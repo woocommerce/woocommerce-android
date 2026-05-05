@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.aiassistant
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -14,7 +15,9 @@ import java.util.Locale
 class WooAssistantCardActionNavigatorTest {
     @Test
     fun `given open order action, when mapped, then order details direction is returned`() {
-        val direction = AssistantCardAction.OpenOrder(remoteOrderId = 123L).toNavDirections()
+        val direction = requireNotNull(
+            AssistantCardAction.OpenOrder(remoteOrderId = 123L).toNavDirections(site = site())
+        )
 
         assertThat(direction.actionId).isEqualTo(R.id.action_global_orderDetailFragment)
         assertThat(direction).isEqualTo(
@@ -27,7 +30,9 @@ class WooAssistantCardActionNavigatorTest {
 
     @Test
     fun `given open product action, when mapped, then product details direction is returned`() {
-        val direction = AssistantCardAction.OpenProduct(remoteProductId = 456L).toNavDirections()
+        val direction = requireNotNull(
+            AssistantCardAction.OpenProduct(remoteProductId = 456L).toNavDirections(site = site())
+        )
 
         assertThat(direction.actionId).isEqualTo(R.id.action_global_productDetailFragment)
         assertThat(direction).isEqualTo(
@@ -35,6 +40,17 @@ class WooAssistantCardActionNavigatorTest {
                 mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId = 456L),
             )
         )
+    }
+
+    @Test
+    fun `given open analytics action, when mapped, then analytics direction is returned`() {
+        val direction = requireNotNull(
+            AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07")
+                .toNavDirections(site = site(), locale = Locale.US)
+        )
+
+        assertThat(direction.actionId).isEqualTo(R.id.action_global_analytics)
+        assertThat(direction.rangeSelection()).isNotNull()
     }
 
     @Test
@@ -73,5 +89,13 @@ class WooAssistantCardActionNavigatorTest {
         )
 
         assertThat(range).isNull()
+    }
+
+    private fun site() = SiteModel().apply { timezone = "-7" }
+
+    private fun androidx.navigation.NavDirections.rangeSelection(): StatsTimeRangeSelection {
+        val field = javaClass.getDeclaredField("rangeSelection")
+        field.isAccessible = true
+        return field.get(this) as StatsTimeRangeSelection
     }
 }

@@ -41,7 +41,7 @@ class WooAssistantCardRenderer(
         when (card) {
             is AssistantCard.Order -> OrderCard(card, onAction, modifier)
             is AssistantCard.Product -> ProductCard(card, onAction, modifier)
-            is AssistantCard.Stats -> StatsCard(card, modifier)
+            is AssistantCard.Stats -> StatsCard(card, onAction, modifier)
         }
     }
 
@@ -81,11 +81,12 @@ class WooAssistantCardRenderer(
     @Composable
     private fun StatsCard(
         card: AssistantCard.Stats,
+        onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
         AiAssistantStatsCard(
             state = card.toStatsCardState(currencyFormatter),
-            onClick = {},
+            onClick = { onAction(AssistantCardAction.OpenAnalytics(card.after, card.before)) },
             modifier = modifier,
         )
     }

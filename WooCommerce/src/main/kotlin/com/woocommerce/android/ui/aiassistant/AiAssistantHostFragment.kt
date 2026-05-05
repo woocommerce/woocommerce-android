@@ -11,12 +11,14 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AiAssistantHostFragment : BaseFragment() {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject lateinit var selectedSite: SelectedSite
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -31,7 +33,9 @@ class AiAssistantHostFragment : BaseFragment() {
                 onBack = { findNavController().navigateUp() },
                 assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter),
                 onCardAction = { action ->
-                    findNavController().navigateSafely(action.toNavDirections())
+                    action.toNavDirections(selectedSite.get())?.let { direction ->
+                        findNavController().navigateSafely(direction)
+                    }
                 },
             )
         }

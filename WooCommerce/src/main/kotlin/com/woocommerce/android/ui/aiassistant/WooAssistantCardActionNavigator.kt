@@ -13,7 +13,10 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-internal fun AssistantCardAction.toNavDirections(): NavDirections =
+internal fun AssistantCardAction.toNavDirections(
+    site: SiteModel,
+    locale: Locale = Locale.getDefault(),
+): NavDirections? =
     when (this) {
         is AssistantCardAction.OpenOrder -> NavGraphMainDirections.actionGlobalOrderDetailFragment(
             orderId = remoteOrderId,
@@ -22,6 +25,14 @@ internal fun AssistantCardAction.toNavDirections(): NavDirections =
         is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
             mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
         )
+        is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
+            after = after,
+            before = before,
+            site = site,
+            locale = locale,
+        )?.let { rangeSelection ->
+            NavGraphMainDirections.actionGlobalAnalytics(rangeSelection)
+        }
     }
 
 internal fun analyticsDatesToStatsTimeRangeSelection(
