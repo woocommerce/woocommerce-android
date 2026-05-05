@@ -74,6 +74,7 @@ fun NotificationModel.getChannelType(): NotificationChannelType {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> NotificationChannelType.NEW_ORDER
         NotificationModel.Kind.COMMENT -> NotificationChannelType.REVIEW
+        NotificationModel.Kind.STOCK -> NotificationChannelType.STOCK
         else -> NotificationChannelType.OTHER
     }
 }
@@ -82,6 +83,7 @@ fun NotificationModel.getUniqueId(): Long {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.meta?.ids?.order ?: 0L
         NotificationModel.Kind.COMMENT -> this.meta?.ids?.comment ?: 0L
+        NotificationModel.Kind.STOCK -> this.meta?.ids?.post ?: 0L
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
@@ -95,6 +97,10 @@ fun NotificationModel.getNoteTitle(resourceProvider: ResourceProvider): String {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> resourceProvider.getString(R.string.notification_order_title)
         NotificationModel.Kind.COMMENT -> resourceProvider.getString(R.string.notification_review_title)
+        NotificationModel.Kind.STOCK ->
+            title
+                ?: getTitleSnippet()
+                ?: resourceProvider.getString(R.string.settings_notifs_stock)
         else -> resourceProvider.getString(R.string.support_push_notification_title)
     }
 }
@@ -103,6 +109,7 @@ fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.getMessageSnippet()
         NotificationModel.Kind.COMMENT -> "${this.getTitleSnippet()}: ${this.getMessageSnippet()}"
+        NotificationModel.Kind.STOCK -> getMessageSnippet() ?: getBodySnippet() ?: getTitleSnippet()
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
@@ -112,6 +119,8 @@ fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String
     }
 }
 
-fun NotificationModel.getTitleSnippet() = this.subject?.get(0)?.text?.split('\n')?.first()
+fun NotificationModel.getTitleSnippet() = this.subject?.getOrNull(0)?.text?.split('\n')?.first()
 
-fun NotificationModel.getMessageSnippet() = this.subject?.get(1)?.text?.split('\n')?.first()
+fun NotificationModel.getMessageSnippet() = this.subject?.getOrNull(1)?.text?.split('\n')?.first()
+
+private fun NotificationModel.getBodySnippet() = this.body?.firstNotNullOfOrNull { it.text }?.split('\n')?.first()
