@@ -18,9 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,17 +56,16 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val isPhoneLayout = remember(context, configuration) { context.isWooPosPhoneLayout() }
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
 
     if (isPhoneLayout) {
         WooPosSettingsPhoneContent(
             state = state,
             onBackClicked = backHandler,
-            onCategorySelectedFromList = containerViewModel::onCategorySelectedFromPhoneList,
+            onCategorySelected = containerViewModel::onCategorySelected,
             onNavigate = containerViewModel::navigateToDetail,
             onBack = containerViewModel::navigateBack,
+            onDismissDetail = containerViewModel::dismissDetail,
             onShowProductInfoDialog = containerViewModel::showProductInfoDialog,
             onShowScanningSetupDialog = containerViewModel::showScanningSetupDialog,
             onRetrySync = containerViewModel::onRetrySyncFromDialogClicked,
@@ -76,7 +73,7 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
             onNavigationEvent = onNavigationEvent
         )
     } else {
-        BackHandler(enabled = !state.canGoBack) { backHandler() }
+        BackHandler { backHandler() }
 
         WooPosSettingsTabletContent(
             state = state,
@@ -97,21 +94,26 @@ fun WooPosSettingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 private fun WooPosSettingsPhoneContent(
     state: WooPosSettingsState,
     onBackClicked: () -> Unit,
-    onCategorySelectedFromList: (WooPosSettingsCategory) -> Unit,
+    onCategorySelected: (WooPosSettingsCategory) -> Unit,
     onNavigate: (WooPosSettingsDetailDestination) -> Unit,
     onBack: () -> Unit,
+    onDismissDetail: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
     onRetrySync: () -> Unit,
     onDismissDialog: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    BackHandler(enabled = !state.isDetailVisible) {
-        onBackClicked()
+    val handleDetailBack: () -> Unit = {
+        if (state.canGoBack) onBack() else onDismissDetail()
+    }
+
+    BackHandler {
+        if (state.showingDetail) handleDetailBack() else onBackClicked()
     }
 
     AnimatedContent(
-        targetState = state.isDetailVisible,
+        targetState = state.showingDetail,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         label = "settings_phone_transition",
     ) { showingDetail ->
@@ -128,21 +130,26 @@ private fun WooPosSettingsPhoneContent(
 
                 WooPosSettingsCategoriesPaneScreen(
                     selectedCategory = state.selectedCategory,
-                    onCategorySelected = onCategorySelectedFromList,
-                    modifier = Modifier.fillMaxSize()
+                    onCategorySelected = onCategorySelected,
+                    showSelection = false,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = WooPosSpacing.Medium.value)
                 )
             }
         } else {
             WooPosSettingsDetailPaneScreen(
                 state = state,
                 onNavigate = onNavigate,
-                onBack = onBack,
+                onBack = handleDetailBack,
                 onShowProductInfoDialog = onShowProductInfoDialog,
                 onShowScanningSetupDialog = onShowScanningSetupDialog,
                 onNavigationEvent = onNavigationEvent,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
+                showBackOnRoot = true,
+                registerBackHandler = false,
             )
         }
     }
@@ -245,6 +252,14 @@ private fun SettingsDialogs(
     }
 }
 
+private val previewScrollableCategories = listOf(
+    WooPosSettingsCategory.STORE,
+    WooPosSettingsCategory.HARDWARE,
+    WooPosSettingsCategory.LOCAL_CATALOG,
+)
+
+private val previewFixedCategories = listOf(WooPosSettingsCategory.HELP)
+
 @WooPosPreview
 @Composable
 fun WooPosSettingsScreenPreview() {
@@ -264,12 +279,8 @@ fun WooPosSettingsScreenPreview() {
                 )
 
                 WooPosSettingsCategoriesPaneScreenContent(
-                    scrollableCategories = listOf(
-                        WooPosSettingsCategory.STORE,
-                        WooPosSettingsCategory.HARDWARE,
-                        WooPosSettingsCategory.LOCAL_CATALOG,
-                    ),
-                    fixedCategories = listOf(WooPosSettingsCategory.HELP),
+                    scrollableCategories = previewScrollableCategories,
+                    fixedCategories = previewFixedCategories,
                     selectedCategory = state.selectedCategory,
                     onCategorySelected = {},
                     modifier = Modifier.fillMaxSize()
@@ -305,7 +316,8 @@ fun WooPosSettingsScreenPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosSettingsPhoneCategoriesPreview() {
+fun WooPosSettingsPhoneScreenPreview() {
+    val state = WooPosSettingsState()
     WooPosTheme {
         Column(
             modifier = Modifier
@@ -318,17 +330,14 @@ fun WooPosSettingsPhoneCategoriesPreview() {
             )
 
             WooPosSettingsCategoriesPaneScreenContent(
-                scrollableCategories = listOf(
-                    WooPosSettingsCategory.STORE,
-                    WooPosSettingsCategory.HARDWARE,
-                    WooPosSettingsCategory.LOCAL_CATALOG,
-                ),
-                fixedCategories = listOf(WooPosSettingsCategory.HELP),
-                selectedCategory = WooPosSettingsCategory.STORE,
+                scrollableCategories = previewScrollableCategories,
+                fixedCategories = previewFixedCategories,
+                selectedCategory = state.selectedCategory,
                 onCategorySelected = {},
-                isSelectable = false,
-                showBottomSpacer = true,
-                modifier = Modifier.fillMaxSize()
+                showSelection = false,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = WooPosSpacing.Medium.value),
             )
         }
     }
@@ -336,8 +345,11 @@ fun WooPosSettingsPhoneCategoriesPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosSettingsPhoneDetailPreview() {
-    val state = WooPosSettingsState(isDetailVisible = true)
+fun WooPosSettingsPhoneDetailScreenPreview() {
+    val state = WooPosSettingsState(
+        selectedCategory = WooPosSettingsCategory.HARDWARE,
+        currentDestination = WooPosSettingsDetailDestination.Hardware.Overview,
+    )
     WooPosTheme {
         Column(
             modifier = Modifier
@@ -354,7 +366,7 @@ fun WooPosSettingsPhoneDetailPreview() {
                 titleText = stringResource(state.currentDestination.titleRes),
                 onBackClicked = {},
                 titleStyle = WooPosTypography.Heading,
-                titleFontWeight = FontWeight.Bold
+                titleFontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))

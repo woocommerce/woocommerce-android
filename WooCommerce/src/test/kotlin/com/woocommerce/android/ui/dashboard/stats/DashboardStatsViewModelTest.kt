@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
@@ -27,10 +28,12 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
@@ -43,6 +46,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -55,8 +59,9 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
 
     private val getStats: GetStats = mock {
-        on { invoke(any(), any()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+        on { invoke(any(), any(), anyOrNull()) } doReturn flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
     }
+    private val statsRepository: StatsRepository = mock()
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
     }
@@ -94,6 +99,10 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: DashboardStatsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(statsRepository.fetchAnalyticsOrderDateType())
+            .thenReturn(Result.success(WCAnalyticsOrderDateType.PAID))
+        whenever(statsRepository.updateAnalyticsOrderDateType(any()))
+            .thenReturn(Result.success(WCAnalyticsOrderDateType.PAID))
         prepareMocks()
         val getSelectedDateRange = GetSelectedRangeForDashboardStats(
             appPrefs = appPrefsWrapper,
@@ -106,6 +115,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             parentViewModel = parentViewModel,
             selectedSite = selectedSite,
             getStats = getStats,
+            statsRepository = statsRepository,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             dashboardTransactionLauncher = dashboardTransactionLauncher,
             appPrefsWrapper = appPrefsWrapper,
@@ -129,7 +139,11 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 whenever(networkStatus.isConnected()).thenReturn(true)
             }
 
-            verify(getStats).invoke(refresh = ArgumentMatchers.eq(false), selectedRange = any())
+            verify(getStats).invoke(
+                refresh = ArgumentMatchers.eq(false),
+                selectedRange = any(),
+                orderDateType = eq(WCAnalyticsOrderDateType.PAID)
+            )
         }
 
     @Test
@@ -139,7 +153,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 whenever(networkStatus.isConnected()).thenReturn(false)
             }
 
-            verify(getStats, never()).invoke(any(), any())
+            verify(getStats, never()).invoke(any(), any(), anyOrNull())
         }
 
     @Test
@@ -151,7 +165,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
             viewModel.onRangeChanged(ANY_SELECTION_TYPE)
 
-            verify(getStats, never()).invoke(any(), any())
+            verify(getStats, never()).invoke(any(), any(), anyOrNull())
         }
 
     @Test
@@ -167,7 +181,8 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
         verify(getStats, times(2)).invoke(
             refresh = ArgumentMatchers.eq(false),
-            selectedRange = getStatsArgumentCaptor.capture()
+            selectedRange = getStatsArgumentCaptor.capture(),
+            orderDateType = eq(WCAnalyticsOrderDateType.PAID)
         )
         Assertions.assertThat(getStatsArgumentCaptor.firstValue.selectionType)
             .isEqualTo(DEFAULT_SELECTION_TYPE)
@@ -189,7 +204,8 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 refresh = eq(true),
                 selectedRange = argThat {
                     selectionType == DEFAULT_SELECTION_TYPE
-                }
+                },
+                orderDateType = eq(WCAnalyticsOrderDateType.PAID)
             )
         }
 
@@ -197,7 +213,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given success loading revenue, when stats granularity changes, then UI is updated for new selection type`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flow { emit(GetStats.LoadStatsResult.RevenueStatsSuccess(null)) })
                 whenever(appPrefsWrapper.getActiveStoreStatsTab())
                     .doReturn(DEFAULT_SELECTION_TYPE.name)
@@ -244,7 +260,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 rangeId = "",
             )
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsSuccess(revenueStats)))
             }
 
@@ -304,6 +320,114 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given saved order date type, when screen starts, then selected order date type is updated`() =
+        testBlocking {
+            setup {
+                whenever(statsRepository.fetchAnalyticsOrderDateType())
+                    .thenReturn(Result.success(WCAnalyticsOrderDateType.CREATED))
+            }
+
+            Assertions.assertThat(viewModel.orderDateTypeState.value.selectedType)
+                .isEqualTo(WCAnalyticsOrderDateType.CREATED)
+            verify(getStats).invoke(
+                refresh = eq(true),
+                selectedRange = argThat {
+                    selectionType == DEFAULT_SELECTION_TYPE
+                },
+                orderDateType = eq(WCAnalyticsOrderDateType.CREATED)
+            )
+        }
+
+    @Test
+    fun `when order date type selector is tapped, then interaction is tracked`() =
+        testBlocking {
+            setup()
+
+            viewModel.onOrderDateTypeSelectorTapped()
+
+            verify(usageTracksEventEmitter).interacted(any())
+            verify(parentViewModel).trackCardInteracted("performance")
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTOR_TAPPED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
+            )
+        }
+
+    @Test
+    fun `when order date type is selected successfully, then setting is saved and stats are refreshed`() =
+        testBlocking {
+            var dismissed = false
+            setup {
+                whenever(statsRepository.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED))
+                    .thenReturn(Result.success(WCAnalyticsOrderDateType.COMPLETED))
+            }
+
+            viewModel.onOrderDateTypeSelected(WCAnalyticsOrderDateType.COMPLETED) {
+                dismissed = true
+            }
+            advanceUntilIdle()
+
+            Assertions.assertThat(viewModel.orderDateTypeState.value).isEqualTo(
+                DashboardStatsViewModel.OrderDateTypeUiState(selectedType = WCAnalyticsOrderDateType.COMPLETED)
+            )
+            Assertions.assertThat(dismissed).isTrue()
+            verify(statsRepository).updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED)
+            verify(getStats).invoke(
+                refresh = eq(true),
+                selectedRange = argThat {
+                    selectionType == DEFAULT_SELECTION_TYPE
+                },
+                orderDateType = eq(WCAnalyticsOrderDateType.COMPLETED)
+            )
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_OPTION] == WCAnalyticsOrderDateType.COMPLETED.value &&
+                        this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
+            )
+        }
+
+    @Test
+    fun `when order date type update fails, then previous selection remains and error is shown`() =
+        testBlocking {
+            var dismissed = false
+            val failure = Exception("network down")
+            setup {
+                whenever(statsRepository.updateAnalyticsOrderDateType(WCAnalyticsOrderDateType.COMPLETED))
+                    .thenReturn(Result.failure(failure))
+            }
+
+            viewModel.onOrderDateTypeSelected(WCAnalyticsOrderDateType.COMPLETED) {
+                dismissed = true
+            }
+            advanceUntilIdle()
+
+            Assertions.assertThat(viewModel.orderDateTypeState.value).isEqualTo(
+                DashboardStatsViewModel.OrderDateTypeUiState(
+                    selectedType = WCAnalyticsOrderDateType.PAID,
+                    hasUpdateError = true
+                )
+            )
+            Assertions.assertThat(dismissed).isFalse()
+            verify(analyticsTrackerWrapper, never()).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_SELECTED),
+                properties = any()
+            )
+            verify(analyticsTrackerWrapper).track(
+                stat = eq(AnalyticsEvent.DASHBOARD_STATS_ORDER_DATE_TYPE_UPDATE_FAILED),
+                properties = argThat {
+                    this[AnalyticsTracker.KEY_OPTION] == WCAnalyticsOrderDateType.COMPLETED.value &&
+                        this[AnalyticsTracker.KEY_ERROR_TYPE] == failure::class.java.simpleName &&
+                        this[AnalyticsTracker.KEY_ERROR_DESC] == "network down" &&
+                        this[AnalyticsTracker.KEY_TYPE] == "performance"
+                }
+            )
+        }
+
+    @Test
     fun `when stats granularity changes, then selected option is saved into prefs`() =
         testBlocking {
             setup()
@@ -317,7 +441,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given error loading revenue, when screen starts, then UI is updated with error`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsError("")))
             }
 
@@ -329,7 +453,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given stats plugin not active, when screen starts, then UI is updated with jetpack error`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.PluginNotActive))
             }
 
@@ -342,7 +466,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given success loading visitor stats, when screen starts, then UI is updated with visitor stats`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap(), 0)))
             }
 
@@ -355,7 +479,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given error loading visitor stats, when screen starts, then UI is updated with error`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorsStatsError))
             }
 
@@ -368,7 +492,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given jetpack CP connected, when screen starts, then show jetpack CP connected state`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
             }
 
@@ -397,7 +521,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given several outdated visitor stats is returned then refreshing indicator is called only once`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -413,7 +537,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given up to date visitor stats is returned after outdated stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -429,7 +553,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given an error is returned after outdated visitor stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -445,7 +569,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given a visitor stats unavailable is returned after outdated data then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
@@ -461,7 +585,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given several outdated revenue stats is returned then refreshing indicator is called only once`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -477,7 +601,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given up to date revenue stats is returned after outdated stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -493,7 +617,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given revenue error is returned after outdated revenue stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -509,7 +633,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given plugin not active error is returned after outdated revenue stats then hide refreshing indicator`() =
         testBlocking {
             setup {
-                whenever(getStats.invoke(any(), any()))
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
@@ -524,7 +648,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     @Test
     fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack icon`() = testBlocking {
         setup {
-            whenever(getStats.invoke(any(), any()))
+            whenever(getStats.invoke(any(), any(), anyOrNull()))
                 .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
             whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
         }

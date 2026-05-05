@@ -13,6 +13,7 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupEnablePushNotificationsOption()
         fun setupJetpackInstallOption()
+        fun setupNotificationsOption()
         fun onNotificationsClicked()
 
         val isCloseAccountOptionVisible: Boolean
@@ -23,9 +24,10 @@ interface MainSettingsContract {
 
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
-        fun showNotificationsSettingsScreen()
+        fun showNotificationsSettingsScreen(showSmarterNotifications: Boolean)
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun setEnablePushNotificationsOptionVisible(isVisible: Boolean)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
+        fun handleNotificationsOption(showSmarterNotifications: Boolean)
     }
 }

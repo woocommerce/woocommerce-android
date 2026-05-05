@@ -58,6 +58,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
@@ -108,9 +109,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private val fadeHandler = Handler(Looper.getMainLooper())
 
-    private val statsDateValue
-        get() = binding.statsViewRow.statsDateTextView
-
     private val revenueValue
         get() = binding.statsViewRow.totalRevenueTextView
 
@@ -126,9 +124,6 @@ class DashboardStatsView @JvmOverloads constructor(
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
-    val customRangeLabel
-        get() = binding.statsViewRow.statsCustomDateRangeTextView
-
     private val customRangeGranularityLabel
         get() = binding.customRangeGranularityLabel
 
@@ -143,8 +138,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     init {
         // TODO Remove those views from the layout when releasing Dynamic Dashboard
-        customRangeLabel.isVisible = false
-        statsDateValue.isVisible = false
         binding.statsTabLayout.isVisible = false
         customRangeButton.isVisible = false
         binding.viewAnalyticsButton.isVisible = false
@@ -207,6 +200,20 @@ class DashboardStatsView @JvmOverloads constructor(
         )
         isRequestingStats = true
         applyCustomRange(statsTimeRangeSelection)
+    }
+
+    fun setOnOrderDateTypeClickListener(onClick: () -> Unit) {
+        binding.statsViewRow.ordersLayout.setOnClickListener { onClick() }
+    }
+
+    fun setOrderDateType(orderDateType: WCAnalyticsOrderDateType) {
+        binding.statsViewRow.ordersLabel.setText(
+            when (orderDateType) {
+                WCAnalyticsOrderDateType.PAID -> R.string.dashboard_stats_paid_orders
+                WCAnalyticsOrderDateType.CREATED -> R.string.dashboard_stats_placed_orders
+                WCAnalyticsOrderDateType.COMPLETED -> R.string.dashboard_stats_completed_orders
+            }
+        )
     }
 
     private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {

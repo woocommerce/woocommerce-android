@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.MappingRemoteException
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVariationsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
@@ -253,6 +254,31 @@ class WCProductStore @Inject internal constructor(
         val site: SiteModel,
         val updatedProducts: List<WCProductModel>
     ) : Payload<BaseNetworkError>()
+
+    data class ProductVariationsPage(
+        val variations: List<WCProductVariationModel>,
+        val canLoadMore: Boolean,
+    )
+
+    data class UpdateProductRequest(
+        val name: String? = null,
+        val regularPrice: String? = null,
+        val salePrice: String? = null,
+        val stockQuantity: Int? = null,
+        val status: String? = null,
+    )
+
+    data class UpdateProductsResult(
+        val updatedProducts: List<Long> = emptyList(),
+        val failedProducts: List<FailedProduct> = emptyList(),
+    ) {
+        data class FailedProduct(
+            val id: Long,
+            val errorCode: String,
+            val errorMessage: String,
+            val errorStatus: Int,
+        )
+    }
 
     class UpdateVariationPayload(
         var site: SiteModel,
@@ -1309,26 +1335,26 @@ class WCProductStore @Inject internal constructor(
         }
     }
 
-    suspend fun fetchProductVariations(payload: FetchProductVariationsPayload): OnProductChanged {
+    suspend fun fetchProductVariations(payload: FetchProductVariationsPayload): WooResult<ProductVariationsPage> {
         return coroutineEngine.withDefaultContext(API, this, "fetchProductVariations") {
-            val result = with(payload) {
-                wcProductRestClient.fetchProductVariations(site, remoteProductId, pageSize, offset)
+            val response = with(payload) {
+                wcProductRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = remoteProductId,
+                    pageSize = pageSize,
+                    offset = offset
+                )
             }
-            return@withDefaultContext if (result.isError) {
-                OnProductChanged(payload.remoteProductId).also { it.error = result.error }
-            } else {
-                // delete product variations for site if this is the first page of results, otherwise
-                // product variations deleted outside of the app will persist
-                if (result.offset == 0) {
-                    productVariationsDao.deleteVariationsForProduct(
-                        localSiteId = result.site.localId(),
-                        remoteProductId = RemoteId(result.remoteProductId)
-                    )
-                }
-
-                productVariationsDao.upsertProductVariations(result.variations)
-                OnProductChanged(payload.remoteProductId, canLoadMore = result.canLoadMore)
-            }
+            handleFetchedProductVariations(
+                response = response,
+                context = ProductVariationsFetchContext(
+                    site = payload.site,
+                    remoteProductId = payload.remoteProductId,
+                    offset = payload.offset,
+                    pageSize = payload.pageSize,
+                    replaceExistingOnFirstPage = true,
+                ),
+            )
         }
     }
 
@@ -1560,6 +1586,53 @@ class WCProductStore @Inject internal constructor(
                     WooResult(result.result?.map { it.product })
                 }
             }
+        }
+
+    suspend fun batchUpdateProducts(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateProductRequest>,
+    ): WooResult<UpdateProductsResult> =
+        coroutineEngine.withDefaultContext(API, this, "batchUpdateProducts") {
+            val result = wcProductRestClient.batchUpdateProductsPatch(site, updateRequests)
+
+            if (result.isError) {
+                return@withDefaultContext WooResult(result.error)
+            }
+
+            val response = result.result ?: return@withDefaultContext WooResult(
+                WooError(INVALID_RESPONSE, UNKNOWN, "Success response with empty data")
+            )
+
+            val updatedProducts = mutableListOf<Long>()
+            val failedProducts = mutableListOf<UpdateProductsResult.FailedProduct>()
+
+            val updatedProductsWithMetaData = response.update.mapNotNull {
+                (it as? BatchProductUpdateResult.ProductResponse.Success)?.product
+            }
+            if (updatedProductsWithMetaData.isNotEmpty()) {
+                productStorageHelper.upsertProducts(updatedProductsWithMetaData)
+            }
+
+            response.update.forEach { productResponse ->
+                when (productResponse) {
+                    is BatchProductUpdateResult.ProductResponse.Success -> {
+                        updatedProducts.add(productResponse.product.product.remoteProductId)
+                    }
+
+                    is BatchProductUpdateResult.ProductResponse.Error -> {
+                        failedProducts.add(
+                            UpdateProductsResult.FailedProduct(
+                                id = productResponse.id,
+                                errorCode = productResponse.error.code,
+                                errorMessage = productResponse.error.message,
+                                errorStatus = productResponse.error.data.status
+                            )
+                        )
+                    }
+                }
+            }
+
+            WooResult(UpdateProductsResult(updatedProducts, failedProducts))
         }
 
     /**
@@ -1882,9 +1955,6 @@ class WCProductStore @Inject internal constructor(
         }
     }
 
-    /**
-     * @return Boolean indicating whether more variations can be fetched.
-     */
     suspend fun fetchProductVariations(
         site: SiteModel,
         productId: Long,
@@ -1894,7 +1964,7 @@ class WCProductStore @Inject internal constructor(
         excludedVariationIds: List<Long> = emptyList(),
         filterOptions: Map<VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
-    ): WooResult<Boolean> {
+    ): WooResult<ProductVariationsPage> {
         return coroutineEngine.withDefaultContext(API, this, "fetchProductVariations") {
             val response = wcProductRestClient.fetchProductVariationsWithSyncRequest(
                 site = site,
@@ -1906,28 +1976,72 @@ class WCProductStore @Inject internal constructor(
                 filterOptions = filterOptions,
                 orderCurrency = orderCurrency
             )
-            when {
-                response.isError -> WooResult(response.error)
-                response.result != null -> {
-                    if (offset == 0 &&
-                        includedVariationIds.isEmpty() &&
-                        excludedVariationIds.isEmpty()
-                    ) {
-                        productVariationsDao.deleteVariationsForProduct(
-                            localSiteId = site.localId(),
-                            remoteProductId = RemoteId(productId)
-                        )
-                    }
-
-                    productVariationsDao.upsertProductVariations(response.result)
-                    val canLoadMore = response.result.size == pageSize
-                    WooResult(canLoadMore)
-                }
-
-                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
-            }
+            handleFetchedProductVariations(
+                response = response,
+                context = ProductVariationsFetchContext(
+                    site = site,
+                    remoteProductId = productId,
+                    offset = offset,
+                    pageSize = pageSize,
+                    replaceExistingOnFirstPage = includedVariationIds.isEmpty() && excludedVariationIds.isEmpty(),
+                ),
+            )
         }
     }
+
+    private suspend fun handleFetchedProductVariations(
+        response: WooPayload<List<WCProductVariationModel>>,
+        context: ProductVariationsFetchContext,
+    ): WooResult<ProductVariationsPage> {
+        return when {
+            response.isError -> WooResult(response.error)
+            response.result != null -> {
+                val fetchedVariations = response.result
+                if (context.replaceExistingOnFirstPage) {
+                    storeFetchedProductVariations(
+                        site = context.site,
+                        remoteProductId = context.remoteProductId,
+                        offset = context.offset,
+                        variations = fetchedVariations,
+                    )
+                } else {
+                    productVariationsDao.upsertProductVariations(fetchedVariations)
+                }
+                WooResult(
+                    ProductVariationsPage(
+                        variations = fetchedVariations,
+                        canLoadMore = fetchedVariations.size == context.pageSize,
+                    )
+                )
+            }
+            else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
+    private suspend fun storeFetchedProductVariations(
+        site: SiteModel,
+        remoteProductId: Long,
+        offset: Int,
+        variations: List<WCProductVariationModel>,
+    ) {
+        // Delete product variations if this is the first page of results, otherwise product
+        // variations deleted outside of the app will persist.
+        if (offset == 0) {
+            productVariationsDao.deleteVariationsForProduct(
+                localSiteId = site.localId(),
+                remoteProductId = RemoteId(remoteProductId)
+            )
+        }
+        productVariationsDao.upsertProductVariations(variations)
+    }
+
+    private data class ProductVariationsFetchContext(
+        val site: SiteModel,
+        val remoteProductId: Long,
+        val offset: Int,
+        val pageSize: Int,
+        val replaceExistingOnFirstPage: Boolean,
+    )
 
     suspend fun createVariations(
         site: SiteModel,

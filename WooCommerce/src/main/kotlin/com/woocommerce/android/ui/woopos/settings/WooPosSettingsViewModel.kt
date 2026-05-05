@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -15,10 +16,10 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SettingsOpened
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.StoreDetailsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,9 +29,14 @@ class WooPosSettingsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val childToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildEventSender: WooPosParentToChildrenEventSender,
+    savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(WooPosSettingsState())
-    val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<WooPosSettingsState> = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = WooPosSettingsState(),
+        key = KEY_STATE,
+    )
+    val state: StateFlow<WooPosSettingsState> = _state
 
     init {
         listenToChildEvents()
@@ -67,14 +73,16 @@ class WooPosSettingsViewModel @Inject constructor(
         _state.update { currentState ->
             currentState.copy(
                 selectedCategory = category,
-                currentDestination = category.rootDestination
+                currentDestination = category.rootDestination,
+                showingDetail = true,
             )
         }
     }
 
-    fun onCategorySelectedFromPhoneList(category: WooPosSettingsCategory) {
-        onCategorySelected(category)
-        _state.update { currentState -> currentState.copy(isDetailVisible = true) }
+    fun dismissDetail() {
+        _state.update { currentState ->
+            currentState.copy(showingDetail = false)
+        }
     }
 
     private fun trackCategorySelection(category: WooPosSettingsCategory) {
@@ -98,10 +106,10 @@ class WooPosSettingsViewModel @Inject constructor(
     fun navigateBack() {
         _state.update { currentState ->
             val parentDestination = currentState.currentDestination.parentDestination
-            when {
-                parentDestination != null -> currentState.copy(currentDestination = parentDestination)
-                currentState.isDetailVisible -> currentState.copy(isDetailVisible = false)
-                else -> currentState
+            if (parentDestination != null) {
+                currentState.copy(currentDestination = parentDestination)
+            } else {
+                currentState
             }
         }
     }
@@ -155,5 +163,9 @@ class WooPosSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             analyticsTracker.track(SettingsClosed)
         }
+    }
+
+    private companion object {
+        const val KEY_STATE = "woo_pos_settings_view_state"
     }
 }

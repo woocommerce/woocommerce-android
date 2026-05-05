@@ -64,6 +64,28 @@ class RetryPolicyTest {
     }
 
     @Test
+    fun `given upstream failure after visible output, when deciding, then DoNotRetry is returned`() {
+        val decision = policy.decide(
+            LoopFailureContext(AssistantError.UpstreamFailure, visibleOutputStarted = true, retryCount = 0)
+        )
+
+        assertThat(decision).isEqualTo(RetryDecision.DoNotRetry)
+    }
+
+    @Test
+    fun `given outcome unknown after visible output, when deciding, then DoNotRetry is returned`() {
+        val decision = policy.decide(
+            LoopFailureContext(
+                AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                visibleOutputStarted = true,
+                retryCount = 0,
+            )
+        )
+
+        assertThat(decision).isEqualTo(RetryDecision.DoNotRetry)
+    }
+
+    @Test
     fun `given network error and retry count at max, when deciding, then ShowManualRetry is returned`() {
         val decision = policy.decide(
             LoopFailureContext(

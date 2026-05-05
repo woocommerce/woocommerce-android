@@ -25,10 +25,6 @@ sealed class WooPosOrderDetailsState {
     sealed class DialogState {
         data object Hidden : DialogState()
 
-        data class IssueRefund(
-            val orderId: Long
-        ) : DialogState()
-
         data class RefundDetails(
             val label: String,
             val items: List<LineItemRow>,
