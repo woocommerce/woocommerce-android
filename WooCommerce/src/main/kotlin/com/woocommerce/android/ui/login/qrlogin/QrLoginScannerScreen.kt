@@ -60,6 +60,15 @@ fun QrLoginScannerScreen(
                 expiresAtEpochMs = uiState.expiresAtEpochMs,
                 onCancel = onCancelNumberMatch,
             )
+            is UiState.WaitingForWpComApproval -> QrLoginNumberDisplayScreen(
+                // The number-display screen presents the upper label as "context the user can
+                // verify before tapping" — for the wp.com flow that's their wp.com email rather
+                // than a site host. Same UI, different identifier.
+                host = uiState.userEmail,
+                realNumber = uiState.realNumber,
+                expiresAtEpochMs = uiState.expiresAtEpochMs,
+                onCancel = onCancelNumberMatch,
+            )
             is UiState.WarningSessionReplace -> QrLoginSessionReplaceWarningScreen(
                 onConfirm = onConfirmSessionReplace,
                 onCancel = onCancelSessionReplace,
@@ -154,6 +163,26 @@ private val simpleErrorContents: Map<ErrorReason, QrLoginErrorContent> = mapOf(
     ErrorReason.MatchInvalidGrant to errorContent(
         R.string.login_qr_scanner_error_match_invalid_grant_title,
         R.string.login_qr_scanner_error_match_invalid_grant_body,
+        R.string.login_qr_error_primary_scan,
+    ),
+    ErrorReason.WpComSessionNotFound to errorContent(
+        R.string.login_qr_wpcom_error_session_not_found_title,
+        R.string.login_qr_wpcom_error_session_not_found_body,
+        R.string.login_qr_error_primary_scan,
+    ),
+    ErrorReason.WpComAlreadyScanned to errorContent(
+        R.string.login_qr_wpcom_error_already_scanned_title,
+        R.string.login_qr_wpcom_error_already_scanned_body,
+        R.string.login_qr_error_primary_scan,
+    ),
+    ErrorReason.WpComNoNumberMatching to errorContent(
+        R.string.login_qr_wpcom_error_no_number_matching_title,
+        R.string.login_qr_wpcom_error_no_number_matching_body,
+        R.string.login_qr_error_primary_scan,
+    ),
+    ErrorReason.WpComAlreadyConsumed to errorContent(
+        R.string.login_qr_wpcom_error_already_consumed_title,
+        R.string.login_qr_wpcom_error_already_consumed_body,
         R.string.login_qr_error_primary_scan,
     ),
     ErrorReason.Scanner to genericErrorContent(),

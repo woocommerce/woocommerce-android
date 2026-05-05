@@ -7,21 +7,20 @@ import java.net.URLDecoder
 import javax.inject.Inject
 
 /**
- * Parses the deep link encoded in a login QR code:
+ * Parses the deep link encoded in a login QR code. The `woocommerce://qr-login` deeplink is the
+ * shared entry point for three flows, distinguished by the query string:
  *
  * ```
- * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
+ * woocommerce://qr-login?token=<hex>&siteUrl=<URL-encoded site URL>     // self-hosted (AP) flow
+ * woocommerce://qr-login?siteUrl=<URL-encoded site URL>                 // site-URL prefill
+ * woocommerce://qr-login?token=<compound>&encrypted=<base64-url>        // wp.com QR app login
  * ```
  *
- * The same deeplink shape is also used as a "site-URL only" QR — when `token` is missing or
- * blank, the payload becomes [QrLoginPayload.SiteUrl] and the scanner routes the merchant to
- * the site-address login screen with the URL prefilled instead of attempting an exchange.
- *
- * Anything malformed, missing parameters, with the wrong scheme/host, or with a non-https
- * `siteUrl` returns [QrLoginPayload.Invalid]. The parser does not validate the token format
- * beyond non-blank — that's the server's job during exchange. `siteUrl` is parsed via OkHttp's
- * [okhttp3.HttpUrl] and rejected if it carries userinfo, query, or fragment components — those
- * have no role in a Woo site root and are classic spoofing surfaces in the confirmation prompt.
+ * `siteUrl` is the load-bearing discriminator: present → self-hosted; absent → wp.com (when
+ * `encrypted` is also there). The parser does not validate token formats beyond non-blank —
+ * that's the server's job during exchange. `siteUrl` is parsed via OkHttp's [okhttp3.HttpUrl]
+ * and rejected if it carries userinfo, query, or fragment components — those have no role in
+ * a Woo site root and are classic spoofing surfaces in the confirmation prompt.
  *
  * Also recognises the WordPress.com magic-login QR
  * (`https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=…`) and
@@ -53,15 +52,27 @@ class QrLoginPayloadParser @Inject constructor() {
     }
 
     /**
-     * Parses the `woocommerce://qr-login?...` deeplink. Returns [QrLoginPayload.Ticket] when both
-     * `token` and `siteUrl` are present and valid, [QrLoginPayload.SiteUrl] when `siteUrl` is
-     * valid but `token` is missing or blank, and `null` (caller maps to `Invalid`) otherwise.
-     * `siteUrl` validation is identical in both branches.
+     * Parses the `woocommerce://qr-login?...` deeplink. Three valid shapes:
+     *  - `token` + `siteUrl` → [QrLoginPayload.Ticket] (self-hosted Application Password flow)
+     *  - `siteUrl` only (no/blank `token`) → [QrLoginPayload.SiteUrl] (site-URL prefill)
+     *  - `token` + `encrypted`, no `siteUrl` → [QrLoginPayload.WpComToken] (wp.com QR app login)
+     *
+     * Anything else (no params, all three present, `encrypted` without `token`, …) returns
+     * `null` and the caller maps it to [QrLoginPayload.Invalid]. The wp.com branch is gated on
+     * `siteUrl` being absent so a self-hosted `Ticket` payload is never silently rerouted to
+     * wp.com if both query params happen to land on the same QR.
      */
     private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
         val uri = parseDeepLink(raw) ?: return null
-        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return null
+        val rawSiteUrl = uri.queryParam(PARAM_SITE_URL)?.takeIf { it.isNotBlank() }
         val token = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
+        val encrypted = uri.queryParam(PARAM_ENCRYPTED)?.takeIf { it.isNotBlank() }
+
+        if (rawSiteUrl == null && token != null && encrypted != null) {
+            return QrLoginPayload.WpComToken(token = token, encrypted = encrypted)
+        }
+
+        val siteUrl = rawSiteUrl?.let(::normalizeSiteUrl) ?: return null
         return if (token != null) {
             QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
         } else {
@@ -126,6 +137,7 @@ class QrLoginPayloadParser @Inject constructor() {
         const val HOST = "qr-login"
         const val PARAM_TOKEN = "token"
         const val PARAM_SITE_URL = "siteUrl"
+        const val PARAM_ENCRYPTED = "encrypted"
         const val PARAM_ACTION = "action"
         const val PARAM_SCHEME = "scheme"
         const val HTTPS_PREFIX = "https://"

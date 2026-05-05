@@ -128,6 +128,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN(siteless = true),
     LOGIN_QR_SESSION_REPLACE_CONFIRMED(siteless = true),
     LOGIN_QR_SESSION_REPLACE_DISMISSED(siteless = true),
+    LOGIN_QR_WPCOM_SUCCESS(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN,

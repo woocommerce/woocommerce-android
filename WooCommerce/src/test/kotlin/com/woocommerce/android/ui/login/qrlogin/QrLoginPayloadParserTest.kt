@@ -262,4 +262,65 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
         assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
     }
 
+    @Test
+    fun `given token and encrypted without siteUrl, when parsed, then returns WpComToken`() {
+        val raw = "woocommerce://qr-login?token=abc%3A123&encrypted=blob-xyz"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.WpComToken(token = "abc:123", encrypted = "blob-xyz"))
+    }
+
+    @Test
+    fun `given long real-world wp dot com payload, when parsed, then returns WpComToken with full values`() {
+        val token = "8a3f5b9e2c4d7168f0a2b4c6e8f1a3b5c7d9e1f3a5b7c9d1e3f5a7b9c1d3e5f7" +
+            ":1234567890abcdef1234567890abcdef"
+        val encrypted = "VGhpcy1pcy1hLWZha2UtYmxvYi13aXRoLW1hbnktY2hhcmFjdGVycw"
+        val raw = "woocommerce://qr-login?token=${token.replace(":", "%3A")}&encrypted=$encrypted"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.WpComToken(token = token, encrypted = encrypted))
+    }
+
+    @Test
+    fun `given encrypted without token, when parsed, then returns Invalid`() {
+        // encrypted on its own is meaningless — server needs both.
+        val raw = "woocommerce://qr-login?encrypted=blob"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given token, encrypted, and siteUrl all present, when parsed, then prefers self-hosted Ticket`() {
+        // siteUrl is the load-bearing discriminator: self-hosted wins. Drop encrypted on the
+        // floor — the AP flow has no use for it and including it would silently misroute the
+        // scan to wp.com.
+        val raw = "woocommerce://qr-login?token=abc&encrypted=blob&siteUrl=https%3A%2F%2Fstore.example"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.Ticket(token = "abc", siteUrl = "https://store.example"))
+    }
+
+    @Test
+    fun `given blank encrypted with token and no siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?token=abc&encrypted="
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given blank token with encrypted and no siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?token=&encrypted=blob"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given uppercase scheme and host with wp dot com payload, when parsed, then returns WpComToken`() {
+        val raw = "WOOCOMMERCE://QR-LOGIN?token=abc&encrypted=blob"
+
+        assertThat(parser.parse(raw)).isInstanceOf(QrLoginPayload.WpComToken::class.java)
+    }
 }

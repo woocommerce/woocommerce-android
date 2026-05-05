@@ -266,6 +266,14 @@
     <string name="login_qr_scanner_error_match_already_scanned_body">That code has already been scanned. Generate a new one in your store.</string>
     <string name="login_qr_scanner_error_match_invalid_grant_title">Sign-in interrupted</string>
     <string name="login_qr_scanner_error_match_invalid_grant_body">Your sign-in was interrupted. Generate a new code in your store and try again.</string>
+    <string name="login_qr_wpcom_error_session_not_found_title">Code expired</string>
+    <string name="login_qr_wpcom_error_session_not_found_body">That QR code has expired. Refresh the page in your browser and try again.</string>
+    <string name="login_qr_wpcom_error_already_scanned_title">Code already used</string>
+    <string name="login_qr_wpcom_error_already_scanned_body">That QR code has already been scanned by another device. Refresh the page in your browser to get a new one.</string>
+    <string name="login_qr_wpcom_error_no_number_matching_title">App update required</string>
+    <string name="login_qr_wpcom_error_no_number_matching_body">This sign-in flow needs a newer version of WooCommerce. Update from the Play Store and try again.</string>
+    <string name="login_qr_wpcom_error_already_consumed_title">Sign-in already completed</string>
+    <string name="login_qr_wpcom_error_already_consumed_body">This sign-in was completed on another device. Refresh the page in your browser to start a new sign-in.</string>
     <string name="login_qr_error_primary_retry">Try again</string>
     <string name="login_qr_error_primary_scan">Scan a new code</string>
     <string name="login_qr_session_replace_title">You\'re already signed in</string>

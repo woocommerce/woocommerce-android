@@ -11,6 +11,12 @@ import com.woocommerce.android.network.qrlogin.QrLoginScanException
 import com.woocommerce.android.network.qrlogin.QrLoginScanResult
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatus
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginExchangeException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginExchangeResult
+import com.woocommerce.android.network.qrlogin.WpComQrLoginRestClient
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanResult
+import com.woocommerce.android.network.qrlogin.WpComQrLoginSessionStatus
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
@@ -51,6 +57,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     private val parser: QrLoginPayloadParser = mock()
     private val restClient: QrLoginRestClient = mock()
+    private val wpComRestClient: WpComQrLoginRestClient = mock()
     private val authenticator: QrLoginAuthenticator = mock()
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
@@ -60,6 +67,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             savedState = SavedStateHandle(),
             parser = parser,
             restClient = restClient,
+            wpComRestClient = wpComRestClient,
             authenticator = authenticator,
             accountRepository = accountRepository,
             analyticsTracker = analyticsTracker
@@ -826,11 +834,225 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     // endregion
 
+    // region wp.com QR app login
+
+    private val wpComPayload = QrLoginPayload.WpComToken(token = "wp-tok", encrypted = "wp-enc")
+    private val wpComScanResult = WpComQrLoginScanResult(
+        sessionId = "wp-sess",
+        realNumber = "247",
+        expiresInSeconds = 90,
+        userEmail = "user@example.com",
+    )
+    private val magicLink = "https://wordpress.com/log-in/link/use/abc"
+
+    private suspend fun stubWpComScanSuccess() {
+        whenever(parser.parse(WP_COM_RAW)).thenReturn(wpComPayload)
+        whenever(wpComRestClient.scan(wpComPayload.token, wpComPayload.encrypted))
+            .thenReturn(Result.success(wpComScanResult))
+    }
+
+    private suspend fun stubWpComPollingTerminates() {
+        // Same approach as the AP variant: a Scanned response holds the polling loop in
+        // WaitingForWpComApproval long enough to assert state, then Expired drains the loop.
+        whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Scanned))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
+    }
+
+    @Test
+    fun `given wp dot com payload, when scan succeeds, then state is WaitingForWpComApproval with email`() =
+        testBlocking {
+            stubWpComScanSuccess()
+            stubWpComPollingTerminates()
+
+            viewModel.onScanResult(successScan(WP_COM_RAW))
+
+            val state = viewModel.uiState.value as UiState.WaitingForWpComApproval
+            assertThat(state.realNumber).isEqualTo("247")
+            assertThat(state.sessionId).isEqualTo("wp-sess")
+            assertThat(state.userEmail).isEqualTo("user@example.com")
+            assertThat(state.token).isEqualTo("wp-tok")
+            assertThat(state.encrypted).isEqualTo("wp-enc")
+            assertThat(state.expiresAtEpochMs).isGreaterThan(System.currentTimeMillis())
+        }
+
+    @Test
+    fun `given wp dot com scan, when 403 RestForbidden, then maps to ServerError without retry`() = testBlocking {
+        whenever(parser.parse(WP_COM_RAW)).thenReturn(wpComPayload)
+        whenever(wpComRestClient.scan(wpComPayload.token, wpComPayload.encrypted))
+            .thenReturn(Result.failure(WpComQrLoginScanException.RestForbidden))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.ServerError)
+        assertThat(state.retryTicket).isNull()
+    }
+
+    @Test
+    fun `given wp dot com scan, when 404 SessionNotFound, then WpComSessionNotFound`() = testBlocking {
+        whenever(parser.parse(WP_COM_RAW)).thenReturn(wpComPayload)
+        whenever(wpComRestClient.scan(wpComPayload.token, wpComPayload.encrypted))
+            .thenReturn(Result.failure(WpComQrLoginScanException.SessionNotFound))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+
+        assertThat((viewModel.uiState.value as UiState.Error).reason)
+            .isEqualTo(ErrorReason.WpComSessionNotFound)
+    }
+
+    @Test
+    fun `given wp dot com scan, when 409 AlreadyScanned, then WpComAlreadyScanned`() = testBlocking {
+        whenever(parser.parse(WP_COM_RAW)).thenReturn(wpComPayload)
+        whenever(wpComRestClient.scan(wpComPayload.token, wpComPayload.encrypted))
+            .thenReturn(Result.failure(WpComQrLoginScanException.AlreadyScanned))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+
+        assertThat((viewModel.uiState.value as UiState.Error).reason)
+            .isEqualTo(ErrorReason.WpComAlreadyScanned)
+    }
+
+    @Test
+    fun `given wp dot com scan, when NoNumberMatching, then WpComNoNumberMatching`() = testBlocking {
+        whenever(parser.parse(WP_COM_RAW)).thenReturn(wpComPayload)
+        whenever(wpComRestClient.scan(wpComPayload.token, wpComPayload.encrypted))
+            .thenReturn(Result.failure(WpComQrLoginScanException.NoNumberMatching))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+
+        assertThat((viewModel.uiState.value as UiState.Error).reason)
+            .isEqualTo(ErrorReason.WpComNoNumberMatching)
+    }
+
+    @Test
+    fun `given approved poll, when exchange succeeds, then dispatches OpenWpComMagicLinkUrl and tracks success`() =
+        testBlocking {
+            stubWpComScanSuccess()
+            whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("g1")))
+            whenever(wpComRestClient.exchange(wpComPayload.token, wpComPayload.encrypted, "g1"))
+                .thenReturn(Result.success(WpComQrLoginExchangeResult(magicLinkUrl = magicLink)))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan(WP_COM_RAW))
+            advanceUntilIdle()
+
+            assertThat(events.last())
+                .isEqualTo(QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = magicLink))
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_WPCOM_SUCCESS)
+        }
+
+    @Test
+    fun `given polling, when status is Rejected, then emits MatchRejected error and stops`() = testBlocking {
+        stubWpComScanSuccess()
+        whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Rejected))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchRejected)
+        verify(wpComRestClient, times(1)).checkSessionStatus(wpComScanResult.sessionId)
+    }
+
+    @Test
+    fun `given polling, when status is Expired, then emits MatchTimedOut error and stops`() = testBlocking {
+        stubWpComScanSuccess()
+        whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+        advanceUntilIdle()
+
+        assertThat((viewModel.uiState.value as UiState.Error).reason)
+            .isEqualTo(ErrorReason.MatchTimedOut)
+    }
+
+    @Test
+    fun `given polling, when status is Consumed, then emits WpComAlreadyConsumed error and stops`() = testBlocking {
+        stubWpComScanSuccess()
+        whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Consumed))
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+        advanceUntilIdle()
+
+        assertThat((viewModel.uiState.value as UiState.Error).reason)
+            .isEqualTo(ErrorReason.WpComAlreadyConsumed)
+    }
+
+    @Test
+    fun `given approved poll, when exchange returns AlreadyConsumed, then emits WpComAlreadyConsumed`() =
+        testBlocking {
+            stubWpComScanSuccess()
+            whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("g1")))
+            whenever(wpComRestClient.exchange(wpComPayload.token, wpComPayload.encrypted, "g1"))
+                .thenReturn(Result.failure(WpComQrLoginExchangeException.AlreadyConsumed))
+
+            viewModel.onScanResult(successScan(WP_COM_RAW))
+            advanceUntilIdle()
+
+            assertThat((viewModel.uiState.value as UiState.Error).reason)
+                .isEqualTo(ErrorReason.WpComAlreadyConsumed)
+        }
+
+    @Test
+    fun `given approved poll, when exchange returns InvalidExchangeGrant, then emits MatchInvalidGrant`() =
+        testBlocking {
+            stubWpComScanSuccess()
+            whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("g1")))
+            whenever(wpComRestClient.exchange(wpComPayload.token, wpComPayload.encrypted, "g1"))
+                .thenReturn(Result.failure(WpComQrLoginExchangeException.InvalidExchangeGrant))
+
+            viewModel.onScanResult(successScan(WP_COM_RAW))
+            advanceUntilIdle()
+
+            assertThat((viewModel.uiState.value as UiState.Error).reason)
+                .isEqualTo(ErrorReason.MatchInvalidGrant)
+        }
+
+    @Test
+    fun `given wp dot com flow, when cancelled mid-poll, then state returns to Idle and polling stops`() =
+        testBlocking {
+            stubWpComScanSuccess()
+            whenever(wpComRestClient.checkSessionStatus(wpComScanResult.sessionId))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Scanned))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("g1")))
+
+            viewModel.onScanResult(successScan(WP_COM_RAW))
+            assertThat(viewModel.uiState.value).isInstanceOf(UiState.WaitingForWpComApproval::class.java)
+            viewModel.onCancelNumberMatch()
+            advanceUntilIdle()
+
+            assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
+            // Exchange must NOT run after cancel — even though we queued an Approved response.
+            verify(wpComRestClient, never())
+                .exchange(any(), any(), any())
+        }
+
+    @Test
+    fun `given wp dot com payload and logged-in user, when handled, then warning is shown first`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        whenever(parser.parse(WP_COM_RAW)).thenReturn(wpComPayload)
+
+        viewModel.onScanResult(successScan(WP_COM_RAW))
+
+        assertThat(viewModel.uiState.value).isInstanceOf(UiState.WarningSessionReplace::class.java)
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
+    }
+
+    // endregion
+
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
 
     private companion object {
         const val RAW_SCAN = "raw"
+        const val WP_COM_RAW = "wpcom-raw"
         const val DEFAULT_SITE_ID = 42
         const val WP_COM_URL =
             "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"

@@ -12,6 +12,12 @@ import com.woocommerce.android.network.qrlogin.QrLoginScanException
 import com.woocommerce.android.network.qrlogin.QrLoginScanResult
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatus
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginExchangeException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginRestClient
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanResult
+import com.woocommerce.android.network.qrlogin.WpComQrLoginSessionStatus
+import com.woocommerce.android.network.qrlogin.WpComQrLoginSessionStatusException
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Authenticating
@@ -19,6 +25,7 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Idle
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.WarningSessionReplace
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.WaitingForApproval
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.WaitingForWpComApproval
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -57,6 +64,7 @@ class QrLoginScannerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val parser: QrLoginPayloadParser,
     private val restClient: QrLoginRestClient,
+    private val wpComRestClient: WpComQrLoginRestClient,
     private val authenticator: QrLoginAuthenticator,
     private val accountRepository: AccountRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper
@@ -97,6 +105,7 @@ class QrLoginScannerViewModel @Inject constructor(
     private fun isIdle(): Boolean = !loggedIn && _uiState.value is Idle
 
     private fun handlePayload(payload: QrLoginPayload) {
+        WooLog.d(WooLog.T.LOGIN, "QR payload parsed: ${payload::class.simpleName}")
         when (payload) {
             is QrLoginPayload.Ticket -> handleHandoff(
                 PendingHandoff.Ticket(ticket = payload, host = payload.siteUrl.toDisplayHost())
@@ -106,6 +115,9 @@ class QrLoginScannerViewModel @Inject constructor(
             )
             is QrLoginPayload.SiteUrl -> handleHandoff(
                 PendingHandoff.SiteUrlPrefill(siteUrl = payload.siteUrl)
+            )
+            is QrLoginPayload.WpComToken -> handleHandoff(
+                PendingHandoff.WpComQrToken(token = payload.token, encrypted = payload.encrypted)
             )
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
@@ -144,6 +156,7 @@ class QrLoginScannerViewModel @Inject constructor(
     private fun resumePending(pending: PendingHandoff) {
         when (pending) {
             is PendingHandoff.Ticket -> startScan(pending.ticket)
+            is PendingHandoff.WpComQrToken -> startWpComScan(pending)
             is PendingHandoff.WpComMagicLink -> {
                 // Hand the URL off to the browser; wp.com then 3xx-redirects to
                 // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
@@ -325,6 +338,160 @@ class QrLoginScannerViewModel @Inject constructor(
         )
     }
 
+    private fun startWpComScan(pending: PendingHandoff.WpComQrToken) {
+        WooLog.d(WooLog.T.LOGIN, "wp.com QR scan: starting")
+        _uiState.value = Authenticating(AuthPhase.ScanInFlight)
+        launch {
+            wpComRestClient.scan(pending.token, pending.encrypted).fold(
+                onSuccess = { scan ->
+                    WooLog.d(WooLog.T.LOGIN, "wp.com QR scan: success sessionId=${scan.sessionId}")
+                    beginWaitingForWpComApproval(pending, scan)
+                },
+                onFailure = { failure ->
+                    WooLog.w(WooLog.T.LOGIN, "wp.com QR scan: failed: $failure")
+                    trackScanFailure(
+                        step = Step.WPCOM_SCAN,
+                        errorContext = failure.javaClass.simpleName,
+                        errorType = failure.toWpComScanReason().name,
+                    )
+                    _uiState.value = Error(reason = failure.toWpComScanReason(), retryTicket = null)
+                }
+            )
+        }
+    }
+
+    private fun beginWaitingForWpComApproval(
+        pending: PendingHandoff.WpComQrToken,
+        scan: WpComQrLoginScanResult,
+    ) {
+        val expiresAt = System.currentTimeMillis() + scan.expiresInSeconds * MILLIS_PER_SECOND
+        _uiState.value = WaitingForWpComApproval(
+            token = pending.token,
+            encrypted = pending.encrypted,
+            sessionId = scan.sessionId,
+            realNumber = scan.realNumber,
+            userEmail = scan.userEmail,
+            expiresAtEpochMs = expiresAt,
+        )
+        startWpComPolling(pending = pending, sessionId = scan.sessionId)
+    }
+
+    private fun startWpComPolling(pending: PendingHandoff.WpComQrToken, sessionId: String) {
+        pollJob?.cancel()
+        WooLog.d(WooLog.T.LOGIN, "wp.com QR poll: starting")
+        pollJob = launch {
+            var consecutiveErrors = 0
+            // Mirror the wc-admin flow: fire one poll immediately on entry. The server may have
+            // already transitioned to approved while the user was tapping a tile.
+            var firstTick = true
+            while (_uiState.value is WaitingForWpComApproval) {
+                if (firstTick) {
+                    firstTick = false
+                } else {
+                    delay(POLL_INTERVAL_MS)
+                }
+                if (_uiState.value !is WaitingForWpComApproval) return@launch
+
+                val callResult = wpComRestClient.checkSessionStatus(sessionId)
+                if (_uiState.value !is WaitingForWpComApproval) return@launch
+                callResult.fold(
+                    onSuccess = { status ->
+                        consecutiveErrors = 0
+                        WooLog.d(WooLog.T.LOGIN, "wp.com QR poll: response=$status")
+                        if (handleWpComStatus(pending, status)) return@launch
+                    },
+                    onFailure = { failure ->
+                        consecutiveErrors++
+                        val reason = failure.toWpComPollReason()
+                        WooLog.w(
+                            WooLog.T.LOGIN,
+                            "wp.com QR poll: failed (consecutive=$consecutiveErrors): $failure"
+                        )
+                        if (failure is WpComQrLoginSessionStatusException.RateLimited ||
+                            consecutiveErrors >= MAX_CONSECUTIVE_POLL_ERRORS
+                        ) {
+                            trackScanFailure(
+                                step = Step.WPCOM_POLL,
+                                errorContext = failure.javaClass.simpleName,
+                                errorType = reason.name,
+                            )
+                            _uiState.value = Error(reason = reason, retryTicket = null)
+                            return@launch
+                        }
+                    }
+                )
+            }
+            WooLog.d(WooLog.T.LOGIN, "wp.com QR poll: loop exited (state=${_uiState.value::class.simpleName})")
+        }
+    }
+
+    /** @return true if the polling loop should stop. */
+    private fun handleWpComStatus(
+        pending: PendingHandoff.WpComQrToken,
+        status: WpComQrLoginSessionStatus,
+    ): Boolean = when (status) {
+        WpComQrLoginSessionStatus.Scanned -> false
+        is WpComQrLoginSessionStatus.Approved -> {
+            startWpComExchange(pending = pending, exchangeGrant = status.grant)
+            true
+        }
+        WpComQrLoginSessionStatus.Rejected -> {
+            trackScanFailure(
+                step = Step.APPROVE,
+                errorContext = null,
+                errorType = ErrorReason.MatchRejected.name,
+            )
+            _uiState.value = Error(reason = ErrorReason.MatchRejected, retryTicket = null)
+            true
+        }
+        WpComQrLoginSessionStatus.Expired -> {
+            trackScanFailure(
+                step = Step.APPROVE,
+                errorContext = null,
+                errorType = ErrorReason.MatchTimedOut.name,
+            )
+            _uiState.value = Error(reason = ErrorReason.MatchTimedOut, retryTicket = null)
+            true
+        }
+        WpComQrLoginSessionStatus.Consumed -> {
+            // Another device/tab finished the exchange first; we never minted a grant ourselves
+            // and have no magic link to open. Surface the same terminal copy as the equivalent
+            // 500 response from /exchange so the user gets a single, consistent message.
+            trackScanFailure(
+                step = Step.WPCOM_POLL,
+                errorContext = null,
+                errorType = ErrorReason.WpComAlreadyConsumed.name,
+            )
+            _uiState.value = Error(reason = ErrorReason.WpComAlreadyConsumed, retryTicket = null)
+            true
+        }
+    }
+
+    private fun startWpComExchange(pending: PendingHandoff.WpComQrToken, exchangeGrant: String) {
+        pollJob?.cancel()
+        _uiState.value = Authenticating(AuthPhase.ExchangeInFlight)
+        launch {
+            wpComRestClient.exchange(pending.token, pending.encrypted, exchangeGrant).fold(
+                onSuccess = { result ->
+                    loggedIn = true
+                    analyticsTracker.track(AnalyticsEvent.LOGIN_QR_WPCOM_SUCCESS)
+                    triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = result.magicLinkUrl))
+                },
+                onFailure = { failure ->
+                    val reason = failure.toWpComExchangeReason()
+                    val httpCode = (failure as? WpComQrLoginExchangeException.HttpError)?.code
+                    trackScanFailure(
+                        step = Step.WPCOM_EXCHANGE,
+                        errorContext = failure.javaClass.simpleName,
+                        errorType = reason.name,
+                        extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
+                    )
+                    _uiState.value = Error(reason = reason, retryTicket = null)
+                }
+            )
+        }
+    }
+
     /**
      * Cancel the in-flight number-match step. The server keeps the session in `scanned`
      * until its 90-second window elapses; wc-admin's polling then auto-transitions to the
@@ -332,7 +499,7 @@ class QrLoginScannerViewModel @Inject constructor(
      * is the contract.
      */
     fun onCancelNumberMatch() {
-        if (_uiState.value !is WaitingForApproval) return
+        if (_uiState.value !is WaitingForApproval && _uiState.value !is WaitingForWpComApproval) return
         pollJob?.cancel()
         pollJob = null
         _uiState.value = Idle
@@ -463,6 +630,42 @@ class QrLoginScannerViewModel @Inject constructor(
         else -> ErrorReason.Unknown
     }
 
+    private fun Throwable.toWpComScanReason(): ErrorReason = when (this) {
+        WpComQrLoginScanException.RestForbidden -> ErrorReason.ServerError
+        WpComQrLoginScanException.SessionNotFound -> ErrorReason.WpComSessionNotFound
+        WpComQrLoginScanException.AlreadyScanned -> ErrorReason.WpComAlreadyScanned
+        WpComQrLoginScanException.NoNumberMatching -> ErrorReason.WpComNoNumberMatching
+        WpComQrLoginScanException.RateLimited -> ErrorReason.RateLimited
+        WpComQrLoginScanException.Network -> ErrorReason.Network
+        WpComQrLoginScanException.MalformedResponse -> ErrorReason.ServerError
+        is WpComQrLoginScanException.HttpError -> ErrorReason.ServerError
+        is WpComQrLoginScanException.Unknown -> ErrorReason.Unknown
+        is IOException -> ErrorReason.Network
+        else -> ErrorReason.Unknown
+    }
+
+    private fun Throwable.toWpComPollReason(): ErrorReason = when (this) {
+        WpComQrLoginSessionStatusException.RateLimited -> ErrorReason.RateLimited
+        WpComQrLoginSessionStatusException.Network -> ErrorReason.Network
+        WpComQrLoginSessionStatusException.MalformedResponse -> ErrorReason.ServerError
+        is WpComQrLoginSessionStatusException.HttpError -> ErrorReason.ServerError
+        is WpComQrLoginSessionStatusException.Unknown -> ErrorReason.Unknown
+        else -> ErrorReason.Network
+    }
+
+    private fun Throwable.toWpComExchangeReason(): ErrorReason = when (this) {
+        WpComQrLoginExchangeException.NotApproved -> ErrorReason.MatchTimedOut
+        WpComQrLoginExchangeException.InvalidExchangeGrant -> ErrorReason.MatchInvalidGrant
+        WpComQrLoginExchangeException.AlreadyConsumed -> ErrorReason.WpComAlreadyConsumed
+        WpComQrLoginExchangeException.SessionNotFound -> ErrorReason.WpComSessionNotFound
+        WpComQrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
+        WpComQrLoginExchangeException.Network -> ErrorReason.Network
+        WpComQrLoginExchangeException.MalformedResponse -> ErrorReason.ServerError
+        is WpComQrLoginExchangeException.HttpError -> ErrorReason.ServerError
+        is WpComQrLoginExchangeException.Unknown -> ErrorReason.Unknown
+        else -> ErrorReason.Unknown
+    }
+
     private fun Throwable.toAuthReason(): ErrorReason = when (this) {
         QrLoginAuthenticationException.NotAWooSite -> ErrorReason.NotAWooSite
         is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
@@ -515,6 +718,22 @@ class QrLoginScannerViewModel @Inject constructor(
             val sessionId: String,
             val expiresAtEpochMs: Long,
         ) : UiState
+
+        /**
+         * Mirror of [WaitingForApproval] for the wp.com flow. Carries the user's email instead of
+         * a site host (the user is signing into their wp.com account, not a per-site URL) and the
+         * encrypted blob alongside the token (the wp.com server requires both on every request).
+         * Tracking it as a distinct state keeps each path's payload precisely typed.
+         */
+        data class WaitingForWpComApproval(
+            val token: String,
+            val encrypted: String,
+            val sessionId: String,
+            val realNumber: String,
+            val userEmail: String,
+            val expiresAtEpochMs: Long,
+        ) : UiState
+
         data class Error(val reason: ErrorReason, val retryTicket: QrLoginPayload.Ticket?) : UiState
         data class WarningSessionReplace(val pending: PendingHandoff) : UiState
     }
@@ -526,6 +745,7 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     sealed interface PendingHandoff {
         data class Ticket(val ticket: QrLoginPayload.Ticket, val host: String) : PendingHandoff
+        data class WpComQrToken(val token: String, val encrypted: String) : PendingHandoff
         data class WpComMagicLink(val url: String) : PendingHandoff
         data class SiteUrlPrefill(val siteUrl: String) : PendingHandoff
     }
@@ -553,11 +773,16 @@ class QrLoginScannerViewModel @Inject constructor(
         MatchTimedOut,
         MatchAlreadyScanned,
         MatchInvalidGrant,
+        WpComSessionNotFound,
+        WpComAlreadyScanned,
+        WpComNoNumberMatching,
+        WpComAlreadyConsumed,
         Unknown
     }
 
     enum class Step {
-        SCANNER, PAYLOAD, SCAN, POLL, APPROVE, EXCHANGE, AUTH
+        SCANNER, PAYLOAD, SCAN, POLL, APPROVE, EXCHANGE, AUTH,
+        WPCOM_SCAN, WPCOM_POLL, WPCOM_EXCHANGE
     }
 
     private companion object {
