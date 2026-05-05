@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.BuiltInReaderDiscoveryFailedException
 import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -285,10 +286,24 @@ class WooPosTotalsViewModel @Inject constructor(
             onFailure = { error ->
                 wooPosLogWrapper.e("Tap to Pay connection failed", error)
                 isTapToPayPayment = false
-                if (error is MissingFineLocationPermissionException) {
-                    _screenEvents.tryEmit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
-                } else {
-                    childrenToParentEventSender.sendToParent(
+                when (error) {
+                    is MissingFineLocationPermissionException ->
+                        _screenEvents.tryEmit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+
+                    is BuiltInReaderDiscoveryFailedException -> {
+                        val detail = error.message?.takeIf { it.isNotBlank() }
+                        val message = if (detail != null) {
+                            resourceProvider.getString(
+                                R.string.woopos_tap_to_pay_payment_failed_with_reason_message,
+                                detail,
+                            )
+                        } else {
+                            resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
+                        }
+                        childrenToParentEventSender.sendToParent(ToastMessageDisplayed(message))
+                    }
+
+                    else -> childrenToParentEventSender.sendToParent(
                         ToastMessageDisplayed(
                             resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
                         )

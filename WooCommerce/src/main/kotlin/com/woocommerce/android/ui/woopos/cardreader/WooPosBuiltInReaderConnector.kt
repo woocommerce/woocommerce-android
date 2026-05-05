@@ -52,9 +52,15 @@ class WooPosBuiltInReaderConnector @Inject constructor(
             }
         }
 
-        val reader = discoverFirstBuiltInReader() ?: return Result.failure(
-            IllegalStateException("No built-in reader available")
-        )
+        val reader = when (val discovery = discoverFirstBuiltInReader()) {
+            is BuiltInDiscoveryResult.Found -> discovery.reader
+            is BuiltInDiscoveryResult.Failed -> return Result.failure(
+                BuiltInReaderDiscoveryFailedException(discovery.message)
+            )
+            BuiltInDiscoveryResult.NoReaders -> return Result.failure(
+                BuiltInReaderDiscoveryFailedException(message = null)
+            )
+        }
 
         cardReaderManager.startConnectionToReader(reader, locationId)
 
@@ -69,10 +75,16 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         }
     }
 
-    private suspend fun discoverFirstBuiltInReader(): CardReader? {
+    private sealed interface BuiltInDiscoveryResult {
+        data class Found(val reader: CardReader) : BuiltInDiscoveryResult
+        data object NoReaders : BuiltInDiscoveryResult
+        data class Failed(val message: String?) : BuiltInDiscoveryResult
+    }
+
+    private suspend fun discoverFirstBuiltInReader(): BuiltInDiscoveryResult {
         runCatching { initializeCardReaderManager() }.onFailure {
             logger.e("Failed to initialize card reader manager before discovery", it)
-            return null
+            return BuiltInDiscoveryResult.Failed(it.message)
         }
         val event = cardReaderManager
             .discoverReaders(
@@ -81,8 +93,10 @@ class WooPosBuiltInReaderConnector @Inject constructor(
             )
             .first { it is CardReaderDiscoveryEvents.ReadersFound || it is CardReaderDiscoveryEvents.Failed }
         return when (event) {
-            is CardReaderDiscoveryEvents.ReadersFound -> event.list.firstOrNull()
-            else -> null
+            is CardReaderDiscoveryEvents.ReadersFound ->
+                event.list.firstOrNull()?.let(BuiltInDiscoveryResult::Found) ?: BuiltInDiscoveryResult.NoReaders
+            is CardReaderDiscoveryEvents.Failed -> BuiltInDiscoveryResult.Failed(event.msg)
+            else -> BuiltInDiscoveryResult.Failed(message = null)
         }
     }
 
@@ -116,3 +130,6 @@ class WooPosBuiltInReaderConnector @Inject constructor(
 
 class MissingFineLocationPermissionException :
     IllegalStateException("ACCESS_FINE_LOCATION permission is required for Tap to Pay")
+
+class BuiltInReaderDiscoveryFailedException(message: String?) :
+    IllegalStateException(message ?: "No built-in reader available")
