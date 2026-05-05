@@ -88,12 +88,6 @@ fun NewOrderNotificationSettingsScreen(
                     onClick = onEnableChaChingSoundClicked
                 )
             }
-            EnableNotificationsCard(
-                title = stringResource(R.string.settings_notifs_new_orders_enable_title),
-                description = stringResource(R.string.settings_notifs_new_orders_enable_description),
-                isEnabled = viewState.notificationsEnabled,
-                onEnabledChanged = onNotificationsEnabledChanged
-            )
             SettingsSectionHeader(
                 text = stringResource(R.string.settings_notifs_notify_me_for),
                 modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp)
