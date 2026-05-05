@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
@@ -265,36 +266,71 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        WooPosCheckoutPaymentButtons(
-            readerStatus = state.readerStatus,
-            isTapToPayAvailable = state.isTapToPayAvailable,
-            onMethodClicked = { method -> onUIEvent(method.toUIEvent()) },
-            onShowAllMethods = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
-        )
+        CheckoutPaymentButtons(onUIEvent = onUIEvent)
     }
 
     val allMethods = buildList {
-        if (state.readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected) {
-            add(WooPosPaymentMethod.CARD_READER)
+        if (state.readerStatus.isReaderConnected() && state.isTapToPayAvailable) {
+            add(WooPosPaymentMethod.TAP_TO_PAY)
         }
-        if (state.isTapToPayAvailable) add(WooPosPaymentMethod.TAP_TO_PAY)
-        add(WooPosPaymentMethod.CASH)
+        add(WooPosPaymentMethod.SCAN_TO_PAY)
+        add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
     }
     WooPosAllPaymentMethodsDialog(
         isVisible = state.isAllPaymentMethodsDialogVisible,
         methods = allMethods,
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
-            onUIEvent(method.toUIEvent())
+            method.toUIEvent()?.let(onUIEvent)
         },
         onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
     )
 }
 
-private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent = when (this) {
-    WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
+@Composable
+private fun CheckoutPaymentButtons(onUIEvent: (WooPosTotalsUIEvent) -> Unit) {
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    val outerPaddingModifier = if (isPhone) {
+        Modifier.padding(WooPosSpacing.Large.value)
+    } else {
+        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(outerPaddingModifier)
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+    ) {
+        WooPosOutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON),
+            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+        )
+        WooPosOutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+            text = stringResource(R.string.woopos_payment_method_other_methods_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+        )
+    }
+}
+
+private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = when (this) {
+    is WooPosTotalsViewState.ReaderStatus.Preparing,
+    is WooPosTotalsViewState.ReaderStatus.CheckingOrder,
+    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> true
+    is WooPosTotalsViewState.ReaderStatus.Disconnected,
+    WooPosTotalsViewState.ReaderStatus.Unavailable -> false
+}
+
+private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
-    WooPosPaymentMethod.CASH -> WooPosTotalsUIEvent.OnCashPaymentClicked
+    WooPosPaymentMethod.SCAN_TO_PAY -> null
+    WooPosPaymentMethod.MARK_ORDER_AS_PAID -> null
 }
 
 @Composable
