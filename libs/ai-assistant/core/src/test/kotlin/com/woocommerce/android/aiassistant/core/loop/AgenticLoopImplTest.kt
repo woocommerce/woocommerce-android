@@ -74,6 +74,38 @@ class AgenticLoopImplTest {
     private fun contextWithTools(vararg tools: ToolDescriptor) =
         SessionContext(siteId = 1L, catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, tools.toList()))
 
+    private fun toolCallTurn(
+        callId: String,
+        toolName: String = "echo",
+        arguments: String,
+    ): Flow<AssistantEvent> = flow {
+        emit(AssistantEvent.ToolCallDelta(index = 0, id = callId, name = toolName, argumentsDelta = arguments))
+        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+    }
+
+    private fun multiToolCallTurn(vararg calls: Pair<String, String>): Flow<AssistantEvent> = flow {
+        calls.forEachIndexed { index, (callId, arguments) ->
+            emit(AssistantEvent.ToolCallDelta(index = index, id = callId, name = "echo", argumentsDelta = arguments))
+        }
+        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+    }
+
+    private fun stopTurn(): Flow<AssistantEvent> = flowOf(AssistantEvent.Finish(FinishReason.STOP))
+
+    private class RecordingToolRegistry(
+        private val descriptor: ToolDescriptor,
+        private val resultBuilder: (ToolCall) -> ToolResult,
+    ) : ToolRegistry {
+        val executedCalls = mutableListOf<ToolCall>()
+
+        override fun descriptors() = listOf(descriptor)
+
+        override suspend fun execute(call: ToolCall): ToolResult {
+            executedCalls += call
+            return resultBuilder(call)
+        }
+    }
+
     @Test
     fun `given model returns STOP finish reason, when running turn, then Finished with COMPLETED is emitted`() = runTest {
         val loop = loopWith(
@@ -456,6 +488,140 @@ class AgenticLoopImplTest {
                 AssistantMessage.Assistant(content = "partial", toolCalls = emptyList()),
             )
         }
+
+    @Test
+    fun `given second identical call, when running turn, then cached result is replayed with soft hint`() = runTest {
+        val registry = RecordingToolRegistry(
+            descriptor = safeEchoDescriptor(),
+            resultBuilder = { call ->
+                ToolResult.Success(call.id, buildJsonObject { put("from_registry", call.id) })
+            }
+        )
+        val loop = loopWith(
+            toolCallTurn(callId = "call_1", arguments = """{"b":2,"a":1}"""),
+            toolCallTurn(callId = "call_2", arguments = """{"a":1,"b":2}"""),
+            stopTurn(),
+            registry = registry,
+        )
+
+        val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+        assertThat(registry.executedCalls.map { it.id }).containsExactly("call_1")
+        assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
+            .containsExactly("call_1")
+
+        val results = events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result }
+        assertThat(results).hasSize(2)
+        val replay = results[1] as ToolResult.Success
+        assertThat(replay.toolCallId).isEqualTo("call_2")
+        assertThat(replay.structured.jsonObject["from_registry"]?.jsonPrimitive?.content).isEqualTo("call_1")
+        assertThat(replay.structured.jsonObject["_assistant_runtime_hint"]?.jsonPrimitive?.content)
+            .isEqualTo("You already fetched this - use the result above.")
+        assertThat(replay.structured.toString()).doesNotContain("duplicate_call_blocked")
+        assertThat(replay.structured.toString()).doesNotContain("error")
+    }
+
+    @Test
+    fun `given third identical call, when running turn, then cached result is replayed with escalated hint`() = runTest {
+        val registry = RecordingToolRegistry(
+            descriptor = safeEchoDescriptor(),
+            resultBuilder = { call ->
+                ToolResult.Success(call.id, buildJsonObject { put("from_registry", call.id) })
+            }
+        )
+        val loop = loopWith(
+            toolCallTurn(callId = "call_1", arguments = """{"a":1,"b":2}"""),
+            toolCallTurn(callId = "call_2", arguments = """{"b":2,"a":1}"""),
+            toolCallTurn(callId = "call_3", arguments = """{"a":1,"b":2}"""),
+            stopTurn(),
+            registry = registry,
+        )
+
+        val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+        assertThat(registry.executedCalls.map { it.id }).containsExactly("call_1")
+        assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
+            .containsExactly("call_1")
+
+        val results = events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result }
+        assertThat(results).hasSize(3)
+        val thirdReplay = results[2] as ToolResult.Success
+        assertThat(thirdReplay.toolCallId).isEqualTo("call_3")
+        assertThat(thirdReplay.structured.jsonObject["from_registry"]?.jsonPrimitive?.content).isEqualTo("call_1")
+        assertThat(thirdReplay.structured.jsonObject["_assistant_runtime_hint"]?.jsonPrimitive?.content)
+            .isEqualTo(
+                "STOP - you have called this tool identically 3+ times. Use the result above and finish now."
+            )
+        assertThat(thirdReplay.structured.toString()).doesNotContain("duplicate_call_blocked")
+        assertThat(thirdReplay.structured.toString()).doesNotContain("error")
+    }
+
+    @Test
+    fun `given per-tool cap exceeded with varied args, when running turn, then ValidationError nudge is emitted`() =
+        runTest {
+            val registry = RecordingToolRegistry(
+                descriptor = safeEchoDescriptor(),
+                resultBuilder = { call ->
+                    ToolResult.Success(call.id, buildJsonObject { put("from_registry", call.id) })
+                }
+            )
+            val loop = loopWith(
+                multiToolCallTurn(
+                    "call_1" to """{"value":1}""",
+                    "call_2" to """{"value":2}""",
+                    "call_3" to """{"value":3}""",
+                    "call_4" to """{"value":4}""",
+                    "call_5" to """{"value":5}""",
+                ),
+                stopTurn(),
+                registry = registry,
+            )
+
+            val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+            assertThat(registry.executedCalls.map { it.id })
+                .containsExactly("call_1", "call_2", "call_3", "call_4")
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
+                .containsExactly("call_1", "call_2", "call_3", "call_4")
+
+            val results = events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result }
+            assertThat(results).hasSize(5)
+            val capResult = results[4] as ToolResult.ValidationError
+            assertThat(capResult.toolCallId).isEqualTo("call_5")
+            assertThat(capResult.reason).contains("Tool call limit exceeded for echo")
+            assertThat(capResult.reason).contains("already called 4 times this turn")
+        }
+
+    @Test
+    fun `given same tool with different args, when running turn, then both calls execute normally`() = runTest {
+        val registry = RecordingToolRegistry(
+            descriptor = safeEchoDescriptor(),
+            resultBuilder = { call ->
+                ToolResult.Success(call.id, buildJsonObject { put("from_registry", call.id) })
+            }
+        )
+        val loop = loopWith(
+            multiToolCallTurn(
+                "call_1" to """{"value":1}""",
+                "call_2" to """{"value":2}""",
+            ),
+            stopTurn(),
+            registry = registry,
+        )
+
+        val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+        assertThat(registry.executedCalls.map { it.id }).containsExactly("call_1", "call_2")
+        assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
+            .containsExactly("call_1", "call_2")
+        val results = events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result }
+        assertThat(results).hasSize(2)
+        assertThat(results).allSatisfy { result ->
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            assertThat((result as ToolResult.Success).structured.toString())
+                .doesNotContain("_assistant_runtime_hint")
+        }
+    }
 
     @Test
     fun `given stub SAFE tool, when loop runs one tool call then STOP, then completes with tool result in history`() = runTest {
