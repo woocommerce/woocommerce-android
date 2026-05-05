@@ -53,6 +53,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
@@ -241,7 +242,10 @@ private fun TotalsLoaded(
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                         if (state.isTapToPayAvailable) {
-                            TapToPayPromoted(onUIEvent = onUIEvent)
+                            TapToPayPromoted(
+                                onUIEvent = onUIEvent,
+                                isInProgress = state.isTapToPayInProgress,
+                            )
                         } else {
                             ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
                         }
@@ -443,6 +447,7 @@ private fun ReaderDisconnected(
 private fun TapToPayPromoted(
     modifier: Modifier = Modifier,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    isInProgress: Boolean = false,
 ) {
     Column(
         modifier = modifier.padding(WooPosSpacing.XLarge.value),
@@ -474,6 +479,7 @@ private fun TapToPayPromoted(
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
             text = stringResource(R.string.woopos_tap_to_pay_promoted_cta_button_label),
+            state = if (isInProgress) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
             modifier = Modifier
                 .adaptiveContentWidth()

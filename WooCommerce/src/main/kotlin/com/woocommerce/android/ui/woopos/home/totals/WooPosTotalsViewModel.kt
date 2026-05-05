@@ -280,6 +280,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private suspend fun attemptTapToPayConnect(orderId: Long) {
         isTapToPayPayment = true
+        setTapToPayInProgress(true)
         builtInReaderConnector.connect().fold(
             onSuccess = {
                 createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
@@ -289,6 +290,7 @@ class WooPosTotalsViewModel @Inject constructor(
             onFailure = { error ->
                 wooPosLogWrapper.e("Tap to Pay connection failed", error)
                 isTapToPayPayment = false
+                setTapToPayInProgress(false)
                 when (error) {
                     is MissingFineLocationPermissionException ->
                         _screenEvents.tryEmit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
@@ -314,6 +316,13 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+    private fun setTapToPayInProgress(inProgress: Boolean) {
+        val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        if (checkout.isTapToPayInProgress != inProgress) {
+            uiState.value = checkout.copy(isTapToPayInProgress = inProgress)
+        }
     }
 
     private fun onFineLocationPermissionResult(granted: Boolean) {
@@ -343,18 +352,37 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun handleRetryFailedTransactionClicked() {
         viewModelScope.launch {
             val paymentState = cardReaderPaymentController?.paymentState?.value
-            check(paymentState != null) {
-                "Retry failed transaction clicked but payment controller is null"
-            }
-            check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
-                "Retry failed transaction clicked but payment state is not PaymentFailed"
-            }
-            when {
-                paymentState.onRetry != null -> paymentState.onRetry!!()
-                else -> {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
-                    retryPaymentCollectionFromScratch()
+            when (paymentState) {
+                is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                    when {
+                        paymentState.onRetry != null -> paymentState.onRetry!!()
+                        else -> {
+                            childrenToParentEventSender.sendToParent(
+                                ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
+                            )
+                            retryPaymentCollectionFromScratch()
+                        }
+                    }
                 }
+
+                is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
+                    val sdkRetry = paymentState.onRetry
+                    if (sdkRetry != null) {
+                        sdkRetry.invoke()
+                    } else {
+                        cardReaderPaymentController?.stop()
+                        cardReaderPaymentController = null
+                        childrenToParentEventSender.sendToParent(
+                            ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
+                        )
+                        val order = totalsRepository.getOrderById(dataState.value.orderId)
+                        checkNotNull(order)
+                        uiState.value = buildWooPosTotalsViewState(order)
+                        attemptTapToPayConnect(dataState.value.orderId)
+                    }
+                }
+
+                else -> error("Retry failed transaction clicked but payment state is not PaymentFailed")
             }
         }
     }
@@ -535,6 +563,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             isTTPPaymentInProgress = false
                         }
                         isTapToPayPayment = false
+                        setTapToPayInProgress(false)
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
 
@@ -547,11 +576,8 @@ class WooPosTotalsViewModel @Inject constructor(
                         wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
                         isTTPPaymentInProgress = false
                         isTapToPayPayment = false
-                        cardReaderPaymentController?.stop()
-                        cardReaderPaymentController = null
-                        childrenToParentEventSender.sendToParent(
-                            ToastMessageDisplayed(uiStringParser.asString(paymentState.errorType.message))
-                        )
+                        uiState.value = buildBuiltInPaymentFailedState(paymentState)
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
                     }
 
                     CardReaderPaymentState.ReFetchingOrder -> Unit
@@ -630,6 +656,23 @@ class WooPosTotalsViewModel @Inject constructor(
             title = resourceProvider.getString(
                 R.string.woopos_success_totals_payment_failed_title
             ),
+            subtitle = uiStringParser.asString(state.errorType.message),
+            retryPaymentButtonLabel = retryButtonLabel,
+            isReturnToCheckoutButtonVisible = isRetryAvailable
+        )
+    }
+
+    private fun buildBuiltInPaymentFailedState(
+        state: CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
+    ): PaymentFailed {
+        val isRetryAvailable = state.onRetry != null
+        val retryButtonLabel = if (isRetryAvailable) {
+            resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
+        } else {
+            resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
+        }
+        return PaymentFailed(
+            title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
             subtitle = uiStringParser.asString(state.errorType.message),
             retryPaymentButtonLabel = retryButtonLabel,
             isReturnToCheckoutButtonVisible = isRetryAvailable
