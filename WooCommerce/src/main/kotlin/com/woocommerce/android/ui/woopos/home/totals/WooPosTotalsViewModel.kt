@@ -50,8 +50,11 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -95,6 +98,9 @@ class WooPosTotalsViewModel @Inject constructor(
         )
 
     val state: StateFlow<WooPosTotalsViewState> = uiState
+
+    private val _screenEvents = MutableSharedFlow<WooPosTotalsScreenEvent>(extraBufferCapacity = 1)
+    val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
 
     private var createDraftOrderJob: Job? = null
     private var newOrder: Order? = null
@@ -194,6 +200,7 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
             WooPosTotalsUIEvent.OnTapToPayClicked,
+            is WooPosTotalsUIEvent.OnFineLocationPermissionResult,
             is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> handleNewPaymentMethodEvent(event)
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
@@ -237,6 +244,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
+            is WooPosTotalsUIEvent.OnFineLocationPermissionResult -> onFineLocationPermissionResult(event.granted)
             is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> {
                 val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
                 uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
@@ -262,26 +270,48 @@ class WooPosTotalsViewModel @Inject constructor(
                 return@launch
             }
 
-            isTapToPayPayment = true
-            builtInReaderConnector.connect().fold(
-                onSuccess = {
-                    createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
-                    cardReaderPaymentController?.start()
-                    listenToPaymentState()
-                },
-                onFailure = { error ->
-                    wooPosLogWrapper.e("Tap to Pay connection failed", error)
-                    isTapToPayPayment = false
-                    val messageRes = if (error is MissingFineLocationPermissionException) {
-                        R.string.woopos_tap_to_pay_missing_location_permission_message
-                    } else {
-                        R.string.woopos_tap_to_pay_payment_failed_message
-                    }
+            attemptTapToPayConnect(orderId)
+        }
+    }
+
+    private suspend fun attemptTapToPayConnect(orderId: Long) {
+        isTapToPayPayment = true
+        builtInReaderConnector.connect().fold(
+            onSuccess = {
+                createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
+                cardReaderPaymentController?.start()
+                listenToPaymentState()
+            },
+            onFailure = { error ->
+                wooPosLogWrapper.e("Tap to Pay connection failed", error)
+                isTapToPayPayment = false
+                if (error is MissingFineLocationPermissionException) {
+                    _screenEvents.tryEmit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+                } else {
                     childrenToParentEventSender.sendToParent(
-                        ToastMessageDisplayed(resourceProvider.getString(messageRes))
+                        ToastMessageDisplayed(
+                            resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
+                        )
                     )
                 }
-            )
+            }
+        )
+    }
+
+    private fun onFineLocationPermissionResult(granted: Boolean) {
+        viewModelScope.launch {
+            if (granted) {
+                val orderId = dataState.value.orderId
+                if (orderId != EMPTY_ORDER_ID) {
+                    attemptTapToPayConnect(orderId)
+                }
+            } else {
+                childrenToParentEventSender.sendToParent(
+                    ToastMessageDisplayed(
+                        resourceProvider.getString(R.string.woopos_tap_to_pay_missing_location_permission_message)
+                    )
+                )
+            }
         }
     }
 

@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -25,8 +28,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,6 +82,22 @@ fun WooPosTotalsScreen(
     onPhoneBack: (() -> Unit)? = null,
 ) {
     val state = viewModel.state.collectAsState().value
+    val onUIEvent = rememberUpdatedState(viewModel::onUIEvent)
+    val fineLocationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        onUIEvent.value(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted))
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.screenEvents.collect { event ->
+            when (event) {
+                WooPosTotalsScreenEvent.RequestFineLocationPermission ->
+                    fineLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
+
     WooPosTotalsScreen(
         modifier = modifier,
         state = state,
