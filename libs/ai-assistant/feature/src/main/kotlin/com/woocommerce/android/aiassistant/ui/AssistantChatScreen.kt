@@ -55,12 +55,12 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardChrome
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
-import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
-import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
@@ -930,11 +930,7 @@ private fun sampleProductCard() = AssistantCard.Product(
 )
 
 private fun sampleStatsCard(
-    chartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
-        AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
-        AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
-        AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
-    ),
+    chartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_STATS_CHART_POINTS,
 ) = AssistantCard.Stats(
     after = "2026-05-01",
     before = "2026-05-07",
@@ -942,6 +938,12 @@ private fun sampleStatsCard(
     revenueCurrency = "USD",
     orderCount = "8",
     chartPoints = chartPoints,
+)
+
+private val SAMPLE_STATS_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
 )
 
 private val AssistantCard.Order.unformattedTotal: String

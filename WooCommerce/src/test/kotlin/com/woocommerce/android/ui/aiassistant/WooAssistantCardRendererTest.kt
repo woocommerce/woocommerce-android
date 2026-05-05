@@ -1,9 +1,11 @@
+@file:Suppress("ImportOrdering")
+
 package com.woocommerce.android.ui.aiassistant
 
 import android.content.Context
 import com.woocommerce.android.R
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -116,9 +118,11 @@ class WooAssistantCardRendererTest {
 
     @Test
     fun `given assistant stats card with one day range, when mapped, then single date is displayed`() {
-        assertThat(statsCard(after = "2026-05-01", before = "2026-05-01")
-            .toStatsCardState(currencyFormatter, Locale.US).period)
-            .isEqualTo("May 1, 2026")
+        val period = statsCard(after = "2026-05-01", before = "2026-05-01")
+            .toStatsCardState(currencyFormatter, Locale.US)
+            .period
+
+        assertThat(period).isEqualTo("May 1, 2026")
     }
 
     @Test
@@ -147,16 +151,20 @@ class WooAssistantCardRendererTest {
 
     @Test
     fun `given assistant stats card with invalid dates, when mapped, then raw date range is preserved`() {
-        assertThat(statsCard(after = "bad", before = "2026-05-07")
-            .toStatsCardState(currencyFormatter, Locale.US).period)
-            .isEqualTo("bad - 2026-05-07")
+        val period = statsCard(after = "bad", before = "2026-05-07")
+            .toStatsCardState(currencyFormatter, Locale.US)
+            .period
+
+        assertThat(period).isEqualTo("bad - 2026-05-07")
     }
 
     @Test
     fun `given assistant stats card without currency, when mapped, then raw revenue is used`() {
-        assertThat(statsCard(revenueCurrency = "")
-            .toStatsCardState(currencyFormatter, Locale.US).revenueTotal)
-            .isEqualTo("123.45")
+        val revenueTotal = statsCard(revenueCurrency = "")
+            .toStatsCardState(currencyFormatter, Locale.US)
+            .revenueTotal
+
+        assertThat(revenueTotal).isEqualTo("123.45")
     }
 
     private fun orderCard(

@@ -24,14 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 
-data class AiAssistantStatsCardState(
-    val period: String,
-    val revenueTotal: String,
-    val orderCount: String,
-    val chartValues: List<Double>,
-    val isTrendAvailable: Boolean,
-)
-
 @Composable
 fun AiAssistantStatsCard(
     state: AiAssistantStatsCardState,
@@ -156,7 +148,7 @@ private fun AiAssistantStatsCardPreviewNoTrend() {
 }
 
 private fun sampleStatsCardState(
-    chartValues: List<Double> = listOf(12.0, 18.0, 9.0, 26.0, 21.0),
+    chartValues: List<Double> = SAMPLE_STATS_CHART_VALUES,
     isTrendAvailable: Boolean = chartValues.isNotEmpty(),
 ) = AiAssistantStatsCardState(
     period = "May 1 - May 7, 2026",
@@ -165,3 +157,5 @@ private fun sampleStatsCardState(
     chartValues = chartValues,
     isTrendAvailable = isTrendAvailable,
 )
+
+private val SAMPLE_STATS_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)

@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.woocommerce.android.R
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
-import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
-import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.Order

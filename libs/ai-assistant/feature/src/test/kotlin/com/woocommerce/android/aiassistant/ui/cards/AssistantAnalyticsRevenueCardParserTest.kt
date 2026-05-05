@@ -5,7 +5,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -92,13 +91,14 @@ class AssistantAnalyticsRevenueCardParserTest {
 
     @Test
     fun `given non numeric chart value, when parsed, then malformed point is skipped`() {
+        val malformedPoint = buildJsonObject {
+            put("date", "2026-05-01")
+            put("value", "not-a-number")
+        }
         val card = parser.parse(
             success(
                 chart = buildJsonArray {
-                    add(buildJsonObject {
-                        put("date", "2026-05-01")
-                        put("value", "not-a-number")
-                    })
+                    add(malformedPoint)
                     addChartPoint("2026-05-02", 8.0)
                 }
             )

@@ -2,12 +2,12 @@ package com.woocommerce.android.aiassistant.ui.cards
 
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,7 +31,8 @@ private data class AnalyticsRevenueStructured(
     val before: String? = null,
     val currency: String? = null,
     val totals: JsonObject? = null,
-    val revenue_chart: List<RevenueChartPoint> = emptyList(),
+    @SerialName("revenue_chart")
+    val revenueChart: List<RevenueChartPoint> = emptyList(),
 )
 
 @Serializable
@@ -49,7 +50,7 @@ private fun AnalyticsRevenueStructured.toStatsCard(): AssistantCard.Stats? {
         revenueTotal = totals.stringValue(REVENUE_TOTAL_KEYS),
         revenueCurrency = currency.orEmpty(),
         orderCount = totals.stringValue(ORDER_COUNT_KEYS),
-        chartPoints = revenue_chart.mapNotNull { it.toChartPoint() },
+        chartPoints = revenueChart.mapNotNull { it.toChartPoint() },
     )
 }
 

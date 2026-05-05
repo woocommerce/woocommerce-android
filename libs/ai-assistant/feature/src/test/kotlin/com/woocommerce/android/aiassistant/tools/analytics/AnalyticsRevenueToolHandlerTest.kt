@@ -241,9 +241,7 @@ class AnalyticsRevenueToolHandlerTest {
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.getValue("revenue_chart").jsonArray.map {
-                it.jsonObject.getValue("value").jsonPrimitive.double
-            }).containsExactly(0.0, 0.0)
+            assertThat(structured.revenueChartValues()).containsExactly(0.0, 0.0)
         }
 
     @Test
@@ -260,9 +258,7 @@ class AnalyticsRevenueToolHandlerTest {
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.getValue("revenue_chart").jsonArray.map {
-                it.jsonObject.getValue("value").jsonPrimitive.double
-            }).containsExactly(-5.0, -1.25)
+            assertThat(structured.revenueChartValues()).containsExactly(-5.0, -1.25)
         }
 
     @Test
@@ -279,9 +275,7 @@ class AnalyticsRevenueToolHandlerTest {
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.getValue("revenue_chart").jsonArray.map {
-                it.jsonObject.getValue("date").jsonPrimitive.content
-            }).containsExactly("2026-04-02")
+            assertThat(structured.revenueChartDates()).containsExactly("2026-04-02")
         }
 
     @Test
@@ -298,9 +292,7 @@ class AnalyticsRevenueToolHandlerTest {
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.getValue("revenue_chart").jsonArray.map {
-                it.jsonObject.getValue("date").jsonPrimitive.content
-            }).containsExactly("2026-04-02")
+            assertThat(structured.revenueChartDates()).containsExactly("2026-04-02")
         }
 
     @Test
@@ -316,8 +308,7 @@ class AnalyticsRevenueToolHandlerTest {
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.getValue("revenue_chart").jsonArray.single().jsonObject.getValue("date")
-                .jsonPrimitive.content).isEqualTo("2026-04-06")
+            assertThat(structured.revenueChartDates()).containsExactly("2026-04-06")
         }
 
     @Test
@@ -333,8 +324,7 @@ class AnalyticsRevenueToolHandlerTest {
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.getValue("revenue_chart").jsonArray.single().jsonObject.getValue("date")
-                .jsonPrimitive.content).isEqualTo("2026-04-01")
+            assertThat(structured.revenueChartDates()).containsExactly("2026-04-01")
         }
 
     @Test
@@ -377,6 +367,16 @@ class AnalyticsRevenueToolHandlerTest {
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         return (result as ToolResult.Success).structured.jsonObject
     }
+
+    private fun JsonObject.revenueChartDates(): List<String> =
+        getValue("revenue_chart").jsonArray.map {
+            it.jsonObject.getValue("date").jsonPrimitive.content
+        }
+
+    private fun JsonObject.revenueChartValues(): List<Double> =
+        getValue("revenue_chart").jsonArray.map {
+            it.jsonObject.getValue("value").jsonPrimitive.double
+        }
 
     private fun sampleStats() = AnalyticsStats(
         totals = buildJsonObject {

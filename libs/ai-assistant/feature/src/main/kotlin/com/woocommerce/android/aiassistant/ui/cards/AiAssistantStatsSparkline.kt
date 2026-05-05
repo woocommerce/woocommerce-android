@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
-import androidx.compose.material3.Text
 
 @Composable
 internal fun AiAssistantStatsSparkline(
@@ -87,16 +87,19 @@ internal fun AiAssistantStatsSparkline(
     }
 }
 
-internal fun normalizeStatsSparklinePoints(points: List<Double>): List<Float> {
-    if (points.isEmpty()) return emptyList()
-    if (points.size == 1) return listOf(CENTERED_POINT)
-
-    val min = points.minOrNull() ?: return emptyList()
-    val max = points.maxOrNull() ?: return emptyList()
-    if (min == max) return List(points.size) { CENTERED_POINT }
-
-    val range = max - min
-    return points.map { ((it - min) / range).toFloat() }
+internal fun normalizeStatsSparklinePoints(points: List<Double>): List<Float> = when {
+    points.isEmpty() -> emptyList()
+    points.size == 1 -> listOf(CENTERED_POINT)
+    else -> {
+        val min = points.minOrNull()
+        val max = points.maxOrNull()
+        if (min == null || max == null || min == max) {
+            List(points.size) { CENTERED_POINT }
+        } else {
+            val range = max - min
+            points.map { ((it - min) / range).toFloat() }
+        }
+    }
 }
 
 private val SPARKLINE_HEIGHT = 58.dp
