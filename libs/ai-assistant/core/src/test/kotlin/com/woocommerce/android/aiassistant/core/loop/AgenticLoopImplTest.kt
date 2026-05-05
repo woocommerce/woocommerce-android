@@ -663,170 +663,185 @@ class AgenticLoopImplTest {
         }
 
     @Test
-    fun `given UNSAFE tool is cancelled, when loop awaits confirmation, then cancelled error is emitted and history is clean`() = runTest {
-        val unsafeDescriptor = ToolDescriptor(
-            name = "orders_update",
-            description = "Updates an order",
-            inputSchema = buildJsonObject { },
-            safetyLevel = ToolSafetyLevel.UNSAFE,
-        )
-        var registryExecuted = false
-        var secondModelTurnRequested = false
-        val service = object : ChatService {
-            private var count = 0
+    fun `given UNSAFE tool is cancelled, when loop awaits confirmation, then turn stops cleanly and history is clean`() =
+        runTest {
+            val unsafeDescriptor = ToolDescriptor(
+                name = "orders_update",
+                description = "Updates an order",
+                inputSchema = buildJsonObject { },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            var registryExecuted = false
+            var secondModelTurnRequested = false
+            val service = object : ChatService {
+                private var count = 0
 
-            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
-                count++
-                return if (count == 1) {
-                    flow {
-                        emit(
-                            AssistantEvent.ToolCallDelta(
-                                index = 0,
-                                id = "call_1",
-                                name = "orders_update",
-                                argumentsDelta = """{"id":42,"status":"processing"}""",
+                override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
+                    count++
+                    return if (count == 1) {
+                        flow {
+                            emit(
+                                AssistantEvent.ToolCallDelta(
+                                    index = 0,
+                                    id = "call_1",
+                                    name = "orders_update",
+                                    argumentsDelta = """{"id":42,"status":"processing"}""",
+                                )
                             )
-                        )
-                        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                            emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                        }
+                    } else {
+                        secondModelTurnRequested = true
+                        flowOf(AssistantEvent.Finish(FinishReason.STOP))
                     }
-                } else {
-                    secondModelTurnRequested = true
-                    flowOf(AssistantEvent.Finish(FinishReason.STOP))
                 }
             }
-        }
-        val registry = object : ToolRegistry {
-            override fun descriptors() = listOf(unsafeDescriptor)
-            override suspend fun execute(call: ToolCall): ToolResult {
-                registryExecuted = true
-                return ToolResult.Success(call.id, buildJsonObject { put("ok", true) })
+            val registry = object : ToolRegistry {
+                override fun descriptors() = listOf(unsafeDescriptor)
+
+                override suspend fun execute(call: ToolCall): ToolResult {
+                    registryExecuted = true
+                    return ToolResult.Success(call.id, buildJsonObject { put("ok", true) })
+                }
             }
+            val safetyOrchestrator = SafetyOrchestratorImpl()
+            val loop = AgenticLoopImpl(
+                service,
+                registry,
+                ConservativeRetryPolicy,
+                passThroughBudgeter(),
+                safetyOrchestrator,
+                json,
+            )
+            val events = mutableListOf<LoopEvent>()
+
+            val job = launch {
+                loop.runTurn(
+                    conversationId = "conv",
+                    userMessage = "go",
+                    history = history,
+                    context = contextWithTools(unsafeDescriptor),
+                ).toList(events)
+            }
+
+            runCurrent()
+            val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
+            safetyOrchestrator.cancel(request.id)
+            advanceUntilIdle()
+
+            assertThat(events.filterIsInstance<LoopEvent.ConfirmationResolved>().single().result.decision)
+                .isEqualTo(ConfirmationDecision.CANCELLED)
+            assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>()).isEmpty()
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>()).isEmpty()
+            assertThat(registryExecuted).isFalse
+            assertThat(secondModelTurnRequested).isFalse()
+
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
+            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.error).isNull()
+            assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
+            val assistantMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
+            assertThat(assistantMessages.flatMap { it.toolCalls }).isEmpty()
+            job.cancel()
         }
-        val safetyOrchestrator = SafetyOrchestratorImpl()
-        val loop = AgenticLoopImpl(
-            service,
-            registry,
-            ConservativeRetryPolicy,
-            passThroughBudgeter(),
-            safetyOrchestrator,
-            json,
-        )
-        val events = mutableListOf<LoopEvent>()
-
-        val job = launch {
-            loop.runTurn("conv", "go", history, contextWithTools(unsafeDescriptor)).toList(events)
-        }
-
-        runCurrent()
-        val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
-        safetyOrchestrator.cancel(request.id)
-        advanceUntilIdle()
-
-        assertThat(events.filterIsInstance<LoopEvent.ConfirmationResolved>().single().result.decision)
-            .isEqualTo(ConfirmationDecision.CANCELLED)
-        assertThat(events.filterIsInstance<LoopEvent.Failed>().single().error)
-            .isEqualTo(AssistantError.Cancelled)
-        assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>()).isEmpty()
-        assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>()).isEmpty()
-        assertThat(registryExecuted).isFalse
-        assertThat(secondModelTurnRequested).isFalse
-        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
-        assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-        assertThat(finished.retryAvailable).isFalse
-        assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
-        val assistantMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
-        assertThat(assistantMessages.flatMap { it.toolCalls }).isEmpty()
-        job.cancel()
-    }
 
     @Test
-    fun `given safe tool succeeds before unsafe tool, when unsafe is cancelled, then history is preserved`() = runTest {
-        val unsafeDescriptor = ToolDescriptor(
-            name = "orders_update",
-            description = "Updates an order",
-            inputSchema = buildJsonObject { },
-            safetyLevel = ToolSafetyLevel.UNSAFE,
-        )
-        var secondModelTurnRequested = false
-        val service = object : ChatService {
-            private var count = 0
+    fun `given safe tool succeeds before unsafe tool, when unsafe is cancelled, then history is preserved cleanly`() =
+        runTest {
+            val unsafeDescriptor = ToolDescriptor(
+                name = "orders_update",
+                description = "Updates an order",
+                inputSchema = buildJsonObject { },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            var secondModelTurnRequested = false
+            val service = object : ChatService {
+                private var count = 0
 
-            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
-                count++
-                return if (count == 1) {
-                    flow {
-                        emit(AssistantEvent.TextDelta("I'll do both."))
-                        emit(
-                            AssistantEvent.ToolCallDelta(
-                                index = 0,
-                                id = "safe_1",
-                                name = "echo",
-                                argumentsDelta = """{"msg":"hello"}""",
+                override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
+                    count++
+                    return if (count == 1) {
+                        flow {
+                            emit(AssistantEvent.TextDelta("I'll do both."))
+                            emit(
+                                AssistantEvent.ToolCallDelta(
+                                    index = 0,
+                                    id = "safe_1",
+                                    name = "echo",
+                                    argumentsDelta = """{"msg":"hello"}""",
+                                )
                             )
-                        )
-                        emit(
-                            AssistantEvent.ToolCallDelta(
-                                index = 1,
-                                id = "unsafe_1",
-                                name = "orders_update",
-                                argumentsDelta = """{"id":42,"status":"processing"}""",
+                            emit(
+                                AssistantEvent.ToolCallDelta(
+                                    index = 1,
+                                    id = "unsafe_1",
+                                    name = "orders_update",
+                                    argumentsDelta = """{"id":42,"status":"processing"}""",
+                                )
                             )
-                        )
-                        emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                            emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                        }
+                    } else {
+                        secondModelTurnRequested = true
+                        flowOf(AssistantEvent.Finish(FinishReason.STOP))
                     }
-                } else {
-                    secondModelTurnRequested = true
-                    flowOf(AssistantEvent.Finish(FinishReason.STOP))
                 }
             }
+            val registry = object : ToolRegistry {
+                override fun descriptors() = listOf(safeEchoDescriptor(), unsafeDescriptor)
+
+                override suspend fun execute(call: ToolCall): ToolResult =
+                    ToolResult.Success(call.id, buildJsonObject { put("echoed", "hello") })
+            }
+            val safetyOrchestrator = SafetyOrchestratorImpl()
+            val loop = AgenticLoopImpl(
+                service,
+                registry,
+                ConservativeRetryPolicy,
+                passThroughBudgeter(),
+                safetyOrchestrator,
+                json,
+            )
+            val events = mutableListOf<LoopEvent>()
+
+            val job = launch {
+                loop.runTurn(
+                    conversationId = "conv",
+                    userMessage = "go",
+                    history = history,
+                    context = contextWithTools(safeEchoDescriptor(), unsafeDescriptor),
+                ).toList(events)
+            }
+
+            runCurrent()
+            val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
+            safetyOrchestrator.cancel(request.id)
+            advanceUntilIdle()
+
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
+                .containsExactly("safe_1")
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result.toolCallId })
+                .containsExactly("safe_1")
+            assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
+            assertThat(finished.retryAvailable).isFalse
+            assertThat(finished.error).isNull()
+            assertThat(secondModelTurnRequested).isFalse
+
+            val assistantToolCalls = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
+                .flatMap { it.toolCalls }
+            assertThat(assistantToolCalls.map { it.id }).containsExactly("safe_1")
+            assertThat(assistantToolCalls.map { it.id }).doesNotContain("unsafe_1")
+
+            val toolMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()
+            assertThat(toolMessages.map { it.toolCallId }).containsExactly("safe_1")
+            assertThat(toolMessages.map { it.toolCallId }).doesNotContain("unsafe_1")
+            assertThat(toolMessages.single().content).contains("echoed")
+            job.cancel()
         }
-        val registry = object : ToolRegistry {
-            override fun descriptors() = listOf(safeEchoDescriptor(), unsafeDescriptor)
-            override suspend fun execute(call: ToolCall): ToolResult =
-                ToolResult.Success(call.id, buildJsonObject { put("echoed", "hello") })
-        }
-        val safetyOrchestrator = SafetyOrchestratorImpl()
-        val loop = AgenticLoopImpl(
-            service,
-            registry,
-            ConservativeRetryPolicy,
-            passThroughBudgeter(),
-            safetyOrchestrator,
-            json,
-        )
-        val events = mutableListOf<LoopEvent>()
-
-        val job = launch {
-            loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor(), unsafeDescriptor)).toList(events)
-        }
-
-        runCurrent()
-        val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
-        safetyOrchestrator.cancel(request.id)
-        advanceUntilIdle()
-
-        assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
-            .containsExactly("safe_1")
-        assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result.toolCallId })
-            .containsExactly("safe_1")
-        assertThat(events.filterIsInstance<LoopEvent.Failed>().single().error)
-            .isEqualTo(AssistantError.Cancelled)
-        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
-        assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-        assertThat(finished.retryAvailable).isFalse
-        assertThat(secondModelTurnRequested).isFalse
-
-        val assistantToolCalls = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
-            .flatMap { it.toolCalls }
-        assertThat(assistantToolCalls.map { it.id }).containsExactly("safe_1")
-        assertThat(assistantToolCalls.map { it.id }).doesNotContain("unsafe_1")
-
-        val toolMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()
-        assertThat(toolMessages.map { it.toolCallId }).containsExactly("safe_1")
-        assertThat(toolMessages.map { it.toolCallId }).doesNotContain("unsafe_1")
-        assertThat(toolMessages.single().content).contains("echoed")
-        job.cancel()
-    }
 
     @Test
     fun `given budgeter trims history, when running turn, then model receives only budgeted messages`() = runTest {

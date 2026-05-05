@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 internal const val MAX_SHOW_CARDS_REFS = 10
+internal const val SHOW_CARDS_TOOL_NAME = "show_cards"
 
 @Serializable
 internal data class ShowCardsArguments(
@@ -53,6 +54,7 @@ internal data class OrderSummary(
     val total: String? = null,
     val currency: String? = null,
     @SerialName("date_created") val dateCreated: String? = null,
+    @SerialName("customer_name") val customerName: String? = null,
 )
 
 @Serializable
@@ -131,6 +133,7 @@ internal sealed interface ShowCardDetails {
         val total: String? = null,
         val currency: String? = null,
         @SerialName("date_created") val dateCreated: String? = null,
+        @SerialName("customer_name") val customerName: String? = null,
     ) : ShowCardDetails
 
     @Serializable
@@ -140,5 +143,6 @@ internal sealed interface ShowCardDetails {
         val price: String? = null,
         @SerialName("stock_status") val stockStatus: String? = null,
         val status: String? = null,
+        @SerialName("image_url") val imageUrl: String? = null,
     ) : ShowCardDetails
 }

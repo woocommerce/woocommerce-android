@@ -34,6 +34,13 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
+        assertThat(rendered.summary).isEqualTo(
+            context.getString(
+                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                "42",
+                "processing",
+            )
+        )
         assertThat(rendered.message).isEqualTo(
             context.getString(
                 R.string.ai_assistant_confirmation_order_set_status_emails_customer,
@@ -48,6 +55,61 @@ class WooCommerceConfirmationPreviewRendererTest {
                 value = "processing",
             )
         )
+    }
+
+    @Test
+    fun `given order status update, when preview is rendered, then summary and rows are exposed for inline cards`() {
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "processing")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf(
+                    "status" to "pending",
+                )
+            ),
+        )
+
+        val rendered = renderer.render(preview)
+
+        assertThat(rendered.summary).isEqualTo("Set order #42 to processing (emails the customer)")
+        assertThat(rendered.rows).containsExactly(
+            RenderedConfirmationDiffRow(
+                name = "status",
+                label = context.getString(R.string.ai_assistant_confirmation_field_status),
+                value = "processing",
+                beforeValue = "pending",
+            )
+        )
+        assertThat(rendered.isBulk).isFalse()
+    }
+
+    @Test
+    fun `given bulk update, when preview is rendered, then before values stay absent`() {
+        val preview = builder.build(
+            toolCall(
+                name = "products_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(7))))
+                    put(
+                        "patch",
+                        buildJsonObject {
+                            put("status", "draft")
+                        },
+                    )
+                },
+            )
+        )
+
+        val rendered = renderer.render(preview)
+
+        assertThat(rendered.isBulk).isTrue()
+        assertThat(rendered.rows.single().beforeValue).isNull()
+        assertThat(rendered.rows.single().afterValue).isEqualTo("draft")
     }
 
     @Test
