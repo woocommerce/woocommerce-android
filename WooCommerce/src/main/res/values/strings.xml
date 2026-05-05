@@ -2289,13 +2289,12 @@
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
-    <string name="settings_notifs_stock_low_stock_description">When a product variant drops to or below your threshold.</string>
-    <string name="settings_notifs_stock_low_stock_threshold">You\'ll be notified when stock drops to your store threshold or below. &lt;a href=\'\'&gt;Edit in store settings&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">When a product variant reaches its low stock threshold.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store default of &lt;b&gt;%1$d&lt;/b&gt;. &lt;a href=\'\'&gt;Edit default threshold&lt;/a&gt;</string>
     <string name="settings_notifs_stock_out_of_stock_title">Out of stock</string>
     <string name="settings_notifs_stock_out_of_stock_description">When a product variant hits zero.</string>
     <string name="settings_notifs_stock_backorder_title">On backorder</string>
     <string name="settings_notifs_stock_backorder_description">When a customer orders an item that\'s currently out of stock.</string>
-    <string name="settings_notifs_stock_footer">Stock alerts are calculated per product variant.</string>
     <string name="settings_notifs_new_reviews">New reviews</string>
     <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
     <string name="settings_notifs_new_reviews_enable_title">Enable new review notifications</string>

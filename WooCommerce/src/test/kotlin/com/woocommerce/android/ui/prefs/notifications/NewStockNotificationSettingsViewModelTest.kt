@@ -20,13 +20,12 @@ import org.wordpress.android.fluxc.model.SiteModel
 class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private lateinit var viewModel: NewStockNotificationSettingsViewModel
+    private val site = SiteModel().apply {
+        adminUrl = "https://example.com/wp-admin"
+    }
 
     private fun setup() {
-        whenever(selectedSite.get()).thenReturn(
-            SiteModel().apply {
-                adminUrl = "https://example.com/wp-admin"
-            }
-        )
+        whenever(selectedSite.get()).thenReturn(site)
         viewModel = NewStockNotificationSettingsViewModel(
             savedStateHandle = SavedStateHandle(),
             selectedSite = selectedSite
@@ -42,6 +41,7 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewState.lowStockNotificationsEnabled).isTrue()
         assertThat(viewState.outOfStockNotificationsEnabled).isTrue()
         assertThat(viewState.backorderNotificationsEnabled).isTrue()
+        assertThat(viewState.defaultLowStockThreshold).isEqualTo(5)
     }
 
     @Test

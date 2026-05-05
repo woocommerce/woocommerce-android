@@ -44,7 +44,9 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     data class ViewState(
         val lowStockNotificationsEnabled: Boolean = true,
         val outOfStockNotificationsEnabled: Boolean = true,
-        val backorderNotificationsEnabled: Boolean = true
+        val backorderNotificationsEnabled: Boolean = true,
+        // Temporary value until the default threshold is fetched from the network.
+        val defaultLowStockThreshold: Int = 5
     )
 
     enum class StockNotificationType {

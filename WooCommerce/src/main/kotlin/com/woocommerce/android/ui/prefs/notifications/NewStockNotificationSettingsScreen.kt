@@ -74,6 +74,7 @@ private fun NewStockNotificationSettingsScreen(
                         modifier = Modifier.padding(top = 4.dp)
                     )
                     LowStockDetails(
+                        defaultLowStockThreshold = viewState.defaultLowStockThreshold,
                         onEditStoreSettingsClicked = onEditStoreSettingsClicked
                     )
                 }
@@ -96,23 +97,19 @@ private fun NewStockNotificationSettingsScreen(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
-            Text(
-                text = stringResource(R.string.settings_notifs_stock_footer),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 16.dp, top = 32.dp, end = 16.dp)
-            )
         }
     }
 }
 
 @Composable
 private fun LowStockDetails(
+    defaultLowStockThreshold: Int,
     onEditStoreSettingsClicked: () -> Unit
 ) {
     val text = clickableAnnotatedStringRes(
         stringResId = R.string.settings_notifs_stock_low_stock_threshold,
-        onUrlClick = { onEditStoreSettingsClicked() }
+        onUrlClick = { onEditStoreSettingsClicked() },
+        defaultLowStockThreshold
     )
     val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
     val openInNewIconId = "openInNewIcon"
