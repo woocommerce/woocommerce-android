@@ -15,7 +15,7 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
     override fun systemPrompt(todayIsoDate: String?): String {
         val isoDate = todayIsoDate ?: defaultToday()
         val date = weekdayAnchor(isoDate) ?: isoDate
-        return MERGED_PROMPT_TEMPLATE.replace(TODAY_ANCHOR_TOKEN, date)
+        return SYSTEM_PROMPT_TEMPLATE.replace(TODAY_ANCHOR_TOKEN, date)
     }
 
     private fun defaultToday(): String =
@@ -33,7 +33,7 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
     private companion object {
         private const val TODAY_ANCHOR_TOKEN = "__TODAY_ANCHOR__"
 
-        private val MERGED_PROMPT_TEMPLATE = """
+        private val SYSTEM_PROMPT_TEMPLATE = """
             You are an assistant inside the WooCommerce Android app, helping a merchant operate their store.
             You answer questions about their store data and, on request, make changes to it. Keep replies
             short, qualitative, and in the merchant's voice. Don't pad, don't explain your process, and don't

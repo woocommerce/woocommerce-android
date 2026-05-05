@@ -23,7 +23,7 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is built, then it keeps the merged cross platform behavioral contract`() {
+    fun `when prompt is built, then it keeps the assistant behavioral contract`() {
         val prompt = WooCommerceAssistantSystemPromptProvider().systemPrompt(todayIsoDate = "2026-05-04")
 
         assertThat(prompt).contains("Tools and their JSON schemas are provided dynamically")
