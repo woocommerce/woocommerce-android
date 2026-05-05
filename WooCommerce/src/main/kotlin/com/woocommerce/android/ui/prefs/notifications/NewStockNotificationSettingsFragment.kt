@@ -36,6 +36,7 @@ class NewStockNotificationSettingsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.refreshDefaultLowStockThreshold()
         AnalyticsTracker.trackViewShown(this)
     }
 

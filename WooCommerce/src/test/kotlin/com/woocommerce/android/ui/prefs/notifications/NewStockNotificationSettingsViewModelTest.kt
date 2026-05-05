@@ -15,20 +15,26 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductSettingsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private lateinit var viewModel: NewStockNotificationSettingsViewModel
     private val site = SiteModel().apply {
         adminUrl = "https://example.com/wp-admin"
     }
 
-    private fun setup() {
+    private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         whenever(selectedSite.get()).thenReturn(site)
+        prepareMocks()
         viewModel = NewStockNotificationSettingsViewModel(
             savedStateHandle = SavedStateHandle(),
-            selectedSite = selectedSite
+            selectedSite = selectedSite,
+            wooCommerceStore = wooCommerceStore
         )
     }
 
@@ -53,6 +59,33 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewState.getOrAwaitValue().notificationsEnabled).isFalse()
     }
+
+    @Test
+    fun `when default low stock threshold is refreshed, then fetch latest value`() = testBlocking {
+        setup {
+            whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+                WooResult(WCProductSettingsModel(defaultLowStockThreshold = 2))
+            )
+        }
+
+        viewModel.refreshDefaultLowStockThreshold()
+
+        assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
+    }
+
+    @Test
+    fun `when default low stock threshold is refreshed without a value, then keep fallback value`() =
+        testBlocking {
+            setup {
+                whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+                    WooResult(WCProductSettingsModel(defaultLowStockThreshold = null))
+                )
+            }
+
+            viewModel.refreshDefaultLowStockThreshold()
+
+            assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(5)
+        }
 
     @Test
     fun `when low stock switch is changed, then update state`() = testBlocking {
