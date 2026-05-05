@@ -57,18 +57,23 @@ fun AiAssistantStatsCard(
                 modifier = Modifier.weight(1f),
             )
         }
-        StatsTrendRow(
-            label = stringResource(R.string.assistant_stats_card_revenue_label),
-            values = state.revenueChartValues,
-            isTrendAvailable = state.isRevenueTrendAvailable,
+        Row(
             modifier = Modifier.fillMaxWidth(),
-        )
-        StatsTrendRow(
-            label = stringResource(R.string.assistant_stats_card_orders_label),
-            values = state.orderChartValues,
-            isTrendAvailable = state.isOrdersTrendAvailable,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            StatsTrendColumn(
+                label = stringResource(R.string.assistant_stats_card_revenue_label),
+                values = state.revenueChartValues,
+                isTrendAvailable = state.isRevenueTrendAvailable,
+                modifier = Modifier.weight(1f),
+            )
+            StatsTrendColumn(
+                label = stringResource(R.string.assistant_stats_card_orders_label),
+                values = state.orderChartValues,
+                isTrendAvailable = state.isOrdersTrendAvailable,
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 
@@ -101,7 +106,7 @@ private fun StatsMetric(
 }
 
 @Composable
-private fun StatsTrendRow(
+private fun StatsTrendColumn(
     label: String,
     values: List<Double>,
     isTrendAvailable: Boolean,
@@ -125,14 +130,14 @@ private fun StatsTrendRow(
     }
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
-@Preview(name = "Dark", showBackground = true, widthDp = 360, heightDp = 320, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
+@Preview(name = "Dark", showBackground = true, widthDp = 360, heightDp = 240, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AiAssistantStatsCardPreviewMultiPoint() {
     AiAssistantStatsCard(state = sampleStatsCardState(), onClick = {})
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
 private fun AiAssistantStatsCardPreviewChangedShape() {
     AiAssistantStatsCard(
@@ -144,7 +149,7 @@ private fun AiAssistantStatsCardPreviewChangedShape() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
 private fun AiAssistantStatsCardPreviewSinglePoint() {
     AiAssistantStatsCard(
@@ -156,7 +161,7 @@ private fun AiAssistantStatsCardPreviewSinglePoint() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
 private fun AiAssistantStatsCardPreviewAllZero() {
     AiAssistantStatsCard(
@@ -168,7 +173,7 @@ private fun AiAssistantStatsCardPreviewAllZero() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
 private fun AiAssistantStatsCardPreviewNegativeRefunds() {
     AiAssistantStatsCard(
@@ -180,7 +185,7 @@ private fun AiAssistantStatsCardPreviewNegativeRefunds() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
 private fun AiAssistantStatsCardPreviewNoTrend() {
     AiAssistantStatsCard(
@@ -194,7 +199,7 @@ private fun AiAssistantStatsCardPreviewNoTrend() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
 private fun AiAssistantStatsCardPreviewPartialData() {
     AiAssistantStatsCard(
