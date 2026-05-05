@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ai_assistant_confirmation_order_update_generic">Update an order</string>
-    <string name="ai_assistant_confirmation_order_set_status">Set order #%1$s to %2$s</string>
-    <string name="ai_assistant_confirmation_order_set_status_emails_customer">Set order #%1$s to %2$s (emails the customer)</string>
     <string name="ai_assistant_confirmation_order_update_summary">Update order #%1$s: %2$s</string>
     <string name="ai_assistant_confirmation_orders_bulk_update_generic">Update many orders</string>
     <string name="ai_assistant_confirmation_orders_bulk_update_summary_single">Update %1$d order: %2$s</string>
@@ -42,8 +40,6 @@
     <string name="assistant_confirmation_eyebrow_pending">Pending change</string>
     <string name="assistant_confirmation_eyebrow_confirmed">Confirmed</string>
     <string name="assistant_confirmation_eyebrow_cancelled">Cancelled</string>
-    <string name="assistant_confirmation_now">Now</string>
-    <string name="assistant_confirmation_after">After</string>
     <string name="assistant_chat_title">AI Assistant</string>
     <string name="assistant_chat_status_idle">Ready</string>
     <string name="assistant_chat_status_streaming">Working</string>

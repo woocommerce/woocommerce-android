@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,7 +65,11 @@ internal fun AssistantConfirmationCardSegment(
                 fontWeight = FontWeight.SemiBold,
             )
             confirmation.preview?.rows?.forEach { row ->
-                ConfirmationDiffRow(row = row, colors = colors)
+                ConfirmationDiffRow(
+                    row = row,
+                    isBulk = confirmation.preview.isBulk,
+                    colors = colors,
+                )
             }
             if (confirmation.state == AssistantConfirmationCardState.PENDING) {
                 ConfirmationActions(
@@ -155,66 +158,62 @@ private fun ConfirmationActions(
 @Composable
 private fun ConfirmationDiffRow(
     row: RenderedConfirmationPreviewField,
+    isBulk: Boolean,
     colors: AssistantConfirmationCardColors,
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f), RoundedCornerShape(8.dp))
             .border(1.dp, colors.border.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = row.label,
+            modifier = Modifier.weight(0.85f),
             color = colors.label,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
-        row.beforeValue?.let { beforeValue ->
-            ConfirmationDiffLine(
-                prefix = stringResource(R.string.assistant_confirmation_now),
-                value = beforeValue,
+        Row(
+            modifier = Modifier.weight(1.15f),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (!isBulk) {
+                row.beforeValue?.let { beforeValue ->
+                    ConfirmationDiffValue(
+                        value = beforeValue,
+                        colors = colors,
+                        strikethrough = true,
+                    )
+                }
+            }
+            ConfirmationDiffValue(
+                value = row.afterValue,
                 colors = colors,
-                strikethrough = true,
             )
         }
-        ConfirmationDiffLine(
-            prefix = stringResource(R.string.assistant_confirmation_after),
-            value = row.afterValue,
-            colors = colors,
-        )
     }
 }
 
 @Composable
-private fun ConfirmationDiffLine(
-    prefix: String,
+private fun ConfirmationDiffValue(
     value: String,
     colors: AssistantConfirmationCardColors,
     strikethrough: Boolean = false,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text(
-            text = prefix,
-            modifier = Modifier.widthIn(min = 40.dp),
-            color = colors.label,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-        )
-        Text(
-            text = value,
-            modifier = Modifier.weight(1f),
-            color = if (strikethrough) colors.label else colors.value,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (strikethrough) FontWeight.Normal else FontWeight.SemiBold,
-            textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
-        )
-    }
+    Text(
+        text = value,
+        color = if (strikethrough) colors.label else colors.value,
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = if (strikethrough) FontWeight.Normal else FontWeight.SemiBold,
+        textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
+    )
 }
 
 @Composable
