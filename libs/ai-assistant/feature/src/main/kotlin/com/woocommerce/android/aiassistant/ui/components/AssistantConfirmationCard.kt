@@ -1,10 +1,13 @@
 package com.woocommerce.android.aiassistant.ui.components
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,13 +31,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationDiffRow
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.eyebrowRes
 import com.woocommerce.android.aiassistant.ui.iconRes
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 @Composable
 internal fun AssistantConfirmationCardSegment(
@@ -155,64 +164,57 @@ private fun ConfirmationActions(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ConfirmationDiffRow(
     row: RenderedConfirmationPreviewField,
     isBulk: Boolean,
     colors: AssistantConfirmationCardColors,
 ) {
-    Row(
+    val beforeValue = row.beforeValue.takeUnless { isBulk }
+
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f), RoundedCornerShape(8.dp))
             .border(1.dp, colors.border.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
             .padding(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Text(
-            text = row.label,
-            modifier = Modifier.weight(0.85f),
+        ConfirmationDiffText(
+            text = "${row.label}:",
             color = colors.label,
-            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
         )
-        Row(
-            modifier = Modifier.weight(1.15f),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (!isBulk) {
-                row.beforeValue?.let { beforeValue ->
-                    ConfirmationDiffValue(
-                        value = beforeValue,
-                        colors = colors,
-                        strikethrough = true,
-                    )
-                }
-            }
-            ConfirmationDiffValue(
-                value = row.afterValue,
-                colors = colors,
+        beforeValue?.let {
+            ConfirmationDiffText(
+                text = it,
+                color = colors.label,
+                textDecoration = TextDecoration.LineThrough,
             )
         }
+        ConfirmationDiffText(
+            text = row.afterValue,
+            color = colors.value,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
 @Composable
-private fun ConfirmationDiffValue(
-    value: String,
-    colors: AssistantConfirmationCardColors,
-    strikethrough: Boolean = false,
+private fun ConfirmationDiffText(
+    text: String,
+    color: Color,
+    fontWeight: FontWeight = FontWeight.Normal,
+    textDecoration: TextDecoration? = null,
 ) {
     Text(
-        text = value,
-        color = if (strikethrough) colors.label else colors.value,
+        text = text,
+        color = color,
         style = MaterialTheme.typography.bodySmall,
-        fontWeight = if (strikethrough) FontWeight.Normal else FontWeight.SemiBold,
-        textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
+        fontWeight = fontWeight,
+        textDecoration = textDecoration,
     )
 }
 
@@ -378,7 +380,7 @@ private fun sampleBillingEmailConfirmationCard() = AssistantConfirmationCard(
         name = "orders_update",
         arguments = buildJsonObject {
             put("id", PREVIEW_ORDER_ID)
-            put("billing_email", "merchant@example.com")
+            put("billing_email", PREVIEW_BILLING_EMAIL_AFTER)
         },
     ),
     state = AssistantConfirmationCardState.PENDING,
@@ -388,8 +390,8 @@ private fun sampleBillingEmailConfirmationCard() = AssistantConfirmationCard(
             RenderedConfirmationDiffRow(
                 name = BILLING_EMAIL_FIELD_NAME,
                 label = "Billing email",
-                value = "merchant@example.com",
-                beforeValue = "schuster.alden@schuster.com",
+                value = PREVIEW_BILLING_EMAIL_AFTER,
+                beforeValue = PREVIEW_BILLING_EMAIL_BEFORE,
             )
         ),
         isBulk = false,
@@ -398,3 +400,5 @@ private fun sampleBillingEmailConfirmationCard() = AssistantConfirmationCard(
 
 private const val PREVIEW_ORDER_ID = 3479
 private const val BILLING_EMAIL_FIELD_NAME = "billing_email"
+private const val PREVIEW_BILLING_EMAIL_BEFORE = "schuster.alden@schuster-fulfillment.example.com"
+private const val PREVIEW_BILLING_EMAIL_AFTER = "alexandra.merchant@northstar-woocommerce.example.com"
