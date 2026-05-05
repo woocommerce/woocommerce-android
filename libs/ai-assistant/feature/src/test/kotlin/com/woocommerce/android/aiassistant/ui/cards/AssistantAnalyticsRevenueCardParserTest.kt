@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.ui.cards
 
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -52,6 +53,23 @@ class AssistantAnalyticsRevenueCardParserTest {
         assertThat(card?.revenueTotal).isEmpty()
         assertThat(card?.orderCount).isEmpty()
         assertThat(card?.chartPoints).hasSize(2)
+    }
+
+    @Test
+    fun `given null primary totals and fallback totals, when parsed, then fallback metrics are used`() {
+        val card = parser.parse(
+            success(
+                totals = buildJsonObject {
+                    put("net_revenue", JsonNull)
+                    put("total_sales", "99.50")
+                    put("orders_count", JsonNull)
+                    put("orders", 7)
+                }
+            )
+        )
+
+        assertThat(card?.revenueTotal).isEqualTo("99.50")
+        assertThat(card?.orderCount).isEqualTo("7")
     }
 
     @Test
@@ -134,6 +152,7 @@ class AssistantAnalyticsRevenueCardParserTest {
         orderCount: Any = "8",
         firstChartValue: Any = 12.0,
         includeTotals: Boolean = true,
+        totals: kotlinx.serialization.json.JsonObject? = null,
         chart: kotlinx.serialization.json.JsonArray = buildJsonArray {
             addChartPoint("2026-05-01", firstChartValue)
             addChartPoint("2026-05-02", 18.0)
@@ -147,7 +166,7 @@ class AssistantAnalyticsRevenueCardParserTest {
             if (includeTotals) {
                 put(
                     "totals",
-                    buildJsonObject {
+                    totals ?: buildJsonObject {
                         putAny("net_revenue", revenueTotal)
                         putAny("orders_count", orderCount)
                     }
@@ -171,6 +190,7 @@ class AssistantAnalyticsRevenueCardParserTest {
             is Double -> put(name, value)
             is Int -> put(name, value)
             is String -> put(name, value)
+            is kotlinx.serialization.json.JsonElement -> put(name, value)
             else -> error("Unsupported test value $value")
         }
     }

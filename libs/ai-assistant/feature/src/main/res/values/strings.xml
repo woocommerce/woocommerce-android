@@ -64,6 +64,7 @@
     <string name="assistant_chat_card_group_generic">Cards</string>
     <string name="assistant_stats_card_revenue_label">Revenue</string>
     <string name="assistant_stats_card_orders_label">Orders</string>
+    <string name="assistant_stats_card_metric_unavailable">Unavailable</string>
     <string name="assistant_stats_card_trend_unavailable">Trend unavailable</string>
     <string name="assistant_stats_card_open_content_description">Open analytics for %1$s</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>

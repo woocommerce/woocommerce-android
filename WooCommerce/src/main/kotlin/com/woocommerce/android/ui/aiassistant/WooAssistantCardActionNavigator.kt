@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 internal fun AssistantCardAction.toNavDirections(
     site: SiteModel,
@@ -41,20 +42,21 @@ internal fun analyticsDatesToStatsTimeRangeSelection(
     site: SiteModel,
     locale: Locale = Locale.getDefault(),
 ): StatsTimeRangeSelection? {
-    val calendar = Calendar.getInstance(getNormalizedTimezone(site.timezone), locale)
-    val start = after.toSiteDate(calendar) ?: return null
-    val end = before.toSiteDate(calendar) ?: return null
+    val timeZone = getNormalizedTimezone(site.timezone)
+    val start = after.toSiteDate(timeZone, locale) ?: return null
+    val end = before.toSiteDate(timeZone, locale) ?: return null
     return StatsTimeRangeSelection.build(
         rangeStart = start,
         rangeEnd = end,
-        calendar = calendar,
+        calendar = Calendar.getInstance(timeZone, locale),
         locale = locale,
     )
 }
 
-private fun String.toSiteDate(calendar: Calendar): Date? =
+private fun String.toSiteDate(timeZone: TimeZone, locale: Locale): Date? =
     runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }
         .map { localDate ->
+            val calendar = Calendar.getInstance(timeZone, locale)
             calendar.clear()
             calendar.set(localDate.year, localDate.monthValue - 1, localDate.dayOfMonth, 0, 0, 0)
             calendar.time

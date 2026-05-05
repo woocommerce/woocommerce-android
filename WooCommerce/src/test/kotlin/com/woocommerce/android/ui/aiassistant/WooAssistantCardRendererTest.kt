@@ -6,6 +6,7 @@ import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -106,7 +107,11 @@ class WooAssistantCardRendererTest {
     fun `given assistant stats card, when mapped, then period revenue order count and chart values are displayed`() {
         whenever(currencyFormatter.formatCurrency("123.45", "USD")).thenReturn("$123.45")
 
-        val model = statsCard(revenueCurrency = "USD").toStatsCardState(currencyFormatter, Locale.US)
+        val model = statsCard(revenueCurrency = "USD").toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
 
         assertThat(model.period).isEqualTo("May 1 - May 7, 2026")
         assertThat(model.revenueTotal).isEqualTo("$123.45")
@@ -119,7 +124,7 @@ class WooAssistantCardRendererTest {
     @Test
     fun `given assistant stats card with one day range, when mapped, then single date is displayed`() {
         val period = statsCard(after = "2026-05-01", before = "2026-05-01")
-            .toStatsCardState(currencyFormatter, Locale.US)
+            .toStatsCardState(currencyFormatter, unavailableValue = "Unavailable", locale = Locale.US)
             .period
 
         assertThat(period).isEqualTo("May 1, 2026")
@@ -128,13 +133,13 @@ class WooAssistantCardRendererTest {
     @Test
     fun `given assistant stats card with blank metrics, when mapped, then unavailable fallback is used`() {
         val model = statsCard(revenueTotal = "", orderCount = "", chartPoints = emptyList())
-            .toStatsCardState(currencyFormatter, Locale.US)
+            .toStatsCardState(currencyFormatter, unavailableValue = "Not available", locale = Locale.US)
 
         assertThat(model).isEqualTo(
             AiAssistantStatsCardState(
                 period = "May 1 - May 7, 2026",
-                revenueTotal = "Unavailable",
-                orderCount = "Unavailable",
+                revenueTotal = "Not available",
+                orderCount = "Not available",
                 chartValues = emptyList(),
                 isTrendAvailable = false,
             )
@@ -143,7 +148,11 @@ class WooAssistantCardRendererTest {
 
     @Test
     fun `given assistant stats card with no chart points, when mapped, then trend is unavailable`() {
-        val model = statsCard(chartPoints = emptyList()).toStatsCardState(currencyFormatter, Locale.US)
+        val model = statsCard(chartPoints = emptyList()).toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
 
         assertThat(model.chartValues).isEmpty()
         assertThat(model.isTrendAvailable).isFalse()
@@ -152,7 +161,7 @@ class WooAssistantCardRendererTest {
     @Test
     fun `given assistant stats card with invalid dates, when mapped, then raw date range is preserved`() {
         val period = statsCard(after = "bad", before = "2026-05-07")
-            .toStatsCardState(currencyFormatter, Locale.US)
+            .toStatsCardState(currencyFormatter, unavailableValue = "Unavailable", locale = Locale.US)
             .period
 
         assertThat(period).isEqualTo("bad - 2026-05-07")
@@ -161,10 +170,17 @@ class WooAssistantCardRendererTest {
     @Test
     fun `given assistant stats card without currency, when mapped, then raw revenue is used`() {
         val revenueTotal = statsCard(revenueCurrency = "")
-            .toStatsCardState(currencyFormatter, Locale.US)
+            .toStatsCardState(currencyFormatter, unavailableValue = "Unavailable", locale = Locale.US)
             .revenueTotal
 
         assertThat(revenueTotal).isEqualTo("123.45")
+    }
+
+    @Test
+    fun `given assistant stats card, when click action is built, then analytics date range is emitted`() {
+        val action = AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07")
+
+        assertThat(action).isEqualTo(AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07"))
     }
 
     private fun orderCard(

@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonPrimitive
@@ -64,7 +65,8 @@ private fun JsonObject?.stringValue(keys: List<String>): String =
     keys.firstNotNullOfOrNull { key -> this?.get(key)?.numericStringOrNull() }.orEmpty()
 
 private fun JsonElement.numericStringOrNull(): String? =
-    runCatching { jsonPrimitive.content }.getOrNull()
+    takeUnless { it == JsonNull }
+        ?.let { runCatching { it.jsonPrimitive.content }.getOrNull() }
 
 private fun String.isIsoLocalDate(): Boolean =
     ISO_LOCAL_DATE_SHAPE.matches(this) &&
