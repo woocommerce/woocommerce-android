@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,10 +33,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -57,6 +61,7 @@ import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -237,21 +242,51 @@ private fun AssistantMessageThread(
     val visibleMessages = state.messages.filter { it.hasVisibleContent() }
     val showTypingIndicator = state.shouldShowTypingIndicator
     val listState = rememberLazyListState()
-    LaunchedEffect(
-        visibleMessages.size,
-        visibleMessages.lastOrNull()?.segments,
-        showTypingIndicator,
-    ) {
-        val totalItems = visibleMessages.size + if (showTypingIndicator) 1 else 0
-        if (totalItems > 0) {
-            listState.animateScrollToItem(totalItems - 1)
+    val bottomPinThresholdPx = with(LocalDensity.current) { BOTTOM_PIN_THRESHOLD_DP.roundToPx() }
+    val scrollSignal = visibleMessages.toScrollSignal(showTypingIndicator)
+    var previousScrollSignal by remember { mutableStateOf<AssistantThreadScrollSignal?>(null) }
+    var wasPinnedBeforeLatestChange by rememberSaveable { mutableStateOf(true) }
+
+    LaunchedEffect(listState, bottomPinThresholdPx, scrollSignal.renderedItemCount) {
+        snapshotFlow {
+            listState.isPinnedToRenderedEnd(
+                renderedItemCount = scrollSignal.renderedItemCount,
+                bottomPinThresholdPx = bottomPinThresholdPx,
+            )
         }
+            .distinctUntilChanged()
+            .collect { wasPinnedBeforeLatestChange = it }
+    }
+
+    LaunchedEffect(scrollSignal) {
+        val renderedItemCount = scrollSignal.renderedItemCount
+        if (renderedItemCount == 0) {
+            previousScrollSignal = scrollSignal
+            return@LaunchedEffect
+        }
+
+        val previous = previousScrollSignal
+        val forceScrollForUserSend = previous != null &&
+            previous.lastUserMessageId != scrollSignal.lastUserMessageId
+        val isNewAssistantMessage = previous != null &&
+            previous.lastMessageId != scrollSignal.lastMessageId &&
+            scrollSignal.lastMessageRole == AssistantUiMessage.Role.ASSISTANT
+
+        if (forceScrollForUserSend || wasPinnedBeforeLatestChange) {
+            val targetIndex = renderedItemCount - 1
+            if (forceScrollForUserSend || isNewAssistantMessage) {
+                listState.animateScrollToItem(targetIndex)
+            } else {
+                listState.scrollToItem(targetIndex)
+            }
+        }
+        previousScrollSignal = scrollSignal
     }
 
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Bottom),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
     ) {
         items(
@@ -276,6 +311,48 @@ private fun AssistantMessageThread(
 }
 
 private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
+private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
+
+private data class AssistantThreadScrollSignal(
+    val renderedItemCount: Int,
+    val messageCount: Int,
+    val lastMessageId: String?,
+    val lastMessageRole: AssistantUiMessage.Role?,
+    val lastUserMessageId: String?,
+    val lastMessageSegmentCount: Int,
+    val lastMessageTextLength: Int,
+    val showTypingIndicator: Boolean,
+)
+
+private fun List<AssistantUiMessage>.toScrollSignal(
+    showTypingIndicator: Boolean,
+): AssistantThreadScrollSignal {
+    val lastMessage = lastOrNull()
+    return AssistantThreadScrollSignal(
+        renderedItemCount = size + if (showTypingIndicator) 1 else 0,
+        messageCount = size,
+        lastMessageId = lastMessage?.id,
+        lastMessageRole = lastMessage?.role,
+        lastUserMessageId = lastOrNull { it.role == AssistantUiMessage.Role.USER }?.id,
+        lastMessageSegmentCount = lastMessage?.segments?.size ?: 0,
+        lastMessageTextLength = lastMessage?.text?.length ?: 0,
+        showTypingIndicator = showTypingIndicator,
+    )
+}
+
+private fun LazyListState.isPinnedToRenderedEnd(
+    renderedItemCount: Int,
+    bottomPinThresholdPx: Int,
+): Boolean {
+    if (renderedItemCount == 0) return true
+
+    val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull() ?: return true
+    val targetIndex = renderedItemCount - 1
+    if (lastVisibleItem.index != targetIndex) return false
+
+    val distanceFromViewportEnd = layoutInfo.viewportEndOffset - (lastVisibleItem.offset + lastVisibleItem.size)
+    return distanceFromViewportEnd <= bottomPinThresholdPx
+}
 
 private fun AssistantUiMessage.hasVisibleContent(): Boolean =
     role == AssistantUiMessage.Role.USER ||
@@ -408,7 +485,7 @@ private fun AssistantTextBubble(text: String, isUser: Boolean) {
 
     Box(
         modifier = Modifier
-            .widthIn(max = 360.dp)
+            .then(if (isUser) Modifier.widthIn(max = 360.dp) else Modifier.fillMaxWidth())
             .background(bubbleColor, shape)
             .then(
                 if (isUser) {
@@ -425,6 +502,7 @@ private fun AssistantTextBubble(text: String, isUser: Boolean) {
     ) {
         Text(
             text = text,
+            modifier = if (isUser) Modifier else Modifier.widthIn(max = 360.dp),
             color = textColor,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = if (isUser) TextAlign.End else TextAlign.Start,
