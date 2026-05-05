@@ -208,10 +208,10 @@ private fun LowStockDetails(
     Text(
         text = textWithIcon,
         inlineContent = inlineContent,
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(top = 8.dp)
             .alpha(if (enabled) 1f else 0.38f)
     )
 }
