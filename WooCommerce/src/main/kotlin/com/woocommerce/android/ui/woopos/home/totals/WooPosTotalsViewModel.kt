@@ -325,6 +325,12 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun ensurePaymentInProgressStateForTapToPay() {
+        if (uiState.value !is PaymentInProgress) {
+            uiState.value = buildPaymentInProgressState()
+        }
+    }
+
     private fun onFineLocationPermissionResult(granted: Boolean) {
         viewModelScope.launch {
             if (granted) {
@@ -557,18 +563,27 @@ class WooPosTotalsViewModel @Inject constructor(
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
                     is CardReaderPaymentState.ProcessingPayment -> {
-                        if (isTapToPayPayment) return@collect
-                        handleProcessingPaymentState(paymentState)
+                        if (isTapToPayPayment) {
+                            ensurePaymentInProgressStateForTapToPay()
+                        } else {
+                            handleProcessingPaymentState(paymentState)
+                        }
                     }
 
                     is CardReaderPaymentState.LoadingData -> {
-                        if (isTapToPayPayment) return@collect
-                        handleReaderLoadingPaymentState()
+                        if (isTapToPayPayment) {
+                            ensurePaymentInProgressStateForTapToPay()
+                        } else {
+                            handleReaderLoadingPaymentState()
+                        }
                     }
 
                     is CardReaderPaymentState.PaymentCapturing -> {
-                        if (isTapToPayPayment) return@collect
-                        handleCapturingPaymentState()
+                        if (isTapToPayPayment) {
+                            ensurePaymentInProgressStateForTapToPay()
+                        } else {
+                            handleCapturingPaymentState()
+                        }
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
