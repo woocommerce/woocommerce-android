@@ -6,6 +6,10 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
+import java.util.Calendar
+import java.util.Locale
 
 class WooAssistantCardActionNavigatorTest {
     @Test
@@ -31,5 +35,43 @@ class WooAssistantCardActionNavigatorTest {
                 mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId = 456L),
             )
         )
+    }
+
+    @Test
+    fun `given negative utc site timezone, when analytics range is mapped, then local dates do not shift backward`() {
+        val site = SiteModel().apply { timezone = "-7" }
+        val range = requireNotNull(
+            analyticsDatesToStatsTimeRangeSelection(
+                after = "2026-05-01",
+                before = "2026-05-01",
+                site = site,
+                locale = Locale.US,
+            )
+        )
+        val calendar = Calendar.getInstance(getNormalizedTimezone(site.timezone), Locale.US)
+
+        calendar.time = range.currentRange.start
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2026)
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.MAY)
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1)
+
+        calendar.time = range.currentRange.end
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2026)
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.MAY)
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1)
+    }
+
+    @Test
+    fun `given invalid analytics date, when range is mapped, then null is returned`() {
+        val site = SiteModel().apply { timezone = "-7" }
+
+        val range = analyticsDatesToStatsTimeRangeSelection(
+            after = "not-a-date",
+            before = "2026-05-01",
+            site = site,
+            locale = Locale.US,
+        )
+
+        assertThat(range).isNull()
     }
 }
