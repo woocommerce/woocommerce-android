@@ -629,6 +629,49 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
     AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
 }
 
+@Preview(showBackground = true, widthDp = 390, heightDp = 180)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 180, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantTextBubblePreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                AssistantTextBubble(
+                    text = "Show orders that need attention",
+                    isUser = true,
+                )
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                AssistantTextBubble(
+                    text = "I found a few processing orders with recent customer notes.",
+                    isUser = false,
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 260)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantCardGroupSegmentPreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AssistantCardGroupSegment(
+                cards = listOf(sampleOrderCard(), sampleProductCard()),
+                assistantCardRenderer = PreviewAssistantCardRenderer,
+                onCardAction = {},
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
 @Composable

@@ -256,3 +256,145 @@ private data class AssistantConfirmationCardColors(
     val label: Color,
     val value: Color,
 )
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 230)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 230, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardPendingPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleAssistantConfirmationCard(AssistantConfirmationCardState.PENDING),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 176)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 176, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardConfirmedPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleAssistantConfirmationCard(AssistantConfirmationCardState.CONFIRMED),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 176)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 176, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardBulkCancelledPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleAssistantConfirmationCard(
+                state = AssistantConfirmationCardState.CANCELLED,
+                isBulk = true,
+            ),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 284)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 284, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardBillingEmailPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleBillingEmailConfirmationCard(),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Composable
+private fun AssistantConfirmationCardPreviewContainer(content: @Composable () -> Unit) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            content()
+        }
+    }
+}
+
+private fun sampleAssistantConfirmationCard(
+    state: AssistantConfirmationCardState,
+    isBulk: Boolean = false,
+) = AssistantConfirmationCard(
+    confirmationId = "confirmation-preview",
+    toolCall = ToolCall(
+        id = "call-preview",
+        name = if (isBulk) "orders_bulk_update" else "orders_update",
+        arguments = buildJsonObject {
+            if (isBulk) {
+                put("status", "completed")
+            } else {
+                put("id", PREVIEW_ORDER_ID)
+                put("status", "completed")
+            }
+        },
+    ),
+    state = state,
+    preview = if (isBulk) {
+        RenderedConfirmationPreview(
+            message = "Update 3 orders",
+            fields = listOf(
+                RenderedConfirmationDiffRow(
+                    name = "status",
+                    label = "Status",
+                    value = "Completed",
+                )
+            ),
+            isBulk = true,
+        )
+    } else {
+        RenderedConfirmationPreview(
+            message = "Update order #3479",
+            fields = listOf(
+                RenderedConfirmationDiffRow(
+                    name = "status",
+                    label = "Status",
+                    value = "Completed",
+                    beforeValue = "Processing",
+                )
+            ),
+            isBulk = false,
+        )
+    },
+)
+
+private fun sampleBillingEmailConfirmationCard() = AssistantConfirmationCard(
+    confirmationId = "billing-email-confirmation-preview",
+    toolCall = ToolCall(
+        id = "call-billing-email-preview",
+        name = "orders_update",
+        arguments = buildJsonObject {
+            put("id", PREVIEW_ORDER_ID)
+            put("billing_email", "merchant@example.com")
+        },
+    ),
+    state = AssistantConfirmationCardState.PENDING,
+    preview = RenderedConfirmationPreview(
+        message = "Update order #3650",
+        fields = listOf(
+            RenderedConfirmationDiffRow(
+                name = BILLING_EMAIL_FIELD_NAME,
+                label = "Billing email",
+                value = "merchant@example.com",
+                beforeValue = "schuster.alden@schuster.com",
+            )
+        ),
+        isBulk = false,
+    ),
+)
+
+private const val PREVIEW_ORDER_ID = 3479
+private const val BILLING_EMAIL_FIELD_NAME = "billing_email"

@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.ui.components
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 
@@ -89,4 +91,32 @@ internal fun AssistantComposer(
             }
         }
     }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 104)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 104, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantComposerReadyPreview() {
+    AssistantComposer(
+        inputText = "Show orders from today",
+        onInputTextChange = {},
+        isTurnActive = false,
+        shouldShowStopControl = false,
+        onSendMessage = {},
+        onCancelTurn = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 104)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 104, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantComposerStreamingPreview() {
+    AssistantComposer(
+        inputText = "",
+        onInputTextChange = {},
+        isTurnActive = true,
+        shouldShowStopControl = true,
+        onSendMessage = {},
+        onCancelTurn = {},
+    )
 }
