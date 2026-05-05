@@ -36,8 +36,6 @@ import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardEntry
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -301,17 +299,14 @@ class AgenticLoopAssistantRuntimeTest {
         assertThat(events.cardEvents()).containsExactly(
             AssistantRuntimeEvent.CardsResolved(
                 listOf(
-                    AssistantCardEntry(
-                        key = AssistantCardKey(family = "order", id = "123"),
-                        card = AssistantCard.Order(
-                            remoteOrderId = 123L,
-                            number = "#123",
-                            status = "processing",
-                            total = "12.34",
-                            currency = "USD",
-                            customerName = "Jane Doe",
-                            date = "2026-05-01T10:00:00Z",
-                        ),
+                    AssistantCard.Order(
+                        remoteOrderId = 123L,
+                        number = "#123",
+                        status = "processing",
+                        total = "12.34",
+                        currency = "USD",
+                        customerName = "Jane Doe",
+                        date = "2026-05-01T10:00:00Z",
                     )
                 )
             )
@@ -408,7 +403,7 @@ class AgenticLoopAssistantRuntimeTest {
             val events = runtime.startTurn(givenTurnRequest()).toList()
 
             assertThat(events.cardEvents()).containsExactly(
-                AssistantRuntimeEvent.CardsResolved(listOf(expectedOrderEntry(id = "123", number = "#123")))
+                AssistantRuntimeEvent.CardsResolved(listOf(expectedOrderCard(id = "123", number = "#123")))
             )
         }
 
@@ -528,17 +523,14 @@ class AgenticLoopAssistantRuntimeTest {
         ),
     )
 
-    private fun expectedOrderEntry(id: String, number: String) = AssistantCardEntry(
-        key = AssistantCardKey(family = "order", id = id),
-        card = AssistantCard.Order(
-            remoteOrderId = id.toLong(),
-            number = number,
-            status = "processing",
-            total = "12.34",
-            currency = "USD",
-            customerName = "Jane Doe",
-            date = "2026-05-01T10:00:00Z",
-        ),
+    private fun expectedOrderCard(id: String, number: String) = AssistantCard.Order(
+        remoteOrderId = id.toLong(),
+        number = number,
+        status = "processing",
+        total = "12.34",
+        currency = "USD",
+        customerName = "Jane Doe",
+        date = "2026-05-01T10:00:00Z",
     )
 
     private fun List<AssistantRuntimeEvent>.cardEvents() =

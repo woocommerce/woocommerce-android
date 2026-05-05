@@ -6,7 +6,7 @@ import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardEntry
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import kotlinx.coroutines.flow.Flow
 
 interface AssistantRuntime {
@@ -48,7 +48,7 @@ sealed interface AssistantRuntimeEvent {
     ) : AssistantRuntimeEvent
 
     data class CardsResolved(
-        val cards: List<AssistantCardEntry>,
+        val cards: List<AssistantCard>,
     ) : AssistantRuntimeEvent
 
     data class Finished(

@@ -12,7 +12,7 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardEntry
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
 import dagger.assisted.Assisted
@@ -308,11 +308,11 @@ class AssistantViewModel @AssistedInject constructor(
         }
     }
 
-    private fun appendAssistantCards(entries: List<AssistantCardEntry>) {
+    private fun appendAssistantCards(cards: List<AssistantCard>) {
         val messageId = activeAssistantMessageId ?: return
-        val newSegments = entries
-            .filter { activeCardKeys.add(it.key) }
-            .map { AssistantUiSegment.Card(it.card) }
+        val newSegments = cards
+            .filter { activeCardKeys.add(it.toCardKey()) }
+            .map { AssistantUiSegment.Card(it) }
         if (newSegments.isEmpty()) return
 
         _uiState.update { state ->
@@ -327,6 +327,12 @@ class AssistantViewModel @AssistedInject constructor(
             )
         }
     }
+
+    private fun AssistantCard.toCardKey(): AssistantCardKey =
+        when (this) {
+            is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
+            is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+        }
 
     private fun appendAssistantText(delta: String) {
         val messageId = activeAssistantMessageId ?: return

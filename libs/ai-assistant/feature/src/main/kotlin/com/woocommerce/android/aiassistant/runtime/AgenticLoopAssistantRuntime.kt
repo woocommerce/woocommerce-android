@@ -86,7 +86,10 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     )
                     pendingError = null
                 }
-                is LoopEvent.Failed -> pendingError = event.error
+                is LoopEvent.Failed -> {
+                    toolNamesById.clear()
+                    pendingError = event.error
+                }
                 is LoopEvent.ConfirmationResolved -> emit(
                     AssistantRuntimeEvent.ConfirmationResolved(event.result)
                 )
@@ -115,7 +118,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         add(AssistantRuntimeEvent.ToolCallFinished(toolCallId = toolCallId))
         val cards = toShowCards(toolName)
         if (cards.isNotEmpty()) {
-            add(AssistantRuntimeEvent.CardsResolved(cards))
+            add(AssistantRuntimeEvent.CardsResolved(cards.map { it.card }))
         }
     }
 

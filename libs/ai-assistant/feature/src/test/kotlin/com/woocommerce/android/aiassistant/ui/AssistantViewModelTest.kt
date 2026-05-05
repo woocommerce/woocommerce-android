@@ -13,8 +13,6 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationD
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardEntry
-import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -648,12 +646,12 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given active assistant bubble, when card entries arrive, then card segments are appended`() = runTest {
+    fun `given active assistant bubble, when cards arrive, then card segments are appended`() = runTest {
         viewModel.onSendMessage("Show order 123")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
-        val orderEntry = givenOrderEntry(id = "123", number = "#123")
+        val orderCard = givenOrderCard(id = "123", number = "#123")
 
-        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderEntry)))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderCard)))
         advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.messages.last()).isEqualTo(
@@ -662,7 +660,7 @@ class AssistantViewModelTest {
                 role = AssistantUiMessage.Role.ASSISTANT,
                 segments = listOf(
                     AssistantUiSegment.Text(""),
-                    AssistantUiSegment.Card(orderEntry.card),
+                    AssistantUiSegment.Card(orderCard),
                 ),
             )
         )
@@ -673,10 +671,10 @@ class AssistantViewModelTest {
         runTest {
             viewModel.onSendMessage("Show order 123")
             val activeBubbleId = viewModel.uiState.value.messages.last().id
-            val orderEntry = givenOrderEntry(id = "123", number = "#123")
+            val orderCard = givenOrderCard(id = "123", number = "#123")
 
             runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Here is the order."))
-            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderEntry)))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderCard)))
             runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Anything else?"))
             runtime.emit(
                 AssistantRuntimeEvent.Finished(
@@ -695,7 +693,7 @@ class AssistantViewModelTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
                         AssistantUiSegment.Text("Here is the order."),
-                        AssistantUiSegment.Card(orderEntry.card),
+                        AssistantUiSegment.Card(orderCard),
                         AssistantUiSegment.Text("Anything else?"),
                     ),
                 )
@@ -726,9 +724,9 @@ class AssistantViewModelTest {
     @Test
     fun `given duplicate card keys across one turn, when cards arrive, then first seen cards are kept`() = runTest {
         viewModel.onSendMessage("Show matching cards")
-        val firstOrder = givenOrderEntry(id = "123", number = "#123")
-        val duplicateOrder = givenOrderEntry(id = "123", number = "#duplicate")
-        val secondOrder = givenOrderEntry(id = "456", number = "#456")
+        val firstOrder = givenOrderCard(id = "123", number = "#123")
+        val duplicateOrder = givenOrderCard(id = "123", number = "#duplicate")
+        val secondOrder = givenOrderCard(id = "456", number = "#456")
 
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstOrder)))
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateOrder, secondOrder)))
@@ -738,24 +736,24 @@ class AssistantViewModelTest {
             .filterIsInstance<AssistantUiSegment.Card>()
 
         assertThat(cardSegments).containsExactly(
-            AssistantUiSegment.Card(firstOrder.card),
-            AssistantUiSegment.Card(secondOrder.card),
+            AssistantUiSegment.Card(firstOrder),
+            AssistantUiSegment.Card(secondOrder),
         )
     }
 
     @Test
     fun `given same id across different families, when cards arrive, then both cards are kept`() = runTest {
         viewModel.onSendMessage("Show order and product 123")
-        val order = givenOrderEntry(id = "123", number = "#123")
-        val product = givenProductEntry(id = "123", name = "Socks")
+        val order = givenOrderCard(id = "123", number = "#123")
+        val product = givenProductCard(id = "123", name = "Socks")
 
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(order, product)))
         advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.messages.last().segments)
             .contains(
-                AssistantUiSegment.Card(order.card),
-                AssistantUiSegment.Card(product.card),
+                AssistantUiSegment.Card(order),
+                AssistantUiSegment.Card(product),
             )
     }
 
@@ -1186,30 +1184,24 @@ class AssistantViewModelTest {
         state = AssistantConfirmationCardState.PENDING,
     )
 
-    private fun givenOrderEntry(id: String, number: String) = AssistantCardEntry(
-        key = AssistantCardKey(family = "order", id = id),
-        card = AssistantCard.Order(
-            remoteOrderId = id.toLong(),
-            number = number,
-            status = "processing",
-            total = "12.34",
-            currency = "USD",
-            customerName = "Jane Doe",
-            date = "2026-05-01T10:00:00Z",
-        ),
+    private fun givenOrderCard(id: String, number: String) = AssistantCard.Order(
+        remoteOrderId = id.toLong(),
+        number = number,
+        status = "processing",
+        total = "12.34",
+        currency = "USD",
+        customerName = "Jane Doe",
+        date = "2026-05-01T10:00:00Z",
     )
 
-    private fun givenProductEntry(id: String, name: String) = AssistantCardEntry(
-        key = AssistantCardKey(family = "product", id = id),
-        card = AssistantCard.Product(
-            remoteProductId = id.toLong(),
-            name = name,
-            sku = "woo-socks",
-            price = "9.99",
-            stockStatus = "instock",
-            status = "publish",
-            imageUrl = "https://example.com/socks.png",
-        ),
+    private fun givenProductCard(id: String, name: String) = AssistantCard.Product(
+        remoteProductId = id.toLong(),
+        name = name,
+        sku = "woo-socks",
+        price = "9.99",
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/socks.png",
     )
 
     private class FakeAssistantRuntime : AssistantRuntime {

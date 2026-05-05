@@ -10,6 +10,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Locale
 
 class WooAssistantCardRendererTest {
     private val currencyFormatter: CurrencyFormatter = mock()
@@ -17,9 +18,15 @@ class WooAssistantCardRendererTest {
 
     @Test
     fun `given assistant order card, when mapped, then host row model formats total with order currency`() {
+        val originalLocale = Locale.getDefault()
+        Locale.setDefault(Locale.US)
         whenever(currencyFormatter.formatCurrency("12.34", "USD")).thenReturn("$12.34")
 
-        val model = orderCard().toOrderSummaryRowModel(context, currencyFormatter)
+        val model = try {
+            orderCard().toOrderSummaryRowModel(context, currencyFormatter)
+        } finally {
+            Locale.setDefault(originalLocale)
+        }
 
         assertThat(model.number).isEqualTo("#1001")
         assertThat(model.date).matches("^May [12]$")
