@@ -57,6 +57,7 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardChrome
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
@@ -451,39 +452,25 @@ private fun AssistantCardGroupSegment(
 ) {
     if (assistantCardRenderer == null || cards.isEmpty()) return
 
-    Surface(
+    AssistantCardChrome(
+        title = stringResource(cards.groupHeaderRes()),
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(ASSISTANT_CARD_CORNER_RADIUS),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = stringResource(cards.groupHeaderRes()),
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
+        cards.forEachIndexed { index, card ->
+            assistantCardRenderer.Card(
+                card = card,
+                onAction = onCardAction,
+                modifier = Modifier.fillMaxWidth(),
             )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            cards.forEachIndexed { index, card ->
-                assistantCardRenderer.Card(
-                    card = card,
-                    onAction = onCardAction,
-                    modifier = Modifier.fillMaxWidth(),
+            if (index < cards.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 14.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
                 )
-                if (index < cards.lastIndex) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 14.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                    )
-                }
             }
         }
     }
 }
-
-private val ASSISTANT_CARD_CORNER_RADIUS = 12.dp
 
 private fun List<AssistantCard>.groupHeaderRes(): Int {
     val containsOrders = any { it is AssistantCard.Order }
@@ -661,6 +648,36 @@ private fun AssistantCardGroupSegmentPreview() {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(sampleOrderCard(), sampleProductCard(), sampleStatsCard()),
+                assistantCardRenderer = PreviewAssistantCardRenderer,
+                onCardAction = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 260)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantStatsCardGroupSegmentPreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AssistantCardGroupSegment(
+                cards = listOf(sampleStatsCard()),
+                assistantCardRenderer = PreviewAssistantCardRenderer,
+                onCardAction = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 260)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantStatsCardGroupNoTrendPreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AssistantCardGroupSegment(
+                cards = listOf(sampleStatsCard(chartPoints = emptyList())),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
                 onCardAction = {},
             )
@@ -912,17 +929,19 @@ private fun sampleProductCard() = AssistantCard.Product(
     imageUrl = "https://example.com/socks.png",
 )
 
-private fun sampleStatsCard() = AssistantCard.Stats(
+private fun sampleStatsCard(
+    chartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+        AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
+        AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
+    ),
+) = AssistantCard.Stats(
     after = "2026-05-01",
     before = "2026-05-07",
     revenueTotal = "123.45",
     revenueCurrency = "USD",
     orderCount = "8",
-    chartPoints = listOf(
-        AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
-        AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
-        AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
-    ),
+    chartPoints = chartPoints,
 )
 
 private val AssistantCard.Order.unformattedTotal: String
