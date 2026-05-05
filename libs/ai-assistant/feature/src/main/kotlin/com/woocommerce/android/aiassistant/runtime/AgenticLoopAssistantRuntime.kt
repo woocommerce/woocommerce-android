@@ -1,6 +1,8 @@
 package com.woocommerce.android.aiassistant.runtime
 
+import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
@@ -32,6 +34,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
     private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
     private val cardParser: AssistantCardUiStructuredParser,
+    private val systemPromptProvider: AssistantSystemPromptProvider,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -60,7 +63,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         agenticLoop.runTurn(
             conversationId = request.conversationId,
             userMessage = request.userMessage,
-            history = request.history,
+            history = request.history.withFreshSystemPrompt(systemPromptProvider.systemPrompt()),
             context = context,
         ).collect { event ->
             when (event) {
@@ -103,6 +106,9 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
             }
         }
     }
+
+    private fun List<AssistantMessage>.withFreshSystemPrompt(prompt: String): List<AssistantMessage> =
+        listOf(AssistantMessage.System(prompt)) + filterNot { it is AssistantMessage.System }
 
     private fun LoopEvent.ToolCallStarted.toRuntimeEvent(
         toolNamesById: MutableMap<String, String>,

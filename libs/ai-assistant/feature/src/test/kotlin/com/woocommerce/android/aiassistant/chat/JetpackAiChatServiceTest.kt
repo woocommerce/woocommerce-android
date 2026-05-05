@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.chat
 
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
@@ -73,9 +74,10 @@ class JetpackAiChatServiceTest {
         assertThat(recorded.getHeader("Authorization")).isEqualTo("Bearer fake-token-1")
         assertThat(recorded.getHeader("Accept")).isEqualTo("text/event-stream")
         val body = recorded.body.readUtf8()
-        assertThat(body).contains(""""feature":"woo-ai-assistant"""")
+        val root = Json.parseToJsonElement(body).jsonObject
+        assertThat(root.getValue("model").jsonPrimitive.content).isEqualTo(AssistantConfig.MODEL_ID)
+        assertThat(root.getValue("feature").jsonPrimitive.content).isEqualTo(AssistantConfig.FEATURE_NAME)
         assertThat(body).contains(""""stream":true""")
-        assertThat(body).contains(""""model":"""")
         assertThat(body).contains(""""messages":[""")
     }
 
