@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
@@ -271,10 +272,13 @@ class WooPosTotalsViewModel @Inject constructor(
                 onFailure = { error ->
                     wooPosLogWrapper.e("Tap to Pay connection failed", error)
                     isTapToPayPayment = false
+                    val messageRes = if (error is MissingFineLocationPermissionException) {
+                        R.string.woopos_tap_to_pay_missing_location_permission_message
+                    } else {
+                        R.string.woopos_tap_to_pay_payment_failed_message
+                    }
                     childrenToParentEventSender.sendToParent(
-                        ToastMessageDisplayed(
-                            resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
-                        )
+                        ToastMessageDisplayed(resourceProvider.getString(messageRes))
                     )
                 }
             )

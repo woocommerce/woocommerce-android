@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosBuiltInReaderConnectorTest {
     private val locationRepository: CardReaderLocationRepository = mock()
@@ -42,12 +44,20 @@ class WooPosBuiltInReaderConnectorTest {
     private val cardReaderManager: CardReaderManager = mock {
         on { this.readerStatus } doReturn readerStatus
     }
+    private val resourceProvider: ResourceProvider = mock {
+        on { isDarkMode() } doReturn false
+    }
+    private val fineLocationPermissionCheck: WooPosFineLocationPermissionCheck = mock {
+        on { isGranted() } doReturn true
+    }
 
     private val sut = WooPosBuiltInReaderConnector(
         cardReaderManager,
         locationRepository,
         onboardingChecker,
         developerOptionsRepository,
+        resourceProvider,
+        fineLocationPermissionCheck,
         logger,
     )
 
@@ -75,6 +85,17 @@ class WooPosBuiltInReaderConnectorTest {
         val result = sut.connect()
 
         assertThat(result.isSuccess).isTrue()
+        verify(cardReaderManager, never()).discoverReaders(any(), any())
+    }
+
+    @Test
+    fun `given fine location permission denied, when connect, then returns failure with permission exception`() = runTest {
+        whenever(fineLocationPermissionCheck.isGranted()).thenReturn(false)
+
+        val result = sut.connect()
+
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(MissingFineLocationPermissionException::class.java)
         verify(cardReaderManager, never()).discoverReaders(any(), any())
     }
 

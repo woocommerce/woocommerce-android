@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -23,11 +25,18 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     private val locationRepository: CardReaderLocationRepository,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val resourceProvider: ResourceProvider,
+    private val fineLocationPermissionCheck: WooPosFineLocationPermissionCheck,
     private val logger: WooPosLogWrapper,
 ) {
     suspend fun connect(): Result<Unit> {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             return Result.success(Unit)
+        }
+
+        if (!fineLocationPermissionCheck.isGranted()) {
+            logger.e("ACCESS_FINE_LOCATION not granted; built-in reader discovery is blocked")
+            return Result.failure(MissingFineLocationPermissionException())
         }
 
         runCatching { initializeCardReaderManager() }.onFailure {
@@ -84,7 +93,6 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     }
 
     private suspend fun initializeCardReaderManager() {
-        if (cardReaderManager.initialized) return
         withContext(Dispatchers.Main.immediate) {
             if (!cardReaderManager.initialized) {
                 cardReaderManager.initialize(
@@ -94,6 +102,17 @@ class WooPosBuiltInReaderConnector @Inject constructor(
                 )
                 logger.d("Card reader manager initialized for TTP (initialized=${cardReaderManager.initialized})")
             }
+            cardReaderManager.setupTapToPayUx(
+                CardReaderManager.TapToPayUxConfig(
+                    primaryColor = R.color.color_primary,
+                    successColor = R.color.woo_green_50,
+                    errorColor = R.color.color_error,
+                    isDarkMode = resourceProvider.isDarkMode(),
+                )
+            )
         }
     }
 }
+
+class MissingFineLocationPermissionException :
+    IllegalStateException("ACCESS_FINE_LOCATION permission is required for Tap to Pay")
