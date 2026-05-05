@@ -114,8 +114,10 @@ class WooAssistantCardRendererTest {
         assertThat(model.period).isEqualTo("May 1 - May 7, 2026")
         assertThat(model.revenueTotal).isEqualTo("$123.45")
         assertThat(model.orderCount).isEqualTo("8")
-        assertThat(model.chartValues).containsExactly(12.0, 18.0, 9.0)
-        assertThat(model.isTrendAvailable).isTrue()
+        assertThat(model.revenueChartValues).containsExactly(12.0, 18.0, 9.0)
+        assertThat(model.orderChartValues).containsExactly(1.0, 3.0, 2.0)
+        assertThat(model.isRevenueTrendAvailable).isTrue()
+        assertThat(model.isOrdersTrendAvailable).isTrue()
         verify(currencyFormatter).formatCurrency("123.45", "USD")
     }
 
@@ -130,7 +132,12 @@ class WooAssistantCardRendererTest {
 
     @Test
     fun `given assistant stats card with blank metrics, when mapped, then unavailable fallback is used`() {
-        val model = statsCard(revenueTotal = "", orderCount = "", chartPoints = emptyList())
+        val model = statsCard(
+            revenueTotal = "",
+            orderCount = "",
+            revenueChartPoints = emptyList(),
+            orderChartPoints = emptyList(),
+        )
             .toStatsCardState(currencyFormatter, unavailableValue = "Not available", locale = Locale.US)
 
         assertThat(model).isEqualTo(
@@ -138,22 +145,40 @@ class WooAssistantCardRendererTest {
                 period = "May 1 - May 7, 2026",
                 revenueTotal = "Not available",
                 orderCount = "Not available",
-                chartValues = emptyList(),
-                isTrendAvailable = false,
+                revenueChartValues = emptyList(),
+                orderChartValues = emptyList(),
+                isRevenueTrendAvailable = false,
+                isOrdersTrendAvailable = false,
             )
         )
     }
 
     @Test
-    fun `given assistant stats card with no chart points, when mapped, then trend is unavailable`() {
-        val model = statsCard(chartPoints = emptyList()).toStatsCardState(
+    fun `given assistant stats card without order chart points, when mapped, then only orders trend is unavailable`() {
+        val model = statsCard(orderChartPoints = emptyList()).toStatsCardState(
             currencyFormatter = currencyFormatter,
             unavailableValue = "Unavailable",
             locale = Locale.US,
         )
 
-        assertThat(model.chartValues).isEmpty()
-        assertThat(model.isTrendAvailable).isFalse()
+        assertThat(model.revenueChartValues).containsExactly(12.0, 18.0, 9.0)
+        assertThat(model.orderChartValues).isEmpty()
+        assertThat(model.isRevenueTrendAvailable).isTrue()
+        assertThat(model.isOrdersTrendAvailable).isFalse()
+    }
+
+    @Test
+    fun `given assistant stats card without revenue chart points, when mapped, then only revenue trend is unavailable`() {
+        val model = statsCard(revenueChartPoints = emptyList()).toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.revenueChartValues).isEmpty()
+        assertThat(model.orderChartValues).containsExactly(1.0, 3.0, 2.0)
+        assertThat(model.isRevenueTrendAvailable).isFalse()
+        assertThat(model.isOrdersTrendAvailable).isTrue()
     }
 
     @Test
@@ -220,10 +245,15 @@ class WooAssistantCardRendererTest {
         revenueTotal: String = "123.45",
         revenueCurrency: String = "",
         orderCount: String = "8",
-        chartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+        revenueChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
             AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
             AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
             AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
+        ),
+        orderChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 1.0),
+            AssistantCard.Stats.ChartPoint("2026-05-02", 3.0),
+            AssistantCard.Stats.ChartPoint("2026-05-03", 2.0),
         ),
     ) = AssistantCard.Stats(
         after = after,
@@ -231,6 +261,7 @@ class WooAssistantCardRendererTest {
         revenueTotal = revenueTotal,
         revenueCurrency = revenueCurrency,
         orderCount = orderCount,
-        chartPoints = chartPoints,
+        revenueChartPoints = revenueChartPoints,
+        orderChartPoints = orderChartPoints,
     )
 }

@@ -380,7 +380,7 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success, when adapted, then stats card with graph points is emitted`() =
+    fun `given analytics revenue success, when adapted, then stats card with revenue and order graph points is emitted`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
@@ -407,9 +407,13 @@ class AgenticLoopAssistantRuntimeTest {
                             revenueTotal = "123.45",
                             revenueCurrency = "USD",
                             orderCount = "3",
-                            chartPoints = listOf(
+                            revenueChartPoints = listOf(
                                 AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 10.0),
                                 AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 20.0),
+                            ),
+                            orderChartPoints = listOf(
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 1.0),
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 2.0),
                             ),
                         )
                     )
@@ -654,6 +658,20 @@ class AgenticLoopAssistantRuntimeTest {
                 buildJsonObject {
                     put("date", "2026-05-02")
                     put("value", 20.0)
+                }
+            )
+        }
+        putJsonArray("order_chart") {
+            add(
+                buildJsonObject {
+                    put("date", "2026-05-01")
+                    put("value", 1.0)
+                }
+            )
+            add(
+                buildJsonObject {
+                    put("date", "2026-05-02")
+                    put("value", 2.0)
                 }
             )
         }

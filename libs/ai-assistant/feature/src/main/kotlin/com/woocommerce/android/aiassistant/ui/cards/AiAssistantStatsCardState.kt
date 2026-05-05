@@ -4,6 +4,8 @@ data class AiAssistantStatsCardState(
     val period: String,
     val revenueTotal: String,
     val orderCount: String,
-    val chartValues: List<Double>,
-    val isTrendAvailable: Boolean,
+    val revenueChartValues: List<Double>,
+    val orderChartValues: List<Double>,
+    val isRevenueTrendAvailable: Boolean,
+    val isOrdersTrendAvailable: Boolean,
 )

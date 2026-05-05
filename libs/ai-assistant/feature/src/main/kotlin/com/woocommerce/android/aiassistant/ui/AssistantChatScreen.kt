@@ -655,8 +655,8 @@ private fun AssistantCardGroupSegmentPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 390, heightDp = 260)
-@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, widthDp = 390, heightDp = 380)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 380, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantStatsCardGroupSegmentPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -670,14 +670,19 @@ private fun AssistantStatsCardGroupSegmentPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 390, heightDp = 260)
-@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, widthDp = 390, heightDp = 380)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 380, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantStatsCardGroupNoTrendPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
-                cards = listOf(sampleStatsCard(chartPoints = emptyList())),
+                cards = listOf(
+                    sampleStatsCard(
+                        revenueChartPoints = emptyList(),
+                        orderChartPoints = emptyList(),
+                    )
+                ),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
                 onCardAction = {},
             )
@@ -900,8 +905,10 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
                     .filter { it.isNotBlank() }
                     .joinToString(" "),
                 orderCount = card.orderCount,
-                chartValues = card.chartPoints.map { it.value },
-                isTrendAvailable = card.chartPoints.isNotEmpty(),
+                revenueChartValues = card.revenueChartPoints.map { it.value },
+                orderChartValues = card.orderChartPoints.map { it.value },
+                isRevenueTrendAvailable = card.revenueChartPoints.isNotEmpty(),
+                isOrdersTrendAvailable = card.orderChartPoints.isNotEmpty(),
             ),
             onClick = {},
             modifier = modifier,
@@ -930,20 +937,28 @@ private fun sampleProductCard() = AssistantCard.Product(
 )
 
 private fun sampleStatsCard(
-    chartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_STATS_CHART_POINTS,
+    revenueChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_REVENUE_CHART_POINTS,
+    orderChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_ORDER_CHART_POINTS,
 ) = AssistantCard.Stats(
     after = "2026-05-01",
     before = "2026-05-07",
     revenueTotal = "123.45",
     revenueCurrency = "USD",
     orderCount = "8",
-    chartPoints = chartPoints,
+    revenueChartPoints = revenueChartPoints,
+    orderChartPoints = orderChartPoints,
 )
 
-private val SAMPLE_STATS_CHART_POINTS = listOf(
+private val SAMPLE_REVENUE_CHART_POINTS = listOf(
     AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
     AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
     AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
+)
+
+private val SAMPLE_ORDER_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 1.0),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 3.0),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 2.0),
 )
 
 private val AssistantCard.Order.unformattedTotal: String

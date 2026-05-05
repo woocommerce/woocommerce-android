@@ -1324,8 +1324,11 @@ class AssistantViewModelTest {
         revenueTotal = revenueTotal,
         revenueCurrency = "USD",
         orderCount = "8",
-        chartPoints = listOf(
+        revenueChartPoints = listOf(
             AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        ),
+        orderChartPoints = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 1.0),
         ),
     )
 

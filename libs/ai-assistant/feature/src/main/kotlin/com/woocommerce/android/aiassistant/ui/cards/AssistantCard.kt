@@ -27,7 +27,8 @@ sealed interface AssistantCard {
         val revenueTotal: String,
         val revenueCurrency: String,
         val orderCount: String,
-        val chartPoints: List<ChartPoint>,
+        val revenueChartPoints: List<ChartPoint>,
+        val orderChartPoints: List<ChartPoint>,
     ) : AssistantCard {
         data class ChartPoint(
             val date: String,

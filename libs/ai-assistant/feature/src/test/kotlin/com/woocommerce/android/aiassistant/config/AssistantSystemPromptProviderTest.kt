@@ -40,7 +40,7 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("the only mechanism for surfacing order and product entities")
         assertThat(prompt).contains("Do not call `show_cards` for analytics")
         assertThat(prompt).contains("Successful `analytics_revenue` results may be rendered")
-        assertThat(prompt).contains("app-owned stats card with a compact trend graph")
+        assertThat(prompt).contains("app-owned stats card with compact revenue and orders trend graphs")
         assertThat(prompt).contains("no card JSON")
         assertThat(prompt).contains("no card tokens")
         assertThat(prompt).contains("There is no terminal `respond` tool")

@@ -125,7 +125,7 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             Merchant: "revenue by day this week"
             GOOD: One call to the analytics revenue tool with the appropriate window and a daily-grain
             parameter. Answer with concise prose; successful analytics revenue results may be rendered by the
-            Android app as an app-owned stats card.
+            Android app as an app-owned stats card with compact revenue and orders trend graphs.
             BAD: Ask "did you want by day or by week?" when the merchant already said "by day".
 
             Pattern 7 - Refusing what the catalog can't do.
@@ -214,8 +214,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             Do not call `show_cards` for analytics, revenue, aggregate stats, settings, concepts, or refusals where
             no entity is involved. Successful `analytics_revenue` results may be rendered by the Android app as an
-            app-owned stats card with a compact trend graph; answer with concise prose and let the card carry the
-            numeric fields.
+            app-owned stats card with compact revenue and orders trend graphs; answer with concise prose and let the
+            card carry the numeric fields.
 
             # Sorting and answer scoping
 

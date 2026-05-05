@@ -57,7 +57,7 @@ internal fun analyticsStatsSummary(
     before: String,
     stats: AnalyticsStats,
     currency: String? = null,
-    includeRevenueChart: Boolean = false,
+    includeStatsCharts: Boolean = false,
 ): JsonObject = buildJsonObject {
     put("after", after)
     put("before", before)
@@ -68,14 +68,19 @@ internal fun analyticsStatsSummary(
         putJsonArray("interval_subtotals") {
             intervals.mapNotNull(::intervalSubtotal).forEach(::add)
         }
-        if (includeRevenueChart) {
+        if (includeStatsCharts) {
             putJsonArray("revenue_chart") {
                 intervals.mapNotNull(::revenueChartPoint).forEach(::add)
             }
+            putJsonArray("order_chart") {
+                intervals.mapNotNull(::orderChartPoint).forEach(::add)
+            }
         }
     }
-    if (stats.intervals == null && includeRevenueChart) {
+    if (stats.intervals == null && includeStatsCharts) {
         putJsonArray("revenue_chart") {
+        }
+        putJsonArray("order_chart") {
         }
     }
 }
@@ -98,6 +103,15 @@ private fun revenueChartPoint(interval: JsonObject): JsonObject? {
     }
 }
 
+private fun orderChartPoint(interval: JsonObject): JsonObject? {
+    val date = interval.chartDate() ?: return null
+    val value = interval.chartOrderCountValue() ?: return null
+    return buildJsonObject {
+        put("date", date)
+        put("value", value)
+    }
+}
+
 private fun JsonObject.chartDate(): String? {
     val intervalDate = stringValue("interval")
         ?.takeIf { it.isIsoLocalDate() }
@@ -111,6 +125,13 @@ private fun JsonObject.chartDate(): String? {
 private fun JsonObject.chartRevenueValue(): Double? {
     val subtotals = this["subtotals"]?.jsonObject ?: return null
     return REVENUE_CHART_VALUE_KEYS.firstNotNullOfOrNull { key ->
+        subtotals.stringValue(key)?.toDoubleOrNull() ?: subtotals[key]?.jsonPrimitive?.doubleOrNull
+    }
+}
+
+private fun JsonObject.chartOrderCountValue(): Double? {
+    val subtotals = this["subtotals"]?.jsonObject ?: return null
+    return ORDER_CHART_VALUE_KEYS.firstNotNullOfOrNull { key ->
         subtotals.stringValue(key)?.toDoubleOrNull() ?: subtotals[key]?.jsonPrimitive?.doubleOrNull
     }
 }
@@ -150,3 +171,4 @@ private const val HOURS_PER_DAY = 24
 private const val ISO_LOCAL_DATE_LENGTH = 10
 private val ISO_LOCAL_DATE_SHAPE = Regex("\\d{4}-\\d{2}-\\d{2}")
 private val REVENUE_CHART_VALUE_KEYS = listOf("net_revenue", "total_sales", "total_revenue", "gross_revenue")
+private val ORDER_CHART_VALUE_KEYS = listOf("orders_count", "order_count", "orders")

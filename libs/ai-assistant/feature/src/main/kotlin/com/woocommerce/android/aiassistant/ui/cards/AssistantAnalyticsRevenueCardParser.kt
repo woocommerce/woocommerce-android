@@ -33,11 +33,13 @@ private data class AnalyticsRevenueStructured(
     val currency: String? = null,
     val totals: JsonObject? = null,
     @SerialName("revenue_chart")
-    val revenueChart: List<RevenueChartPoint> = emptyList(),
+    val revenueChart: List<ChartPointPayload> = emptyList(),
+    @SerialName("order_chart")
+    val orderChart: List<ChartPointPayload> = emptyList(),
 )
 
 @Serializable
-private data class RevenueChartPoint(
+private data class ChartPointPayload(
     val date: String? = null,
     val value: JsonElement? = null,
 )
@@ -51,11 +53,12 @@ private fun AnalyticsRevenueStructured.toStatsCard(): AssistantCard.Stats? {
         revenueTotal = totals.stringValue(REVENUE_TOTAL_KEYS),
         revenueCurrency = currency.orEmpty(),
         orderCount = totals.stringValue(ORDER_COUNT_KEYS),
-        chartPoints = revenueChart.mapNotNull { it.toChartPoint() },
+        revenueChartPoints = revenueChart.mapNotNull { it.toChartPoint() },
+        orderChartPoints = orderChart.mapNotNull { it.toChartPoint() },
     )
 }
 
-private fun RevenueChartPoint.toChartPoint(): AssistantCard.Stats.ChartPoint? {
+private fun ChartPointPayload.toChartPoint(): AssistantCard.Stats.ChartPoint? {
     val validDate = date?.takeIf { it.isIsoLocalDate() } ?: return null
     val numericValue = value?.numericStringOrNull()?.toDoubleOrNull() ?: return null
     return AssistantCard.Stats.ChartPoint(date = validDate, value = numericValue)

@@ -88,6 +88,8 @@ internal fun AssistantCard.Stats.toStatsCardState(
     period = formatStatsPeriod(after, before, unavailableValue, locale),
     revenueTotal = formatStatsRevenue(currencyFormatter, unavailableValue),
     orderCount = orderCount.ifBlank { unavailableValue },
-    chartValues = chartPoints.map { it.value },
-    isTrendAvailable = chartPoints.isNotEmpty(),
+    revenueChartValues = revenueChartPoints.map { it.value },
+    orderChartValues = orderChartPoints.map { it.value },
+    isRevenueTrendAvailable = revenueChartPoints.isNotEmpty(),
+    isOrdersTrendAvailable = orderChartPoints.isNotEmpty(),
 )

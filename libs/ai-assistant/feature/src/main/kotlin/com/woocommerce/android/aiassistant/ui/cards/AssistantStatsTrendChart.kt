@@ -20,17 +20,17 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 
 @Composable
-internal fun AiAssistantStatsSparkline(
+internal fun AssistantStatsTrendChart(
     points: List<Double>,
     modifier: Modifier = Modifier,
 ) {
-    val normalizedPoints = normalizeStatsSparklinePoints(points)
+    val normalizedPoints = normalizeStatsTrendChartPoints(points)
     val lineColor = MaterialTheme.colorScheme.primary
     val guideColor = MaterialTheme.colorScheme.outlineVariant
     val fallbackColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
-        modifier = modifier.height(SPARKLINE_HEIGHT),
+        modifier = modifier.height(TREND_CHART_HEIGHT),
         contentAlignment = Alignment.Center,
     ) {
         if (normalizedPoints.isEmpty()) {
@@ -87,7 +87,7 @@ internal fun AiAssistantStatsSparkline(
     }
 }
 
-internal fun normalizeStatsSparklinePoints(points: List<Double>): List<Float> = when {
+internal fun normalizeStatsTrendChartPoints(points: List<Double>): List<Float> = when {
     points.isEmpty() -> emptyList()
     points.size == 1 -> listOf(CENTERED_POINT)
     else -> {
@@ -102,7 +102,7 @@ internal fun normalizeStatsSparklinePoints(points: List<Double>): List<Float> = 
     }
 }
 
-private val SPARKLINE_HEIGHT = 58.dp
+private val TREND_CHART_HEIGHT = 58.dp
 private const val CENTERED_POINT = 0.5f
 private const val SINGLE_POINT_START_FRACTION = 0.42f
 private const val SINGLE_POINT_END_FRACTION = 0.58f

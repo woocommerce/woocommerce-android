@@ -29,9 +29,13 @@ class AssistantAnalyticsRevenueCardParserTest {
                 revenueTotal = "123.45",
                 revenueCurrency = "USD",
                 orderCount = "8",
-                chartPoints = listOf(
+                revenueChartPoints = listOf(
                     AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 12.0),
                     AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 18.0),
+                ),
+                orderChartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 1.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 3.0),
                 ),
             )
         )
@@ -43,7 +47,7 @@ class AssistantAnalyticsRevenueCardParserTest {
 
         assertThat(card?.revenueTotal).isEqualTo("123.45")
         assertThat(card?.orderCount).isEqualTo("8")
-        assertThat(card?.chartPoints?.first()?.value).isEqualTo(0.0)
+        assertThat(card?.revenueChartPoints?.first()?.value).isEqualTo(0.0)
     }
 
     @Test
@@ -52,7 +56,8 @@ class AssistantAnalyticsRevenueCardParserTest {
 
         assertThat(card?.revenueTotal).isEmpty()
         assertThat(card?.orderCount).isEmpty()
-        assertThat(card?.chartPoints).hasSize(2)
+        assertThat(card?.revenueChartPoints).hasSize(2)
+        assertThat(card?.orderChartPoints).hasSize(2)
     }
 
     @Test
@@ -74,69 +79,83 @@ class AssistantAnalyticsRevenueCardParserTest {
 
     @Test
     fun `given empty revenue chart, when parsed, then chart points are empty`() {
-        val card = parser.parse(success(chart = buildJsonArray {}))
+        val card = parser.parse(success(revenueChart = buildJsonArray {}, orderChart = buildJsonArray {}))
 
-        assertThat(card?.chartPoints).isEmpty()
+        assertThat(card?.revenueChartPoints).isEmpty()
+        assertThat(card?.orderChartPoints).isEmpty()
     }
 
     @Test
     fun `given single revenue chart point, when parsed, then one chart point is preserved`() {
-        val card = parser.parse(success(chart = buildJsonArray { addChartPoint("2026-05-01", 12.0) }))
+        val card = parser.parse(success(revenueChart = buildJsonArray { addChartPoint("2026-05-01", 12.0) }))
 
-        assertThat(card?.chartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0))
+        assertThat(card?.revenueChartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0))
     }
 
     @Test
     fun `given all zero revenue chart points, when parsed, then zero points are preserved`() {
         val card = parser.parse(
             success(
-                chart = buildJsonArray {
+                revenueChart = buildJsonArray {
                     addChartPoint("2026-05-01", 0.0)
                     addChartPoint("2026-05-02", 0.0)
                 }
             )
         )
 
-        assertThat(card?.chartPoints?.map { it.value }).containsExactly(0.0, 0.0)
+        assertThat(card?.revenueChartPoints?.map { it.value }).containsExactly(0.0, 0.0)
     }
 
     @Test
     fun `given negative revenue chart points, when parsed, then negative points are preserved`() {
-        val card = parser.parse(success(chart = buildJsonArray { addChartPoint("2026-05-01", -5.0) }))
+        val card = parser.parse(success(revenueChart = buildJsonArray { addChartPoint("2026-05-01", -5.0) }))
 
-        assertThat(card?.chartPoints?.single()?.value).isEqualTo(-5.0)
+        assertThat(card?.revenueChartPoints?.single()?.value).isEqualTo(-5.0)
     }
 
     @Test
-    fun `given non numeric chart value, when parsed, then malformed point is skipped`() {
+    fun `given non numeric chart values, when parsed, then malformed points are skipped per series`() {
         val malformedPoint = buildJsonObject {
             put("date", "2026-05-01")
             put("value", "not-a-number")
         }
         val card = parser.parse(
             success(
-                chart = buildJsonArray {
+                revenueChart = buildJsonArray {
                     add(malformedPoint)
                     addChartPoint("2026-05-02", 8.0)
-                }
+                },
+                orderChart = buildJsonArray {
+                    addChartPoint("2026-05-01", 1.0)
+                    add(malformedPoint)
+                },
             )
         )
 
-        assertThat(card?.chartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-02", 8.0))
+        assertThat(card?.revenueChartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-02", 8.0))
+        assertThat(card?.orderChartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 1.0))
     }
 
     @Test
     fun `given malformed chart date, when parsed, then malformed point is skipped`() {
         val card = parser.parse(
             success(
-                chart = buildJsonArray {
+                revenueChart = buildJsonArray {
                     addChartPoint("2026-99-99", 12.0)
                     addChartPoint("2026-05-02", 8.0)
                 }
             )
         )
 
-        assertThat(card?.chartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-02", 8.0))
+        assertThat(card?.revenueChartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-02", 8.0))
+    }
+
+    @Test
+    fun `given missing order chart, when parsed, then order chart points are empty and revenue points remain`() {
+        val card = parser.parse(success(orderChart = null))
+
+        assertThat(card?.revenueChartPoints).hasSize(2)
+        assertThat(card?.orderChartPoints).isEmpty()
     }
 
     @Test
@@ -153,9 +172,13 @@ class AssistantAnalyticsRevenueCardParserTest {
         firstChartValue: Any = 12.0,
         includeTotals: Boolean = true,
         totals: kotlinx.serialization.json.JsonObject? = null,
-        chart: kotlinx.serialization.json.JsonArray = buildJsonArray {
+        revenueChart: kotlinx.serialization.json.JsonArray = buildJsonArray {
             addChartPoint("2026-05-01", firstChartValue)
             addChartPoint("2026-05-02", 18.0)
+        },
+        orderChart: kotlinx.serialization.json.JsonArray? = buildJsonArray {
+            addChartPoint("2026-05-01", 1.0)
+            addChartPoint("2026-05-02", 3.0)
         },
     ) = ToolResult.Success(
         toolCallId = "call-1",
@@ -172,7 +195,8 @@ class AssistantAnalyticsRevenueCardParserTest {
                     }
                 )
             }
-            put("revenue_chart", chart)
+            put("revenue_chart", revenueChart)
+            orderChart?.let { put("order_chart", it) }
         },
     )
 
