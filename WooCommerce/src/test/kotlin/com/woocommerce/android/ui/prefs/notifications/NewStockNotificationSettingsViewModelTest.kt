@@ -38,10 +38,20 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
 
         val viewState = viewModel.viewState.getOrAwaitValue()
 
+        assertThat(viewState.notificationsEnabled).isTrue()
         assertThat(viewState.lowStockNotificationsEnabled).isTrue()
         assertThat(viewState.outOfStockNotificationsEnabled).isTrue()
         assertThat(viewState.backorderNotificationsEnabled).isTrue()
         assertThat(viewState.defaultLowStockThreshold).isEqualTo(5)
+    }
+
+    @Test
+    fun `when notifications switch is changed, then update state`() = testBlocking {
+        setup()
+
+        viewModel.onNotificationsEnabledChanged(false)
+
+        assertThat(viewModel.viewState.getOrAwaitValue().notificationsEnabled).isFalse()
     }
 
     @Test

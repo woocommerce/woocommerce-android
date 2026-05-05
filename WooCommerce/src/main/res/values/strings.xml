@@ -2288,6 +2288,8 @@
     <string name="settings_notifs_new_orders_threshold">Threshold (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_stock_enable_title">Enable stock notifications</string>
+    <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
     <string name="settings_notifs_stock_low_stock_description">When a product variant reaches its low stock threshold.</string>
     <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store default of &lt;b&gt;%1$d&lt;/b&gt;. &lt;a href=\'\'&gt;Edit default threshold&lt;/a&gt;</string>

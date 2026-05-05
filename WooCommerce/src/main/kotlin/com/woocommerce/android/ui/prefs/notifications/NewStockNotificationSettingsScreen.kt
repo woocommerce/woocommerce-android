@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.prefs.notifications
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,13 +13,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -27,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsViewModel.StockNotificationType
 import com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsViewModel.ViewState
@@ -37,6 +45,7 @@ fun NewStockNotificationSettingsScreen(viewModel: NewStockNotificationSettingsVi
     viewModel.viewState.observeAsState().value?.let { viewState ->
         NewStockNotificationSettingsScreen(
             viewState = viewState,
+            onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
             onStockNotificationEnabledChanged = viewModel::onStockNotificationEnabledChanged,
             onEditStoreSettingsClicked = viewModel::onEditStoreSettingsClicked
         )
@@ -46,6 +55,7 @@ fun NewStockNotificationSettingsScreen(viewModel: NewStockNotificationSettingsVi
 @Composable
 private fun NewStockNotificationSettingsScreen(
     viewState: ViewState,
+    onNotificationsEnabledChanged: (Boolean) -> Unit,
     onStockNotificationEnabledChanged: (StockNotificationType, Boolean) -> Unit,
     onEditStoreSettingsClicked: () -> Unit
 ) {
@@ -60,55 +70,110 @@ private fun NewStockNotificationSettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             EnableNotificationsCard(
-                title = stringResource(R.string.settings_notifs_stock_low_stock_title),
-                isEnabled = viewState.lowStockNotificationsEnabled,
-                onEnabledChanged = {
-                    onStockNotificationEnabledChanged(StockNotificationType.LowStock, it)
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                descriptionContent = {
-                    Text(
-                        text = stringResource(R.string.settings_notifs_stock_low_stock_description),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                    LowStockDetails(
-                        defaultLowStockThreshold = viewState.defaultLowStockThreshold,
-                        onEditStoreSettingsClicked = onEditStoreSettingsClicked
-                    )
-                }
+                title = stringResource(R.string.settings_notifs_stock_enable_title),
+                description = stringResource(R.string.settings_notifs_stock_enable_description),
+                isEnabled = viewState.notificationsEnabled,
+                onEnabledChanged = onNotificationsEnabledChanged,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             )
-            EnableNotificationsCard(
+            StockNotificationOption(
+                title = stringResource(R.string.settings_notifs_stock_low_stock_title),
+                description = stringResource(R.string.settings_notifs_stock_low_stock_description),
+                checked = viewState.lowStockNotificationsEnabled,
+                enabled = viewState.notificationsEnabled,
+                onCheckedChange = {
+                    onStockNotificationEnabledChanged(StockNotificationType.LowStock, it)
+                }
+            ) {
+                LowStockDetails(
+                    defaultLowStockThreshold = viewState.defaultLowStockThreshold,
+                    enabled = viewState.notificationsEnabled,
+                    onEditStoreSettingsClicked = onEditStoreSettingsClicked
+                )
+            }
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_out_of_stock_title),
                 description = stringResource(R.string.settings_notifs_stock_out_of_stock_description),
-                isEnabled = viewState.outOfStockNotificationsEnabled,
-                onEnabledChanged = {
+                checked = viewState.outOfStockNotificationsEnabled,
+                enabled = viewState.notificationsEnabled,
+                onCheckedChange = {
                     onStockNotificationEnabledChanged(StockNotificationType.OutOfStock, it)
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                }
             )
-            EnableNotificationsCard(
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_backorder_title),
                 description = stringResource(R.string.settings_notifs_stock_backorder_description),
-                isEnabled = viewState.backorderNotificationsEnabled,
-                onEnabledChanged = {
+                checked = viewState.backorderNotificationsEnabled,
+                enabled = viewState.notificationsEnabled,
+                onCheckedChange = {
                     onStockNotificationEnabledChanged(StockNotificationType.Backorder, it)
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                }
             )
         }
     }
 }
 
 @Composable
+private fun StockNotificationOption(
+    title: String,
+    description: String,
+    checked: Boolean,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit = {}
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = enabled) { onCheckedChange(!checked) }
+            .padding(horizontal = 16.dp, vertical = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val titleColor = MaterialTheme.colorScheme.onSurface.let {
+            if (enabled) it else it.copy(alpha = 0.38f)
+        }
+        val descriptionColor = MaterialTheme.colorScheme.onSurfaceVariant.let {
+            if (enabled) it else it.copy(alpha = 0.38f)
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = titleColor
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = descriptionColor,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            content()
+        }
+        WCSwitch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled
+        )
+    }
+}
+
+@Composable
 private fun LowStockDetails(
     defaultLowStockThreshold: Int,
+    enabled: Boolean,
     onEditStoreSettingsClicked: () -> Unit
 ) {
     val text = clickableAnnotatedStringRes(
         stringResId = R.string.settings_notifs_stock_low_stock_threshold,
-        onUrlClick = { onEditStoreSettingsClicked() },
+        onUrlClick = {
+            if (enabled) {
+                onEditStoreSettingsClicked()
+            }
+        },
         defaultLowStockThreshold
     )
     val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
@@ -146,7 +211,9 @@ private fun LowStockDetails(
         inlineContent = inlineContent,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-        modifier = Modifier.padding(top = 12.dp)
+        modifier = Modifier
+            .padding(top = 12.dp)
+            .alpha(if (enabled) 1f else 0.38f)
     )
 }
 
@@ -157,6 +224,7 @@ private fun NewStockNotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NewStockNotificationSettingsScreen(
             viewState = ViewState(),
+            onNotificationsEnabledChanged = {},
             onStockNotificationEnabledChanged = { _, _ -> },
             onEditStoreSettingsClicked = {}
         )

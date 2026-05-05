@@ -22,6 +22,10 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
 
+    fun onNotificationsEnabledChanged(isEnabled: Boolean) {
+        _viewState.update { it.copy(notificationsEnabled = isEnabled) }
+    }
+
     fun onStockNotificationEnabledChanged(type: StockNotificationType, isEnabled: Boolean) {
         _viewState.update {
             when (type) {
@@ -42,6 +46,7 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val notificationsEnabled: Boolean = true,
         val lowStockNotificationsEnabled: Boolean = true,
         val outOfStockNotificationsEnabled: Boolean = true,
         val backorderNotificationsEnabled: Boolean = true,
