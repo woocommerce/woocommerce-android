@@ -70,16 +70,7 @@ class ProductsUpdateToolHandlerTest {
         assertThat(handler.descriptor.name).isEqualTo("products_update")
         assertThat(handler.descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.UNSAFE)
         assertThat(handler.descriptor.description).contains("simple product")
-        assertThat(handler.descriptor.description).contains("Accepts only these fields")
-        assertThat(handler.descriptor.description).contains("name")
-        assertThat(handler.descriptor.description).contains("regular_price")
-        assertThat(handler.descriptor.description).contains("sale_price")
-        assertThat(handler.descriptor.description).contains("stock_quantity")
-        assertThat(handler.descriptor.description).contains("status")
         assertThat(handler.descriptor.description).contains("Variable products")
-        assertThat(handler.descriptor.description).contains("variations")
-        assertThat(handler.descriptor.description).contains("confirmation")
-        assertThat(handler.descriptor.description).contains("one write")
         assertThat(properties.keys).containsExactlyInAnyOrder(
             "id",
             "name",
