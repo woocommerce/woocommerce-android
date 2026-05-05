@@ -281,16 +281,16 @@ class AssistantUiStateTest {
     }
 
     @Test
-    fun `given assistant card, when card segment is created, then card is preserved`() {
+    fun `given assistant cards, when card group segment is created, then cards are preserved`() {
         val card = orderCard()
 
-        val segment: AssistantUiSegment = AssistantUiSegment.Card(card)
+        val segment: AssistantUiSegment = AssistantUiSegment.CardGroup(listOf(card))
 
-        assertThat(segment).isEqualTo(AssistantUiSegment.Card(card))
+        assertThat(segment).isEqualTo(AssistantUiSegment.CardGroup(listOf(card)))
     }
 
     @Test
-    fun `given assistant message, when text and card segments are used, then segment order is preserved`() {
+    fun `given assistant message, when text and card group segments are used, then segment order is preserved`() {
         val card = orderCard()
 
         val message = AssistantUiMessage(
@@ -298,13 +298,13 @@ class AssistantUiStateTest {
             role = AssistantUiMessage.Role.ASSISTANT,
             segments = listOf(
                 AssistantUiSegment.Text("Here is the order."),
-                AssistantUiSegment.Card(card),
+                AssistantUiSegment.CardGroup(listOf(card)),
             ),
         )
 
         assertThat(message.segments).containsExactly(
             AssistantUiSegment.Text("Here is the order."),
-            AssistantUiSegment.Card(card),
+            AssistantUiSegment.CardGroup(listOf(card)),
         )
     }
 

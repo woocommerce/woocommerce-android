@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -419,8 +420,8 @@ private fun AssistantMessageSegment(
                 AssistantTextBubble(text = segment.text, isUser = isUser)
             }
         }
-        is AssistantUiSegment.Card -> AssistantCardSegment(
-            card = segment.card,
+        is AssistantUiSegment.CardGroup -> AssistantCardGroupSegment(
+            cards = segment.cards,
             assistantCardRenderer = assistantCardRenderer,
             onCardAction = onCardAction,
         )
@@ -434,12 +435,12 @@ private fun AssistantMessageSegment(
 }
 
 @Composable
-private fun AssistantCardSegment(
-    card: AssistantCard,
+private fun AssistantCardGroupSegment(
+    cards: List<AssistantCard>,
     assistantCardRenderer: AssistantCardRenderer?,
     onCardAction: (AssistantCardAction) -> Unit,
 ) {
-    if (assistantCardRenderer == null) return
+    if (assistantCardRenderer == null || cards.isEmpty()) return
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -447,22 +448,50 @@ private fun AssistantCardSegment(
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        when (card) {
-            is AssistantCard.Order -> assistantCardRenderer.OrderCard(
-                card = card,
-                onAction = onCardAction,
-                modifier = Modifier.fillMaxWidth(),
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(cards.groupHeaderRes()),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
             )
-            is AssistantCard.Product -> assistantCardRenderer.ProductCard(
-                card = card,
-                onAction = onCardAction,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            cards.forEachIndexed { index, card ->
+                when (card) {
+                    is AssistantCard.Order -> assistantCardRenderer.OrderCard(
+                        card = card,
+                        onAction = onCardAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    is AssistantCard.Product -> assistantCardRenderer.ProductCard(
+                        card = card,
+                        onAction = onCardAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                if (index < cards.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 14.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
+                }
+            }
         }
     }
 }
 
 private val ASSISTANT_CARD_CORNER_RADIUS = 12.dp
+
+private fun List<AssistantCard>.groupHeaderRes(): Int {
+    val containsOrders = any { it is AssistantCard.Order }
+    val containsProducts = any { it is AssistantCard.Product }
+    return when {
+        containsOrders && !containsProducts -> R.string.assistant_chat_card_group_orders
+        containsProducts && !containsOrders -> R.string.assistant_chat_card_group_products
+        else -> R.string.assistant_chat_card_group_generic
+    }
+}
 
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
@@ -667,9 +696,9 @@ private fun AssistantChatScreenPreview() {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
                         AssistantUiSegment.Text("Here is order #3479."),
-                        AssistantUiSegment.Card(sampleOrderCard()),
+                        AssistantUiSegment.CardGroup(listOf(sampleOrderCard())),
                         AssistantUiSegment.Text("Here is a matching product."),
-                        AssistantUiSegment.Card(sampleProductCard()),
+                        AssistantUiSegment.CardGroup(listOf(sampleProductCard())),
                     ),
                 ),
             )

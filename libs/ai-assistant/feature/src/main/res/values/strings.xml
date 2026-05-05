@@ -63,6 +63,9 @@
     <string name="assistant_chat_tool_activity_cards">Preparing cards</string>
     <string name="assistant_chat_tool_activity_generic">Checking your store</string>
     <string name="assistant_chat_tool_activity_content_description">Assistant is working: %1$s</string>
+    <string name="assistant_chat_card_group_orders">Orders</string>
+    <string name="assistant_chat_card_group_products">Products</string>
+    <string name="assistant_chat_card_group_generic">Cards</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>
     <string name="assistant_chat_send">Send</string>
     <string name="assistant_chat_stop">Stop</string>

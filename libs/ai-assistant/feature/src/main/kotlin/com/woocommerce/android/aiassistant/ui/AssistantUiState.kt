@@ -99,7 +99,7 @@ sealed interface AssistantUiSegment {
 
     data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
 
-    data class Card(val card: AssistantCard) : AssistantUiSegment
+    data class CardGroup(val cards: List<AssistantCard>) : AssistantUiSegment
 
     data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
 }
@@ -109,7 +109,7 @@ internal val AssistantUiMessage.hasVisibleAssistantContent: Boolean
         when (segment) {
             is AssistantUiSegment.Text -> segment.text.isNotEmpty()
             is AssistantUiSegment.ConfirmationCard -> true
-            is AssistantUiSegment.Card -> true
+            is AssistantUiSegment.CardGroup -> segment.cards.isNotEmpty()
             is AssistantUiSegment.ToolActivity -> true
         }
     }

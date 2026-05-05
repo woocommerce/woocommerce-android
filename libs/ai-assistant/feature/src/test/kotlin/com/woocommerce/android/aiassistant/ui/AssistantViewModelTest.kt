@@ -646,7 +646,7 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given active assistant bubble, when cards arrive, then card segments are appended`() = runTest {
+    fun `given active assistant bubble, when cards arrive, then grouped card segment is appended`() = runTest {
         viewModel.onSendMessage("Show order 123")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
         val orderCard = givenOrderCard(id = "123", number = "#123")
@@ -660,7 +660,7 @@ class AssistantViewModelTest {
                 role = AssistantUiMessage.Role.ASSISTANT,
                 segments = listOf(
                     AssistantUiSegment.Text(""),
-                    AssistantUiSegment.Card(orderCard),
+                    AssistantUiSegment.CardGroup(listOf(orderCard)),
                 ),
             )
         )
@@ -693,7 +693,7 @@ class AssistantViewModelTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
                         AssistantUiSegment.Text("Here is the order."),
-                        AssistantUiSegment.Card(orderCard),
+                        AssistantUiSegment.CardGroup(listOf(orderCard)),
                         AssistantUiSegment.Text("Anything else?"),
                     ),
                 )
@@ -717,7 +717,7 @@ class AssistantViewModelTest {
         )
         advanceUntilIdle()
 
-        assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
+        assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.CardGroup>())
             .isEmpty()
     }
 
@@ -732,12 +732,33 @@ class AssistantViewModelTest {
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateOrder, secondOrder)))
         advanceUntilIdle()
 
-        val cardSegments = viewModel.uiState.value.messages.last().segments
-            .filterIsInstance<AssistantUiSegment.Card>()
+        val cardGroups = viewModel.uiState.value.messages.last().segments
+            .filterIsInstance<AssistantUiSegment.CardGroup>()
 
-        assertThat(cardSegments).containsExactly(
-            AssistantUiSegment.Card(firstOrder),
-            AssistantUiSegment.Card(secondOrder),
+        assertThat(cardGroups).containsExactly(
+            AssistantUiSegment.CardGroup(listOf(firstOrder, secondOrder)),
+        )
+    }
+
+    @Test
+    fun `given completed tool activity separates card batches, when cards arrive, then batches merge`() = runTest {
+        viewModel.onSendMessage("Show matching cards")
+        val firstOrder = givenOrderCard(id = "123", number = "#123")
+        val secondOrder = givenOrderCard(id = "456", number = "#456")
+
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "show_cards"))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstOrder)))
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-2", toolName = "show_cards"))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-2"))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(secondOrder)))
+        advanceUntilIdle()
+
+        val cardGroups = viewModel.uiState.value.messages.last().segments
+            .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+        assertThat(cardGroups).containsExactly(
+            AssistantUiSegment.CardGroup(listOf(firstOrder, secondOrder)),
         )
     }
 
@@ -752,8 +773,7 @@ class AssistantViewModelTest {
 
         assertThat(viewModel.uiState.value.messages.last().segments)
             .contains(
-                AssistantUiSegment.Card(order),
-                AssistantUiSegment.Card(product),
+                AssistantUiSegment.CardGroup(listOf(order, product)),
             )
     }
 
@@ -777,8 +797,10 @@ class AssistantViewModelTest {
             )
             advanceUntilIdle()
 
-            assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
-                .isEmpty()
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).isEmpty()
         }
 
     @Test
