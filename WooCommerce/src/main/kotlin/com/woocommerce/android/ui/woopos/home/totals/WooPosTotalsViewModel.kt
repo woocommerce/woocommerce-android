@@ -345,8 +345,29 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
-            retryPaymentCollectionFromScratch()
+            if (lastFailedPaymentWasTapToPay()) {
+                returnToCheckoutAfterTapToPayFailed()
+            } else {
+                retryPaymentCollectionFromScratch()
+            }
         }
+    }
+
+    private fun lastFailedPaymentWasTapToPay(): Boolean =
+        cardReaderPaymentController?.paymentState?.value is
+            CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
+
+    private suspend fun returnToCheckoutAfterTapToPayFailed() {
+        cardReaderPaymentController?.stop()
+        cardReaderPaymentController = null
+        isTapToPayPayment = false
+        isTTPPaymentInProgress = false
+        childrenToParentEventSender.sendToParent(
+            ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
+        )
+        val order = totalsRepository.getOrderById(dataState.value.orderId)
+        checkNotNull(order)
+        uiState.value = buildWooPosTotalsViewState(order)
     }
 
     private fun handleRetryFailedTransactionClicked() {
@@ -370,15 +391,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     if (sdkRetry != null) {
                         sdkRetry.invoke()
                     } else {
-                        cardReaderPaymentController?.stop()
-                        cardReaderPaymentController = null
-                        childrenToParentEventSender.sendToParent(
-                            ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
-                        )
-                        val order = totalsRepository.getOrderById(dataState.value.orderId)
-                        checkNotNull(order)
-                        uiState.value = buildWooPosTotalsViewState(order)
-                        attemptTapToPayConnect(dataState.value.orderId)
+                        returnToCheckoutAfterTapToPayFailed()
                     }
                 }
 
