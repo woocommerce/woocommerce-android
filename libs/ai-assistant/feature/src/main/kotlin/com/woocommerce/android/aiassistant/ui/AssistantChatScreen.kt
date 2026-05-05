@@ -58,6 +58,8 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewFie
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
@@ -465,18 +467,11 @@ private fun AssistantCardGroupSegment(
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             cards.forEachIndexed { index, card ->
-                when (card) {
-                    is AssistantCard.Order -> assistantCardRenderer.OrderCard(
-                        card = card,
-                        onAction = onCardAction,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    is AssistantCard.Product -> assistantCardRenderer.ProductCard(
-                        card = card,
-                        onAction = onCardAction,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+                assistantCardRenderer.Card(
+                    card = card,
+                    onAction = onCardAction,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 if (index < cards.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 14.dp),
@@ -493,9 +488,11 @@ private val ASSISTANT_CARD_CORNER_RADIUS = 12.dp
 private fun List<AssistantCard>.groupHeaderRes(): Int {
     val containsOrders = any { it is AssistantCard.Order }
     val containsProducts = any { it is AssistantCard.Product }
+    val containsStats = any { it is AssistantCard.Stats }
     return when {
-        containsOrders && !containsProducts -> R.string.assistant_chat_card_group_orders
-        containsProducts && !containsOrders -> R.string.assistant_chat_card_group_products
+        containsOrders && !containsProducts && !containsStats -> R.string.assistant_chat_card_group_orders
+        containsProducts && !containsOrders && !containsStats -> R.string.assistant_chat_card_group_products
+        containsStats && !containsOrders && !containsProducts -> R.string.assistant_chat_card_group_stats
         else -> R.string.assistant_chat_card_group_generic
     }
 }
@@ -663,7 +660,7 @@ private fun AssistantCardGroupSegmentPreview() {
     Surface(color = MaterialTheme.colorScheme.background) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
-                cards = listOf(sampleOrderCard(), sampleProductCard()),
+                cards = listOf(sampleOrderCard(), sampleProductCard(), sampleStatsCard()),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
                 onCardAction = {},
             )
@@ -749,6 +746,8 @@ private fun AssistantChatScreenPreview() {
                         AssistantUiSegment.CardGroup(listOf(sampleOrderCard())),
                         AssistantUiSegment.Text("Here is a matching product."),
                         AssistantUiSegment.CardGroup(listOf(sampleProductCard())),
+                        AssistantUiSegment.Text("Here are this week's sales."),
+                        AssistantUiSegment.CardGroup(listOf(sampleStatsCard())),
                     ),
                 ),
             )
@@ -810,9 +809,21 @@ private fun AssistantChatScreenConfirmationPreview() {
 
 private object PreviewAssistantCardRenderer : AssistantCardRenderer {
     @Composable
-    override fun OrderCard(
-        card: AssistantCard.Order,
+    override fun Card(
+        card: AssistantCard,
         onAction: (AssistantCardAction) -> Unit,
+        modifier: Modifier,
+    ) {
+        when (card) {
+            is AssistantCard.Order -> PreviewOrderCard(card, modifier)
+            is AssistantCard.Product -> PreviewProductCard(card, modifier)
+            is AssistantCard.Stats -> PreviewStatsCard(card, modifier)
+        }
+    }
+
+    @Composable
+    private fun PreviewOrderCard(
+        card: AssistantCard.Order,
         modifier: Modifier,
     ) {
         Column(
@@ -836,9 +847,8 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
     }
 
     @Composable
-    override fun ProductCard(
+    private fun PreviewProductCard(
         card: AssistantCard.Product,
-        onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
         Column(
@@ -860,6 +870,26 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
             )
         }
     }
+
+    @Composable
+    private fun PreviewStatsCard(
+        card: AssistantCard.Stats,
+        modifier: Modifier,
+    ) {
+        AiAssistantStatsCard(
+            state = AiAssistantStatsCardState(
+                period = "${card.after} - ${card.before}",
+                revenueTotal = listOf(card.revenueTotal, card.revenueCurrency)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" "),
+                orderCount = card.orderCount,
+                chartValues = card.chartPoints.map { it.value },
+                isTrendAvailable = card.chartPoints.isNotEmpty(),
+            ),
+            onClick = {},
+            modifier = modifier,
+        )
+    }
 }
 
 private fun sampleOrderCard() = AssistantCard.Order(
@@ -880,6 +910,19 @@ private fun sampleProductCard() = AssistantCard.Product(
     stockStatus = "instock",
     status = "publish",
     imageUrl = "https://example.com/socks.png",
+)
+
+private fun sampleStatsCard() = AssistantCard.Stats(
+    after = "2026-05-01",
+    before = "2026-05-07",
+    revenueTotal = "123.45",
+    revenueCurrency = "USD",
+    orderCount = "8",
+    chartPoints = listOf(
+        AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
+        AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
+    ),
 )
 
 private val AssistantCard.Order.unformattedTotal: String

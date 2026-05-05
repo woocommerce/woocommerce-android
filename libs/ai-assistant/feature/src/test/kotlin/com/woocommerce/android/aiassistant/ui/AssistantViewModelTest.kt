@@ -812,6 +812,26 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given duplicate stats card date ranges across one turn, when cards arrive, then first seen card is kept`() =
+        runTest {
+            viewModel.onSendMessage("Show sales")
+            val firstStats = givenStatsCard(after = "2026-05-01", before = "2026-05-07", revenueTotal = "123.45")
+            val duplicateStats = givenStatsCard(after = "2026-05-01", before = "2026-05-07", revenueTotal = "999.99")
+            val secondStats = givenStatsCard(after = "2026-05-08", before = "2026-05-14", revenueTotal = "456.78")
+
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstStats)))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateStats, secondStats)))
+            advanceUntilIdle()
+
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).containsExactly(
+                AssistantUiSegment.CardGroup(listOf(firstStats, secondStats)),
+            )
+        }
+
+    @Test
     fun `given finished history contains card shaped tool json, when reduced, then no card segment is created`() =
         runTest {
             viewModel.onSendMessage("Show analytics")
@@ -1292,6 +1312,21 @@ class AssistantViewModelTest {
         stockStatus = "instock",
         status = "publish",
         imageUrl = "https://example.com/socks.png",
+    )
+
+    private fun givenStatsCard(
+        after: String,
+        before: String,
+        revenueTotal: String,
+    ) = AssistantCard.Stats(
+        after = after,
+        before = before,
+        revenueTotal = revenueTotal,
+        revenueCurrency = "USD",
+        orderCount = "8",
+        chartPoints = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        ),
     )
 
     private class FakeAssistantRuntime : AssistantRuntime {

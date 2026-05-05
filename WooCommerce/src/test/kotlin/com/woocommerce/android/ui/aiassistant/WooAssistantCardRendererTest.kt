@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.aiassistant
 import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -99,6 +100,65 @@ class WooAssistantCardRendererTest {
         assertThat(model.statusColor).isEqualTo(R.color.tag_bg_processing)
     }
 
+    @Test
+    fun `given assistant stats card, when mapped, then period revenue order count and chart values are displayed`() {
+        whenever(currencyFormatter.formatCurrency("123.45", "USD")).thenReturn("$123.45")
+
+        val model = statsCard(revenueCurrency = "USD").toStatsCardState(currencyFormatter, Locale.US)
+
+        assertThat(model.period).isEqualTo("May 1 - May 7, 2026")
+        assertThat(model.revenueTotal).isEqualTo("$123.45")
+        assertThat(model.orderCount).isEqualTo("8")
+        assertThat(model.chartValues).containsExactly(12.0, 18.0, 9.0)
+        assertThat(model.isTrendAvailable).isTrue()
+        verify(currencyFormatter).formatCurrency("123.45", "USD")
+    }
+
+    @Test
+    fun `given assistant stats card with one day range, when mapped, then single date is displayed`() {
+        assertThat(statsCard(after = "2026-05-01", before = "2026-05-01")
+            .toStatsCardState(currencyFormatter, Locale.US).period)
+            .isEqualTo("May 1, 2026")
+    }
+
+    @Test
+    fun `given assistant stats card with blank metrics, when mapped, then unavailable fallback is used`() {
+        val model = statsCard(revenueTotal = "", orderCount = "", chartPoints = emptyList())
+            .toStatsCardState(currencyFormatter, Locale.US)
+
+        assertThat(model).isEqualTo(
+            AiAssistantStatsCardState(
+                period = "May 1 - May 7, 2026",
+                revenueTotal = "Unavailable",
+                orderCount = "Unavailable",
+                chartValues = emptyList(),
+                isTrendAvailable = false,
+            )
+        )
+    }
+
+    @Test
+    fun `given assistant stats card with no chart points, when mapped, then trend is unavailable`() {
+        val model = statsCard(chartPoints = emptyList()).toStatsCardState(currencyFormatter, Locale.US)
+
+        assertThat(model.chartValues).isEmpty()
+        assertThat(model.isTrendAvailable).isFalse()
+    }
+
+    @Test
+    fun `given assistant stats card with invalid dates, when mapped, then raw date range is preserved`() {
+        assertThat(statsCard(after = "bad", before = "2026-05-07")
+            .toStatsCardState(currencyFormatter, Locale.US).period)
+            .isEqualTo("bad - 2026-05-07")
+    }
+
+    @Test
+    fun `given assistant stats card without currency, when mapped, then raw revenue is used`() {
+        assertThat(statsCard(revenueCurrency = "")
+            .toStatsCardState(currencyFormatter, Locale.US).revenueTotal)
+            .isEqualTo("123.45")
+    }
+
     private fun orderCard(
         status: String = "processing",
         currency: String = "USD",
@@ -124,5 +184,25 @@ class WooAssistantCardRendererTest {
         stockStatus = "instock",
         status = "publish",
         imageUrl = "https://example.com/socks.png",
+    )
+
+    private fun statsCard(
+        after: String = "2026-05-01",
+        before: String = "2026-05-07",
+        revenueTotal: String = "123.45",
+        revenueCurrency: String = "",
+        orderCount: String = "8",
+        chartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+            AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
+            AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
+        ),
+    ) = AssistantCard.Stats(
+        after = after,
+        before = before,
+        revenueTotal = revenueTotal,
+        revenueCurrency = revenueCurrency,
+        orderCount = orderCount,
+        chartPoints = chartPoints,
     )
 }

@@ -60,7 +60,12 @@
     <string name="assistant_chat_tool_activity_content_description">Assistant is working: %1$s</string>
     <string name="assistant_chat_card_group_orders">Orders</string>
     <string name="assistant_chat_card_group_products">Products</string>
+    <string name="assistant_chat_card_group_stats">Analytics</string>
     <string name="assistant_chat_card_group_generic">Cards</string>
+    <string name="assistant_stats_card_revenue_label">Revenue</string>
+    <string name="assistant_stats_card_orders_label">Orders</string>
+    <string name="assistant_stats_card_trend_unavailable">Trend unavailable</string>
+    <string name="assistant_stats_card_open_content_description">Open analytics for %1$s</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>
     <string name="assistant_chat_send">Send</string>
     <string name="assistant_chat_send_content_description">Send message</string>

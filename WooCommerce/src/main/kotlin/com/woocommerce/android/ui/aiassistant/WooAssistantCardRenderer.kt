@@ -9,6 +9,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
+import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.Order
@@ -21,14 +23,30 @@ import com.woocommerce.android.ui.products.compose.ProductSummaryRowInfo
 import com.woocommerce.android.util.CurrencyFormatter
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Date
+import java.util.Locale
 
 class WooAssistantCardRenderer(
     private val currencyFormatter: CurrencyFormatter,
 ) : AssistantCardRenderer {
     @Composable
-    override fun OrderCard(
+    override fun Card(
+        card: AssistantCard,
+        onAction: (AssistantCardAction) -> Unit,
+        modifier: Modifier,
+    ) {
+        when (card) {
+            is AssistantCard.Order -> OrderCard(card, onAction, modifier)
+            is AssistantCard.Product -> ProductCard(card, onAction, modifier)
+            is AssistantCard.Stats -> StatsCard(card, modifier)
+        }
+    }
+
+    @Composable
+    private fun OrderCard(
         card: AssistantCard.Order,
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
@@ -42,7 +60,7 @@ class WooAssistantCardRenderer(
     }
 
     @Composable
-    override fun ProductCard(
+    private fun ProductCard(
         card: AssistantCard.Product,
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
@@ -58,6 +76,18 @@ class WooAssistantCardRenderer(
             ProductSummaryRowInfo(rowModel.stockStatusPriceText)
             rowModel.skuText?.let { sku -> ProductSummaryRowInfo(sku) }
         }
+    }
+
+    @Composable
+    private fun StatsCard(
+        card: AssistantCard.Stats,
+        modifier: Modifier,
+    ) {
+        AiAssistantStatsCard(
+            state = card.toStatsCardState(currencyFormatter),
+            onClick = {},
+            modifier = modifier,
+        )
     }
 }
 
@@ -150,3 +180,53 @@ internal fun AssistantCard.Product.toProductSummaryRowModel(
             ?.let { context.getString(R.string.orderdetail_product_lineitem_sku_value, it) },
     )
 }
+
+// ---------- Stats card ----------
+
+private const val ASSISTANT_STATS_UNAVAILABLE = "Unavailable"
+private const val ASSISTANT_STATS_PERIOD_SEPARATOR = " - "
+
+private fun formatStatsPeriod(
+    after: String,
+    before: String,
+    locale: Locale = Locale.getDefault(),
+): String {
+    val start = after.toStatsLocalDate()
+    val end = before.toStatsLocalDate()
+    return when {
+        start == null || end == null -> listOf(after, before)
+            .filter { it.isNotBlank() }
+            .joinToString(ASSISTANT_STATS_PERIOD_SEPARATOR)
+            .ifBlank { ASSISTANT_STATS_UNAVAILABLE }
+        start == end -> start.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale))
+        start.year == end.year -> listOf(
+            start.format(DateTimeFormatter.ofPattern("MMM d", locale)),
+            end.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale)),
+        ).joinToString(ASSISTANT_STATS_PERIOD_SEPARATOR)
+        else -> listOf(
+            start.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale)),
+            end.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale)),
+        ).joinToString(ASSISTANT_STATS_PERIOD_SEPARATOR)
+    }
+}
+
+private fun String.toStatsLocalDate(): LocalDate? =
+    runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.getOrNull()
+
+private fun AssistantCard.Stats.formatStatsRevenue(currencyFormatter: CurrencyFormatter): String =
+    when {
+        revenueTotal.isBlank() -> ASSISTANT_STATS_UNAVAILABLE
+        revenueCurrency.isBlank() -> revenueTotal
+        else -> currencyFormatter.formatCurrency(revenueTotal, revenueCurrency)
+    }
+
+internal fun AssistantCard.Stats.toStatsCardState(
+    currencyFormatter: CurrencyFormatter,
+    locale: Locale = Locale.getDefault(),
+): AiAssistantStatsCardState = AiAssistantStatsCardState(
+    period = formatStatsPeriod(after, before, locale),
+    revenueTotal = formatStatsRevenue(currencyFormatter),
+    orderCount = orderCount.ifBlank { ASSISTANT_STATS_UNAVAILABLE },
+    chartValues = chartPoints.map { it.value },
+    isTrendAvailable = chartPoints.isNotEmpty(),
+)

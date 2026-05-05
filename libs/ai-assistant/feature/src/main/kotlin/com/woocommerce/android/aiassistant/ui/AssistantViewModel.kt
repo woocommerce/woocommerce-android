@@ -334,6 +334,7 @@ class AssistantViewModel @AssistedInject constructor(
         when (this) {
             is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
             is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+            is AssistantCard.Stats -> AssistantCardKey(family = "stats", id = "$after:$before")
         }
 
     private fun appendAssistantText(delta: String) {

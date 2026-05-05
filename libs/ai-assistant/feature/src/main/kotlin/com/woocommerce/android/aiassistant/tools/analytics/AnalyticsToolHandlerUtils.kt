@@ -4,6 +4,9 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import java.time.DayOfWeek
@@ -53,14 +56,26 @@ internal fun analyticsStatsSummary(
     after: String,
     before: String,
     stats: AnalyticsStats,
+    currency: String? = null,
+    includeRevenueChart: Boolean = false,
 ): JsonObject = buildJsonObject {
     put("after", after)
     put("before", before)
+    currency?.let { put("currency", it) }
     stats.totals?.let { put("totals", it) }
     stats.intervals?.let { intervals ->
         put("interval_count", intervals.size)
         putJsonArray("interval_subtotals") {
             intervals.mapNotNull(::intervalSubtotal).forEach(::add)
+        }
+        if (includeRevenueChart) {
+            putJsonArray("revenue_chart") {
+                intervals.mapNotNull(::revenueChartPoint).forEach(::add)
+            }
+        }
+    }
+    if (stats.intervals == null && includeRevenueChart) {
+        putJsonArray("revenue_chart") {
         }
     }
 }
@@ -73,6 +88,39 @@ private fun intervalSubtotal(interval: JsonObject): JsonObject? {
     }
     return subtotal.takeIf { it.isNotEmpty() }
 }
+
+private fun revenueChartPoint(interval: JsonObject): JsonObject? {
+    val date = interval.chartDate() ?: return null
+    val value = interval.chartRevenueValue() ?: return null
+    return buildJsonObject {
+        put("date", date)
+        put("value", value)
+    }
+}
+
+private fun JsonObject.chartDate(): String? {
+    val intervalDate = stringValue("interval")
+        ?.takeIf { it.isIsoLocalDate() }
+    if (intervalDate != null) return intervalDate
+
+    return stringValue("date_start")
+        ?.take(ISO_LOCAL_DATE_LENGTH)
+        ?.takeIf { it.isIsoLocalDate() }
+}
+
+private fun JsonObject.chartRevenueValue(): Double? {
+    val subtotals = this["subtotals"]?.jsonObject ?: return null
+    return REVENUE_CHART_VALUE_KEYS.firstNotNullOfOrNull { key ->
+        subtotals.stringValue(key)?.toDoubleOrNull() ?: subtotals[key]?.jsonPrimitive?.doubleOrNull
+    }
+}
+
+private fun JsonObject.stringValue(name: String): String? =
+    this[name]?.jsonPrimitive?.content
+
+private fun String.isIsoLocalDate(): Boolean =
+    ISO_LOCAL_DATE_SHAPE.matches(this) &&
+        runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.isSuccess
 
 private fun analyticsBucketCount(
     after: LocalDate,
@@ -99,3 +147,6 @@ private fun analyticsBucketCount(
 
 private const val MAX_ANALYTICS_INTERVALS = 100
 private const val HOURS_PER_DAY = 24
+private const val ISO_LOCAL_DATE_LENGTH = 10
+private val ISO_LOCAL_DATE_SHAPE = Regex("\\d{4}-\\d{2}-\\d{2}")
+private val REVENUE_CHART_VALUE_KEYS = listOf("net_revenue", "total_sales", "total_revenue", "gross_revenue")
