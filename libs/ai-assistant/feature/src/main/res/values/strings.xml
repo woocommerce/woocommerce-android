@@ -64,7 +64,10 @@
     <string name="assistant_chat_card_group_generic">Cards</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>
     <string name="assistant_chat_send">Send</string>
+    <string name="assistant_chat_send_content_description">Send message</string>
     <string name="assistant_chat_stop">Stop</string>
+    <string name="assistant_chat_stop_content_description">Stop response</string>
+    <string name="assistant_chat_pending_confirmation_hint">Resolve the pending change above.</string>
     <string name="assistant_chat_retry">Retry</string>
     <string name="assistant_chat_confirm_tool">Confirm %1$s?</string>
     <string name="assistant_chat_confirm">Confirm</string>
