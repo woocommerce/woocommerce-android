@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecti
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
@@ -319,9 +320,13 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun setTapToPayInProgress(inProgress: Boolean) {
+        setTapToPayProgress(if (inProgress) WooPosTotalsViewState.TapToPayProgress.Preparing else null)
+    }
+
+    private fun setTapToPayProgress(progress: WooPosTotalsViewState.TapToPayProgress?) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        if (checkout.isTapToPayInProgress != inProgress) {
-            uiState.value = checkout.copy(isTapToPayInProgress = inProgress)
+        if (checkout.tapToPayProgress != progress) {
+            uiState.value = checkout.copy(tapToPayProgress = progress)
         }
     }
 
@@ -568,7 +573,10 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is CardReaderPaymentState.LoadingData -> {
-                        if (isTapToPayPayment) return@collect
+                        if (isTapToPayPayment) {
+                            setTapToPayProgress(WooPosTotalsViewState.TapToPayProgress.SdkActive)
+                            return@collect
+                        }
                         handleReaderLoadingPaymentState()
                     }
 
@@ -603,8 +611,12 @@ class WooPosTotalsViewModel @Inject constructor(
                         isTTPPaymentInProgress = false
                         isTapToPayPayment = false
                         launch { builtInReaderConnector.disconnectIfConnected() }
-                        uiState.value = buildBuiltInPaymentFailedState(paymentState)
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
+                        if (paymentState.errorType == PaymentFlowError.Canceled) {
+                            returnToCheckoutAfterTapToPayFailed()
+                        } else {
+                            uiState.value = buildBuiltInPaymentFailedState(paymentState)
+                            childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
+                        }
                     }
 
                     CardReaderPaymentState.ReFetchingOrder -> Unit
