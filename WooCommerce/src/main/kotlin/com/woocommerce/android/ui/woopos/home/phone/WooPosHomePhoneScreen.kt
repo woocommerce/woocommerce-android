@@ -123,7 +123,7 @@ private fun WooPosHomePhoneContent(
 
                 is WooPosHomeState.ScreenPositionState.Checkout ->
                     WooPosPhoneTotalsScreen(
-                        onBack = { onHomeUIEvent(WooPosHomeUIEvent.PhoneBackFromCheckoutClicked) },
+                        onBack = { onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked) },
                         viewModel = totalsViewModel,
                     )
             }
