@@ -16,7 +16,7 @@ internal fun assistantCanvasColor(): Color = MaterialTheme.colorScheme.surface
 internal fun assistantUserBubbleColor(): Color = MaterialTheme.colorScheme.primary
 
 @Composable
-internal fun assistantUserBubbleContentColor(): Color = MaterialTheme.colorScheme.onPrimary
+internal fun assistantUserBubbleContentColor(): Color = Color.White
 
 @Composable
 internal fun assistantBubbleColor(): Color {
