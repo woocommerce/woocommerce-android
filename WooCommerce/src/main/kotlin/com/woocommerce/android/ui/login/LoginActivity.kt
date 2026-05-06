@@ -53,6 +53,9 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginAvailability
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -110,7 +113,9 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginSiteCredentialsFragment.Listener {
+    LoginSiteCredentialsFragment.Listener,
+    QrLoginPrologueFragment.Listener,
+    QrLoginScannerFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -127,6 +132,7 @@ class LoginActivity :
         const val SITE_URL_PARAMETER = "siteUrl"
         const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
         const val APP_LOGIN_AUTHORITY = "app-login"
+        const val QR_LOGIN_AUTHORITY = "qr-login"
         const val USERNAME_PARAMETER = "username"
     }
 
@@ -159,6 +165,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var registerDevice: RegisterDevice
+
+    @Inject
+    internal lateinit var qrLoginAvailability: QrLoginAvailability
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -195,6 +204,16 @@ class LoginActivity :
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
                 intent.data?.let { uri -> handleAppLoginUri(uri) }
+            }
+
+            savedInstanceState == null &&
+                intent?.action == Intent.ACTION_VIEW &&
+                intent.data?.authority == QR_LOGIN_AUTHORITY -> {
+                intent.data?.let { uri -> handleQrLoginUri(uri) }
+                // Replace the activity intent so a process restart from recents cannot replay
+                // the single-use token. Mutating fields on the in-memory Intent is not enough —
+                // Android restores getIntent() from the originally launched intent on cold start.
+                setIntent(Intent())
             }
 
             hasJetpackConnectedIntent() -> {
@@ -268,6 +287,25 @@ class LoginActivity :
         } else {
             showPrologueFragment()
         }
+    }
+
+    private fun showQrLoginPrologueFragment() {
+        val existing = supportFragmentManager.findFragmentByTag(QrLoginPrologueFragment.TAG)
+            as? QrLoginPrologueFragment
+        changeFragment(existing ?: QrLoginPrologueFragment(), true, QrLoginPrologueFragment.TAG)
+    }
+
+    override fun onQrLoginScanClicked() {
+        changeFragment(QrLoginScannerFragment(), true, QrLoginScannerFragment.TAG)
+    }
+
+    override fun onQrLoginFallbackClicked() {
+        disableDynamicEdgeToEdge()
+        loginViaSiteAddress()
+    }
+
+    override fun onQrLoginCompleted(localSiteId: Int) {
+        loggedInViaUsernamePassword(arrayListOf(localSiteId))
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
@@ -355,7 +393,11 @@ class LoginActivity :
     override fun onPrimaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         disableDynamicEdgeToEdge()
-        loginViaSiteAddress()
+        if (qrLoginAvailability.isAvailable()) {
+            showQrLoginPrologueFragment()
+        } else {
+            loginViaSiteAddress()
+        }
     }
 
     override fun onSecondaryButtonClicked() {
@@ -1016,6 +1058,11 @@ class LoginActivity :
         // Sometimes, the same website could be fetched from different APIs (WPCom or WPApi), and if cached twice
         // during successive login attempts, it leads to some issues later
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+    private fun handleQrLoginUri(uri: Uri) {
+        unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
+        changeFragment(QrLoginScannerFragment.forDeepLink(uri.toString()), true, QrLoginScannerFragment.TAG)
     }
 
     private fun handleAppLoginUri(uri: Uri) {
