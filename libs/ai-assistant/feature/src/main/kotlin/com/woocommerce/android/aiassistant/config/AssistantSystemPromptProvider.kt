@@ -34,11 +34,9 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             )
         val firstDayOfWeek = WeekFields.of(locale).firstDayOfWeek
         val thisWeekStart = date.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
-        val thisWeekEnd = thisWeekStart.plusDays(DAYS_IN_WEEK - 1)
         val lastWeekStart = thisWeekStart.minusWeeks(1)
         val lastWeekEnd = thisWeekStart.minusDays(1)
         val thisMonthStart = date.withDayOfMonth(1)
-        val thisMonthEnd = date.withDayOfMonth(date.lengthOfMonth())
         val weekStartName = firstDayOfWeek.getDisplayName(TextStyle.FULL, locale)
 
         return DateAnchors(
@@ -47,9 +45,9 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
                 Generated date anchors:
                 - today: ${date.iso()}
                 - yesterday: ${date.minusDays(1).iso()}
-                - this week: after ${thisWeekStart.iso()}, before ${thisWeekEnd.iso()} (week starts $weekStartName)
+                - this week: after ${thisWeekStart.iso()}, before ${date.iso()} (week starts $weekStartName)
                 - last week: after ${lastWeekStart.iso()}, before ${lastWeekEnd.iso()}
-                - this month: after ${thisMonthStart.iso()}, before ${thisMonthEnd.iso()}
+                - this month: after ${thisMonthStart.iso()}, before ${date.iso()}
             """.trimIndent(),
         )
     }
@@ -77,7 +75,6 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
     private companion object {
         private const val TODAY_ANCHOR_TOKEN = "__TODAY_ANCHOR__"
         private const val DATE_ANCHORS_TOKEN = "__DATE_ANCHORS__"
-        private const val DAYS_IN_WEEK = 7L
 
         private val SYSTEM_PROMPT_TEMPLATE = """
             You are an assistant inside the WooCommerce Android app, helping a merchant operate their store.

@@ -20,16 +20,16 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("Generated date anchors:")
         assertThat(prompt).contains("- today: 2026-05-06")
         assertThat(prompt).contains("- yesterday: 2026-05-05")
-        assertThat(prompt).contains("- this week: after 2026-05-03, before 2026-05-09 (week starts Sunday)")
+        assertThat(prompt).contains("- this week: after 2026-05-03, before 2026-05-06 (week starts Sunday)")
         assertThat(prompt).contains("- last week: after 2026-04-26, before 2026-05-02")
-        assertThat(prompt).contains("- this month: after 2026-05-01, before 2026-05-31")
+        assertThat(prompt).contains("- this month: after 2026-05-01, before 2026-05-06")
     }
 
     @Test
     fun `given locale with monday week start, when prompt is built, then weekly anchors use locale`() {
         val prompt = promptFor(todayIsoDate = "2026-05-06", locale = Locale.UK)
 
-        assertThat(prompt).contains("- this week: after 2026-05-04, before 2026-05-10 (week starts Monday)")
+        assertThat(prompt).contains("- this week: after 2026-05-04, before 2026-05-06 (week starts Monday)")
         assertThat(prompt).contains("- last week: after 2026-04-27, before 2026-05-03")
     }
 

@@ -22,7 +22,10 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
     override val descriptor = ToolDescriptor(
         name = ANALYTICS_REVENUE_TOOL_NAME,
         description = "Revenue analytics for a date range. Returns totals and per-interval subtotals. " +
-            "Prefer this over orders_list for aggregate revenue questions.",
+            "Prefer this over orders_list for aggregate revenue questions. Revenue/sales stats are card-backed: " +
+            "after any successful call for a revenue or sales stats question, do not stop with prose; call " +
+            "show_cards with family analytics_stats and an id built from the same after/before/interval/currency " +
+            "values. If currency was omitted, use currency:none in the id.",
         inputSchema = inputSchema {
             string("after", description = "Inclusive start date YYYY-MM-DD.", required = true)
             string("before", description = "Inclusive end date YYYY-MM-DD.", required = true)
