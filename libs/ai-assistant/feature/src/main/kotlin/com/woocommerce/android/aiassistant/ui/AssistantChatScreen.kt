@@ -61,6 +61,7 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardChrome
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
+import com.woocommerce.android.aiassistant.ui.cards.toAssistantCardGroupMetadata
 import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
 import com.woocommerce.android.aiassistant.ui.components.AssistantEmptyState
@@ -466,9 +467,11 @@ private fun AssistantCardGroupSegment(
     onCardAction: (AssistantCardAction) -> Unit,
 ) {
     if (assistantCardRenderer == null || cards.isEmpty()) return
+    val metadata = cards.toAssistantCardGroupMetadata()
 
     AssistantCardChrome(
-        title = stringResource(cards.groupHeaderRes()),
+        title = stringResource(metadata.titleRes),
+        leadingIconRes = metadata.iconRes,
         modifier = Modifier.fillMaxWidth(),
     ) {
         cards.forEachIndexed { index, card ->
@@ -484,18 +487,6 @@ private fun AssistantCardGroupSegment(
                 )
             }
         }
-    }
-}
-
-private fun List<AssistantCard>.groupHeaderRes(): Int {
-    val containsOrders = any { it is AssistantCard.Order }
-    val containsProducts = any { it is AssistantCard.Product }
-    val containsStats = any { it is AssistantCard.Stats }
-    return when {
-        containsOrders && !containsProducts && !containsStats -> R.string.assistant_chat_card_group_orders
-        containsProducts && !containsOrders && !containsStats -> R.string.assistant_chat_card_group_products
-        containsStats && !containsOrders && !containsProducts -> R.string.assistant_chat_card_group_stats
-        else -> R.string.assistant_chat_card_group_generic
     }
 }
 
