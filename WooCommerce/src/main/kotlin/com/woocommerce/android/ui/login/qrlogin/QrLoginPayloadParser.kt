@@ -42,7 +42,6 @@ class QrLoginPayloadParser @Inject constructor() {
      */
     private fun looksLikeInstallQr(raw: String?): Boolean {
         val parsed = raw?.trim()?.takeIf { it.isNotEmpty() }?.toHttpUrlOrNull() ?: return false
-        if (parsed.scheme != "https") return false
         if (!parsed.host.equals(INSTALL_QR_HOST, ignoreCase = true)) return false
         val pathSegments = parsed.encodedPathSegments.filter { it.isNotEmpty() }
         return pathSegments.firstOrNull()?.equals(INSTALL_QR_PATH_FIRST_SEGMENT, ignoreCase = true) == true

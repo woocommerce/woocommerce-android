@@ -137,8 +137,8 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given http install QR url, when parsed, then returns Invalid`() {
-        assertThat(parser.parse("http://woocommerce.com/mobile/")).isEqualTo(QrLoginPayload.Invalid)
+    fun `given http install QR url, when parsed, then returns InstallQrCode`() {
+        assertThat(parser.parse("http://woocommerce.com/mobile/")).isEqualTo(QrLoginPayload.InstallQrCode)
     }
 
     @Test
