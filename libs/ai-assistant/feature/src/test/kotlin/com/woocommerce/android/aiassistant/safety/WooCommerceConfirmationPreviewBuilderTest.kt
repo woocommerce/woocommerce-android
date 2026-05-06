@@ -14,7 +14,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     private val builder = WooCommerceConfirmationPreviewBuilder()
 
     @Test
-    fun `given order status update emails customer, when preview is built, then resource message is included`() {
+    fun `given order status update emails customer, when preview is built, then typed summary is included`() {
         val call = toolCall(
             name = "orders_update",
             arguments = buildJsonObject {
@@ -27,16 +27,22 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.summary).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                R.string.ai_assistant_confirmation_order_update_summary,
                 raw("42"),
-                raw("processing"),
+                string(
+                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
+                    raw("processing"),
+                ),
             )
         )
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                R.string.ai_assistant_confirmation_order_update_summary,
                 raw("42"),
-                raw("processing"),
+                string(
+                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
+                    raw("processing"),
+                ),
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -61,7 +67,11 @@ class WooCommerceConfirmationPreviewBuilderTest {
         val preview = builder.build(call)
 
         assertThat(preview.message).isEqualTo(
-            string(R.string.ai_assistant_confirmation_order_set_status, raw("3000000000"), raw("pending"))
+            string(
+                R.string.ai_assistant_confirmation_order_update_summary,
+                raw("3000000000"),
+                string(R.string.ai_assistant_confirmation_change_summary_status, raw("pending")),
+            )
         )
     }
 
@@ -80,7 +90,11 @@ class WooCommerceConfirmationPreviewBuilderTest {
         val preview = builder.build(call)
 
         assertThat(preview.message).isEqualTo(
-            string(R.string.ai_assistant_confirmation_order_set_status, raw("42"), raw("pending"))
+            string(
+                R.string.ai_assistant_confirmation_order_update_summary,
+                raw("42"),
+                string(R.string.ai_assistant_confirmation_change_summary_status, raw("pending")),
+            )
         )
         assertThat(preview.fields).containsExactly(
             ConfirmationPreviewField(
