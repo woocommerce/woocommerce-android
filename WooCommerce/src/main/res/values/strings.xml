@@ -2292,7 +2292,7 @@
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
     <string name="settings_notifs_stock_low_stock_description">When a product variant reaches its low stock threshold.</string>
-    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store default of &lt;b&gt;%1$d&lt;/b&gt;. &lt;a href=\'\'&gt;Edit default threshold&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store default of &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit default threshold&lt;/a&gt;</string>
     <string name="settings_notifs_stock_out_of_stock_title">Out of stock</string>
     <string name="settings_notifs_stock_out_of_stock_description">When a product variant hits zero.</string>
     <string name="settings_notifs_stock_backorder_title">On backorder</string>

@@ -58,7 +58,13 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
 
     private fun refreshDefaultLowStockThreshold() {
         launch {
-            val productSettings = wooCommerceStore.fetchSiteProductSettings(selectedSite.get()).model
+            val site = selectedSite.get()
+
+            wooCommerceStore.getProductSettings(site)?.defaultLowStockThreshold?.let { threshold ->
+                updateDefaultLowStockThreshold(threshold)
+            }
+
+            val productSettings = wooCommerceStore.fetchSiteProductSettings(site).model
 
             productSettings?.defaultLowStockThreshold?.let { threshold ->
                 updateDefaultLowStockThreshold(threshold)
@@ -77,7 +83,7 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         val lowStockNotificationsEnabled: Boolean = true,
         val outOfStockNotificationsEnabled: Boolean = true,
         val backorderNotificationsEnabled: Boolean = true,
-        val defaultLowStockThreshold: Int = 5
+        val defaultLowStockThreshold: Int? = null
     )
 
     enum class StockNotificationType {
