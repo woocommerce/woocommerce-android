@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.ui.AssistantToolActivity
+import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
+import com.woocommerce.android.aiassistant.ui.assistantStatusGreen
 import com.woocommerce.android.aiassistant.ui.labelRes
 
 /**
@@ -48,13 +50,13 @@ internal fun AssistantToolActivityPill(
                 liveRegion = LiveRegionMode.Polite
             }
         },
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, assistantOutlineColor()),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ToolActivityLeadingAffordance(status = activity.status)
@@ -63,8 +65,8 @@ internal fun AssistantToolActivityPill(
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Normal,
             )
         }
     }
@@ -74,7 +76,7 @@ internal fun AssistantToolActivityPill(
 private fun ToolActivityLeadingAffordance(status: AssistantToolActivity.Status) {
     when (status) {
         AssistantToolActivity.Status.RUNNING -> AssistantInFlightDots(
-            color = MaterialTheme.colorScheme.primary,
+            color = assistantStatusGreen(),
             dotSize = InFlightDotsToolPillSize,
             spacing = InFlightDotsToolPillSpacing,
         )
@@ -82,7 +84,7 @@ private fun ToolActivityLeadingAffordance(status: AssistantToolActivity.Status) 
             painter = painterResource(R.drawable.ic_assistant_tool_completed),
             contentDescription = null,
             modifier = Modifier.size(14.dp),
-            tint = MaterialTheme.colorScheme.primary,
+            tint = assistantStatusGreen(),
         )
     }
 }

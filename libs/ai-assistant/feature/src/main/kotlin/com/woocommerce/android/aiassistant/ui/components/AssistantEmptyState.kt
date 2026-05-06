@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
+import com.woocommerce.android.aiassistant.ui.assistantCanvasColor
+import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
 
 @Composable
 internal fun AssistantEmptyState(
@@ -53,7 +55,7 @@ internal fun AssistantEmptyState(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(EMPTY_STATE_CARD_CORNER_RADIUS),
             color = MaterialTheme.colorScheme.surface,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            border = BorderStroke(1.dp, assistantOutlineColor()),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 suggestions.forEachIndexed { index, suggestion ->
@@ -65,7 +67,7 @@ internal fun AssistantEmptyState(
                     if (index < suggestions.lastIndex) {
                         HorizontalDivider(
                             modifier = Modifier.padding(start = EMPTY_STATE_DIVIDER_INDENT),
-                            color = MaterialTheme.colorScheme.outlineVariant,
+                            color = assistantOutlineColor().copy(alpha = 0.5f),
                         )
                     }
                 }
@@ -153,7 +155,7 @@ private val EMPTY_STATE_DIVIDER_INDENT = 56.dp
 @Preview(name = "Large Font", showBackground = true, widthDp = 390, heightDp = 620, fontScale = 1.5f)
 @Composable
 private fun AssistantEmptyStatePreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         AssistantEmptyState(onSuggestionClick = {})
     }
 }

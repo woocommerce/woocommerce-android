@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +16,15 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,7 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -50,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -153,7 +154,7 @@ fun AssistantChatScreen(
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = assistantCanvasColor(),
         topBar = {
             AssistantTopAppBar(
                 status = state.status,
@@ -201,29 +202,61 @@ private fun AssistantTopAppBar(
     status: AssistantUiStatus,
     onBack: () -> Unit,
 ) {
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(R.string.assistant_chat_title),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_assistant_back),
-                    contentDescription = stringResource(R.string.assistant_chat_back_content_description),
-                )
-            }
-        },
-        actions = {
-            AssistantStatusLabel(status = status)
-        },
-        windowInsets = WindowInsets()
-    )
+    Column {
+        CenterAlignedTopAppBar(
+            title = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_assistant_sparkle),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = stringResource(R.string.assistant_chat_title),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            },
+            navigationIcon = {
+                Surface(
+                    modifier = Modifier.padding(start = 8.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.72f),
+                    border = BorderStroke(1.dp, assistantOutlineColor()),
+                ) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.size(40.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_assistant_back),
+                            contentDescription = stringResource(R.string.assistant_chat_back_content_description),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            },
+            actions = {
+                AssistantStatusLabel(status = status)
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = assistantCanvasColor(),
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+            windowInsets = WindowInsets(),
+        )
+        HorizontalDivider(color = assistantOutlineColor().copy(alpha = 0.6f))
+    }
 }
 
 @Composable
@@ -240,7 +273,7 @@ private fun AssistantStatusLabel(status: AssistantUiStatus) {
             .semantics { contentDescription = statusContentDescription },
         shape = RoundedCornerShape(50),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, assistantOutlineColor()),
     ) {
         Text(
             text = statusLabel,
@@ -519,7 +552,7 @@ private fun AssistantCardGroupSegment(
             if (index < cards.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 14.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant,
+                    color = assistantOutlineColor().copy(alpha = 0.5f),
                 )
             }
         }
@@ -529,45 +562,29 @@ private fun AssistantCardGroupSegment(
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
     val bubbleColor = if (isUser) {
-        MaterialTheme.colorScheme.primary
+        assistantUserBubbleColor()
     } else {
-        MaterialTheme.colorScheme.surface
+        assistantBubbleColor()
     }
     val textColor = if (isUser) {
-        MaterialTheme.colorScheme.onPrimary
+        assistantUserBubbleContentColor()
     } else {
-        MaterialTheme.colorScheme.onSurface
+        assistantBubbleContentColor()
     }
-    val shape = RoundedCornerShape(
-        topStart = 16.dp,
-        topEnd = 16.dp,
-        bottomStart = if (isUser) 16.dp else 4.dp,
-        bottomEnd = if (isUser) 4.dp else 16.dp,
-    )
+    val shape = RoundedCornerShape(20.dp)
+    val maxWidth = if (isUser) 0.78f else 0.85f
+    val verticalPadding = if (isUser) 10.dp else 12.dp
 
     Box(
         modifier = Modifier
-            .then(if (isUser) Modifier.widthIn(max = 360.dp) else Modifier.fillMaxWidth())
+            .fillMaxWidth(maxWidth)
             .background(bubbleColor, shape)
-            .then(
-                if (isUser) {
-                    Modifier
-                } else {
-                    Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = shape,
-                    )
-                }
-            )
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(horizontal = 14.dp, vertical = verticalPadding),
     ) {
         Text(
             text = text,
-            modifier = if (isUser) Modifier else Modifier.widthIn(max = 360.dp),
             color = textColor,
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = if (isUser) TextAlign.End else TextAlign.Start,
         )
     }
 }
@@ -658,7 +675,7 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 180, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantTextBubblePreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -686,7 +703,7 @@ private fun AssistantTextBubblePreview() {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantCardGroupSegmentPreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(sampleOrderCard(), sampleProductCard(), sampleStatsCard()),
@@ -701,7 +718,7 @@ private fun AssistantCardGroupSegmentPreview() {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 380, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantStatsCardGroupSegmentPreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(sampleStatsCard()),
@@ -716,7 +733,7 @@ private fun AssistantStatsCardGroupSegmentPreview() {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 380, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantStatsCardGroupNoTrendPreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(

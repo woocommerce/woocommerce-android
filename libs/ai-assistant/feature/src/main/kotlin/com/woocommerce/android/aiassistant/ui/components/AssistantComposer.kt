@@ -31,6 +31,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
+import com.woocommerce.android.aiassistant.ui.assistantCanvasColor
+import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
 
 @Composable
 internal fun AssistantComposer(
@@ -46,7 +48,7 @@ internal fun AssistantComposer(
     val showPendingHint = isTurnActive && !shouldShowStopControl
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.background,
+        color = assistantCanvasColor(),
     ) {
         Column(
             modifier = Modifier
@@ -73,8 +75,7 @@ internal fun AssistantComposer(
                     .heightIn(min = COMPOSER_MIN_HEIGHT),
                 shape = RoundedCornerShape(COMPOSER_CORNER_RADIUS),
                 color = MaterialTheme.colorScheme.surface,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                shadowElevation = 2.dp,
+                border = BorderStroke(1.dp, assistantOutlineColor()),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -160,7 +161,7 @@ private fun AssistantComposerActionButton(
     val buttonContent = if (buttonEnabled) {
         MaterialTheme.colorScheme.onPrimary
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
     }
     val contentDescription = if (shouldShowStopControl) {
         stringResource(R.string.assistant_chat_stop_content_description)

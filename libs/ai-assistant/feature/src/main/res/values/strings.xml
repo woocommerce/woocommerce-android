@@ -40,7 +40,7 @@
     <string name="assistant_confirmation_eyebrow_pending">Pending change</string>
     <string name="assistant_confirmation_eyebrow_confirmed">Confirmed</string>
     <string name="assistant_confirmation_eyebrow_cancelled">Cancelled</string>
-    <string name="assistant_chat_title">AI Assistant</string>
+    <string name="assistant_chat_title">Assistant</string>
     <string name="assistant_chat_status_idle">Ready</string>
     <string name="assistant_chat_status_streaming">Working</string>
     <string name="assistant_chat_status_awaiting_confirmation">Review required</string>
