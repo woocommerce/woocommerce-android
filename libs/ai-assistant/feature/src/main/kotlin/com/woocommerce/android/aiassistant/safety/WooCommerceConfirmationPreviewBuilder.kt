@@ -59,24 +59,15 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
             }
         }
 
-        if (status != null) {
-            val message = if (status in CUSTOMER_NOTIFYING_STATUSES) {
-                string(
-                    R.string.ai_assistant_confirmation_order_set_status_emails_customer,
-                    raw(id.toString()),
-                    raw(status),
-                )
-            } else {
-                string(R.string.ai_assistant_confirmation_order_set_status, raw(id.toString()), raw(status))
-            }
-            return ConfirmationPreview(message = message, fields = fields)
-        }
-
         return ConfirmationPreview(
             message = string(
                 R.string.ai_assistant_confirmation_order_update_summary,
                 raw(id.toString()),
-                fields.toChangeSummary(),
+                fields.toChangeSummary(
+                    statusEmailImpact = status
+                        ?.takeIf { it in CUSTOMER_NOTIFYING_STATUSES }
+                        ?.let { R.string.ai_assistant_confirmation_change_summary_status_emails_customer },
+                ),
             ),
             fields = fields,
         )

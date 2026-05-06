@@ -9,16 +9,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,10 +34,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -57,6 +62,7 @@ import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -137,13 +143,12 @@ fun AssistantChatScreen(
                 status = state.status,
                 onBack = onBack,
             )
-        },
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .imePadding(),
         ) {
             AssistantMessageThread(
                 state = state,
@@ -194,6 +199,7 @@ private fun AssistantTopAppBar(
         actions = {
             AssistantStatusLabel(status = status)
         },
+        windowInsets = WindowInsets()
     )
 }
 
@@ -234,24 +240,56 @@ private fun AssistantMessageThread(
     onCardAction: (AssistantCardAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val visibleMessages = state.messages.filter { it.hasVisibleContent() }
+    val visibleMessages = state.messages.filter { message ->
+        message.hasVisibleContent(state)
+    }
     val showTypingIndicator = state.shouldShowTypingIndicator
     val listState = rememberLazyListState()
-    LaunchedEffect(
-        visibleMessages.size,
-        visibleMessages.lastOrNull()?.segments,
-        showTypingIndicator,
-    ) {
-        val totalItems = visibleMessages.size + if (showTypingIndicator) 1 else 0
-        if (totalItems > 0) {
-            listState.animateScrollToItem(totalItems - 1)
+    val bottomPinThresholdPx = with(LocalDensity.current) { BOTTOM_PIN_THRESHOLD_DP.roundToPx() }
+    val scrollSignal = visibleMessages.toScrollSignal(showTypingIndicator)
+    var previousScrollSignal by remember { mutableStateOf<AssistantThreadScrollSignal?>(null) }
+    var wasPinnedBeforeLatestChange by rememberSaveable { mutableStateOf(true) }
+
+    LaunchedEffect(listState, bottomPinThresholdPx, scrollSignal.renderedItemCount) {
+        snapshotFlow {
+            listState.isPinnedToRenderedEnd(
+                renderedItemCount = scrollSignal.renderedItemCount,
+                bottomPinThresholdPx = bottomPinThresholdPx,
+            )
         }
+            .distinctUntilChanged()
+            .collect { wasPinnedBeforeLatestChange = it }
+    }
+
+    LaunchedEffect(scrollSignal) {
+        val renderedItemCount = scrollSignal.renderedItemCount
+        if (renderedItemCount == 0) {
+            previousScrollSignal = scrollSignal
+            return@LaunchedEffect
+        }
+
+        val previous = previousScrollSignal
+        val forceScrollForUserSend = previous != null &&
+            previous.lastUserMessageId != scrollSignal.lastUserMessageId
+        val isNewAssistantMessage = previous != null &&
+            previous.lastMessageId != scrollSignal.lastMessageId &&
+            scrollSignal.lastMessageRole == AssistantUiMessage.Role.ASSISTANT
+
+        if (forceScrollForUserSend || wasPinnedBeforeLatestChange) {
+            val targetIndex = renderedItemCount - 1
+            if (forceScrollForUserSend || isNewAssistantMessage) {
+                listState.animateScrollToItem(targetIndex)
+            } else {
+                listState.scrollToItem(targetIndex)
+            }
+        }
+        previousScrollSignal = scrollSignal
     }
 
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Bottom),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
     ) {
         items(
@@ -260,6 +298,7 @@ private fun AssistantMessageThread(
         ) { message ->
             AssistantMessageBubble(
                 message = message,
+                displaySegments = message.orderedSegments(state),
                 onRetry = onRetry,
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
@@ -276,15 +315,61 @@ private fun AssistantMessageThread(
 }
 
 private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
+private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
 
-private fun AssistantUiMessage.hasVisibleContent(): Boolean =
-    role == AssistantUiMessage.Role.USER ||
-        error != null ||
-        hasVisibleAssistantContent
+private data class AssistantThreadScrollSignal(
+    val renderedItemCount: Int,
+    val messageCount: Int,
+    val lastMessageId: String?,
+    val lastMessageRole: AssistantUiMessage.Role?,
+    val lastUserMessageId: String?,
+    val lastMessageSegmentCount: Int,
+    val lastMessageTextLength: Int,
+    val showTypingIndicator: Boolean,
+)
+
+private fun List<AssistantUiMessage>.toScrollSignal(
+    showTypingIndicator: Boolean,
+): AssistantThreadScrollSignal {
+    val lastMessage = lastOrNull()
+    return AssistantThreadScrollSignal(
+        renderedItemCount = size + if (showTypingIndicator) 1 else 0,
+        messageCount = size,
+        lastMessageId = lastMessage?.id,
+        lastMessageRole = lastMessage?.role,
+        lastUserMessageId = lastOrNull { it.role == AssistantUiMessage.Role.USER }?.id,
+        lastMessageSegmentCount = lastMessage?.segments?.size ?: 0,
+        lastMessageTextLength = lastMessage?.text?.length ?: 0,
+        showTypingIndicator = showTypingIndicator,
+    )
+}
+
+private fun LazyListState.isPinnedToRenderedEnd(
+    renderedItemCount: Int,
+    bottomPinThresholdPx: Int,
+): Boolean {
+    if (renderedItemCount == 0) return true
+
+    val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull() ?: return true
+    val targetIndex = renderedItemCount - 1
+    if (lastVisibleItem.index != targetIndex) return false
+
+    val distanceFromViewportEnd = layoutInfo.viewportEndOffset - (lastVisibleItem.offset + lastVisibleItem.size)
+    return isRenderedTargetPinnedToViewportEnd(
+        distanceFromViewportEnd = distanceFromViewportEnd,
+        bottomPinThresholdPx = bottomPinThresholdPx,
+    )
+}
+
+internal fun isRenderedTargetPinnedToViewportEnd(
+    distanceFromViewportEnd: Int,
+    bottomPinThresholdPx: Int,
+): Boolean = distanceFromViewportEnd in 0..bottomPinThresholdPx
 
 @Composable
 private fun AssistantMessageBubble(
     message: AssistantUiMessage,
+    displaySegments: List<AssistantUiSegment>,
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
@@ -301,7 +386,7 @@ private fun AssistantMessageBubble(
             .semantics(mergeDescendants = true) { contentDescription = description },
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        message.segments.forEach { segment ->
+        displaySegments.forEach { segment ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = rowArrangement,
@@ -342,8 +427,8 @@ private fun AssistantMessageSegment(
                 AssistantTextBubble(text = segment.text, isUser = isUser)
             }
         }
-        is AssistantUiSegment.Card -> AssistantCardSegment(
-            card = segment.card,
+        is AssistantUiSegment.CardGroup -> AssistantCardGroupSegment(
+            cards = segment.cards,
             assistantCardRenderer = assistantCardRenderer,
             onCardAction = onCardAction,
         )
@@ -357,12 +442,12 @@ private fun AssistantMessageSegment(
 }
 
 @Composable
-private fun AssistantCardSegment(
-    card: AssistantCard,
+private fun AssistantCardGroupSegment(
+    cards: List<AssistantCard>,
     assistantCardRenderer: AssistantCardRenderer?,
     onCardAction: (AssistantCardAction) -> Unit,
 ) {
-    if (assistantCardRenderer == null) return
+    if (assistantCardRenderer == null || cards.isEmpty()) return
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -370,22 +455,50 @@ private fun AssistantCardSegment(
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        when (card) {
-            is AssistantCard.Order -> assistantCardRenderer.OrderCard(
-                card = card,
-                onAction = onCardAction,
-                modifier = Modifier.fillMaxWidth(),
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(cards.groupHeaderRes()),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
             )
-            is AssistantCard.Product -> assistantCardRenderer.ProductCard(
-                card = card,
-                onAction = onCardAction,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            cards.forEachIndexed { index, card ->
+                when (card) {
+                    is AssistantCard.Order -> assistantCardRenderer.OrderCard(
+                        card = card,
+                        onAction = onCardAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    is AssistantCard.Product -> assistantCardRenderer.ProductCard(
+                        card = card,
+                        onAction = onCardAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                if (index < cards.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 14.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
+                }
+            }
         }
     }
 }
 
 private val ASSISTANT_CARD_CORNER_RADIUS = 12.dp
+
+private fun List<AssistantCard>.groupHeaderRes(): Int {
+    val containsOrders = any { it is AssistantCard.Order }
+    val containsProducts = any { it is AssistantCard.Product }
+    return when {
+        containsOrders && !containsProducts -> R.string.assistant_chat_card_group_orders
+        containsProducts && !containsOrders -> R.string.assistant_chat_card_group_products
+        else -> R.string.assistant_chat_card_group_generic
+    }
+}
 
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
@@ -408,7 +521,7 @@ private fun AssistantTextBubble(text: String, isUser: Boolean) {
 
     Box(
         modifier = Modifier
-            .widthIn(max = 360.dp)
+            .then(if (isUser) Modifier.widthIn(max = 360.dp) else Modifier.fillMaxWidth())
             .background(bubbleColor, shape)
             .then(
                 if (isUser) {
@@ -425,6 +538,7 @@ private fun AssistantTextBubble(text: String, isUser: Boolean) {
     ) {
         Text(
             text = text,
+            modifier = if (isUser) Modifier else Modifier.widthIn(max = 360.dp),
             color = textColor,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = if (isUser) TextAlign.End else TextAlign.Start,
@@ -514,6 +628,49 @@ private fun AssistantUiStatus.toHeaderText(): String = when (this) {
     AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
 }
 
+@Preview(showBackground = true, widthDp = 390, heightDp = 180)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 180, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantTextBubblePreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                AssistantTextBubble(
+                    text = "Show orders that need attention",
+                    isUser = true,
+                )
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                AssistantTextBubble(
+                    text = "I found a few processing orders with recent customer notes.",
+                    isUser = false,
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 260)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantCardGroupSegmentPreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AssistantCardGroupSegment(
+                cards = listOf(sampleOrderCard(), sampleProductCard()),
+                assistantCardRenderer = PreviewAssistantCardRenderer,
+                onCardAction = {},
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -589,9 +746,9 @@ private fun AssistantChatScreenPreview() {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
                         AssistantUiSegment.Text("Here is order #3479."),
-                        AssistantUiSegment.Card(sampleOrderCard()),
+                        AssistantUiSegment.CardGroup(listOf(sampleOrderCard())),
                         AssistantUiSegment.Text("Here is a matching product."),
-                        AssistantUiSegment.Card(sampleProductCard()),
+                        AssistantUiSegment.CardGroup(listOf(sampleProductCard())),
                     ),
                 ),
             )
