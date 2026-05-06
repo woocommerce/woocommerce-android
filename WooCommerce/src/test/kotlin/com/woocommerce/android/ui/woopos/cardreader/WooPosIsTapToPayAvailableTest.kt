@@ -59,4 +59,18 @@ class WooPosIsTapToPayAvailableTest {
 
         assertThat(sut()).isFalse()
     }
+
+    @Test
+    fun `given flag on, when isFeatureFlagEnabled invoked, then returns true`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
+
+        assertThat(sut.isFeatureFlagEnabled()).isTrue()
+    }
+
+    @Test
+    fun `given flag off, when isFeatureFlagEnabled invoked, then returns false`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(false)
+
+        assertThat(sut.isFeatureFlagEnabled()).isFalse()
+    }
 }

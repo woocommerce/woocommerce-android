@@ -10,10 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
@@ -119,7 +121,7 @@ internal fun derivePaymentButtonsLayout(
     readerStatus: WooPosTotalsViewState.ReaderStatus,
     isTapToPayAvailable: Boolean,
 ): WooPosPaymentButtonsLayout {
-    val methods = availableMethods(readerStatus, isTapToPayAvailable)
+    val methods = availablePaymentMethods(readerStatus, isTapToPayAvailable)
     if (methods.size == 1) return WooPosPaymentButtonsLayout.Single(methods.single())
     val primary = pickPrimary(formFactor, methods)
     if (methods.size >= OVERFLOW_THRESHOLD) return WooPosPaymentButtonsLayout.WithOverflow(primary)
@@ -127,7 +129,7 @@ internal fun derivePaymentButtonsLayout(
     return WooPosPaymentButtonsLayout.Pair(primary, secondary)
 }
 
-private fun availableMethods(
+internal fun availablePaymentMethods(
     readerStatus: WooPosTotalsViewState.ReaderStatus,
     isTapToPayAvailable: Boolean,
 ): List<WooPosPaymentMethod> {
@@ -156,4 +158,43 @@ private fun pickPrimary(
         )
     }
     return preference.first { it in methods }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCheckoutPaymentButtonsReaderConnectedPreview() {
+    WooPosTheme {
+        WooPosCheckoutPaymentButtons(
+            readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment("ready", "tap"),
+            isTapToPayAvailable = true,
+            onMethodClicked = {},
+            onShowAllMethods = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCheckoutPaymentButtonsReaderDisconnectedTtpAvailablePreview() {
+    WooPosTheme {
+        WooPosCheckoutPaymentButtons(
+            readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected("title", "subtitle", "cta"),
+            isTapToPayAvailable = true,
+            onMethodClicked = {},
+            onShowAllMethods = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCheckoutPaymentButtonsReaderDisconnectedNoTtpPreview() {
+    WooPosTheme {
+        WooPosCheckoutPaymentButtons(
+            readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected("title", "subtitle", "cta"),
+            isTapToPayAvailable = false,
+            onMethodClicked = {},
+            onShowAllMethods = {},
+        )
+    }
 }

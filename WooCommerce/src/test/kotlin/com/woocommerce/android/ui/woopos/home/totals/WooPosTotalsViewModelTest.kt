@@ -2018,9 +2018,10 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
+    fun `given flag on and TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
         // GIVEN
         val notAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(notAvailable)
         clearInvocations(tracker)
 
@@ -2032,9 +2033,25 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+    fun `given flag on and TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
         // GIVEN
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
+    fun `given flag off and TTP NotAvailable, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(false)
+        whenever(tapToPayAvailabilityStatus.invoke())
+            .thenReturn(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
         clearInvocations(tracker)
 
         // WHEN

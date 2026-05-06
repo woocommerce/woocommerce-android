@@ -273,16 +273,9 @@ private fun TotalsLoaded(
         )
     }
 
-    val allMethods = buildList {
-        if (state.readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected) {
-            add(WooPosPaymentMethod.CARD_READER)
-        }
-        if (state.isTapToPayAvailable) add(WooPosPaymentMethod.TAP_TO_PAY)
-        add(WooPosPaymentMethod.CASH)
-    }
     WooPosAllPaymentMethodsDialog(
         isVisible = state.isAllPaymentMethodsDialogVisible,
-        methods = allMethods,
+        methods = availablePaymentMethods(state.readerStatus, state.isTapToPayAvailable),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
             onUIEvent(method.toUIEvent())
