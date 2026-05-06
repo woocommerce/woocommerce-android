@@ -7,7 +7,9 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
@@ -744,6 +746,31 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(mockCardReaderPaymentController).start()
+    }
+
+    @Test
+    fun `given order draft created, when built-in reader connects, then do not auto-collect`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
+
+        val mockCardReaderPaymentController: CardReaderPaymentController = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any(), any())).thenReturn(mockCardReaderPaymentController)
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+
+        val builtInReader: CardReader = mock {
+            on { type } doReturn ReaderType.BuildInReader.TapToPayDevice.name
+        }
+
+        // WHEN
+        readerStatus.value = CardReaderStatus.Connected(builtInReader)
+
+        // THEN
+        verify(mockCardReaderPaymentController, never()).start()
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.readerStatus).isInstanceOf(WooPosTotalsViewState.ReaderStatus.Disconnected::class.java)
     }
 
     @Test
