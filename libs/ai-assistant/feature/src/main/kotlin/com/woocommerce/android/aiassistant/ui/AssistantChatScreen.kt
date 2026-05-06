@@ -22,9 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -203,7 +202,7 @@ private fun AssistantTopAppBar(
     onBack: () -> Unit,
 ) {
     Column {
-        CenterAlignedTopAppBar(
+        TopAppBar(
             title = {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -226,22 +225,12 @@ private fun AssistantTopAppBar(
                 }
             },
             navigationIcon = {
-                Surface(
-                    modifier = Modifier.padding(start = 8.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.72f),
-                    border = BorderStroke(1.dp, assistantOutlineColor()),
-                ) {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier.size(40.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_assistant_back),
-                            contentDescription = stringResource(R.string.assistant_chat_back_content_description),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                IconButton(onClick = onBack) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_assistant_back),
+                        contentDescription = stringResource(R.string.assistant_chat_back_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
             },
             actions = {
