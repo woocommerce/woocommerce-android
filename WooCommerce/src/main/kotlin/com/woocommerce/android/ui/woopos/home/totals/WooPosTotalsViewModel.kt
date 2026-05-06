@@ -12,11 +12,15 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.BuiltInReaderDiscoveryFailedException
+import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
+import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -47,8 +51,11 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -73,6 +80,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val paymentsFlowTracker: PaymentsFlowTracker,
+    private val builtInReaderConnector: WooPosBuiltInReaderConnector,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -92,6 +100,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
     val state: StateFlow<WooPosTotalsViewState> = uiState
 
+    private val _screenEvents = MutableSharedFlow<WooPosTotalsScreenEvent>(extraBufferCapacity = 1)
+    val screenEvents: SharedFlow<WooPosTotalsScreenEvent> = _screenEvents.asSharedFlow()
+
     private var createDraftOrderJob: Job? = null
     private var newOrder: Order? = null
     private var deletedVariationFromApiError: Long? = null
@@ -106,11 +117,17 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
 
-    private fun createCardReaderPaymentController(orderId: Long) {
+    private var isTapToPayPayment: Boolean = false
+
+    private fun createCardReaderPaymentController(
+        orderId: Long,
+        cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
+    ) {
         cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+            cardReaderType = cardReaderType,
         )
     }
 
@@ -127,6 +144,7 @@ class WooPosTotalsViewModel @Inject constructor(
             cardReaderFacade.readerStatus.combine(
                 dataState
             ) { status, data -> Pair(status, data) }.collect { (status, data) ->
+                if (isTapToPayPayment) return@collect
                 when (status) {
                     is NotConnected, is Connecting -> {
                         val state = uiState.value
@@ -160,6 +178,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
+        if (isTapToPayPayment) {
+            isTTPPaymentInProgress = false
+        }
+        isTapToPayPayment = false
     }
 
     private fun cancelCreateOrderDraftAction() {
@@ -182,6 +204,7 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
             WooPosTotalsUIEvent.OnTapToPayClicked,
+            is WooPosTotalsUIEvent.OnFineLocationPermissionResult,
             is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> handleNewPaymentMethodEvent(event)
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
@@ -224,15 +247,98 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
         when (event) {
-            WooPosTotalsUIEvent.OnTapToPayClicked -> viewModelScope.launch {
-                totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
-                wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
-            }
+            WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
+            is WooPosTotalsUIEvent.OnFineLocationPermissionResult -> onFineLocationPermissionResult(event.granted)
             is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> {
                 val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
                 uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
             }
             else -> Unit
+        }
+    }
+
+    private fun startTapToPayPayment() {
+        if (isTapToPayPayment) return
+        viewModelScope.launch {
+            totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
+
+            val orderId = dataState.value.orderId
+            if (orderId == EMPTY_ORDER_ID) {
+                wooPosLogWrapper.e("Tap to Pay tapped before order draft was created")
+                return@launch
+            }
+            if (!networkStatus.isConnected()) {
+                childrenToParentEventSender.sendToParent(
+                    ToastMessageDisplayed(resourceProvider.getString(R.string.woopos_no_internet_message))
+                )
+                return@launch
+            }
+
+            attemptTapToPayConnect(orderId)
+        }
+    }
+
+    private suspend fun attemptTapToPayConnect(orderId: Long) {
+        isTapToPayPayment = true
+        setTapToPayInProgress(true)
+        builtInReaderConnector.connect().fold(
+            onSuccess = {
+                createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
+                cardReaderPaymentController?.start()
+                listenToPaymentState()
+            },
+            onFailure = { error ->
+                wooPosLogWrapper.e("Tap to Pay connection failed", error)
+                isTapToPayPayment = false
+                setTapToPayInProgress(false)
+                when (error) {
+                    is MissingFineLocationPermissionException ->
+                        _screenEvents.tryEmit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+
+                    is BuiltInReaderDiscoveryFailedException -> {
+                        val detail = error.message?.takeIf { it.isNotBlank() }
+                        val message = if (detail != null) {
+                            resourceProvider.getString(
+                                R.string.woopos_tap_to_pay_payment_failed_with_reason_message,
+                                detail,
+                            )
+                        } else {
+                            resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
+                        }
+                        childrenToParentEventSender.sendToParent(ToastMessageDisplayed(message))
+                    }
+
+                    else -> childrenToParentEventSender.sendToParent(
+                        ToastMessageDisplayed(
+                            resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    private fun setTapToPayInProgress(inProgress: Boolean) {
+        val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        if (checkout.isTapToPayInProgress != inProgress) {
+            uiState.value = checkout.copy(isTapToPayInProgress = inProgress)
+        }
+    }
+
+    private fun onFineLocationPermissionResult(granted: Boolean) {
+        viewModelScope.launch {
+            if (granted) {
+                val orderId = dataState.value.orderId
+                if (orderId != EMPTY_ORDER_ID) {
+                    attemptTapToPayConnect(orderId)
+                }
+            } else {
+                childrenToParentEventSender.sendToParent(
+                    ToastMessageDisplayed(
+                        resourceProvider.getString(R.string.woopos_tap_to_pay_missing_location_permission_message)
+                    )
+                )
+            }
         }
     }
 
@@ -418,15 +524,31 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
-                    is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
+                    is CardReaderPaymentState.ProcessingPayment -> {
+                        if (isTapToPayPayment) return@collect
+                        handleProcessingPaymentState(paymentState)
+                    }
 
-                    is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
+                    is CardReaderPaymentState.LoadingData -> {
+                        if (isTapToPayPayment) return@collect
+                        handleReaderLoadingPaymentState()
+                    }
 
                     is CardReaderPaymentState.PaymentCapturing -> {
+                        if (isTapToPayPayment) return@collect
                         handleCapturingPaymentState()
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
+                        val wasTapToPay = isTapToPayPayment
+                        if (wasTapToPay) {
+                            isTTPPaymentInProgress = false
+                        }
+                        isTapToPayPayment = false
+                        setTapToPayInProgress(false)
+                        if (wasTapToPay) {
+                            launch { builtInReaderConnector.disconnectIfConnected() }
+                        }
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
 
@@ -435,10 +557,19 @@ class WooPosTotalsViewModel @Inject constructor(
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
                     }
 
+                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
+                        wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
+                        isTTPPaymentInProgress = false
+                        isTapToPayPayment = false
+                        launch { builtInReaderConnector.disconnectIfConnected() }
+                        childrenToParentEventSender.sendToParent(
+                            ToastMessageDisplayed(uiStringParser.asString(paymentState.errorType.message))
+                        )
+                    }
+
                     CardReaderPaymentState.ReFetchingOrder -> Unit
 
                     is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
-                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
                     is CardReaderPaymentState.PrintingReceipt,
                     CardReaderPaymentState.SharingReceipt -> {
                         throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")

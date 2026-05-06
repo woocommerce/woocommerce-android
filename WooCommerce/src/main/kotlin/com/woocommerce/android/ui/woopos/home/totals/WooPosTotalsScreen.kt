@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,8 +29,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,6 +83,22 @@ fun WooPosTotalsScreen(
     onPhoneBack: (() -> Unit)? = null,
 ) {
     val state = viewModel.state.collectAsState().value
+    val onUIEvent = rememberUpdatedState(viewModel::onUIEvent)
+    val fineLocationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        onUIEvent.value(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted))
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.screenEvents.collect { event ->
+            when (event) {
+                WooPosTotalsScreenEvent.RequestFineLocationPermission ->
+                    fineLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
+
     WooPosTotalsScreen(
         modifier = modifier,
         state = state,
@@ -213,16 +235,17 @@ private fun TotalsLoaded(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .heightIn(min = TAP_TO_PAY_STATE_MIN_HEIGHT),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                        if (state.isTapToPayAvailable) {
-                            TapToPayPromoted(onUIEvent = onUIEvent)
-                        } else {
-                            ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
+                        when {
+                            state.isTapToPayInProgress -> TapToPayConnecting()
+                            state.isTapToPayAvailable -> TapToPayPromoted(onUIEvent = onUIEvent)
+                            else -> ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
                         }
                     }
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
@@ -337,6 +360,13 @@ private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) 
     WooPosPaymentMethod.SCAN_TO_PAY -> null
     WooPosPaymentMethod.MARK_ORDER_AS_PAID -> null
 }
+
+@Composable
+private fun TapToPayConnecting() {
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
+}
+
+private val TAP_TO_PAY_STATE_MIN_HEIGHT = 380.dp
 
 @Composable
 private fun PreparingReader(title: String, subtitle: String) {

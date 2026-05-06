@@ -12,6 +12,7 @@ sealed class WooPosTotalsViewState : Parcelable {
         val readerStatus: ReaderStatus,
         val isTapToPayAvailable: Boolean = false,
         val isAllPaymentMethodsDialogVisible: Boolean = false,
+        val isTapToPayInProgress: Boolean = false,
     ) : WooPosTotalsViewState()
 
     sealed class Totals : Parcelable {
