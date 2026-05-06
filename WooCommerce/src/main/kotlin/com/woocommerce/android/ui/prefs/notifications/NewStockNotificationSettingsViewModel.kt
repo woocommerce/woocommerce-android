@@ -25,6 +25,10 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
 
+    init {
+        refreshDefaultLowStockThreshold()
+    }
+
     fun onNotificationsEnabledChanged(isEnabled: Boolean) {
         _viewState.update { it.copy(notificationsEnabled = isEnabled) }
     }
@@ -39,14 +43,8 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         }
     }
 
-    fun refreshDefaultLowStockThreshold() {
-        launch {
-            val productSettings = wooCommerceStore.fetchSiteProductSettings(selectedSite.get()).model
-
-            productSettings?.defaultLowStockThreshold?.let { threshold ->
-                updateDefaultLowStockThreshold(threshold)
-            }
-        }
+    fun onStoreSettingsWebViewClosed() {
+        refreshDefaultLowStockThreshold()
     }
 
     fun onEditStoreSettingsClicked() {
@@ -56,6 +54,16 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
                 screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
             )
         )
+    }
+
+    private fun refreshDefaultLowStockThreshold() {
+        launch {
+            val productSettings = wooCommerceStore.fetchSiteProductSettings(selectedSite.get()).model
+
+            productSettings?.defaultLowStockThreshold?.let { threshold ->
+                updateDefaultLowStockThreshold(threshold)
+            }
+        }
     }
 
     private fun updateDefaultLowStockThreshold(threshold: Int) {

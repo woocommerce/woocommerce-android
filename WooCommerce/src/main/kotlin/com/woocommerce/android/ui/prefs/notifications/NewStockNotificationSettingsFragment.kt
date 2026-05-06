@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -32,11 +34,11 @@ class NewStockNotificationSettingsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeEvents()
+        setupResultHandlers()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.refreshDefaultLowStockThreshold()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -46,6 +48,12 @@ class NewStockNotificationSettingsFragment : BaseFragment() {
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
             }
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_DISMISSED) {
+            viewModel.onStoreSettingsWebViewClosed()
         }
     }
 }
