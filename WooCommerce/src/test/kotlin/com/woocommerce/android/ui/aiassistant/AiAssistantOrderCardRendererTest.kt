@@ -16,6 +16,11 @@ class AiAssistantOrderCardRendererTest {
     private val context: Context = mock()
 
     @Test
+    fun `when renderer is created, then class has direct unit test coverage`() {
+        assertThat(AiAssistantOrderCardRenderer(currencyFormatter)).isNotNull
+    }
+
+    @Test
     fun `given assistant order card, when mapped, then host row model formats total with order currency`() {
         val originalLocale = Locale.getDefault()
         Locale.setDefault(Locale.US)

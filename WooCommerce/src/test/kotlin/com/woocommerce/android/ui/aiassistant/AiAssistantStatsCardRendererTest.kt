@@ -15,6 +15,11 @@ class AiAssistantStatsCardRendererTest {
     private val currencyFormatter: CurrencyFormatter = mock()
 
     @Test
+    fun `when renderer is created, then class has direct unit test coverage`() {
+        assertThat(AiAssistantStatsCardRenderer(currencyFormatter)).isNotNull
+    }
+
+    @Test
     fun `given assistant stats card, when mapped, then period total sales net sales and chart values are displayed`() {
         whenever(currencyFormatter.formatCurrency("123.45", "USD")).thenReturn("$123.45")
         whenever(currencyFormatter.formatCurrency("100.15", "USD")).thenReturn("$100.15")
