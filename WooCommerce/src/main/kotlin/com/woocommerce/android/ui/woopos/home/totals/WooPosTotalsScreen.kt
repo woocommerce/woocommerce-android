@@ -242,22 +242,29 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        val isReaderDisconnected = state.readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected
-        val methods = if (isReaderDisconnected) {
-            listOf(WooPosPaymentMethod.CARD_READER, WooPosPaymentMethod.CASH)
-        } else {
-            listOf(WooPosPaymentMethod.CASH)
-        }
         WooPosCheckoutPaymentButtons(
-            methods = methods,
-            onMethodClicked = { method ->
-                when (method) {
-                    WooPosPaymentMethod.CARD_READER -> onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
-                    WooPosPaymentMethod.CASH -> onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
-                }
-            },
+            readerStatus = state.readerStatus,
+            isTapToPayAvailable = state.isTapToPayAvailable,
+            onMethodClicked = { method -> onUIEvent(method.toUIEvent()) },
+            onShowAllMethods = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
         )
     }
+
+    WooPosAllPaymentMethodsDialog(
+        isVisible = state.isAllPaymentMethodsDialogVisible,
+        methods = availablePaymentMethods(state.readerStatus, state.isTapToPayAvailable),
+        onMethodClicked = { method ->
+            onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+            onUIEvent(method.toUIEvent())
+        },
+        onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
+    )
+}
+
+private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent = when (this) {
+    WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
+    WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
+    WooPosPaymentMethod.CASH -> WooPosTotalsUIEvent.OnCashPaymentClicked
 }
 
 @Composable

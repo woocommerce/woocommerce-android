@@ -3754,6 +3754,9 @@
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_take_cash_payment_label">Cash payment</string>
     <string name="woopos_payment_method_card_reader_label">Card reader</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay</string>
+    <string name="woopos_payment_method_all_methods_label">All payment methods</string>
+    <string name="woopos_payment_method_picker_dialog_title">Choose payment method</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Pay with Tap to pay</string>

@@ -183,7 +183,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
-            WooPosTotalsUIEvent.OnTapToPayClicked -> handleTapToPayClicked()
+            WooPosTotalsUIEvent.OnTapToPayClicked,
+            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> handleNewPaymentMethodEvent(event)
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
 
@@ -223,9 +224,16 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun handleTapToPayClicked() = viewModelScope.launch {
-        totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
-        wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
+    private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
+        if (event is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged) {
+            val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+            uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
+        } else {
+            viewModelScope.launch {
+                totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
+                wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
+            }
+        }
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {

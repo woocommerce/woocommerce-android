@@ -2034,6 +2034,34 @@ class WooPosTotalsViewModelTest {
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
 
+    @Test
+    fun `when OnAllPaymentMethodsVisibilityChanged true, then dialog flag flips to visible`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true))
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isAllPaymentMethodsDialogVisible).isTrue()
+    }
+
+    @Test
+    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true))
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+
+            // THEN
+            val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+            assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
+        }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
