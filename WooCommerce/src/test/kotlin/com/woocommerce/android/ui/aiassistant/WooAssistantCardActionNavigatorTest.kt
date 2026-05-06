@@ -7,16 +7,15 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 class WooAssistantCardActionNavigatorTest {
     @Test
     fun `given open order action, when mapped, then order details direction is returned`() {
         val direction = requireNotNull(
-            AssistantCardAction.OpenOrder(remoteOrderId = 123L).toNavDirections(site = site())
+            AssistantCardAction.OpenOrder(remoteOrderId = 123L).toNavDirections()
         )
 
         assertThat(direction.actionId).isEqualTo(R.id.action_global_orderDetailFragment)
@@ -31,7 +30,7 @@ class WooAssistantCardActionNavigatorTest {
     @Test
     fun `given open product action, when mapped, then product details direction is returned`() {
         val direction = requireNotNull(
-            AssistantCardAction.OpenProduct(remoteProductId = 456L).toNavDirections(site = site())
+            AssistantCardAction.OpenProduct(remoteProductId = 456L).toNavDirections()
         )
 
         assertThat(direction.actionId).isEqualTo(R.id.action_global_productDetailFragment)
@@ -46,7 +45,7 @@ class WooAssistantCardActionNavigatorTest {
     fun `given open analytics action, when mapped, then analytics direction is returned`() {
         val direction = requireNotNull(
             AssistantCardAction.OpenAnalytics(after = "2026-05-01", before = "2026-05-07")
-                .toNavDirections(site = site(), locale = Locale.US)
+                .toNavDirections(locale = Locale.US)
         )
 
         assertThat(direction.actionId).isEqualTo(R.id.action_global_analytics)
@@ -54,44 +53,45 @@ class WooAssistantCardActionNavigatorTest {
     }
 
     @Test
-    fun `given negative utc site timezone, when analytics range is mapped, then local dates do not shift backward`() {
-        val site = SiteModel().apply { timezone = "-7" }
-        val range = requireNotNull(
-            analyticsDatesToStatsTimeRangeSelection(
-                after = "2026-05-01",
-                before = "2026-05-01",
-                site = site,
-                locale = Locale.US,
+    fun `given analytics date range, when mapped, then hub range preserves requested dates`() {
+        val originalTimeZone = TimeZone.getDefault()
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT+01:00"))
+        try {
+            val range = requireNotNull(
+                analyticsDatesToStatsTimeRangeSelection(
+                    after = "2026-05-01",
+                    before = "2026-05-06",
+                    locale = Locale.US,
+                )
             )
-        )
-        val calendar = Calendar.getInstance(getNormalizedTimezone(site.timezone), Locale.US)
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+01:00"), Locale.US)
 
-        calendar.time = range.currentRange.start
-        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2026)
-        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.MAY)
-        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1)
+            calendar.time = range.currentRange.start
+            assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2026)
+            assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.MAY)
+            assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1)
 
-        calendar.time = range.currentRange.end
-        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2026)
-        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.MAY)
-        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1)
+            calendar.time = range.currentRange.end
+            assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2026)
+            assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.MAY)
+            assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(6)
+            assertThat(range.currentRangeDescription).contains("May 1")
+            assertThat(range.currentRangeDescription).contains("6, 2026")
+        } finally {
+            TimeZone.setDefault(originalTimeZone)
+        }
     }
 
     @Test
     fun `given invalid analytics date, when range is mapped, then null is returned`() {
-        val site = SiteModel().apply { timezone = "-7" }
-
         val range = analyticsDatesToStatsTimeRangeSelection(
             after = "not-a-date",
             before = "2026-05-01",
-            site = site,
             locale = Locale.US,
         )
 
         assertThat(range).isNull()
     }
-
-    private fun site() = SiteModel().apply { timezone = "-7" }
 
     private fun androidx.navigation.NavDirections.rangeSelection(): StatsTimeRangeSelection {
         val field = javaClass.getDeclaredField("rangeSelection")

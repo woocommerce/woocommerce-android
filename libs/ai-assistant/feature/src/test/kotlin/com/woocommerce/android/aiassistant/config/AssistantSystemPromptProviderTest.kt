@@ -38,7 +38,8 @@ class AssistantSystemPromptProviderTest {
 
         assertThat(prompt).contains("show_cards")
         assertThat(prompt).contains("The UI never renders cards")
-        assertThat(prompt).contains("if you don't call the card-rendering tool, no cards appear")
+        assertThat(prompt).contains("don't call the card-rendering tool")
+        assertThat(prompt).contains("no cards appear")
         assertThat(prompt).contains("then call `show_cards` with an ID-only `analytics_stats` reference")
         assertThat(prompt).contains("analytics_stats")
         assertThat(prompt).contains("currency-or-none query values")

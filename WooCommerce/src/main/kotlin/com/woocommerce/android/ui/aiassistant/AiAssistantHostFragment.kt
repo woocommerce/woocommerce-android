@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.aiassistant.ui.AssistantRoute
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -19,9 +18,6 @@ import javax.inject.Inject
 class AiAssistantHostFragment : BaseFragment() {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
-
-    @Inject
-    lateinit var selectedSite: SelectedSite
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -36,7 +32,7 @@ class AiAssistantHostFragment : BaseFragment() {
                 onBack = { findNavController().navigateUp() },
                 assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter),
                 onCardAction = { action ->
-                    action.toNavDirections(selectedSite.get())?.let { direction ->
+                    action.toNavDirections()?.let { direction ->
                         findNavController().navigateSafely(direction)
                     }
                 },
