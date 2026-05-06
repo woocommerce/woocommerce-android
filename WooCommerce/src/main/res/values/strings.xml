@@ -219,6 +219,13 @@
     <string name="login_qr_prologue_step_hint">Then scan the QR code that appears.</string>
     <string name="login_qr_prologue_scan_button">Scan QR code</string>
     <string name="login_qr_prologue_fallback_link">Sign in with site address instead</string>
+    <string name="login_qr_scanner_hint">Center the QR code in the frame</string>
+    <string name="login_qr_scanner_visit_url">Visit %1$s</string>
+    <string name="login_qr_scanner_authenticating">Signing you in…</string>
+    <string name="login_qr_endpoint_missing_title">This store can\'t complete QR login</string>
+    <string name="login_qr_endpoint_missing_body">Your WooCommerce plugin doesn\'t support QR login. Please update WooCommerce on your store and try again, or sign in by entering your site URL.</string>
+    <string name="login_qr_endpoint_missing_enter_url">Enter site URL instead</string>
+    <string name="login_qr_endpoint_missing_retry">Try scanning again</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
