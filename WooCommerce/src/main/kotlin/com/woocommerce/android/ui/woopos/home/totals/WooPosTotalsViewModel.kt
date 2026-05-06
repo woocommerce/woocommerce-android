@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -161,6 +162,13 @@ class WooPosTotalsViewModel @Inject constructor(
                     is Connected -> {
                         val state = uiState.value
                         if (state !is WooPosTotalsViewState.Checkout) return@collect
+                        if (ReaderType.isBuiltInReaderType(status.cardReader.type)) {
+                            // Built-in (Tap to Pay) reader sessions are user-driven via the TTP CTA.
+                            // Auto-collecting against a still-connected built-in reader from a previous
+                            // transaction would block other payment methods on the next checkout.
+                            uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+                            return@collect
+                        }
                         uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
                         if (data.orderId != EMPTY_ORDER_ID) {
                             collectPayment()
@@ -620,6 +628,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
                         isTTPPaymentInProgress = false
                         isTapToPayPayment = false
+                        setTapToPayInProgress(false)
                         launch { builtInReaderConnector.disconnectIfConnected() }
                         if (paymentState.errorType == PaymentFlowError.Canceled) {
                             returnToCheckoutAfterTapToPayFailed()
