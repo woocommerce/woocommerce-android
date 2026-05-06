@@ -9,6 +9,7 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
@@ -94,7 +95,7 @@ class AgenticLoopImpl(
             modelMessages = modelMessages + newAssistantMsg
             newTurnMessages.add(newAssistantMsg)
             modelMessages = appendCompletedToolMessages(modelMessages, newTurnMessages, completedTools)
-            completedTools.firstOutcomeUnknownError()?.let { error ->
+            completedTools.firstUnsafeTransportFailureError()?.let { error ->
                 emit(LoopEvent.Failed(error))
                 emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
                 return@flow
@@ -334,14 +335,21 @@ class AgenticLoopImpl(
         val safetyLevel: ToolSafetyLevel,
     )
 
-    private fun List<CompletedToolCall>.firstOutcomeUnknownError(): AssistantError.OutcomeUnknown? =
+    private fun List<CompletedToolCall>.firstUnsafeTransportFailureError(): AssistantError? =
         firstNotNullOfOrNull { completed ->
-            val isUnknownWriteOutcome = completed.safetyLevel == ToolSafetyLevel.UNSAFE &&
-                completed.result is ToolResult.TransportError
-            if (isUnknownWriteOutcome) {
-                AssistantError.OutcomeUnknown(toolName = completed.historyToolCall.name)
-            } else {
-                null
+            val result = completed.result as? ToolResult.TransportError
+                ?: return@firstNotNullOfOrNull null
+            if (completed.safetyLevel != ToolSafetyLevel.UNSAFE) {
+                return@firstNotNullOfOrNull null
+            }
+
+            when (result.kind) {
+                ToolFailureKind.OUTCOME_UNKNOWN -> AssistantError.OutcomeUnknown(
+                    toolName = completed.historyToolCall.name,
+                )
+                ToolFailureKind.DETERMINISTIC_FAILURE -> AssistantError.ToolFailed(
+                    toolName = completed.historyToolCall.name,
+                )
             }
         }
 

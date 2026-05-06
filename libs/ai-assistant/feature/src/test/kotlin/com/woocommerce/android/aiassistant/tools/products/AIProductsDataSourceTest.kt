@@ -215,6 +215,20 @@ class AIProductsDataSourceTest {
     }
 
     @Test
+    fun `given product remains absent after fetch, when getProduct is called, then product not found failure is returned`() =
+        runTest {
+            whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(null)
+            whenever(productStore.fetchSingleProduct(any())).thenReturn(
+                WCProductStore.OnProductChanged(remoteProductId = 10L)
+            )
+
+            val result = dataSource.getProduct(productId = 10L)
+
+            assertThat(result.exceptionOrNull())
+                .isInstanceOf(AIProductsDataSource.ProductNotFoundException::class.java)
+        }
+
+    @Test
     fun `given network fetch fails, when getProduct is called, then failure result is returned`() = runTest {
         whenever(productStore.getProductByRemoteId(site, 10L)).thenReturn(null)
         val errorEvent = WCProductStore.OnProductChanged().also {
