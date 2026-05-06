@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
@@ -55,8 +56,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -163,7 +162,7 @@ class WooPosTotalsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock()
+    private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
     }
@@ -1954,7 +1953,7 @@ class WooPosTotalsViewModelTest {
     fun `given flag on and TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
         // GIVEN
         val notAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(notAvailable)
         clearInvocations(tracker)
 
@@ -1968,7 +1967,7 @@ class WooPosTotalsViewModelTest {
     @Test
     fun `given flag on and TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
         whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
         clearInvocations(tracker)
 
@@ -1982,7 +1981,7 @@ class WooPosTotalsViewModelTest {
     @Test
     fun `given flag off and TTP NotAvailable, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(false)
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(false)
         whenever(tapToPayAvailabilityStatus.invoke())
             .thenReturn(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
         clearInvocations(tracker)
@@ -1992,6 +1991,47 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
+    fun `given TTP available, when checkout shown, then state isTapToPayAvailable is true`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.invoke()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayAvailable).isTrue()
+    }
+
+    @Test
+    fun `given TTP unavailable, when checkout shown, then state isTapToPayAvailable is false`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.invoke()).thenReturn(false)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayAvailable).isFalse()
+    }
+
+    @Test
+    fun `when OnTapToPayClicked, then track entry-point analytics and do not navigate`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+        clearInvocations(childrenToParentEventSender)
+        clearInvocations(analyticsTracker)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.TapToPayEntryPointTapped)
+        verify(childrenToParentEventSender, never()).sendToParent(any())
     }
 
     private fun mockPaymentFailedTexts() {
@@ -2145,7 +2185,7 @@ class WooPosTotalsViewModelTest {
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
-        featureFlagRepository = featureFlagRepository,
+        isTapToPayAvailable = isTapToPayAvailable,
         tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
         paymentsFlowTracker = tracker,
     )
