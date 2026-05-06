@@ -288,7 +288,7 @@ private fun TotalsLoaded(
 
         CheckoutPaymentButtons(
             onUIEvent = onUIEvent,
-            tapToPayInProgress = state.isTapToPayInProgress,
+            buttonsState = state.paymentButtonsState,
         )
     }
 
@@ -317,7 +317,7 @@ private fun TotalsLoaded(
 @Composable
 private fun CheckoutPaymentButtons(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
-    tapToPayInProgress: Boolean,
+    buttonsState: WooPosTotalsViewState.PaymentButtonsState,
 ) {
     val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     val outerPaddingModifier = if (isPhone) {
@@ -325,7 +325,10 @@ private fun CheckoutPaymentButtons(
     } else {
         Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
     }
-    val buttonState = if (tapToPayInProgress) WooPosButtonState.DISABLED else WooPosButtonState.ENABLED
+    val buttonState = when (buttonsState) {
+        WooPosTotalsViewState.PaymentButtonsState.Enabled -> WooPosButtonState.ENABLED
+        WooPosTotalsViewState.PaymentButtonsState.Disabled -> WooPosButtonState.DISABLED
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
