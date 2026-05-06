@@ -157,7 +157,7 @@ private fun pickPrimary(
             WooPosPaymentMethod.TAP_TO_PAY,
         )
     }
-    return preference.first { it in methods }
+    return preference.firstOrNull { it in methods } ?: methods.first()
 }
 
 @Composable
