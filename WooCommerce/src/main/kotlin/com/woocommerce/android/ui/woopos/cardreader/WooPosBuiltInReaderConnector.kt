@@ -137,8 +137,8 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     }
 }
 
-class MissingFineLocationPermissionException :
+internal class MissingFineLocationPermissionException :
     IllegalStateException("ACCESS_FINE_LOCATION permission is required for Tap to Pay")
 
-class BuiltInReaderDiscoveryFailedException(message: String?) :
-    IllegalStateException(message ?: "No built-in reader available")
+internal class BuiltInReaderDiscoveryFailedException(message: String?) :
+    IllegalStateException(message)
