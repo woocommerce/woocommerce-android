@@ -296,7 +296,7 @@ private fun TotalsLoaded(
 
         CheckoutPaymentButtons(
             onUIEvent = onUIEvent,
-            tapToPayInProgress = state.isTapToPayInProgress,
+            tapToPayInProgress = state.tapToPayProgress != null,
         )
     }
 
