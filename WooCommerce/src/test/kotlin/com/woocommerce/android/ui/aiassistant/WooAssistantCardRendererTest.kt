@@ -102,23 +102,25 @@ class WooAssistantCardRendererTest {
     }
 
     @Test
-    fun `given assistant stats card, when mapped, then period revenue order count and chart values are displayed`() {
+    fun `given assistant stats card, when mapped, then period total sales net sales and chart values are displayed`() {
         whenever(currencyFormatter.formatCurrency("123.45", "USD")).thenReturn("$123.45")
+        whenever(currencyFormatter.formatCurrency("100.15", "USD")).thenReturn("$100.15")
 
-        val model = statsCard(revenueCurrency = "USD").toStatsCardState(
+        val model = statsCard(currency = "USD").toStatsCardState(
             currencyFormatter = currencyFormatter,
             unavailableValue = "Unavailable",
             locale = Locale.US,
         )
 
         assertThat(model.period).isEqualTo("May 1 - May 7, 2026")
-        assertThat(model.revenueTotal).isEqualTo("$123.45")
-        assertThat(model.orderCount).isEqualTo("8")
-        assertThat(model.revenueChartValues).containsExactly(12.0, 18.0, 9.0)
-        assertThat(model.orderChartValues).containsExactly(1.0, 3.0, 2.0)
-        assertThat(model.isRevenueTrendAvailable).isTrue()
-        assertThat(model.isOrdersTrendAvailable).isTrue()
+        assertThat(model.totalSales).isEqualTo("$123.45")
+        assertThat(model.netSales).isEqualTo("$100.15")
+        assertThat(model.totalSalesChartValues).containsExactly(12.0, 18.0, 9.0)
+        assertThat(model.netSalesChartValues).containsExactly(10.0, 15.0, 8.0)
+        assertThat(model.isTotalSalesTrendAvailable).isTrue()
+        assertThat(model.isNetSalesTrendAvailable).isTrue()
         verify(currencyFormatter).formatCurrency("123.45", "USD")
+        verify(currencyFormatter).formatCurrency("100.15", "USD")
     }
 
     @Test
@@ -133,52 +135,52 @@ class WooAssistantCardRendererTest {
     @Test
     fun `given assistant stats card with blank metrics, when mapped, then unavailable fallback is used`() {
         val model = statsCard(
-            revenueTotal = "",
-            orderCount = "",
-            revenueChartPoints = emptyList(),
-            orderChartPoints = emptyList(),
+            totalSales = "",
+            netSales = "",
+            totalSalesChartPoints = emptyList(),
+            netSalesChartPoints = emptyList(),
         )
             .toStatsCardState(currencyFormatter, unavailableValue = "Not available", locale = Locale.US)
 
         assertThat(model).isEqualTo(
             AiAssistantStatsCardState(
                 period = "May 1 - May 7, 2026",
-                revenueTotal = "Not available",
-                orderCount = "Not available",
-                revenueChartValues = emptyList(),
-                orderChartValues = emptyList(),
-                isRevenueTrendAvailable = false,
-                isOrdersTrendAvailable = false,
+                totalSales = "Not available",
+                netSales = "Not available",
+                totalSalesChartValues = emptyList(),
+                netSalesChartValues = emptyList(),
+                isTotalSalesTrendAvailable = false,
+                isNetSalesTrendAvailable = false,
             )
         )
     }
 
     @Test
-    fun `given assistant stats card without order chart points, when mapped, then only orders trend is unavailable`() {
-        val model = statsCard(orderChartPoints = emptyList()).toStatsCardState(
+    fun `given assistant stats card without net sales chart points, when mapped, then only net sales trend is unavailable`() {
+        val model = statsCard(netSalesChartPoints = emptyList()).toStatsCardState(
             currencyFormatter = currencyFormatter,
             unavailableValue = "Unavailable",
             locale = Locale.US,
         )
 
-        assertThat(model.revenueChartValues).containsExactly(12.0, 18.0, 9.0)
-        assertThat(model.orderChartValues).isEmpty()
-        assertThat(model.isRevenueTrendAvailable).isTrue()
-        assertThat(model.isOrdersTrendAvailable).isFalse()
+        assertThat(model.totalSalesChartValues).containsExactly(12.0, 18.0, 9.0)
+        assertThat(model.netSalesChartValues).isEmpty()
+        assertThat(model.isTotalSalesTrendAvailable).isTrue()
+        assertThat(model.isNetSalesTrendAvailable).isFalse()
     }
 
     @Test
-    fun `given assistant stats card without revenue chart points, when mapped, then only revenue trend is unavailable`() {
-        val model = statsCard(revenueChartPoints = emptyList()).toStatsCardState(
+    fun `given assistant stats card without total sales chart points, when mapped, then only total sales trend is unavailable`() {
+        val model = statsCard(totalSalesChartPoints = emptyList()).toStatsCardState(
             currencyFormatter = currencyFormatter,
             unavailableValue = "Unavailable",
             locale = Locale.US,
         )
 
-        assertThat(model.revenueChartValues).isEmpty()
-        assertThat(model.orderChartValues).containsExactly(1.0, 3.0, 2.0)
-        assertThat(model.isRevenueTrendAvailable).isFalse()
-        assertThat(model.isOrdersTrendAvailable).isTrue()
+        assertThat(model.totalSalesChartValues).isEmpty()
+        assertThat(model.netSalesChartValues).containsExactly(10.0, 15.0, 8.0)
+        assertThat(model.isTotalSalesTrendAvailable).isFalse()
+        assertThat(model.isNetSalesTrendAvailable).isTrue()
     }
 
     @Test
@@ -191,12 +193,12 @@ class WooAssistantCardRendererTest {
     }
 
     @Test
-    fun `given assistant stats card without currency, when mapped, then raw revenue is used`() {
-        val revenueTotal = statsCard(revenueCurrency = "")
+    fun `given assistant stats card without currency, when mapped, then raw total sales is used`() {
+        val totalSales = statsCard(currency = "")
             .toStatsCardState(currencyFormatter, unavailableValue = "Unavailable", locale = Locale.US)
-            .revenueTotal
+            .totalSales
 
-        assertThat(revenueTotal).isEqualTo("123.45")
+        assertThat(totalSales).isEqualTo("123.45")
     }
 
     @Test
@@ -242,26 +244,32 @@ class WooAssistantCardRendererTest {
     private fun statsCard(
         after: String = "2026-05-01",
         before: String = "2026-05-07",
-        revenueTotal: String = "123.45",
-        revenueCurrency: String = "",
-        orderCount: String = "8",
-        revenueChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+        totalSales: String = "123.45",
+        netSales: String = "100.15",
+        currency: String = "",
+        totalSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
             AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
             AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
             AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
         ),
-        orderChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
-            AssistantCard.Stats.ChartPoint("2026-05-01", 1.0),
-            AssistantCard.Stats.ChartPoint("2026-05-02", 3.0),
-            AssistantCard.Stats.ChartPoint("2026-05-03", 2.0),
+        netSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 10.0),
+            AssistantCard.Stats.ChartPoint("2026-05-02", 15.0),
+            AssistantCard.Stats.ChartPoint("2026-05-03", 8.0),
         ),
     ) = AssistantCard.Stats(
+        id = ANALYTICS_STATS_ID,
         after = after,
         before = before,
-        revenueTotal = revenueTotal,
-        revenueCurrency = revenueCurrency,
-        orderCount = orderCount,
-        revenueChartPoints = revenueChartPoints,
-        orderChartPoints = orderChartPoints,
+        currency = currency,
+        totalSales = totalSales,
+        netSales = netSales,
+        totalSalesChartPoints = totalSalesChartPoints,
+        netSalesChartPoints = netSalesChartPoints,
     )
+
+    private companion object {
+        private const val ANALYTICS_STATS_ID =
+            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+    }
 }

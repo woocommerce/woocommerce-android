@@ -22,13 +22,14 @@ sealed interface AssistantCard {
     ) : AssistantCard
 
     data class Stats(
+        val id: String,
         val after: String,
         val before: String,
-        val revenueTotal: String,
-        val revenueCurrency: String,
-        val orderCount: String,
-        val revenueChartPoints: List<ChartPoint>,
-        val orderChartPoints: List<ChartPoint>,
+        val currency: String,
+        val totalSales: String,
+        val netSales: String,
+        val totalSalesChartPoints: List<ChartPoint>,
+        val netSalesChartPoints: List<ChartPoint>,
     ) : AssistantCard {
         data class ChartPoint(
             val date: String,

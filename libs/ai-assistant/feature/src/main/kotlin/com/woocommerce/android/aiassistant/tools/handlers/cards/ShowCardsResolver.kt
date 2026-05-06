@@ -2,9 +2,14 @@ package com.woocommerce.android.aiassistant.tools.handlers.cards
 
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.CachedLookupResult
+import com.woocommerce.android.aiassistant.tools.analytics.AIAnalyticsDataSource
+import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateAfterBound
+import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateBeforeBound
+import com.woocommerce.android.aiassistant.tools.analytics.analyticsStatsSummary
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
@@ -34,14 +39,16 @@ internal sealed interface ShowCardsResolution {
 internal class DefaultShowCardsResolver @Inject constructor(
     private val ordersDataSource: AIOrdersDataSource,
     private val productsDataSource: AIProductsDataSource,
+    private val analyticsDataSource: AIAnalyticsDataSource,
     @AiAssistantJson private val json: Json,
 ) : ShowCardsResolver {
     override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> {
         val orderResults = resolveOrders(refs.filter { it.family == ShowCardFamily.Order })
         val productResults = resolveProducts(refs.filter { it.family == ShowCardFamily.Product })
+        val analyticsResults = resolveAnalyticsStats(refs.filter { it.family == ShowCardFamily.AnalyticsStats })
 
         return refs.map { ref ->
-            orderResults[ref] ?: productResults[ref] ?: ShowCardsResolution.Missing(
+            orderResults[ref] ?: productResults[ref] ?: analyticsResults[ref] ?: ShowCardsResolution.Missing(
                 ref = ref,
                 reason = ShowCardsRejectionReason.NotFound,
             )
@@ -135,6 +142,68 @@ internal class DefaultShowCardsResolver @Inject constructor(
             ),
         ),
     )
+
+    private suspend fun resolveAnalyticsStats(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
+        if (refs.isEmpty()) return emptyMap()
+
+        return buildMap {
+            refs.forEach { ref ->
+                put(ref, resolveAnalyticsStats(ref))
+            }
+        }
+    }
+
+    private suspend fun resolveAnalyticsStats(ref: ValidatedRef): ShowCardsResolution {
+        val query = AnalyticsStatsCardId.parse(ref.id)
+            ?: return ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.InvalidId)
+        return analyticsDataSource.fetchRevenueStats(
+            after = analyticsDateAfterBound(query.after),
+            before = analyticsDateBeforeBound(query.before),
+            interval = query.interval,
+            currency = query.currency,
+        ).fold(
+            onSuccess = { stats ->
+                val summary = analyticsStatsSummary(
+                    after = query.after,
+                    before = query.before,
+                    stats = stats,
+                    currency = query.currency,
+                )
+                val totals = summary["totals"] as? JsonObject ?: JsonObject(emptyMap())
+                val intervalSubtotals = (summary["interval_subtotals"] as? JsonArray)
+                    ?.mapNotNull { it as? JsonObject }
+                    .orEmpty()
+                ShowCardsResolution.Resolved(
+                    ref = ref,
+                    summary = jsonObject(
+                        AnalyticsStatsSummary(
+                            id = ref.id,
+                            after = query.after,
+                            before = query.before,
+                            currency = query.currency,
+                            totals = totals,
+                            intervalSubtotals = intervalSubtotals,
+                        )
+                    ),
+                    card = ShowCardPayload(
+                        family = ShowCardFamily.AnalyticsStats.serializedName,
+                        id = ref.id,
+                        title = "Analytics",
+                        details = ShowCardDetails.AnalyticsStats(
+                            after = query.after,
+                            before = query.before,
+                            currency = query.currency,
+                            totals = totals,
+                            intervalSubtotals = intervalSubtotals,
+                        ),
+                    ),
+                )
+            },
+            onFailure = {
+                ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed)
+            },
+        )
+    }
 
     private inline fun <reified T> jsonObject(value: T): JsonObject =
         json.encodeToJsonElement(value).jsonObject

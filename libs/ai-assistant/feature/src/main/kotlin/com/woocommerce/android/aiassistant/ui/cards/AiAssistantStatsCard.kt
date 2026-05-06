@@ -47,13 +47,13 @@ fun AiAssistantStatsCard(
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             StatsMetric(
-                label = stringResource(R.string.assistant_stats_card_revenue_label),
-                value = state.revenueTotal,
+                label = stringResource(R.string.assistant_stats_card_total_sales_label),
+                value = state.totalSales,
                 modifier = Modifier.weight(1f),
             )
             StatsMetric(
-                label = stringResource(R.string.assistant_stats_card_orders_label),
-                value = state.orderCount,
+                label = stringResource(R.string.assistant_stats_card_net_sales_label),
+                value = state.netSales,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -62,15 +62,15 @@ fun AiAssistantStatsCard(
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             StatsTrendColumn(
-                label = stringResource(R.string.assistant_stats_card_revenue_label),
-                values = state.revenueChartValues,
-                isTrendAvailable = state.isRevenueTrendAvailable,
+                label = stringResource(R.string.assistant_stats_card_total_sales_label),
+                values = state.totalSalesChartValues,
+                isTrendAvailable = state.isTotalSalesTrendAvailable,
                 modifier = Modifier.weight(1f),
             )
             StatsTrendColumn(
-                label = stringResource(R.string.assistant_stats_card_orders_label),
-                values = state.orderChartValues,
-                isTrendAvailable = state.isOrdersTrendAvailable,
+                label = stringResource(R.string.assistant_stats_card_net_sales_label),
+                values = state.netSalesChartValues,
+                isTrendAvailable = state.isNetSalesTrendAvailable,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -142,8 +142,8 @@ private fun AiAssistantStatsCardPreviewMultiPoint() {
 private fun AiAssistantStatsCardPreviewChangedShape() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
-            revenueChartValues = listOf(26.0, 9.0, 22.0, 7.0, 18.0),
-            orderChartValues = listOf(5.0, 1.0, 4.0, 2.0, 3.0),
+            totalSalesChartValues = listOf(26.0, 9.0, 22.0, 7.0, 18.0),
+            netSalesChartValues = listOf(15.0, 4.0, 18.0, 3.0, 12.0),
         ),
         onClick = {},
     )
@@ -154,8 +154,8 @@ private fun AiAssistantStatsCardPreviewChangedShape() {
 private fun AiAssistantStatsCardPreviewSinglePoint() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
-            revenueChartValues = listOf(12.0),
-            orderChartValues = listOf(1.0),
+            totalSalesChartValues = listOf(12.0),
+            netSalesChartValues = listOf(9.0),
         ),
         onClick = {},
     )
@@ -166,8 +166,8 @@ private fun AiAssistantStatsCardPreviewSinglePoint() {
 private fun AiAssistantStatsCardPreviewAllZero() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
-            revenueChartValues = listOf(0.0, 0.0, 0.0),
-            orderChartValues = listOf(0.0, 0.0, 0.0),
+            totalSalesChartValues = listOf(0.0, 0.0, 0.0),
+            netSalesChartValues = listOf(0.0, 0.0, 0.0),
         ),
         onClick = {},
     )
@@ -178,8 +178,8 @@ private fun AiAssistantStatsCardPreviewAllZero() {
 private fun AiAssistantStatsCardPreviewNegativeRefunds() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
-            revenueChartValues = listOf(10.0, -5.0, 3.0),
-            orderChartValues = listOf(2.0, 1.0, 2.0),
+            totalSalesChartValues = listOf(10.0, -5.0, 3.0),
+            netSalesChartValues = listOf(8.0, -7.0, 1.0),
         ),
         onClick = {},
     )
@@ -190,10 +190,10 @@ private fun AiAssistantStatsCardPreviewNegativeRefunds() {
 private fun AiAssistantStatsCardPreviewNoTrend() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
-            revenueChartValues = emptyList(),
-            orderChartValues = emptyList(),
-            isRevenueTrendAvailable = false,
-            isOrdersTrendAvailable = false,
+            totalSalesChartValues = emptyList(),
+            netSalesChartValues = emptyList(),
+            isTotalSalesTrendAvailable = false,
+            isNetSalesTrendAvailable = false,
         ),
         onClick = {},
     )
@@ -204,28 +204,28 @@ private fun AiAssistantStatsCardPreviewNoTrend() {
 private fun AiAssistantStatsCardPreviewPartialData() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
-            revenueChartValues = listOf(12.0, 18.0, 9.0, 26.0, 21.0),
-            orderChartValues = emptyList(),
-            isOrdersTrendAvailable = false,
+            totalSalesChartValues = listOf(12.0, 18.0, 9.0, 26.0, 21.0),
+            netSalesChartValues = emptyList(),
+            isNetSalesTrendAvailable = false,
         ),
         onClick = {},
     )
 }
 
 private fun sampleStatsCardState(
-    revenueChartValues: List<Double> = SAMPLE_REVENUE_CHART_VALUES,
-    orderChartValues: List<Double> = SAMPLE_ORDER_CHART_VALUES,
-    isRevenueTrendAvailable: Boolean = revenueChartValues.isNotEmpty(),
-    isOrdersTrendAvailable: Boolean = orderChartValues.isNotEmpty(),
+    totalSalesChartValues: List<Double> = SAMPLE_TOTAL_SALES_CHART_VALUES,
+    netSalesChartValues: List<Double> = SAMPLE_NET_SALES_CHART_VALUES,
+    isTotalSalesTrendAvailable: Boolean = totalSalesChartValues.isNotEmpty(),
+    isNetSalesTrendAvailable: Boolean = netSalesChartValues.isNotEmpty(),
 ) = AiAssistantStatsCardState(
     period = "May 1 - May 7, 2026",
-    revenueTotal = "$123.45",
-    orderCount = "8",
-    revenueChartValues = revenueChartValues,
-    orderChartValues = orderChartValues,
-    isRevenueTrendAvailable = isRevenueTrendAvailable,
-    isOrdersTrendAvailable = isOrdersTrendAvailable,
+    totalSales = "$170.35",
+    netSales = "$120.15",
+    totalSalesChartValues = totalSalesChartValues,
+    netSalesChartValues = netSalesChartValues,
+    isTotalSalesTrendAvailable = isTotalSalesTrendAvailable,
+    isNetSalesTrendAvailable = isNetSalesTrendAvailable,
 )
 
-private val SAMPLE_REVENUE_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)
-private val SAMPLE_ORDER_CHART_VALUES = listOf(1.0, 3.0, 2.0, 5.0, 4.0)
+private val SAMPLE_TOTAL_SALES_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)
+private val SAMPLE_NET_SALES_CHART_VALUES = listOf(8.0, 12.0, 6.0, 20.0, 14.0)

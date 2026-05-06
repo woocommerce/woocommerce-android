@@ -37,7 +37,6 @@ import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDat
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
-import com.woocommerce.android.aiassistant.ui.cards.AssistantAnalyticsRevenueCardParser
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
@@ -380,7 +379,7 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success, when adapted, then stats card with revenue and order graph points is emitted`() =
+    fun `given analytics revenue success, when adapted, then no stats card is emitted directly`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
@@ -398,22 +397,46 @@ class AgenticLoopAssistantRuntimeTest {
 
             val events = runtime.startTurn(givenTurnRequest()).toList()
 
+            assertThat(events.cardEvents()).isEmpty()
+        }
+
+    @Test
+    fun `given show cards success with analytics stats, when adapted, then stats card is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-stats",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = showCardsUiStructured(analyticsStatsPayload()),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
             assertThat(events.cardEvents()).containsExactly(
                 AssistantRuntimeEvent.CardsResolved(
                     listOf(
                         AssistantCard.Stats(
+                            id = ANALYTICS_STATS_ID,
                             after = "2026-05-01",
                             before = "2026-05-03",
-                            revenueTotal = "123.45",
-                            revenueCurrency = "USD",
-                            orderCount = "3",
-                            revenueChartPoints = listOf(
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 10.0),
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 20.0),
+                            currency = "USD",
+                            totalSales = "170.35",
+                            netSales = "120.15",
+                            totalSalesChartPoints = listOf(
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
                             ),
-                            orderChartPoints = listOf(
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 1.0),
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 2.0),
+                            netSalesChartPoints = listOf(
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
+                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
                             ),
                         )
                     )
@@ -615,7 +638,6 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
         confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
-        analyticsRevenueCardParser = AssistantAnalyticsRevenueCardParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
     )
 
@@ -690,6 +712,37 @@ class AgenticLoopAssistantRuntimeTest {
             currency = "USD",
             dateCreated = "2026-05-01T10:00:00Z",
             customerName = "Jane Doe",
+        ),
+    )
+
+    private fun analyticsStatsPayload() = ShowCardPayload(
+        family = "analytics_stats",
+        id = ANALYTICS_STATS_ID,
+        title = "Analytics",
+        details = ShowCardDetails.AnalyticsStats(
+            after = "2026-05-01",
+            before = "2026-05-03",
+            currency = "USD",
+            totals = buildJsonObject {
+                put("total_sales", "170.35")
+                put("net_revenue", "120.15")
+            },
+            intervalSubtotals = listOf(
+                buildJsonObject {
+                    put("interval", "2026-05-01")
+                    putJsonObject("subtotals") {
+                        put("total_sales", "100.00")
+                        put("net_revenue", "80.00")
+                    }
+                },
+                buildJsonObject {
+                    put("interval", "2026-05-02")
+                    putJsonObject("subtotals") {
+                        put("total_sales", "70.35")
+                        put("net_revenue", "40.15")
+                    }
+                },
+            ),
         ),
     )
 
@@ -778,5 +831,10 @@ class AgenticLoopAssistantRuntimeTest {
         variationsDataSource = mock<AIProductVariationsDataSource>(),
     ) {
         override suspend fun resolve(request: ConfirmationRequest): ConfirmationSnapshot? = snapshot
+    }
+
+    private companion object {
+        private const val ANALYTICS_STATS_ID =
+            "analytics_revenue:after:2026-05-01:before:2026-05-03:interval:day:currency:USD"
     }
 }

@@ -679,8 +679,8 @@ private fun AssistantStatsCardGroupNoTrendPreview() {
             AssistantCardGroupSegment(
                 cards = listOf(
                     sampleStatsCard(
-                        revenueChartPoints = emptyList(),
-                        orderChartPoints = emptyList(),
+                        totalSalesChartPoints = emptyList(),
+                        netSalesChartPoints = emptyList(),
                     )
                 ),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
@@ -901,14 +901,16 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         AiAssistantStatsCard(
             state = AiAssistantStatsCardState(
                 period = "${card.after} - ${card.before}",
-                revenueTotal = listOf(card.revenueTotal, card.revenueCurrency)
+                totalSales = listOf(card.totalSales, card.currency)
                     .filter { it.isNotBlank() }
                     .joinToString(" "),
-                orderCount = card.orderCount,
-                revenueChartValues = card.revenueChartPoints.map { it.value },
-                orderChartValues = card.orderChartPoints.map { it.value },
-                isRevenueTrendAvailable = card.revenueChartPoints.isNotEmpty(),
-                isOrdersTrendAvailable = card.orderChartPoints.isNotEmpty(),
+                netSales = listOf(card.netSales, card.currency)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" "),
+                totalSalesChartValues = card.totalSalesChartPoints.map { it.value },
+                netSalesChartValues = card.netSalesChartPoints.map { it.value },
+                isTotalSalesTrendAvailable = card.totalSalesChartPoints.isNotEmpty(),
+                isNetSalesTrendAvailable = card.netSalesChartPoints.isNotEmpty(),
             ),
             onClick = {},
             modifier = modifier,
@@ -937,28 +939,29 @@ private fun sampleProductCard() = AssistantCard.Product(
 )
 
 private fun sampleStatsCard(
-    revenueChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_REVENUE_CHART_POINTS,
-    orderChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_ORDER_CHART_POINTS,
+    totalSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_SALES_CHART_POINTS,
+    netSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_NET_SALES_CHART_POINTS,
 ) = AssistantCard.Stats(
+    id = "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD",
     after = "2026-05-01",
     before = "2026-05-07",
-    revenueTotal = "123.45",
-    revenueCurrency = "USD",
-    orderCount = "8",
-    revenueChartPoints = revenueChartPoints,
-    orderChartPoints = orderChartPoints,
+    currency = "USD",
+    totalSales = "170.35",
+    netSales = "120.15",
+    totalSalesChartPoints = totalSalesChartPoints,
+    netSalesChartPoints = netSalesChartPoints,
 )
 
-private val SAMPLE_REVENUE_CHART_POINTS = listOf(
+private val SAMPLE_TOTAL_SALES_CHART_POINTS = listOf(
     AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
     AssistantCard.Stats.ChartPoint("2026-05-02", 18.0),
     AssistantCard.Stats.ChartPoint("2026-05-03", 9.0),
 )
 
-private val SAMPLE_ORDER_CHART_POINTS = listOf(
-    AssistantCard.Stats.ChartPoint("2026-05-01", 1.0),
-    AssistantCard.Stats.ChartPoint("2026-05-02", 3.0),
-    AssistantCard.Stats.ChartPoint("2026-05-03", 2.0),
+private val SAMPLE_NET_SALES_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 8.0),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 12.0),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 6.0),
 )
 
 private val AssistantCard.Order.unformattedTotal: String

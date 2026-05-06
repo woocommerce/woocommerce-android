@@ -65,7 +65,6 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
                         before = args.before,
                         stats = stats,
                         currency = currency,
-                        includeStatsCharts = true,
                     ),
                 )
             },

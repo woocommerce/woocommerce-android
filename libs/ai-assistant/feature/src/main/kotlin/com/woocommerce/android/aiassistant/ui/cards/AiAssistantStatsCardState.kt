@@ -2,10 +2,10 @@ package com.woocommerce.android.aiassistant.ui.cards
 
 data class AiAssistantStatsCardState(
     val period: String,
-    val revenueTotal: String,
-    val orderCount: String,
-    val revenueChartValues: List<Double>,
-    val orderChartValues: List<Double>,
-    val isRevenueTrendAvailable: Boolean,
-    val isOrdersTrendAvailable: Boolean,
+    val totalSales: String,
+    val netSales: String,
+    val totalSalesChartValues: List<Double>,
+    val netSalesChartValues: List<Double>,
+    val isTotalSalesTrendAvailable: Boolean,
+    val isNetSalesTrendAvailable: Boolean,
 )

@@ -33,18 +33,25 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is built, then show cards remains entity only and stats cards are app owned`() {
+    fun `when prompt is built, then show cards includes analytics stats and preserves payload shape`() {
         val prompt = WooCommerceAssistantSystemPromptProvider().systemPrompt(todayIsoDate = "2026-05-04")
 
         assertThat(prompt).contains("show_cards")
-        assertThat(prompt).contains("the only mechanism for surfacing order and product entities")
-        assertThat(prompt).contains("Do not call `show_cards` for analytics")
-        assertThat(prompt).contains("Successful `analytics_revenue` results may be rendered")
-        assertThat(prompt).contains("app-owned stats card with compact revenue and orders trend graphs")
+        assertThat(prompt).contains("Use `show_cards` for analytics stats cards")
+        assertThat(prompt).contains("analytics_stats")
+        assertThat(prompt).contains(
+            "analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:interval:<interval>:currency:<ISO|none>"
+        )
+        assertThat(prompt).contains("Do not copy `totals`, `interval_subtotals`, or chart arrays into `show_cards`")
+        assertThat(prompt).doesNotContain("Do not call `show_cards` for analytics")
+        assertThat(prompt).doesNotContain("Successful `analytics_revenue` results may be rendered by the Android app")
+        assertThat(prompt).doesNotContain(
+            "copy the `analytics_revenue` result's `after`, `before`, `currency`, `totals`, and `interval_subtotals`"
+        )
         assertThat(prompt).contains("no card JSON")
         assertThat(prompt).contains("no card tokens")
         assertThat(prompt).contains("There is no terminal `respond` tool")
-        assertThat(prompt).contains("There is no `render` field")
+        assertThat(prompt).contains("There is no `render`")
     }
 
     @Test

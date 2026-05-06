@@ -5,11 +5,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.double
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -80,7 +77,7 @@ class AnalyticsRevenueToolHandlerTest {
             assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(2)
             assertThat(structured.getValue("totals").jsonObject.getValue("net_revenue").jsonPrimitive.content)
-                .isEqualTo("12345.67")
+                .isEqualTo("120.15")
 
             val firstInterval = structured.getValue("interval_subtotals").jsonArray.first().jsonObject
             assertThat(firstInterval.keys).containsExactlyInAnyOrder("interval", "date_start", "subtotals")
@@ -191,138 +188,51 @@ class AnalyticsRevenueToolHandlerTest {
         }
 
     @Test
-    fun `given interval subtotals, when execute succeeds, then structured result includes revenue and order chart points`() =
+    fun `given interval subtotals, when execute succeeds, then structured result does not include Android chart arrays`() =
         runTest {
             givenRevenueStats(
                 sampleStats(
                     intervalSubtotals = listOf(
-                        intervalSubtotal("2026-04-01", "10.00", orderCount = 1),
-                        intervalSubtotal("2026-04-02", "-2.50", orderCount = 3),
+                        intervalSubtotal("2026-04-01", totalSales = "10.00", netRevenue = "8.00"),
+                        intervalSubtotal("2026-04-02", totalSales = "-2.50", netRevenue = "-3.50"),
                     )
                 )
             )
 
             val structured = whenRevenueToolExecutes()
 
-            assertThat(structured.revenueChartDates())
-                .containsExactly("2026-04-01", "2026-04-02")
-            assertThat(structured.revenueChartValues())
-                .containsExactly(10.0, -2.5)
-            assertThat(structured.orderChartDates())
-                .containsExactly("2026-04-01", "2026-04-02")
-            assertThat(structured.orderChartValues())
-                .containsExactly(1.0, 3.0)
+            assertThat(structured.keys).doesNotContain(
+                "revenue_chart",
+                "order_chart",
+                "total_sales_chart",
+                "net_sales_chart",
+            )
+            assertThat(structured.getValue("interval_subtotals").jsonArray).hasSize(2)
         }
 
     @Test
-    fun `given empty intervals, when execute succeeds, then revenue and order charts are empty`() = runTest {
-        givenRevenueStats(sampleStats(intervalSubtotals = emptyList()))
-
-        val structured = whenRevenueToolExecutes()
-
-        assertThat(structured.getValue("revenue_chart").jsonArray).isEmpty()
-        assertThat(structured.getValue("order_chart").jsonArray).isEmpty()
-    }
-
-    @Test
-    fun `given one interval, when execute succeeds, then revenue and order charts have one point`() = runTest {
-        givenRevenueStats(
-            sampleStats(intervalSubtotals = listOf(intervalSubtotal("2026-04-01", "10.00", orderCount = 1)))
-        )
-
-        val structured = whenRevenueToolExecutes()
-
-        assertThat(structured.getValue("revenue_chart").jsonArray).hasSize(1)
-        assertThat(structured.getValue("order_chart").jsonArray).hasSize(1)
-    }
-
-    @Test
-    fun `given all zero intervals, when execute succeeds, then zero revenue and order chart values are retained`() =
+    fun `given total sales gross sales and net revenue, when execute succeeds, then fields are preserved in totals`() =
         runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal("2026-04-01", "0.00", orderCount = 0),
-                        intervalSubtotal("2026-04-02", "0", orderCount = 0),
-                    )
-                )
-            )
+            givenRevenueStats(sampleStats())
 
             val structured = whenRevenueToolExecutes()
+            val totals = structured.getValue("totals").jsonObject
 
-            assertThat(structured.revenueChartValues()).containsExactly(0.0, 0.0)
-            assertThat(structured.orderChartValues()).containsExactly(0.0, 0.0)
+            assertThat(totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
+            assertThat(totals.getValue("gross_sales").jsonPrimitive.content).isEqualTo("190.00")
+            assertThat(totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
         }
 
     @Test
-    fun `given negative revenue intervals, when execute succeeds, then negative revenue and order values are retained`() =
-        runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal("2026-04-01", "-5.00", orderCount = -1),
-                        intervalSubtotal("2026-04-02", "-1.25", orderCount = -2),
-                    )
-                )
-            )
-
-            val structured = whenRevenueToolExecutes()
-
-            assertThat(structured.revenueChartValues()).containsExactly(-5.0, -1.25)
-            assertThat(structured.orderChartValues()).containsExactly(-1.0, -2.0)
-        }
-
-    @Test
-    fun `given non numeric interval metrics, when execute succeeds, then malformed chart points are skipped per series`() =
-        runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal("2026-04-01", "n/a", orderCount = 3),
-                        intervalSubtotal("2026-04-02", "8.50", orderCount = "n/a"),
-                    )
-                )
-            )
-
-            val structured = whenRevenueToolExecutes()
-
-            assertThat(structured.revenueChartDates()).containsExactly("2026-04-02")
-            assertThat(structured.orderChartDates()).containsExactly("2026-04-01")
-        }
-
-    @Test
-    fun `given malformed interval date and missing date start, when execute succeeds, then both chart points are skipped`() =
-        runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal(
-                            interval = "2026-99-99",
-                            revenue = "10.00",
-                            orderCount = 1,
-                            dateStart = null,
-                        ),
-                        intervalSubtotal("2026-04-02", "8.50", orderCount = 2),
-                    )
-                )
-            )
-
-            val structured = whenRevenueToolExecutes()
-
-            assertThat(structured.revenueChartDates()).containsExactly("2026-04-02")
-            assertThat(structured.orderChartDates()).containsExactly("2026-04-02")
-        }
-
-    @Test
-    fun `given weekly interval label with valid date start, when execute succeeds, then both chart points use date start`() =
+    fun `given interval subtotals with date start, when execute succeeds, then date start remains available for card parser`() =
         runTest {
             givenRevenueStats(
                 sampleStats(
                     intervalSubtotals = listOf(
                         intervalSubtotal(
                             interval = "week-2026-15",
-                            revenue = "50.00",
-                            orderCount = 4,
+                            totalSales = "50.00",
+                            netRevenue = "35.00",
                             dateStart = "2026-04-06 00:00:00",
                         ),
                     )
@@ -330,70 +240,10 @@ class AnalyticsRevenueToolHandlerTest {
             )
 
             val structured = whenRevenueToolExecutes()
+            val firstInterval = structured.getValue("interval_subtotals").jsonArray.first().jsonObject
 
-            assertThat(structured.revenueChartDates()).containsExactly("2026-04-06")
-            assertThat(structured.orderChartDates()).containsExactly("2026-04-06")
-        }
-
-    @Test
-    fun `given monthly interval label with valid date start, when execute succeeds, then both chart points use date start`() =
-        runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal(
-                            interval = "month-2026-04",
-                            revenue = "75.00",
-                            orderCount = 7,
-                            dateStart = "2026-04-01 00:00:00",
-                        ),
-                    )
-                )
-            )
-
-            val structured = whenRevenueToolExecutes()
-
-            assertThat(structured.revenueChartDates()).containsExactly("2026-04-01")
-            assertThat(structured.orderChartDates()).containsExactly("2026-04-01")
-        }
-
-    @Test
-    fun `given non date interval label and invalid date start, when execute succeeds, then chart point is skipped`() =
-        runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal(
-                            interval = "week-2026-15",
-                            revenue = "50.00",
-                            dateStart = "not-a-date",
-                        ),
-                    )
-                )
-            )
-
-            val structured = whenRevenueToolExecutes()
-
-            assertThat(structured.getValue("revenue_chart").jsonArray).isEmpty()
-            assertThat(structured.getValue("order_chart").jsonArray).isEmpty()
-        }
-
-    @Test
-    fun `given missing interval order counts, when execute succeeds, then order chart is empty and revenue chart remains`() =
-        runTest {
-            givenRevenueStats(
-                sampleStats(
-                    intervalSubtotals = listOf(
-                        intervalSubtotal("2026-04-01", "50.00", orderCount = null),
-                        intervalSubtotal("2026-04-02", "75.00", orderCount = null),
-                    )
-                )
-            )
-
-            val structured = whenRevenueToolExecutes()
-
-            assertThat(structured.revenueChartValues()).containsExactly(50.0, 75.0)
-            assertThat(structured.getValue("order_chart").jsonArray).isEmpty()
+            assertThat(firstInterval.getValue("interval").jsonPrimitive.content).isEqualTo("week-2026-15")
+            assertThat(firstInterval.getValue("date_start").jsonPrimitive.content).isEqualTo("2026-04-06 00:00:00")
         }
 
     private suspend fun givenRevenueStats(stats: AnalyticsStats) {
@@ -421,29 +271,11 @@ class AnalyticsRevenueToolHandlerTest {
         return (result as ToolResult.Success).structured.jsonObject
     }
 
-    private fun JsonObject.revenueChartDates(): List<String> =
-        getValue("revenue_chart").jsonArray.map {
-            it.jsonObject.getValue("date").jsonPrimitive.content
-        }
-
-    private fun JsonObject.revenueChartValues(): List<Double> =
-        getValue("revenue_chart").jsonArray.map {
-            it.jsonObject.getValue("value").jsonPrimitive.double
-        }
-
-    private fun JsonObject.orderChartDates(): List<String> =
-        getValue("order_chart").jsonArray.map {
-            it.jsonObject.getValue("date").jsonPrimitive.content
-        }
-
-    private fun JsonObject.orderChartValues(): List<Double> =
-        getValue("order_chart").jsonArray.map {
-            it.jsonObject.getValue("value").jsonPrimitive.double
-        }
-
     private fun sampleStats() = AnalyticsStats(
         totals = buildJsonObject {
-            put("net_revenue", "12345.67")
+            put("total_sales", "170.35")
+            put("gross_sales", "190.00")
+            put("net_revenue", "120.15")
             put("orders_count", 42)
         },
         intervals = listOf(
@@ -455,6 +287,8 @@ class AnalyticsRevenueToolHandlerTest {
                     "subtotals",
                     buildJsonObject {
                         put("orders_count", 5)
+                        put("total_sales", "100.00")
+                        put("net_revenue", "80.00")
                     }
                 )
             },
@@ -465,6 +299,8 @@ class AnalyticsRevenueToolHandlerTest {
                     "subtotals",
                     buildJsonObject {
                         put("orders_count", 7)
+                        put("total_sales", "70.35")
+                        put("net_revenue", "40.15")
                     }
                 )
             },
@@ -473,7 +309,9 @@ class AnalyticsRevenueToolHandlerTest {
 
     private fun sampleStats(intervalSubtotals: List<JsonObject>) = AnalyticsStats(
         totals = buildJsonObject {
-            put("net_revenue", "12345.67")
+            put("total_sales", "170.35")
+            put("gross_sales", "190.00")
+            put("net_revenue", "120.15")
             put("orders_count", 42)
         },
         intervals = intervalSubtotals,
@@ -481,8 +319,8 @@ class AnalyticsRevenueToolHandlerTest {
 
     private fun intervalSubtotal(
         interval: String,
-        revenue: String,
-        orderCount: Any? = 1,
+        totalSales: String,
+        netRevenue: String,
         dateStart: String? = "$interval 00:00:00",
     ) = buildJsonObject {
         put("interval", interval)
@@ -490,18 +328,9 @@ class AnalyticsRevenueToolHandlerTest {
         put(
             "subtotals",
             buildJsonObject {
-                put("net_revenue", revenue)
-                orderCount?.let { putAny("orders_count", it) }
+                put("total_sales", totalSales)
+                put("net_revenue", netRevenue)
             }
         )
-    }
-
-    private fun JsonObjectBuilder.putAny(name: String, value: Any) {
-        when (value) {
-            is Number -> put(name, value)
-            is String -> put(name, value)
-            is JsonElement -> put(name, value)
-            else -> error("Unsupported test value $value")
-        }
     }
 }

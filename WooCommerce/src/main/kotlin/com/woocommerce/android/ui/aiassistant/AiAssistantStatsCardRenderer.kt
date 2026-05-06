@@ -70,14 +70,16 @@ private fun formatStatsPeriod(
 private fun String.toStatsLocalDate(): LocalDate? =
     runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.getOrNull()
 
-private fun AssistantCard.Stats.formatStatsRevenue(
+private fun formatStatsMoney(
+    value: String,
+    currency: String,
     currencyFormatter: CurrencyFormatter,
     unavailableValue: String,
 ): String =
     when {
-        revenueTotal.isBlank() -> unavailableValue
-        revenueCurrency.isBlank() -> revenueTotal
-        else -> currencyFormatter.formatCurrency(revenueTotal, revenueCurrency)
+        value.isBlank() -> unavailableValue
+        currency.isBlank() -> value
+        else -> currencyFormatter.formatCurrency(value, currency)
     }
 
 internal fun AssistantCard.Stats.toStatsCardState(
@@ -86,10 +88,10 @@ internal fun AssistantCard.Stats.toStatsCardState(
     locale: Locale = Locale.getDefault(),
 ): AiAssistantStatsCardState = AiAssistantStatsCardState(
     period = formatStatsPeriod(after, before, unavailableValue, locale),
-    revenueTotal = formatStatsRevenue(currencyFormatter, unavailableValue),
-    orderCount = orderCount.ifBlank { unavailableValue },
-    revenueChartValues = revenueChartPoints.map { it.value },
-    orderChartValues = orderChartPoints.map { it.value },
-    isRevenueTrendAvailable = revenueChartPoints.isNotEmpty(),
-    isOrdersTrendAvailable = orderChartPoints.isNotEmpty(),
+    totalSales = formatStatsMoney(totalSales, currency, currencyFormatter, unavailableValue),
+    netSales = formatStatsMoney(netSales, currency, currencyFormatter, unavailableValue),
+    totalSalesChartValues = totalSalesChartPoints.map { it.value },
+    netSalesChartValues = netSalesChartPoints.map { it.value },
+    isTotalSalesTrendAvailable = totalSalesChartPoints.isNotEmpty(),
+    isNetSalesTrendAvailable = netSalesChartPoints.isNotEmpty(),
 )
