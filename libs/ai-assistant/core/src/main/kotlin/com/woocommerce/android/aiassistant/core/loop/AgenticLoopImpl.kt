@@ -47,6 +47,7 @@ class AgenticLoopImpl(
         val newTurnMessages = mutableListOf<AssistantMessage>(initialTurn.currentUserTurn)
         var modelMessages: List<AssistantMessage> = initialTurn.modelMessages
         var visibleOutputStarted = false
+        val replayTracker = ToolReplayTracker(json)
         var iteration = 0
 
         while (iteration < MAX_ITERATIONS) {
@@ -83,7 +84,7 @@ class AgenticLoopImpl(
                 return@flow
             }
 
-            val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors)
+            val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors, replayTracker)
             if (toolExecution is ToolExecutionOutcome.Cancelled) {
                 emitCancelledToolExecution(toolExecution, stream.assistantText, history, newTurnMessages)
                 return@flow
@@ -198,6 +199,7 @@ class AgenticLoopImpl(
         assembledResults: List<ToolCallAssembler.AssemblyResult>,
         validCalls: List<ToolCall>,
         toolDescriptors: List<ToolDescriptor>,
+        replayTracker: ToolReplayTracker,
     ): ToolExecutionOutcome {
         val completedTools = mutableListOf<CompletedToolCall>()
         for (r in assembledResults) {
@@ -209,10 +211,31 @@ class AgenticLoopImpl(
         }
         for (call in validCalls) {
             val descriptor = toolDescriptors.find { it.name == call.name }
-            val result = executeToolIfAllowed(call, descriptor)
-                ?: return ToolExecutionOutcome.Cancelled(completedTools)
-            completedTools += CompletedToolCall(call, result, descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE)
-            emit(LoopEvent.ToolCallFinished(result))
+            when (val replayDecision = replayTracker.prepare(call)) {
+                is ToolReplayDecision.CapExceeded -> {
+                    completedTools += CompletedToolCall(
+                        call,
+                        replayDecision.result,
+                        descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                    )
+                    emit(LoopEvent.ToolCallFinished(replayDecision.result))
+                }
+                is ToolReplayDecision.Replay -> {
+                    completedTools += CompletedToolCall(
+                        call,
+                        replayDecision.result,
+                        descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                    )
+                    emit(LoopEvent.ToolCallFinished(replayDecision.result))
+                }
+                is ToolReplayDecision.Execute -> {
+                    val result = executeToolIfAllowed(call, descriptor)
+                        ?: return ToolExecutionOutcome.Cancelled(completedTools)
+                    replayTracker.record(replayDecision.signature, result)
+                    completedTools += CompletedToolCall(call, result, descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE)
+                    emit(LoopEvent.ToolCallFinished(result))
+                }
+            }
         }
         return ToolExecutionOutcome.Completed(completedTools)
     }
