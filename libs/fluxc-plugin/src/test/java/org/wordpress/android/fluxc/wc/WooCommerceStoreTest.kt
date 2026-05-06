@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
@@ -293,6 +294,43 @@ class WooCommerceStoreTest {
                 assertThat(it?.localSiteId).isEqualTo(expectedModel.localSiteId)
                 assertThat(it?.selectedOption).isEqualTo(expectedModel.selectedOption)
             }
+        }
+    }
+
+    @Test
+    fun `when fetch analytics order date type fails, then the error is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsOrderDateType(site)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.fetchAnalyticsOrderDateType(site)
+
+            assertThat(result.error).isEqualTo(error)
+        }
+    }
+
+    @Test
+    fun `when fetch analytics order date type succeeds, then the success is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsOrderDateType(site))
+                .thenReturn(WooPayload(WCAnalyticsOrderDateType.CREATED))
+
+            val result = wooCommerceStore.fetchAnalyticsOrderDateType(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isEqualTo(WCAnalyticsOrderDateType.CREATED)
+        }
+    }
+
+    @Test
+    fun `when update analytics order date type succeeds, then the success is returned`() {
+        runBlocking {
+            whenever(wcrestClient.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED))
+                .thenReturn(WooPayload(WCAnalyticsOrderDateType.COMPLETED))
+
+            val result = wooCommerceStore.updateAnalyticsOrderDateType(site, WCAnalyticsOrderDateType.COMPLETED)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isEqualTo(WCAnalyticsOrderDateType.COMPLETED)
         }
     }
 

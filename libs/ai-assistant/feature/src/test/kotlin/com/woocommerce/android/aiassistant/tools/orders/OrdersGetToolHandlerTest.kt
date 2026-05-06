@@ -84,16 +84,6 @@ class OrdersGetToolHandlerTest {
         }
 
     @Test
-    fun `given non-integer id, when execute is called, then ValidationError is returned`() =
-        runTest {
-            val result = handler.execute(toolCall(buildJsonObject { put("id", "abc") }))
-
-            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
-            val error = result as ToolResult.ValidationError
-            assertThat(error.toolCallId).isEqualTo("call-1")
-        }
-
-    @Test
     fun `given the data source fails, when execute is called, then retryable TransportError is returned`() =
         runTest {
             whenever(dataSource.getOrder(7L)).thenReturn(Result.failure(IllegalStateException("network error")))

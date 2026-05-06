@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
+import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsViewModel.NotificationType
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -128,5 +129,40 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
             channelType = NotificationChannelType.NEW_ORDER,
             dismissDelay = 10.seconds
         )
+    }
+
+    @Test
+    fun `when view is loaded, then expose notification type rows`() = testBlocking {
+        setup()
+
+        val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
+
+        assertThat(notificationTypeItems.map { it.type }).containsExactly(
+            NotificationType.NEW_ORDERS,
+            NotificationType.NEW_REVIEWS,
+            NotificationType.STOCK
+        )
+    }
+
+    @Test
+    fun `when view is loaded, then all notification type switches are enabled`() = testBlocking {
+        setup()
+
+        val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
+
+        assertThat(notificationTypeItems.map { it.isEnabled }).containsOnly(true)
+    }
+
+    @Test
+    fun `when notification type switch is changed, then update row state`() = testBlocking {
+        setup()
+
+        viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+
+        val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
+
+        assertThat(
+            notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled
+        ).isFalse()
     }
 }

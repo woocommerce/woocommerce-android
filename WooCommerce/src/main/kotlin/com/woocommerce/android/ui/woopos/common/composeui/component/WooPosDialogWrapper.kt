@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,17 +27,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 
 private const val DEFAULT_WIDTH_FRACTION = 0.75f
+private const val PHONE_WIDTH_FRACTION = 0.95f
+private const val PHONE_MAX_HEIGHT_FRACTION = 0.9f
 private const val ENTER_EXIT_DURATION_MS = 300
 
 @Composable
@@ -50,6 +57,19 @@ fun WooPosDialogWrapper(
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     val closeContentDescription = stringResource(R.string.close)
+    val breakpoint = currentWooPosBreakpoint()
+    val adaptiveWidthFraction = when (breakpoint) {
+        WooPosBreakpoint.Phone -> PHONE_WIDTH_FRACTION
+        WooPosBreakpoint.SmallTablet,
+        WooPosBreakpoint.Tablet -> widthFraction
+    }
+    val phoneMaxHeight = if (breakpoint == WooPosBreakpoint.Phone) {
+        val density = LocalDensity.current
+        val containerHeight = with(density) { LocalWindowInfo.current.containerSize.height.toDp() }
+        containerHeight * PHONE_MAX_HEIGHT_FRACTION
+    } else {
+        null
+    }
 
     BackHandler(enabled = isVisible) { onDismissRequest() }
 
@@ -87,7 +107,14 @@ fun WooPosDialogWrapper(
                 modifier = modifier
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .fillMaxWidth(widthFraction),
+                    .fillMaxWidth(adaptiveWidthFraction)
+                    .then(
+                        if (phoneMaxHeight != null) {
+                            Modifier.heightIn(max = phoneMaxHeight)
+                        } else {
+                            Modifier
+                        }
+                    ),
             ) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.XLarge.value)
