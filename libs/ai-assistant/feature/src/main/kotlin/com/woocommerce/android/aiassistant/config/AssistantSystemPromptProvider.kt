@@ -4,6 +4,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.format.TextStyle
+import java.time.temporal.TemporalAdjusters
+import java.time.temporal.WeekFields
 import java.util.Locale
 import javax.inject.Inject
 
@@ -14,24 +16,68 @@ internal interface AssistantSystemPromptProvider {
 internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : AssistantSystemPromptProvider {
     override fun systemPrompt(todayIsoDate: String?): String {
         val isoDate = todayIsoDate ?: defaultToday()
-        val date = weekdayAnchor(isoDate) ?: isoDate
-        return SYSTEM_PROMPT_TEMPLATE.replace(TODAY_ANCHOR_TOKEN, date)
+        val locale = Locale.getDefault()
+        val anchors = dateAnchors(isoDate, locale)
+        return SYSTEM_PROMPT_TEMPLATE
+            .replace(TODAY_ANCHOR_TOKEN, anchors.today)
+            .replace(DATE_ANCHORS_TOKEN, anchors.calendarAnchors)
     }
 
     private fun defaultToday(): String =
         DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now())
 
-    private fun weekdayAnchor(isoDate: String): String? =
+    private fun dateAnchors(isoDate: String, locale: Locale): DateAnchors {
+        val date = parseIsoLocalDate(isoDate)
+            ?: return DateAnchors(
+                today = isoDate,
+                calendarAnchors = "Calendar anchors unavailable because today's date is not a valid YYYY-MM-DD.",
+            )
+        val firstDayOfWeek = WeekFields.of(locale).firstDayOfWeek
+        val thisWeekStart = date.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+        val thisWeekEnd = thisWeekStart.plusDays(DAYS_IN_WEEK - 1)
+        val lastWeekStart = thisWeekStart.minusWeeks(1)
+        val lastWeekEnd = thisWeekStart.minusDays(1)
+        val thisMonthStart = date.withDayOfMonth(1)
+        val thisMonthEnd = date.withDayOfMonth(date.lengthOfMonth())
+        val weekStartName = firstDayOfWeek.getDisplayName(TextStyle.FULL, locale)
+
+        return DateAnchors(
+            today = date.withWeekday(locale),
+            calendarAnchors = """
+                Generated date anchors:
+                - today: ${date.iso()}
+                - yesterday: ${date.minusDays(1).iso()}
+                - this week: after ${thisWeekStart.iso()}, before ${thisWeekEnd.iso()} (week starts $weekStartName)
+                - last week: after ${lastWeekStart.iso()}, before ${lastWeekEnd.iso()}
+                - this month: after ${thisMonthStart.iso()}, before ${thisMonthEnd.iso()}
+            """.trimIndent(),
+        )
+    }
+
+    private fun parseIsoLocalDate(isoDate: String): LocalDate? =
         try {
-            val date = LocalDate.parse(isoDate, DateTimeFormatter.ISO_LOCAL_DATE)
-            val weekday = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US)
-            "$isoDate ($weekday)"
+            LocalDate.parse(isoDate, DateTimeFormatter.ISO_LOCAL_DATE)
         } catch (_: DateTimeParseException) {
             null
         }
 
+    private fun LocalDate.withWeekday(locale: Locale): String {
+        val weekday = dayOfWeek.getDisplayName(TextStyle.FULL, locale)
+        return "${iso()} ($weekday)"
+    }
+
+    private fun LocalDate.iso(): String =
+        DateTimeFormatter.ISO_LOCAL_DATE.format(this)
+
+    private data class DateAnchors(
+        val today: String,
+        val calendarAnchors: String,
+    )
+
     private companion object {
         private const val TODAY_ANCHOR_TOKEN = "__TODAY_ANCHOR__"
+        private const val DATE_ANCHORS_TOKEN = "__DATE_ANCHORS__"
+        private const val DAYS_IN_WEEK = 7L
 
         private val SYSTEM_PROMPT_TEMPLATE = """
             You are an assistant inside the WooCommerce Android app, helping a merchant operate their store.
@@ -54,10 +100,16 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             # Today
 
-            Today is __TODAY_ANCHOR__. Pass any analytics date parameters as YYYY-MM-DD. Calendar references
+            Today is __TODAY_ANCHOR__.
+            __DATE_ANCHORS__
+            Pass any analytics date parameters as YYYY-MM-DD. Calendar references
             like "yesterday", "last week", "last Monday", "this month", and "vs yesterday" have specific
             calendar meanings relative to today's date - resolve them yourself and dispatch the call. Don't ask
             the merchant which day or window they meant when their wording already named one.
+            For analytics requests, the grouping phrase controls `interval`; the time phrase controls `after`
+            and `before`. For example, "revenue by day this month" means interval day with this-month
+            after/before dates, not interval month. Aggregate sales, revenue, and order metric questions should
+            use analytics tools, not row counts from list tools.
 
             # Tools
 

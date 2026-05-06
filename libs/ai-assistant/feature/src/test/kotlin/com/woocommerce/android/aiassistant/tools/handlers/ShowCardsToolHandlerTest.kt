@@ -128,7 +128,6 @@ class ShowCardsToolHandlerTest {
             "before",
             "currency",
             "totals",
-            "interval_subtotals",
         )
     }
 
@@ -157,7 +156,7 @@ class ShowCardsToolHandlerTest {
 
         val structuredText = assertSuccess(result).structured.toString()
 
-        assertThat(structuredText).contains("interval_subtotals")
+        assertThat(structuredText).doesNotContain("interval_subtotals")
         assertThat(structuredText).doesNotContain("private_total")
         assertThat(structuredText).doesNotContain("debug")
     }
@@ -234,6 +233,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.currency).isEqualTo("USD")
         assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
         assertThat(details.intervalSubtotals).hasSize(1)
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("interval_subtotals")
     }
 
     @Test

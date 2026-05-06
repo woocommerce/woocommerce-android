@@ -185,7 +185,6 @@ internal class ShowCardsToolHandler internal constructor(
             "before",
             "currency",
             "totals",
-            "interval_subtotals",
         )
     }
 }

@@ -46,7 +46,9 @@ private fun List<String>.hasExpectedAnalyticsStatsIdLabels(): Boolean =
 private fun String.toParsedCurrency(): ParsedCurrency? =
     when (this) {
         NO_CURRENCY_VALUE -> ParsedCurrency(null)
-        else -> normaliseCurrency(this)?.let(::ParsedCurrency)
+        else -> normaliseCurrency(this)
+            ?.takeIf(VALID_CURRENCY_CODE::matches)
+            ?.let(::ParsedCurrency)
     }
 
 private fun AnalyticsStatsCardId.hasValidDateRange(): Boolean =
@@ -77,3 +79,4 @@ private const val INTERVAL_LABEL_INDEX = 5
 private const val INTERVAL_VALUE_INDEX = 6
 private const val CURRENCY_LABEL_INDEX = 7
 private const val CURRENCY_VALUE_INDEX = 8
+private val VALID_CURRENCY_CODE = Regex("[A-Z]{3}")
