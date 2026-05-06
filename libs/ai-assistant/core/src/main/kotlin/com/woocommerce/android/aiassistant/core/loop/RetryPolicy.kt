@@ -23,8 +23,8 @@ object ConservativeRetryPolicy : RetryPolicy {
     private const val BACKOFF_MS = 500L
 
     override fun decide(failure: LoopFailureContext): RetryDecision = when {
-        failure.visibleOutputStarted -> RetryDecision.ShowManualRetry
         !isRetryable(failure.error) -> RetryDecision.DoNotRetry
+        failure.visibleOutputStarted -> RetryDecision.ShowManualRetry
         failure.retryCount >= MAX_AUTO_RETRIES -> RetryDecision.ShowManualRetry
         else -> RetryDecision.RetryNow(BACKOFF_MS)
     }

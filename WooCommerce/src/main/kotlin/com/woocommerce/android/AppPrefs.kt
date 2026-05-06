@@ -111,6 +111,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        DASHBOARD_REVENUE_STATS_TYPE,
         ACTIVE_TOP_PERFORMERS_GRANULARITY,
         DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
@@ -1011,6 +1012,12 @@ object AppPrefs {
     }
 
     fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
+
+    fun setDashboardRevenueStatsType(typeName: String) {
+        setString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE, typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = getString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE)
 
     fun setActiveTopPerformersTab(selectionName: String) {
         setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)

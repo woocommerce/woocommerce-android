@@ -1,0 +1,524 @@
+package com.woocommerce.android.aiassistant.ui
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
+import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
+import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
+import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
+import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
+import com.woocommerce.android.tools.SelectedSite
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+@HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
+class AssistantViewModel @AssistedInject constructor(
+    @Assisted private val conversationId: String,
+    private val runtime: AssistantRuntime,
+    private val selectedSite: SelectedSite,
+    private val idGenerator: AssistantMessageIdGenerator,
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(AssistantUiState())
+    val uiState: StateFlow<AssistantUiState> = _uiState.asStateFlow()
+
+    private var turnJob: Job? = null
+    private var activeAssistantMessageId: String? = null
+    private var history: List<AssistantMessage> = emptyList()
+    private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
+    private var lastUserMessage: String? = null
+    private val activeCardKeys = linkedSetOf<AssistantCardKey>()
+
+    fun onSendMessage(message: String) {
+        if (_uiState.value.isTurnActive) return
+
+        val trimmedMessage = message.trim()
+        if (trimmedMessage.isEmpty()) return
+
+        lastUserMessage = trimmedMessage
+        startTurn(trimmedMessage, isRetry = false)
+    }
+
+    fun onRetry() {
+        if (_uiState.value.isTurnActive || !_uiState.value.canRetry) return
+
+        val message = lastUserMessage ?: return
+        startTurn(message, isRetry = true)
+    }
+
+    fun onCancelTurn() {
+        if (!_uiState.value.isTurnActive) return
+        if (_uiState.value.activeConfirmationId != null) {
+            cancelOpenConfirmationSegments()
+            return
+        }
+
+        preserveCancelledTurnInHistory()
+        turnJob?.cancel()
+        turnJob = null
+        activeAssistantMessageId = null
+        viewModelScope.launch {
+            runtime.cancelTurn(conversationId)
+        }
+        _uiState.update {
+            it.copy(
+                messages = it.messages.withoutTransientActivity(),
+                status = AssistantUiStatus.ERROR,
+                error = AssistantError.Cancelled.toAssistantUiError(),
+                canRetry = false,
+                activeConfirmationId = null,
+                activeAssistantMessageId = null,
+            )
+        }
+    }
+
+    fun onConfirmWrite() {
+        val confirmationId = _uiState.value.activeConfirmationId ?: return
+        viewModelScope.launch {
+            when (
+                runtime.resolveConfirmation(
+                    ConfirmationResult(confirmationId, ConfirmationDecision.CONFIRMED)
+                )
+            ) {
+                AssistantRuntimeConfirmationDispatchResult.Accepted -> {
+                    _uiState.update {
+                        it.copy(
+                            status = AssistantUiStatus.STREAMING,
+                            error = null,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                        )
+                    }
+                }
+                AssistantRuntimeConfirmationDispatchResult.Deferred -> {
+                    activeAssistantMessageId = null
+                    _uiState.update {
+                        it.copy(
+                            messages = it.messages.withoutTransientActivity(),
+                            status = AssistantUiStatus.ERROR,
+                            error = AssistantUiError.CONFIRMATION_DEFERRED,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                            activeAssistantMessageId = null,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun onCancelWrite() {
+        cancelOpenConfirmationSegments()
+    }
+
+    private fun startTurn(message: String, isRetry: Boolean) {
+        turnJob?.cancel()
+        activeCardKeys.clear()
+        if (!isRetry) {
+            lastTurnBaseHistory = history
+        }
+
+        _uiState.update { state ->
+            val userMessage = if (isRetry) {
+                null
+            } else {
+                AssistantUiMessage(idGenerator.nextId(), AssistantUiMessage.Role.USER, message)
+            }
+            val assistantMessageId = idGenerator.nextId()
+            activeAssistantMessageId = assistantMessageId
+            val turnMessages = if (isRetry) {
+                listOf(AssistantUiMessage(assistantMessageId, AssistantUiMessage.Role.ASSISTANT, ""))
+            } else {
+                listOf(
+                    checkNotNull(userMessage),
+                    AssistantUiMessage(assistantMessageId, AssistantUiMessage.Role.ASSISTANT, ""),
+                )
+            }
+            state.copy(
+                messages = state.messages.withoutTransientActivity().withoutRetryActions() + turnMessages,
+                status = AssistantUiStatus.STREAMING,
+                error = null,
+                canRetry = false,
+                activeConfirmationId = null,
+                activeAssistantMessageId = assistantMessageId,
+            )
+        }
+
+        val request = AssistantTurnRequest(
+            conversationId = conversationId,
+            siteId = selectedSite.get().siteId,
+            toolScope = ToolScope.GLOBAL,
+            userMessage = message,
+            history = lastTurnBaseHistory,
+        )
+        val events = if (isRetry) runtime.retryTurn(request) else runtime.startTurn(request)
+        turnJob = viewModelScope.launch {
+            events.collect(::reduceRuntimeEvent)
+        }
+    }
+
+    private fun reduceRuntimeEvent(event: AssistantRuntimeEvent) {
+        when (event) {
+            is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
+            is AssistantRuntimeEvent.ToolCallStarted -> showToolActivity(event)
+            is AssistantRuntimeEvent.ToolCallFinished -> markToolActivityCompleted(event.toolCallId)
+            is AssistantRuntimeEvent.AwaitingConfirmation -> {
+                _uiState.update {
+                    it.copy(
+                        messages = it.messages.withConfirmationCard(
+                            activeMessageId = activeAssistantMessageId,
+                            confirmation = event.confirmation,
+                            nextId = idGenerator::nextId,
+                        ),
+                        status = AssistantUiStatus.AWAITING_CONFIRMATION,
+                        error = null,
+                        canRetry = false,
+                        activeConfirmationId = event.confirmation.confirmationId,
+                    )
+                }
+            }
+            is AssistantRuntimeEvent.ConfirmationResolved -> {
+                _uiState.update { state ->
+                    state.copy(
+                        messages = state.messages.withUpdatedConfirmationCard(
+                            confirmationId = event.result.requestId,
+                            state = event.result.decision.toCardState(),
+                        )
+                    )
+                }
+            }
+            is AssistantRuntimeEvent.CardsResolved -> appendAssistantCards(event.cards)
+            is AssistantRuntimeEvent.Finished -> {
+                val activeMessageId = activeAssistantMessageId
+                val normalizedError = event.normalizedAssistantError()
+                val canRetry = event.canRetry()
+                activeAssistantMessageId = null
+                activeCardKeys.clear()
+                history = event.updatedHistory
+                _uiState.update {
+                    it.copy(
+                        messages = it.messages
+                            .withoutTransientActivity()
+                            .withAssistantError(
+                                activeMessageId = activeMessageId,
+                                error = normalizedError,
+                                canRetry = canRetry,
+                                nextId = idGenerator::nextId,
+                            ),
+                        status = event.toAssistantUiStatus(),
+                        error = event.toAssistantUiError(),
+                        canRetry = canRetry,
+                        activeConfirmationId = null,
+                        activeAssistantMessageId = null,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showToolActivity(event: AssistantRuntimeEvent.ToolCallStarted) {
+        val messageId = activeAssistantMessageId ?: return
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if (message.id == messageId) {
+                        message.withToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = event.toolCallId,
+                                toolName = event.toolName,
+                            )
+                        )
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+    }
+
+    private fun markToolActivityCompleted(toolCallId: String) {
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.withToolActivityStatus(toolCallId, AssistantToolActivity.Status.COMPLETED)
+            )
+        }
+    }
+
+    private fun preserveCancelledTurnInHistory() {
+        val userMessage = lastUserMessage ?: return
+        val assistantMessageId = activeAssistantMessageId
+        val assistantText = _uiState.value.messages
+            .firstOrNull { it.id == assistantMessageId }
+            ?.text
+            .orEmpty()
+        val cancelledTurnHistory = buildList {
+            add(AssistantMessage.User(userMessage))
+            assistantText.takeIf { it.isNotEmpty() }?.let {
+                add(AssistantMessage.Assistant(content = it))
+            }
+        }
+        history = lastTurnBaseHistory + cancelledTurnHistory
+    }
+
+    private fun cancelOpenConfirmationSegments() {
+        val confirmationId = _uiState.value.activeConfirmationId ?: return
+        viewModelScope.launch {
+            when (
+                runtime.resolveConfirmation(
+                    ConfirmationResult(confirmationId, ConfirmationDecision.CANCELLED)
+                )
+            ) {
+                AssistantRuntimeConfirmationDispatchResult.Accepted -> {
+                    _uiState.update {
+                        it.copy(
+                            error = null,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                        )
+                    }
+                }
+                AssistantRuntimeConfirmationDispatchResult.Deferred -> {
+                    activeAssistantMessageId = null
+                    _uiState.update {
+                        it.copy(
+                            messages = it.messages.withoutTransientActivity(),
+                            status = AssistantUiStatus.ERROR,
+                            error = AssistantUiError.CONFIRMATION_DEFERRED,
+                            canRetry = false,
+                            activeConfirmationId = null,
+                            activeAssistantMessageId = null,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun appendAssistantCards(cards: List<AssistantCard>) {
+        val messageId = activeAssistantMessageId ?: return
+        val newSegments = cards
+            .filter { activeCardKeys.add(it.toCardKey()) }
+            .map { AssistantUiSegment.Card(it) }
+        if (newSegments.isEmpty()) return
+
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if (message.id == messageId) {
+                        message.copy(segments = message.segments + newSegments)
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+    }
+
+    private fun AssistantCard.toCardKey(): AssistantCardKey =
+        when (this) {
+            is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
+            is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+        }
+
+    private fun appendAssistantText(delta: String) {
+        val messageId = activeAssistantMessageId ?: return
+        _uiState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if (message.id == messageId) {
+                        message.appendText(delta)
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+    }
+
+    private fun LoopOutcome.toAssistantUiStatus(): AssistantUiStatus = when (this) {
+        LoopOutcome.COMPLETED,
+        LoopOutcome.STOPPED -> AssistantUiStatus.IDLE
+        LoopOutcome.FAILED,
+        LoopOutcome.MAX_ITERATIONS -> AssistantUiStatus.ERROR
+    }
+
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiStatus(): AssistantUiStatus = when {
+        error == AssistantError.Cancelled -> AssistantUiStatus.ERROR
+        else -> outcome.toAssistantUiStatus()
+    }
+
+    private fun AssistantRuntimeEvent.Finished.toAssistantUiError(): AssistantUiError? =
+        error?.toAssistantUiError() ?: when (outcome) {
+            LoopOutcome.COMPLETED,
+            LoopOutcome.STOPPED -> null
+            LoopOutcome.FAILED -> AssistantUiError.UNKNOWN
+            LoopOutcome.MAX_ITERATIONS -> AssistantUiError.MAX_ITERATIONS
+        }
+
+    private fun AssistantRuntimeEvent.Finished.normalizedAssistantError(): AssistantError? =
+        error ?: if (outcome == LoopOutcome.FAILED) AssistantError.Unknown() else null
+
+    private fun AssistantRuntimeEvent.Finished.canRetry(): Boolean =
+        outcome == LoopOutcome.FAILED &&
+            retryAvailable &&
+            error?.supportsRetryAction() == true
+
+    private fun List<AssistantUiMessage>.withoutRetryActions(): List<AssistantUiMessage> =
+        map { message ->
+            val error = message.error
+            if (error?.canRetry == true) {
+                message.copy(error = error.copy(canRetry = false))
+            } else {
+                message
+            }
+        }
+
+    private fun List<AssistantUiMessage>.withoutTransientActivity(): List<AssistantUiMessage> =
+        map { message ->
+            message.copy(
+                segments = message.segments.filterNot { segment ->
+                    segment is AssistantUiSegment.ToolActivity &&
+                        segment.activity.status == AssistantToolActivity.Status.RUNNING
+                }
+            )
+        }
+
+    private fun List<AssistantUiMessage>.withAssistantError(
+        activeMessageId: String?,
+        error: AssistantError?,
+        canRetry: Boolean,
+        nextId: () -> String,
+    ): List<AssistantUiMessage> {
+        if (error == null) return this
+
+        val messageError = AssistantMessageError(error = error, canRetry = canRetry)
+        val targetId = activeMessageId
+        if (targetId == null) {
+            return this + AssistantUiMessage(
+                id = nextId(),
+                role = AssistantUiMessage.Role.ASSISTANT,
+                segments = listOf(AssistantUiSegment.Text("")),
+                error = messageError,
+            )
+        }
+
+        return map { message ->
+            if (message.id == targetId) {
+                message.copy(error = messageError)
+            } else {
+                message
+            }
+        }
+    }
+
+    private fun List<AssistantUiMessage>.withConfirmationCard(
+        activeMessageId: String?,
+        confirmation: AssistantConfirmationCard,
+        nextId: () -> String,
+    ): List<AssistantUiMessage> {
+        val targetId = activeMessageId
+        if (targetId == null) {
+            return this + AssistantUiMessage(
+                id = nextId(),
+                role = AssistantUiMessage.Role.ASSISTANT,
+                segments = listOf(
+                    AssistantUiSegment.Text(""),
+                    AssistantUiSegment.ConfirmationCard(confirmation),
+                ),
+            )
+        }
+
+        return map { message ->
+            if (message.id == targetId) {
+                message.appendConfirmationCard(confirmation)
+            } else {
+                message
+            }
+        }
+    }
+
+    private fun AssistantUiMessage.appendText(delta: String): AssistantUiMessage {
+        val lastSegment = segments.lastOrNull()
+        if (lastSegment !is AssistantUiSegment.Text) {
+            return copy(segments = segments + AssistantUiSegment.Text(delta))
+        }
+
+        val updatedSegments = segments.toMutableList()
+        updatedSegments[updatedSegments.lastIndex] = lastSegment.copy(text = lastSegment.text + delta)
+        return copy(segments = updatedSegments)
+    }
+
+    private fun AssistantUiMessage.withToolActivity(activity: AssistantToolActivity): AssistantUiMessage =
+        copy(
+            segments = segments.filterNot {
+                it is AssistantUiSegment.ToolActivity && it.activity.toolCallId == activity.toolCallId
+            } + AssistantUiSegment.ToolActivity(activity)
+        )
+
+    private fun List<AssistantUiMessage>.withToolActivityStatus(
+        toolCallId: String,
+        status: AssistantToolActivity.Status,
+    ): List<AssistantUiMessage> =
+        map { message ->
+            message.copy(
+                segments = message.segments.map { segment ->
+                    if (segment is AssistantUiSegment.ToolActivity && segment.activity.toolCallId == toolCallId) {
+                        AssistantUiSegment.ToolActivity(segment.activity.copy(status = status))
+                    } else {
+                        segment
+                    }
+                }
+            )
+        }
+
+    private fun AssistantUiMessage.appendConfirmationCard(
+        confirmation: AssistantConfirmationCard,
+    ): AssistantUiMessage {
+        val updatedSegments = segments.filterNot {
+            it is AssistantUiSegment.ConfirmationCard &&
+                it.model.confirmationId == confirmation.confirmationId
+        } + AssistantUiSegment.ConfirmationCard(confirmation)
+        return copy(segments = updatedSegments)
+    }
+
+    private fun List<AssistantUiMessage>.withUpdatedConfirmationCard(
+        confirmationId: String,
+        state: AssistantConfirmationCardState,
+    ): List<AssistantUiMessage> = map { message ->
+        message.copy(
+            segments = message.segments.map { segment ->
+                if (segment is AssistantUiSegment.ConfirmationCard &&
+                    segment.model.confirmationId == confirmationId
+                ) {
+                    segment.copy(model = segment.model.copy(state = state))
+                } else {
+                    segment
+                }
+            }
+        )
+    }
+
+    private fun ConfirmationDecision.toCardState(): AssistantConfirmationCardState = when (this) {
+        ConfirmationDecision.CONFIRMED -> AssistantConfirmationCardState.CONFIRMED
+        ConfirmationDecision.CANCELLED -> AssistantConfirmationCardState.CANCELLED
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(conversationId: String): AssistantViewModel
+    }
+}

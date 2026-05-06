@@ -11,6 +11,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -63,7 +64,7 @@ class BackgroundUpdateAnalyticsRepositoryTest : BaseUnitTest() {
         val mockCurrentResult: Result<WCRevenueStatsModel?> = Result.success(mock())
         val mockPreviousResult: Result<WCRevenueStatsModel?> = Result.success(mock())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(mockCurrentResult, mockPreviousResult)
 
         val result = backgroundUpdateAnalyticsRepository.fetchRevenueStats(testSelectionData)
@@ -76,7 +77,7 @@ class BackgroundUpdateAnalyticsRepositoryTest : BaseUnitTest() {
         val mockError = Exception("Error fetching revenue stats")
         val mockCurrentResult: Result<WCRevenueStatsModel?> = Result.failure(mockError)
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(mockCurrentResult, Result.success(mock()))
 
         val result = backgroundUpdateAnalyticsRepository.fetchRevenueStats(testSelectionData)
@@ -96,7 +97,7 @@ class BackgroundUpdateAnalyticsRepositoryTest : BaseUnitTest() {
         val mockCurrentResult: Result<WCRevenueStatsModel?> = Result.failure(mockError1)
         val mockPreviousResult: Result<WCRevenueStatsModel?> = Result.failure(mockError2)
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(mockCurrentResult, mockPreviousResult)
 
         val result = backgroundUpdateAnalyticsRepository.fetchRevenueStats(testSelectionData)
