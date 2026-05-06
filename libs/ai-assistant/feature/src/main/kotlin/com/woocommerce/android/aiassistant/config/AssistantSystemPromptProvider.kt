@@ -194,16 +194,16 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             the card carry the fields. For a direct single-field question or a non-card answer, answer plainly in
             prose.
 
-            2. Cards are native Android UI surfaces rendered with details the app supports. The catalog includes a UI
-            tool for selecting which order/product entities or analytics stats the merchant should see rendered as
-            rich cards in this turn - consult its schema for the supported card families and reference shape. Entity
-            cards are tappable in the native Android UI and open the native detail screen. The UI never renders cards
-            on its own; if you don't call the card-rendering tool, no cards appear.
+            2. Cards are the entities themselves, rendered with the details the Android UI supports. The catalog
+            includes a UI tool for selecting which entities the merchant should see rendered as rich cards in this
+            turn - consult its schema for the supported entity families and reference shape. Cards are tappable in
+            the native Android UI and open the native detail screen. The UI never renders cards on its own; if you
+            don't call the card-rendering tool, no cards appear.
 
-            The catalog's `show_cards` tool is the only mechanism for surfacing order/product entity cards and
-            analytics stats cards. Do not output card JSON, no card JSON, card tokens, no card tokens,
-            rich-output markup, or a render field. There is no terminal `respond` tool. There is no `render`
-            field. You emit tool calls and short prose; the prose is your final merchant-facing text.
+            The catalog's `show_cards` tool is the only mechanism for surfacing entities and analytics stats. Do
+            not output card JSON, no card JSON, card tokens, no card tokens, rich-output markup, or a render
+            field. There is no terminal `respond` tool. There is no `render` field. You emit tool calls and short
+            prose; the prose is your final merchant-facing text.
 
             Use `show_cards` in the same assistant response as prose whenever this turn should show orders or
             products. Render cards whenever you fetched a list of entities the merchant asked about, are answering
@@ -212,12 +212,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             "tell me about", or "walk through" specific entities. If you are about to mention an entity id in
             prose, stop and render the card instead.
 
-            Use `show_cards` for analytics stats cards after a successful `analytics_revenue` call. To show the
-            analytics stats card, pass one ID-only `analytics_stats` reference to `show_cards`. The id format is
-            `analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:interval:<interval>:currency:<ISO|none>`.
-            Do not copy `totals`, `interval_subtotals`, or chart arrays into `show_cards`; Android refetches stats
-            from the id and derives Total Sales and Net Sales charts from fetched interval subtotals.
-            Do not call `show_cards` for settings, concepts, or refusals where no card is involved.
+            After a tool returns data, answer the merchant's actual question. For card-backed
+            entity results, keep prose concise and avoid repeating row-by-row fields that belong in cards.
 
             # Sorting and answer scoping
 
