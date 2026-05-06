@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,9 +31,12 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun QrLoginErrorScreen(
-    content: QrLoginErrorContent,
+    @StringRes title: Int,
+    @StringRes body: Int,
+    @StringRes primaryActionLabel: Int,
     onPrimaryClicked: () -> Unit,
     onSecondaryClicked: () -> Unit,
+    @StringRes secondaryActionLabel: Int = R.string.login_qr_endpoint_missing_enter_url,
 ) {
     Column(
         modifier = Modifier
@@ -50,7 +54,7 @@ fun QrLoginErrorScreen(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         Text(
-            text = stringResource(id = content.title),
+            text = stringResource(id = title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
@@ -58,7 +62,7 @@ fun QrLoginErrorScreen(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = content.body),
+            text = stringResource(id = body),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -66,13 +70,13 @@ fun QrLoginErrorScreen(
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
         WCColoredButton(
             onClick = onPrimaryClicked,
-            text = stringResource(id = content.primaryAction),
+            text = stringResource(id = primaryActionLabel),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCOutlinedButton(
             onClick = onSecondaryClicked,
-            text = stringResource(id = content.secondaryAction),
+            text = stringResource(id = secondaryActionLabel),
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -83,11 +87,9 @@ fun QrLoginErrorScreen(
 private fun QrLoginErrorScreenPreview() {
     WooThemeWithBackground {
         QrLoginErrorScreen(
-            content = QrLoginErrorContent(
-                title = R.string.login_qr_scanner_error_token_title,
-                body = R.string.login_qr_scanner_error_token_body,
-                primaryAction = R.string.login_qr_endpoint_missing_retry,
-            ),
+            title = R.string.login_qr_scanner_error_token_title,
+            body = R.string.login_qr_scanner_error_token_body,
+            primaryActionLabel = R.string.login_qr_error_primary_scan,
             onPrimaryClicked = {},
             onSecondaryClicked = {},
         )
