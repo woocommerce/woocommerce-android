@@ -16,6 +16,15 @@ plugins {
     alias(libs.plugins.dependency.analysis)
 }
 
+def isComposeScreenshotTestsEnabled = providers
+        .gradleProperty("android.experimental.enableScreenshotTest")
+        .map { it.toBoolean() }
+        .getOrElse(false)
+
+if (isComposeScreenshotTestsEnabled) {
+    apply plugin: libs.plugins.compose.screenshot.get().pluginId
+}
+
 fladle {
     variant = "vanillaDebug"
     serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
@@ -78,6 +87,10 @@ def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properti
 
 android {
     namespace = "com.woocommerce.android"
+
+    if (isComposeScreenshotTestsEnabled) {
+        experimentalProperties["android.experimental.enableScreenshotTest"] = true
+    }
 
     compileSdk = gradle.ext.compileSdkVersion
 
@@ -216,6 +229,11 @@ android {
 }
 
 dependencies {
+    if (isComposeScreenshotTestsEnabled) {
+        screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
+        screenshotTestImplementation(libs.google.screenshot.validation.api)
+    }
+
     implementation(libs.wordpress.libaddressinput.common) {
         exclude group: "org.json", module: "json"
         exclude group: "com.google.guava", module: "guava"

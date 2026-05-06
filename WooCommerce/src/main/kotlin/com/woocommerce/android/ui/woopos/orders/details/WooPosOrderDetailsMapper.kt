@@ -67,7 +67,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO, order.currency)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState(actions)
+            actions = actions
         )
     }
 
@@ -110,9 +110,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState(
-                orderActionsProvider.getAvailableActions(order)
-            )
+            actions = orderActionsProvider.getAvailableActions(order)
         )
     }
 

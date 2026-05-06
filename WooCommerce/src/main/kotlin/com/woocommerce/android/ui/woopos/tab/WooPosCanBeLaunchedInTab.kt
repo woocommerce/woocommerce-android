@@ -29,6 +29,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     private val fetchWooCoreVersion: FetchActiveWCPluginVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled,
+    private val supportedCountries: WooPosSupportedCountries,
     private val wooPosLog: WooPosLogWrapper,
 ) {
 
@@ -157,10 +158,13 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             wooCommerceStore.getSiteSettings(site) ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
         }
 
-    private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
-        SUPPORTED_COUNTRY_CURRENCY_PAIRS.any {
-            it.first.equals(countryCode, true) && it.second.equals(currency, true)
+    private suspend fun isCountryAndCurrencySupported(countryCode: String, currency: String): Boolean {
+        val pairs = supportedCountries.supportedCountryCurrencyPairs()
+        return pairs.any {
+            it.first.equals(countryCode, ignoreCase = true) &&
+                it.second.equals(currency, ignoreCase = true)
         }
+    }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion: String): Boolean {
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
@@ -180,7 +184,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
     companion object {
         const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
-        val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
 
         private const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = MINIMUM_SUPPORTED_WC_VERSION
         private const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"

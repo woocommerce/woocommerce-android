@@ -49,7 +49,7 @@ class VariationSelectorRepository @Inject constructor(
                     )
                     Result.failure(WooException(result.error))
                 } else {
-                    Result.success(result.model!!)
+                    Result.success(requireNotNull(result.model).canLoadMore)
                 }
             }
     }

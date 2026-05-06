@@ -34,6 +34,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val fetchWooCoreVersion: FetchActiveWCPluginVersion = mock()
+    private val supportedCountries: WooPosSupportedCountries = mock()
 
     private lateinit var sut: WooPosCanBeLaunchedInTab
     private lateinit var siteModel: SiteModel
@@ -53,6 +54,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
 
         whenever(isRemotelyEnabled.invoke(any())).thenReturn(Result.success(true))
         whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(false)
+        whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(listOf("us" to "usd", "gb" to "gbp"))
 
         sut = WooPosCanBeLaunchedInTab(
             appPrefs = appPrefs,
@@ -61,6 +63,7 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
             fetchWooCoreVersion = fetchWooCoreVersion,
             wooCommerceStore = wooCommerceStore,
             isRemotelyEnabled = isRemotelyEnabled,
+            supportedCountries = supportedCountries,
             wooPosLog = mock()
         )
     }
@@ -283,6 +286,48 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         val result = sut()
 
         assertEquals(Launchable, result)
+    }
+
+    // --- Supported countries dynamic list ---
+
+    @Test
+    fun `given DE country and EUR currency and primary flag on, when invoked, then return Launchable`() = testBlocking {
+        whenever(supportedCountries.supportedCountryCurrencyPairs())
+            .thenReturn(listOf("us" to "usd", "gb" to "gbp", "de" to "eur"))
+        val siteSettings = buildSiteSettings(countryCode = "DE", currencyCode = "EUR")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+
+        assertEquals(Launchable, sut())
+    }
+
+    @Test
+    fun `given DE country and EUR currency and primary flag off, when invoked, then return UnsupportedCurrency`() = testBlocking {
+        whenever(supportedCountries.supportedCountryCurrencyPairs())
+            .thenReturn(listOf("us" to "usd", "gb" to "gbp"))
+        val siteSettings = buildSiteSettings(countryCode = "DE", currencyCode = "EUR")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+
+        val result = sut()
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
+    }
+
+    @Test
+    fun `given AU country and AUD currency and both flags on, when invoked, then return UnsupportedCurrency`() = testBlocking {
+        whenever(supportedCountries.supportedCountryCurrencyPairs())
+            .thenReturn(
+                listOf(
+                    "us" to "usd", "gb" to "gbp",
+                    "fr" to "eur", "de" to "eur", "ie" to "eur", "nl" to "eur",
+                    "sg" to "sgd", "nz" to "nzd",
+                    "at" to "eur", "be" to "eur", "fi" to "eur", "it" to "eur",
+                    "lu" to "eur", "pt" to "eur", "es" to "eur",
+                )
+            )
+        val siteSettings = buildSiteSettings(countryCode = "AU", currencyCode = "AUD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+
+        val result = sut()
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
     }
 
     // ---

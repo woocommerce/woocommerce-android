@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 13:56:05+0000
+Translation-Revision-Date: 2026-04-21 13:57:02+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">Заменить сотрудника</string>
+    <string name="booking_reschedule_screen_title">Перенести бронирование</string>
+    <string name="booking_details_reschedule_button">Перенести</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">Я подтверждаю своё согласие с &lt;a href=\"fedex-tos\"&gt;условиями предоставления услуг FedEx&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">Чтобы приобрести транспортные этикетки FedEx, необходимо принять следующие условия:</string>
+    <string name="wpp_shipping_fedex_tos_title">Условия предоставления услуг FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Не удалось загрузить тарифы на доставку. Укажите имя и фамилию в адресе назначения и повторите попытку.</string>
+    <string name="woopos_settings_receipt_edit_button">Редактировать данные чека</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d из %2$d элементов</string>
+    <string name="woopos_home_syncing_catalog_preparing">Подготовка каталога…</string>
+    <string name="product_type_bookable_service_desc">Услуга, которую клиенты могут бронировать онлайн</string>
+    <string name="product_type_bookable_service_title">Услуга</string>
+    <string name="settings_troubleshoot_connection">Устранение неполадок при подключении</string>
+    <string name="connectivity_tool_copy">Копировать</string>
+    <string name="connectivity_tool_technical_details_copied">Технические данные скопированы в буфер обмена.</string>
+    <string name="connectivity_tool_technical_details_title">Технические данные</string>
+    <string name="connectivity_tool_view_technical_details">Просмотр технических данных</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Получение товаров вашего магазина</string>
+    <string name="user_role_access_error_fetch_failed">Не удалось подтвердить вашу роль в этом магазине. Повторите попытку. Если устранить проблему не удалось, обратитесь в службу поддержки.</string>
     <string name="woopos_eligibility_learn_more_label">Подробнее</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. &lt;b&gt;Перейдите на Pro&lt;/b&gt;, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. Перейдите на Pro, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
@@ -30,7 +49,6 @@ Language: ru
     <string name="woo_push_notifications_introduction_connected_body">Вы в одном шаге от получения уведомлений о новых заказах, отзывах и многом другом.</string>
     <string name="woo_push_notifications_introduction_connected_title">Получайте push-уведомления для своего магазина</string>
     <string name="my_store_widget_push_notifications_description">Включите push-уведомления, чтобы следить за новыми заказами и отзывами.</string>
-    <string name="dashboard_stats_net_sales">Чистая выручка</string>
     <string name="woopos_search_products_and_variations">Поиск товаров и вариантов</string>
     <string name="woopos_bookings_details_customer_guest_badge">Гость</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Обновить плагин</string>
@@ -1196,14 +1214,11 @@ Language: ru
     <string name="plugin_state_update_available">Доступно обновление (%s)</string>
     <string name="plugin_state_up_to_date">Обновлён</string>
     <string name="settings_store_name">Название магазина</string>
-    <string name="domain_picker_suggestions_error">Не удалось загрузить предлагаемые домены</string>
     <string name="product_removing_category_dialog_title">Удалить рубрику</string>
     <string name="product_update_category_dialog_title">Обновить рубрику</string>
     <string name="delete_product_category_failed">Ошибка при удалении рубрики</string>
     <string name="delete_product_category_success">Рубрика товаров удалена</string>
     <string name="update_product_category_success">Рубрика товаров обновлена</string>
-    <string name="domain_picker_suggestions_title">Варианты</string>
-    <string name="domain_picker_hint">Укажите домен</string>
     <string name="my_store_custom_range_granularity_year">По годам</string>
     <string name="my_store_custom_range_granularity_month">По месяцам</string>
     <string name="my_store_custom_range_granularity_week">По неделям</string>
@@ -1213,7 +1228,6 @@ Language: ru
     <string name="login_site_picker_add_a_store">Подключить другой магазин</string>
     <string name="login_prologue_start_new_store">Запускаете новый магазин?</string>
     <string name="store_name_default">Название магазина</string>
-    <string name="domain_picker_title">Выберите домен</string>
     <string name="analytics_section_see_all">Просмотреть всю аналитику магазина</string>
     <string name="product_update_stock_status_dialog_subtitle">Пожалуйста, подождите…</string>
     <string name="product_update_stock_status_dialog_title">Обновление статусов наличия на складе</string>
@@ -1342,6 +1356,7 @@ Language: ru
     <string name="blaze_campaign_edit_ad_change_image_button">Изменить изображение</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Применить</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s дн.</string>
+    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Готово</string>
     <string name="blaze_campaign_budget_impressions_title">Показы</string>
     <string name="blaze_campaign_budget_update_button">Обновить</string>
@@ -1350,7 +1365,6 @@ Language: ru
     <string name="blaze_campaign_budget_days_duration">на %1$s дн.</string>
     <string name="blaze_campaign_budget_toolbar_title">Настройте бюджет</string>
     <string name="blaze_campaign_preview_target_default_value">Все</string>
-    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_preview_days_duration">%1$s дн. с %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Дата начала</string>
     <string name="product_creation_survey_button_dont_show_again">Больше не показывать</string>
@@ -1669,8 +1683,8 @@ Language: ru
     <string name="store_onboarding_task_name_store_title">Назовите магазин</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Включите NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Посылка, небольшое количество (требуется маркировка)</string>
-    <string name="shipping_label_hazmat_option_lighters">Посылка с зажигающим устройством (разрешённым к перевозке)</string>
     <string name="shipping_label_hazmat_option_limited_quantity">Наземное отправление, ограниченное количество: аэрозоли, дезинфицирующие спреи, аэрозольная краска, спреи для волос, пропан, бутан, чистящие средства и т. д. — Духи, лак для ногтей, жидкость для снятия лака для ногтей, растворители, антисептики для рук, медицинский спирт, продукты на основе этанола и т. д. — Другие поверхностные вещества в ограниченном количестве (косметика, бытовая химия, краски и т. д.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Посылка с зажигающим устройством (разрешённым к перевозке)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Посылка с допустимым количеством (например, небольшой объём воспламеняющейся жидкости, коррозионно-активные, токсичные или экологически опасные вещества — требуется маркировка)</string>
     <string name="shipping_label_hazmat_option_id8000">Посылка с потребительскими товарами ID8000 — разрешённые для авиаперевозки потребительские товары ID8000 (невоспламеняющиеся аэрозоли, воспламеняющиеся горючие жидкости, токсичные вещества, опасные материалы)</string>
     <string name="shipping_label_hazmat_option_ground_only">Опасные материалы, разрешённые только для наземной перевозки (для товаров, которые не перечислены, но их можно перевозить только по земле)</string>
@@ -1969,7 +1983,6 @@ Language: ru
     <string name="store_onboarding_launch_store_back_to_store_button">Назад в Мой магазин</string>
     <string name="store_onboarding_launch_store_share_url_button">URL-адрес рекомендации</string>
     <string name="store_onboarding_launch_store_button">Опубликовать мой магазин</string>
-    <string name="domains_search_domains">Поиск доменов</string>
     <string name="upgrades_upgradeable_caption">У вас идёт %1$d-дневный бесплатный пробный период. Бесплатный пробный период закончится через %2$s. Перейдите на платную подписку для доступа к новым функциям магазина.</string>
     <string name="free_trial_days_left">Осталось от пробного периода: %1$s.</string>
     <string name="login_site_credentials_http_error">Не удалось войти. Код состояния: %1$s</string>
@@ -2014,43 +2027,14 @@ Language: ru
     <string name="jetpack_benefits_fetching_status">Получение статуса Jetpack</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Что-то пошло не так. Повторите попытку позже.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Попробуйте выполнить платёж</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Регистрация доменного имени…</string>
-    <string name="domain_registration_country_picker_dialog_title">Выберите страну</string>
-    <string name="domain_registration_state_picker_dialog_title">Выберите округ/область</string>
     <string name="card_reader_tap_to_pay_explanation_title">Получение платежей по карте\nна вашем телефоне</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Оплата в касание</string>
-    <string name="domain_registration_generic_error">Во время регистрации домена произошла ошибка</string>
-    <string name="domain_contact_information_phone_number_hint">Телефон</string>
-    <string name="domain_contact_information_country_code_hint">Код страны</string>
-    <string name="domain_contact_information_country_hint">Страна</string>
-    <string name="domain_contact_information_address_hint">Адрес</string>
-    <string name="domain_contact_information_address_hint_two">Адрес 2</string>
-    <string name="domain_contact_information_city_hint">Город</string>
-    <string name="domain_contact_information_state_hint">Округ/Область</string>
-    <string name="domain_contact_information_state_not_available_hint">Область/округ (не доступно)</string>
-    <string name="domain_contact_information_postal_code_hint">Почтовый индекс</string>
-    <string name="domain_contact_information_register_domain_button">Зарегистрировать домен</string>
-    <string name="domain_contact_information_description">Для вашего удобства, мы заполнили вашу контактную информацию WordPress.com. Пожалуйста, перепроверьте её на корректность, действительно ли вы хотите использовать её для этого домена.</string>
-    <string name="domain_contact_information_organization_hint">Организация (необязательно)</string>
-    <string name="domain_registration_privacy_protection_description">Владельцы доменов должны делиться контактной информацией для публичной базы данных по всем доменам. С защитой персональных данных мы публикуем нашу информацию вместо вашей и перенаправляем вам все сообщения приватным образом.</string>
-    <string name="domain_registration_contact_form_input_error">Введите правильный %s</string>
-    <string name="domain_privacy_option_on_title">Зарегистрировать как личный с защитой персональных данных</string>
-    <string name="domain_privacy_option_off_title">Зарегистрировать открыто</string>
-    <string name="domain_contact_information_title">Контактная информация домена</string>
-    <string name="domain_registration_privacy_protection_tos">Регистрируя этот домен, вы соглашаетесь с нашими &lt;a href=\'\'&gt;правилами и условиями&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_title">Защита персональных данных</string>
-    <string name="domains_access_error_title">Только администраторы магазина могут получить доступ к настройкам домена</string>
     <string name="login_jetpack_installation_continue_magic_link">Или продолжите с помощью волшебной ссылки</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Чтобы установить Jetpack, введите пароль своей учётной записи WordPress.com.</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Чтобы подключиться к Jetpack, введите пароль своей учётной записи WordPress.com.</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Войти с помощью учётной записи WordPress.com, чтобы установить Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Войти с помощью учётной записи WordPress.com, чтобы подключиться к Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">Настройки домена находятся в разделе «Настройки» &gt; «Домены».</string>
-    <string name="domains_purchase_successful_delay_notice">Выполняется настройка адреса сайта. Это может занять до 30 минут, после чего домен начнёт работать.</string>
-    <string name="domains_purchase_successful_heading">Поздравляем с приобретением</string>
-    <string name="domains_free_with_credits">Бесплатно за первый год</string>
     <string name="settings_confirm_logout_site_credentials">Вы уверены, что хотите выйти из учётной записи?</string>
-    <string name="domains_generic_error_title">Не удаётся загрузить домены сайта</string>
     <string name="store_onboarding_completed_tasks_status">Готово: %1$d из %2$d</string>
     <string name="store_onboarding_task_launch_store_description">Покажите свой сайт всему миру, когда захотите!</string>
     <string name="store_onboarding_task_launch_store_title">Запустите собственный магазин</string>
@@ -2061,19 +2045,6 @@ Language: ru
     <string name="card_reader_payment_failed_device_is_not_supported">Ваше устройство не поддерживается. За подробной информацией обращайтесь в службу поддержки</string>
     <string name="card_reader_payment_failed_nfc_disabled">Приложение не может использовать устройство чтения карт, поскольку отключён модуль NFC</string>
     <string name="card_reader_payment_failed_canceled">Транзакция отменена</string>
-    <string name="domains_redirect_notice">Приобретенный домен будет перенаправлять пользователей на</string>
-    <string name="domains_select_domain">Выберите домен</string>
-    <string name="domains_add_domain_button_title">Добавить домен</string>
-    <string name="domains_your_domains">Домены вашего сайта</string>
-    <string name="domains_primary_address">Основной адрес сайта</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Узнайте больше&lt;/u&gt;&lt;/a&gt; о доменах и связанных с ними действиях.</string>
-    <string name="domains_search_for_domain_button_title">Поиск домена</string>
-    <string name="domains_claim_your_free_domain_link">Отправить заявку на домен</string>
-    <string name="domains_claim_your_free_domain_description">На вашем тарифе можно бесплатно зарегистрировать домен на один год.</string>
-    <string name="domains_claim_your_free_domain_title">Отправьте заявку на бесплатный домен</string>
-    <string name="domains_your_free_store_address">Бесплатный адрес вашего магазина</string>
-    <string name="domains_purchase_redirect_notice">Приобретённый домен будет перенаправлять пользователей на ваш основной адрес.</string>
-    <string name="domains">Домены</string>
     <string name="feedback_banner_ipp_cta_button">Отправить отзыв</string>
     <string name="feedback_banner_ipp_message_beginner">Оцените первый опыт очной оплаты.</string>
     <string name="feedback_banner_ipp_title_beginner">Нравится платить очно?</string>
@@ -2091,7 +2062,6 @@ Language: ru
     <string name="analytics_session_card_title">Сессии</string>
     <string name="analytics_session_no_data">Нет сессий за этот период</string>
     <string name="date_compared_to">По сравнению с</string>
-    <string name="domain">Домен</string>
     <string name="card_reader_type_selection_bluetooth_reader">Устройство чтения карт</string>
     <string name="login_application_passwords_help">Что такое пароли приложения?</string>
     <string name="login_open_installation_page">Открыть страницу установки</string>
@@ -2118,7 +2088,6 @@ Language: ru
     <string name="variation_add_new">Добавить новый вариант</string>
     <string name="variation_list_add">Добавить вариацию</string>
     <string name="variation_add_all">Создать все варианты</string>
-    <string name="domain_picker_empty_suggestions">Нет доступных доменов по этому запросу</string>
     <string name="login_jetpack_installation_exit_without_connection">Выйти без подключения</string>
     <string name="login_jetpack_installation_continue_connection">Продолжить подключение</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">Попробуйте подключиться ещё раз, чтобы войти в магазин.</string>
@@ -2166,7 +2135,6 @@ Language: ru
     <string name="login_jetpack_connect">Подключить Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Подключение магазина</string>
     <string name="analytics_visitors_subtitle">Посетители</string>
-    <string name="domain_picker_subtitle">Это место, где люди найдут вас в Интернете. Не беспокойтесь, вы сможете изменить это позднее.</string>
     <string name="or_use_password_below_qr_code_scan_option">Или войти с помощью пароля</string>
     <string name="simulated_reader_toast">Симуляция устройства чтения карт отключена</string>
     <string name="variations_bulk_update_stock_quantity_success">Количество товаров в наличии обновлено</string>
