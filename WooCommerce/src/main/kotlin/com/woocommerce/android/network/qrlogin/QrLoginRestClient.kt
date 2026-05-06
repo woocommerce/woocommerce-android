@@ -68,8 +68,8 @@ class QrLoginRestClient @Inject constructor(
 
     private fun parseExchangeBody(body: String): QrLoginCredentials? {
         // Let JsonSyntaxException propagate so mapException converts it to MalformedResponse.
-        val response = gson.fromJson(body, ExchangeResponse::class.java)
-        val credentials = response?.toCredentials()
+        val response = gson.fromJson(body, ExchangeResponse::class.java) ?: return null
+        val credentials = response.toCredentials()
         if (credentials == null) {
             WooLog.w(
                 WooLog.T.LOGIN,
