@@ -16,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,7 +34,6 @@ internal fun AssistantStatsTrendChart(
 ) {
     val normalizedPoints = normalizeStatsTrendChartPoints(points)
     val lineColor = MaterialTheme.colorScheme.primary
-    val guideColor = MaterialTheme.colorScheme.outlineVariant
     val fallbackColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
@@ -50,46 +51,68 @@ internal fun AssistantStatsTrendChart(
             )
         } else {
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val midY = size.height / 2f
-                drawLine(
-                    color = guideColor,
-                    start = Offset(0f, midY),
-                    end = Offset(size.width, midY),
-                    strokeWidth = 1.dp.toPx(),
-                )
+                val strokeWidthPx = TREND_LINE_STROKE.toPx()
+                val verticalInset = strokeWidthPx + END_POINT_RADIUS.toPx()
+                val drawableHeight = (size.height - verticalInset * 2f).coerceAtLeast(0f)
 
-                val xStep = if (normalizedPoints.size == 1) {
-                    0f
+                val coords = if (normalizedPoints.size == 1) {
+                    val y = verticalInset + (1f - normalizedPoints.single()) * drawableHeight
+                    listOf(Offset(size.width / 2f, y))
                 } else {
-                    size.width / (normalizedPoints.lastIndex)
-                }
-                val path = Path()
-                normalizedPoints.forEachIndexed { index, normalized ->
-                    val x = if (normalizedPoints.size == 1) size.width / 2f else index * xStep
-                    val y = size.height - normalized * size.height
-                    if (index == 0) {
-                        path.moveTo(x, y)
-                    } else {
-                        path.lineTo(x, y)
+                    val xStep = size.width / normalizedPoints.lastIndex
+                    normalizedPoints.mapIndexed { index, normalized ->
+                        val y = verticalInset + (1f - normalized) * drawableHeight
+                        Offset(index * xStep, y)
                     }
                 }
-                drawPath(
-                    path = path,
-                    color = lineColor,
-                    style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round),
-                )
-                if (normalizedPoints.size == 1) {
-                    val y = size.height - normalizedPoints.single() * size.height
-                    drawLine(
+
+                if (coords.size >= 2) {
+                    val linePath = buildSmoothTrendPath(coords)
+                    val fillPath = Path().apply {
+                        addPath(linePath)
+                        lineTo(coords.last().x, size.height)
+                        lineTo(coords.first().x, size.height)
+                        close()
+                    }
+                    drawPath(
+                        path = fillPath,
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                lineColor.copy(alpha = TREND_FILL_TOP_ALPHA),
+                                lineColor.copy(alpha = 0f),
+                            ),
+                            startY = 0f,
+                            endY = size.height,
+                        ),
+                    )
+                    drawPath(
+                        path = linePath,
                         color = lineColor,
-                        start = Offset(size.width * SINGLE_POINT_START_FRACTION, y),
-                        end = Offset(size.width * SINGLE_POINT_END_FRACTION, y),
-                        strokeWidth = 2.dp.toPx(),
-                        cap = StrokeCap.Round,
+                        style = Stroke(
+                            width = strokeWidthPx,
+                            cap = StrokeCap.Round,
+                            join = StrokeJoin.Round,
+                        ),
                     )
                 }
+
+                drawCircle(
+                    color = lineColor,
+                    radius = END_POINT_RADIUS.toPx(),
+                    center = coords.last(),
+                )
             }
         }
+    }
+}
+
+private fun buildSmoothTrendPath(coords: List<Offset>): Path = Path().apply {
+    moveTo(coords.first().x, coords.first().y)
+    for (index in 1 until coords.size) {
+        val previous = coords[index - 1]
+        val current = coords[index]
+        val controlX = (previous.x + current.x) / 2f
+        cubicTo(controlX, previous.y, controlX, current.y, current.x, current.y)
     }
 }
 
@@ -148,6 +171,7 @@ private fun AssistantStatsTrendChartPreviewItem(points: List<Double>) {
 }
 
 private val TREND_CHART_HEIGHT = 58.dp
+private val TREND_LINE_STROKE = 2.dp
+private val END_POINT_RADIUS = 2.5.dp
+private const val TREND_FILL_TOP_ALPHA = 0.18f
 private const val CENTERED_POINT = 0.5f
-private const val SINGLE_POINT_START_FRACTION = 0.42f
-private const val SINGLE_POINT_END_FRACTION = 0.58f
