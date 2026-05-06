@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,13 +30,18 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun QrLoginEndpointMissingScreen(
-    onEnterUrlClicked: () -> Unit,
-    onRetryClicked: () -> Unit
+fun QrLoginErrorScreen(
+    @StringRes title: Int,
+    @StringRes body: Int,
+    @StringRes primaryActionLabel: Int,
+    onPrimaryClicked: () -> Unit,
+    onSecondaryClicked: () -> Unit,
+    @StringRes secondaryActionLabel: Int = R.string.login_qr_endpoint_missing_enter_url,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .systemBarsPadding()
             .padding(horizontal = dimensionResource(id = R.dimen.major_150)),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -47,27 +54,29 @@ fun QrLoginEndpointMissingScreen(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         Text(
-            text = stringResource(id = R.string.login_qr_endpoint_missing_title),
+            text = stringResource(id = title),
             style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.login_qr_endpoint_missing_body),
+            text = stringResource(id = body),
             style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
         WCColoredButton(
-            onClick = onEnterUrlClicked,
-            text = stringResource(id = R.string.login_qr_endpoint_missing_enter_url),
+            onClick = onPrimaryClicked,
+            text = stringResource(id = primaryActionLabel),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCOutlinedButton(
-            onClick = onRetryClicked,
-            text = stringResource(id = R.string.login_qr_endpoint_missing_retry),
+            onClick = onSecondaryClicked,
+            text = stringResource(id = secondaryActionLabel),
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -75,8 +84,14 @@ fun QrLoginEndpointMissingScreen(
 
 @LightDarkThemePreviews
 @Composable
-private fun QrLoginEndpointMissingScreenPreview() {
+private fun QrLoginErrorScreenPreview() {
     WooThemeWithBackground {
-        QrLoginEndpointMissingScreen(onEnterUrlClicked = {}, onRetryClicked = {})
+        QrLoginErrorScreen(
+            title = R.string.login_qr_scanner_error_token_title,
+            body = R.string.login_qr_scanner_error_token_body,
+            primaryActionLabel = R.string.login_qr_error_primary_scan,
+            onPrimaryClicked = {},
+            onSecondaryClicked = {},
+        )
     }
 }

@@ -8,19 +8,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
-import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.PrimaryAction
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 
 /**
- * Renders the QR-first login screen. Routes between the camera scanner, the endpoint-missing
- * fallback, and the signing-in progress dialog. The fragment plumbs camera permissions and the
- * post-login handoff; this composable is purely UI routing.
+ * Renders the QR-first login screen. Routes between the camera scanner, fullscreen confirm,
+ * fullscreen error (which subsumes the endpoint-missing fallback), and the fullscreen
+ * signing-in state. The fragment plumbs camera permissions and the post-login handoff; this
+ * composable is purely UI routing.
  */
 @Composable
 fun QrLoginScannerScreen(
@@ -30,7 +28,10 @@ fun QrLoginScannerScreen(
     onNewFrame: (ImageProxy) -> Unit,
     onBindingException: (Exception) -> Unit,
     onPermissionResult: (Boolean) -> Unit,
+    onConfirmSite: () -> Unit,
+    onCancelSite: () -> Unit,
     onStartOver: () -> Unit,
+    onRetryExchange: () -> Unit,
     onFallbackClicked: () -> Unit,
 ) {
     Box(
@@ -49,22 +50,24 @@ fun QrLoginScannerScreen(
             )
         }
 
-        if (uiState is UiState.Error && uiState.reason == ErrorReason.EndpointMissing) {
-            QrLoginEndpointMissingScreen(
-                onEnterUrlClicked = onFallbackClicked,
-                onRetryClicked = onStartOver,
+        when (uiState) {
+            is UiState.Confirming -> QrLoginConfirmSiteScreen(
+                host = uiState.host,
+                onConfirm = onConfirmSite,
+                onCancel = onCancelSite,
             )
-        }
-
-        if (uiState is UiState.Authenticating) {
-            ProgressDialog(
-                title = "",
-                subtitle = stringResource(id = R.string.login_qr_scanner_authenticating),
-                properties = DialogProperties(
-                    dismissOnBackPress = false,
-                    dismissOnClickOutside = false
-                )
+            is UiState.Error -> QrLoginErrorScreen(
+                title = uiState.title,
+                body = uiState.body,
+                primaryActionLabel = uiState.primaryAction.label,
+                onPrimaryClicked = when (uiState.primaryAction) {
+                    is PrimaryAction.Retry -> onRetryExchange
+                    is PrimaryAction.ScanAgain -> onStartOver
+                },
+                onSecondaryClicked = onFallbackClicked,
             )
+            UiState.Authenticating -> QrLoginAuthenticatingScreen()
+            UiState.Idle -> Unit
         }
     }
 }
