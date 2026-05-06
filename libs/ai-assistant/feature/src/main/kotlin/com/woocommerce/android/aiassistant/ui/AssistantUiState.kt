@@ -99,20 +99,10 @@ sealed interface AssistantUiSegment {
 
     data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
 
-    data class Card(val card: AssistantCard) : AssistantUiSegment
+    data class CardGroup(val cards: List<AssistantCard>) : AssistantUiSegment
 
     data class ToolActivity(val activity: AssistantToolActivity) : AssistantUiSegment
 }
-
-internal val AssistantUiMessage.hasVisibleAssistantContent: Boolean
-    get() = segments.any { segment ->
-        when (segment) {
-            is AssistantUiSegment.Text -> segment.text.isNotEmpty()
-            is AssistantUiSegment.ConfirmationCard -> true
-            is AssistantUiSegment.Card -> true
-            is AssistantUiSegment.ToolActivity -> true
-        }
-    }
 
 @StringRes
 internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
@@ -129,7 +119,6 @@ internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
     "analytics_orders",
     "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
     "customers_list" -> R.string.assistant_chat_tool_activity_customers
-    "show_cards" -> R.string.assistant_chat_tool_activity_cards
     else -> R.string.assistant_chat_tool_activity_generic
 }
 
