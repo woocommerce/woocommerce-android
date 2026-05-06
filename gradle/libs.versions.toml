@@ -95,6 +95,7 @@ mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.16.1"
 sentry = '6.2.0'
+screenshot = '0.0.1-alpha14'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.3.2"
@@ -152,6 +153,7 @@ androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref 
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-testing = { group = "androidx.lifecycle", name = "lifecycle-runtime-testing", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
 androidx-navigation-common = { group = "androidx.navigation", name = "navigation-common", version.ref = "androidx-navigation" }
@@ -206,6 +208,7 @@ eventbus-android = { module = "org.greenrobot:eventbus", version.ref = "eventbus
 eventbus-java = {group = "org.greenrobot", name = "eventbus-java", version.ref = "eventbus" }
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
 fastlane-screengrab = { group = "tools.fastlane", name = "screengrab", version.ref = "fastlane-screengrab" }
+google-screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 glassfish-javax-annotation = { module = "org.glassfish:javax.annotation", version.ref = "glassfish-javax-annotation" }
 google-autoService = { module = "com.google.auto.service:auto-service", version.ref = "google-autoService" }
 google-dagger = { module = "com.google.dagger:dagger", version.ref = "google-dagger" }
@@ -292,6 +295,7 @@ fladle = { id = "com.osacky.fladle", version.ref = "fladle" }
 google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }

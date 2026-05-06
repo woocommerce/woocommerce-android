@@ -40,6 +40,41 @@ class CustomerRestClient @Inject constructor(private val wooNetwork: WooNetwork)
     }
 
     /**
+     * Makes a GET call to `/wc/v3/customers` to fetch customers.
+     */
+    suspend fun fetchCustomers(
+        site: SiteModel,
+        search: String? = null,
+        email: String? = null,
+        include: List<Long>? = null,
+        orderby: String = "registered_date",
+        order: String = "desc",
+        page: Int? = null,
+        perPage: Int = 20,
+    ): WooPayload<Array<CustomerDTO>> {
+        val url = WOOCOMMERCE.customers.pathV3
+        val params = mutableMapOf(
+            "per_page" to perPage.toString(),
+            "orderby" to orderby,
+            "order" to order,
+        ).run {
+            putIfNotEmpty("search" to search)
+            putIfNotEmpty("email" to email)
+            putIfNotEmpty("include" to include?.joinToString(","))
+            putIfNotEmpty("page" to page?.toString())
+        }
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = params,
+            clazz = Array<CustomerDTO>::class.java
+        )
+
+        return response.toWooPayload()
+    }
+
+    /**
      * Makes a GET call to `wc-analytics/reports/customers` to fetch customers
      *
      */

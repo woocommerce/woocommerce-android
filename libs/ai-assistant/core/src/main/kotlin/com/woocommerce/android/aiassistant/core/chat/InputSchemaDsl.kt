@@ -42,6 +42,16 @@ class InputSchemaBuilder {
         if (required) requiredKeys += name
     }
 
+    fun objectProperty(
+        name: String,
+        description: String? = null,
+        required: Boolean = false,
+        block: InputSchemaBuilder.() -> Unit
+    ) {
+        properties[name] = InputSchemaBuilder().apply(block).build(description)
+        if (required) requiredKeys += name
+    }
+
     private fun prop(name: String, type: String, description: String?, required: Boolean) {
         properties[name] = buildJsonObject {
             put("type", type)
@@ -50,8 +60,9 @@ class InputSchemaBuilder {
         if (required) requiredKeys += name
     }
 
-    internal fun build(): JsonObject = buildJsonObject {
+    internal fun build(description: String? = null): JsonObject = buildJsonObject {
         put("type", "object")
+        description?.let { put("description", it) }
         put("additionalProperties", false)
         putJsonObject("properties") { properties.forEach { (k, v) -> put(k, v) } }
         if (requiredKeys.isNotEmpty()) {

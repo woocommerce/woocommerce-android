@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.model.WCBundleStats
 import org.wordpress.android.fluxc.model.WCGiftCardStats
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
@@ -58,6 +59,8 @@ class StatsRepository @Inject constructor(
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
         private const val PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION = "6.7.0"
         private const val AN_HOUR_IN_MILLIS = 3600000
+
+        private fun genericWooError() = WooError(GENERIC_ERROR, UNKNOWN)
     }
 
     suspend fun fetchRevenueStats(
@@ -65,11 +68,13 @@ class StatsRepository @Inject constructor(
         granularity: StatsGranularity,
         forced: Boolean,
         revenueRangeId: String,
+        orderDateType: WCAnalyticsOrderDateType? = null,
     ): Result<WCRevenueStatsModel?> = fetchRevenueStats(
         range = range,
         granularity = granularity,
         forced = forced,
         revenueRangeId = revenueRangeId,
+        orderDateType = orderDateType,
         site = selectedSite.get()
     )
 
@@ -78,6 +83,7 @@ class StatsRepository @Inject constructor(
         granularity: StatsGranularity,
         forced: Boolean,
         revenueRangeId: String,
+        orderDateType: WCAnalyticsOrderDateType? = null,
         site: SiteModel
     ): Result<WCRevenueStatsModel?> {
         val result = wcStatsStore.fetchRevenueStats(
@@ -87,17 +93,16 @@ class StatsRepository @Inject constructor(
                 startDate = range.start.formatToYYYYmmDDhhmmss(),
                 endDate = range.end.formatToYYYYmmDDhhmmss(),
                 forced = forced,
-                revenueRangeId = revenueRangeId
+                revenueRangeId = revenueRangeId,
+                orderDateType = orderDateType
             )
         )
 
         return if (!result.isError) {
             val revenueStatsModel = withContext(dispatchers.io) {
-                wcStatsStore.getRawRevenueStats(
+                wcStatsStore.getRawRevenueStatsFromRangeId(
                     site,
-                    result.granularity,
-                    result.startDate!!,
-                    result.endDate!!
+                    revenueRangeId
                 )
             }
             Result.success(revenueStatsModel)
@@ -121,6 +126,26 @@ class StatsRepository @Inject constructor(
                 revenueRangeId
             )
         )
+    }
+
+    suspend fun fetchAnalyticsOrderDateType(): Result<WCAnalyticsOrderDateType> {
+        val result = wooCommerceStore.fetchAnalyticsOrderDateType(selectedSite.get())
+        return if (result.isError) {
+            Result.failure(WooException(result.error ?: genericWooError()))
+        } else {
+            result.model?.let { Result.success(it) } ?: Result.failure(WooException(genericWooError()))
+        }
+    }
+
+    suspend fun updateAnalyticsOrderDateType(
+        orderDateType: WCAnalyticsOrderDateType
+    ): Result<WCAnalyticsOrderDateType> {
+        val result = wooCommerceStore.updateAnalyticsOrderDateType(selectedSite.get(), orderDateType)
+        return if (result.isError) {
+            Result.failure(WooException(result.error ?: genericWooError()))
+        } else {
+            result.model?.let { Result.success(it) } ?: Result.failure(WooException(genericWooError()))
+        }
     }
 
     suspend fun fetchVisitorStats(

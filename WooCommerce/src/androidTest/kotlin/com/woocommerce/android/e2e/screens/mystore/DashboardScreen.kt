@@ -49,7 +49,7 @@ class DashboardScreen : Screen(R.id.dashboard_container) {
                 ViewMatchers.hasDescendant(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.ordersLabel),
-                        ViewMatchers.withText(R.string.dashboard_stats_orders),
+                        ViewMatchers.withText(R.string.dashboard_stats_paid_orders),
                         ViewMatchers.hasSibling(
                             Matchers.allOf(
                                 ViewMatchers.withId(R.id.ordersValueTextView),

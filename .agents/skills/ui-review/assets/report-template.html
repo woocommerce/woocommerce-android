@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UI Review</title>
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --card: #ffffff;
+      --text: #111111;
+      --muted: #66666b;
+      --border: #e7e7ec;
+      --warn-bg: #ffd84d;
+      --warn-text: #3b2a00;
+      --warn-border: #ffb700;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 24px 56px;
+    }
+    .hero, .gallery-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+    }
+    .hero {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      background: var(--warn-bg);
+      color: var(--warn-text);
+      border: 1px solid var(--warn-border);
+    }
+    h1 {
+      font-size: 28px;
+      line-height: 1.05;
+      margin: 0;
+    }
+    h2 {
+      font-size: 22px;
+      margin: 0 0 12px;
+    }
+    p {
+      margin: 0;
+      line-height: 1.5;
+    }
+    .hero-subtitle {
+      margin-top: 12px;
+      color: #44444a;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    ul {
+      margin: 10px 0 0 0;
+      padding-left: 22px;
+    }
+    li {
+      margin: 6px 0;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .sub {
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .section {
+      margin-top: 28px;
+    }
+    .gallery-card img {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      display: block;
+      background: white;
+    }
+    .screen-section {
+      margin-top: 24px;
+    }
+    .screen-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 14px;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+    .gallery-card {
+      padding: 14px;
+      width: min(100%, 420px);
+    }
+    .gallery-label {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .meta {
+      font-size: 14px;
+      margin-top: 8px;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .meta-label {
+      color: #44444a;
+      font-weight: 600;
+    }
+    .meta-value {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .gallery-card.issue {
+      border-color: var(--warn-border);
+      background: #fff7cc;
+    }
+    .issue-marker {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: var(--warn-bg);
+      color: var(--warn-text);
+      border: 1px solid var(--warn-border);
+    }
+    .gallery-card.portrait {
+      width: min(100%, 360px);
+    }
+    .gallery-card.landscape {
+      width: min(100%, 600px);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="hero-badge">{{ISSUE_COUNT_LABEL}}</div>
+      <h1>UI Review</h1>
+      <p class="hero-subtitle">Reviewed screens</p>
+      {{REVIEWED_SCREENS}}
+    </section>
+
+    {{SCREEN_SECTIONS}}
+  </main>
+</body>
+</html>
