@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -175,17 +176,19 @@ private fun LowStockDetails(
         },
         defaultLowStockThreshold
     )
-    val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
     val openInNewIconId = "openInNewIcon"
-    val textWithIcon = buildAnnotatedString {
-        append(text)
-        append(" ")
-        if (linkAnnotation != null) {
-            pushLink(linkAnnotation)
-            appendInlineContent(openInNewIconId, "[Icon]")
-            pop()
-        } else {
-            appendInlineContent(openInNewIconId, "[Icon]")
+    val textWithIcon = remember(text) {
+        val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
+        buildAnnotatedString {
+            append(text)
+            append(" ")
+            if (linkAnnotation != null) {
+                pushLink(linkAnnotation)
+                appendInlineContent(openInNewIconId, "[Icon]")
+                pop()
+            } else {
+                appendInlineContent(openInNewIconId, "[Icon]")
+            }
         }
     }
     val iconColor = MaterialTheme.colorScheme.primary
