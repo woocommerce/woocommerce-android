@@ -117,8 +117,10 @@ class WooPosTotalsViewModel @Inject constructor(
     init {
         listenUpEvents()
         observeCardReaderStatus()
-        (tapToPayAvailabilityStatus() as? TapToPayAvailabilityStatus.Result.NotAvailable)?.let {
-            paymentsFlowTracker.trackTapToPayNotAvailableReason(it, TAP_TO_PAY_SOURCE)
+        if (isTapToPayAvailable.isFeatureFlagEnabled()) {
+            (tapToPayAvailabilityStatus() as? TapToPayAvailabilityStatus.Result.NotAvailable)?.let {
+                paymentsFlowTracker.trackTapToPayNotAvailableReason(it, TAP_TO_PAY_SOURCE)
+            }
         }
     }
 
@@ -223,16 +225,14 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
-        when (event) {
-            WooPosTotalsUIEvent.OnTapToPayClicked -> viewModelScope.launch {
+        if (event is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged) {
+            val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+            uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
+        } else {
+            viewModelScope.launch {
                 totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
                 wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
             }
-            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> {
-                val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-                uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
-            }
-            else -> Unit
         }
     }
 

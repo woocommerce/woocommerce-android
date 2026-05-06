@@ -1950,6 +1950,50 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given flag on and TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
+        // GIVEN
+        val notAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(notAvailable)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker).trackTapToPayNotAvailableReason(notAvailable, "woo_pos_checkout")
+    }
+
+    @Test
+    fun `given flag on and TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
+    fun `given flag off and TTP NotAvailable, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(false)
+        whenever(tapToPayAvailabilityStatus.invoke())
+            .thenReturn(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
     fun `given TTP available, when checkout shown, then state isTapToPayAvailable is true`() = runTest {
         // GIVEN
         whenever(isTapToPayAvailable.invoke()).thenReturn(true)
@@ -2004,45 +2048,19 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() = runTest {
-        // GIVEN
-        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
-        viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true))
+    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true))
 
-        // WHEN
-        viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
 
-        // THEN
-        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
-    }
-
-    @Test
-    fun `given TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
-        // GIVEN
-        val notAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
-        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(notAvailable)
-        clearInvocations(tracker)
-
-        // WHEN
-        createViewModelAndSetupForSuccessfulOrderCreation()
-
-        // THEN
-        verify(tracker).trackTapToPayNotAvailableReason(notAvailable, "woo_pos_checkout")
-    }
-
-    @Test
-    fun `given TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
-        // GIVEN
-        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
-        clearInvocations(tracker)
-
-        // WHEN
-        createViewModelAndSetupForSuccessfulOrderCreation()
-
-        // THEN
-        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
-    }
+            // THEN
+            val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+            assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
+        }
 
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
