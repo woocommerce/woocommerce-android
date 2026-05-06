@@ -46,8 +46,7 @@ internal fun AssistantComposer(
     val showPendingHint = isTurnActive && !shouldShowStopControl
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 4.dp,
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(
             modifier = Modifier
