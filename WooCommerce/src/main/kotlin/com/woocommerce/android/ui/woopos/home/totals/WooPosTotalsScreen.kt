@@ -241,10 +241,7 @@ private fun TotalsLoaded(
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                         when {
-                            state.isTapToPayInProgress -> PreparingReader(
-                                title = stringResource(R.string.woopos_tap_to_pay_preparing_title),
-                                subtitle = stringResource(R.string.woopos_tap_to_pay_preparing_subtitle),
-                            )
+                            state.isTapToPayInProgress -> TapToPayConnecting()
                             state.isTapToPayAvailable -> TapToPayPromoted(onUIEvent = onUIEvent)
                             else -> ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
                         }
@@ -360,6 +357,11 @@ private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) 
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
     WooPosPaymentMethod.SCAN_TO_PAY -> null
     WooPosPaymentMethod.MARK_ORDER_AS_PAID -> null
+}
+
+@Composable
+private fun TapToPayConnecting() {
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
 }
 
 @Composable
