@@ -1,6 +1,10 @@
 package com.woocommerce.android.aiassistant.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -323,17 +327,24 @@ private fun AssistantMessageThread(
                 onCancelWrite = onCancelWrite,
                 assistantCardRenderer = assistantCardRenderer,
                 onCardAction = onCardAction,
+                modifier = Modifier.animateItem(),
             )
         }
         if (showTypingIndicator) {
             item(key = TYPING_INDICATOR_ITEM_KEY) {
-                AssistantTypingIndicator()
+                AssistantRevealOnFirstComposition(
+                    modifier = Modifier.animateItem(),
+                ) {
+                    AssistantTypingIndicator()
+                }
             }
         }
     }
 }
 
 private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
+private const val REVEAL_ANIMATION_DURATION_MS = 180
+private const val REVEAL_SLIDE_OFFSET_DIVISOR = 3
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
 
 private data class AssistantThreadScrollSignal(
@@ -394,13 +405,14 @@ private fun AssistantMessageBubble(
     onCancelWrite: () -> Unit,
     assistantCardRenderer: AssistantCardRenderer?,
     onCardAction: (AssistantCardAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val rowArrangement = if (isUser) Arrangement.End else Arrangement.Start
     val description = message.contentDescription(isUser = isUser)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) { contentDescription = description },
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -451,12 +463,36 @@ private fun AssistantMessageSegment(
             assistantCardRenderer = assistantCardRenderer,
             onCardAction = onCardAction,
         )
-        is AssistantUiSegment.ToolActivity -> AssistantToolActivityPill(activity = segment.activity)
+        is AssistantUiSegment.ToolActivity -> AssistantRevealOnFirstComposition {
+            AssistantToolActivityPill(activity = segment.activity)
+        }
         is AssistantUiSegment.ConfirmationCard -> AssistantConfirmationCardSegment(
             confirmation = segment.model,
             onConfirmWrite = onConfirmWrite,
             onCancelWrite = onCancelWrite,
         )
+    }
+}
+
+@Composable
+private fun AssistantRevealOnFirstComposition(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        enter = fadeIn(animationSpec = tween(REVEAL_ANIMATION_DURATION_MS)) +
+            slideInVertically(animationSpec = tween(REVEAL_ANIMATION_DURATION_MS)) { fullHeight ->
+                fullHeight / REVEAL_SLIDE_OFFSET_DIVISOR
+            },
+    ) {
+        content()
     }
 }
 
