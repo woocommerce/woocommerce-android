@@ -63,6 +63,7 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCardChrome
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
 import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
+import com.woocommerce.android.aiassistant.ui.components.AssistantEmptyState
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -112,6 +113,12 @@ fun AssistantChatScreen(
                 viewModel.onSendMessage(message)
             }
         },
+        onSendSuggestion = { prompt ->
+            if (!state.isTurnActive) {
+                inputText = ""
+                viewModel.onSendMessage(prompt)
+            }
+        },
         onCancelTurn = viewModel::onCancelTurn,
         onRetry = viewModel::onRetry,
         onConfirmWrite = viewModel::onConfirmWrite,
@@ -129,6 +136,7 @@ fun AssistantChatScreen(
     inputText: String,
     onInputTextChange: (String) -> Unit,
     onSendMessage: () -> Unit,
+    onSendSuggestion: (String) -> Unit,
     onCancelTurn: () -> Unit,
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
@@ -153,15 +161,22 @@ fun AssistantChatScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AssistantMessageThread(
-                state = state,
-                onRetry = onRetry,
-                onConfirmWrite = onConfirmWrite,
-                onCancelWrite = onCancelWrite,
-                assistantCardRenderer = assistantCardRenderer,
-                onCardAction = onCardAction,
-                modifier = Modifier.weight(1f),
-            )
+            if (state.shouldShowEmptyState) {
+                AssistantEmptyState(
+                    onSuggestionClick = onSendSuggestion,
+                    modifier = Modifier.weight(1f),
+                )
+            } else {
+                AssistantMessageThread(
+                    state = state,
+                    onRetry = onRetry,
+                    onConfirmWrite = onConfirmWrite,
+                    onCancelWrite = onCancelWrite,
+                    assistantCardRenderer = assistantCardRenderer,
+                    onCardAction = onCardAction,
+                    modifier = Modifier.weight(1f),
+                )
+            }
             AssistantStatusPanel(state = state)
             AssistantComposer(
                 inputText = inputText,
@@ -692,6 +707,25 @@ private fun AssistantStatsCardGroupNoTrendPreview() {
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "Large Font", showBackground = true, widthDp = 390, heightDp = 720, fontScale = 1.5f)
+@Composable
+private fun AssistantChatScreenEmptyStatePreview() {
+    AssistantChatScreen(
+        state = AssistantUiState(),
+        inputText = "",
+        onInputTextChange = {},
+        onSendMessage = {},
+        onSendSuggestion = {},
+        onCancelTurn = {},
+        onRetry = {},
+        onConfirmWrite = {},
+        onCancelWrite = {},
+        onBack = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantChatScreenToolActivityPreview() {
     AssistantChatScreen(
@@ -718,6 +752,7 @@ private fun AssistantChatScreenToolActivityPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
@@ -742,6 +777,7 @@ private fun AssistantChatScreenTypingPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
@@ -777,6 +813,7 @@ private fun AssistantChatScreenPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
@@ -821,6 +858,7 @@ private fun AssistantChatScreenConfirmationPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},

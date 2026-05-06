@@ -62,6 +62,13 @@
     <string name="assistant_chat_card_group_products">Products</string>
     <string name="assistant_chat_card_group_stats">Analytics</string>
     <string name="assistant_chat_card_group_generic">Cards</string>
+    <string name="assistant_chat_empty_state_title">What can I help with?</string>
+    <string name="assistant_chat_empty_state_subtitle">Ask a question or try one of these store shortcuts.</string>
+    <string name="assistant_chat_empty_state_suggestion_revenue">Show today\'s revenue</string>
+    <string name="assistant_chat_empty_state_suggestion_stock">Find products low on stock</string>
+    <string name="assistant_chat_empty_state_suggestion_orders">Show recent orders</string>
+    <string name="assistant_chat_empty_state_suggestion_customers">List new customers</string>
+    <string name="assistant_chat_empty_state_suggestion_content_description">Send suggestion: %1$s</string>
     <string name="assistant_stats_card_total_sales_label">Total Sales</string>
     <string name="assistant_stats_card_net_sales_label">Net Sales</string>
     <string name="assistant_stats_card_metric_unavailable">Unavailable</string>

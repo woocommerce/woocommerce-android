@@ -140,6 +140,46 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given idle state with no visible content, when checking empty state, then it is visible`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.IDLE,
+            messages = emptyList(),
+            error = null,
+        )
+
+        assertThat(state.shouldShowEmptyState).isTrue()
+    }
+
+    @Test
+    fun `given idle state with messages, when checking empty state, then it is hidden`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.IDLE,
+            messages = listOf(
+                AssistantUiMessage("message-1", AssistantUiMessage.Role.USER, "Show today's sales"),
+            ),
+        )
+
+        assertThat(state.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
+    fun `given streaming state with no messages, when checking empty state, then it is hidden`() {
+        val state = AssistantUiState(status = AssistantUiStatus.STREAMING)
+
+        assertThat(state.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
+    fun `given fallback error state with no messages, when checking empty state, then it is hidden`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.ERROR,
+            error = AssistantUiError.NETWORK,
+        )
+
+        assertThat(state.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
     fun `given streaming with active empty assistant message, when checking typing indicator, then it is visible`() {
         val state = AssistantUiState(
             messages = listOf(
