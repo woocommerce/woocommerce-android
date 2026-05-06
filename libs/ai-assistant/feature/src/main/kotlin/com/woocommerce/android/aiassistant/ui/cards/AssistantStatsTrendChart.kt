@@ -1,11 +1,16 @@
 package com.woocommerce.android.aiassistant.ui.cards
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +21,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 
@@ -100,6 +106,45 @@ internal fun normalizeStatsTrendChartPoints(points: List<Double>): List<Float> =
             points.map { ((it - min) / range).toFloat() }
         }
     }
+}
+
+@Preview(showBackground = true, widthDp = 240, heightDp = 440)
+@Preview(name = "Dark", showBackground = true, widthDp = 240, heightDp = 440, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantStatsTrendChartPreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AssistantStatsTrendChartPreviewItem(points = listOf(12.0, 18.0, 9.0, 26.0, 21.0))
+            AssistantStatsTrendChartPreviewItem(points = listOf(26.0, 21.0, 12.0, 4.0, 2.0))
+            AssistantStatsTrendChartPreviewItem(points = listOf(4.0, 4.0, 4.0, 4.0))
+            AssistantStatsTrendChartPreviewItem(points = listOf(10.0, -5.0, 3.0, -1.0))
+            AssistantStatsTrendChartPreviewItem(points = listOf(12.0))
+            AssistantStatsTrendChartPreviewItem(points = emptyList())
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 96, heightDp = 96)
+@Composable
+private fun AssistantStatsTrendChartCompactPreview() {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            AssistantStatsTrendChart(
+                points = listOf(2.0, 8.0, 3.0, 14.0),
+                modifier = Modifier.width(64.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AssistantStatsTrendChartPreviewItem(points: List<Double>) {
+    AssistantStatsTrendChart(
+        points = points,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+    )
 }
 
 private val TREND_CHART_HEIGHT = 58.dp
