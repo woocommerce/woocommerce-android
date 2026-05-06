@@ -92,6 +92,4 @@ internal fun AssistantCard.Stats.toStatsCardState(
     netSales = formatStatsMoney(netSales, currency, currencyFormatter, unavailableValue),
     totalSalesChartValues = totalSalesChartPoints.map { it.value },
     netSalesChartValues = netSalesChartPoints.map { it.value },
-    isTotalSalesTrendAvailable = totalSalesChartPoints.isNotEmpty(),
-    isNetSalesTrendAvailable = netSalesChartPoints.isNotEmpty(),
 )

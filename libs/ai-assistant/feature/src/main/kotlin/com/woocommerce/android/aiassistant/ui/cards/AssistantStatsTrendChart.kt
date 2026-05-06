@@ -4,16 +4,13 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -21,11 +18,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.aiassistant.R
 
 @Composable
 internal fun AssistantStatsTrendChart(
@@ -33,76 +27,61 @@ internal fun AssistantStatsTrendChart(
     modifier: Modifier = Modifier,
 ) {
     val normalizedPoints = normalizeStatsTrendChartPoints(points)
+    if (normalizedPoints.isEmpty()) return
+
     val lineColor = MaterialTheme.colorScheme.primary
-    val fallbackColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    Box(
-        modifier = modifier.height(TREND_CHART_HEIGHT),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (normalizedPoints.isEmpty()) {
-            Text(
-                text = stringResource(R.string.assistant_stats_card_trend_unavailable),
-                modifier = Modifier.padding(horizontal = 8.dp),
-                color = fallbackColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.labelMedium,
-            )
+    Canvas(modifier = modifier.height(TREND_CHART_HEIGHT)) {
+        val strokeWidthPx = TREND_LINE_STROKE.toPx()
+        val verticalInset = strokeWidthPx + END_POINT_RADIUS.toPx()
+        val drawableHeight = (size.height - verticalInset * 2f).coerceAtLeast(0f)
+
+        val coords = if (normalizedPoints.size == 1) {
+            val y = verticalInset + (1f - normalizedPoints.single()) * drawableHeight
+            listOf(Offset(size.width / 2f, y))
         } else {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val strokeWidthPx = TREND_LINE_STROKE.toPx()
-                val verticalInset = strokeWidthPx + END_POINT_RADIUS.toPx()
-                val drawableHeight = (size.height - verticalInset * 2f).coerceAtLeast(0f)
-
-                val coords = if (normalizedPoints.size == 1) {
-                    val y = verticalInset + (1f - normalizedPoints.single()) * drawableHeight
-                    listOf(Offset(size.width / 2f, y))
-                } else {
-                    val xStep = size.width / normalizedPoints.lastIndex
-                    normalizedPoints.mapIndexed { index, normalized ->
-                        val y = verticalInset + (1f - normalized) * drawableHeight
-                        Offset(index * xStep, y)
-                    }
-                }
-
-                if (coords.size >= 2) {
-                    val linePath = buildSmoothTrendPath(coords)
-                    val fillPath = Path().apply {
-                        addPath(linePath)
-                        lineTo(coords.last().x, size.height)
-                        lineTo(coords.first().x, size.height)
-                        close()
-                    }
-                    drawPath(
-                        path = fillPath,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                lineColor.copy(alpha = TREND_FILL_TOP_ALPHA),
-                                lineColor.copy(alpha = 0f),
-                            ),
-                            startY = 0f,
-                            endY = size.height,
-                        ),
-                    )
-                    drawPath(
-                        path = linePath,
-                        color = lineColor,
-                        style = Stroke(
-                            width = strokeWidthPx,
-                            cap = StrokeCap.Round,
-                            join = StrokeJoin.Round,
-                        ),
-                    )
-                }
-
-                drawCircle(
-                    color = lineColor,
-                    radius = END_POINT_RADIUS.toPx(),
-                    center = coords.last(),
-                )
+            val xStep = size.width / normalizedPoints.lastIndex
+            normalizedPoints.mapIndexed { index, normalized ->
+                val y = verticalInset + (1f - normalized) * drawableHeight
+                Offset(index * xStep, y)
             }
         }
+
+        if (coords.size >= 2) {
+            val linePath = buildSmoothTrendPath(coords)
+            val fillPath = Path().apply {
+                addPath(linePath)
+                lineTo(coords.last().x, size.height)
+                lineTo(coords.first().x, size.height)
+                close()
+            }
+            drawPath(
+                path = fillPath,
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        lineColor.copy(alpha = TREND_FILL_TOP_ALPHA),
+                        lineColor.copy(alpha = 0f),
+                    ),
+                    startY = 0f,
+                    endY = size.height,
+                ),
+            )
+            drawPath(
+                path = linePath,
+                color = lineColor,
+                style = Stroke(
+                    width = strokeWidthPx,
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round,
+                ),
+            )
+        }
+
+        drawCircle(
+            color = lineColor,
+            radius = END_POINT_RADIUS.toPx(),
+            center = coords.last(),
+        )
     }
 }
 

@@ -65,7 +65,6 @@
     <string name="assistant_stats_card_total_sales_label">Total Sales</string>
     <string name="assistant_stats_card_net_sales_label">Net Sales</string>
     <string name="assistant_stats_card_metric_unavailable">Unavailable</string>
-    <string name="assistant_stats_card_trend_unavailable">Trend unavailable</string>
     <string name="assistant_stats_card_open_content_description">Open analytics for %1$s</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>
     <string name="assistant_chat_send">Send</string>

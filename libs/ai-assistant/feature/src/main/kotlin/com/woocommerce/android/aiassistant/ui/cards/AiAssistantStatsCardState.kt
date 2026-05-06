@@ -6,6 +6,4 @@ data class AiAssistantStatsCardState(
     val netSales: String,
     val totalSalesChartValues: List<Double>,
     val netSalesChartValues: List<Double>,
-    val isTotalSalesTrendAvailable: Boolean,
-    val isNetSalesTrendAvailable: Boolean,
 )

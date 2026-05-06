@@ -909,8 +909,6 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
                     .joinToString(" "),
                 totalSalesChartValues = card.totalSalesChartPoints.map { it.value },
                 netSalesChartValues = card.netSalesChartPoints.map { it.value },
-                isTotalSalesTrendAvailable = card.totalSalesChartPoints.isNotEmpty(),
-                isNetSalesTrendAvailable = card.netSalesChartPoints.isNotEmpty(),
             ),
             onClick = {},
             modifier = modifier,

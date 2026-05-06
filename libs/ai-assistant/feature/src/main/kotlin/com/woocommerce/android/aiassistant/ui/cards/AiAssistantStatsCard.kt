@@ -28,6 +28,8 @@ fun AiAssistantStatsCard(
     modifier: Modifier = Modifier,
 ) {
     val contentDescription = stringResource(R.string.assistant_stats_card_open_content_description, state.period)
+    val showTotalSalesTrend = shouldShowStatsTrendChart(state.totalSalesChartValues)
+    val showNetSalesTrend = shouldShowStatsTrendChart(state.netSalesChartValues)
     Column(
         modifier = modifier
             .clickable(role = Role.Button, onClick = onClick)
@@ -57,22 +59,26 @@ fun AiAssistantStatsCard(
                 modifier = Modifier.weight(1f),
             )
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            StatsTrendColumn(
-                label = stringResource(R.string.assistant_stats_card_total_sales_label),
-                values = state.totalSalesChartValues,
-                isTrendAvailable = state.isTotalSalesTrendAvailable,
-                modifier = Modifier.weight(1f),
-            )
-            StatsTrendColumn(
-                label = stringResource(R.string.assistant_stats_card_net_sales_label),
-                values = state.netSalesChartValues,
-                isTrendAvailable = state.isNetSalesTrendAvailable,
-                modifier = Modifier.weight(1f),
-            )
+        if (showTotalSalesTrend || showNetSalesTrend) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                if (showTotalSalesTrend) {
+                    StatsTrendColumn(
+                        label = stringResource(R.string.assistant_stats_card_total_sales_label),
+                        values = state.totalSalesChartValues,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (showNetSalesTrend) {
+                    StatsTrendColumn(
+                        label = stringResource(R.string.assistant_stats_card_net_sales_label),
+                        values = state.netSalesChartValues,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
         }
     }
 }
@@ -109,7 +115,6 @@ private fun StatsMetric(
 private fun StatsTrendColumn(
     label: String,
     values: List<Double>,
-    isTrendAvailable: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -124,11 +129,13 @@ private fun StatsTrendColumn(
             style = MaterialTheme.typography.labelSmall,
         )
         AssistantStatsTrendChart(
-            points = if (isTrendAvailable) values else emptyList(),
+            points = values,
             modifier = Modifier.fillMaxWidth(),
         )
     }
 }
+
+internal fun shouldShowStatsTrendChart(values: List<Double>): Boolean = values.size > 1
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Preview(name = "Dark", showBackground = true, widthDp = 360, heightDp = 240, uiMode = UI_MODE_NIGHT_YES)
@@ -192,8 +199,6 @@ private fun AiAssistantStatsCardPreviewNoTrend() {
         state = sampleStatsCardState(
             totalSalesChartValues = emptyList(),
             netSalesChartValues = emptyList(),
-            isTotalSalesTrendAvailable = false,
-            isNetSalesTrendAvailable = false,
         ),
         onClick = {},
     )
@@ -206,7 +211,6 @@ private fun AiAssistantStatsCardPreviewPartialData() {
         state = sampleStatsCardState(
             totalSalesChartValues = listOf(12.0, 18.0, 9.0, 26.0, 21.0),
             netSalesChartValues = emptyList(),
-            isNetSalesTrendAvailable = false,
         ),
         onClick = {},
     )
@@ -215,16 +219,12 @@ private fun AiAssistantStatsCardPreviewPartialData() {
 private fun sampleStatsCardState(
     totalSalesChartValues: List<Double> = SAMPLE_TOTAL_SALES_CHART_VALUES,
     netSalesChartValues: List<Double> = SAMPLE_NET_SALES_CHART_VALUES,
-    isTotalSalesTrendAvailable: Boolean = totalSalesChartValues.isNotEmpty(),
-    isNetSalesTrendAvailable: Boolean = netSalesChartValues.isNotEmpty(),
 ) = AiAssistantStatsCardState(
     period = "May 1 - May 7, 2026",
     totalSales = "$170.35",
     netSales = "$120.15",
     totalSalesChartValues = totalSalesChartValues,
     netSalesChartValues = netSalesChartValues,
-    isTotalSalesTrendAvailable = isTotalSalesTrendAvailable,
-    isNetSalesTrendAvailable = isNetSalesTrendAvailable,
 )
 
 private val SAMPLE_TOTAL_SALES_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)

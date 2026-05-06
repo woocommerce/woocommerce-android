@@ -35,8 +35,6 @@ class AiAssistantStatsCardRendererTest {
         assertThat(model.netSales).isEqualTo("$100.15")
         assertThat(model.totalSalesChartValues).containsExactly(12.0, 18.0, 9.0)
         assertThat(model.netSalesChartValues).containsExactly(10.0, 15.0, 8.0)
-        assertThat(model.isTotalSalesTrendAvailable).isTrue()
-        assertThat(model.isNetSalesTrendAvailable).isTrue()
         verify(currencyFormatter).formatCurrency("123.45", "USD")
         verify(currencyFormatter).formatCurrency("100.15", "USD")
     }
@@ -67,14 +65,12 @@ class AiAssistantStatsCardRendererTest {
                 netSales = "Not available",
                 totalSalesChartValues = emptyList(),
                 netSalesChartValues = emptyList(),
-                isTotalSalesTrendAvailable = false,
-                isNetSalesTrendAvailable = false,
             )
         )
     }
 
     @Test
-    fun `given assistant stats card without net sales chart points, when mapped, then only net sales trend is unavailable`() {
+    fun `given assistant stats card without net sales chart points, when mapped, then net sales chart values are empty`() {
         val model = statsCard(netSalesChartPoints = emptyList()).toStatsCardState(
             currencyFormatter = currencyFormatter,
             unavailableValue = "Unavailable",
@@ -83,12 +79,10 @@ class AiAssistantStatsCardRendererTest {
 
         assertThat(model.totalSalesChartValues).containsExactly(12.0, 18.0, 9.0)
         assertThat(model.netSalesChartValues).isEmpty()
-        assertThat(model.isTotalSalesTrendAvailable).isTrue()
-        assertThat(model.isNetSalesTrendAvailable).isFalse()
     }
 
     @Test
-    fun `given assistant stats card without total sales chart points, when mapped, then only total sales trend is unavailable`() {
+    fun `given assistant stats card without total sales chart points, when mapped, then total sales chart values are empty`() {
         val model = statsCard(totalSalesChartPoints = emptyList()).toStatsCardState(
             currencyFormatter = currencyFormatter,
             unavailableValue = "Unavailable",
@@ -97,8 +91,6 @@ class AiAssistantStatsCardRendererTest {
 
         assertThat(model.totalSalesChartValues).isEmpty()
         assertThat(model.netSalesChartValues).containsExactly(10.0, 15.0, 8.0)
-        assertThat(model.isTotalSalesTrendAvailable).isFalse()
-        assertThat(model.isNetSalesTrendAvailable).isTrue()
     }
 
     @Test
