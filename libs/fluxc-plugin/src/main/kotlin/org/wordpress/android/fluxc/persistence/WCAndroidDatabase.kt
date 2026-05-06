@@ -75,6 +75,7 @@ import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
+import org.wordpress.android.fluxc.persistence.dao.WooPushNotificationPreferencesDao
 import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
@@ -102,6 +103,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.fluxc.persistence.entity.WooPushNotificationPreferencesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
@@ -139,7 +141,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 83
+const val WC_DATABASE_VERSION = 84
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -200,6 +202,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCRevenueStatsModel::class,
         WCShippingLabelModel::class,
         WCShippingLabelCreationEligibility::class,
+        WooPushNotificationPreferencesEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -262,6 +265,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 80, to = 81),
         AutoMigration(from = 81, to = 82),
         AutoMigration(from = 82, to = 83),
+        AutoMigration(from = 83, to = 84),
     ]
 )
 @TypeConverters(
@@ -318,6 +322,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val revenueStatsDao: RevenueStatsDao
     internal abstract val shippingLabelDao: ShippingLabelDao
     internal abstract val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
+    internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
 
     companion object {
         fun buildDb(

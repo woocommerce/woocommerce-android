@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import org.wordpress.android.fluxc.persistence.dao.WooPushNotificationPreferencesDao
 import org.wordpress.android.util.AppLog
 import java.io.File
 import javax.inject.Inject
@@ -170,6 +171,11 @@ interface WCDatabaseModule {
 
         @Provides internal fun provideShippingLabelCreationEligibilityDao(database: WCAndroidDatabase) =
             database.shippingLabelCreationEligibilityDao
+
+        @Provides
+        internal fun provideWooPushNotificationPreferencesDao(
+            database: WCAndroidDatabase
+        ): WooPushNotificationPreferencesDao = database.wooPushNotificationPreferencesDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }
