@@ -169,7 +169,9 @@ class UnifiedLoginTracker
         JETPACK_NOT_CONNECTED("jetpack_not_connected"),
         NOT_WOO_STORE("not_woo_store"),
         NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found"),
-        NOT_WORDPRESS_SITE("not_wordpress_site");
+        NOT_WORDPRESS_SITE("not_wordpress_site"),
+        QR_PROLOGUE("qr_prologue"),
+        QR_SCAN("qr_scan");
 
         companion object {
             private val valueMap = values().associateBy(Step::value)
@@ -205,7 +207,9 @@ class UnifiedLoginTracker
         TRY_AGAIN("try_again"),
         WHAT_IS_WORDPRESS_COM("what_is_wordpress_com"),
         WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN("what_is_wordpress_com_on_invalid_email_screen"),
-        CREATE_ACCOUNT("create_account")
+        CREATE_ACCOUNT("create_account"),
+        LOGIN_QR_SCAN("login_qr_scan"),
+        LOGIN_QR_FALLBACK("login_qr_fallback")
     }
 
     companion object {
