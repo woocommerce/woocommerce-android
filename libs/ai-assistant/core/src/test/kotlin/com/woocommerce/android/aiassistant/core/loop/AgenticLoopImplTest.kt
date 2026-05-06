@@ -9,6 +9,7 @@ import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
@@ -656,9 +657,68 @@ class AgenticLoopImplTest {
             assertThat(finished.retryAvailable).isFalse()
             assertThat(finished.error).isEqualTo(AssistantError.OutcomeUnknown(toolName = "orders_update"))
             assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result)
-                .isEqualTo(ToolResult.TransportError(toolCallId = "call_1", retryable = true))
+                .isEqualTo(
+                    ToolResult.TransportError(
+                        toolCallId = "call_1",
+                        retryable = true,
+                        kind = ToolFailureKind.OUTCOME_UNKNOWN,
+                    )
+                )
             assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single().toolCallId)
                 .isEqualTo("call_1")
+            job.cancel()
+        }
+
+    @Test
+    fun `given confirmed unsafe tool returns deterministic transport error, when running turn, then tool failed fails without retry`() =
+        runTest {
+            val unsafeDescriptor = ToolDescriptor(
+                name = "orders_update",
+                description = "Updates an order",
+                inputSchema = buildJsonObject { },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val registry = object : ToolRegistry {
+                override fun descriptors() = listOf(unsafeDescriptor)
+
+                override suspend fun execute(call: ToolCall): ToolResult =
+                    ToolResult.TransportError(
+                        toolCallId = call.id,
+                        retryable = true,
+                        kind = ToolFailureKind.DETERMINISTIC_FAILURE,
+                    )
+            }
+            val safetyOrchestrator = SafetyOrchestratorImpl()
+            val loop = loopWith(
+                flow {
+                    emit(
+                        AssistantEvent.ToolCallDelta(
+                            index = 0,
+                            id = "call_1",
+                            name = "orders_update",
+                            argumentsDelta = """{"id":42,"status":"processing"}""",
+                        )
+                    )
+                    emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                },
+                registry = registry,
+                safetyOrchestrator = safetyOrchestrator,
+            )
+            val events = mutableListOf<LoopEvent>()
+
+            val job = launch {
+                loop.runTurn("conv", "update order", history, contextWithTools(unsafeDescriptor)).toList(events)
+            }
+
+            runCurrent()
+            val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
+            safetyOrchestrator.confirm(request.id)
+            advanceUntilIdle()
+
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.error).isEqualTo(AssistantError.ToolFailed(toolName = "orders_update"))
             job.cancel()
         }
 
