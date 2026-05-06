@@ -101,7 +101,8 @@ private fun WooPosTotalsScreen(
                 WooPosPaymentSuccessScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
-                    onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+                    onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) },
+                    onBackPressed = { onUIEvent(WooPosTotalsUIEvent.OnBackClicked) },
                 )
             }
         }

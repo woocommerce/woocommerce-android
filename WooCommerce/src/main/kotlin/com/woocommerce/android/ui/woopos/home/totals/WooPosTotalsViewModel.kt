@@ -250,6 +250,10 @@ class WooPosTotalsViewModel @Inject constructor(
                     retryPaymentCollectionFromScratch()
                 }
 
+                is WooPosTotalsViewState.PaymentSuccess -> {
+                    childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+                }
+
                 else -> {
                     cancelCreateOrderDraftAction()
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
