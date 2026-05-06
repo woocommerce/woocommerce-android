@@ -4,9 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,12 +36,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderIndicatorDot
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderStatusText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -185,7 +182,14 @@ private fun ConnectedContent(
                 HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    ReaderConnectedIndicator()
+                    WooPosReaderIndicatorDot(
+                        size = 14.dp,
+                        color = WooPosTheme.colors.success,
+                        modifier = Modifier.padding(start = WooPosSpacing.Medium.value),
+                    )
+                    WooPosReaderStatusText(
+                        title = stringResource(R.string.woopos_reader_connected),
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -225,25 +229,6 @@ private fun NotConnectedContent(
             title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
             onClick = onDocumentationClicked
-        )
-    }
-}
-
-@Composable
-private fun ReaderConnectedIndicator() {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-        Box(
-            modifier = Modifier
-                .size(14.dp.toAdaptiveComponentSize())
-                .background(color = WooPosTheme.colors.success, shape = CircleShape)
-        )
-        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-        WooPosText(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Small.value),
-            text = stringResource(R.string.woopos_reader_connected),
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
