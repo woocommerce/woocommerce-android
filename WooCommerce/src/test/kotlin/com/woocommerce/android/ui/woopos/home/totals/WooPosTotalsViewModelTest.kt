@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
@@ -2156,6 +2157,57 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
+    fun `given missing location permission, when TTP clicked, then permission request event is emitted`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(builtInReaderConnector.connect()).thenReturn(
+            Result.failure(MissingFineLocationPermissionException())
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN / THEN
+        viewModel.screenEvents.test {
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+            assertThat(awaitItem()).isEqualTo(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+        }
+    }
+
+    @Test
+    fun `given permission granted result, when received, then connect is re-attempted`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted = true))
+        advanceUntilIdle()
+
+        // THEN
+        verify(builtInReaderConnector).connect()
+    }
+
+    @Test
+    fun `given permission denied result, when received, then connect is not attempted`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_tap_to_pay_missing_location_permission_message))
+            .thenReturn("Grant location to use TTP")
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted = false))
+        advanceUntilIdle()
+
+        // THEN
+        verify(builtInReaderConnector, never()).connect()
+        verify(childrenToParentEventSender).sendToParent(
+            argThat {
+                this is ChildToParentEvent.ToastMessageDisplayed && this.message == "Grant location to use TTP"
+            }
+        )
     }
 
     private fun mockPaymentFailedTexts() {
