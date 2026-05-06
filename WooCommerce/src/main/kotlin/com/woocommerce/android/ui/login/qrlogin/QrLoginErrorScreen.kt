@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +32,13 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun QrLoginErrorScreen(
-    content: QrLoginErrorContent,
+    @StringRes title: Int,
+    @StringRes body: Int,
+    @StringRes primaryActionLabel: Int,
     onPrimaryClicked: () -> Unit,
     onSecondaryClicked: () -> Unit,
+    @StringRes secondaryActionLabel: Int = R.string.login_qr_endpoint_missing_enter_url,
+    bodyArgs: List<Int> = emptyList(),
 ) {
     Column(
         modifier = Modifier
@@ -51,7 +56,7 @@ fun QrLoginErrorScreen(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         Text(
-            text = stringResource(id = content.title),
+            text = stringResource(id = title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
@@ -61,8 +66,8 @@ fun QrLoginErrorScreen(
         @Suppress("SpreadOperator")
         Text(
             text = annotatedStringRes(
-                content.body,
-                *content.bodyArgs.map { stringResource(id = it) }.toTypedArray(),
+                body,
+                *bodyArgs.map { stringResource(id = it) }.toTypedArray(),
             ),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -71,13 +76,13 @@ fun QrLoginErrorScreen(
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
         WCColoredButton(
             onClick = onPrimaryClicked,
-            text = stringResource(id = content.primaryAction),
+            text = stringResource(id = primaryActionLabel),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCTextButton(
             onClick = onSecondaryClicked,
-            text = stringResource(id = content.secondaryAction),
+            text = stringResource(id = secondaryActionLabel),
             allCaps = false,
             modifier = Modifier.fillMaxWidth()
         )
@@ -89,11 +94,9 @@ fun QrLoginErrorScreen(
 private fun QrLoginErrorScreenPreview() {
     WooThemeWithBackground {
         QrLoginErrorScreen(
-            content = QrLoginErrorContent(
-                title = R.string.login_qr_scanner_error_token_title,
-                body = R.string.login_qr_scanner_error_token_body,
-                primaryAction = R.string.login_qr_endpoint_missing_retry,
-            ),
+            title = R.string.login_qr_scanner_error_token_title,
+            body = R.string.login_qr_scanner_error_token_body,
+            primaryActionLabel = R.string.login_qr_error_primary_scan,
             onPrimaryClicked = {},
             onSecondaryClicked = {},
         )

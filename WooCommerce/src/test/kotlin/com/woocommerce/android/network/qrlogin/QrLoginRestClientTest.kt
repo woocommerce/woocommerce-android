@@ -151,6 +151,24 @@ class QrLoginRestClientTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given 200 with null JSON literal body, when exchange, then MalformedResponse`() = testBlocking {
+        responder = { ok(it, body = "null") }
+
+        val result = client.exchange("https://store.example", "tok")
+
+        assertThat(result.exceptionOrNull()).isEqualTo(QrLoginExchangeException.MalformedResponse)
+    }
+
+    @Test
+    fun `given 200 with empty body, when exchange, then MalformedResponse`() = testBlocking {
+        responder = { ok(it, body = "") }
+
+        val result = client.exchange("https://store.example", "tok")
+
+        assertThat(result.exceptionOrNull()).isEqualTo(QrLoginExchangeException.MalformedResponse)
+    }
+
+    @Test
     fun `given 200 with blank application_password, when exchange, then MalformedResponse`() = testBlocking {
         responder = {
             ok(it, body = """{"user_login":"admin","site_url":"https://x","application_password":"  "}""")
