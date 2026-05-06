@@ -224,8 +224,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleTapToPayClicked() = viewModelScope.launch {
-        totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
-        wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
+        totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped()
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {

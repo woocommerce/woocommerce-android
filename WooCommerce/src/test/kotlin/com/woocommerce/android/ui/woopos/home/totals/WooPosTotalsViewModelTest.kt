@@ -2020,7 +2020,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when OnTapToPayClicked, then track entry-point analytics and do not navigate`() = runTest {
+    fun `when OnTapToPayClicked, then track checkout TTP analytics and do not navigate`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
         clearInvocations(childrenToParentEventSender)
@@ -2030,7 +2030,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.TapToPayEntryPointTapped)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutTapToPayPaymentTapped)
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
 

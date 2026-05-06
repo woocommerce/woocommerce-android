@@ -98,8 +98,8 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(WooPosAnalyticsEvent.Event.CheckoutCashPaymentTapped)
     }
 
-    suspend fun trackTapToPayEntryPointTapped() {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.TapToPayEntryPointTapped)
+    suspend fun trackCheckoutTapToPayPaymentTapped() {
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.CheckoutTapToPayPaymentTapped)
     }
 
     suspend fun trackCheckoutOutdatedItemDetectedScreenShown() {
