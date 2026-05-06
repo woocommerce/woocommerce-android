@@ -163,11 +163,12 @@ internal class DefaultShowCardsResolver @Inject constructor(
             currency = query.currency,
         ).fold(
             onSuccess = { stats ->
+                val displayCurrency = query.currency ?: analyticsDataSource.getSelectedSiteCurrencyCode()
                 val summary = analyticsStatsSummary(
                     after = query.after,
                     before = query.before,
                     stats = stats,
-                    currency = query.currency,
+                    currency = displayCurrency,
                 )
                 val totals = summary["totals"] as? JsonObject ?: JsonObject(emptyMap())
                 val intervalSubtotals = (summary["interval_subtotals"] as? JsonArray)
@@ -180,7 +181,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                             id = ref.id,
                             after = query.after,
                             before = query.before,
-                            currency = query.currency,
+                            currency = displayCurrency,
                             totals = totals,
                             intervalSubtotals = intervalSubtotals,
                         )
@@ -192,7 +193,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                         details = ShowCardDetails.AnalyticsStats(
                             after = query.after,
                             before = query.before,
-                            currency = query.currency,
+                            currency = displayCurrency,
                             totals = totals,
                             intervalSubtotals = intervalSubtotals,
                         ),

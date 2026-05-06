@@ -120,7 +120,7 @@ class ShowCardsResolverTest {
     }
 
     @Test
-    fun `given analytics stats ref with currency none, when resolved, then null currency is refetched`() = runTest {
+    fun `given analytics stats ref with currency none, when resolved, then site currency is used for display`() = runTest {
         whenever(
             analyticsDataSource.fetchRevenueStats(
                 after = "2026-05-01T00:00:00",
@@ -129,6 +129,7 @@ class ShowCardsResolverTest {
                 currency = null,
             )
         ).thenReturn(Result.success(analyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID_NO_CURRENCY)))
 
@@ -139,9 +140,9 @@ class ShowCardsResolverTest {
             currency = null,
         )
         val resolved = result.single() as ShowCardsResolution.Resolved
-        assertThat(resolved.summary.keys).doesNotContain("currency")
+        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
-        assertThat(details.currency).isNull()
+        assertThat(details.currency).isEqualTo("USD")
     }
 
     @Test
