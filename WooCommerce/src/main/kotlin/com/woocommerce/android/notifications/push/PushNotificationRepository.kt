@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -48,6 +49,33 @@ class PushNotificationRepository @Inject constructor(
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport,
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
+    fun observeWooNotificationPreferences(site: SiteModel): Flow<WooPushNotificationPreferences?> =
+        wooPushNotificationsStore.observeNotificationPreferences(site)
+
+    suspend fun fetchWooNotificationPreferences(site: SiteModel): Result<WooPushNotificationPreferences> {
+        val result = wooPushNotificationsStore.fetchNotificationPreferences(site)
+        return if (!result.isError) {
+            result.model?.let {
+                Result.success(it)
+            } ?: Result.failure(Exception("Woo push notification preferences fetch succeeded but API returned null"))
+        } else {
+            Result.failure(WooException(result.error))
+        }
+    }
+
+    suspend fun updateWooNotificationPreferences(
+        site: SiteModel,
+        preferences: WooPushNotificationPreferences
+    ): Result<WooPushNotificationPreferences> {
+        val result = wooPushNotificationsStore.updateNotificationPreferences(site, preferences)
+        return if (!result.isError) {
+            result.model?.let {
+                Result.success(it)
+            } ?: Result.failure(Exception("Woo push notification preferences update succeeded but API returned null"))
+        } else {
+            Result.failure(WooException(result.error))
+        }
+    }
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
         WooLog.d(
