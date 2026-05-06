@@ -325,8 +325,18 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun setTapToPayProgress(progress: WooPosTotalsViewState.TapToPayProgress?) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        if (checkout.tapToPayProgress != progress) {
-            uiState.value = checkout.copy(tapToPayProgress = progress)
+        val nextButtonsState = if (progress != null) {
+            WooPosTotalsViewState.PaymentButtonsState.Disabled
+        } else {
+            WooPosTotalsViewState.PaymentButtonsState.Enabled
+        }
+        if (checkout.tapToPayProgress != progress ||
+            checkout.paymentButtonsState != nextButtonsState
+        ) {
+            uiState.value = checkout.copy(
+                tapToPayProgress = progress,
+                paymentButtonsState = nextButtonsState,
+            )
         }
     }
 

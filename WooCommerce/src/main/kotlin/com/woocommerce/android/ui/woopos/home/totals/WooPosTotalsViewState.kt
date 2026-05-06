@@ -13,11 +13,18 @@ sealed class WooPosTotalsViewState : Parcelable {
         val isTapToPayAvailable: Boolean = false,
         val isAllPaymentMethodsDialogVisible: Boolean = false,
         val tapToPayProgress: TapToPayProgress? = null,
+        val paymentButtonsState: PaymentButtonsState = PaymentButtonsState.Enabled,
     ) : WooPosTotalsViewState()
 
     sealed class TapToPayProgress : Parcelable {
         @Parcelize data object Preparing : TapToPayProgress()
         @Parcelize data object SdkActive : TapToPayProgress()
+    }
+
+    @Parcelize
+    enum class PaymentButtonsState : Parcelable {
+        Enabled,
+        Disabled,
     }
 
     sealed class Totals : Parcelable {
