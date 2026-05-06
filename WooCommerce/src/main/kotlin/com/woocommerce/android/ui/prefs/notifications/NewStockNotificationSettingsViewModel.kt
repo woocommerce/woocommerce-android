@@ -73,9 +73,7 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     }
 
     private fun updateDefaultLowStockThreshold(threshold: Int) {
-        if (_viewState.value.defaultLowStockThreshold != threshold) {
-            _viewState.update { it.copy(defaultLowStockThreshold = threshold) }
-        }
+        _viewState.update { it.copy(defaultLowStockThreshold = threshold) }
     }
 
     data class ViewState(
