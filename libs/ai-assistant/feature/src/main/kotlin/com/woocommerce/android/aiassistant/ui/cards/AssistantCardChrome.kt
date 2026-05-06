@@ -66,4 +66,4 @@ internal fun AssistantCardChrome(
     }
 }
 
-private val ASSISTANT_CARD_CORNER_RADIUS = 20.dp
+private val ASSISTANT_CARD_CORNER_RADIUS = 8.dp

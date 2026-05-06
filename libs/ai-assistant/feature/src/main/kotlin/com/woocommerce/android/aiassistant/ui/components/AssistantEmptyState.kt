@@ -143,7 +143,7 @@ private fun assistantEmptyStateSuggestions() = listOf(
     ),
 )
 
-private val EMPTY_STATE_CARD_CORNER_RADIUS = 14.dp
+private val EMPTY_STATE_CARD_CORNER_RADIUS = 8.dp
 private val EMPTY_STATE_ROW_MIN_HEIGHT = 56.dp
 private val EMPTY_STATE_ROW_HORIZONTAL_PADDING = 16.dp
 private val EMPTY_STATE_ROW_ICON_SPACING = 16.dp

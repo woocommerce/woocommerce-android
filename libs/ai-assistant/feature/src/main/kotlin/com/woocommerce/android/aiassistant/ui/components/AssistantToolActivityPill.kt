@@ -31,10 +31,10 @@ import com.woocommerce.android.aiassistant.ui.assistantStatusGreen
 import com.woocommerce.android.aiassistant.ui.labelRes
 
 /**
- * In-thread affordance announcing the tool the assistant is running. Reads as a pill but uses a
- * 12dp rounded rectangle to match the iOS reference. Leading affordance is the animated three-dot
- * pulse (matches [AssistantTypingIndicator]) while the tool runs and a static checkmark once the
- * tool finishes — completed activities are preserved in the thread as a step history.
+ * In-thread affordance announcing the tool the assistant is running. Leading affordance is the
+ * animated three-dot pulse (matches [AssistantTypingIndicator]) while the tool runs and a static
+ * checkmark once the tool finishes — completed activities are preserved in the thread as a step
+ * history.
  */
 @Composable
 internal fun AssistantToolActivityPill(
@@ -50,7 +50,7 @@ internal fun AssistantToolActivityPill(
                 liveRegion = LiveRegionMode.Polite
             }
         },
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, assistantOutlineColor()),
     ) {

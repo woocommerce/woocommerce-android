@@ -560,7 +560,7 @@ private fun AssistantTextBubble(text: String, isUser: Boolean) {
     } else {
         assistantBubbleContentColor()
     }
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(16.dp)
     val maxWidth = if (isUser) 0.78f else 0.85f
     val verticalPadding = if (isUser) 10.dp else 12.dp
 
