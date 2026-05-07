@@ -368,6 +368,7 @@ private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
 private const val REVEAL_ANIMATION_DURATION_MS = 180
 private const val REVEAL_SLIDE_OFFSET_DIVISOR = 3
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
+private val USER_BUBBLE_MAX_WIDTH = 280.dp
 
 private data class AssistantThreadScrollSignal(
     val renderedItemCount: Int,
@@ -562,7 +563,7 @@ private fun AssistantTextBubble(text: String, isUser: Boolean) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.78f)
+            .widthIn(max = USER_BUBBLE_MAX_WIDTH)
             .background(assistantUserBubbleColor(), RoundedCornerShape(16.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
