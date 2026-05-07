@@ -31,7 +31,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosBuiltInReaderConnectorTest {
     private val locationRepository: CardReaderLocationRepository = mock()
