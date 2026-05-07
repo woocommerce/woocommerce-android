@@ -20,6 +20,7 @@ internal data class ProductVariationDetailResponse(
     val attributes: List<CompactVariationAttribute>,
     val image: CompactProductImage? = null,
     val description: String? = null,
+    @SerialName("description_truncated") val descriptionTruncated: Boolean? = null,
     val weight: String? = null,
     val dimensions: CompactVariationDimensions? = null,
     @SerialName("tax_class") val taxClass: String? = null,
@@ -59,7 +60,12 @@ internal fun WCProductVariationModel.toProductVariationDetailResponse(
     price = price,
     attributes = compactAttributes(),
     image = getImageModel()?.toCompactProductImage().takeIf { "image" in extraFields },
-    description = description.takeIf { "description" in extraFields },
+    description = if ("description" in extraFields) description.take(PRODUCT_TEXT_FIELD_LIMIT) else null,
+    descriptionTruncated = if ("description" in extraFields) {
+        description.length > PRODUCT_TEXT_FIELD_LIMIT
+    } else {
+        null
+    },
     weight = weight.takeIf { "weight" in extraFields },
     dimensions = CompactVariationDimensions(length, width, height).takeIf { "dimensions" in extraFields },
     taxClass = taxClass.takeIf { "tax_class" in extraFields },

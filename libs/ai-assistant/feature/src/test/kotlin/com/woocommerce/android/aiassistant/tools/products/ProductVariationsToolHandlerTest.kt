@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
@@ -269,6 +270,39 @@ class ProductVariationsToolHandlerTest {
             assertThat(row.getValue("date_modified").jsonPrimitive.content).isEqualTo("2026-05-02T10:00:00Z")
             assertThat(row.getValue("menu_order").jsonPrimitive.int).isEqualTo(3)
             assertThat(row.getValue("backorders").jsonPrimitive.content).isEqualTo("notify")
+        }
+
+    @Test
+    fun `given long variation description extra, when list executes, then description is capped with marker`() =
+        runTest {
+            val longDescription = "x".repeat(PRODUCT_TEXT_FIELD_LIMIT + 1)
+            whenever(dataSource.fetchVariations(productId = 100L, page = 1, perPage = 20)).thenReturn(
+                Result.success(
+                    listOf(
+                        variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            description = longDescription,
+                        )
+                    )
+                )
+            )
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("product_id", 100)
+                        putJsonArray("extra_fields") {
+                            add("description")
+                        }
+                    }
+                )
+            )
+
+            val row = (result as ToolResult.Success).structured.jsonObject
+                .getValue("variations").jsonArray.single().jsonObject
+            assertThat(row.getValue("description").jsonPrimitive.content).hasSize(PRODUCT_TEXT_FIELD_LIMIT)
+            assertThat(row.getValue("description_truncated").jsonPrimitive.boolean).isTrue
         }
 
     @Test
