@@ -91,6 +91,38 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given failed send response, when sending new message, then failure result is returned`() = testBlocking {
+        whenever(restClient.sendMessage(BOT_SLUG, MESSAGE, CONTEXT)).thenReturn(Response.Error(createNetworkError()))
+
+        val result = repository.sendMessage(
+            botSlug = BOT_SLUG,
+            message = MESSAGE,
+            context = CONTEXT
+        )
+
+        val exception = requireNotNull(result.exceptionOrNull()) as SupportChatRepositoryException
+        assertThat(exception.message).isEqualTo(ERROR_MESSAGE)
+        assertThat(exception.type).isEqualTo(BaseRequest.GenericErrorType.NOT_FOUND.name)
+    }
+
+    @Test
+    fun `given failed send response, when sending follow up message, then failure result is returned`() = testBlocking {
+        whenever(restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, MESSAGE))
+            .thenReturn(Response.Error(createNetworkError()))
+
+        val result = repository.sendMessage(
+            botSlug = BOT_SLUG,
+            message = MESSAGE,
+            context = CONTEXT,
+            chatId = CHAT_ID
+        )
+
+        val exception = requireNotNull(result.exceptionOrNull()) as SupportChatRepositoryException
+        assertThat(exception.message).isEqualTo(ERROR_MESSAGE)
+        assertThat(exception.type).isEqualTo(BaseRequest.GenericErrorType.NOT_FOUND.name)
+    }
+
+    @Test
     fun `given successful fetch response, when fetching chat, then success result is returned`() = testBlocking {
         val response = createResponse()
         whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID)).thenReturn(Response.Success(response, emptyList()))
