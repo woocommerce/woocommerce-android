@@ -127,7 +127,10 @@ fun AssistantChatScreen(
         onRetry = viewModel::onRetry,
         onConfirmWrite = viewModel::onConfirmWrite,
         onCancelWrite = viewModel::onCancelWrite,
-        onRestartConversation = viewModel::onRestartConversation,
+        onRestartConversation = {
+            inputText = ""
+            viewModel.onRestartConversation()
+        },
         onBack = onBack,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
