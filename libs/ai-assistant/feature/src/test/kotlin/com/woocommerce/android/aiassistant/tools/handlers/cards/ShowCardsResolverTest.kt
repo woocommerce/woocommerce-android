@@ -4,6 +4,7 @@ import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.analytics.AIAnalyticsDataSource
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsInterval
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsStats
+import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.coroutines.test.runTest
@@ -25,12 +26,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 class ShowCardsResolverTest {
     private val ordersDataSource: AIOrdersDataSource = mock()
     private val productsDataSource: AIProductsDataSource = mock()
     private val analyticsDataSource: AIAnalyticsDataSource = mock()
+    private val customersDataSource: AICustomersDataSource = mock()
     private val json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = false
@@ -41,6 +44,7 @@ class ShowCardsResolverTest {
         ordersDataSource = ordersDataSource,
         productsDataSource = productsDataSource,
         analyticsDataSource = analyticsDataSource,
+        customersDataSource = customersDataSource,
         json = json,
     )
 
@@ -49,11 +53,23 @@ class ShowCardsResolverTest {
         val orderOne = order(id = 1L, number = "1001")
         val orderTwo = order(id = 2L, number = "1002")
         val product = product(id = 3L, name = "Socks")
+        val customer = customer(id = 4L, firstName = "Ada", lastName = "Lovelace", email = "ada@example.com")
         val stats = analyticsStats()
         whenever(ordersDataSource.getOrders(listOf(1L, 2L))).thenReturn(
             Result.success(orderLookup(orderTwo, orderOne))
         )
         whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(productLookup(product)))
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = listOf(4L),
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = 1,
+            )
+        ).thenReturn(Result.success(listOf(customer)))
         whenever(
             analyticsDataSource.fetchRevenueStats(
                 after = "2026-05-01T00:00:00",
@@ -68,16 +84,27 @@ class ShowCardsResolverTest {
                 ref(ShowCardFamily.Order, "1"),
                 ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID),
                 ref(ShowCardFamily.Product, "3"),
+                ref(ShowCardFamily.Customer, "4"),
                 ref(ShowCardFamily.Order, "2"),
             )
         )
 
         verify(ordersDataSource).getOrders(listOf(1L, 2L))
         verify(productsDataSource).getProducts(listOf(3L))
+        verify(customersDataSource).fetchCustomers(
+            search = null,
+            email = null,
+            include = listOf(4L),
+            orderby = "registered_date",
+            order = "desc",
+            page = null,
+            perPage = 1,
+        )
         assertThat(result.map { it.ref.family.serializedName to it.ref.id }).containsExactly(
             "order" to "1",
             "analytics_stats" to ANALYTICS_STATS_ID,
             "product" to "3",
+            "customer" to "4",
             "order" to "2",
         )
         assertThat(result).allSatisfy { resolution ->
@@ -367,6 +394,99 @@ class ShowCardsResolverTest {
         assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.NotFound)
     }
 
+    @Test
+    fun `given customer refs, when resolved, then customers are fetched by include and compact cards are returned`() =
+        runTest {
+            val customerOne = customer(id = 123L, firstName = "Ada", lastName = "Lovelace", email = "ada@example.com")
+            val customerTwo = customer(id = 456L, firstName = "Grace", lastName = "Hopper", email = "grace@example.com")
+            whenever(
+                customersDataSource.fetchCustomers(
+                    search = null,
+                    email = null,
+                    include = listOf(123L, 456L),
+                    orderby = "registered_date",
+                    order = "desc",
+                    page = null,
+                    perPage = 2,
+                )
+            ).thenReturn(Result.success(listOf(customerTwo, customerOne)))
+
+            val result = resolver.resolve(
+                listOf(
+                    ref(ShowCardFamily.Customer, "123"),
+                    ref(ShowCardFamily.Customer, "456"),
+                )
+            )
+
+            verify(customersDataSource).fetchCustomers(
+                search = null,
+                email = null,
+                include = listOf(123L, 456L),
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = 2,
+            )
+            val resolved = result.filterIsInstance<ShowCardsResolution.Resolved>()
+            assertThat(resolved.map { it.ref.id }).containsExactly("123", "456")
+            assertThat(resolved[0].summary.keys).containsExactly("id", "name", "email")
+            assertThat(resolved[0].summary.getValue("id").jsonPrimitive.content).isEqualTo("123")
+            assertThat(resolved[0].summary.getValue("name").jsonPrimitive.content).isEqualTo("Ada Lovelace")
+            assertThat(resolved[0].summary.getValue("email").jsonPrimitive.content).isEqualTo("ada@example.com")
+            assertThat(resolved[0].summary).doesNotContainKeys("phone", "address")
+            assertThat(resolved[0].card.family).isEqualTo("customer")
+            assertThat(resolved[0].card.id).isEqualTo("123")
+            assertThat(resolved[0].card.title).isEqualTo("Ada Lovelace")
+            val details = resolved[0].card.details as ShowCardDetails.Customer
+            assertThat(details.email).isEqualTo("ada@example.com")
+        }
+
+    @Test
+    fun `given customer fetch succeeds but id is absent, when resolved, then missing customer is not found`() = runTest {
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = listOf(123L, 456L),
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = 2,
+            )
+        ).thenReturn(Result.success(listOf(customer(id = 123L))))
+
+        val result = resolver.resolve(
+            listOf(
+                ref(ShowCardFamily.Customer, "123"),
+                ref(ShowCardFamily.Customer, "456"),
+            )
+        )
+
+        assertThat(result[0]).isInstanceOf(ShowCardsResolution.Resolved::class.java)
+        val missing = result[1] as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.NotFound)
+    }
+
+    @Test
+    fun `given customer fetch fails, when resolved, then customer refs are fetch failed`() = runTest {
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = listOf(123L),
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = 1,
+            )
+        ).thenReturn(Result.failure(IllegalStateException("network")))
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.Customer, "123")))
+
+        val missing = result.single() as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
+    }
+
     private fun ref(family: ShowCardFamily, id: String) = ValidatedRef(index = 0, family = family, id = id)
 
     private fun orderLookup(vararg orders: OrderEntity): CachedLookupResult<OrderEntity> =
@@ -427,6 +547,22 @@ class ShowCardsResolverTest {
         stockQuantity = stockQuantity,
         status = "publish",
         images = """[{"id":7,"src":"$PRODUCT_IMAGE_URL"}]""",
+    )
+
+    private fun customer(
+        id: Long,
+        firstName: String = "Ada",
+        lastName: String = "Lovelace",
+        email: String = "ada@example.com",
+    ) = WCCustomerModel(
+        localSiteId = LocalId(1),
+        remoteCustomerId = RemoteId(id),
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        billingPhone = "555-1234",
+        billingAddress1 = "123 Main St",
+        shippingAddress1 = "123 Main St",
     )
 
     private fun analyticsStats() = AnalyticsStats(
