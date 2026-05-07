@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.parseExtraFields
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -29,7 +30,7 @@ internal class CustomersListToolHandler @Inject constructor(
     override val descriptor = ToolDescriptor(
         name = "customers_list",
         description = "List customers or look up known customer IDs by passing include as an array of IDs. " +
-            "Returns compact matches with id, first_name, last_name, and email only.",
+            "Returns compact matches with id, first_name, last_name, email, username, and date_created.",
         inputSchema = buildJsonObject {
             put("type", "object")
             putJsonObject("properties") {
@@ -72,6 +73,14 @@ internal class CustomersListToolHandler @Inject constructor(
                     put("maximum", MAX_PER_PAGE)
                     put("description", "Results per page. Values are clamped to 1..50.")
                 }
+                putJsonObject("extra_fields") {
+                    put("type", "array")
+                    put("description", "Optional compact fields: billing, shipping, role, avatar_url.")
+                    putJsonObject("items") {
+                        put("type", "string")
+                        putJsonArray("enum") { CUSTOMER_EXTRA_FIELDS.forEach { add(it) } }
+                    }
+                }
             }
             put("additionalProperties", false)
         },
@@ -99,7 +108,7 @@ internal class CustomersListToolHandler @Inject constructor(
             onSuccess = { customers ->
                 ToolResult.Success(
                     toolCallId = call.id,
-                    structured = customers.toStructuredSummary(),
+                    structured = customers.toStructuredSummary(extraFields = args.extraFields),
                     uiStructured = null,
                 )
             },
@@ -152,6 +161,9 @@ internal class CustomersListToolHandler @Inject constructor(
             order = order,
             page = pageValue?.takeIf { it > 1 },
             perPage = perPageValue.coerceIn(MIN_PER_PAGE, MAX_PER_PAGE),
+            extraFields = parseExtraFields(this, CUSTOMER_EXTRA_FIELDS, "customers_list").getOrElse {
+                throw IllegalArgumentException(it.message ?: "Invalid extra_fields")
+            },
         )
     }
 
@@ -195,7 +207,7 @@ internal class CustomersListToolHandler @Inject constructor(
         return id
     }
 
-    private fun List<WCCustomerModel>.toStructuredSummary() = buildJsonObject {
+    private fun List<WCCustomerModel>.toStructuredSummary(extraFields: Set<String>) = buildJsonObject {
         put("count", size)
         putJsonArray("matches") {
             this@toStructuredSummary.forEach { customer ->
@@ -205,6 +217,23 @@ internal class CustomersListToolHandler @Inject constructor(
                         putOptionalString("first_name", customer.firstName)
                         putOptionalString("last_name", customer.lastName)
                         putOptionalString("email", customer.email)
+                        putOptionalString("username", customer.username)
+                        putOptionalString("date_created", customer.dateCreated)
+                        if ("billing" in extraFields) {
+                            putJsonObject("billing") {
+                                putOptionalString("phone", customer.billingPhone)
+                                putOptionalString("city", customer.billingCity)
+                                putOptionalString("country", customer.billingCountry)
+                            }
+                        }
+                        if ("shipping" in extraFields) {
+                            putJsonObject("shipping") {
+                                putOptionalString("city", customer.shippingCity)
+                                putOptionalString("country", customer.shippingCountry)
+                            }
+                        }
+                        putOptionalString("role", customer.role.takeIf { "role" in extraFields })
+                        putOptionalString("avatar_url", customer.avatarUrl.takeIf { "avatar_url" in extraFields })
                     }
                 )
             }
@@ -218,8 +247,8 @@ internal class CustomersListToolHandler @Inject constructor(
         }
     }
 
-    private fun JsonObjectBuilder.putOptionalString(name: String, value: String) {
-        if (value.isNotBlank()) {
+    private fun JsonObjectBuilder.putOptionalString(name: String, value: String?) {
+        if (!value.isNullOrBlank()) {
             put(name, value)
         }
     }
@@ -232,6 +261,7 @@ internal class CustomersListToolHandler @Inject constructor(
         val order: String,
         val page: Int?,
         val perPage: Int,
+        val extraFields: Set<String>,
     )
 
     private companion object {
@@ -241,7 +271,17 @@ internal class CustomersListToolHandler @Inject constructor(
         const val MIN_PER_PAGE = 1
         const val MAX_PER_PAGE = 50
 
-        val ALLOWED_KEYS = setOf("search", "email", "include", "orderby", "order", "page", "per_page")
+        val CUSTOMER_EXTRA_FIELDS = setOf("billing", "shipping", "role", "avatar_url")
+        val ALLOWED_KEYS = setOf(
+            "search",
+            "email",
+            "include",
+            "orderby",
+            "order",
+            "page",
+            "per_page",
+            "extra_fields",
+        )
         val ALLOWED_ORDERBY = setOf("registered_date", "name", "id", "email")
         val ALLOWED_ORDER = setOf("asc", "desc")
         val RETRYABLE_WOO_ERROR_TYPES = setOf(

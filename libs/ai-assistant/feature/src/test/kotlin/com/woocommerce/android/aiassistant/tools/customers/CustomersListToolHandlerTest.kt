@@ -18,6 +18,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -61,6 +62,7 @@ class CustomersListToolHandlerTest {
             "order",
             "page",
             "per_page",
+            "extra_fields",
         )
         assertThat(descriptor.inputSchema.getValue("additionalProperties").jsonPrimitive.content).isEqualTo("false")
         assertThat(properties.getValue("orderby").jsonObject.getValue("enum").jsonArray.stringValues())
@@ -159,6 +161,76 @@ class CustomersListToolHandlerTest {
         assertThat(matches[0].jsonObject.getValue("email").jsonPrimitive.content).isEqualTo("jane@example.com")
         assertThat(matches[1].jsonObject.keys).containsExactly("id")
         assertThat(result.structured.toString()).doesNotContain("phone", "billing", "shipping", "analytics")
+    }
+
+    @Test
+    fun `given fetched customers, when executed, then available default fields are returned and order totals are not fabricated`() =
+        runTest {
+            whenever(dataSource.fetchCustomers()).thenReturn(
+                Result.success(
+                    listOf(
+                        customer(
+                            id = 42,
+                            firstName = "Jane",
+                            lastName = "Doe",
+                            email = "jane@example.com",
+                            username = "jane",
+                            dateCreated = "2026-05-01T10:00:00Z",
+                        )
+                    )
+                )
+            )
+
+            val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+            val match = (result as ToolResult.Success).structured.jsonObject
+                .getValue("matches").jsonArray.single().jsonObject
+            assertThat(match.getValue("username").jsonPrimitive.content).isEqualTo("jane")
+            assertThat(match.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
+            assertThat(match.keys).doesNotContain("orders_count", "total_spent")
+        }
+
+    @Test
+    fun `given customer extra fields, when executed, then every allowed customer extra is returned`() = runTest {
+        whenever(dataSource.fetchCustomers()).thenReturn(
+            Result.success(
+                listOf(
+                    customer(
+                        id = 42,
+                        role = "customer",
+                        avatarUrl = "https://example.com/avatar.jpg",
+                        billingPhone = "555-1234",
+                        billingCity = "Portland",
+                        billingCountry = "US",
+                        shippingCity = "Seattle",
+                        shippingCountry = "US",
+                    )
+                )
+            )
+        )
+
+        val result = handler.execute(
+            toolCall(
+                arguments = buildJsonObject {
+                    putJsonArray("extra_fields") {
+                        add("billing")
+                        add("shipping")
+                        add("role")
+                        add("avatar_url")
+                    }
+                }
+            )
+        )
+
+        val match = (result as ToolResult.Success).structured.jsonObject
+            .getValue("matches").jsonArray.single().jsonObject
+        val billing = match.getValue("billing").jsonObject
+        assertThat(billing.getValue("phone").jsonPrimitive.content).isEqualTo("555-1234")
+        assertThat(billing.getValue("city").jsonPrimitive.content).isEqualTo("Portland")
+        assertThat(billing.getValue("country").jsonPrimitive.content).isEqualTo("US")
+        assertThat(match.getValue("shipping").jsonObject.getValue("city").jsonPrimitive.content).isEqualTo("Seattle")
+        assertThat(match.getValue("role").jsonPrimitive.content).isEqualTo("customer")
+        assertThat(match.getValue("avatar_url").jsonPrimitive.content).isEqualTo("https://example.com/avatar.jpg")
     }
 
     @Test
@@ -304,18 +376,35 @@ class CustomersListToolHandlerTest {
 
     private fun customer(
         id: Long,
-        firstName: String,
-        lastName: String,
-        email: String,
+        firstName: String = "",
+        lastName: String = "",
+        email: String = "",
+        username: String = "",
+        dateCreated: String = "",
+        role: String = "",
+        avatarUrl: String = "",
+        billingPhone: String = "555-1234",
+        billingCity: String = "",
+        billingCountry: String = "",
+        shippingCity: String = "",
+        shippingCountry: String = "",
     ) = WCCustomerModel(
         localSiteId = LocalId(DEFAULT_SITE.id),
         remoteCustomerId = RemoteId(id),
+        avatarUrl = avatarUrl,
+        dateCreated = dateCreated,
         firstName = firstName,
         lastName = lastName,
         email = email,
-        billingPhone = "555-1234",
+        role = role,
+        username = username,
+        billingPhone = billingPhone,
         billingAddress1 = "123 Main St",
+        billingCity = billingCity,
+        billingCountry = billingCountry,
         shippingAddress1 = "123 Main St",
+        shippingCity = shippingCity,
+        shippingCountry = shippingCountry,
         analyticsCustomerId = 999,
     )
 
