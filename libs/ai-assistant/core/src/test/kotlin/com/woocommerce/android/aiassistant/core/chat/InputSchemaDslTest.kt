@@ -50,6 +50,25 @@ class InputSchemaDslTest {
     }
 
     @Test
+    fun `given enum array property, when building schema, then item enum is listed`() {
+        val schema = inputSchema {
+            arrayEnum(
+                name = "extra_fields",
+                values = listOf("billing", "line_items"),
+                description = "Optional compact fields."
+            )
+        }
+
+        val extraFields = requireNotNull(schema["properties"]).jsonObject.getValue("extra_fields").jsonObject
+        assertThat(extraFields.getValue("type").jsonPrimitive.content).isEqualTo("array")
+        assertThat(extraFields.getValue("items").jsonObject.getValue("type").jsonPrimitive.content)
+            .isEqualTo("string")
+        assertThat(extraFields.getValue("items").jsonObject.getValue("enum").jsonArray.map {
+            it.jsonPrimitive.content
+        }).containsExactly("billing", "line_items")
+    }
+
+    @Test
     fun `given a required object property, when building the schema, then nested object shape is correct`() {
         val schema = inputSchema {
             array("ids", itemType = "integer", required = true)

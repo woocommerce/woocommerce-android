@@ -42,6 +42,23 @@ class InputSchemaBuilder {
         if (required) requiredKeys += name
     }
 
+    fun arrayEnum(
+        name: String,
+        values: List<String>,
+        description: String? = null,
+        required: Boolean = false
+    ) {
+        properties[name] = buildJsonObject {
+            put("type", "array")
+            description?.let { put("description", it) }
+            putJsonObject("items") {
+                put("type", "string")
+                putJsonArray("enum") { values.forEach { add(it) } }
+            }
+        }
+        if (required) requiredKeys += name
+    }
+
     fun objectProperty(
         name: String,
         description: String? = null,
