@@ -59,17 +59,7 @@ class ShowCardsResolverTest {
             Result.success(orderLookup(orderTwo, orderOne))
         )
         whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(productLookup(product)))
-        whenever(
-            customersDataSource.fetchCustomers(
-                search = null,
-                email = null,
-                include = listOf(4L),
-                orderby = "registered_date",
-                order = "desc",
-                page = null,
-                perPage = 1,
-            )
-        ).thenReturn(Result.success(listOf(customer)))
+        givenCustomersFetch(ids = listOf(4L), customer)
         whenever(
             analyticsDataSource.fetchRevenueStats(
                 after = "2026-05-01T00:00:00",
@@ -91,15 +81,7 @@ class ShowCardsResolverTest {
 
         verify(ordersDataSource).getOrders(listOf(1L, 2L))
         verify(productsDataSource).getProducts(listOf(3L))
-        verify(customersDataSource).fetchCustomers(
-            search = null,
-            email = null,
-            include = listOf(4L),
-            orderby = "registered_date",
-            order = "desc",
-            page = null,
-            perPage = 1,
-        )
+        verifyCustomersFetch(ids = listOf(4L))
         assertThat(result.map { it.ref.family.serializedName to it.ref.id }).containsExactly(
             "order" to "1",
             "analytics_stats" to ANALYTICS_STATS_ID,
@@ -399,17 +381,7 @@ class ShowCardsResolverTest {
         runTest {
             val customerOne = customer(id = 123L, firstName = "Ada", lastName = "Lovelace", email = "ada@example.com")
             val customerTwo = customer(id = 456L, firstName = "Grace", lastName = "Hopper", email = "grace@example.com")
-            whenever(
-                customersDataSource.fetchCustomers(
-                    search = null,
-                    email = null,
-                    include = listOf(123L, 456L),
-                    orderby = "registered_date",
-                    order = "desc",
-                    page = null,
-                    perPage = 2,
-                )
-            ).thenReturn(Result.success(listOf(customerTwo, customerOne)))
+            givenCustomersFetch(ids = listOf(123L, 456L), customerTwo, customerOne)
 
             val result = resolver.resolve(
                 listOf(
@@ -418,15 +390,7 @@ class ShowCardsResolverTest {
                 )
             )
 
-            verify(customersDataSource).fetchCustomers(
-                search = null,
-                email = null,
-                include = listOf(123L, 456L),
-                orderby = "registered_date",
-                order = "desc",
-                page = null,
-                perPage = 2,
-            )
+            verifyCustomersFetch(ids = listOf(123L, 456L))
             val resolved = result.filterIsInstance<ShowCardsResolution.Resolved>()
             assertThat(resolved.map { it.ref.id }).containsExactly("123", "456")
             assertThat(resolved[0].summary.keys).containsExactly("id", "name", "email")
@@ -443,17 +407,7 @@ class ShowCardsResolverTest {
 
     @Test
     fun `given customer fetch succeeds but id is absent, when resolved, then missing customer is not found`() = runTest {
-        whenever(
-            customersDataSource.fetchCustomers(
-                search = null,
-                email = null,
-                include = listOf(123L, 456L),
-                orderby = "registered_date",
-                order = "desc",
-                page = null,
-                perPage = 2,
-            )
-        ).thenReturn(Result.success(listOf(customer(id = 123L))))
+        givenCustomersFetch(ids = listOf(123L, 456L), customer(id = 123L))
 
         val result = resolver.resolve(
             listOf(
@@ -469,17 +423,7 @@ class ShowCardsResolverTest {
 
     @Test
     fun `given customer fetch fails, when resolved, then customer refs are fetch failed`() = runTest {
-        whenever(
-            customersDataSource.fetchCustomers(
-                search = null,
-                email = null,
-                include = listOf(123L),
-                orderby = "registered_date",
-                order = "desc",
-                page = null,
-                perPage = 1,
-            )
-        ).thenReturn(Result.failure(IllegalStateException("network")))
+        givenCustomersFetchFailure(ids = listOf(123L))
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.Customer, "123")))
 
@@ -506,6 +450,49 @@ class ShowCardsResolverTest {
             fetchAttempted = true,
             fetchFailed = false,
         )
+
+    private suspend fun givenCustomersFetch(
+        ids: List<Long>,
+        vararg customers: WCCustomerModel,
+    ) {
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = ids,
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = ids.size,
+            )
+        ).thenReturn(Result.success(customers.toList()))
+    }
+
+    private suspend fun givenCustomersFetchFailure(ids: List<Long>) {
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = ids,
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = ids.size,
+            )
+        ).thenReturn(Result.failure(IllegalStateException("network")))
+    }
+
+    private suspend fun verifyCustomersFetch(ids: List<Long>) {
+        verify(customersDataSource).fetchCustomers(
+            search = null,
+            email = null,
+            include = ids,
+            orderby = "registered_date",
+            order = "desc",
+            page = null,
+            perPage = ids.size,
+        )
+    }
 
     private fun order(
         id: Long,

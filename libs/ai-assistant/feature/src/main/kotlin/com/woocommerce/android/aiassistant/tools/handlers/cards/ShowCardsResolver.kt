@@ -54,11 +54,14 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val customerResults = resolveCustomers(refs.filter { it.family == ShowCardFamily.Customer })
 
         return refs.map { ref ->
-            orderResults[ref] ?: productResults[ref] ?: analyticsResults[ref] ?: customerResults[ref]
+            orderResults[ref]
+                ?: productResults[ref]
+                ?: analyticsResults[ref]
+                ?: customerResults[ref]
                 ?: ShowCardsResolution.Missing(
-                ref = ref,
-                reason = ShowCardsRejectionReason.NotFound,
-            )
+                    ref = ref,
+                    reason = ShowCardsRejectionReason.NotFound,
+                )
         }
     }
 
