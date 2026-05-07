@@ -1,6 +1,8 @@
 package com.woocommerce.android.aiassistant.ui.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -44,12 +46,14 @@ internal fun AssistantToolActivityPill(
     val label = stringResource(activity.labelRes())
     val description = stringResource(R.string.assistant_chat_tool_activity_content_description, label)
     Surface(
-        modifier = modifier.semantics {
-            contentDescription = description
-            if (activity.status == AssistantToolActivity.Status.RUNNING) {
-                liveRegion = LiveRegionMode.Polite
-            }
-        },
+        modifier = modifier
+            .animateContentSize(animationSpec = tween(durationMillis = 220))
+            .semantics {
+                contentDescription = description
+                if (activity.status == AssistantToolActivity.Status.RUNNING) {
+                    liveRegion = LiveRegionMode.Polite
+                }
+            },
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, assistantOutlineColor()),
