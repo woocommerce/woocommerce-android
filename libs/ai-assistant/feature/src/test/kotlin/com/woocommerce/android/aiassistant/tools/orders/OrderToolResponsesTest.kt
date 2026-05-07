@@ -110,6 +110,26 @@ class OrderToolResponsesTest {
             assertThat(tax.getValue("tax_total").jsonPrimitive.content).isEqualTo("3.00")
         }
 
+    @Test
+    fun `given long customer note, when detail response is built, then note is capped with marker`() = runTest {
+        val structured = json.encodeToJsonElement(
+            order(customerNote = "a".repeat(501)).toOrderDetailResponse()
+        ).jsonObject
+
+        assertThat(structured.getValue("customer_note").jsonPrimitive.content).isEqualTo("a".repeat(500))
+        assertThat(structured.getValue("customer_note_truncated").jsonPrimitive.boolean).isTrue()
+    }
+
+    @Test
+    fun `given long customer note, when list row response is built, then note is capped with marker`() = runTest {
+        val structured = json.encodeToJsonElement(
+            order(customerNote = "a".repeat(501)).toOrderListRowResponse()
+        ).jsonObject
+
+        assertThat(structured.getValue("customer_note").jsonPrimitive.content).isEqualTo("a".repeat(500))
+        assertThat(structured.getValue("customer_note_truncated").jsonPrimitive.boolean).isTrue()
+    }
+
     private fun order(
         lineItems: String = "[]",
         billingPhone: String = "",
@@ -120,6 +140,7 @@ class OrderToolResponsesTest {
         couponLines: String = "",
         feeLines: String = "",
         taxLines: String = "",
+        customerNote: String = "Leave at front desk",
     ) = OrderEntity(
         localSiteId = LocalId(1),
         orderId = 123L,
@@ -130,7 +151,7 @@ class OrderToolResponsesTest {
         dateCreated = "2026-05-01T10:00:00Z",
         dateModified = "2026-05-02T10:00:00Z",
         datePaid = "2026-05-01T10:30:00Z",
-        customerNote = "Leave at front desk",
+        customerNote = customerNote,
         totalTax = "4.00",
         shippingTotal = "6.00",
         discountTotal = "2.00",

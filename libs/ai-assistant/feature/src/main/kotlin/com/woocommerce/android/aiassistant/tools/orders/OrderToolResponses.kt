@@ -23,6 +23,7 @@ internal data class OrderDetailResponse(
     @SerialName("customer_id") val customerId: Long,
     @SerialName("date_paid") val datePaid: String,
     @SerialName("customer_note") val customerNote: String,
+    @SerialName("customer_note_truncated") val customerNoteTruncated: Boolean? = null,
     @SerialName("total_tax") val totalTax: String,
     @SerialName("shipping_total") val shippingTotal: String,
     @SerialName("discount_total") val discountTotal: String,
@@ -99,6 +100,7 @@ internal data class OrderListRowResponse(
     @SerialName("payment_method_title") val paymentMethodTitle: String? = null,
     @SerialName("customer_email") val customerEmail: String? = null,
     @SerialName("customer_note") val customerNote: String? = null,
+    @SerialName("customer_note_truncated") val customerNoteTruncated: Boolean? = null,
     @SerialName("date_paid") val datePaid: String? = null,
     @SerialName("shipping_total") val shippingTotal: String? = null,
     @SerialName("discount_total") val discountTotal: String? = null,
@@ -113,6 +115,7 @@ internal suspend fun OrderEntity.toOrderDetailResponse(
     lineItemsLimit: Int = ORDER_DETAIL_LINE_ITEMS_LIMIT,
 ): OrderDetailResponse {
     val allLineItems = getLineItemList()
+    val compactCustomerNote = customerNote.compactCustomerNote()
     return OrderDetailResponse(
         id = orderId,
         number = number,
@@ -126,7 +129,8 @@ internal suspend fun OrderEntity.toOrderDetailResponse(
         customerEmail = billingEmail,
         customerId = customerId,
         datePaid = datePaid,
-        customerNote = customerNote,
+        customerNote = compactCustomerNote.value,
+        customerNoteTruncated = compactCustomerNote.truncated.takeIf { it },
         totalTax = totalTax,
         shippingTotal = shippingTotal,
         discountTotal = discountTotal,
@@ -145,6 +149,7 @@ internal suspend fun OrderEntity.toOrderListRowResponse(
     lineItemsLimit: Int = ORDER_LIST_LINE_ITEMS_LIMIT,
 ): OrderListRowResponse {
     val allLineItems = getLineItemList()
+    val compactCustomerNote = customerNote.compactCustomerNote()
     return OrderListRowResponse(
         id = orderId,
         number = number,
@@ -156,7 +161,8 @@ internal suspend fun OrderEntity.toOrderListRowResponse(
         customerName = customerName(),
         paymentMethodTitle = paymentMethodTitle,
         customerEmail = billingEmail,
-        customerNote = customerNote,
+        customerNote = compactCustomerNote.value,
+        customerNoteTruncated = compactCustomerNote.truncated.takeIf { it },
         datePaid = datePaid,
         shippingTotal = shippingTotal,
         discountTotal = discountTotal,
@@ -170,6 +176,16 @@ internal suspend fun OrderEntity.toOrderListRowResponse(
 
 private fun OrderEntity.customerName(): String =
     listOf(billingFirstName, billingLastName).filter { it.isNotBlank() }.joinToString(" ")
+
+private data class CompactCustomerNote(
+    val value: String,
+    val truncated: Boolean,
+)
+
+private fun String.compactCustomerNote() = CompactCustomerNote(
+    value = take(ORDER_CUSTOMER_NOTE_LIMIT),
+    truncated = length > ORDER_CUSTOMER_NOTE_LIMIT,
+)
 
 private fun LineItem.toCompactLineItem() = CompactOrderLineItem(
     id = id,
@@ -229,3 +245,4 @@ private fun TaxLine.toCompactTaxLine() = CompactTaxLine(
 internal const val ORDER_DETAIL_LINE_ITEMS_LIMIT = 10
 internal const val ORDER_LIST_LINE_ITEMS_LIMIT = 5
 internal const val ORDER_ADJUSTMENT_LINES_LIMIT = 10
+internal const val ORDER_CUSTOMER_NOTE_LIMIT = 500

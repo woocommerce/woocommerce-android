@@ -226,6 +226,33 @@ class AIProductsDataSourceTest {
     }
 
     @Test
+    fun `given include ids with pagination, when fetchProducts is called, then only page ids are fetched`() = runTest {
+        val pageIds = listOf(6L, 7L, 8L, 9L, 10L)
+        val products = pageIds.map { makeProduct(id = it) }
+        whenever(
+            productStore.fetchProducts(
+                site = any(),
+                offset = eq(0),
+                pageSize = eq(5),
+                sortType = any(),
+                includedProductIds = eq(pageIds),
+                excludedProductIds = any(),
+                filterOptions = any(),
+                includeTypes = any(),
+                forceRefresh = eq(false),
+                orderCurrency = anyOrNull(),
+                posProductsOnly = any(),
+            )
+        ).thenReturn(WooResult(true))
+        whenever(productStore.getProductsByRemoteIds(site, pageIds)).thenReturn(products)
+
+        val result = dataSource.fetchProducts(include = (1L..12L).toList(), page = 2, perPage = 5).getOrThrow()
+
+        assertThat(result.products).containsExactlyElementsOf(products)
+        assertThat(result.canLoadMore).isTrue()
+    }
+
+    @Test
     fun `given orderby and order, when fetchProducts is called, then product sorting is forwarded`() = runTest {
         stubFetchProducts(WooResult(emptyList()))
 

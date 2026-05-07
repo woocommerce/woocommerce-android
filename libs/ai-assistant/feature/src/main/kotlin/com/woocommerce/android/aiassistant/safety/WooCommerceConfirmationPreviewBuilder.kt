@@ -61,13 +61,20 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
                 add(
                     messageField(
                         name = "customer_note",
-                        value = string(R.string.ai_assistant_confirmation_field_value_updated),
+                        value = raw(arguments.stringValue("customer_note").orEmpty().customerNotePreviewValue()),
                         label = R.string.ai_assistant_confirmation_field_customer_note,
                     )
                 )
             }
             arguments.stringValue("billing_email")?.let {
-                add(textField("billing_email", it, R.string.ai_assistant_confirmation_field_billing_email))
+                add(
+                    textField(
+                        name = "billing_email",
+                        value = it,
+                        label = R.string.ai_assistant_confirmation_field_billing_email,
+                        beforeValue = snapshot?.currentValues?.get("billing_email"),
+                    )
+                )
             }
         }
 
@@ -361,6 +368,13 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         else -> raw(value)
     }
 
+    private fun String.customerNotePreviewValue(): String =
+        if (length > CUSTOMER_NOTE_PREVIEW_LIMIT) {
+            "${take(CUSTOMER_NOTE_PREVIEW_LIMIT)}..."
+        } else {
+            this
+        }
+
     private fun raw(value: String) = ConfirmationPreviewText.Raw(value)
 
     private fun string(
@@ -412,6 +426,7 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         const val PRODUCTS_UPDATE = "products_update"
         const val PRODUCTS_BULK_UPDATE = "products_bulk_update"
         const val PRODUCT_VARIATIONS_UPDATE = "product_variations_update"
+        const val CUSTOMER_NOTE_PREVIEW_LIMIT = 160
 
         val DEDICATED_TOOL_NAMES = setOf(
             ORDERS_UPDATE,

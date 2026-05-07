@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
@@ -149,6 +150,44 @@ class AnalyticsRevenueToolHandlerTest {
                 interval = AnalyticsInterval.DAY,
                 currency = "USD",
             )
+        }
+
+    @Test
+    fun `given previous period fetch fails, when primary succeeds, then partial primary result is returned`() =
+        runTest {
+            whenever(
+                dataSource.fetchRevenueStats(
+                    after = "2026-05-01T00:00:00",
+                    before = "2026-05-07T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                    currency = null,
+                )
+            ).thenReturn(Result.success(sampleStats()))
+            whenever(
+                dataSource.fetchRevenueStats(
+                    after = "2026-04-24T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                    currency = null,
+                )
+            ).thenReturn(Result.failure(RuntimeException("comparison failed")))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-05-01")
+                        put("before", "2026-05-07")
+                        put("compare_to", "previous_period")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            val structured = (result as ToolResult.Success).structured.jsonObject
+            assertThat(structured).doesNotContainKey("previous_period_totals")
+            assertThat(structured.getValue("previous_period_partial").jsonPrimitive.boolean).isTrue()
+            assertThat(structured.getValue("previous_period_warning").jsonPrimitive.content)
+                .contains("could not be fetched")
         }
 
     @Test

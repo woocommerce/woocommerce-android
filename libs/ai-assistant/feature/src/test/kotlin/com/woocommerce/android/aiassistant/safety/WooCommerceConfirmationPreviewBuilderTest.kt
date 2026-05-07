@@ -94,7 +94,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
             ),
             ConfirmationPreviewField(
                 name = "customer_note",
-                value = string(R.string.ai_assistant_confirmation_field_value_updated),
+                value = raw("Thanks"),
                 label = label(R.string.ai_assistant_confirmation_field_customer_note),
             ),
             ConfirmationPreviewField(
@@ -102,6 +102,58 @@ class WooCommerceConfirmationPreviewBuilderTest {
                 value = raw("buyer@example.com"),
                 label = label(R.string.ai_assistant_confirmation_field_billing_email),
             ),
+        )
+    }
+
+    @Test
+    fun `given order billing email update and snapshot, when preview is built, then before and after are included`() {
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("billing_email", "new@example.com")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf("billing_email" to "old@example.com")
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "billing_email",
+                label = label(R.string.ai_assistant_confirmation_field_billing_email),
+                value = raw("new@example.com"),
+                beforeValue = raw("old@example.com"),
+            )
+        )
+    }
+
+    @Test
+    fun `given long order customer note update, when preview is built, then after value is capped without before`() {
+        val longNote = "a".repeat(200)
+
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("customer_note", longNote)
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf("customer_note" to "previous private note")
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "customer_note",
+                label = label(R.string.ai_assistant_confirmation_field_customer_note),
+                value = raw("${"a".repeat(160)}..."),
+                beforeValue = null,
+            )
         )
     }
 

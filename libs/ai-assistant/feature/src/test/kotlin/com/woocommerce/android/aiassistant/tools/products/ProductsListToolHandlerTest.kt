@@ -340,6 +340,54 @@ class ProductsListToolHandlerTest {
     }
 
     @Test
+    fun `given include result has more pages, when execute succeeds, then can_load_more is returned`() = runTest {
+        whenever(
+            dataSource.fetchProducts(
+                search = null,
+                status = null,
+                page = 2,
+                perPage = 5,
+                category = null,
+                sku = null,
+                include = (1L..12L).toList(),
+                stockStatus = null,
+                orderby = null,
+                order = null,
+            )
+        ).thenReturn(
+            Result.success(
+                AIProductsDataSource.ProductsPage(products = listOf(makeProduct(id = 6L)), canLoadMore = true)
+            )
+        )
+
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("page", 2)
+                    put("per_page", 5)
+                    put("include", buildJsonArray { (1..12).forEach { add(it) } })
+                }
+            )
+        )
+
+        val structured = (result as ToolResult.Success).structured.jsonObject
+        assertThat(structured.getValue("can_load_more").jsonPrimitive.boolean).isTrue()
+    }
+
+    @Test
+    fun `given too many include ids, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("include", buildJsonArray { (1..101).forEach { add(it) } })
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
     fun `given tag arg, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(toolCall(buildJsonObject { put("tag", 3) }))
 

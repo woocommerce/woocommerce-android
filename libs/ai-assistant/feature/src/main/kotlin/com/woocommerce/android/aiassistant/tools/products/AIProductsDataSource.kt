@@ -61,14 +61,26 @@ internal class AIProductsDataSource @Inject constructor(
         val offset = (page - 1) * clampedPerPage
         val sortType = resolveSortType(orderby, order)
         val filterOptions = productFilterOptions(status, category, stockStatus)
+        val fetchOptions = ProductFetchOptions(sortType = sortType, filterOptions = filterOptions)
 
         return when {
             normalisedSku != null -> fetchProductsBySku(site, normalisedSku, offset, clampedPerPage, filterOptions)
             normalisedSearch != null -> searchProducts(site, normalisedSearch, offset, clampedPerPage, filterOptions)
-            normalisedInclude != null -> fetchIncludedProducts(site, normalisedInclude, offset, sortType, filterOptions)
+            normalisedInclude != null -> fetchIncludedProducts(
+                site = site,
+                include = normalisedInclude,
+                offset = offset,
+                pageSize = clampedPerPage,
+                fetchOptions = fetchOptions,
+            )
             else -> fetchProductPage(site, offset, clampedPerPage, sortType, filterOptions)
         }
     }
+
+    private data class ProductFetchOptions(
+        val sortType: ProductSorting,
+        val filterOptions: Map<ProductFilterOption, String>,
+    )
 
     private fun productFilterOptions(
         status: String?,
@@ -119,16 +131,21 @@ internal class AIProductsDataSource @Inject constructor(
         site: SiteModel,
         include: List<Long>,
         offset: Int,
-        sortType: ProductSorting,
-        filterOptions: Map<ProductFilterOption, String>,
+        pageSize: Int,
+        fetchOptions: ProductFetchOptions,
     ): Result<ProductsPage> {
+        val pagedInclude = include.drop(offset).take(pageSize)
+        if (pagedInclude.isEmpty()) {
+            return Result.success(ProductsPage(products = emptyList(), canLoadMore = false))
+        }
+
         val result = productStore.fetchProducts(
             site = site,
-            offset = offset,
-            pageSize = include.size.coerceIn(1, MAX_PAGE_SIZE),
-            sortType = sortType,
-            includedProductIds = include,
-            filterOptions = filterOptions,
+            offset = 0,
+            pageSize = pagedInclude.size.coerceIn(1, MAX_PAGE_SIZE),
+            sortType = fetchOptions.sortType,
+            includedProductIds = pagedInclude,
+            filterOptions = fetchOptions.filterOptions,
             forceRefresh = false,
         )
         return if (result.isError) {
@@ -136,8 +153,8 @@ internal class AIProductsDataSource @Inject constructor(
         } else {
             Result.success(
                 ProductsPage(
-                    products = productStore.getProductsByRemoteIds(site, include),
-                    canLoadMore = false,
+                    products = productStore.getProductsByRemoteIds(site, pagedInclude),
+                    canLoadMore = include.size > offset + pageSize,
                 )
             )
         }

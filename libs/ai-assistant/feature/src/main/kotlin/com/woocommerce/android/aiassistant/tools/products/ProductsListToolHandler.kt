@@ -87,6 +87,7 @@ internal class ProductsListToolHandler @Inject constructor(
                     count = products.size,
                     ids = products.map { it.remoteProductId },
                     products = products.map { it.toProductListRowResponse() },
+                    canLoadMore = page.canLoadMore,
                     statusCounts = statusCounts,
                 )
                 ToolResult.Success(toolCallId = call.id, structured = json.encodeToJsonElement(response) as JsonObject)
@@ -114,6 +115,9 @@ internal class ProductsListToolHandler @Inject constructor(
             invalidEnumMessage(orderby, PRODUCT_ORDER_BY_VALUES, "orderby"),
             invalidEnumMessage(order, PRODUCT_SORT_ORDERS, "order"),
             "include must contain at least one product ID.".takeIf { include != null && include.isEmpty() },
+            "include can contain at most $MAX_INCLUDE_IDS product IDs.".takeIf {
+                include != null && include.size > MAX_INCLUDE_IDS
+            },
             "include cannot be combined with search, sku, orderby, or order.".takeIf { hasAmbiguousInclude() },
             "orderby and order cannot be combined with search or sku.".takeIf { hasSearchSortCombination() },
         ).firstOrNull()
@@ -136,6 +140,7 @@ internal class ProductsListToolHandler @Inject constructor(
         val count: Int,
         val ids: List<Long>,
         val products: List<ProductListRowResponse>,
+        @SerialName("can_load_more") val canLoadMore: Boolean,
         @SerialName("status_counts") val statusCounts: Map<String, Int>,
     )
 }
@@ -157,6 +162,7 @@ private val PRODUCT_STATUSES = setOf("any", "draft", "pending", "private", "publ
 private val PRODUCT_STOCK_STATUSES = setOf("instock", "outofstock", "onbackorder")
 private val PRODUCT_ORDER_BY_VALUES = setOf("date", "title", "popularity")
 private val PRODUCT_SORT_ORDERS = setOf("asc", "desc")
+private const val MAX_INCLUDE_IDS = 100
 
 private fun invalidEnumMessage(value: String?, allowed: Set<String>, name: String): String? =
     value?.takeUnless { it in allowed }?.let { "'$it' is not an allowed $name." }

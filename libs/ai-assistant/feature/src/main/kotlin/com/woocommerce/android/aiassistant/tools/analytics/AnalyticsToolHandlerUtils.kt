@@ -56,6 +56,8 @@ internal fun analyticsStatsSummary(
     stats: AnalyticsStats,
     currency: String? = null,
     previousPeriodTotals: JsonObject? = null,
+    previousPeriodPartial: Boolean = false,
+    previousPeriodWarning: String? = null,
 ): JsonObject = buildJsonObject {
     put("after", after)
     put("before", before)
@@ -63,6 +65,10 @@ internal fun analyticsStatsSummary(
     currency?.let { put("currency", it) }
     stats.totals?.let { put("totals", it) }
     previousPeriodTotals?.let { put("previous_period_totals", it) }
+    if (previousPeriodPartial) {
+        put("previous_period_partial", true)
+    }
+    previousPeriodWarning?.let { put("previous_period_warning", it) }
     stats.intervals?.let { intervals ->
         put("interval_count", intervals.size)
         putJsonArray("interval_subtotals") {

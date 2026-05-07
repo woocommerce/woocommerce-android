@@ -76,19 +76,19 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
         ).getOrElse {
             return ToolResult.TransportError(toolCallId = call.id, retryable = true)
         }
-        val previousPeriodTotals = if (args.compareTo == COMPARE_TO_PREVIOUS_PERIOD) {
+        val previousPeriodStats = if (args.compareTo == COMPARE_TO_PREVIOUS_PERIOD) {
             val (previousAfter, previousBefore) = previousPeriodFor(args.after, args.before)
             dataSource.fetchRevenueStats(
                 after = analyticsDateAfterBound(previousAfter),
                 before = analyticsDateBeforeBound(previousBefore),
                 interval = interval,
                 currency = currency,
-            ).getOrElse {
-                return ToolResult.TransportError(toolCallId = call.id, retryable = true)
-            }.totals as? JsonObject
+            )
         } else {
             null
         }
+        val previousPeriodTotals = previousPeriodStats?.getOrNull()?.totals as? JsonObject
+        val previousPeriodPartial = previousPeriodStats?.isFailure == true
 
         return ToolResult.Success(
             toolCallId = call.id,
@@ -99,6 +99,8 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
                 stats = stats,
                 currency = currency,
                 previousPeriodTotals = previousPeriodTotals,
+                previousPeriodPartial = previousPeriodPartial,
+                previousPeriodWarning = PREVIOUS_PERIOD_WARNING.takeIf { previousPeriodPartial },
             ),
         )
     }
@@ -115,6 +117,7 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
 
     private companion object {
         const val COMPARE_TO_PREVIOUS_PERIOD = "previous_period"
+        const val PREVIOUS_PERIOD_WARNING = "Previous period totals could not be fetched."
 
         val ALLOWED_ARGUMENTS = setOf("after", "before", "interval", "currency", "compare_to")
     }
