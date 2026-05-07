@@ -389,6 +389,47 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given ai assistant is hidden, when dashboard state is built, then configurable widget order is unchanged`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                DashboardWidget(
+                    type = DashboardWidget.Type.ORDERS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.STATS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.COUPONS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                )
+            )
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(false))
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val visibleConfigurableTypes = viewState.widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+            assertThat(visibleConfigurableTypes).containsExactly(
+                DashboardWidget.Type.ORDERS,
+                DashboardWidget.Type.STATS,
+                DashboardWidget.Type.COUPONS
+            )
+        }
+
+    @Test
     fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {
         setup {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
