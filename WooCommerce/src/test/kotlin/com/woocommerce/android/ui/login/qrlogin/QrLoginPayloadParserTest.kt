@@ -176,6 +176,91 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given wp dot com magic link url, when parsed, then returns WpComMagicLinkUrl with original url`() {
+        val raw = "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc123"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.WpComMagicLinkUrl(url = raw))
+    }
+
+    @Test
+    fun `given wp dot com magic link url with token containing reserved chars, when parsed, then preserves verbatim`() {
+        // Real wp.com tokens contain percent-encoded reserved characters; the parser must not
+        // transform them — the URL is forwarded to the browser as-is.
+        val raw = "https://wordpress.com/wp-login.php" +
+            "?token=%2Fu5iR4Bv3B%2BGLC5zt1V89A%3D%3D%3AqkpOuOFo9IeVclfMciTlEw%3D%3D" +
+            "&action=magic-login&scheme=woocommerce"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.WpComMagicLinkUrl(url = raw))
+    }
+
+    @Test
+    fun `given wp dot com magic link url with flow, when parsed, then preserves entire url`() {
+        val raw = "https://wordpress.com/wp-login.php" +
+            "?action=magic-login&scheme=woocommerce&token=abc&flow=jetpack-connection"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.WpComMagicLinkUrl(url = raw))
+    }
+
+    @Test
+    fun `given wp dot com magic link url with mixed case host, when parsed, then returns WpComMagicLinkUrl`() {
+        val raw = "https://WordPress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
+
+        assertThat(parser.parse(raw)).isInstanceOf(QrLoginPayload.WpComMagicLinkUrl::class.java)
+    }
+
+    @Test
+    fun `given wp dot com magic link url with reordered query params, when parsed, then returns WpComMagicLinkUrl`() {
+        val raw = "https://wordpress.com/wp-login.php?token=abc&scheme=woocommerce&action=magic-login"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.WpComMagicLinkUrl(url = raw))
+    }
+
+    @Test
+    fun `given wp dot com url with scheme wordpress, when parsed, then returns Invalid`() {
+        // Intended for the WordPress app — must not be silently consumed by us.
+        val raw = "https://wordpress.com/wp-login.php?action=magic-login&scheme=wordpress&token=abc"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given wp dot com url with non magic-login action, when parsed, then returns Invalid`() {
+        val raw = "https://wordpress.com/wp-login.php?action=lostpassword&scheme=woocommerce&token=abc"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given wp dot com magic link url without token, when parsed, then returns Invalid`() {
+        val raw = "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given wp dot com magic link url with blank token, when parsed, then returns Invalid`() {
+        val raw = "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token="
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given http wp dot com magic link url, when parsed, then returns Invalid`() {
+        val raw = "http://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given wp dot com url with non wp-login path, when parsed, then returns Invalid`() {
+        val raw = "https://wordpress.com/wp-admin/login.php?action=magic-login&scheme=woocommerce&token=abc"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
     private companion object {
         const val VALID_TOKEN = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCD"
     }

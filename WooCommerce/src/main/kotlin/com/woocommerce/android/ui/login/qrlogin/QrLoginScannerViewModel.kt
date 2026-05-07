@@ -85,6 +85,15 @@ class QrLoginScannerViewModel @Inject constructor(
                 ticket = payload,
                 host = payload.siteUrl.toDisplayHost()
             )
+            is QrLoginPayload.WpComMagicLinkUrl -> {
+                // Hand the URL off to the browser; wp.com then 3xx-redirects to
+                // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
+                // because the user is leaving the scanner and the outcome is no longer ours to
+                // handle. This is the happy path — we track the handoff, not a scan failure.
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+                triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = payload.url))
+            }
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -290,6 +299,14 @@ class QrLoginScannerViewModel @Inject constructor(
 
     sealed class Dispatch : Event() {
         data class LoggedIn(val localSiteId: Int) : Dispatch()
+
+        /**
+         * The merchant scanned a wp.com magic-login URL. The fragment hands [url] to the browser;
+         * wp.com then 3xx-redirects to `woocommerce://magic-login` which the existing
+         * intent-filter routes to `MagicLinkInterceptActivity` — the same end-to-end path a
+         * 3rd-party scanner (Google Lens, etc.) takes today.
+         */
+        data class OpenWpComMagicLinkUrl(val url: String) : Dispatch()
     }
 
     sealed interface UiState {
