@@ -11,6 +11,8 @@ class WooPosIsTapToPayAvailable @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
 ) {
     operator fun invoke(): Boolean =
-        featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY) &&
-            tapToPayAvailabilityStatus().isAvailable
+        isFeatureFlagEnabled() && tapToPayAvailabilityStatus().isAvailable
+
+    fun isFeatureFlagEnabled(): Boolean =
+        featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)
 }

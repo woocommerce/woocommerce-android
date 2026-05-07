@@ -12,6 +12,7 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
@@ -129,6 +130,24 @@ class AssistantViewModelTest {
                     toolName = "orders_get",
                 )
             ),
+        )
+        assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
+    }
+
+    @Test
+    fun `given active assistant bubble, when show cards tool starts, then tool activity is hidden`() = runTest {
+        viewModel.onSendMessage("Show matching orders")
+
+        runtime.emit(
+            AssistantRuntimeEvent.ToolCallStarted(
+                toolCallId = "call-1",
+                toolName = SHOW_CARDS_TOOL_NAME,
+            )
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
         )
         assertThat(viewModel.uiState.value.shouldShowTypingIndicator).isTrue()
     }
@@ -646,7 +665,7 @@ class AssistantViewModelTest {
     }
 
     @Test
-    fun `given active assistant bubble, when cards arrive, then card segments are appended`() = runTest {
+    fun `given active assistant bubble, when cards arrive, then grouped card segment is appended`() = runTest {
         viewModel.onSendMessage("Show order 123")
         val activeBubbleId = viewModel.uiState.value.messages.last().id
         val orderCard = givenOrderCard(id = "123", number = "#123")
@@ -660,9 +679,24 @@ class AssistantViewModelTest {
                 role = AssistantUiMessage.Role.ASSISTANT,
                 segments = listOf(
                     AssistantUiSegment.Text(""),
-                    AssistantUiSegment.Card(orderCard),
+                    AssistantUiSegment.CardGroup(listOf(orderCard)),
                 ),
             )
+        )
+    }
+
+    @Test
+    fun `given show cards tool activity is hidden, when cards resolve, then card group is still appended`() = runTest {
+        viewModel.onSendMessage("Show order 123")
+        val orderCard = givenOrderCard(id = "123", number = "#123")
+
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = SHOW_CARDS_TOOL_NAME))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderCard)))
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
+            AssistantUiSegment.Text(""),
+            AssistantUiSegment.CardGroup(listOf(orderCard)),
         )
     }
 
@@ -693,7 +727,7 @@ class AssistantViewModelTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
                         AssistantUiSegment.Text("Here is the order."),
-                        AssistantUiSegment.Card(orderCard),
+                        AssistantUiSegment.CardGroup(listOf(orderCard)),
                         AssistantUiSegment.Text("Anything else?"),
                     ),
                 )
@@ -717,7 +751,7 @@ class AssistantViewModelTest {
         )
         advanceUntilIdle()
 
-        assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
+        assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.CardGroup>())
             .isEmpty()
     }
 
@@ -732,12 +766,33 @@ class AssistantViewModelTest {
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateOrder, secondOrder)))
         advanceUntilIdle()
 
-        val cardSegments = viewModel.uiState.value.messages.last().segments
-            .filterIsInstance<AssistantUiSegment.Card>()
+        val cardGroups = viewModel.uiState.value.messages.last().segments
+            .filterIsInstance<AssistantUiSegment.CardGroup>()
 
-        assertThat(cardSegments).containsExactly(
-            AssistantUiSegment.Card(firstOrder),
-            AssistantUiSegment.Card(secondOrder),
+        assertThat(cardGroups).containsExactly(
+            AssistantUiSegment.CardGroup(listOf(firstOrder, secondOrder)),
+        )
+    }
+
+    @Test
+    fun `given repeated show cards calls, when cards arrive, then batches merge`() = runTest {
+        viewModel.onSendMessage("Show matching cards")
+        val firstOrder = givenOrderCard(id = "123", number = "#123")
+        val secondOrder = givenOrderCard(id = "456", number = "#456")
+
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = SHOW_CARDS_TOOL_NAME))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstOrder)))
+        runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-2", toolName = SHOW_CARDS_TOOL_NAME))
+        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-2"))
+        runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(secondOrder)))
+        advanceUntilIdle()
+
+        val cardGroups = viewModel.uiState.value.messages.last().segments
+            .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+        assertThat(cardGroups).containsExactly(
+            AssistantUiSegment.CardGroup(listOf(firstOrder, secondOrder)),
         )
     }
 
@@ -752,8 +807,7 @@ class AssistantViewModelTest {
 
         assertThat(viewModel.uiState.value.messages.last().segments)
             .contains(
-                AssistantUiSegment.Card(order),
-                AssistantUiSegment.Card(product),
+                AssistantUiSegment.CardGroup(listOf(order, product)),
             )
     }
 
@@ -777,8 +831,10 @@ class AssistantViewModelTest {
             )
             advanceUntilIdle()
 
-            assertThat(viewModel.uiState.value.messages.last().segments.filterIsInstance<AssistantUiSegment.Card>())
-                .isEmpty()
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).isEmpty()
         }
 
     @Test
@@ -1173,6 +1229,40 @@ class AssistantViewModelTest {
                 )
             )
         }
+
+    @Test
+    fun `given cancelled confirmation is resolved, when next turn starts, then transcript card stays closed`() = runTest {
+        viewModel.onSendMessage("Cancel order 123")
+        runtime.emit(AssistantRuntimeEvent.AwaitingConfirmation(givenConfirmationCard()))
+        advanceUntilIdle()
+
+        viewModel.onCancelTurn()
+        runtime.emit(
+            AssistantRuntimeEvent.ConfirmationResolved(
+                ConfirmationResult("confirmation-1", ConfirmationDecision.CANCELLED)
+            )
+        )
+        runtime.emit(
+            AssistantRuntimeEvent.Finished(
+                outcome = LoopOutcome.STOPPED,
+                updatedHistory = listOf(AssistantMessage.User("Cancel order 123")),
+            )
+        )
+        advanceUntilIdle()
+        val resolvedMessageId = viewModel.uiState.value.messages.last().id
+
+        viewModel.onSendMessage("Show order 123")
+        advanceUntilIdle()
+
+        val resolvedMessage = viewModel.uiState.value.messages.first { it.id == resolvedMessageId }
+        assertThat(resolvedMessage.segments).contains(
+            AssistantUiSegment.ConfirmationCard(
+                givenConfirmationCard().copy(state = AssistantConfirmationCardState.CANCELLED)
+            )
+        )
+        assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
+        assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
+    }
 
     private fun givenConfirmationCard() = AssistantConfirmationCard(
         confirmationId = "confirmation-1",

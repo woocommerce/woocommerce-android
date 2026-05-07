@@ -292,20 +292,9 @@ private fun TotalsLoaded(
         )
     }
 
-    val allMethods = buildList {
-        val readerConnected = state.readerStatus.isReaderConnected()
-        if (!readerConnected && state.isTapToPayAvailable) {
-            add(WooPosPaymentMethod.CARD_READER)
-        }
-        if (readerConnected && state.isTapToPayAvailable) {
-            add(WooPosPaymentMethod.TAP_TO_PAY)
-        }
-        add(WooPosPaymentMethod.SCAN_TO_PAY)
-        add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
-    }
     WooPosAllPaymentMethodsDialog(
         isVisible = state.isAllPaymentMethodsDialogVisible,
-        methods = allMethods,
+        methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
             method.toUIEvent()?.let(onUIEvent)
@@ -353,14 +342,6 @@ private fun CheckoutPaymentButtons(
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
         )
     }
-}
-
-private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = when (this) {
-    is WooPosTotalsViewState.ReaderStatus.Preparing,
-    is WooPosTotalsViewState.ReaderStatus.CheckingOrder,
-    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> true
-    is WooPosTotalsViewState.ReaderStatus.Disconnected,
-    WooPosTotalsViewState.ReaderStatus.Unavailable -> false
 }
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
@@ -433,17 +414,13 @@ private fun ReaderDisconnected(
             imageVector = WooPosIcons.CardReaderNotConnected,
             contentDescription = stringResource(id = R.string.woopos_reader_not_connected_description),
         )
-
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
         WooPosText(
             text = status.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
         )
-
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
         WooPosText(
             text = status.subtitle,
             style = WooPosTypography.BodyLarge,
@@ -475,17 +452,13 @@ private fun TapToPayPromoted(
             painter = painterResource(id = R.drawable.img_tap_to_pay_summary),
             contentDescription = stringResource(id = R.string.woopos_tap_to_pay_promoted_image_description),
         )
-
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
         WooPosText(
             text = stringResource(R.string.woopos_tap_to_pay_promoted_title),
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
         )
-
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
         WooPosText(
             text = stringResource(R.string.woopos_tap_to_pay_promoted_subtitle),
             style = WooPosTypography.BodyLarge,
@@ -740,10 +713,10 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
 
 @Composable
 @WooPosPreview
-fun WooPosTotalsScreenPreviewTapToPayPromoted(modifier: Modifier = Modifier) {
+fun WooPosTotalsScreenPreviewWithTapToPayPromoted() {
     WooPosTheme {
         WooPosTotalsScreen(
-            modifier = modifier,
+            modifier = Modifier,
             state = WooPosTotalsViewState.Checkout(
                 totals = Totals.Visible(
                     orderSubtotalText = "$420.00",
