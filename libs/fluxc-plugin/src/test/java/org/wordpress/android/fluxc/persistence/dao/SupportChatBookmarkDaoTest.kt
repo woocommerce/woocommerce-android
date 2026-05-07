@@ -71,22 +71,22 @@ class SupportChatBookmarkDaoTest {
     }
 
     @Test
-    fun `when touching bookmark, then only updated date changes`(): Unit = runBlocking {
+    fun `when marking bookmark as updated, then only updated date changes`(): Unit = runBlocking {
         val bookmark = createBookmark(chatId = 1L, updatedAt = 100L)
         dao.insertOrReplace(bookmark)
 
-        val touchedRows = dao.touch(chatId = 1L, updatedAt = 200L)
+        val updatedRows = dao.markAsUpdated(chatId = 1L, updatedAt = 200L)
 
-        val touchedBookmark = requireNotNull(dao.getByChatId(1L))
-        assertThat(touchedRows).isEqualTo(1)
-        assertThat(touchedBookmark).isEqualTo(bookmark.copy(updatedAt = 200L))
+        val updatedBookmark = requireNotNull(dao.getByChatId(1L))
+        assertThat(updatedRows).isEqualTo(1)
+        assertThat(updatedBookmark).isEqualTo(bookmark.copy(updatedAt = 200L))
     }
 
     @Test
-    fun `given missing bookmark, when touched, then no rows are changed`(): Unit = runBlocking {
-        val touchedRows = dao.touch(chatId = 1L, updatedAt = 200L)
+    fun `given missing bookmark, when marking as updated, then no rows are changed`(): Unit = runBlocking {
+        val updatedRows = dao.markAsUpdated(chatId = 1L, updatedAt = 200L)
 
-        assertThat(touchedRows).isEqualTo(0)
+        assertThat(updatedRows).isEqualTo(0)
     }
 
     @Test

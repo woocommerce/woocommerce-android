@@ -58,8 +58,8 @@ class SupportChatRepository @Inject constructor(
         )
     }
 
-    suspend fun touchChat(chatId: Long): Unit = withContext(dispatchers.io) {
-        bookmarkDao.touch(chatId = chatId, updatedAt = currentTimeProvider.currentDate().time)
+    suspend fun markChatAsUpdated(chatId: Long): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markAsUpdated(chatId = chatId, updatedAt = currentTimeProvider.currentDate().time)
     }
 
     suspend fun loadChatHistory(): List<SupportChatBookmark> = withContext(dispatchers.io) {

@@ -185,10 +185,10 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when touching chat, then dao is updated with current timestamp`() = testBlocking {
-        repository.touchChat(CHAT_ID)
+    fun `when marking chat as updated, then dao is updated with current timestamp`() = testBlocking {
+        repository.markChatAsUpdated(CHAT_ID)
 
-        verify(bookmarkDao).touch(CHAT_ID, CURRENT_TIME)
+        verify(bookmarkDao).markAsUpdated(CHAT_ID, CURRENT_TIME)
     }
 
     @Test

@@ -13,7 +13,7 @@ interface SupportChatBookmarkDao {
     suspend fun insertOrReplace(bookmark: SupportChatBookmarkEntity)
 
     @Query("UPDATE SupportChatBookmarkEntity SET updatedAt = :updatedAt WHERE chatId = :chatId")
-    suspend fun touch(chatId: Long, updatedAt: Long): Int
+    suspend fun markAsUpdated(chatId: Long, updatedAt: Long): Int
 
     @Query("SELECT * FROM SupportChatBookmarkEntity WHERE chatId = :chatId")
     suspend fun getByChatId(chatId: Long): SupportChatBookmarkEntity?
