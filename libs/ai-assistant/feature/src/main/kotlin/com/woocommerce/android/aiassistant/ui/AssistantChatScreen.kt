@@ -357,7 +357,9 @@ private fun AssistantMessageThread(
                 AssistantRevealOnFirstComposition(
                     modifier = Modifier.animateItem(),
                 ) {
-                    AssistantTypingIndicator()
+                    AssistantTypingIndicator(
+                        modifier = Modifier.padding(start = ASSISTANT_TEXT_HORIZONTAL_INSET)
+                    )
                 }
             }
         }
@@ -368,6 +370,7 @@ private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
 private const val REVEAL_ANIMATION_DURATION_MS = 180
 private const val REVEAL_SLIDE_OFFSET_DIVISOR = 3
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
+private val ASSISTANT_TEXT_HORIZONTAL_INSET = 16.dp
 
 private data class AssistantThreadScrollSignal(
     val renderedItemCount: Int,
@@ -550,29 +553,27 @@ private fun AssistantCardGroupSegment(
 
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
-    val bubbleColor = if (isUser) {
-        assistantUserBubbleColor()
-    } else {
-        assistantBubbleColor()
+    if (!isUser) {
+        Text(
+            text = text,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = ASSISTANT_TEXT_HORIZONTAL_INSET),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        return
     }
-    val textColor = if (isUser) {
-        assistantUserBubbleContentColor()
-    } else {
-        assistantBubbleContentColor()
-    }
-    val shape = RoundedCornerShape(16.dp)
-    val maxWidth = if (isUser) 0.78f else 0.85f
-    val verticalPadding = if (isUser) 10.dp else 12.dp
 
     Box(
         modifier = Modifier
-            .fillMaxWidth(maxWidth)
-            .background(bubbleColor, shape)
-            .padding(horizontal = 14.dp, vertical = verticalPadding),
+            .fillMaxWidth(0.78f)
+            .background(assistantUserBubbleColor(), RoundedCornerShape(16.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
         Text(
             text = text,
-            color = textColor,
+            color = assistantUserBubbleContentColor(),
             style = MaterialTheme.typography.bodyMedium,
         )
     }
