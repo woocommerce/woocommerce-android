@@ -2158,6 +2158,121 @@ class WooPosTotalsViewModelTest {
         verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
     }
 
+    @Test
+    fun `given TTP in flight, when LoadingData emitted, then tapToPayProgress becomes SdkActive`() = runTest {
+        // GIVEN
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.LoadingData {}
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.tapToPayProgress).isEqualTo(WooPosTotalsViewState.TapToPayProgress.SdkActive)
+    }
+
+    @Test
+    fun `given TTP in flight, when PaymentCapturing emitted, then PaymentInProgress state shown`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
+            .thenReturn("Processing payment")
+        whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle))
+            .thenReturn("Please wait…")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing("")
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
+    }
+
+    @Test
+    fun `given TTP failed with Canceled, when state emitted, then silently returns to checkout`() = runTest {
+        // GIVEN
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.Canceled,
+            onRetry = {},
+        )
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(vm.state.value).isNotInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
+        verify(childrenToParentEventSender, never()).sendToParent(ChildToParentEvent.PaymentFailed)
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+    }
+
+    @Test
+    fun `given TTP failed with onRetry, when retry clicked, then SDK onRetry invoked`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        var retryCalled = false
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.NoNetwork,
+            onRetry = { retryCalled = true },
+        )
+        advanceUntilIdle()
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(retryCalled).isTrue()
+    }
+
+    @Test
+    fun `given TTP failed without onRetry, when retry clicked, then returns to checkout`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        whenever(resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method))
+            .thenReturn("Try another payment method")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.Cancelable(
+            errorType = PaymentFlowError.NoNetwork,
+            amountWithCurrencyLabel = "",
+            onCancel = {},
+            onRetry = null,
+        )
+        advanceUntilIdle()
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+    }
+
+    private suspend fun givenTtpInFlight(): Pair<WooPosTotalsViewModel, MutableStateFlow<CardReaderPaymentOrRefundState>> {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
+        val mockController: CardReaderPaymentController = mock()
+        val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+            CardReaderPaymentState.LoadingData {}
+        )
+        whenever(mockController.paymentState).thenReturn(paymentState)
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any(), any())).thenReturn(mockController)
+
+        val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        vm.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+        return vm to paymentState
+    }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
