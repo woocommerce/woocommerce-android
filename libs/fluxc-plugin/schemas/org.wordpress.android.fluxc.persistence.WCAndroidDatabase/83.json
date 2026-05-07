@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 83,
-    "identityHash": "79d6f5c9dd8906495ce628dc4ef72434",
+    "identityHash": "6a3fd902e870857480221f099ed7afd8",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -4699,7 +4699,7 @@
       },
       {
         "tableName": "SupportChatBookmarkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chatId` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteSiteId` INTEGER NOT NULL, `wpcomUserId` INTEGER NOT NULL, `botSlug` TEXT NOT NULL, `title` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`chatId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chatId` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteSiteId` INTEGER NOT NULL, `botSlug` TEXT NOT NULL, `title` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`chatId`))",
         "fields": [
           {
             "fieldPath": "chatId",
@@ -4716,12 +4716,6 @@
           {
             "fieldPath": "remoteSiteId",
             "columnName": "remoteSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "wpcomUserId",
-            "columnName": "wpcomUserId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -4759,7 +4753,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79d6f5c9dd8906495ce628dc4ef72434')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a3fd902e870857480221f099ed7afd8')"
     ]
   }
 }

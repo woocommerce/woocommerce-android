@@ -570,16 +570,16 @@ class MigrationTests {
         migratedDb.execSQL(
             """
             INSERT INTO SupportChatBookmarkEntity (
-                chatId, localSiteId, remoteSiteId, wpcomUserId, botSlug, title, createdAt, updatedAt
+                chatId, localSiteId, remoteSiteId, botSlug, title, createdAt, updatedAt
             ) VALUES (
-                1234, 10, 20, 30, 'woo-workflow-support_mobile_inapp', 'Order help', 1000, 2000
+                1234, 10, 20, 'woo-workflow-support_mobile_inapp', 'Order help', 1000, 2000
             )
             """.trimIndent()
         )
 
         migratedDb.query(
             """
-            SELECT chatId, localSiteId, remoteSiteId, wpcomUserId, botSlug, title, createdAt, updatedAt
+            SELECT chatId, localSiteId, remoteSiteId, botSlug, title, createdAt, updatedAt
             FROM SupportChatBookmarkEntity
             WHERE chatId = 1234
             """.trimIndent()
@@ -589,11 +589,10 @@ class MigrationTests {
             assertThat(cursor.getLong(0)).isEqualTo(1234)
             assertThat(cursor.getInt(1)).isEqualTo(10)
             assertThat(cursor.getLong(2)).isEqualTo(20)
-            assertThat(cursor.getLong(3)).isEqualTo(30)
-            assertThat(cursor.getString(4)).isEqualTo("woo-workflow-support_mobile_inapp")
-            assertThat(cursor.getString(5)).isEqualTo("Order help")
-            assertThat(cursor.getLong(6)).isEqualTo(1000)
-            assertThat(cursor.getLong(7)).isEqualTo(2000)
+            assertThat(cursor.getString(3)).isEqualTo("woo-workflow-support_mobile_inapp")
+            assertThat(cursor.getString(4)).isEqualTo("Order help")
+            assertThat(cursor.getLong(5)).isEqualTo(1000)
+            assertThat(cursor.getLong(6)).isEqualTo(2000)
         }
     }
 

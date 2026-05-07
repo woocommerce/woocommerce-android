@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
 import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 
@@ -19,7 +18,6 @@ class SupportChatRepository @Inject constructor(
     private val restClient: SupportChatRestClient,
     private val bookmarkDao: SupportChatBookmarkDao,
     private val selectedSite: SelectedSite,
-    private val accountStore: AccountStore,
     private val currentTimeProvider: CurrentTimeProvider,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -49,7 +47,6 @@ class SupportChatRepository @Inject constructor(
                 chatId = chatId,
                 localSiteId = LocalId(selectedSiteModel.id),
                 remoteSiteId = selectedSiteModel.siteId,
-                wpcomUserId = accountStore.account.userId,
                 botSlug = botSlug,
                 title = firstUserMessage.trim().take(MAX_TITLE_LENGTH).ifBlank { null },
                 createdAt = now,
@@ -86,7 +83,6 @@ class SupportChatRepository @Inject constructor(
             chatId = chatId,
             localSiteId = localSiteId,
             remoteSiteId = remoteSiteId,
-            wpcomUserId = wpcomUserId,
             botSlug = botSlug,
             title = title,
             createdAt = createdAt,
@@ -102,7 +98,6 @@ data class SupportChatBookmark(
     val chatId: Long,
     val localSiteId: LocalId,
     val remoteSiteId: Long,
-    val wpcomUserId: Long,
     val botSlug: String,
     val title: String?,
     val createdAt: Long,

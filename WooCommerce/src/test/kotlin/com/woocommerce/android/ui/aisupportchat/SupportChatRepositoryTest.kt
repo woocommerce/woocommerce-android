@@ -16,7 +16,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -25,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGson
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
 import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
 
@@ -34,7 +32,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     private val restClient: SupportChatRestClient = mock()
     private val bookmarkDao: SupportChatBookmarkDao = mock()
     private val selectedSite: SelectedSite = mock()
-    private val accountStore: AccountStore = mock()
     private val currentTimeProvider: CurrentTimeProvider = mock()
 
     private lateinit var repository: SupportChatRepository
@@ -46,7 +43,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
             restClient = restClient,
             bookmarkDao = bookmarkDao,
             selectedSite = selectedSite,
-            accountStore = accountStore,
             currentTimeProvider = currentTimeProvider,
             dispatchers = CoroutineDispatchers(
                 main = coroutinesTestRule.testDispatcher,
@@ -147,7 +143,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     fun `given first message, when registering chat, then bookmark is created with metadata and clamped title`() =
         testBlocking {
             stubSelectedSite()
-            stubAccountStore()
             val bookmarkCaptor = argumentCaptor<SupportChatBookmarkEntity>()
             val firstMessage = "  abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ  "
 
@@ -161,7 +156,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
             assertThat(bookmarkCaptor.firstValue.chatId).isEqualTo(CHAT_ID)
             assertThat(bookmarkCaptor.firstValue.localSiteId).isEqualTo(LocalId(LOCAL_SITE_ID))
             assertThat(bookmarkCaptor.firstValue.remoteSiteId).isEqualTo(REMOTE_SITE_ID)
-            assertThat(bookmarkCaptor.firstValue.wpcomUserId).isEqualTo(WPCOM_USER_ID)
             assertThat(bookmarkCaptor.firstValue.botSlug).isEqualTo(BOT_SLUG)
             assertThat(bookmarkCaptor.firstValue.title).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX")
             assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(CURRENT_TIME)
@@ -171,7 +165,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     @Test
     fun `given blank first message, when registering chat, then title is null`() = testBlocking {
         stubSelectedSite()
-        stubAccountStore()
         val bookmarkCaptor = argumentCaptor<SupportChatBookmarkEntity>()
 
         repository.registerChat(
@@ -212,7 +205,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
                 chatId = entity.chatId,
                 localSiteId = entity.localSiteId,
                 remoteSiteId = entity.remoteSiteId,
-                wpcomUserId = entity.wpcomUserId,
                 botSlug = entity.botSlug,
                 title = entity.title,
                 createdAt = entity.createdAt,
@@ -230,14 +222,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         )
     }
 
-    private fun stubAccountStore(userId: Long = WPCOM_USER_ID) {
-        whenever(accountStore.account).thenReturn(
-            AccountModel().apply {
-                this.userId = userId
-            }
-        )
-    }
-
     private fun createResponse(): SupportChatResponse = SupportChatResponse(
         chatId = CHAT_ID,
         sessionId = null,
@@ -249,7 +233,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         chatId = CHAT_ID,
         localSiteId = LocalId(LOCAL_SITE_ID),
         remoteSiteId = REMOTE_SITE_ID,
-        wpcomUserId = WPCOM_USER_ID,
         botSlug = BOT_SLUG,
         title = "Support chat",
         createdAt = 1_000L,
@@ -269,7 +252,6 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         const val CHAT_ID = 1234L
         const val LOCAL_SITE_ID = 10
         const val REMOTE_SITE_ID = 20L
-        const val WPCOM_USER_ID = 30L
         const val CURRENT_TIME = 1_234_567L
         const val MESSAGE = "I need help with orders"
         const val ERROR_MESSAGE = "Not found"
