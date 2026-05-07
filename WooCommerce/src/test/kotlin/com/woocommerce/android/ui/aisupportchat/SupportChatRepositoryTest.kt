@@ -157,7 +157,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
                 firstUserMessage = firstMessage
             )
 
-            verify(bookmarkDao).insertIgnore(bookmarkCaptor.capture())
+            verify(bookmarkDao).insertOrReplace(bookmarkCaptor.capture())
             assertThat(bookmarkCaptor.firstValue.chatId).isEqualTo(CHAT_ID)
             assertThat(bookmarkCaptor.firstValue.localSiteId).isEqualTo(LocalId(LOCAL_SITE_ID))
             assertThat(bookmarkCaptor.firstValue.remoteSiteId).isEqualTo(REMOTE_SITE_ID)
@@ -180,7 +180,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
             firstUserMessage = "   "
         )
 
-        verify(bookmarkDao).insertIgnore(bookmarkCaptor.capture())
+        verify(bookmarkDao).insertOrReplace(bookmarkCaptor.capture())
         assertThat(bookmarkCaptor.firstValue.title).isNull()
     }
 

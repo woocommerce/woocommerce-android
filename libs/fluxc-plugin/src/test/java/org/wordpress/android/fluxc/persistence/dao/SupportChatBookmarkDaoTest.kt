@@ -30,22 +30,20 @@ class SupportChatBookmarkDaoTest {
     fun `when bookmark is inserted, then it can be loaded by chat id`(): Unit = runBlocking {
         val bookmark = createBookmark(chatId = 1L)
 
-        dao.insertIgnore(bookmark)
+        dao.insertOrReplace(bookmark)
 
         assertThat(dao.getByChatId(1L)).isEqualTo(bookmark)
     }
 
     @Test
-    fun `given duplicate chat id, when inserted, then existing bookmark is kept`(): Unit = runBlocking {
+    fun `given duplicate chat id, when inserted, then existing bookmark is replaced`(): Unit = runBlocking {
         val first = createBookmark(chatId = 1L, title = "First")
         val duplicate = createBookmark(chatId = 1L, title = "Duplicate")
 
-        val firstInsertResult = dao.insertIgnore(first)
-        val duplicateInsertResult = dao.insertIgnore(duplicate)
+        dao.insertOrReplace(first)
+        dao.insertOrReplace(duplicate)
 
-        assertThat(firstInsertResult).isEqualTo(1L)
-        assertThat(duplicateInsertResult).isEqualTo(-1L)
-        assertThat(dao.getByChatId(1L)).isEqualTo(first)
+        assertThat(dao.getByChatId(1L)).isEqualTo(duplicate)
     }
 
     @Test
@@ -53,7 +51,7 @@ class SupportChatBookmarkDaoTest {
         val oldest = createBookmark(chatId = 1L, updatedAt = 100L)
         val newest = createBookmark(chatId = 2L, updatedAt = 300L)
         val middle = createBookmark(chatId = 3L, updatedAt = 200L)
-        listOf(oldest, newest, middle).forEach { dao.insertIgnore(it) }
+        listOf(oldest, newest, middle).forEach { dao.insertOrReplace(it) }
 
         val bookmarks = dao.getForSite(DEFAULT_SITE_ID)
 
@@ -64,8 +62,8 @@ class SupportChatBookmarkDaoTest {
     fun `when loading bookmarks for site, then other sites are excluded`(): Unit = runBlocking {
         val selectedSiteBookmark = createBookmark(chatId = 1L, localSiteId = DEFAULT_SITE_ID)
         val otherSiteBookmark = createBookmark(chatId = 2L, localSiteId = OTHER_SITE_ID)
-        dao.insertIgnore(selectedSiteBookmark)
-        dao.insertIgnore(otherSiteBookmark)
+        dao.insertOrReplace(selectedSiteBookmark)
+        dao.insertOrReplace(otherSiteBookmark)
 
         val bookmarks = dao.getForSite(DEFAULT_SITE_ID)
 
@@ -75,7 +73,7 @@ class SupportChatBookmarkDaoTest {
     @Test
     fun `when touching bookmark, then only updated date changes`(): Unit = runBlocking {
         val bookmark = createBookmark(chatId = 1L, updatedAt = 100L)
-        dao.insertIgnore(bookmark)
+        dao.insertOrReplace(bookmark)
 
         val touchedRows = dao.touch(chatId = 1L, updatedAt = 200L)
 
@@ -95,8 +93,8 @@ class SupportChatBookmarkDaoTest {
     fun `when bookmark is deleted, then only target row is removed`(): Unit = runBlocking {
         val targetBookmark = createBookmark(chatId = 1L)
         val otherBookmark = createBookmark(chatId = 2L)
-        dao.insertIgnore(targetBookmark)
-        dao.insertIgnore(otherBookmark)
+        dao.insertOrReplace(targetBookmark)
+        dao.insertOrReplace(otherBookmark)
 
         val deletedRows = dao.delete(chatId = 1L)
 

@@ -9,8 +9,8 @@ import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 
 @Dao
 interface SupportChatBookmarkDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertIgnore(bookmark: SupportChatBookmarkEntity): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplace(bookmark: SupportChatBookmarkEntity)
 
     @Query("UPDATE SupportChatBookmarkEntity SET updatedAt = :updatedAt WHERE chatId = :chatId")
     suspend fun touch(chatId: Long, updatedAt: Long): Int
