@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.aiassistant
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
@@ -16,24 +15,11 @@ internal class AiAssistantCustomerCardRenderer {
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
-        val context = LocalContext.current
-        val rowModel = card.toCustomerSummaryRowModel(context)
         CustomerSummaryRow(
-            name = rowModel.name,
-            email = rowModel.email,
+            name = card.name.ifBlank { stringResource(R.string.order_creation_customer_search_empty_name) },
+            email = card.email.ifBlank { stringResource(R.string.order_creation_customer_search_empty_email) },
             onClick = { onAction(AssistantCardAction.OpenCustomer(card.remoteCustomerId)) },
             modifier = modifier,
         )
     }
 }
-
-internal data class AssistantCustomerSummaryRowModel(
-    val name: String,
-    val email: String,
-)
-
-internal fun AssistantCard.Customer.toCustomerSummaryRowModel(context: Context): AssistantCustomerSummaryRowModel =
-    AssistantCustomerSummaryRowModel(
-        name = name.ifBlank { context.getString(R.string.order_creation_customer_search_empty_name) },
-        email = email.ifBlank { context.getString(R.string.order_creation_customer_search_empty_email) },
-    )

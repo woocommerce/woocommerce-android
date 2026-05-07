@@ -21,6 +21,20 @@ internal class WooAssistantCardActionNavigator @Inject constructor(
         locale: Locale = Locale.getDefault(),
     ): NavDirections? =
         when (action) {
+            is AssistantCardAction.OpenOrder -> NavGraphMainDirections.actionGlobalOrderDetailFragment(
+                orderId = action.remoteOrderId,
+                ignoreTwoPaneLayoutLogic = true,
+            )
+            is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
+                mode = ProductDetailFragment.Mode.ShowProduct(action.remoteProductId),
+            )
+            is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
+                after = action.after,
+                before = action.before,
+                locale = locale,
+            )?.let { rangeSelection ->
+                NavGraphMainDirections.actionGlobalAnalytics(rangeSelection)
+            }
             is AssistantCardAction.OpenCustomer -> {
                 val customer = getCustomerWithStats(
                     remoteCustomerId = action.remoteCustomerId,
@@ -29,30 +43,8 @@ internal class WooAssistantCardActionNavigator @Inject constructor(
 
                 NavGraphMainDirections.actionGlobalCustomerDetailsFragment(customer)
             }
-            else -> action.toNavDirections(locale)
         }
 }
-
-private fun AssistantCardAction.toNavDirections(
-    locale: Locale,
-): NavDirections? =
-    when (this) {
-        is AssistantCardAction.OpenOrder -> NavGraphMainDirections.actionGlobalOrderDetailFragment(
-            orderId = remoteOrderId,
-            ignoreTwoPaneLayoutLogic = true,
-        )
-        is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
-            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-        )
-        is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
-            after = after,
-            before = before,
-            locale = locale,
-        )?.let { rangeSelection ->
-            NavGraphMainDirections.actionGlobalAnalytics(rangeSelection)
-        }
-        is AssistantCardAction.OpenCustomer -> null
-    }
 
 internal fun analyticsDatesToStatsTimeRangeSelection(
     after: String,
