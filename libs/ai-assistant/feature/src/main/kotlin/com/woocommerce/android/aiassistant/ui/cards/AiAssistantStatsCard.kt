@@ -244,15 +244,17 @@ private fun sampleOrdersStatsCardState() = AiAssistantStatsCardState(
         AiAssistantStatsCardState.Metric(
             type = AssistantCard.Stats.MetricType.TotalOrders,
             value = "42",
-            chartValues = listOf(12.0, 16.0, 14.0),
+            chartValues = SAMPLE_TOTAL_ORDERS_CHART_VALUES,
         ),
         AiAssistantStatsCardState.Metric(
             type = AssistantCard.Stats.MetricType.AverageOrderValue,
             value = "$85.30",
-            chartValues = listOf(80.10, 82.25, 93.55),
+            chartValues = SAMPLE_AVERAGE_ORDER_VALUE_CHART_VALUES,
         ),
     ),
 )
 
 private val SAMPLE_TOTAL_SALES_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)
 private val SAMPLE_NET_SALES_CHART_VALUES = listOf(8.0, 12.0, 6.0, 20.0, 14.0)
+private val SAMPLE_TOTAL_ORDERS_CHART_VALUES = listOf(12.0, 16.0, 14.0)
+private val SAMPLE_AVERAGE_ORDER_VALUE_CHART_VALUES = listOf(80.10, 82.25, 93.55)

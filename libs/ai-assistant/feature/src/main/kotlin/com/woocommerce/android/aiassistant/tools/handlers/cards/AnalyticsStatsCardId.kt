@@ -22,18 +22,8 @@ internal data class AnalyticsStatsCardId(
             val interval = parts?.get(INTERVAL_VALUE_INDEX)?.let(AnalyticsInterval::fromValue)
             val parsedCurrency = parts?.get(CURRENCY_VALUE_INDEX)?.toParsedCurrency()
 
-            return if (parts != null && kind != null && interval != null && parsedCurrency != null) {
-                AnalyticsStatsCardId(
-                    kind = kind,
-                    after = parts[AFTER_VALUE_INDEX],
-                    before = parts[BEFORE_VALUE_INDEX],
-                    interval = interval,
-                    currency = parsedCurrency.value,
-                ).takeIf {
-                    it.hasValidDateRange() && kind.acceptsCurrency(parts[CURRENCY_VALUE_INDEX])
-                }
-            } else {
-                null
+            return parts?.toAnalyticsStatsCardId(kind, interval, parsedCurrency)?.takeIf {
+                it.hasValidDateRange() && it.kind.acceptsCurrency(parts[CURRENCY_VALUE_INDEX])
             }
         }
     }
@@ -53,6 +43,25 @@ internal enum class AnalyticsStatsKind(
 }
 
 private data class ParsedCurrency(val value: String?)
+
+private fun List<String>.toAnalyticsStatsCardId(
+    kind: AnalyticsStatsKind?,
+    interval: AnalyticsInterval?,
+    parsedCurrency: ParsedCurrency?,
+): AnalyticsStatsCardId? {
+    return when {
+        kind == null -> null
+        interval == null -> null
+        parsedCurrency == null -> null
+        else -> AnalyticsStatsCardId(
+            kind = kind,
+            after = get(AFTER_VALUE_INDEX),
+            before = get(BEFORE_VALUE_INDEX),
+            interval = interval,
+            currency = parsedCurrency.value,
+        )
+    }
+}
 
 private fun List<String>.hasExpectedAnalyticsStatsIdLabels(): Boolean =
     AnalyticsStatsKind.fromPrefix(get(TOOL_INDEX)) != null &&

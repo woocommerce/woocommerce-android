@@ -76,20 +76,26 @@ internal object AssistantCardPayloadParser {
         )
     }
 
-    private fun parseStatsCard(card: ShowCardPayload): AssistantCard? {
-        val details = card.details as? ShowCardDetails.AnalyticsStats ?: return null
-        val after = details.after.takeIf { it.isIsoLocalDate() } ?: return null
-        val before = details.before.takeIf { it.isIsoLocalDate() } ?: return null
-        val kind = details.kind.toStatsKind() ?: return null
+    private fun parseStatsCard(card: ShowCardPayload): AssistantCard? =
+        (card.details as? ShowCardDetails.AnalyticsStats)?.toStatsCard(card.id)
 
-        return AssistantCard.Stats(
-            id = card.id,
-            kind = kind,
-            after = after,
-            before = before,
-            currency = details.currency.orEmpty(),
-            metrics = details.toMetrics(kind),
-        )
+    private fun ShowCardDetails.AnalyticsStats.toStatsCard(id: String): AssistantCard? {
+        val afterDate = after.takeIf { it.isIsoLocalDate() }
+        val beforeDate = before.takeIf { it.isIsoLocalDate() }
+        val statsKind = kind.toStatsKind()
+
+        return if (afterDate != null && beforeDate != null && statsKind != null) {
+            AssistantCard.Stats(
+                id = id,
+                kind = statsKind,
+                after = afterDate,
+                before = beforeDate,
+                currency = currency.orEmpty(),
+                metrics = toMetrics(statsKind),
+            )
+        } else {
+            null
+        }
     }
 
     private fun ShowCardDetails.AnalyticsStats.toMetrics(
