@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.networking.SupportChatRestClient
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.util.CoroutineDispatchers
+import dagger.Reusable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
@@ -11,9 +12,8 @@ import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@Reusable
 class SupportChatRepository @Inject constructor(
     private val restClient: SupportChatRestClient,
     private val bookmarkDao: SupportChatBookmarkDao,
