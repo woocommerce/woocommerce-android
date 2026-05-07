@@ -4,7 +4,7 @@
 
 24.8
 -----
-
+- [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
 
 24.7
 -----

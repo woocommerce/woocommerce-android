@@ -158,6 +158,10 @@
             android:windowSoftInputMode="adjustResize" />
         <!--        Make sure portrait screen orientation is not required for the installation of the app -->
         <activity
+            android:name=".ui.payments.cardreader.readermode.CardReaderModeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Woo.DayNight" />
+        <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
             android:exported="false"
             android:theme="@style/Theme.WooPos"
