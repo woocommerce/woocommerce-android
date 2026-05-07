@@ -117,10 +117,15 @@ class WooPosTotalsViewModel @Inject constructor(
     init {
         listenUpEvents()
         observeCardReaderStatus()
-        if (isTapToPayAvailable.isFeatureFlagEnabled()) {
-            (tapToPayAvailabilityStatus() as? TapToPayAvailabilityStatus.Result.NotAvailable)?.let {
-                paymentsFlowTracker.trackTapToPayNotAvailableReason(it, TAP_TO_PAY_SOURCE)
-            }
+        trackTapToPayUnavailableReasonIfNeeded()
+    }
+
+    private fun trackTapToPayUnavailableReasonIfNeeded() {
+        if (!isTapToPayAvailable.isFeatureFlagEnabled()) return
+        when (val result = tapToPayAvailabilityStatus()) {
+            is TapToPayAvailabilityStatus.Result.NotAvailable ->
+                paymentsFlowTracker.trackTapToPayNotAvailableReason(result, TAP_TO_PAY_SOURCE)
+            else -> Unit
         }
     }
 
@@ -183,8 +188,10 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
-            WooPosTotalsUIEvent.OnTapToPayClicked,
-            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> handleNewPaymentMethodEvent(event)
+            WooPosTotalsUIEvent.OnTapToPayClicked -> handleTapToPayClicked()
+
+            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged ->
+                handleAllPaymentMethodsVisibilityChanged(event.isVisible)
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
 
@@ -224,16 +231,13 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
-        if (event is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged) {
-            val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-            uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
-        } else {
-            viewModelScope.launch {
-                totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
-                wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
-            }
-        }
+    private fun handleTapToPayClicked() = viewModelScope.launch {
+        totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped()
+    }
+
+    private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
+        val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = isVisible)
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
