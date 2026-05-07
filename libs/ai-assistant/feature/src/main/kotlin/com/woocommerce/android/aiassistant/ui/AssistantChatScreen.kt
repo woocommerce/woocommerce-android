@@ -334,7 +334,7 @@ private fun AssistantMessageThread(
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
+        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
     ) {
         items(
@@ -438,7 +438,7 @@ private fun AssistantMessageBubble(
         modifier = modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) { contentDescription = description },
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         displaySegments.forEach { segment ->
             Row(
