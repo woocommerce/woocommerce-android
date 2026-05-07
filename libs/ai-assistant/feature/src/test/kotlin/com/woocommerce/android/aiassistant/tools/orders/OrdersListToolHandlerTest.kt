@@ -175,19 +175,6 @@ class OrdersListToolHandlerTest {
         }
 
     @Test
-    fun `given order list extra fields argument, when execute is called, then ValidationError is returned`() =
-        runTest {
-            val result = handler.execute(
-                toolCall(buildJsonObject { put("extra_fields", "metadata") })
-            )
-
-            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
-            assertThat((result as ToolResult.ValidationError).reason)
-                .contains("Unsupported orders_list argument")
-            verify(dataSource, never()).fetchOrders(search = null)
-        }
-
-    @Test
     fun `given unknown order list argument, when execute is called, then ValidationError is returned`() =
         runTest {
             val result = handler.execute(toolCall(buildJsonObject { put("unexpected", true) }))

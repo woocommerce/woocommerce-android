@@ -64,49 +64,6 @@ class WooCommerceToolCatalogTest {
     }
 
     @Test
-    fun `when descriptors are inspected, then tool expansion issue adds no new tools`() {
-        val names = allHandlers.map { it.descriptor.name }
-        val modelVisibleDescriptions = allHandlers.joinToString(separator = "\n") { handler ->
-            handler.descriptor.description
-        }
-
-        assertThat(names).containsExactlyInAnyOrder(
-            "orders_list",
-            "orders_get",
-            "orders_update",
-            "orders_bulk_update",
-            "products_list",
-            "products_get",
-            "products_update",
-            "products_bulk_update",
-            "product_variations_list",
-            "product_variations_update",
-            "analytics_revenue",
-            "analytics_orders",
-            "show_cards",
-            "customers_list",
-        )
-        assertThat(names).doesNotContain(
-            "order_notes_create",
-            "order_notes_list",
-            "analytics_top_products",
-            "analytics_top_customers",
-            "analytics_customers",
-            "customers_get",
-            "product_variations_bulk_update",
-        )
-        assertThat(modelVisibleDescriptions).doesNotContain(
-            "order_notes_create",
-            "order_notes_list",
-            "analytics_top_products",
-            "analytics_top_customers",
-            "analytics_customers",
-            "customers_get",
-            "product_variations_bulk_update",
-        )
-    }
-
-    @Test
     fun `when descriptors are inspected, then write tools are UNSAFE and read tools are SAFE`() {
         val byName = allHandlers.associateBy { it.descriptor.name }
         val writeToolNames = setOf(

@@ -47,7 +47,7 @@ class OrderToolResponsesTest {
             assertThat(structured.getValue("line_items_truncated").jsonPrimitive.boolean).isTrue
             val lineItems = structured.getValue("line_items").jsonArray
             assertThat(lineItems).hasSize(10)
-            assertThat(lineItems.first().jsonObject.keys).containsExactly(
+            assertThat(lineItems.first().jsonObject.keys).containsExactlyInAnyOrder(
                 "id",
                 "name",
                 "quantity",

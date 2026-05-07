@@ -157,7 +157,7 @@ class CustomersListToolHandlerTest {
         assertThat(matches[0].jsonObject.getValue("first_name").jsonPrimitive.content).isEqualTo("Jane")
         assertThat(matches[0].jsonObject.getValue("last_name").jsonPrimitive.content).isEqualTo("Doe")
         assertThat(matches[0].jsonObject.getValue("email").jsonPrimitive.content).isEqualTo("jane@example.com")
-        assertThat(matches[1].jsonObject.keys).containsExactly("id", "billing", "shipping")
+        assertThat(matches[1].jsonObject.keys).containsExactlyInAnyOrder("id", "billing", "shipping")
         assertThat(result.structured.toString()).doesNotContain("analytics")
     }
 

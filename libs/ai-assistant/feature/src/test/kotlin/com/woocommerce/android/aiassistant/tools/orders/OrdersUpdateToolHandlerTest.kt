@@ -192,7 +192,7 @@ class OrdersUpdateToolHandlerTest {
                 buildJsonObject {
                     put("id", 123)
                     put("status", "completed")
-                    put("extra_fields", "billing")
+                    put("unexpected", "billing")
                 }
             )
         )

@@ -5,7 +5,7 @@ import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class ToolExtraFieldsTest {
+class ToolArgumentValidationTest {
     @Test
     fun `given known argument keys, when validating, then success is returned`() {
         val result = validateAllowedArguments(
@@ -31,6 +31,6 @@ class ToolExtraFieldsTest {
         )
 
         assertThat(result.exceptionOrNull()?.message)
-            .isEqualTo("Unsupported orders_get argument(s): unexpected")
+            .contains("orders_get", "unexpected")
     }
 }

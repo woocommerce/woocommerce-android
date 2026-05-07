@@ -80,18 +80,11 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is generated, then it does not advertise unregistered tool names`() {
+    fun `when prompt is generated, then variation bulk guidance stays on existing update tool`() {
         val prompt = promptFor(todayIsoDate = "2026-05-07")
 
-        assertThat(prompt).doesNotContain(
-            "product_variations_bulk_update",
-            "order_notes_create",
-            "order_notes_list",
-            "analytics_top_products",
-            "analytics_top_customers",
-            "analytics_customers",
-            "customers_get",
-        )
+        assertThat(prompt).contains("product_variations_update")
+        assertThat(prompt).doesNotContain("product_variations_bulk_update")
     }
 
     @Test

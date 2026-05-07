@@ -90,22 +90,6 @@ class OrdersGetToolHandlerTest {
         }
 
     @Test
-    fun `given extra fields argument, when execute is called, then ValidationError is returned`() = runTest {
-        val result = handler.execute(
-            toolCall(
-                buildJsonObject {
-                    put("id", 123)
-                    put("extra_fields", "metadata")
-                }
-            )
-        )
-
-        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
-        assertThat((result as ToolResult.ValidationError).reason)
-            .contains("Unsupported orders_get argument")
-    }
-
-    @Test
     fun `given unknown arg, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(
             toolCall(
