@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
@@ -15,7 +14,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -140,7 +138,7 @@ class OrdersListToolHandlerTest {
         }
 
     @Test
-    fun `given order list extra fields, when execute is called, then every allowed list extra is included`() =
+    fun `given order list expanded fields, when execute is called, then every list field is included`() =
         runTest {
             val order = makeOrder(
                 id = 10L,
@@ -169,23 +167,7 @@ class OrdersListToolHandlerTest {
                 Result.success(AIOrdersDataSource.OrdersPage(orders = listOf(order), canLoadMore = false))
             )
 
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        putJsonArray("extra_fields") {
-                            add("billing")
-                            add("payment_method_title")
-                            add("customer_email")
-                            add("line_items")
-                            add("customer_note")
-                            add("date_paid")
-                            add("shipping_total")
-                            add("discount_total")
-                            add("shipping")
-                        }
-                    }
-                )
-            )
+            val result = handler.execute(toolCall(buildJsonObject {}))
 
             val row = (result as ToolResult.Success).structured.jsonObject
                 .getValue("orders").jsonArray.single().jsonObject
@@ -193,15 +175,15 @@ class OrdersListToolHandlerTest {
         }
 
     @Test
-    fun `given unsupported order list extra field, when execute is called, then ValidationError is returned`() =
+    fun `given order list extra fields argument, when execute is called, then ValidationError is returned`() =
         runTest {
             val result = handler.execute(
-                toolCall(buildJsonObject { putJsonArray("extra_fields") { add("metadata") } })
+                toolCall(buildJsonObject { put("extra_fields", "metadata") })
             )
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
             assertThat((result as ToolResult.ValidationError).reason)
-                .contains("Unsupported orders_list extra_fields: metadata")
+                .contains("Unsupported orders_list argument")
             verify(dataSource, never()).fetchOrders(search = null)
         }
 

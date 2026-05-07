@@ -32,7 +32,7 @@ class ProductVariationDetailResponseTest {
             description = longDescription,
         )
 
-        val response = variation.toProductVariationDetailResponse(extraFields = setOf("description"))
+        val response = variation.toProductVariationDetailResponse()
 
         assertThat(response.description).hasSize(PRODUCT_TEXT_FIELD_LIMIT)
         assertThat(response.description).isEqualTo(longDescription.take(PRODUCT_TEXT_FIELD_LIMIT))

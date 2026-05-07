@@ -19,7 +19,7 @@ class ProductDetailResponseTest {
             totalSales = 99L,
         )
 
-        val response = product.toProductDetailResponse(extraFields = emptySet())
+        val response = product.toProductDetailResponse()
 
         assertThat(response.parentId).isEqualTo(9L)
         assertThat(response.permalink).isEqualTo("https://example.com/product/hoodie")
@@ -30,7 +30,7 @@ class ProductDetailResponseTest {
     }
 
     @Test
-    fun `given all detail extra fields, when detail response is built, then every allowed extra is projected`() {
+    fun `given all detail fields, when detail response is built, then every expanded field is projected`() {
         val product = WCProductModel(
             remoteId = RemoteId(42L),
             name = "Hoodie",
@@ -49,20 +49,7 @@ class ProductDetailResponseTest {
             relatedIds = "[31,32]",
         )
 
-        val response = product.toProductDetailResponse(
-            extraFields = setOf(
-                "description",
-                "short_description",
-                "attributes",
-                "images",
-                "dimensions",
-                "weight",
-                "shipping_class",
-                "cross_sell_ids",
-                "upsell_ids",
-                "related_ids",
-            )
-        )
+        val response = product.toProductDetailResponse()
 
         assertThat(response.description).isEqualTo("Long description")
         assertThat(response.shortDescription).isEqualTo("Short description")

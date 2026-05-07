@@ -53,13 +53,13 @@ class InputSchemaDslTest {
     fun `given enum array property, when building schema, then item enum is listed`() {
         val schema = inputSchema {
             arrayEnum(
-                name = "extra_fields",
+                name = "fields",
                 values = listOf("billing", "line_items"),
                 description = "Optional compact fields."
             )
         }
 
-        val extraFields = requireNotNull(schema["properties"]).jsonObject.getValue("extra_fields").jsonObject
+        val extraFields = requireNotNull(schema["properties"]).jsonObject.getValue("fields").jsonObject
         assertThat(extraFields.getValue("type").jsonPrimitive.content).isEqualTo("array")
         assertThat(extraFields.getValue("items").jsonObject.getValue("type").jsonPrimitive.content)
             .isEqualTo("string")

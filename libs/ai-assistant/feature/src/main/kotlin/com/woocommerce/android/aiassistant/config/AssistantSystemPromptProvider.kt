@@ -115,10 +115,6 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             and what each tool does. If a tool covers the merchant's ask per its schema, call it; if no tool
             covers it, say so honestly and point to the native Android UI where the action lives.
 
-            Some read tools accept `extra_fields`. Use `extra_fields` only when the merchant's question needs
-            fields outside the default summary, and prefer the smallest field set that answers the question.
-            Do not request extra fields speculatively.
-
             Try a tool before refusing. When the merchant asks for something a read tool could plausibly answer,
             attempt the call. Don't refuse based on what you assume the tool can or can't do - the schemas are
             the source of truth. If a filter, search term, or parameter looks worth trying, try it; if the tool

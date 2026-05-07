@@ -8,7 +8,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
-import com.woocommerce.android.aiassistant.tools.parseExtraFields
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -35,11 +34,6 @@ internal class ProductVariationsToolHandler @Inject constructor(
             integer("variation_id", description = "Variation ID; omit to list variations or provide to fetch one.")
             integer("page", description = "1-based page number; default 1. List mode only.")
             integer("per_page", description = "Max items; clamped 1-50, default 20. List mode only.")
-            arrayEnum(
-                name = "extra_fields",
-                values = PRODUCT_VARIATIONS_EXTRA_FIELDS.toList(),
-                description = "Optional compact fields for variation rows.",
-            )
         },
         safetyLevel = ToolSafetyLevel.SAFE,
     )
@@ -49,20 +43,16 @@ internal class ProductVariationsToolHandler @Inject constructor(
             ?.let {
                 return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
             }
-        val extraFields = parseExtraFields(call.arguments, PRODUCT_VARIATIONS_EXTRA_FIELDS, descriptor.name)
-            .getOrElse {
-                return ToolResult.ValidationError(call.id, it.message ?: "Invalid extra_fields")
-            }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
 
         val result = if (args.variationId != null) {
             dataSource.getVariation(productId = args.productId, variationId = args.variationId)
-                .map { variation -> variation.toDetailJson(extraFields) }
+                .map { variation -> variation.toDetailJson() }
         } else {
             dataSource.fetchVariations(productId = args.productId, page = args.page, perPage = args.perPage)
-                .map { variations -> variations.toListJson(productId = args.productId, extraFields = extraFields) }
+                .map { variations -> variations.toListJson(productId = args.productId) }
         }
 
         return result.fold(
@@ -95,15 +85,15 @@ internal class ProductVariationsToolHandler @Inject constructor(
         @SerialName("price_range") val priceRange: PriceRange?,
     )
 
-    private fun WCProductVariationModel.toDetailJson(extraFields: Set<String>): JsonObject =
-        json.encodeToJsonElement(toProductVariationDetailResponse(extraFields)) as JsonObject
+    private fun WCProductVariationModel.toDetailJson(): JsonObject =
+        json.encodeToJsonElement(toProductVariationDetailResponse()) as JsonObject
 
-    private fun List<WCProductVariationModel>.toListJson(productId: Long, extraFields: Set<String>): JsonObject {
+    private fun List<WCProductVariationModel>.toListJson(productId: Long): JsonObject {
         val response = VariationList(
             productId = productId,
             count = size,
             ids = map { it.remoteVariationId.value },
-            variations = map { it.toProductVariationDetailResponse(extraFields) },
+            variations = map { it.toProductVariationDetailResponse() },
             stockStatusCounts = groupingBy { it.stockStatus }.eachCount(),
             priceRange = priceRange(),
         )
@@ -133,15 +123,4 @@ internal class ProductVariationsToolHandler @Inject constructor(
         takeIf { it.isNotBlank() }?.let { runCatching { it.toBigDecimal() }.getOrNull() }
 }
 
-private val PRODUCT_VARIATIONS_ALLOWED_ARGS = setOf("product_id", "variation_id", "page", "per_page", "extra_fields")
-private val PRODUCT_VARIATIONS_EXTRA_FIELDS = setOf(
-    "image",
-    "description",
-    "weight",
-    "dimensions",
-    "tax_class",
-    "date_created",
-    "date_modified",
-    "menu_order",
-    "backorders",
-)
+private val PRODUCT_VARIATIONS_ALLOWED_ARGS = setOf("product_id", "variation_id", "page", "per_page")

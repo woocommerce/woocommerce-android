@@ -18,7 +18,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -62,7 +61,6 @@ class CustomersListToolHandlerTest {
             "order",
             "page",
             "per_page",
-            "extra_fields",
         )
         assertThat(descriptor.inputSchema.getValue("additionalProperties").jsonPrimitive.content).isEqualTo("false")
         assertThat(properties.getValue("orderby").jsonObject.getValue("enum").jsonArray.stringValues())
@@ -159,8 +157,8 @@ class CustomersListToolHandlerTest {
         assertThat(matches[0].jsonObject.getValue("first_name").jsonPrimitive.content).isEqualTo("Jane")
         assertThat(matches[0].jsonObject.getValue("last_name").jsonPrimitive.content).isEqualTo("Doe")
         assertThat(matches[0].jsonObject.getValue("email").jsonPrimitive.content).isEqualTo("jane@example.com")
-        assertThat(matches[1].jsonObject.keys).containsExactly("id")
-        assertThat(result.structured.toString()).doesNotContain("phone", "billing", "shipping", "analytics")
+        assertThat(matches[1].jsonObject.keys).containsExactly("id", "billing", "shipping")
+        assertThat(result.structured.toString()).doesNotContain("analytics")
     }
 
     @Test
@@ -191,7 +189,7 @@ class CustomersListToolHandlerTest {
         }
 
     @Test
-    fun `given customer extra fields, when executed, then every allowed customer extra is returned`() = runTest {
+    fun `given customer expanded fields, when executed, then every customer field is returned`() = runTest {
         whenever(dataSource.fetchCustomers()).thenReturn(
             Result.success(
                 listOf(
@@ -209,18 +207,7 @@ class CustomersListToolHandlerTest {
             )
         )
 
-        val result = handler.execute(
-            toolCall(
-                arguments = buildJsonObject {
-                    putJsonArray("extra_fields") {
-                        add("billing")
-                        add("shipping")
-                        add("role")
-                        add("avatar_url")
-                    }
-                }
-            )
-        )
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
         val match = (result as ToolResult.Success).structured.jsonObject
             .getValue("matches").jsonArray.single().jsonObject

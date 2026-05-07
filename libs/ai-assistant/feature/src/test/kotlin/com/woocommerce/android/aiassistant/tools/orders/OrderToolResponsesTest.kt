@@ -41,7 +41,7 @@ class OrderToolResponsesTest {
                 }
             )
 
-            val structured = json.encodeToJsonElement(order.toOrderDetailResponse(extraFields = emptySet())).jsonObject
+            val structured = json.encodeToJsonElement(order.toOrderDetailResponse()).jsonObject
 
             assertThat(structured.getValue("line_items_count").jsonPrimitive.int).isEqualTo(12)
             assertThat(structured.getValue("line_items_truncated").jsonPrimitive.boolean).isTrue
@@ -59,7 +59,7 @@ class OrderToolResponsesTest {
         }
 
     @Test
-    fun `given billing and shipping extras, when detail response is built, then compact addresses are included`() =
+    fun `given billing and shipping fields, when detail response is built, then compact addresses are included`() =
         runTest {
             val response = order(
                 billingPhone = "555-0100",
@@ -67,7 +67,7 @@ class OrderToolResponsesTest {
                 billingCountry = "US",
                 shippingCity = "Seattle",
                 shippingCountry = "US",
-            ).toOrderDetailResponse(extraFields = setOf("billing", "shipping"))
+            ).toOrderDetailResponse()
 
             val structured = json.encodeToJsonElement(response).jsonObject
             assertThat(structured.getValue("billing").jsonObject.getValue("phone").jsonPrimitive.content)
@@ -77,7 +77,7 @@ class OrderToolResponsesTest {
         }
 
     @Test
-    fun `given order adjustment extras, when detail response is built, then coupon fee and tax lines are projected`() =
+    fun `given order adjustment fields, when detail response is built, then coupon fee and tax lines are projected`() =
         runTest {
             val response = order(
                 couponLines = """[{"id":10,"code":"SAVE10","discount":"5.00","discount_tax":"0.50"}]""",
@@ -94,7 +94,7 @@ class OrderToolResponsesTest {
                       }
                     ]
                 """.trimIndent(),
-            ).toOrderDetailResponse(extraFields = setOf("coupon_lines", "fee_lines", "tax_lines"))
+            ).toOrderDetailResponse()
 
             val structured = json.encodeToJsonElement(response).jsonObject
             val coupon = structured.getValue("coupon_lines").jsonArray.single().jsonObject

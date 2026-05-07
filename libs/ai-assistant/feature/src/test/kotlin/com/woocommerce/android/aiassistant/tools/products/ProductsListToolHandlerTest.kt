@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.double
@@ -16,7 +15,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -136,27 +134,7 @@ class ProductsListToolHandlerTest {
                 Result.success(AIProductsDataSource.ProductsPage(products = listOf(product), canLoadMore = false))
             )
 
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        putJsonArray("extra_fields") {
-                            add("regular_price")
-                            add("sale_price")
-                            add("on_sale")
-                            add("stock_quantity")
-                            add("manage_stock")
-                            add("categories")
-                            add("tags")
-                            add("total_sales")
-                            add("date_created")
-                            add("date_modified")
-                            add("image")
-                            add("short_description")
-                            add("description")
-                        }
-                    }
-                )
-            )
+            val result = handler.execute(toolCall(buildJsonObject {}))
 
             val row = (result as ToolResult.Success).structured.jsonObject
                 .getValue("products").jsonArray.single().jsonObject

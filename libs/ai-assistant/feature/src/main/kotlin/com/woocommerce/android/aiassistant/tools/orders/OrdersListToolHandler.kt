@@ -8,7 +8,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
-import com.woocommerce.android.aiassistant.tools.parseExtraFields
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -50,11 +49,6 @@ internal class OrdersListToolHandler @Inject constructor(
             enum("order", values = listOf("asc", "desc"), description = "Sort direction; default 'desc'.")
             integer("page", description = "1-based page number; default 1.")
             integer("per_page", description = "Max items; clamped 1-50, default 20.")
-            arrayEnum(
-                name = "extra_fields",
-                values = ORDERS_LIST_EXTRA_FIELDS.toList(),
-                description = "Optional compact fields for each order row.",
-            )
         },
         safetyLevel = ToolSafetyLevel.SAFE,
     )
@@ -62,9 +56,6 @@ internal class OrdersListToolHandler @Inject constructor(
     override suspend fun execute(call: ToolCall): ToolResult {
         validateAllowedArguments(call.arguments, ORDERS_LIST_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
             return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
-        }
-        val extraFields = parseExtraFields(call.arguments, ORDERS_LIST_EXTRA_FIELDS, descriptor.name).getOrElse {
-            return ToolResult.ValidationError(call.id, it.message ?: "Invalid extra_fields")
         }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
@@ -95,7 +86,7 @@ internal class OrdersListToolHandler @Inject constructor(
                 val response = OrderListResponse(
                     count = orders.size,
                     ids = orders.map { it.orderId },
-                    orders = orders.map { it.toOrderListRowResponse(extraFields) },
+                    orders = orders.map { it.toOrderListRowResponse() },
                     statusCounts = statusCounts,
                     totalRange = totalRange,
                 )
@@ -146,17 +137,4 @@ private val ORDERS_LIST_ALLOWED_ARGS = setOf(
     "order",
     "page",
     "per_page",
-    "extra_fields",
-)
-
-private val ORDERS_LIST_EXTRA_FIELDS = setOf(
-    "billing",
-    "payment_method_title",
-    "customer_email",
-    "line_items",
-    "customer_note",
-    "date_paid",
-    "shipping_total",
-    "discount_total",
-    "shipping",
 )

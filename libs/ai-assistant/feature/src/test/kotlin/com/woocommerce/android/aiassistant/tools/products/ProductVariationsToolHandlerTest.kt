@@ -7,7 +7,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
@@ -16,7 +15,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -239,24 +237,7 @@ class ProductVariationsToolHandlerTest {
                 )
             )
 
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        put("product_id", 100)
-                        putJsonArray("extra_fields") {
-                            add("image")
-                            add("description")
-                            add("weight")
-                            add("dimensions")
-                            add("tax_class")
-                            add("date_created")
-                            add("date_modified")
-                            add("menu_order")
-                            add("backorders")
-                        }
-                    }
-                )
-            )
+            val result = handler.execute(toolCall(buildJsonObject { put("product_id", 100) }))
 
             val row = (result as ToolResult.Success).structured.jsonObject
                 .getValue("variations").jsonArray.single().jsonObject
@@ -288,16 +269,7 @@ class ProductVariationsToolHandlerTest {
                 )
             )
 
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        put("product_id", 100)
-                        putJsonArray("extra_fields") {
-                            add("description")
-                        }
-                    }
-                )
-            )
+            val result = handler.execute(toolCall(buildJsonObject { put("product_id", 100) }))
 
             val row = (result as ToolResult.Success).structured.jsonObject
                 .getValue("variations").jsonArray.single().jsonObject

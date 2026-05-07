@@ -6,14 +6,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -92,25 +90,7 @@ class ProductsGetToolHandlerTest {
             )
             whenever(dataSource.getProduct(productId = 42L)).thenReturn(Result.success(product))
 
-            val result = handler.execute(
-                toolCall(
-                    buildJsonObject {
-                        put("id", 42)
-                        putJsonArray("extra_fields") {
-                            add("description")
-                            add("short_description")
-                            add("attributes")
-                            add("images")
-                            add("dimensions")
-                            add("weight")
-                            add("shipping_class")
-                            add("cross_sell_ids")
-                            add("upsell_ids")
-                            add("related_ids")
-                        }
-                    }
-                )
-            )
+            val result = handler.execute(toolCall(buildJsonObject { put("id", 42) }))
 
             val json = (result as ToolResult.Success).structured.jsonObject
             assertThat(json.getValue("description").jsonPrimitive.content).isEqualTo("Long description")
@@ -129,19 +109,19 @@ class ProductsGetToolHandlerTest {
         }
 
     @Test
-    fun `given unsupported extra field, when execute is called, then ValidationError is returned`() = runTest {
+    fun `given extra fields argument, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(
             toolCall(
                 buildJsonObject {
                     put("id", 42)
-                    putJsonArray("extra_fields") { add("raw_html") }
+                    put("extra_fields", "raw_html")
                 }
             )
         )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         assertThat((result as ToolResult.ValidationError).reason)
-            .contains("Unsupported products_get extra_fields: raw_html")
+            .contains("Unsupported products_get argument")
     }
 
     @Test

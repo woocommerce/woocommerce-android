@@ -44,9 +44,7 @@ internal data class CompactVariationDimensions(
     val height: String,
 )
 
-internal fun WCProductVariationModel.toProductVariationDetailResponse(
-    extraFields: Set<String> = emptySet(),
-) = ProductVariationDetailResponse(
+internal fun WCProductVariationModel.toProductVariationDetailResponse() = ProductVariationDetailResponse(
     id = remoteVariationId.value,
     productId = remoteProductId.value,
     status = status,
@@ -59,20 +57,16 @@ internal fun WCProductVariationModel.toProductVariationDetailResponse(
     stockStatus = stockStatus,
     price = price,
     attributes = compactAttributes(),
-    image = getImageModel()?.toCompactProductImage().takeIf { "image" in extraFields },
-    description = if ("description" in extraFields) description.take(PRODUCT_TEXT_FIELD_LIMIT) else null,
-    descriptionTruncated = if ("description" in extraFields) {
-        description.length > PRODUCT_TEXT_FIELD_LIMIT
-    } else {
-        null
-    },
-    weight = weight.takeIf { "weight" in extraFields },
-    dimensions = CompactVariationDimensions(length, width, height).takeIf { "dimensions" in extraFields },
-    taxClass = taxClass.takeIf { "tax_class" in extraFields },
-    dateCreated = dateCreated.takeIf { "date_created" in extraFields },
-    dateModified = dateModified.takeIf { "date_modified" in extraFields },
-    menuOrder = menuOrder.takeIf { "menu_order" in extraFields },
-    backorders = backorders.takeIf { "backorders" in extraFields },
+    image = getImageModel()?.toCompactProductImage(),
+    description = description.take(PRODUCT_TEXT_FIELD_LIMIT),
+    descriptionTruncated = description.length > PRODUCT_TEXT_FIELD_LIMIT,
+    weight = weight,
+    dimensions = CompactVariationDimensions(length, width, height),
+    taxClass = taxClass,
+    dateCreated = dateCreated,
+    dateModified = dateModified,
+    menuOrder = menuOrder,
+    backorders = backorders,
 )
 
 private fun WCProductVariationModel.compactAttributes(): List<CompactVariationAttribute> =

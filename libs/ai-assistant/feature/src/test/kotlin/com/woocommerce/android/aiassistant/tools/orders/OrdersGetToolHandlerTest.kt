@@ -6,14 +6,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -92,19 +90,19 @@ class OrdersGetToolHandlerTest {
         }
 
     @Test
-    fun `given unsupported extra field, when execute is called, then ValidationError is returned`() = runTest {
+    fun `given extra fields argument, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(
             toolCall(
                 buildJsonObject {
                     put("id", 123)
-                    putJsonArray("extra_fields") { add("metadata") }
+                    put("extra_fields", "metadata")
                 }
             )
         )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         assertThat((result as ToolResult.ValidationError).reason)
-            .contains("Unsupported orders_get extra_fields: metadata")
+            .contains("Unsupported orders_get argument")
     }
 
     @Test
@@ -123,7 +121,7 @@ class OrdersGetToolHandlerTest {
     }
 
     @Test
-    fun `given adjustment extra fields, when execute is called, then coupon fee and tax lines are returned`() = runTest {
+    fun `given adjustment fields, when execute is called, then coupon fee and tax lines are returned`() = runTest {
         val order = makeOrder(
             couponLines = """[{"id":10,"code":"SAVE10","discount":"5.00","discount_tax":"0.50"}]""",
             feeLines = """[{"id":20,"name":"Rush","total":"7.00","total_tax":"0.70","tax_status":"taxable"}]""",
@@ -133,18 +131,7 @@ class OrdersGetToolHandlerTest {
         )
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(order))
 
-        val result = handler.execute(
-            toolCall(
-                buildJsonObject {
-                    put("id", 123)
-                    putJsonArray("extra_fields") {
-                        add("coupon_lines")
-                        add("fee_lines")
-                        add("tax_lines")
-                    }
-                }
-            )
-        )
+        val result = handler.execute(toolCall(buildJsonObject { put("id", 123) }))
 
         val json = (result as ToolResult.Success).structured.jsonObject
         assertThat(json.getValue("coupon_lines").jsonArray.single().jsonObject.getValue("code").jsonPrimitive.content)

@@ -8,7 +8,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
-import com.woocommerce.android.aiassistant.tools.parseExtraFields
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -28,11 +27,6 @@ internal class OrdersGetToolHandler @Inject constructor(
             "customers_list for follow-up questions about the buyer.",
         inputSchema = inputSchema {
             integer("id", description = "The order ID.", required = true)
-            arrayEnum(
-                name = "extra_fields",
-                values = ORDERS_GET_EXTRA_FIELDS.toList(),
-                description = "Optional compact fields: billing, shipping, coupon_lines, fee_lines, tax_lines.",
-            )
         },
         safetyLevel = ToolSafetyLevel.SAFE,
     )
@@ -41,9 +35,6 @@ internal class OrdersGetToolHandler @Inject constructor(
         validateAllowedArguments(call.arguments, ORDERS_GET_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
             return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
         }
-        val extraFields = parseExtraFields(call.arguments, ORDERS_GET_EXTRA_FIELDS, descriptor.name).getOrElse {
-            return ToolResult.ValidationError(call.id, it.message ?: "Invalid extra_fields")
-        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -51,7 +42,7 @@ internal class OrdersGetToolHandler @Inject constructor(
             onSuccess = { order ->
                 ToolResult.Success(
                     toolCallId = call.id,
-                    structured = json.encodeToJsonElement(order.toOrderDetailResponse(extraFields)) as JsonObject,
+                    structured = json.encodeToJsonElement(order.toOrderDetailResponse()) as JsonObject,
                 )
             },
             onFailure = {
@@ -65,5 +56,4 @@ internal class OrdersGetToolHandler @Inject constructor(
     private data class Args(val id: Long)
 }
 
-private val ORDERS_GET_ALLOWED_ARGS = setOf("id", "extra_fields")
-private val ORDERS_GET_EXTRA_FIELDS = setOf("billing", "shipping", "coupon_lines", "fee_lines", "tax_lines")
+private val ORDERS_GET_ALLOWED_ARGS = setOf("id")

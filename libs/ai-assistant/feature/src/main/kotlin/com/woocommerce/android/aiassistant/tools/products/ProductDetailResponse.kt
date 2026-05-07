@@ -106,11 +106,11 @@ internal data class ProductListRowResponse(
 )
 
 @Suppress("LongMethod")
-internal fun WCProductModel.toProductDetailResponse(extraFields: Set<String> = emptySet()): ProductDetailResponse {
+internal fun WCProductModel.toProductDetailResponse(): ProductDetailResponse {
     val variationIds = getVariationIdList()
-    val categoryList = getCategoryList()
-    val attributeList = if ("attributes" in extraFields) getAttributeList() else emptyList()
-    val imageList = getImageListOrEmpty()
+    val categoryList = safeCategoryList()
+    val attributeList = safeAttributeList()
+    val imageList = safeImageList()
 
     return ProductDetailResponse(
         id = remoteProductId,
@@ -134,44 +134,24 @@ internal fun WCProductModel.toProductDetailResponse(extraFields: Set<String> = e
         variationsCount = variationIds.size,
         variationIds = variationIds.take(PRODUCT_VARIATION_IDS_LIMIT),
         variationIdsTruncated = variationIds.size > PRODUCT_VARIATION_IDS_LIMIT,
-        description = if ("description" in extraFields) description.take(PRODUCT_TEXT_FIELD_LIMIT) else null,
-        descriptionTruncated = if ("description" in extraFields) {
-            description.length > PRODUCT_TEXT_FIELD_LIMIT
-        } else {
-            null
-        },
-        shortDescription = if ("short_description" in extraFields) {
-            shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT)
-        } else {
-            null
-        },
-        shortDescriptionTruncated = if ("short_description" in extraFields) {
-            shortDescription.length > PRODUCT_TEXT_FIELD_LIMIT
-        } else {
-            null
-        },
-        attributes = if ("attributes" in extraFields) {
-            attributeList.take(PRODUCT_ATTRIBUTES_LIMIT).map { it.toCompactProductAttribute() }
-        } else {
-            null
-        },
-        attributesTruncated = if ("attributes" in extraFields) attributeList.size > PRODUCT_ATTRIBUTES_LIMIT else null,
-        images = if ("images" in extraFields) {
-            imageList.take(PRODUCT_IMAGES_LIMIT).map { it.toCompactProductImage() }
-        } else {
-            null
-        },
-        imagesTruncated = if ("images" in extraFields) imageList.size > PRODUCT_IMAGES_LIMIT else null,
-        dimensions = if ("dimensions" in extraFields) CompactProductDimensions(length, width, height) else null,
-        weight = weight.takeIf { "weight" in extraFields },
-        shippingClass = shippingClass.takeIf { "shipping_class" in extraFields },
-        crossSellIds = getCrossSellProductIdList().takeIf { "cross_sell_ids" in extraFields },
-        upsellIds = getUpsellProductIdList().takeIf { "upsell_ids" in extraFields },
-        relatedIds = parseLongArray(relatedIds).takeIf { "related_ids" in extraFields },
+        description = description.take(PRODUCT_TEXT_FIELD_LIMIT),
+        descriptionTruncated = description.length > PRODUCT_TEXT_FIELD_LIMIT,
+        shortDescription = shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT),
+        shortDescriptionTruncated = shortDescription.length > PRODUCT_TEXT_FIELD_LIMIT,
+        attributes = attributeList.take(PRODUCT_ATTRIBUTES_LIMIT).map { it.toCompactProductAttribute() },
+        attributesTruncated = attributeList.size > PRODUCT_ATTRIBUTES_LIMIT,
+        images = imageList.take(PRODUCT_IMAGES_LIMIT).map { it.toCompactProductImage() },
+        imagesTruncated = imageList.size > PRODUCT_IMAGES_LIMIT,
+        dimensions = CompactProductDimensions(length, width, height),
+        weight = weight,
+        shippingClass = shippingClass,
+        crossSellIds = safeCrossSellProductIdList(),
+        upsellIds = safeUpsellProductIdList(),
+        relatedIds = if (relatedIds.isNotBlank()) parseLongArray(relatedIds) else emptyList(),
     )
 }
 
-internal fun WCProductModel.toProductListRowResponse(extraFields: Set<String> = emptySet()): ProductListRowResponse =
+internal fun WCProductModel.toProductListRowResponse(): ProductListRowResponse =
     ProductListRowResponse(
         id = remoteProductId,
         name = name,
@@ -180,34 +160,36 @@ internal fun WCProductModel.toProductListRowResponse(extraFields: Set<String> = 
         stockStatus = stockStatus,
         type = type,
         status = status,
-        regularPrice = regularPrice.takeIf { "regular_price" in extraFields },
-        salePrice = salePrice.takeIf { "sale_price" in extraFields },
-        onSale = onSale.takeIf { "on_sale" in extraFields },
-        stockQuantity = stockQuantity.takeIf { "stock_quantity" in extraFields },
-        manageStock = manageStock.takeIf { "manage_stock" in extraFields },
-        categories = getCategoryList().map { it.toCompactProductTerm() }.takeIf { "categories" in extraFields },
-        tags = getTagList().map { it.toCompactProductTerm() }.takeIf { "tags" in extraFields },
-        totalSales = totalSales.takeIf { "total_sales" in extraFields },
-        dateCreated = dateCreated.takeIf { "date_created" in extraFields },
-        dateModified = dateModified.takeIf { "date_modified" in extraFields },
-        image = getImageListOrEmpty().firstOrNull()?.toCompactProductImage().takeIf { "image" in extraFields },
-        shortDescription = if ("short_description" in extraFields) {
-            shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT)
-        } else {
-            null
-        },
-        shortDescriptionTruncated = if ("short_description" in extraFields) {
-            shortDescription.length > PRODUCT_TEXT_FIELD_LIMIT
-        } else {
-            null
-        },
-        description = if ("description" in extraFields) description.take(PRODUCT_TEXT_FIELD_LIMIT) else null,
-        descriptionTruncated = if ("description" in extraFields) {
-            description.length > PRODUCT_TEXT_FIELD_LIMIT
-        } else {
-            null
-        },
+        regularPrice = regularPrice,
+        salePrice = salePrice,
+        onSale = onSale,
+        stockQuantity = stockQuantity,
+        manageStock = manageStock,
+        categories = safeCategoryList().map { it.toCompactProductTerm() },
+        tags = safeTagList().map { it.toCompactProductTerm() },
+        totalSales = totalSales,
+        dateCreated = dateCreated,
+        dateModified = dateModified,
+        image = safeImageList().firstOrNull()?.toCompactProductImage(),
+        shortDescription = shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT),
+        shortDescriptionTruncated = shortDescription.length > PRODUCT_TEXT_FIELD_LIMIT,
+        description = description.take(PRODUCT_TEXT_FIELD_LIMIT),
+        descriptionTruncated = description.length > PRODUCT_TEXT_FIELD_LIMIT,
     )
+
+private fun WCProductModel.safeCategoryList() = if (categories.isBlank()) emptyList() else getCategoryList()
+
+private fun WCProductModel.safeTagList() = if (tags.isBlank()) emptyList() else getTagList()
+
+private fun WCProductModel.safeAttributeList() = if (attributes.isBlank()) emptyList() else getAttributeList()
+
+private fun WCProductModel.safeImageList() = if (images.isBlank()) emptyList() else getImageListOrEmpty()
+
+private fun WCProductModel.safeCrossSellProductIdList() =
+    if (crossSellIds.isBlank()) emptyList() else getCrossSellProductIdList()
+
+private fun WCProductModel.safeUpsellProductIdList() =
+    if (upsellIds.isBlank()) emptyList() else getUpsellProductIdList()
 
 private fun WCProductModel.ProductTriplet.toCompactProductTerm() = CompactProductTerm(
     id = id,

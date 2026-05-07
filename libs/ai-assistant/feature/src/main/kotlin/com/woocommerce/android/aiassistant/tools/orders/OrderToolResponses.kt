@@ -110,7 +110,6 @@ internal data class OrderListRowResponse(
 )
 
 internal suspend fun OrderEntity.toOrderDetailResponse(
-    extraFields: Set<String> = emptySet(),
     lineItemsLimit: Int = ORDER_DETAIL_LINE_ITEMS_LIMIT,
 ): OrderDetailResponse {
     val allLineItems = getLineItemList()
@@ -134,32 +133,18 @@ internal suspend fun OrderEntity.toOrderDetailResponse(
         lineItemsCount = allLineItems.size,
         lineItemsTruncated = allLineItems.size > lineItemsLimit,
         lineItems = allLineItems.take(lineItemsLimit).map { it.toCompactLineItem() },
-        billing = if ("billing" in extraFields) toCompactBillingAddress() else null,
-        shipping = if ("shipping" in extraFields) toCompactShippingAddress() else null,
-        couponLines = if ("coupon_lines" in extraFields) {
-            getCouponLineList().take(ORDER_ADJUSTMENT_LINES_LIMIT).map { it.toCompactCouponLine() }
-        } else {
-            null
-        },
-        feeLines = if ("fee_lines" in extraFields) {
-            getFeeLineList().take(ORDER_ADJUSTMENT_LINES_LIMIT).map { it.toCompactFeeLine() }
-        } else {
-            null
-        },
-        taxLines = if ("tax_lines" in extraFields) {
-            getTaxLineList().take(ORDER_ADJUSTMENT_LINES_LIMIT).map { it.toCompactTaxLine() }
-        } else {
-            null
-        },
+        billing = toCompactBillingAddress(),
+        shipping = toCompactShippingAddress(),
+        couponLines = getCouponLineList().take(ORDER_ADJUSTMENT_LINES_LIMIT).map { it.toCompactCouponLine() },
+        feeLines = getFeeLineList().take(ORDER_ADJUSTMENT_LINES_LIMIT).map { it.toCompactFeeLine() },
+        taxLines = getTaxLineList().take(ORDER_ADJUSTMENT_LINES_LIMIT).map { it.toCompactTaxLine() },
     )
 }
 
 internal suspend fun OrderEntity.toOrderListRowResponse(
-    extraFields: Set<String> = emptySet(),
     lineItemsLimit: Int = ORDER_LIST_LINE_ITEMS_LIMIT,
 ): OrderListRowResponse {
-    val includeLineItems = "line_items" in extraFields
-    val allLineItems = if (includeLineItems) getLineItemList() else emptyList()
+    val allLineItems = getLineItemList()
     return OrderListRowResponse(
         id = orderId,
         number = number,
@@ -169,17 +154,17 @@ internal suspend fun OrderEntity.toOrderListRowResponse(
         dateCreated = dateCreated,
         customerId = customerId,
         customerName = customerName(),
-        paymentMethodTitle = paymentMethodTitle.takeIf { "payment_method_title" in extraFields },
-        customerEmail = billingEmail.takeIf { "customer_email" in extraFields },
-        customerNote = customerNote.takeIf { "customer_note" in extraFields },
-        datePaid = datePaid.takeIf { "date_paid" in extraFields },
-        shippingTotal = shippingTotal.takeIf { "shipping_total" in extraFields },
-        discountTotal = discountTotal.takeIf { "discount_total" in extraFields },
-        lineItemsCount = if (includeLineItems) allLineItems.size else null,
-        lineItemsTruncated = if (includeLineItems) allLineItems.size > lineItemsLimit else null,
-        lineItems = if (includeLineItems) allLineItems.take(lineItemsLimit).map { it.toCompactLineItem() } else null,
-        billing = if ("billing" in extraFields) toCompactBillingAddress() else null,
-        shipping = if ("shipping" in extraFields) toCompactShippingAddress() else null,
+        paymentMethodTitle = paymentMethodTitle,
+        customerEmail = billingEmail,
+        customerNote = customerNote,
+        datePaid = datePaid,
+        shippingTotal = shippingTotal,
+        discountTotal = discountTotal,
+        lineItemsCount = allLineItems.size,
+        lineItemsTruncated = allLineItems.size > lineItemsLimit,
+        lineItems = allLineItems.take(lineItemsLimit).map { it.toCompactLineItem() },
+        billing = toCompactBillingAddress(),
+        shipping = toCompactShippingAddress(),
     )
 }
 
