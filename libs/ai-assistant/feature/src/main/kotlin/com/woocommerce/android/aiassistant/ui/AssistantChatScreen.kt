@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -128,6 +127,7 @@ fun AssistantChatScreen(
         onRetry = viewModel::onRetry,
         onConfirmWrite = viewModel::onConfirmWrite,
         onCancelWrite = viewModel::onCancelWrite,
+        onRestartConversation = viewModel::onRestartConversation,
         onBack = onBack,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
@@ -146,6 +146,7 @@ fun AssistantChatScreen(
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
+    onRestartConversation: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
@@ -156,7 +157,8 @@ fun AssistantChatScreen(
         containerColor = assistantCanvasColor(),
         topBar = {
             AssistantTopAppBar(
-                status = state.status,
+                showRestartAction = state.messages.isNotEmpty(),
+                onRestartConversation = onRestartConversation,
                 onBack = onBack,
             )
         }
@@ -198,7 +200,8 @@ fun AssistantChatScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AssistantTopAppBar(
-    status: AssistantUiStatus,
+    showRestartAction: Boolean,
+    onRestartConversation: () -> Unit,
     onBack: () -> Unit,
 ) {
     Column {
@@ -234,7 +237,17 @@ private fun AssistantTopAppBar(
                 }
             },
             actions = {
-                AssistantStatusLabel(status = status)
+                if (showRestartAction) {
+                    IconButton(onClick = onRestartConversation) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_assistant_restart),
+                            contentDescription = stringResource(
+                                R.string.assistant_chat_restart_content_description
+                            ),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = assistantCanvasColor(),
@@ -245,33 +258,6 @@ private fun AssistantTopAppBar(
             windowInsets = WindowInsets(),
         )
         HorizontalDivider(color = assistantOutlineColor().copy(alpha = 0.6f))
-    }
-}
-
-@Composable
-private fun AssistantStatusLabel(status: AssistantUiStatus) {
-    val statusLabel = status.toHeaderText()
-    val statusContentDescription = stringResource(
-        R.string.assistant_chat_status_content_description,
-        statusLabel,
-    )
-    Surface(
-        modifier = Modifier
-            .padding(end = 12.dp)
-            .widthIn(max = 156.dp)
-            .semantics { contentDescription = statusContentDescription },
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, assistantOutlineColor()),
-    ) {
-        Text(
-            text = statusLabel,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelSmall,
-        )
     }
 }
 
@@ -647,16 +633,6 @@ private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
     }
 }
 
-@Composable
-private fun AssistantUiStatus.toHeaderText(): String = when (this) {
-    AssistantUiStatus.IDLE -> stringResource(R.string.assistant_chat_status_idle)
-    AssistantUiStatus.STREAMING -> stringResource(R.string.assistant_chat_status_streaming)
-    AssistantUiStatus.AWAITING_CONFIRMATION -> stringResource(
-        R.string.assistant_chat_status_awaiting_confirmation
-    )
-    AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
-}
-
 @Preview(showBackground = true, widthDp = 390, heightDp = 180)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 180, uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -750,6 +726,7 @@ private fun AssistantChatScreenEmptyStatePreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
@@ -802,6 +779,7 @@ private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
@@ -846,6 +824,7 @@ private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
@@ -871,6 +850,7 @@ private fun AssistantChatScreenTypingPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
@@ -907,6 +887,7 @@ private fun AssistantChatScreenPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
         assistantCardRenderer = PreviewAssistantCardRenderer,
     )
@@ -952,6 +933,7 @@ private fun AssistantChatScreenConfirmationPreview() {
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
