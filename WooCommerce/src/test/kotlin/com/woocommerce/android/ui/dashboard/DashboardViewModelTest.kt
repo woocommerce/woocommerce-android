@@ -364,6 +364,31 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given ai assistant card is visible, when card tapped, then open assistant event is emitted`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(true))
+            }
+            val assistantEntry = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filterIsInstance<AIAssistantEntry>()
+                .single()
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                assistantEntry.onClick()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.OpenAiAssistant)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_INTERACTED,
+                mapOf(AnalyticsTracker.KEY_TYPE to "ai_assistant")
+            )
+        }
+
+    @Test
     fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {
         setup {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))

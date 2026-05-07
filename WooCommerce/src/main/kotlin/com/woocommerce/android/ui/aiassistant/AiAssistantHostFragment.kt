@@ -41,6 +41,6 @@ class AiAssistantHostFragment : BaseFragment() {
     }
 
     companion object {
-        private const val ASSISTANT_CONVERSATION_ID = "more-menu-assistant"
+        private const val ASSISTANT_CONVERSATION_ID = "dashboard-assistant"
     }
 }

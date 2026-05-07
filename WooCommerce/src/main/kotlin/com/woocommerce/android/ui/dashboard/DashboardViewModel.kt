@@ -76,6 +76,7 @@ class DashboardViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        private const val AI_ASSISTANT_TRACKING_TYPE = "ai_assistant"
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
             SelectionType.TODAY,
             SelectionType.WEEK_TO_DATE,
@@ -244,7 +245,7 @@ class DashboardViewModel @Inject constructor(
         add(
             DashboardWidgetUiModel.AIAssistantEntry(
                 isVisible = isAiAssistantEligible,
-                onClick = {}
+                onClick = ::onAiAssistantCardClicked
             )
         )
 
@@ -299,6 +300,11 @@ class DashboardViewModel @Inject constructor(
                 }
             )
         )
+    }
+
+    private fun onAiAssistantCardClicked() {
+        trackCardInteracted(AI_ASSISTANT_TRACKING_TYPE)
+        triggerEvent(DashboardEvent.OpenAiAssistant)
     }
 
     private fun jetpackBenefitsBannerState(
@@ -379,6 +385,8 @@ class DashboardViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : DashboardEvent()
 
         data object OpenEditWidgets : DashboardEvent()
+
+        data object OpenAiAssistant : DashboardEvent()
 
         data class OpenRangePicker(
             val start: Long,
