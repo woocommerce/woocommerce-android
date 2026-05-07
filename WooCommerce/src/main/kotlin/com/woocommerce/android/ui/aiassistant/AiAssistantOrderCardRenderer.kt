@@ -13,13 +13,12 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRow
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
-import com.woocommerce.android.util.CurrencyFormatter
 import java.time.Instant
 import java.time.format.DateTimeParseException
 import java.util.Date
 
 internal class AiAssistantOrderCardRenderer(
-    private val currencyFormatter: CurrencyFormatter,
+    private val currencyFormatter: AiAssistantCurrencyFormatter,
 ) {
     @Composable
     fun Card(
@@ -38,7 +37,7 @@ internal class AiAssistantOrderCardRenderer(
 
 internal fun AssistantCard.Order.toOrderSummaryRowModel(
     context: Context,
-    currencyFormatter: CurrencyFormatter,
+    currencyFormatter: AiAssistantCurrencyFormatter,
 ): OrderSummaryRowModel {
     fun formatTotalPrice(): String =
         when {

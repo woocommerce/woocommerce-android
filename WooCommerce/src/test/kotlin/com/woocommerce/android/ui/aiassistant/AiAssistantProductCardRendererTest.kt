@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.aiassistant
 import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
-import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -11,7 +10,7 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 class AiAssistantProductCardRendererTest {
-    private val currencyFormatter: CurrencyFormatter = mock()
+    private val currencyFormatter: AiAssistantCurrencyFormatter = mock()
 
     @Test
     fun `when renderer is created, then class has direct unit test coverage`() {

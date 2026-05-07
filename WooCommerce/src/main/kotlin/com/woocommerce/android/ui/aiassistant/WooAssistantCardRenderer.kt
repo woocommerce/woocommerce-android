@@ -7,12 +7,14 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
 import com.woocommerce.android.util.CurrencyFormatter
 
-class WooAssistantCardRenderer(
-    currencyFormatter: CurrencyFormatter,
+class WooAssistantCardRenderer internal constructor(
+    currencyFormatter: AiAssistantCurrencyFormatter,
 ) : AssistantCardRenderer {
     private val orderCardRenderer = AiAssistantOrderCardRenderer(currencyFormatter)
     private val productCardRenderer = AiAssistantProductCardRenderer(currencyFormatter)
     private val statsCardRenderer = AiAssistantStatsCardRenderer(currencyFormatter)
+
+    constructor(currencyFormatter: CurrencyFormatter) : this(WooAiAssistantCurrencyFormatter(currencyFormatter))
 
     @Composable
     override fun Card(
