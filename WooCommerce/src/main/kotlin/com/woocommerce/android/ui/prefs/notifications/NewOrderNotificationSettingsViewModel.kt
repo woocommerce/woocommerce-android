@@ -50,7 +50,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     }
 
     fun onThresholdAmountChanged(amount: BigDecimal) {
-        _viewState.update { it.copy(thresholdAmount = amount) }
+        _viewState.update { it.copy(thresholdAmount = amount.coerceAtLeast(MIN_THRESHOLD_AMOUNT)) }
     }
 
     fun refreshNotificationSettings() {
@@ -101,5 +101,6 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
 
     companion object {
         private const val DEFAULT_THRESHOLD_AMOUNT = 100
+        private val MIN_THRESHOLD_AMOUNT = BigDecimal.ONE
     }
 }
