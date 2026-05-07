@@ -210,8 +210,9 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             Prefer bulk write tools when the same patch covers more than one entity. Multiple orders to the same
             status: orders_bulk_update. Multiple products sharing one patch: products_bulk_update. Multiple
-            variations of one parent product: product_variations_bulk_update. One bulk call shows the merchant a
-            single confirmation card; chained per-entity calls force a tap per entity and are noisier.
+            variations of one parent product: use product_variations_update one variation at a time, and only
+            after the Android confirmation flow for each unsafe write. One bulk call shows the merchant a single
+            confirmation card; chained per-entity calls force a tap per entity and are noisier.
 
             # Cross-turn context reuse
 
