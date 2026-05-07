@@ -112,28 +112,29 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given first message, when registering chat, then title is trimmed and clamped`() = testBlocking {
-        stubSelectedSite()
-        stubAccountStore()
-        val bookmarkCaptor = argumentCaptor<SupportChatBookmarkEntity>()
-        val firstMessage = "  abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ  "
+    fun `given first message, when registering chat, then bookmark is created with metadata and clamped title`() =
+        testBlocking {
+            stubSelectedSite()
+            stubAccountStore()
+            val bookmarkCaptor = argumentCaptor<SupportChatBookmarkEntity>()
+            val firstMessage = "  abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ  "
 
-        repository.registerChat(
-            chatId = CHAT_ID,
-            botSlug = BOT_SLUG,
-            firstUserMessage = firstMessage
-        )
+            repository.registerChat(
+                chatId = CHAT_ID,
+                botSlug = BOT_SLUG,
+                firstUserMessage = firstMessage
+            )
 
-        verify(bookmarkDao).insertIgnore(bookmarkCaptor.capture())
-        assertThat(bookmarkCaptor.firstValue.chatId).isEqualTo(CHAT_ID)
-        assertThat(bookmarkCaptor.firstValue.localSiteId).isEqualTo(LocalId(LOCAL_SITE_ID))
-        assertThat(bookmarkCaptor.firstValue.remoteSiteId).isEqualTo(REMOTE_SITE_ID)
-        assertThat(bookmarkCaptor.firstValue.wpcomUserId).isEqualTo(WPCOM_USER_ID)
-        assertThat(bookmarkCaptor.firstValue.botSlug).isEqualTo(BOT_SLUG)
-        assertThat(bookmarkCaptor.firstValue.title).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX")
-        assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(CURRENT_TIME)
-        assertThat(bookmarkCaptor.firstValue.updatedAt).isEqualTo(CURRENT_TIME)
-    }
+            verify(bookmarkDao).insertIgnore(bookmarkCaptor.capture())
+            assertThat(bookmarkCaptor.firstValue.chatId).isEqualTo(CHAT_ID)
+            assertThat(bookmarkCaptor.firstValue.localSiteId).isEqualTo(LocalId(LOCAL_SITE_ID))
+            assertThat(bookmarkCaptor.firstValue.remoteSiteId).isEqualTo(REMOTE_SITE_ID)
+            assertThat(bookmarkCaptor.firstValue.wpcomUserId).isEqualTo(WPCOM_USER_ID)
+            assertThat(bookmarkCaptor.firstValue.botSlug).isEqualTo(BOT_SLUG)
+            assertThat(bookmarkCaptor.firstValue.title).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX")
+            assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(CURRENT_TIME)
+            assertThat(bookmarkCaptor.firstValue.updatedAt).isEqualTo(CURRENT_TIME)
+        }
 
     @Test
     fun `given blank first message, when registering chat, then title is null`() = testBlocking {
