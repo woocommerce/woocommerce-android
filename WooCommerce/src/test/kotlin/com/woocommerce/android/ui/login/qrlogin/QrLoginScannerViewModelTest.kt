@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -113,12 +114,10 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         viewModel.onScanResult(successScan())
 
-        assertThat(viewModel.uiState.value).isEqualTo(
-            QrLoginScannerViewModel.UiState.Error(
-                reason = QrLoginScannerViewModel.ErrorReason.InvalidPayload,
-                retryTicket = null,
-            )
-        )
+        val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
+        assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.InvalidPayload)
+        assertThat(state.primaryAction)
+            .isInstanceOf(QrLoginScannerViewModel.PrimaryAction.ScanAgain::class.java)
     }
 
     @Test
@@ -138,7 +137,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
         assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Scanner)
-        assertThat(state.retryTicket).isNull()
+        assertThat(state.primaryAction)
+            .isInstanceOf(QrLoginScannerViewModel.PrimaryAction.ScanAgain::class.java)
     }
 
     @Test
@@ -162,7 +162,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
             val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
             assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.TokenRejected)
-            assertThat(state.retryTicket).isNull()
+            assertThat(state.primaryAction)
+                .isInstanceOf(QrLoginScannerViewModel.PrimaryAction.ScanAgain::class.java)
         }
 
     @Test
@@ -175,7 +176,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
         assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
-        assertThat(state.retryTicket).isEqualTo(ticket)
+        assertThat(state.primaryAction).isEqualTo(QrLoginScannerViewModel.PrimaryAction.Retry(ticket))
     }
 
     @Test
@@ -188,7 +189,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
         assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.ServerError)
-        assertThat(state.retryTicket).isEqualTo(ticket)
+        assertThat(state.primaryAction).isEqualTo(QrLoginScannerViewModel.PrimaryAction.Retry(ticket))
     }
 
     @Test
@@ -202,6 +203,10 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
             val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
             assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.SiteAuthFailure)
+            // Auth failure can't be retried with the same ticket — surface "Scan a new code".
+            assertThat(state.primaryAction).isEqualTo(
+                QrLoginScannerViewModel.PrimaryAction.ScanAgain(R.string.login_qr_error_primary_scan)
+            )
         }
 
     @Test
@@ -240,7 +245,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
         assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
-        assertThat(state.retryTicket).isEqualTo(ticket)
+        assertThat(state.primaryAction).isEqualTo(QrLoginScannerViewModel.PrimaryAction.Retry(ticket))
     }
 
     @Test
@@ -254,7 +259,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
             val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
             assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.RateLimited)
-            assertThat(state.retryTicket).isEqualTo(ticket)
+            assertThat(state.primaryAction).isEqualTo(QrLoginScannerViewModel.PrimaryAction.Retry(ticket))
         }
 
     @Test
@@ -270,7 +275,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             assertThat(events).isEmpty()
             val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
             assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.EndpointMissing)
-            assertThat(state.retryTicket).isNull()
+            assertThat(state.primaryAction)
+                .isInstanceOf(QrLoginScannerViewModel.PrimaryAction.ScanAgain::class.java)
         }
 
     @Test
@@ -319,6 +325,10 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
         val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
         assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.UserNotEligible)
+        // Ineligibility won't change on retry — surface "Scan a new code", not "Try again".
+        assertThat(state.primaryAction).isEqualTo(
+            QrLoginScannerViewModel.PrimaryAction.ScanAgain(R.string.login_qr_error_primary_scan)
+        )
     }
 
     @Test
@@ -392,7 +402,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
             val state = viewModel.uiState.value as QrLoginScannerViewModel.UiState.Error
             assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
-            assertThat(state.retryTicket).isEqualTo(ticket)
+            assertThat(state.primaryAction).isEqualTo(QrLoginScannerViewModel.PrimaryAction.Retry(ticket))
         }
 
     @Test

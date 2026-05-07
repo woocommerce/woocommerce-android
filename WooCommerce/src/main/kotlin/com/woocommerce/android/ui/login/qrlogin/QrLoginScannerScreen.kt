@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import androidx.annotation.StringRes
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,7 @@ import androidx.compose.ui.Modifier
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
-import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.PrimaryAction
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 
 /**
@@ -64,8 +63,14 @@ fun QrLoginScannerScreen(
                 onCancel = onCancelSessionReplace,
             )
             is UiState.Error -> QrLoginErrorScreen(
-                content = uiState.reason.toErrorContent(),
-                onPrimaryClicked = if (uiState.retryTicket != null) onRetryExchange else onStartOver,
+                title = uiState.title,
+                body = uiState.body,
+                bodyArgs = uiState.bodyArgs,
+                primaryActionLabel = uiState.primaryAction.label,
+                onPrimaryClicked = when (uiState.primaryAction) {
+                    is PrimaryAction.Retry -> onRetryExchange
+                    is PrimaryAction.ScanAgain -> onStartOver
+                },
                 onSecondaryClicked = onFallbackClicked,
             )
             UiState.Authenticating -> QrLoginAuthenticatingScreen()
@@ -73,76 +78,3 @@ fun QrLoginScannerScreen(
         }
     }
 }
-
-data class QrLoginErrorContent(
-    @StringRes val title: Int,
-    @StringRes val body: Int,
-    @StringRes val primaryAction: Int,
-    @StringRes val secondaryAction: Int = R.string.login_qr_endpoint_missing_enter_url,
-    val bodyHighlightedArgs: List<Int> = emptyList(),
-)
-
-private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
-    ErrorReason.InvalidPayload -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_payload_title,
-        body = R.string.login_qr_scanner_error_payload_body,
-        primaryAction = R.string.login_qr_error_primary_scan,
-    )
-    ErrorReason.InstallQrCode -> installQrErrorContent()
-    ErrorReason.TokenRejected -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_token_title,
-        body = R.string.login_qr_scanner_error_token_body,
-        primaryAction = R.string.login_qr_error_primary_scan,
-    )
-    ErrorReason.EndpointMissing -> QrLoginErrorContent(
-        title = R.string.login_qr_endpoint_missing_title,
-        body = R.string.login_qr_endpoint_missing_body,
-        primaryAction = R.string.login_qr_endpoint_missing_retry,
-    )
-    ErrorReason.RateLimited -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_rate_limited_title,
-        body = R.string.login_qr_scanner_error_rate_limited_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
-    )
-    ErrorReason.Network -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_network_title,
-        body = R.string.login_qr_scanner_error_network_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
-    )
-    ErrorReason.ServerError -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_server_title,
-        body = R.string.login_qr_scanner_error_server_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
-    )
-    ErrorReason.SiteAuthFailure -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_site_auth_title,
-        body = R.string.login_qr_scanner_error_site_auth_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
-    )
-    ErrorReason.NotAWooSite -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_not_woo_title,
-        body = R.string.login_qr_scanner_error_not_woo_body,
-        primaryAction = R.string.login_qr_error_primary_scan,
-    )
-    ErrorReason.UserNotEligible -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_user_role_title,
-        body = R.string.login_qr_scanner_error_user_role_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
-    )
-    ErrorReason.Scanner,
-    ErrorReason.Unknown -> QrLoginErrorContent(
-        title = R.string.login_qr_scanner_error_generic_title,
-        body = R.string.login_qr_scanner_error_generic_body,
-        primaryAction = R.string.login_qr_error_primary_retry,
-    )
-}
-
-private fun installQrErrorContent() = QrLoginErrorContent(
-    title = R.string.login_qr_scanner_error_install_qr_title,
-    body = R.string.login_qr_scanner_error_install_qr_body,
-    primaryAction = R.string.login_qr_error_primary_scan,
-    bodyHighlightedArgs = listOf(
-        R.string.login_qr_scanner_error_install_qr_body_button,
-        R.string.login_qr_prologue_url,
-    ),
-)
