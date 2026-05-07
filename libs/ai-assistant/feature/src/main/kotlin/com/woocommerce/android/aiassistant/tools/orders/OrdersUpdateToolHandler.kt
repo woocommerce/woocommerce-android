@@ -1,8 +1,10 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
@@ -13,6 +15,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
+import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 internal class OrdersUpdateToolHandler @Inject constructor(
@@ -53,7 +56,13 @@ internal class OrdersUpdateToolHandler @Inject constructor(
                     ) as JsonObject,
                 )
             },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = { error ->
+                ToolResult.TransportError(
+                    toolCallId = call.id,
+                    retryable = true,
+                    kind = error.toOrderUpdateFailureKind(),
+                )
+            },
         )
     }
 
@@ -80,3 +89,27 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         )
     }
 }
+
+private fun Throwable.toOrderUpdateFailureKind(): ToolFailureKind {
+    val orderError = (this as? OnChangedException)?.error as? WCOrderStore.OrderError
+        ?: return ToolFailureKind.OUTCOME_UNKNOWN
+
+    return when (orderError.type) {
+        WCOrderStore.OrderErrorType.INVALID_ID,
+        WCOrderStore.OrderErrorType.INVALID_PARAM,
+        WCOrderStore.OrderErrorType.ORDER_STATUS_NOT_FOUND,
+        WCOrderStore.OrderErrorType.EMPTY_BILLING_EMAIL -> ToolFailureKind.DETERMINISTIC_FAILURE
+        WCOrderStore.OrderErrorType.GENERIC_ERROR -> if (orderError.isLocalMissingOrder()) {
+            ToolFailureKind.DETERMINISTIC_FAILURE
+        } else {
+            ToolFailureKind.OUTCOME_UNKNOWN
+        }
+        else -> ToolFailureKind.OUTCOME_UNKNOWN
+    }
+}
+
+private fun WCOrderStore.OrderError.isLocalMissingOrder(): Boolean =
+    message == "Order not found" ||
+        LOCAL_MISSING_ORDER_MESSAGE_REGEX.matches(message)
+
+private val LOCAL_MISSING_ORDER_MESSAGE_REGEX = Regex("""^Order with id \d+ not found$""")

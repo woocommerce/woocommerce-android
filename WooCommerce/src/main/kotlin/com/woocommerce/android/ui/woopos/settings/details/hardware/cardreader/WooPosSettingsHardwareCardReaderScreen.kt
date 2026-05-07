@@ -89,8 +89,8 @@ private fun WooPosSettingsHardwareCardReaderContent(
                 .verticalScroll(rememberScrollState()),
         ) {
             when (state) {
-                is WooPosSettingsHardwareCardReaderUiState.Connected -> {
-                    ConnectedContent(
+                is WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth -> {
+                    ConnectedBluetoothContent(
                         readerName = state.readerName,
                         batteryLevel = state.batteryLevel,
                         firmwareVersion = state.firmwareVersion ?: stringResource(
@@ -99,6 +99,15 @@ private fun WooPosSettingsHardwareCardReaderContent(
                         isSoftwareUpdateAvailable = state.isSoftwareUpdateAvailable,
                         onDisconnectClicked = onDisconnectClicked,
                         onUpdateClick = onUpdateClick,
+                        onDocumentationClicked = onDocumentationClicked,
+                    )
+                }
+
+                is WooPosSettingsHardwareCardReaderUiState.Connected.Phone -> {
+                    ConnectedPhoneContent(
+                        readerName = state.readerName,
+                        fingerprintSuffix = state.fingerprintSuffix,
+                        onDisconnectClicked = onDisconnectClicked,
                         onDocumentationClicked = onDocumentationClicked,
                     )
                 }
@@ -115,7 +124,7 @@ private fun WooPosSettingsHardwareCardReaderContent(
 }
 
 @Composable
-private fun ConnectedContent(
+private fun ConnectedBluetoothContent(
     readerName: String,
     batteryLevel: Float?,
     firmwareVersion: String,
@@ -183,6 +192,63 @@ private fun ConnectedContent(
                             onClick = onUpdateClick
                         )
                     }
+                }
+            }
+        }
+
+        WooPosSettingsDetailsMenuItem(
+            title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
+            subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
+            onClick = onDocumentationClicked
+        )
+    }
+}
+
+@Composable
+internal fun ConnectedPhoneContent(
+    readerName: String,
+    fingerprintSuffix: String?,
+    onDisconnectClicked: () -> Unit,
+    onDocumentationClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+    ) {
+        WooPosCard(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier.padding(WooPosSpacing.Medium.value)
+            ) {
+                Row {
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
+                        subtitle = readerName,
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    WooPosOutlinedButtonSmall(
+                        text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
+                        onClick = onDisconnectClicked
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                WooPosSettingsDetailsMenuItemInfo(
+                    title = stringResource(R.string.woopos_settings_card_reader_transport_title),
+                    subtitle = stringResource(R.string.woopos_settings_card_reader_transport_wifi),
+                )
+
+                if (fingerprintSuffix != null) {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_fingerprint_title),
+                        subtitle = fingerprintSuffix,
+                    )
                 }
             }
         }
@@ -272,14 +338,31 @@ fun WooPosSettingsHardwareCardReaderScreenNotConnectedPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosSettingsHardwareCardReaderScreenConnectedPreview() {
+fun WooPosSettingsHardwareCardReaderScreenConnectedBluetoothPreview() {
     WooPosTheme {
         WooPosSettingsHardwareCardReaderContent(
-            uiState = WooPosSettingsHardwareCardReaderUiState.Connected(
+            uiState = WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth(
                 readerName = "Stripe Reader M2",
                 batteryLevel = 0.75f,
                 firmwareVersion = "1.2.3",
                 isSoftwareUpdateAvailable = true
+            ),
+            onConnectClicked = { },
+            onDisconnectClicked = { },
+            onDocumentationClicked = { },
+            onUpdateClick = { }
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsHardwareCardReaderScreenConnectedPhonePreview() {
+    WooPosTheme {
+        WooPosSettingsHardwareCardReaderContent(
+            uiState = WooPosSettingsHardwareCardReaderUiState.Connected.Phone(
+                readerName = "Andrey's Pixel 7",
+                fingerprintSuffix = "AB4F",
             ),
             onConnectClicked = { },
             onDisconnectClicked = { },
