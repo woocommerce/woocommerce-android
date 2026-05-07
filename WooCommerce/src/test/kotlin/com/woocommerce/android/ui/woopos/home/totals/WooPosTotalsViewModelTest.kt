@@ -82,6 +82,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -2208,6 +2209,79 @@ class WooPosTotalsViewModelTest {
                 this is ChildToParentEvent.ToastMessageDisplayed && this.message == "Grant location to use TTP"
             }
         )
+    }
+
+    @Test
+    fun `given TTP in flight, when PaymentSuccessful, then OrderSuccessfullyPaidByCard sent and flags reset`() = runTest {
+        // GIVEN
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.PaymentSuccessful.BuiltInReaderPaymentSuccessful(
+            amountWithCurrencyLabel = "$10.00",
+            onPrintReceiptClicked = {},
+            onSendReceiptClicked = {},
+            onSaveUserClicked = {},
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender, atLeastOnce()).sendToParent(ChildToParentEvent.OrderSuccessfullyPaidByCard)
+        val state = vm.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayInProgress).isFalse()
+        assertThat(state.paymentButtonsState).isEqualTo(WooPosTotalsViewState.PaymentButtonsState.Enabled)
+    }
+
+    @Test
+    fun `given TTP in flight, when BuiltInReaderFailedPayment emitted, then toast shown to parent`() = runTest {
+        // GIVEN
+        whenever(uiStringParser.asString(any())).thenReturn("Tap to Pay declined")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.NoNetwork,
+            onRetry = {},
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender, atLeastOnce()).sendToParent(
+            argThat { this is ChildToParentEvent.ToastMessageDisplayed }
+        )
+        val state = vm.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayInProgress).isFalse()
+    }
+
+    @Test
+    fun `given TTP starting, when in progress, then paymentButtonsState is Disabled`() = runTest {
+        // GIVEN
+        val (vm, _) = givenTtpInFlight()
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isTapToPayInProgress).isTrue()
+        assertThat(state.paymentButtonsState).isEqualTo(WooPosTotalsViewState.PaymentButtonsState.Disabled)
+    }
+
+    private suspend fun givenTtpInFlight(): Pair<WooPosTotalsViewModel, MutableStateFlow<CardReaderPaymentOrRefundState>> {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
+        val mockController: CardReaderPaymentController = mock()
+        val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+            CardReaderPaymentState.LoadingData {}
+        )
+        whenever(mockController.paymentState).thenReturn(paymentState)
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
+        whenever(factory.create(any(), any(), any(), any(), any())).thenReturn(mockController)
+
+        val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        vm.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+        return vm to paymentState
     }
 
     private fun mockPaymentFailedTexts() {
