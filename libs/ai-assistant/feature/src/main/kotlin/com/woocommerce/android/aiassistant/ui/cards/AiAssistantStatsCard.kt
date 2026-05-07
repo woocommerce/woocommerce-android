@@ -203,6 +203,12 @@ private fun AiAssistantStatsCardPreviewNoTrend() {
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 240)
 @Composable
+private fun AiAssistantStatsCardPreviewOrders() {
+    AiAssistantStatsCard(state = sampleOrdersStatsCardState(), onClick = {})
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 240)
+@Composable
 private fun AiAssistantStatsCardPreviewPartialData() {
     AiAssistantStatsCard(
         state = sampleStatsCardState(
@@ -228,6 +234,22 @@ private fun sampleStatsCardState(
             type = AssistantCard.Stats.MetricType.NetSales,
             value = "$120.15",
             chartValues = netSalesChartValues,
+        ),
+    ),
+)
+
+private fun sampleOrdersStatsCardState() = AiAssistantStatsCardState(
+    period = "May 1 - May 7, 2026",
+    metrics = listOf(
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.TotalOrders,
+            value = "42",
+            chartValues = listOf(12.0, 16.0, 14.0),
+        ),
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.AverageOrderValue,
+            value = "$85.30",
+            chartValues = listOf(80.10, 82.25, 93.55),
         ),
     ),
 )

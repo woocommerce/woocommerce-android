@@ -97,7 +97,7 @@ internal object AssistantCardPayloadParser {
     ): List<AssistantCard.Stats.Metric> =
         when (kind) {
             AssistantCard.Stats.Kind.Revenue -> revenueMetrics()
-            AssistantCard.Stats.Kind.Orders -> emptyList()
+            AssistantCard.Stats.Kind.Orders -> ordersMetrics()
         }
 
     private fun ShowCardDetails.AnalyticsStats.revenueMetrics(): List<AssistantCard.Stats.Metric> =
@@ -111,6 +111,20 @@ internal object AssistantCardPayloadParser {
                 type = AssistantCard.Stats.MetricType.NetSales,
                 value = totals.stringValue(NET_SALES_KEYS),
                 chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(NET_SALES_KEYS) },
+            ),
+        )
+
+    private fun ShowCardDetails.AnalyticsStats.ordersMetrics(): List<AssistantCard.Stats.Metric> =
+        listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = totals.stringValue(ORDERS_COUNT_KEYS),
+                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(ORDERS_COUNT_KEYS) },
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = totals.stringValue(AVERAGE_ORDER_VALUE_KEYS),
+                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(AVERAGE_ORDER_VALUE_KEYS) },
             ),
         )
 
@@ -164,5 +178,7 @@ internal object AssistantCardPayloadParser {
     private const val ORDERS_KIND = "orders"
     private val TOTAL_SALES_KEYS = listOf("total_sales", "gross_sales")
     private val NET_SALES_KEYS = listOf("net_revenue")
+    private val ORDERS_COUNT_KEYS = listOf("orders_count")
+    private val AVERAGE_ORDER_VALUE_KEYS = listOf("avg_order_value")
     private val ISO_LOCAL_DATE_SHAPE = Regex("\\d{4}-\\d{2}-\\d{2}")
 }

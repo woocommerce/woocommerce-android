@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Locale
@@ -130,6 +131,60 @@ class AiAssistantStatsCardRendererTest {
     }
 
     @Test
+    fun `given orders stats card, when mapped, then count is raw and average order value is money`() {
+        whenever(currencyFormatter.formatCurrency("85.30", "USD")).thenReturn("$85.30")
+
+        val model = ordersStatsCard().toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.metrics).containsExactly(
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartValues = listOf(12.0),
+            ),
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "$85.30",
+                chartValues = listOf(80.10),
+            ),
+        )
+        verify(currencyFormatter, never()).formatCurrency("42", "USD")
+        verify(currencyFormatter).formatCurrency("85.30", "USD")
+    }
+
+    @Test
+    fun `given orders stats card with blank metrics, when mapped, then unavailable fallback is used`() {
+        val model = ordersStatsCard(
+            ordersCount = "",
+            averageOrderValue = "",
+            ordersCountChartPoints = emptyList(),
+            averageOrderValueChartPoints = emptyList(),
+        ).toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.metrics).containsExactly(
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "Unavailable",
+                chartValues = emptyList(),
+            ),
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "Unavailable",
+                chartValues = emptyList(),
+            ),
+        )
+        verify(currencyFormatter, never()).formatCurrency("", "USD")
+    }
+
+    @Test
     fun `given assistant stats card, when stats card click handler is invoked, then analytics action is emitted`() {
         val actions = mutableListOf<AssistantCardAction>()
 
@@ -178,6 +233,35 @@ class AiAssistantStatsCardRendererTest {
         ),
     )
 
+    private fun ordersStatsCard(
+        ordersCount: String = "42",
+        averageOrderValue: String = "85.30",
+        ordersCountChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        ),
+        averageOrderValueChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
+        ),
+    ) = AssistantCard.Stats(
+        id = ANALYTICS_ORDERS_STATS_ID,
+        kind = AssistantCard.Stats.Kind.Orders,
+        after = "2026-05-01",
+        before = "2026-05-07",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = ordersCount,
+                chartPoints = ordersCountChartPoints,
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = averageOrderValue,
+                chartPoints = averageOrderValueChartPoints,
+            ),
+        ),
+    )
+
     private fun AiAssistantStatsCardState.metric(
         type: AssistantCard.Stats.MetricType,
     ): AiAssistantStatsCardState.Metric = metrics.single { it.type == type }
@@ -185,5 +269,7 @@ class AiAssistantStatsCardRendererTest {
     private companion object {
         private const val ANALYTICS_STATS_ID =
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+        private const val ANALYTICS_ORDERS_STATS_ID =
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
     }
 }

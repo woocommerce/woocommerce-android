@@ -334,6 +334,83 @@ class AssistantCardPayloadParserTest {
         assertThat(cards).isEmpty()
     }
 
+    @Test
+    fun `given orders analytics stats payload, when parsed, then order metrics are used`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    analyticsStatsPayload(
+                        id = ANALYTICS_ORDERS_STATS_ID,
+                        kind = "orders",
+                        totals = buildJsonObject {
+                            put("orders_count", 42)
+                            put("avg_order_value", "85.30")
+                        },
+                        intervalSubtotals = listOf(
+                            buildJsonObject {
+                                put("interval", "2026-05-01")
+                                putJsonObject("subtotals") {
+                                    put("orders_count", 12)
+                                    put("avg_order_value", "80.10")
+                                }
+                            }
+                        ),
+                    )
+                )
+            )
+        )
+
+        val statsCard = cards.single() as AssistantCard.Stats
+        assertThat(statsCard.kind).isEqualTo(AssistantCard.Stats.Kind.Orders)
+        assertThat(statsCard.metrics).containsExactly(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 80.10)),
+            ),
+        )
+    }
+
+    @Test
+    fun `given orders analytics stats payload missing metrics, when parsed, then blank order metrics remain`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    analyticsStatsPayload(
+                        id = ANALYTICS_ORDERS_STATS_ID,
+                        kind = "orders",
+                        totals = buildJsonObject {},
+                        intervalSubtotals = listOf(
+                            buildJsonObject {
+                                put("interval", "2026-05-01")
+                                putJsonObject("subtotals") {}
+                            }
+                        ),
+                    )
+                )
+            )
+        )
+
+        val statsCard = cards.single() as AssistantCard.Stats
+        assertThat(statsCard.metrics).containsExactly(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "",
+                chartPoints = emptyList(),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "",
+                chartPoints = emptyList(),
+            ),
+        )
+    }
+
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
         id = id,
@@ -343,6 +420,7 @@ class AssistantCardPayloadParserTest {
 
     private fun analyticsStatsPayload(
         id: String = ANALYTICS_STATS_ID,
+        kind: String = "revenue",
         after: String = "2026-05-01",
         before: String = "2026-05-07",
         totals: JsonObject = buildJsonObject {
@@ -364,6 +442,7 @@ class AssistantCardPayloadParserTest {
             currency = "USD",
             totals = totals,
             intervalSubtotals = intervalSubtotals,
+            kind = kind,
         ),
     )
 
@@ -398,5 +477,7 @@ class AssistantCardPayloadParserTest {
     private companion object {
         private const val ANALYTICS_STATS_ID =
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+        private const val ANALYTICS_ORDERS_STATS_ID =
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
     }
 }

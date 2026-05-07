@@ -90,8 +90,22 @@ internal fun AssistantCard.Stats.toStatsCardState(
     metrics = metrics.map { metric ->
         AiAssistantStatsCardState.Metric(
             type = metric.type,
-            value = formatStatsMoney(metric.value, currency, currencyFormatter, unavailableValue),
+            value = formatStatsMetric(metric, currency, currencyFormatter, unavailableValue),
             chartValues = metric.chartPoints.map { it.value },
         )
     },
 )
+
+private fun formatStatsMetric(
+    metric: AssistantCard.Stats.Metric,
+    currency: String,
+    currencyFormatter: AiAssistantCurrencyFormatter,
+    unavailableValue: String,
+): String =
+    when (metric.type) {
+        AssistantCard.Stats.MetricType.TotalSales,
+        AssistantCard.Stats.MetricType.NetSales,
+        AssistantCard.Stats.MetricType.AverageOrderValue ->
+            formatStatsMoney(metric.value, currency, currencyFormatter, unavailableValue)
+        AssistantCard.Stats.MetricType.TotalOrders -> metric.value.ifBlank { unavailableValue }
+    }
