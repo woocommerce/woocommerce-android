@@ -71,10 +71,17 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given missing token, when parsed, then returns Invalid`() {
+    fun `given missing token but valid siteUrl, when parsed, then returns SiteUrl`() {
         val raw = "woocommerce://qr-login?siteUrl=https%3A%2F%2Fstore.example"
 
-        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.SiteUrl(siteUrl = "https://store.example"))
+    }
+
+    @Test
+    fun `given blank token but valid siteUrl, when parsed, then returns SiteUrl`() {
+        val raw = "woocommerce://qr-login?token=&siteUrl=https%3A%2F%2Fstore.example"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.SiteUrl(siteUrl = "https://store.example"))
     }
 
     @Test
@@ -85,10 +92,27 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given blank token, when parsed, then returns Invalid`() {
-        val raw = "woocommerce://qr-login?token=&siteUrl=https%3A%2F%2Fstore.example"
+    fun `given missing token and non-https siteUrl, when parsed, then returns Invalid`() {
+        // siteUrl validation is identical for Ticket and SiteUrl branches
+        val raw = "woocommerce://qr-login?siteUrl=http%3A%2F%2Fstore.example"
 
         assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given missing token and siteUrl with userinfo, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?siteUrl=https%3A%2F%2Fuser%3Apass%40store.example"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given missing token and siteUrl with non-default port, when parsed, then preserves port`() {
+        val raw = "woocommerce://qr-login?siteUrl=https%3A%2F%2Fstore.example%3A8443"
+
+        assertThat(parser.parse(raw)).isEqualTo(
+            QrLoginPayload.SiteUrl(siteUrl = "https://store.example:8443")
+        )
     }
 
     @Test

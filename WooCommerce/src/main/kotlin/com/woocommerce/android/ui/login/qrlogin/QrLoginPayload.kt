@@ -35,5 +35,13 @@ sealed interface QrLoginPayload {
      */
     data class WpComMagicLinkUrl(val url: String) : QrLoginPayload
 
+    /**
+     * The merchant scanned a `woocommerce://qr-login?siteUrl=…` deeplink with no `token` (or a
+     * blank one). The scanner routes them to the existing site-address login screen with the URL
+     * prefilled and validation auto-started — bridging "scan QR" to "enter password / accept site"
+     * with no manual typing.
+     */
+    data class SiteUrl(val siteUrl: String) : QrLoginPayload
+
     data object Invalid : QrLoginPayload
 }

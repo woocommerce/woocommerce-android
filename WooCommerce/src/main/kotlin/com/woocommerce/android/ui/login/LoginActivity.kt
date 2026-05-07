@@ -315,6 +315,11 @@ class LoginActivity :
         loggedInViaUsernamePassword(arrayListOf(localSiteId))
     }
 
+    override fun onQrLoginSiteUrlPrefill(siteUrl: String) {
+        disableDynamicEdgeToEdge()
+        loginViaSiteAddress(prefilledSiteUrl = siteUrl)
+    }
+
     private fun hasJetpackConnectedIntent(): Boolean {
         val action = intent.action
         val uri = intent.data
@@ -515,9 +520,12 @@ class LoginActivity :
         changeFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG, false)
     }
 
-    override fun loginViaSiteAddress() {
+    override fun loginViaSiteAddress() = loginViaSiteAddress(prefilledSiteUrl = null)
+
+    private fun loginViaSiteAddress(prefilledSiteUrl: String?) {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
-        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment()
+            ?: WooLoginSiteAddressFragment.newInstance(prefilledSiteUrl)
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
