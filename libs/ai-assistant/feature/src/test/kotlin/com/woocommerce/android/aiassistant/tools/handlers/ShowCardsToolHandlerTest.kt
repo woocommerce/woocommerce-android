@@ -17,6 +17,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -146,6 +147,8 @@ class ShowCardsToolHandlerTest {
             "before",
             "currency",
             "totals",
+            "interval_subtotals",
+            "kind",
         )
     }
 
@@ -159,6 +162,28 @@ class ShowCardsToolHandlerTest {
         val summary = firstResolvedSummary(result)
 
         assertThat(summary.keys).containsExactly("id", "name", "email")
+    }
+
+    @Test
+    fun `given revenue and orders analytics stats ids, when executed, then both refs validate and resolve`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(
+                analyticsStatsCard(id = ANALYTICS_STATS_ID),
+                analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID, kind = "orders"),
+            ),
+            referencesJson = """
+                [
+                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" },
+                  { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID" }
+                ]
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(2)
+        assertThat(rejectedReasons(result)).isEmpty()
+        assertThat(resolvedFamilies(result)).containsExactly("analytics_stats", "analytics_stats")
+        assertThat(resolvedSummaries(result).map { it.getValue("kind").jsonPrimitive.content })
+            .containsExactly("revenue", "orders")
     }
 
     @Test
@@ -186,7 +211,7 @@ class ShowCardsToolHandlerTest {
 
         val structuredText = assertSuccess(result).structured.toString()
 
-        assertThat(structuredText).doesNotContain("interval_subtotals")
+        assertThat(structuredText).contains("interval_subtotals")
         assertThat(structuredText).doesNotContain("private_total")
         assertThat(structuredText).doesNotContain("debug")
     }
@@ -261,6 +286,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.after).isEqualTo("2026-05-01")
         assertThat(details.before).isEqualTo("2026-05-07")
         assertThat(details.currency).isEqualTo("USD")
+        assertThat(details.kind).isEqualTo("revenue")
         assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
         assertThat(details.intervalSubtotals).hasSize(1)
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("interval_subtotals")
@@ -345,6 +371,25 @@ class ShowCardsToolHandlerTest {
                 { "family": "analytics_stats", "id": "analytics_revenue:2026-05-01:2026-05-07" },
                 { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-07:before:2026-05-01:interval:day:currency:USD" },
                 { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:bad:currency:USD" }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+    }
+
+    @Test
+    fun `given unknown analytics stats prefixes, when executed, then refs are rejected as invalid id`() = runTest {
+        val result = executeShowCards(
+            handler = handlerWith(FakeResolver.empty()),
+            argumentsJson = """
+            {
+              "references": [
+                { "family": "analytics_stats", "id": "analytics_products:after:2026-05-01:before:2026-05-07:interval:day:currency:none" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-07:before:2026-05-01:interval:day:currency:none" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:bad:currency:none" }
               ]
             }
             """.trimIndent()
@@ -492,6 +537,11 @@ class ShowCardsToolHandlerTest {
             .getValue("resolved_refs").jsonArray
             .map { ref -> ref.jsonObject.getValue("id").jsonPrimitive.content }
 
+    private fun resolvedSummaries(result: ToolResult): List<JsonObject> =
+        assertSuccess(result).structured.jsonObject
+            .getValue("resolved_refs").jsonArray
+            .map { ref -> ref.jsonObject.getValue("summary").jsonObject }
+
     private fun uiCards(result: ToolResult) =
         requireNotNull(assertSuccess(result).uiStructured).jsonObject.getValue("cards").jsonArray
 
@@ -603,7 +653,10 @@ class ShowCardsToolHandlerTest {
         )
     }
 
-    private fun analyticsStatsCard(id: String): ShowCardsResolution.Resolved {
+    private fun analyticsStatsCard(
+        id: String,
+        kind: String = "revenue",
+    ): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.AnalyticsStats, id = id)
         val totals = buildJsonObject {
             put("total_sales", "170.35")
@@ -629,6 +682,7 @@ class ShowCardsToolHandlerTest {
                 put("currency", "USD")
                 put("totals", totals)
                 put("interval_subtotals", buildJsonArray { intervals.forEach { add(it) } })
+                put("kind", kind)
             },
             card = ShowCardPayload(
                 family = "analytics_stats",
@@ -640,6 +694,7 @@ class ShowCardsToolHandlerTest {
                     currency = "USD",
                     totals = totals,
                     intervalSubtotals = intervals,
+                    kind = kind,
                 ),
             )
         )
@@ -705,5 +760,7 @@ class ShowCardsToolHandlerTest {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
         private const val ANALYTICS_STATS_ID =
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+        private const val ANALYTICS_ORDERS_STATS_ID =
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
     }
 }

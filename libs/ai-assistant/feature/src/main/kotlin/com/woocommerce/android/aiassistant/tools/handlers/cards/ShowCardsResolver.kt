@@ -180,12 +180,23 @@ internal class DefaultShowCardsResolver @Inject constructor(
     private suspend fun resolveAnalyticsStats(ref: ValidatedRef): ShowCardsResolution {
         val query = AnalyticsStatsCardId.parse(ref.id)
             ?: return ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.InvalidId)
-        return analyticsDataSource.fetchRevenueStats(
-            after = analyticsDateAfterBound(query.after),
-            before = analyticsDateBeforeBound(query.before),
-            interval = query.interval,
-            currency = query.currency,
-        ).fold(
+        val after = analyticsDateAfterBound(query.after)
+        val before = analyticsDateBeforeBound(query.before)
+        val statsResult = when (query.kind) {
+            AnalyticsStatsKind.Revenue -> analyticsDataSource.fetchRevenueStats(
+                after = after,
+                before = before,
+                interval = query.interval,
+                currency = query.currency,
+            )
+            AnalyticsStatsKind.Orders -> analyticsDataSource.fetchOrdersStats(
+                after = after,
+                before = before,
+                interval = query.interval,
+            )
+        }
+
+        return statsResult.fold(
             onSuccess = { stats ->
                 val displayCurrency = query.currency ?: analyticsDataSource.getSelectedSiteCurrencyCode()
                 val summary = analyticsStatsSummary(
@@ -209,6 +220,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                             currency = displayCurrency,
                             totals = totals,
                             intervalSubtotals = intervalSubtotals,
+                            kind = query.kind.serializedName,
                         )
                     ),
                     card = ShowCardPayload(
@@ -221,6 +233,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                             currency = displayCurrency,
                             totals = totals,
                             intervalSubtotals = intervalSubtotals,
+                            kind = query.kind.serializedName,
                         ),
                     ),
                 )

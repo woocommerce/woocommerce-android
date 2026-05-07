@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.tools.analytics.parseAnalyticsDate
 import com.woocommerce.android.aiassistant.tools.analytics.validateAnalyticsDateRange
 
 internal data class AnalyticsStatsCardId(
+    val kind: AnalyticsStatsKind,
     val after: String,
     val before: String,
     val interval: AnalyticsInterval,
@@ -17,16 +18,20 @@ internal data class AnalyticsStatsCardId(
                 ?.split(":")
                 ?.takeIf { it.size == ANALYTICS_STATS_ID_PART_COUNT }
                 ?.takeIf { it.hasExpectedAnalyticsStatsIdLabels() }
+            val kind = parts?.get(TOOL_INDEX)?.let(AnalyticsStatsKind::fromPrefix)
             val interval = parts?.get(INTERVAL_VALUE_INDEX)?.let(AnalyticsInterval::fromValue)
             val parsedCurrency = parts?.get(CURRENCY_VALUE_INDEX)?.toParsedCurrency()
 
-            return if (parts != null && interval != null && parsedCurrency != null) {
+            return if (parts != null && kind != null && interval != null && parsedCurrency != null) {
                 AnalyticsStatsCardId(
+                    kind = kind,
                     after = parts[AFTER_VALUE_INDEX],
                     before = parts[BEFORE_VALUE_INDEX],
                     interval = interval,
                     currency = parsedCurrency.value,
-                ).takeIf { it.hasValidDateRange() }
+                ).takeIf {
+                    it.hasValidDateRange() && kind.acceptsCurrency(parts[CURRENCY_VALUE_INDEX])
+                }
             } else {
                 null
             }
@@ -34,10 +39,23 @@ internal data class AnalyticsStatsCardId(
     }
 }
 
+internal enum class AnalyticsStatsKind(
+    val idPrefix: String,
+    val serializedName: String,
+) {
+    Revenue("analytics_revenue", "revenue"),
+    Orders("analytics_orders", "orders");
+
+    companion object {
+        fun fromPrefix(value: String): AnalyticsStatsKind? =
+            entries.firstOrNull { it.idPrefix == value }
+    }
+}
+
 private data class ParsedCurrency(val value: String?)
 
 private fun List<String>.hasExpectedAnalyticsStatsIdLabels(): Boolean =
-    get(TOOL_INDEX) == ANALYTICS_STATS_TOOL &&
+    AnalyticsStatsKind.fromPrefix(get(TOOL_INDEX)) != null &&
         get(AFTER_LABEL_INDEX) == AFTER_LABEL &&
         get(BEFORE_LABEL_INDEX) == BEFORE_LABEL &&
         get(INTERVAL_LABEL_INDEX) == INTERVAL_LABEL &&
@@ -57,13 +75,15 @@ private fun AnalyticsStatsCardId.hasValidDateRange(): Boolean {
     return validateAnalyticsDateRange(afterDate, beforeDate, interval) == null
 }
 
+private fun AnalyticsStatsKind.acceptsCurrency(currency: String): Boolean =
+    this != AnalyticsStatsKind.Orders || currency == NO_CURRENCY_VALUE
+
 internal fun AnalyticsStatsCardId.toSyntheticId(): String {
     val currencyValue = currency ?: NO_CURRENCY_VALUE
-    return "$ANALYTICS_STATS_TOOL:$AFTER_LABEL:$after:$BEFORE_LABEL:$before:" +
+    return "${kind.idPrefix}:$AFTER_LABEL:$after:$BEFORE_LABEL:$before:" +
         "$INTERVAL_LABEL:${interval.value}:$CURRENCY_LABEL:$currencyValue"
 }
 
-private const val ANALYTICS_STATS_TOOL = "analytics_revenue"
 private const val AFTER_LABEL = "after"
 private const val BEFORE_LABEL = "before"
 private const val INTERVAL_LABEL = "interval"

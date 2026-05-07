@@ -119,6 +119,7 @@ class ShowCardsResolverTest {
         assertThat(resolved.summary.getValue("after").jsonPrimitive.content).isEqualTo("2026-05-01")
         assertThat(resolved.summary.getValue("before").jsonPrimitive.content).isEqualTo("2026-05-07")
         assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        assertThat(resolved.summary.getValue("kind").jsonPrimitive.content).isEqualTo("revenue")
         assertThat(resolved.summary.getValue("totals").jsonObject.getValue("total_sales").jsonPrimitive.content)
             .isEqualTo("170.35")
         assertThat(resolved.summary.getValue("interval_subtotals").jsonArray).hasSize(2)
@@ -126,8 +127,56 @@ class ShowCardsResolverTest {
         assertThat(resolved.card.id).isEqualTo(ANALYTICS_STATS_ID)
         assertThat(resolved.card.title).isEqualTo("Analytics")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
+        assertThat(details.kind).isEqualTo("revenue")
         assertThat(details.totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
         assertThat(details.intervalSubtotals).hasSize(2)
+    }
+
+    @Test
+    fun `given revenue and orders analytics stats refs, when resolved, then resolver fetches each stats kind`() = runTest {
+        whenever(
+            analyticsDataSource.fetchRevenueStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
+                currency = "USD",
+            )
+        ).thenReturn(Result.success(analyticsStats()))
+        whenever(
+            analyticsDataSource.fetchOrdersStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
+            )
+        ).thenReturn(Result.success(orderAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
+
+        val result = resolver.resolve(
+            listOf(
+                ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID),
+                ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID),
+            )
+        )
+
+        verify(analyticsDataSource).fetchRevenueStats(
+            after = "2026-05-01T00:00:00",
+            before = "2026-05-07T23:59:59",
+            interval = AnalyticsInterval.DAY,
+            currency = "USD",
+        )
+        verify(analyticsDataSource).fetchOrdersStats(
+            after = "2026-05-01T00:00:00",
+            before = "2026-05-07T23:59:59",
+            interval = AnalyticsInterval.DAY,
+        )
+        assertThat(result).allSatisfy { resolution ->
+            assertThat(resolution).isInstanceOf(ShowCardsResolution.Resolved::class.java)
+        }
+        assertThat(result.map { it.ref.id }).containsExactly(ANALYTICS_STATS_ID, ANALYTICS_ORDERS_STATS_ID)
+        assertThat(
+            result.filterIsInstance<ShowCardsResolution.Resolved>()
+                .map { it.summary.getValue("kind").jsonPrimitive.content }
+        ).containsExactly("revenue", "orders")
     }
 
     @Test
@@ -564,6 +613,17 @@ class ShowCardsResolverTest {
         ),
     )
 
+    private fun orderAnalyticsStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("orders_count", "42")
+            put("avg_order_value", "85.30")
+        },
+        intervals = listOf(
+            orderAnalyticsInterval("2026-05-01", "12", "80.10"),
+            orderAnalyticsInterval("2026-05-02", "30", "87.38"),
+        ),
+    )
+
     private fun analyticsInterval(
         interval: String,
         totalSales: String,
@@ -574,6 +634,19 @@ class ShowCardsResolverTest {
         putJsonObject("subtotals") {
             put("total_sales", totalSales)
             put("net_revenue", netRevenue)
+        }
+    }
+
+    private fun orderAnalyticsInterval(
+        interval: String,
+        ordersCount: String,
+        averageOrderValue: String,
+    ) = buildJsonObject {
+        put("interval", interval)
+        put("date_start", "$interval 00:00:00")
+        putJsonObject("subtotals") {
+            put("orders_count", ordersCount)
+            put("avg_order_value", averageOrderValue)
         }
     }
 
@@ -589,5 +662,7 @@ class ShowCardsResolverTest {
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
         private const val ANALYTICS_STATS_ID_NO_CURRENCY =
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+        private const val ANALYTICS_ORDERS_STATS_ID =
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
     }
 }
