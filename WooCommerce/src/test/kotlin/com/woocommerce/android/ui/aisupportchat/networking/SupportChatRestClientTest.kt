@@ -102,7 +102,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
 
     @Test
     fun `given successful response, when sendMessage, then Success is propagated`() = testBlocking {
-        val data = SupportChatResponse(chatId = CHAT_ID, sessionId = null, botSlug = BOT_SLUG, botVersion = null)
+        val data = supportChatResponse()
         stubPostResponse(data = data)
 
         val result = restClient.sendMessage(BOT_SLUG, MESSAGE, JsonObject())
@@ -138,13 +138,13 @@ class SupportChatRestClientTest : BaseUnitTest() {
     }
 
     private suspend fun stubPostResponse(
-        data: SupportChatResponse? = null,
+        data: SupportChatResponse = supportChatResponse(),
         error: WPComGsonNetworkError? = null
     ) {
         val response: Response<SupportChatResponse> = if (error != null) {
             Response.Error(error)
         } else {
-            Response.Success(data ?: mock(), emptyList())
+            Response.Success(data, emptyList())
         }
         whenever(
             wpComGsonRequestBuilder.syncPostRequest(
@@ -160,13 +160,13 @@ class SupportChatRestClientTest : BaseUnitTest() {
     }
 
     private suspend fun stubGetResponse(
-        data: SupportChatResponse? = null,
+        data: SupportChatResponse = supportChatResponse(),
         error: WPComGsonNetworkError? = null
     ) {
         val response: Response<SupportChatResponse> = if (error != null) {
             Response.Error(error)
         } else {
-            Response.Success(data ?: mock(), emptyList())
+            Response.Success(data, emptyList())
         }
         whenever(
             wpComGsonRequestBuilder.syncGetRequest(
@@ -182,6 +182,13 @@ class SupportChatRestClientTest : BaseUnitTest() {
             )
         ).thenReturn(response)
     }
+
+    private fun supportChatResponse() = SupportChatResponse(
+        chatId = CHAT_ID,
+        sessionId = null,
+        botSlug = BOT_SLUG,
+        botVersion = null
+    )
 
     private companion object {
         const val BOT_SLUG = "woo-workflow-support_mobile_inapp"
