@@ -30,6 +30,8 @@ fun QrLoginScannerScreen(
     onPermissionResult: (Boolean) -> Unit,
     onConfirmSite: () -> Unit,
     onCancelSite: () -> Unit,
+    onConfirmSessionReplace: () -> Unit,
+    onCancelSessionReplace: () -> Unit,
     onStartOver: () -> Unit,
     onRetryExchange: () -> Unit,
     onFallbackClicked: () -> Unit,
@@ -55,6 +57,10 @@ fun QrLoginScannerScreen(
                 host = uiState.host,
                 onConfirm = onConfirmSite,
                 onCancel = onCancelSite,
+            )
+            is UiState.WarningSessionReplace -> QrLoginSessionReplaceWarningScreen(
+                onConfirm = onConfirmSessionReplace,
+                onCancel = onCancelSessionReplace,
             )
             is UiState.Error -> QrLoginErrorScreen(
                 title = uiState.title,

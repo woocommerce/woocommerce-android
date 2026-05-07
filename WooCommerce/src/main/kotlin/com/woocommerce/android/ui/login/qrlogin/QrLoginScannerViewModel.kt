@@ -8,11 +8,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Authenticating
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Confirming
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Error
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Idle
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.WarningSessionReplace
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -44,6 +46,7 @@ class QrLoginScannerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val parser: QrLoginPayloadParser,
     private val authenticator: QrLoginAuthenticator,
+    private val accountRepository: AccountRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
@@ -81,27 +84,15 @@ class QrLoginScannerViewModel @Inject constructor(
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
-            is QrLoginPayload.Ticket -> _uiState.value = Confirming(
-                ticket = payload,
-                host = payload.siteUrl.toDisplayHost()
+            is QrLoginPayload.Ticket -> handleHandoff(
+                PendingHandoff.Ticket(ticket = payload, host = payload.siteUrl.toDisplayHost())
             )
-            is QrLoginPayload.WpComMagicLinkUrl -> {
-                // Hand the URL off to the browser; wp.com then 3xx-redirects to
-                // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
-                // because the user is leaving the scanner and the outcome is no longer ours to
-                // handle. This is the happy path — we track the handoff, not a scan failure.
-                loggedIn = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
-                triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = payload.url))
-            }
-            is QrLoginPayload.SiteUrl -> {
-                // Site-URL-only QR — no token to exchange, just route the merchant to the
-                // existing site-address login screen with the URL prefilled and validation
-                // auto-started. Same lock + happy-path tracking as the wp.com branch.
-                loggedIn = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
-                triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = payload.siteUrl))
-            }
+            is QrLoginPayload.WpComMagicLinkUrl -> handleHandoff(
+                PendingHandoff.WpComMagicLink(url = payload.url)
+            )
+            is QrLoginPayload.SiteUrl -> handleHandoff(
+                PendingHandoff.SiteUrlPrefill(siteUrl = payload.siteUrl)
+            )
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -117,6 +108,47 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorType = ErrorReason.InvalidPayload.name,
                 )
                 _uiState.value = makeErrorState(ErrorReason.InvalidPayload, ticket = null)
+            }
+        }
+    }
+
+    /**
+     * Gate every QR hand-off (ticket / wp.com magic link / site-URL prefill) on the user being
+     * signed out. If a session is already active we surface a confirmation screen first; the
+     * user must opt in to replacing it before we run [AccountRepository.logout] and resume the
+     * original action.
+     */
+    private fun handleHandoff(pending: PendingHandoff) {
+        if (accountRepository.isUserLoggedIn()) {
+            analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
+            _uiState.value = WarningSessionReplace(pending)
+        } else {
+            resumePending(pending)
+        }
+    }
+
+    private fun resumePending(pending: PendingHandoff) {
+        when (pending) {
+            is PendingHandoff.Ticket -> _uiState.value = Confirming(
+                ticket = pending.ticket,
+                host = pending.host
+            )
+            is PendingHandoff.WpComMagicLink -> {
+                // Hand the URL off to the browser; wp.com then 3xx-redirects to
+                // woocommerce://magic-login → MagicLinkInterceptActivity. Lock the state machine
+                // because the user is leaving the scanner and the outcome is no longer ours to
+                // handle. This is the happy path — we track the handoff, not a scan failure.
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+                triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = pending.url))
+            }
+            is PendingHandoff.SiteUrlPrefill -> {
+                // Site-URL-only QR — no token to exchange, just route the merchant to the
+                // existing site-address login screen with the URL prefilled and validation
+                // auto-started. Same lock + happy-path tracking as the wp.com branch.
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+                triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = pending.siteUrl))
             }
         }
     }
@@ -173,6 +205,45 @@ class QrLoginScannerViewModel @Inject constructor(
 
     fun onCancelSite() {
         if (_uiState.value is Confirming) _uiState.value = Idle
+    }
+
+    /**
+     * The merchant accepted the session-replace warning. Run the canonical logout via
+     * [AccountRepository.logout] (which handles both wp.com OAuth and per-site app-password
+     * sessions, plus prefs / analytics / Zendesk / DataStore cleanup) and then resume the
+     * original payload action exactly as if the user had been signed out from the start.
+     *
+     * We flip into [Authenticating] for the duration of the logout so the UI gives feedback
+     * while [AccountRepository.logout] talks to the server — for the Ticket path this is then
+     * overwritten by [Confirming] so the merchant still sees the host-confirmation step.
+     *
+     * If logout fails (only the wp.com path can; it returns false without running cleanup, so
+     * the access token and selected site are still in place), we must NOT resume — installing
+     * fresh credentials on top of a live session is exactly what the warning exists to prevent.
+     * Surface a generic error and let the merchant scan again, which re-shows the warning.
+     */
+    fun onConfirmSessionReplace() {
+        val pending = (_uiState.value as? WarningSessionReplace)?.pending ?: return
+        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
+        _uiState.value = Authenticating
+        launch {
+            if (accountRepository.logout()) {
+                resumePending(pending)
+            } else {
+                trackScanFailure(
+                    step = Step.EXCHANGE,
+                    errorContext = null,
+                    errorType = SESSION_REPLACE_LOGOUT_FAILED,
+                )
+                _uiState.value = makeErrorState(ErrorReason.Network, ticket = null)
+            }
+        }
+    }
+
+    fun onCancelSessionReplace() {
+        if (_uiState.value !is WarningSessionReplace) return
+        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_DISMISSED)
+        _uiState.value = Idle
     }
 
     /**
@@ -335,6 +406,7 @@ class QrLoginScannerViewModel @Inject constructor(
             val bodyArgs: List<Int> = emptyList(),
             val primaryAction: PrimaryAction,
         ) : UiState
+        data class WarningSessionReplace(val pending: PendingHandoff) : UiState
     }
 
     sealed interface PrimaryAction {
@@ -347,6 +419,17 @@ class QrLoginScannerViewModel @Inject constructor(
 
         /** Sends the user back to the scanner to capture a fresh code. */
         data class ScanAgain(@StringRes override val label: Int) : PrimaryAction
+    }
+
+    /**
+     * Captures a parsed QR payload that we deferred while showing the session-replace warning.
+     * On confirm we run logout and then dispatch the matching action via [resumePending];
+     * on cancel we simply drop it and return to [UiState.Idle].
+     */
+    sealed interface PendingHandoff {
+        data class Ticket(val ticket: QrLoginPayload.Ticket, val host: String) : PendingHandoff
+        data class WpComMagicLink(val url: String) : PendingHandoff
+        data class SiteUrlPrefill(val siteUrl: String) : PendingHandoff
     }
 
     enum class ErrorReason {
@@ -371,5 +454,6 @@ class QrLoginScannerViewModel @Inject constructor(
     private companion object {
         const val HTTPS_DEFAULT_PORT = 443
         const val HTTP_DEFAULT_PORT = 80
+        const val SESSION_REPLACE_LOGOUT_FAILED = "session_replace_logout_failed"
     }
 }
