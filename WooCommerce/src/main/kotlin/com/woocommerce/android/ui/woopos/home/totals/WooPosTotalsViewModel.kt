@@ -271,21 +271,20 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun startTapToPayPayment() {
+        val orderId = dataState.value.orderId
+        if (orderId == EMPTY_ORDER_ID) {
+            wooPosLogWrapper.e("Tap to Pay tapped before order draft was created")
+            return
+        }
+        viewModelScope.launch { totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped() }
+        launchTapToPayConnect(orderId)
+    }
+
+    private fun launchTapToPayConnect(orderId: Long) {
         if (isTapToPayPayment) return
         isTapToPayPayment = true
         setTapToPayInProgress(true)
-        viewModelScope.launch {
-            totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped()
-
-            val orderId = dataState.value.orderId
-            if (orderId == EMPTY_ORDER_ID) {
-                wooPosLogWrapper.e("Tap to Pay tapped before order draft was created")
-                resetTapToPayProgress()
-                return@launch
-            }
-
-            attemptTapToPayConnect(orderId)
-        }
+        viewModelScope.launch { attemptTapToPayConnect(orderId) }
     }
 
     private suspend fun attemptTapToPayConnect(orderId: Long) {
@@ -341,18 +340,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun setTapToPayInProgress(inProgress: Boolean) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        val nextButtonsState = if (inProgress) {
-            WooPosTotalsViewState.PaymentButtonsState.Disabled
-        } else {
-            WooPosTotalsViewState.PaymentButtonsState.Enabled
-        }
-        if (checkout.isTapToPayInProgress != inProgress ||
-            checkout.paymentButtonsState != nextButtonsState
-        ) {
-            uiState.value = checkout.copy(
-                isTapToPayInProgress = inProgress,
-                paymentButtonsState = nextButtonsState,
-            )
+        if (checkout.isTapToPayInProgress != inProgress) {
+            uiState.value = checkout.copy(isTapToPayInProgress = inProgress)
         }
     }
 
@@ -369,10 +358,7 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         val orderId = dataState.value.orderId
         if (orderId == EMPTY_ORDER_ID) return
-        if (isTapToPayPayment) return
-        isTapToPayPayment = true
-        setTapToPayInProgress(true)
-        viewModelScope.launch { attemptTapToPayConnect(orderId) }
+        launchTapToPayConnect(orderId)
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
@@ -585,6 +571,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 )
             }
 
+            // Stripe SDK owns the user-visible UI for these states during TTP, so the in-app screen stays put.
             is CardReaderPaymentState.ProcessingPayment,
             is CardReaderPaymentState.LoadingData,
             is CardReaderPaymentState.PaymentCapturing,
