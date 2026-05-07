@@ -36,6 +36,8 @@ internal class AIProductsDataSource @Inject constructor(
             "For variable products, update individual variations instead."
     )
 
+    class ProductNotFoundException(productId: Long) : NoSuchElementException("Product $productId not found")
+
     suspend fun fetchProducts(
         search: String? = null,
         status: String? = null,
@@ -215,7 +217,7 @@ internal class AIProductsDataSource @Inject constructor(
         } else {
             val product = productStore.getProductByRemoteId(site, productId)
             product?.let { Result.success(it) }
-                ?: Result.failure(IllegalStateException("Product $productId not found after fetch"))
+                ?: Result.failure(ProductNotFoundException(productId))
         }
     }
 

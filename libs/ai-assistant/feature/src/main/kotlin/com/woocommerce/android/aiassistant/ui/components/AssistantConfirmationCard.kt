@@ -1,17 +1,19 @@
 package com.woocommerce.android.aiassistant.ui.components
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,13 +31,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationDiffRow
+import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.eyebrowRes
 import com.woocommerce.android.aiassistant.ui.iconRes
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 @Composable
 internal fun AssistantConfirmationCardSegment(
@@ -66,7 +74,11 @@ internal fun AssistantConfirmationCardSegment(
                 fontWeight = FontWeight.SemiBold,
             )
             confirmation.preview?.rows?.forEach { row ->
-                ConfirmationDiffRow(row = row, colors = colors)
+                ConfirmationDiffRow(
+                    row = row,
+                    isBulk = confirmation.preview.isBulk,
+                    colors = colors,
+                )
             }
             if (confirmation.state == AssistantConfirmationCardState.PENDING) {
                 ConfirmationActions(
@@ -152,69 +164,58 @@ private fun ConfirmationActions(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ConfirmationDiffRow(
     row: RenderedConfirmationPreviewField,
+    isBulk: Boolean,
     colors: AssistantConfirmationCardColors,
 ) {
-    Column(
+    val beforeValue = row.beforeValue.takeUnless { isBulk }
+
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f), RoundedCornerShape(8.dp))
             .border(1.dp, colors.border.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
             .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Text(
-            text = row.label,
+        ConfirmationDiffText(
+            text = "${row.label}:",
             color = colors.label,
-            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
         )
-        row.beforeValue?.let { beforeValue ->
-            ConfirmationDiffLine(
-                prefix = stringResource(R.string.assistant_confirmation_now),
-                value = beforeValue,
-                colors = colors,
-                strikethrough = true,
+        beforeValue?.let {
+            ConfirmationDiffText(
+                text = it,
+                color = colors.label,
+                textDecoration = TextDecoration.LineThrough,
             )
         }
-        ConfirmationDiffLine(
-            prefix = stringResource(R.string.assistant_confirmation_after),
-            value = row.afterValue,
-            colors = colors,
+        ConfirmationDiffText(
+            text = row.afterValue,
+            color = colors.value,
+            fontWeight = FontWeight.SemiBold,
         )
     }
 }
 
 @Composable
-private fun ConfirmationDiffLine(
-    prefix: String,
-    value: String,
-    colors: AssistantConfirmationCardColors,
-    strikethrough: Boolean = false,
+private fun ConfirmationDiffText(
+    text: String,
+    color: Color,
+    fontWeight: FontWeight = FontWeight.Normal,
+    textDecoration: TextDecoration? = null,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text(
-            text = prefix,
-            modifier = Modifier.widthIn(min = 40.dp),
-            color = colors.label,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-        )
-        Text(
-            text = value,
-            modifier = Modifier.weight(1f),
-            color = if (strikethrough) colors.label else colors.value,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (strikethrough) FontWeight.Normal else FontWeight.SemiBold,
-            textDecoration = if (strikethrough) TextDecoration.LineThrough else null,
-        )
-    }
+    Text(
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = fontWeight,
+        textDecoration = textDecoration,
+    )
 }
 
 @Composable
@@ -257,3 +258,147 @@ private data class AssistantConfirmationCardColors(
     val label: Color,
     val value: Color,
 )
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 230)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 230, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardPendingPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleAssistantConfirmationCard(AssistantConfirmationCardState.PENDING),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 176)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 176, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardConfirmedPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleAssistantConfirmationCard(AssistantConfirmationCardState.CONFIRMED),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 176)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 176, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardBulkCancelledPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleAssistantConfirmationCard(
+                state = AssistantConfirmationCardState.CANCELLED,
+                isBulk = true,
+            ),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 284)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 284, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantConfirmationCardBillingEmailPreview() {
+    AssistantConfirmationCardPreviewContainer {
+        AssistantConfirmationCardSegment(
+            confirmation = sampleBillingEmailConfirmationCard(),
+            onConfirmWrite = {},
+            onCancelWrite = {},
+        )
+    }
+}
+
+@Composable
+private fun AssistantConfirmationCardPreviewContainer(content: @Composable () -> Unit) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            content()
+        }
+    }
+}
+
+private fun sampleAssistantConfirmationCard(
+    state: AssistantConfirmationCardState,
+    isBulk: Boolean = false,
+) = AssistantConfirmationCard(
+    confirmationId = "confirmation-preview",
+    toolCall = ToolCall(
+        id = "call-preview",
+        name = if (isBulk) "orders_bulk_update" else "orders_update",
+        arguments = buildJsonObject {
+            if (isBulk) {
+                put("status", "completed")
+            } else {
+                put("id", PREVIEW_ORDER_ID)
+                put("status", "completed")
+            }
+        },
+    ),
+    state = state,
+    preview = if (isBulk) {
+        RenderedConfirmationPreview(
+            message = "Update 3 orders",
+            fields = listOf(
+                RenderedConfirmationDiffRow(
+                    name = "status",
+                    label = "Status",
+                    value = "Completed",
+                )
+            ),
+            isBulk = true,
+        )
+    } else {
+        RenderedConfirmationPreview(
+            message = "Update order #3479",
+            fields = listOf(
+                RenderedConfirmationDiffRow(
+                    name = "status",
+                    label = "Status",
+                    value = "Completed",
+                    beforeValue = "Processing",
+                )
+            ),
+            isBulk = false,
+        )
+    },
+)
+
+private fun sampleBillingEmailConfirmationCard() = AssistantConfirmationCard(
+    confirmationId = "billing-email-confirmation-preview",
+    toolCall = ToolCall(
+        id = "call-billing-email-preview",
+        name = "orders_update",
+        arguments = buildJsonObject {
+            put("id", PREVIEW_ORDER_ID)
+            put("billing_email", PREVIEW_BILLING_EMAIL_AFTER)
+        },
+    ),
+    state = AssistantConfirmationCardState.PENDING,
+    preview = RenderedConfirmationPreview(
+        message = "Update order #3650",
+        fields = listOf(
+            RenderedConfirmationDiffRow(
+                name = BILLING_EMAIL_FIELD_NAME,
+                label = "Billing email",
+                value = PREVIEW_BILLING_EMAIL_AFTER,
+                beforeValue = PREVIEW_BILLING_EMAIL_BEFORE,
+            )
+        ),
+        isBulk = false,
+    ),
+)
+
+private const val PREVIEW_ORDER_ID = 3479
+private const val BILLING_EMAIL_FIELD_NAME = "billing_email"
+private const val PREVIEW_BILLING_EMAIL_BEFORE = "schuster.alden@schuster-fulfillment.example.com"
+private const val PREVIEW_BILLING_EMAIL_AFTER = "alexandra.merchant@northstar-woocommerce.example.com"
