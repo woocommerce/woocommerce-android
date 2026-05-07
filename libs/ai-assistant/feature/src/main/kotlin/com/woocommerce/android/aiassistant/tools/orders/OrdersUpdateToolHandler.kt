@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -41,6 +42,9 @@ internal class OrdersUpdateToolHandler @Inject constructor(
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, ORDERS_UPDATE_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -49,11 +53,26 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         }
         return dataSource.updateOrderStatus(args.id, args.status).fold(
             onSuccess = {
-                ToolResult.Success(
-                    toolCallId = call.id,
-                    structured = json.encodeToJsonElement(
-                        UpdateResult(orderId = args.id, status = args.status)
-                    ) as JsonObject,
+                dataSource.getOrder(args.id).fold(
+                    onSuccess = { order ->
+                        ToolResult.Success(
+                            toolCallId = call.id,
+                            structured = json.encodeToJsonElement(order.toOrderDetailResponse()) as JsonObject,
+                        )
+                    },
+                    onFailure = {
+                        ToolResult.Success(
+                            toolCallId = call.id,
+                            structured = json.encodeToJsonElement(
+                                UpdateResult(
+                                    orderId = args.id,
+                                    status = args.status,
+                                    responsePartial = true,
+                                    warning = "Order status updated, but updated order details could not be fetched.",
+                                )
+                            ) as JsonObject,
+                        )
+                    },
                 )
             },
             onFailure = { error ->
@@ -73,6 +92,8 @@ internal class OrdersUpdateToolHandler @Inject constructor(
     private data class UpdateResult(
         @SerialName("order_id") val orderId: Long,
         val status: String,
+        @SerialName("response_partial") val responsePartial: Boolean = false,
+        val warning: String? = null,
     )
 
     companion object {
@@ -89,6 +110,8 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         )
     }
 }
+
+private val ORDERS_UPDATE_ALLOWED_ARGS = setOf("id", "status")
 
 private fun Throwable.toOrderUpdateFailureKind(): ToolFailureKind {
     val orderError = (this as? OnChangedException)?.error as? WCOrderStore.OrderError

@@ -11,11 +11,15 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -122,6 +126,24 @@ class OrdersBulkUpdateToolHandlerTest {
     }
 
     @Test
+    fun `given unknown patch argument, when bulk order update executes, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    putJsonArray("ids") { add(1) }
+                    putJsonObject("patch") {
+                        put("status", "completed")
+                        put("unexpected", true)
+                    }
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        verify(dataSource, never()).bulkUpdateOrders(any(), any())
+    }
+
+    @Test
     fun `given valid patch, when execute succeeds, then structured summary is returned`() = runTest {
         whenever(
             dataSource.bulkUpdateOrders(
@@ -173,16 +195,60 @@ class OrdersBulkUpdateToolHandlerTest {
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         val structured = (result as ToolResult.Success).structured.jsonObject
         assertThat(requireNotNull(structured["tool"]).jsonPrimitive.content).isEqualTo("orders_bulk_update")
-        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.content).isEqualTo("1")
-        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.content).isEqualTo("1")
+        assertThat(requireNotNull(structured["requested_count"]).jsonPrimitive.int).isEqualTo(2)
+        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.int).isEqualTo(1)
+        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.int).isEqualTo(1)
+        assertThat(requireNotNull(structured["partial_success"]).jsonPrimitive.boolean).isTrue
+        assertThat(requireNotNull(structured["patch_keys"]).jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("status", "customer_note", "billing_email")
         assertThat(requireNotNull(structured["updated_ids"]).jsonArray.single().jsonPrimitive.long).isEqualTo(123L)
         val failed = requireNotNull(structured["failed"]).jsonArray.single().jsonObject
+        assertThat(failed.keys).containsExactly("id", "code", "message", "status")
         assertThat(requireNotNull(failed["id"]).jsonPrimitive.long).isEqualTo(456L)
         assertThat(requireNotNull(failed["code"]).jsonPrimitive.content)
             .isEqualTo("woocommerce_rest_shop_order_invalid_id")
         assertThat(requireNotNull(failed["message"]).jsonPrimitive.content).isEqualTo("Invalid ID.")
         assertThat(requireNotNull(failed["status"]).jsonPrimitive.content).isEqualTo("400")
     }
+
+    @Test
+    fun `given partial bulk result, when execute succeeds, then compact receipt includes requested counts and patch keys`() =
+        runTest {
+            whenever(
+                dataSource.bulkUpdateOrders(
+                    orderIds = listOf(1L, 2L),
+                    patch = AIOrdersDataSource.OrderPatch(status = "completed")
+                )
+            ).thenReturn(
+                Result.success(
+                    AIOrdersDataSource.BulkUpdateResult(
+                        updatedIds = listOf(1L),
+                        failedOrders = listOf(
+                            FailedOrder(id = 2L, errorCode = "bad_status", errorMessage = "Nope", errorStatus = 400)
+                        )
+                    )
+                )
+            )
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        putJsonArray("ids") { add(1); add(2) }
+                        putJsonObject("patch") { put("status", "completed") }
+                    }
+                )
+            )
+
+            val json = (result as ToolResult.Success).structured.jsonObject
+            assertThat(json.getValue("tool").jsonPrimitive.content).isEqualTo("orders_bulk_update")
+            assertThat(json.getValue("requested_count").jsonPrimitive.int).isEqualTo(2)
+            assertThat(json.getValue("updated_count").jsonPrimitive.int).isEqualTo(1)
+            assertThat(json.getValue("failed_count").jsonPrimitive.int).isEqualTo(1)
+            assertThat(json.getValue("partial_success").jsonPrimitive.boolean).isTrue
+            assertThat(json.getValue("patch_keys").jsonArray.map { it.jsonPrimitive.content }).containsExactly("status")
+            assertThat(json.getValue("failed").jsonArray.single().jsonObject.keys)
+                .containsExactly("id", "code", "message", "status")
+        }
 
     @Test
     fun `given update fails, when execute is called, then retryable TransportError is returned`() = runTest {

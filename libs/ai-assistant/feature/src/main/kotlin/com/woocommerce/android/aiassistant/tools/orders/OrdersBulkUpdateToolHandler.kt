@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -63,6 +64,14 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
 
     @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, ORDERS_BULK_ALLOWED_ARGS, TOOL_NAME).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
+        (call.arguments["patch"] as? JsonObject)?.let { patch ->
+            validateAllowedArguments(patch, ORDERS_BULK_PATCH_KEYS, "$TOOL_NAME.patch").exceptionOrNull()?.let {
+                return ToolResult.ValidationError(call.id, it.message ?: "Invalid patch")
+            }
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -90,7 +99,7 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
             onSuccess = { result ->
                 ToolResult.Success(
                     toolCallId = call.id,
-                    structured = result.toJson(),
+                    structured = result.toJson(args),
                 )
             },
             onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
@@ -112,30 +121,37 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
         fun hasUpdates(): Boolean = status != null || customerNote != null || billingEmail != null
     }
 
-    private fun AIOrdersDataSource.BulkUpdateResult.toJson(): JsonObject = buildJsonObject {
+    private fun AIOrdersDataSource.BulkUpdateResult.toJson(args: Args): JsonObject = buildJsonObject {
         put("tool", TOOL_NAME)
+        put("requested_count", args.ids.size)
         put("updated_count", updatedIds.size)
         put("failed_count", failedOrders.size)
-        if (updatedIds.isNotEmpty()) {
-            putJsonArray("updated_ids") { updatedIds.forEach { add(it) } }
-        }
-        if (failedOrders.isNotEmpty()) {
-            putJsonArray("failed") {
-                failedOrders.forEach { failedOrder ->
-                    addJsonObject {
-                        put("id", failedOrder.id)
-                        put("code", failedOrder.errorCode)
-                        put("message", failedOrder.errorMessage)
-                        put("status", failedOrder.errorStatus)
-                    }
+        put("partial_success", updatedIds.isNotEmpty() && failedOrders.isNotEmpty())
+        putJsonArray("patch_keys") { args.patch.patchKeys().forEach { add(it) } }
+        putJsonArray("updated_ids") { updatedIds.forEach { add(it) } }
+        putJsonArray("failed") {
+            failedOrders.forEach { failedOrder ->
+                addJsonObject {
+                    put("id", failedOrder.id)
+                    put("code", failedOrder.errorCode)
+                    put("message", failedOrder.errorMessage)
+                    put("status", failedOrder.errorStatus)
                 }
             }
         }
     }
 
+    private fun Patch.patchKeys(): List<String> = buildList {
+        if (status != null) add("status")
+        if (customerNote != null) add("customer_note")
+        if (billingEmail != null) add("billing_email")
+    }
+
     private companion object {
         const val TOOL_NAME = "orders_bulk_update"
         const val MAX_IDS = 100
+        val ORDERS_BULK_ALLOWED_ARGS = setOf("ids", "patch")
+        val ORDERS_BULK_PATCH_KEYS = setOf("status", "customer_note", "billing_email")
         val ALLOWED_STATUSES = listOf(
             "pending",
             "processing",

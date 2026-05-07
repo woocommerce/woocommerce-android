@@ -8,12 +8,12 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
-import kotlinx.serialization.SerialName
+import com.woocommerce.android.aiassistant.tools.parseExtraFields
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
 internal class OrdersGetToolHandler @Inject constructor(
@@ -28,11 +28,22 @@ internal class OrdersGetToolHandler @Inject constructor(
             "customers_list for follow-up questions about the buyer.",
         inputSchema = inputSchema {
             integer("id", description = "The order ID.", required = true)
+            arrayEnum(
+                name = "extra_fields",
+                values = ORDERS_GET_EXTRA_FIELDS.toList(),
+                description = "Optional compact fields: billing, shipping, coupon_lines, fee_lines, tax_lines.",
+            )
         },
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, ORDERS_GET_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
+        val extraFields = parseExtraFields(call.arguments, ORDERS_GET_EXTRA_FIELDS, descriptor.name).getOrElse {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid extra_fields")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -40,7 +51,7 @@ internal class OrdersGetToolHandler @Inject constructor(
             onSuccess = { order ->
                 ToolResult.Success(
                     toolCallId = call.id,
-                    structured = json.encodeToJsonElement(order.toDetail()) as JsonObject,
+                    structured = json.encodeToJsonElement(order.toOrderDetailResponse(extraFields)) as JsonObject,
                 )
             },
             onFailure = {
@@ -52,29 +63,7 @@ internal class OrdersGetToolHandler @Inject constructor(
 
     @Serializable
     private data class Args(val id: Long)
-
-    @Serializable
-    private data class OrderDetail(
-        val id: Long,
-        val number: String,
-        val status: String,
-        val total: String,
-        val currency: String,
-        @SerialName("date_created") val dateCreated: String,
-        @SerialName("payment_method_title") val paymentMethodTitle: String,
-        @SerialName("customer_name") val customerName: String,
-        @SerialName("customer_email") val customerEmail: String,
-    )
-
-    private fun OrderEntity.toDetail() = OrderDetail(
-        id = orderId,
-        number = number,
-        status = status,
-        total = total,
-        currency = currency,
-        dateCreated = dateCreated,
-        paymentMethodTitle = paymentMethodTitle,
-        customerName = "$billingFirstName $billingLastName".trim(),
-        customerEmail = billingEmail,
-    )
 }
+
+private val ORDERS_GET_ALLOWED_ARGS = setOf("id", "extra_fields")
+private val ORDERS_GET_EXTRA_FIELDS = setOf("billing", "shipping", "coupon_lines", "fee_lines", "tax_lines")
