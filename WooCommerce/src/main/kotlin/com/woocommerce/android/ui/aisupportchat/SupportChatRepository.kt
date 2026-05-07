@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 
 @Reusable
@@ -19,6 +20,7 @@ class SupportChatRepository @Inject constructor(
     private val bookmarkDao: SupportChatBookmarkDao,
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
+    private val currentTimeProvider: CurrentTimeProvider,
     private val dispatchers: CoroutineDispatchers
 ) {
     suspend fun sendMessage(
@@ -41,7 +43,7 @@ class SupportChatRepository @Inject constructor(
 
     suspend fun registerChat(chatId: Long, botSlug: String, firstUserMessage: String): Unit = withContext(dispatchers.io) {
         val selectedSiteModel = selectedSite.get()
-        val now = System.currentTimeMillis()
+        val now = currentTimeProvider.currentDate().time
         bookmarkDao.insertIgnore(
             SupportChatBookmarkEntity(
                 chatId = chatId,
@@ -57,7 +59,7 @@ class SupportChatRepository @Inject constructor(
     }
 
     suspend fun touchChat(chatId: Long): Unit = withContext(dispatchers.io) {
-        bookmarkDao.touch(chatId = chatId, updatedAt = System.currentTimeMillis())
+        bookmarkDao.touch(chatId = chatId, updatedAt = currentTimeProvider.currentDate().time)
     }
 
     suspend fun loadChatHistory(): List<SupportChatBookmark> = withContext(dispatchers.io) {

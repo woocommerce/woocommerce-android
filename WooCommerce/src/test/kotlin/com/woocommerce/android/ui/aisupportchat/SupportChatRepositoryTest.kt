@@ -12,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -27,6 +26,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class SupportChatRepositoryTest : BaseUnitTest() {
@@ -34,16 +35,19 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     private val bookmarkDao: SupportChatBookmarkDao = mock()
     private val selectedSite: SelectedSite = mock()
     private val accountStore: AccountStore = mock()
+    private val currentTimeProvider: CurrentTimeProvider = mock()
 
     private lateinit var repository: SupportChatRepository
 
     @Before
     fun setUp() {
+        whenever(currentTimeProvider.currentDate()).thenReturn(Date(CURRENT_TIME))
         repository = SupportChatRepository(
             restClient = restClient,
             bookmarkDao = bookmarkDao,
             selectedSite = selectedSite,
             accountStore = accountStore,
+            currentTimeProvider = currentTimeProvider,
             dispatchers = CoroutineDispatchers(
                 main = coroutinesTestRule.testDispatcher,
                 computation = coroutinesTestRule.testDispatcher,
@@ -127,7 +131,8 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         assertThat(bookmarkCaptor.firstValue.wpcomUserId).isEqualTo(WPCOM_USER_ID)
         assertThat(bookmarkCaptor.firstValue.botSlug).isEqualTo(BOT_SLUG)
         assertThat(bookmarkCaptor.firstValue.title).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX")
-        assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(bookmarkCaptor.firstValue.updatedAt)
+        assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(CURRENT_TIME)
+        assertThat(bookmarkCaptor.firstValue.updatedAt).isEqualTo(CURRENT_TIME)
     }
 
     @Test
@@ -150,7 +155,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     fun `when touching chat, then dao is updated with current timestamp`() = testBlocking {
         repository.touchChat(CHAT_ID)
 
-        verify(bookmarkDao).touch(eq(CHAT_ID), any())
+        verify(bookmarkDao).touch(CHAT_ID, CURRENT_TIME)
     }
 
     @Test
@@ -232,6 +237,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         const val LOCAL_SITE_ID = 10
         const val REMOTE_SITE_ID = 20L
         const val WPCOM_USER_ID = 30L
+        const val CURRENT_TIME = 1_234_567L
         const val MESSAGE = "I need help with orders"
         const val ERROR_MESSAGE = "Not found"
         val CONTEXT = mapOf<String, Any>("site_id" to REMOTE_SITE_ID)
