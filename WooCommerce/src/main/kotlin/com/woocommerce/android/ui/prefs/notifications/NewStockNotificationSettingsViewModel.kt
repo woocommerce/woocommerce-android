@@ -11,16 +11,23 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
 class NewStockNotificationSettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
+
+    init {
+        refreshDefaultLowStockThreshold()
+    }
 
     fun onNotificationsEnabledChanged(isEnabled: Boolean) {
         _viewState.update { it.copy(notificationsEnabled = isEnabled) }
@@ -36,6 +43,10 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         }
     }
 
+    fun onStoreSettingsWebViewClosed() {
+        refreshDefaultLowStockThreshold()
+    }
+
     fun onEditStoreSettingsClicked() {
         triggerEvent(
             MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
@@ -45,13 +56,32 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         )
     }
 
+    private fun refreshDefaultLowStockThreshold() {
+        launch {
+            val site = selectedSite.get()
+
+            wooCommerceStore.getProductSettings(site)?.defaultLowStockThreshold?.let { threshold ->
+                updateDefaultLowStockThreshold(threshold)
+            }
+
+            val productSettings = wooCommerceStore.fetchSiteProductSettings(site).model
+
+            productSettings?.defaultLowStockThreshold?.let { threshold ->
+                updateDefaultLowStockThreshold(threshold)
+            }
+        }
+    }
+
+    private fun updateDefaultLowStockThreshold(threshold: Int) {
+        _viewState.update { it.copy(defaultLowStockThreshold = threshold) }
+    }
+
     data class ViewState(
         val notificationsEnabled: Boolean = true,
         val lowStockNotificationsEnabled: Boolean = true,
         val outOfStockNotificationsEnabled: Boolean = true,
         val backorderNotificationsEnabled: Boolean = true,
-        // Temporary value until the default threshold is fetched from the network.
-        val defaultLowStockThreshold: Int = 5
+        val defaultLowStockThreshold: Int? = null
     )
 
     enum class StockNotificationType {
