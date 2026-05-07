@@ -6,12 +6,17 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -32,8 +37,23 @@ class ProductsListToolHandlerTest {
         },
     )
 
-    private fun makeProduct(id: Long = 1L, status: String = "publish"): WCProductModel =
-        WCProductModel(remoteId = RemoteId(id), status = status)
+    private fun makeProduct(
+        id: Long = 1L,
+        status: String = "publish",
+        name: String = "",
+        sku: String = "",
+        price: String = "",
+        stockStatus: String = "",
+        type: String = "",
+    ): WCProductModel = WCProductModel(
+        remoteId = RemoteId(id),
+        status = status,
+        name = name,
+        sku = sku,
+        price = price,
+        stockStatus = stockStatus,
+        type = type,
+    )
 
     private fun toolCall(arguments: JsonObject): ToolCall =
         ToolCall(id = "call-1", name = "products_list", arguments = arguments)
@@ -56,6 +76,106 @@ class ProductsListToolHandlerTest {
             assertThat(requireNotNull(json["count"]).jsonPrimitive.int).isEqualTo(2)
             val ids = requireNotNull(json["ids"]).jsonArray.map { it.jsonPrimitive.content.toLong() }
             assertThat(ids).containsExactly(10L, 20L)
+        }
+
+    @Test
+    fun `given products are returned, when execute is called, then structured JSON contains per row summaries`() =
+        runTest {
+            val product = makeProduct(
+                id = 10L,
+                name = "Socks",
+                sku = "SOCK",
+                price = "9.99",
+                stockStatus = "instock",
+                type = "simple",
+                status = "publish",
+            )
+            whenever(dataSource.fetchProducts(search = null)).thenReturn(
+                Result.success(AIProductsDataSource.ProductsPage(products = listOf(product), canLoadMore = false))
+            )
+
+            val result = handler.execute(toolCall(buildJsonObject {}))
+
+            val row = (result as ToolResult.Success).structured.jsonObject
+                .getValue("products").jsonArray.single().jsonObject
+            assertThat(row.getValue("id").jsonPrimitive.long).isEqualTo(10L)
+            assertThat(row.getValue("name").jsonPrimitive.content).isEqualTo("Socks")
+            assertThat(row.getValue("sku").jsonPrimitive.content).isEqualTo("SOCK")
+            assertThat(row.getValue("price").jsonPrimitive.content).isEqualTo("9.99")
+            assertThat(row.getValue("stock_status").jsonPrimitive.content).isEqualTo("instock")
+            assertThat(row.getValue("type").jsonPrimitive.content).isEqualTo("simple")
+            assertThat(row.getValue("status").jsonPrimitive.content).isEqualTo("publish")
+        }
+
+    @Test
+    fun `given product list extras, when execute is called, then every allowed list extra is included`() =
+        runTest {
+            val product = WCProductModel(
+                remoteId = RemoteId(10L),
+                name = "Socks",
+                sku = "SOCK",
+                price = "9.99",
+                regularPrice = "12.99",
+                salePrice = "9.99",
+                onSale = true,
+                stockQuantity = 4.0,
+                manageStock = true,
+                stockStatus = "instock",
+                type = "simple",
+                status = "publish",
+                categories = """[{"id":1,"name":"Clothing","slug":"clothing"}]""",
+                tags = """[{"id":2,"name":"Featured","slug":"featured"}]""",
+                totalSales = 20L,
+                dateCreated = "2026-05-01T10:00:00Z",
+                dateModified = "2026-05-02T10:00:00Z",
+                images = """[{"id":7,"src":"https://example.com/socks.jpg","alt":"Socks","name":"Front"}]""",
+                shortDescription = "Short socks",
+                description = "Long socks",
+            )
+            whenever(dataSource.fetchProducts(search = null)).thenReturn(
+                Result.success(AIProductsDataSource.ProductsPage(products = listOf(product), canLoadMore = false))
+            )
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        putJsonArray("extra_fields") {
+                            add("regular_price")
+                            add("sale_price")
+                            add("on_sale")
+                            add("stock_quantity")
+                            add("manage_stock")
+                            add("categories")
+                            add("tags")
+                            add("total_sales")
+                            add("date_created")
+                            add("date_modified")
+                            add("image")
+                            add("short_description")
+                            add("description")
+                        }
+                    }
+                )
+            )
+
+            val row = (result as ToolResult.Success).structured.jsonObject
+                .getValue("products").jsonArray.single().jsonObject
+            assertThat(row.getValue("regular_price").jsonPrimitive.content).isEqualTo("12.99")
+            assertThat(row.getValue("sale_price").jsonPrimitive.content).isEqualTo("9.99")
+            assertThat(row.getValue("on_sale").jsonPrimitive.boolean).isTrue
+            assertThat(row.getValue("stock_quantity").jsonPrimitive.double).isEqualTo(4.0)
+            assertThat(row.getValue("manage_stock").jsonPrimitive.boolean).isTrue
+            assertThat(row.getValue("categories").jsonArray.single().jsonObject.getValue("name").jsonPrimitive.content)
+                .isEqualTo("Clothing")
+            assertThat(row.getValue("tags").jsonArray.single().jsonObject.getValue("name").jsonPrimitive.content)
+                .isEqualTo("Featured")
+            assertThat(row.getValue("total_sales").jsonPrimitive.long).isEqualTo(20L)
+            assertThat(row.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
+            assertThat(row.getValue("date_modified").jsonPrimitive.content).isEqualTo("2026-05-02T10:00:00Z")
+            assertThat(row.getValue("image").jsonObject.getValue("src").jsonPrimitive.content)
+                .isEqualTo("https://example.com/socks.jpg")
+            assertThat(row.getValue("short_description").jsonPrimitive.content).isEqualTo("Short socks")
+            assertThat(row.getValue("description").jsonPrimitive.content).isEqualTo("Long socks")
         }
 
     @Test

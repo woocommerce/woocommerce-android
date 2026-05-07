@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -48,6 +49,9 @@ internal class ProductsUpdateToolHandler @Inject constructor(
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, PRODUCTS_UPDATE_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -111,6 +115,15 @@ internal class ProductsUpdateToolHandler @Inject constructor(
         val ALLOWED_STATUSES = setOf("draft", "pending", "private", "publish")
     }
 }
+
+private val PRODUCTS_UPDATE_ALLOWED_ARGS = setOf(
+    "id",
+    "name",
+    "regular_price",
+    "sale_price",
+    "stock_quantity",
+    "status",
+)
 
 private fun Throwable.toProductUpdateFailureKind(): ToolFailureKind = when (this) {
     is AIProductsDataSource.ProductNotFoundException -> ToolFailureKind.DETERMINISTIC_FAILURE

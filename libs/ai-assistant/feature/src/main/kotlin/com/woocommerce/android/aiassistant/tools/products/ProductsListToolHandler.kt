@@ -8,6 +8,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.parseExtraFields
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -35,11 +37,22 @@ internal class ProductsListToolHandler @Inject constructor(
             )
             integer("page", description = "1-based page number; default 1.")
             integer("per_page", description = "Max items; clamped 1-50, default 20.")
+            arrayEnum(
+                name = "extra_fields",
+                values = PRODUCTS_LIST_EXTRA_FIELDS.toList(),
+                description = "Optional compact fields for each product row.",
+            )
         },
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, PRODUCTS_LIST_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
+        val extraFields = parseExtraFields(call.arguments, PRODUCTS_LIST_EXTRA_FIELDS, descriptor.name).getOrElse {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid extra_fields")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -55,6 +68,7 @@ internal class ProductsListToolHandler @Inject constructor(
                 val response = ProductListResponse(
                     count = products.size,
                     ids = products.map { it.remoteProductId },
+                    products = products.map { it.toProductListRowResponse(extraFields) },
                     statusCounts = statusCounts,
                 )
                 ToolResult.Success(toolCallId = call.id, structured = json.encodeToJsonElement(response) as JsonObject)
@@ -75,6 +89,24 @@ internal class ProductsListToolHandler @Inject constructor(
     private data class ProductListResponse(
         val count: Int,
         val ids: List<Long>,
+        val products: List<ProductListRowResponse>,
         @SerialName("status_counts") val statusCounts: Map<String, Int>,
     )
 }
+
+private val PRODUCTS_LIST_ALLOWED_ARGS = setOf("search", "status", "page", "per_page", "extra_fields")
+private val PRODUCTS_LIST_EXTRA_FIELDS = setOf(
+    "regular_price",
+    "sale_price",
+    "on_sale",
+    "stock_quantity",
+    "manage_stock",
+    "categories",
+    "tags",
+    "total_sales",
+    "date_created",
+    "date_modified",
+    "image",
+    "short_description",
+    "description",
+)
