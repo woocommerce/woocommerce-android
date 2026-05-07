@@ -53,6 +53,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentType: PaymentType,
         isTTPPaymentInProgress: KMutableProperty0<Boolean>,
         allowCancelledStatus: Boolean = false,
+        cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
     ): CardReaderPaymentController = CardReaderPaymentController(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -77,7 +78,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
             orderId = orderId,
             paymentType = paymentType
         ),
-        cardReaderType = CardReaderType.EXTERNAL,
+        cardReaderType = cardReaderType,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
         allowCancelledStatus = allowCancelledStatus,
     )
