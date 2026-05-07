@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AiAssistantHostFragment : BaseFragment() {
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -31,7 +32,9 @@ class AiAssistantHostFragment : BaseFragment() {
                 onBack = { findNavController().navigateUp() },
                 assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter),
                 onCardAction = { action ->
-                    findNavController().navigateSafely(action.toNavDirections())
+                    action.toNavDirections()?.let { direction ->
+                        findNavController().navigateSafely(direction)
+                    }
                 },
             )
         }

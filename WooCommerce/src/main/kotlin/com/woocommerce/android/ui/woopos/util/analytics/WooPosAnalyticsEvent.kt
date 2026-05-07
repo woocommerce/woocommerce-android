@@ -614,6 +614,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 get() = "reader_ready_for_card_payment"
         }
 
+        data object RemoteTapToPayExplainerShown : Event() {
+            override val name: String = "remote_ttp_explainer_shown"
+        }
+
         data object SimpleProductExplanationDialogShown : Event() {
             override val name: String = "simple_products_explanation_dialog_shown"
         }

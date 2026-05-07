@@ -23,8 +23,11 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFail
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
@@ -52,6 +55,64 @@ internal class PaymentManager(
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
         processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
+
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun createPaymentIntentOnly(paymentInfo: PaymentInfo): CreatePaymentIntentResult {
+        validateRemoteState(paymentInfo)?.let { return CreatePaymentIntentResult.Failed(it) }
+        return try {
+            when (val result = createPaymentAction.createPaymentIntent(paymentInfo)) {
+                is Success -> {
+                    val id = result.paymentIntent.id
+                    val secret = result.paymentIntent.clientSecret
+                    if (id == null || secret == null) {
+                        CreatePaymentIntentResult.Failed(
+                            IllegalStateException("createPaymentIntent returned null id or clientSecret"),
+                        )
+                    } else {
+                        CreatePaymentIntentResult.Success(paymentIntentId = id, clientSecret = secret)
+                    }
+                }
+                is Failure -> CreatePaymentIntentResult.Failed(result.exception)
+            }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (cause: Exception) {
+            CreatePaymentIntentResult.Failed(cause)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult =
+        try {
+            val retrieved = terminalWrapper.retrievePaymentIntent(clientSecret)
+            val processed = terminalWrapper.processPaymentIntent(retrieved)
+            val id = processed.id
+            val status = processed.status?.name?.lowercase()
+            if (id == null || status == null) {
+                RetrieveAndCollectResult.Failed(
+                    IllegalStateException("processPaymentIntent returned null id or status"),
+                )
+            } else {
+                RetrieveAndCollectResult.Success(paymentIntentId = id, status = status)
+            }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (cause: Exception) {
+            RetrieveAndCollectResult.Failed(cause)
+        }
+
+    private fun validateRemoteState(paymentInfo: PaymentInfo): Throwable? {
+        val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
+        return when {
+            cardReaderConfig !is CardReaderConfigForSupportedCountry ||
+                !paymentUtils.isSupportedCurrency(paymentInfo.currency, cardReaderConfig) ->
+                IllegalStateException(
+                    "Unsupported country/currency: ${paymentInfo.countryCode}/${paymentInfo.currency}"
+                )
+            !terminalWrapper.isInitialized() -> IllegalStateException("Reader not connected")
+            else -> null
+        }
+    }
 
     fun cancelPayment(paymentData: PaymentData) {
         val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent

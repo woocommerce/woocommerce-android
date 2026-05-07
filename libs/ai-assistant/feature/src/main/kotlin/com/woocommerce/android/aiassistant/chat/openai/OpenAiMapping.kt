@@ -1,6 +1,6 @@
 package com.woocommerce.android.aiassistant.chat.openai
 
-import com.woocommerce.android.aiassistant.core.AssistantConfig
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
