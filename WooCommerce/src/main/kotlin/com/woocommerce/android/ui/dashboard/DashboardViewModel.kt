@@ -26,6 +26,7 @@ import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificati
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.aiassistant.AIAssistantEligibilityChecker
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
@@ -71,6 +72,7 @@ class DashboardViewModel @Inject constructor(
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
+    private val aiAssistantEligibilityChecker: AIAssistantEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -108,9 +110,10 @@ class DashboardViewModel @Inject constructor(
     private val dashboardWidgets = combine(
         dashboardRepository.widgets,
         dashboardRepository.hasNewWidgets,
-        feedbackPrefs.userFeedbackIsDueObservable
-    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue ->
-        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue)
+        feedbackPrefs.userFeedbackIsDueObservable,
+        aiAssistantEligibilityChecker.observeEligibility()
+    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue, isAiAssistantEligible ->
+        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue, isAiAssistantEligible)
     }
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
@@ -235,8 +238,16 @@ class DashboardViewModel @Inject constructor(
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
         hasNewWidgets: Boolean,
-        userFeedbackIsDue: Boolean
+        userFeedbackIsDue: Boolean,
+        isAiAssistantEligible: Boolean
     ): List<DashboardWidgetUiModel> = buildList {
+        add(
+            DashboardWidgetUiModel.AIAssistantEntry(
+                isVisible = isAiAssistantEligible,
+                onClick = {}
+            )
+        )
+
         addAll(
             widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
         )
@@ -333,6 +344,11 @@ class DashboardViewModel @Inject constructor(
             override val isVisible: Boolean
                 get() = widget.isVisible
         }
+
+        data class AIAssistantEntry(
+            override val isVisible: Boolean,
+            val onClick: () -> Unit
+        ) : DashboardWidgetUiModel
 
         data class ShareStoreWidget(
             override val isVisible: Boolean,

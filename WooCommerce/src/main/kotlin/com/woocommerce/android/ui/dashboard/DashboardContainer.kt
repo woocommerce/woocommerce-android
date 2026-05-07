@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardCardsState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.AIAssistantEntry
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
@@ -230,6 +231,8 @@ private fun DashboardWidgetCard(
                 modifier = modifier
             )
         }
+
+        is AIAssistantEntry -> Unit
     }
 }
 
