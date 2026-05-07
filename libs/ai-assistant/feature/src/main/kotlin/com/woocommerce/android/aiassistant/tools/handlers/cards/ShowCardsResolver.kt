@@ -48,9 +48,11 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val orderResults = resolveOrders(refs.filter { it.family == ShowCardFamily.Order })
         val productResults = resolveProducts(refs.filter { it.family == ShowCardFamily.Product })
         val analyticsResults = resolveAnalyticsStats(refs.filter { it.family == ShowCardFamily.AnalyticsStats })
+        val customerResults = resolveCustomers(refs.filter { it.family == ShowCardFamily.Customer })
 
         return refs.map { ref ->
-            orderResults[ref] ?: productResults[ref] ?: analyticsResults[ref] ?: ShowCardsResolution.Missing(
+            orderResults[ref] ?: productResults[ref] ?: analyticsResults[ref] ?: customerResults[ref]
+                ?: ShowCardsResolution.Missing(
                 ref = ref,
                 reason = ShowCardsRejectionReason.NotFound,
             )
@@ -221,6 +223,14 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed)
             },
         )
+    }
+
+    private fun resolveCustomers(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
+        if (refs.isEmpty()) return emptyMap()
+
+        return refs.associateWith { ref ->
+            ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.NotFound)
+        }
     }
 
     private inline fun <reified T> jsonObject(value: T): JsonObject =
