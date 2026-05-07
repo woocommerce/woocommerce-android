@@ -240,7 +240,7 @@
     <string name="login_qr_scanner_error_payload_title">Not a WooCommerce code</string>
     <string name="login_qr_scanner_error_payload_body">This QR isn\'t a WooCommerce login code. Generate a new one from your store and try again.</string>
     <string name="login_qr_scanner_error_install_qr_title">That\'s the install QR</string>
-    <string name="login_qr_scanner_error_install_qr_body">The app\'s already installed — this QR installs it. In wp-admin, tap the %1$s button to reveal the sign-in QR. Or visit %2$s on your computer.</string>
+    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[The app\'s already installed — this QR installs it. In wp-admin, tap the <b>%1$s</b> button to reveal the sign-in QR. Or visit <b>%2$s</b> on your computer.]]></string>
     <string name="login_qr_scanner_error_install_qr_body_button">App is installed</string>
     <string name="login_qr_scanner_error_token_title">Code expired</string>
     <string name="login_qr_scanner_error_token_body">That code expired or has already been used. Generate a new one in your store.</string>
