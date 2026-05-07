@@ -757,20 +757,35 @@ private fun AssistantChatScreenEmptyStatePreview() {
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun AssistantChatScreenToolActivityPreview() {
+private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
     AssistantChatScreen(
         state = AssistantUiState(
             messages = listOf(
-                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Find order 123"),
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Show revenue and latest orders"),
                 AssistantUiMessage(
                     id = "preview-2",
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
-                        AssistantUiSegment.Text(""),
+                        AssistantUiSegment.Text("I checked this week's revenue and am loading your latest orders."),
                         AssistantUiSegment.ToolActivity(
                             AssistantToolActivity(
-                                toolCallId = "call-preview",
-                                toolName = "orders_get",
+                                toolCallId = "call-revenue",
+                                toolName = "analytics_revenue",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-customer",
+                                toolName = "customers_list",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-orders",
+                                toolName = "orders_list",
+                                status = AssistantToolActivity.Status.RUNNING,
                             )
                         ),
                     ),
@@ -778,6 +793,50 @@ private fun AssistantChatScreenToolActivityPreview() {
             ),
             status = AssistantUiStatus.STREAMING,
             activeAssistantMessageId = "preview-2",
+        ),
+        inputText = "",
+        onInputTextChange = {},
+        onSendMessage = {},
+        onSendSuggestion = {},
+        onCancelTurn = {},
+        onRetry = {},
+        onConfirmWrite = {},
+        onCancelWrite = {},
+        onBack = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
+    AssistantChatScreen(
+        state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Show revenue and latest orders"),
+                AssistantUiMessage(
+                    id = "preview-2",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-revenue",
+                                toolName = "analytics_revenue",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                        AssistantUiSegment.Text("Here are this week's sales and your most recent order."),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-orders",
+                                toolName = "orders_list",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                    ),
+                ),
+            ),
+            status = AssistantUiStatus.IDLE,
         ),
         inputText = "",
         onInputTextChange = {},
