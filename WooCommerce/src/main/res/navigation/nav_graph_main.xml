@@ -852,6 +852,9 @@
             app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />
     </fragment>
     <action
+        android:id="@+id/action_global_customerDetailsFragment"
+        app:destination="@id/customerDetailsFragment" />
+    <action
         android:id="@+id/action_global_googleAdsCampaignSuccessBottomSheet"
         app:destination="@id/googleAdsCampaignSuccessBottomSheetFragment" />
     <dialog

@@ -4,15 +4,37 @@ import androidx.navigation.NavDirections
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.moremenu.customer.GetCustomerWithStats
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-internal fun AssistantCardAction.toNavDirections(
-    locale: Locale = Locale.getDefault(),
+internal class WooAssistantCardActionNavigator @Inject constructor(
+    private val getCustomerWithStats: GetCustomerWithStats,
+) {
+    internal suspend fun directionFor(
+        action: AssistantCardAction,
+        locale: Locale = Locale.getDefault(),
+    ): NavDirections? =
+        when (action) {
+            is AssistantCardAction.OpenCustomer -> {
+                val customer = getCustomerWithStats(
+                    remoteCustomerId = action.remoteCustomerId,
+                    analyticsCustomerId = null,
+                ).getOrNull() ?: return null
+
+                NavGraphMainDirections.actionGlobalCustomerDetailsFragment(customer)
+            }
+            else -> action.toNavDirections(locale)
+        }
+}
+
+private fun AssistantCardAction.toNavDirections(
+    locale: Locale,
 ): NavDirections? =
     when (this) {
         is AssistantCardAction.OpenOrder -> NavGraphMainDirections.actionGlobalOrderDetailFragment(
@@ -22,7 +44,6 @@ internal fun AssistantCardAction.toNavDirections(
         is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
             mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
         )
-        is AssistantCardAction.OpenCustomer -> null
         is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
             after = after,
             before = before,
@@ -30,6 +51,7 @@ internal fun AssistantCardAction.toNavDirections(
         )?.let { rangeSelection ->
             NavGraphMainDirections.actionGlobalAnalytics(rangeSelection)
         }
+        is AssistantCardAction.OpenCustomer -> null
     }
 
 internal fun analyticsDatesToStatsTimeRangeSelection(
