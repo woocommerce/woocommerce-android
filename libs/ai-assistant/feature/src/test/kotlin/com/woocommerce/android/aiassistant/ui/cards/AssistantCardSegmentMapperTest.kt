@@ -9,7 +9,7 @@ import org.junit.Test
 
 class AssistantCardSegmentMapperTest {
     @Test
-    fun `given order and product payloads, when mapped, then card segments preserve parsed card order`() {
+    fun `given order and product payloads, when mapped, then grouped segment preserves parsed card order`() {
         val segments = AssistantCardSegmentMapper.toSegments(
             ShowCardsUiStructured(
                 cards = listOf(
@@ -20,28 +20,28 @@ class AssistantCardSegmentMapperTest {
         )
 
         assertThat(segments).containsExactly(
-            AssistantUiSegment.Card(
-                AssistantCard.Order(
-                    remoteOrderId = 1L,
-                    number = "#1",
-                    status = "processing",
-                    total = "12.34",
-                    currency = "USD",
-                    customerName = "Jane Doe",
-                    date = "2026-05-01T10:00:00Z",
+            AssistantUiSegment.CardGroup(
+                listOf(
+                    AssistantCard.Order(
+                        remoteOrderId = 1L,
+                        number = "#1",
+                        status = "processing",
+                        total = "12.34",
+                        currency = "USD",
+                        customerName = "Jane Doe",
+                        date = "2026-05-01T10:00:00Z",
+                    ),
+                    AssistantCard.Product(
+                        remoteProductId = 2L,
+                        name = "Socks",
+                        sku = "woo-socks",
+                        price = "9.99",
+                        stockStatus = "instock",
+                        status = "publish",
+                        imageUrl = "https://example.com/socks.png",
+                    ),
                 )
-            ),
-            AssistantUiSegment.Card(
-                AssistantCard.Product(
-                    remoteProductId = 2L,
-                    name = "Socks",
-                    sku = "woo-socks",
-                    price = "9.99",
-                    stockStatus = "instock",
-                    status = "publish",
-                    imageUrl = "https://example.com/socks.png",
-                )
-            ),
+            )
         )
     }
 

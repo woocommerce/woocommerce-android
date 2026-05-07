@@ -23,3 +23,22 @@ internal fun WooPosPaymentMethod.testTag(): String = when (this) {
     WooPosPaymentMethod.SCAN_TO_PAY -> WooPosTestTags.SCAN_TO_PAY_PAYMENT_BUTTON
     WooPosPaymentMethod.MARK_ORDER_AS_PAID -> WooPosTestTags.MARK_ORDER_AS_PAID_PAYMENT_BUTTON
 }
+
+internal fun buildAllPaymentMethods(
+    readerStatus: WooPosTotalsViewState.ReaderStatus,
+    isTapToPayAvailable: Boolean,
+): List<WooPosPaymentMethod> = buildList {
+    val readerConnected = readerStatus.isReaderConnected()
+    if (!readerConnected && isTapToPayAvailable) add(WooPosPaymentMethod.CARD_READER)
+    if (readerConnected && isTapToPayAvailable) add(WooPosPaymentMethod.TAP_TO_PAY)
+    add(WooPosPaymentMethod.SCAN_TO_PAY)
+    add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
+}
+
+private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = when (this) {
+    is WooPosTotalsViewState.ReaderStatus.Preparing,
+    is WooPosTotalsViewState.ReaderStatus.CheckingOrder,
+    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> true
+    is WooPosTotalsViewState.ReaderStatus.Disconnected,
+    WooPosTotalsViewState.ReaderStatus.Unavailable -> false
+}
