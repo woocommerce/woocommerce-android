@@ -80,6 +80,15 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
+    fun `when prompt is generated, then it teaches conservative extra field usage`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-07")
+
+        assertThat(prompt).contains("extra_fields")
+        assertThat(prompt).contains("Use `extra_fields` only when")
+        assertThat(prompt).contains("Do not request extra fields speculatively")
+    }
+
+    @Test
     fun `when prompt is built, then show cards is the only card producer including analytics stats`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 
