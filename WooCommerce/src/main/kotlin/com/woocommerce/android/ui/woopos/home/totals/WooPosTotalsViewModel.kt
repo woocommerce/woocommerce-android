@@ -337,18 +337,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun setTapToPayProgress(progress: WooPosTotalsViewState.TapToPayProgress?) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        val nextButtonsState = if (progress != null) {
-            WooPosTotalsViewState.PaymentButtonsState.Disabled
-        } else {
-            WooPosTotalsViewState.PaymentButtonsState.Enabled
-        }
-        if (checkout.tapToPayProgress != progress ||
-            checkout.paymentButtonsState != nextButtonsState
-        ) {
-            uiState.value = checkout.copy(
-                tapToPayProgress = progress,
-                paymentButtonsState = nextButtonsState,
-            )
+        if (checkout.tapToPayProgress != progress) {
+            uiState.value = checkout.copy(tapToPayProgress = progress)
         }
     }
 
@@ -588,71 +578,80 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun listenToPaymentState() {
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
-                when (paymentState) {
-                    is CardReaderPaymentState.ProcessingPayment -> {
-                        if (isTapToPayPayment) return@collect
-                        handleProcessingPaymentState(paymentState)
-                    }
-
-                    is CardReaderPaymentState.LoadingData -> {
-                        if (isTapToPayPayment) {
-                            setTapToPayProgress(WooPosTotalsViewState.TapToPayProgress.SdkActive)
-                            return@collect
-                        }
-                        handleReaderLoadingPaymentState()
-                    }
-
-                    is CardReaderPaymentState.PaymentCapturing -> {
-                        if (isTapToPayPayment) {
-                            ensurePaymentInProgressStateForTapToPay()
-                        } else {
-                            handleCapturingPaymentState()
-                        }
-                    }
-
-                    is CardReaderPaymentState.PaymentSuccessful -> {
-                        val wasTapToPay = isTapToPayPayment
-                        if (wasTapToPay) {
-                            isTTPPaymentInProgress = false
-                        }
-                        isTapToPayPayment = false
-                        setTapToPayInProgress(false)
-                        if (wasTapToPay) {
-                            launch { builtInReaderConnector.disconnectIfConnected() }
-                        }
-                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
-                    }
-
-                    is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
-                        uiState.value = buildPaymentFailedState(paymentState)
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
-                    }
-
-                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
-                        wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
-                        isTTPPaymentInProgress = false
-                        isTapToPayPayment = false
-                        setTapToPayInProgress(false)
-                        launch { builtInReaderConnector.disconnectIfConnected() }
-                        if (paymentState.errorType == PaymentFlowError.Canceled) {
-                            returnToCheckoutAfterTapToPayFailed()
-                        } else {
-                            uiState.value = buildBuiltInPaymentFailedState(paymentState)
-                            childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
-                        }
-                    }
-
-                    CardReaderPaymentState.ReFetchingOrder -> Unit
-
-                    is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
-                    is CardReaderPaymentState.PrintingReceipt,
-                    CardReaderPaymentState.SharingReceipt -> {
-                        throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
-                    }
+                if (isTapToPayPayment) {
+                    handleTapToPayPaymentState(paymentState)
+                } else {
+                    handleExternalReaderPaymentState(paymentState)
                 }
             }
         }
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+    }
+
+    private suspend fun handleTapToPayPaymentState(paymentState: CardReaderPaymentOrRefundState) {
+        when (paymentState) {
+            is CardReaderPaymentState.LoadingData ->
+                setTapToPayProgress(WooPosTotalsViewState.TapToPayProgress.SdkActive)
+
+            is CardReaderPaymentState.PaymentCapturing -> ensurePaymentInProgressStateForTapToPay()
+
+            is CardReaderPaymentState.PaymentSuccessful -> {
+                isTTPPaymentInProgress = false
+                isTapToPayPayment = false
+                setTapToPayInProgress(false)
+                viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
+                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+            }
+
+            is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
+                wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
+                isTTPPaymentInProgress = false
+                isTapToPayPayment = false
+                setTapToPayInProgress(false)
+                viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
+                if (paymentState.errorType == PaymentFlowError.Canceled) {
+                    returnToCheckoutAfterTapToPayFailed()
+                } else {
+                    uiState.value = buildBuiltInPaymentFailedState(paymentState)
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
+                }
+            }
+
+            is CardReaderPaymentState.ProcessingPayment,
+            CardReaderPaymentState.ReFetchingOrder,
+            is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> Unit
+
+            is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+            is CardReaderPaymentState.PrintingReceipt,
+            CardReaderPaymentState.SharingReceipt ->
+                throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+        }
+    }
+
+    private suspend fun handleExternalReaderPaymentState(paymentState: CardReaderPaymentOrRefundState) {
+        when (paymentState) {
+            is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
+
+            is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
+
+            is CardReaderPaymentState.PaymentCapturing -> handleCapturingPaymentState()
+
+            is CardReaderPaymentState.PaymentSuccessful ->
+                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+
+            is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                uiState.value = buildPaymentFailedState(paymentState)
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
+            }
+
+            is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
+            CardReaderPaymentState.ReFetchingOrder -> Unit
+
+            is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+            is CardReaderPaymentState.PrintingReceipt,
+            CardReaderPaymentState.SharingReceipt ->
+                throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+        }
     }
 
     private suspend fun handleCapturingPaymentState() {
