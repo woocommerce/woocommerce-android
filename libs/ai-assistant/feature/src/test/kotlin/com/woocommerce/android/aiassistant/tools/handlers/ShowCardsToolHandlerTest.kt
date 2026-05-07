@@ -38,17 +38,23 @@ class ShowCardsToolHandlerTest {
     private val handler = handlerWith(FakeResolver.empty())
 
     @Test
-    fun `when descriptor is inspected, then show cards accepts Android v1 order and product references`() {
+    fun `when descriptor is inspected, then show cards accepts order product and analytics stats references`() {
         val descriptor = handler.descriptor
 
         assertThat(descriptor.name).isEqualTo("show_cards")
         assertThat(descriptor.description).contains("order")
         assertThat(descriptor.description).contains("product")
+        assertThat(descriptor.description).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("references")
         assertThat(descriptor.inputSchema.toString()).contains("family")
         assertThat(descriptor.inputSchema.toString()).contains("id")
         assertThat(descriptor.inputSchema.toString()).contains("order")
         assertThat(descriptor.inputSchema.toString()).contains("product")
+        assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
+        assertThat(descriptor.inputSchema.toString())
+            .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
     }
 
     @Test
@@ -108,6 +114,24 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
+    fun `given resolved analytics stats, when executed, then summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(analyticsStatsCard(id = ANALYTICS_STATS_ID)),
+            referencesJson = """[{ "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }]"""
+        )
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "after",
+            "before",
+            "currency",
+            "totals",
+        )
+    }
+
+    @Test
     fun `given resolver returns summary extras, when executed, then structured excludes private fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(leakyProductCard(id = "456")),
@@ -121,6 +145,20 @@ class ShowCardsToolHandlerTest {
         assertThat(structuredText).doesNotContain("image.png")
         assertThat(structuredText).doesNotContain("metadata")
         assertThat(structuredText).doesNotContain("raw")
+    }
+
+    @Test
+    fun `given resolved analytics stats extras, when executed, then structured excludes private fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(leakyAnalyticsStatsCard(id = ANALYTICS_STATS_ID)),
+            referencesJson = """[{ "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }]"""
+        )
+
+        val structuredText = assertSuccess(result).structured.toString()
+
+        assertThat(structuredText).doesNotContain("interval_subtotals")
+        assertThat(structuredText).doesNotContain("private_total")
+        assertThat(structuredText).doesNotContain("debug")
     }
 
     @Test
@@ -178,6 +216,27 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
+    fun `given resolved analytics stats, when executed, then uiStructured contains typed analytics details`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(analyticsStatsCard(id = ANALYTICS_STATS_ID)),
+            referencesJson = """[{ "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }]"""
+        )
+
+        val card = typedUiCards(result).single()
+        val details = card.details as ShowCardDetails.AnalyticsStats
+
+        assertThat(card.family).isEqualTo("analytics_stats")
+        assertThat(card.id).isEqualTo(ANALYTICS_STATS_ID)
+        assertThat(card.title).isEqualTo("Analytics")
+        assertThat(details.after).isEqualTo("2026-05-01")
+        assertThat(details.before).isEqualTo("2026-05-07")
+        assertThat(details.currency).isEqualTo("USD")
+        assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
+        assertThat(details.intervalSubtotals).hasSize(1)
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("interval_subtotals")
+    }
+
+    @Test
     fun `given invalid refs, when executed, then rejected refs use lower snake case reasons`() = runTest {
         val result = executeShowCards(
             handler = handler,
@@ -214,13 +273,14 @@ class ShowCardsToolHandlerTest {
               "references": [
                 { "family": "order", "id": 123 },
                 { "family": "product", "id": true },
-                { "family": "order", "id": null }
+                { "family": "order", "id": null },
+                { "family": "analytics_stats", "id": 123 }
               ]
             }
             """.trimIndent()
         )
 
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id")
     }
 
     @Test
@@ -243,21 +303,46 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
+    fun `given malformed analytics stats id, when executed, then ref is rejected as invalid id`() = runTest {
+        val result = executeShowCards(
+            handler = handlerWith(FakeResolver.empty()),
+            argumentsJson = """
+            {
+              "references": [
+                { "family": "analytics_stats", "id": "analytics_revenue:2026-05-01:2026-05-07" },
+                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-07:before:2026-05-01:interval:day:currency:USD" },
+                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:bad:currency:USD" }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+    }
+
+    @Test
     fun `given duplicate refs, when executed, then duplicates after first family id pair are rejected`() = runTest {
         val result = callShowCards(
-            resolver = FakeResolver.resolving(orderCard(id = "123"), productCard(id = "123")),
+            resolver = FakeResolver.resolving(
+                orderCard(id = "123"),
+                productCard(id = "123"),
+                analyticsStatsCard(id = ANALYTICS_STATS_ID),
+            ),
             referencesJson = """
                 [
                   { "family": "order", "id": "123" },
                   { "family": "order", "id": "123" },
-                  { "family": "product", "id": "123" }
+                  { "family": "product", "id": "123" },
+                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" },
+                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }
                 ]
             """.trimIndent()
         )
 
-        assertThat(validated(result)).isEqualTo(2)
-        assertThat(rejectedReasons(result)).containsExactly("duplicate_ref")
-        assertThat(resolvedFamilies(result)).containsExactly("order", "product")
+        assertThat(validated(result)).isEqualTo(3)
+        assertThat(rejectedReasons(result)).containsExactly("duplicate_ref", "duplicate_ref")
+        assertThat(resolvedFamilies(result)).containsExactly("order", "product", "analytics_stats")
     }
 
     @Test
@@ -477,6 +562,61 @@ class ShowCardsToolHandlerTest {
         )
     }
 
+    private fun analyticsStatsCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.AnalyticsStats, id = id)
+        val totals = buildJsonObject {
+            put("total_sales", "170.35")
+            put("net_revenue", "120.15")
+        }
+        val intervals = listOf(
+            buildJsonObject {
+                put("interval", "2026-05-01")
+                put("date_start", "2026-05-01 00:00:00")
+                putJsonObject("subtotals") {
+                    put("total_sales", "170.35")
+                    put("net_revenue", "120.15")
+                }
+            }
+        )
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = buildJsonObject {
+                put("id", id)
+                put("after", "2026-05-01")
+                put("before", "2026-05-07")
+                put("currency", "USD")
+                put("totals", totals)
+                put("interval_subtotals", buildJsonArray { intervals.forEach { add(it) } })
+            },
+            card = ShowCardPayload(
+                family = "analytics_stats",
+                id = id,
+                title = "Analytics",
+                details = ShowCardDetails.AnalyticsStats(
+                    after = "2026-05-01",
+                    before = "2026-05-07",
+                    currency = "USD",
+                    totals = totals,
+                    intervalSubtotals = intervals,
+                ),
+            )
+        )
+    }
+
+    private fun leakyAnalyticsStatsCard(id: String): ShowCardsResolution.Resolved {
+        val resolved = analyticsStatsCard(id)
+        return resolved.copy(
+            summary = buildJsonObject {
+                resolved.summary.forEach { (key, value) -> put(key, value) }
+                put("private_total", "should not leak")
+                putJsonObject("debug") {
+                    put("request", "raw")
+                }
+            }
+        )
+    }
+
     private class FakeResolver(
         private val resolutions: List<ShowCardsResolution>,
     ) : ShowCardsResolver {
@@ -501,5 +641,7 @@ class ShowCardsToolHandlerTest {
 
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
+        private const val ANALYTICS_STATS_ID =
+            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
     }
 }

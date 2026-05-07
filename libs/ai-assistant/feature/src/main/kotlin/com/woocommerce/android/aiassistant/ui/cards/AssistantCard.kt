@@ -20,4 +20,20 @@ sealed interface AssistantCard {
         val status: String,
         val imageUrl: String,
     ) : AssistantCard
+
+    data class Stats(
+        val id: String,
+        val after: String,
+        val before: String,
+        val currency: String,
+        val totalSales: String,
+        val netSales: String,
+        val totalSalesChartPoints: List<ChartPoint>,
+        val netSalesChartPoints: List<ChartPoint>,
+    ) : AssistantCard {
+        data class ChartPoint(
+            val date: String,
+            val value: Double,
+        )
+    }
 }
