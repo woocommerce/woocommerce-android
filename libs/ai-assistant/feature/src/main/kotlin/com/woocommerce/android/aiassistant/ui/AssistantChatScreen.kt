@@ -240,7 +240,7 @@ private fun AssistantTopAppBar(
                 if (showRestartAction) {
                     IconButton(onClick = onRestartConversation) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_assistant_restart),
+                            painter = painterResource(R.drawable.ic_assistant_new_chat),
                             contentDescription = stringResource(
                                 R.string.assistant_chat_restart_content_description
                             ),
