@@ -26,10 +26,29 @@ import javax.inject.Inject
 class QrLoginPayloadParser @Inject constructor() {
 
     fun parse(raw: String?): QrLoginPayload {
-        val uri = parseDeepLink(raw) ?: return QrLoginPayload.Invalid
-        val token = uri.queryParam(PARAM_TOKEN)?.takeIf(TOKEN_REGEX::matches) ?: return QrLoginPayload.Invalid
-        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return QrLoginPayload.Invalid
+        if (looksLikeInstallQr(raw)) return QrLoginPayload.InstallQrCode
+        return parseTicket(raw) ?: QrLoginPayload.Invalid
+    }
+
+    private fun parseTicket(raw: String?): QrLoginPayload.Ticket? {
+        val uri = parseDeepLink(raw) ?: return null
+        val token = uri.queryParam(PARAM_TOKEN)?.takeIf(TOKEN_REGEX::matches) ?: return null
+        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return null
         return QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
+    }
+
+    /**
+     * The wp-admin onboarding flow renders a QR that points to
+     * `https://woocommerce.com/mobile/...` — its purpose is to land users on the App Store /
+     * Play Store install pages. If we see one of those URLs we know the merchant scanned the
+     * install QR rather than the sign-in QR; the app is already installed, so we can surface
+     * a helpful explanation instead of "Not a WooCommerce code".
+     */
+    private fun looksLikeInstallQr(raw: String?): Boolean {
+        val parsed = raw?.trim()?.takeIf { it.isNotEmpty() }?.toHttpUrlOrNull() ?: return false
+        if (!parsed.host.equals(INSTALL_QR_HOST, ignoreCase = true)) return false
+        val pathSegments = parsed.encodedPathSegments.filter { it.isNotEmpty() }
+        return pathSegments.firstOrNull()?.equals(INSTALL_QR_PATH_FIRST_SEGMENT, ignoreCase = true) == true
     }
 
     private fun parseDeepLink(raw: String?): URI? {
@@ -75,6 +94,8 @@ class QrLoginPayloadParser @Inject constructor() {
         const val PARAM_TOKEN = "token"
         const val PARAM_SITE_URL = "siteUrl"
         const val HTTPS_PREFIX = "https://"
+        const val INSTALL_QR_HOST = "woocommerce.com"
+        const val INSTALL_QR_PATH_FIRST_SEGMENT = "mobile"
         val TOKEN_REGEX = Regex("^[A-Za-z0-9]{64,512}$")
     }
 }

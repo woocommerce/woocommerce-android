@@ -85,6 +85,14 @@ class QrLoginScannerViewModel @Inject constructor(
                 ticket = payload,
                 host = payload.siteUrl.toDisplayHost()
             )
+            QrLoginPayload.InstallQrCode -> {
+                trackScanFailure(
+                    step = Step.PAYLOAD,
+                    errorContext = null,
+                    errorType = ErrorReason.InstallQrCode.name,
+                )
+                _uiState.value = makeErrorState(ErrorReason.InstallQrCode, ticket = null)
+            }
             QrLoginPayload.Invalid -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -187,12 +195,20 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     private fun makeErrorState(reason: ErrorReason, ticket: QrLoginPayload.Ticket?): Error {
         val (title, body) = reason.toTitleAndBody()
-        return Error(reason = reason, title = title, body = body, primaryAction = reason.toPrimaryAction(ticket))
+        return Error(
+            reason = reason,
+            title = title,
+            body = body,
+            bodyArgs = reason.toBodyArgs(),
+            primaryAction = reason.toPrimaryAction(ticket),
+        )
     }
 
     private fun ErrorReason.toTitleAndBody(): Pair<Int, Int> = when (this) {
         ErrorReason.InvalidPayload ->
             R.string.login_qr_scanner_error_payload_title to R.string.login_qr_scanner_error_payload_body
+        ErrorReason.InstallQrCode ->
+            R.string.login_qr_scanner_error_install_qr_title to R.string.login_qr_scanner_error_install_qr_body
         ErrorReason.Scanner ->
             R.string.login_qr_scanner_error_generic_title to R.string.login_qr_scanner_error_generic_body
         ErrorReason.TokenRejected ->
@@ -215,6 +231,18 @@ class QrLoginScannerViewModel @Inject constructor(
             R.string.login_qr_scanner_error_generic_title to R.string.login_qr_scanner_error_generic_body
     }
 
+    /**
+     * String-resource args substituted into the body via `%1$s`, `%2$s`, … placeholders. Strings
+     * declare their own `<b>…</b>` markup around the placeholders so translators can't break it.
+     */
+    private fun ErrorReason.toBodyArgs(): List<Int> = when (this) {
+        ErrorReason.InstallQrCode -> listOf(
+            R.string.login_qr_scanner_error_install_qr_body_button,
+            R.string.login_qr_prologue_url,
+        )
+        else -> emptyList()
+    }
+
     private fun ErrorReason.toPrimaryAction(ticket: QrLoginPayload.Ticket?): PrimaryAction = when (this) {
         ErrorReason.RateLimited,
         ErrorReason.Network,
@@ -223,6 +251,7 @@ class QrLoginScannerViewModel @Inject constructor(
         ErrorReason.Scanner -> PrimaryAction.ScanAgain(R.string.login_qr_error_primary_retry)
         ErrorReason.EndpointMissing -> PrimaryAction.ScanAgain(R.string.login_qr_endpoint_missing_retry)
         ErrorReason.InvalidPayload,
+        ErrorReason.InstallQrCode,
         ErrorReason.TokenRejected,
         ErrorReason.SiteAuthFailure,
         ErrorReason.NotAWooSite,
@@ -271,6 +300,7 @@ class QrLoginScannerViewModel @Inject constructor(
             val reason: ErrorReason,
             @StringRes val title: Int,
             @StringRes val body: Int,
+            val bodyArgs: List<Int> = emptyList(),
             val primaryAction: PrimaryAction,
         ) : UiState
     }
@@ -289,6 +319,7 @@ class QrLoginScannerViewModel @Inject constructor(
 
     enum class ErrorReason {
         InvalidPayload,
+        InstallQrCode,
         Scanner,
         TokenRejected,
         EndpointMissing,

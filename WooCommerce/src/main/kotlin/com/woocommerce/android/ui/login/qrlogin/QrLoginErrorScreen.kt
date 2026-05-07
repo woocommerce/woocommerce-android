@@ -24,8 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -37,6 +38,7 @@ fun QrLoginErrorScreen(
     onPrimaryClicked: () -> Unit,
     onSecondaryClicked: () -> Unit,
     @StringRes secondaryActionLabel: Int = R.string.login_qr_endpoint_missing_enter_url,
+    bodyArgs: List<Int> = emptyList(),
 ) {
     Column(
         modifier = Modifier
@@ -61,8 +63,12 @@ fun QrLoginErrorScreen(
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        @Suppress("SpreadOperator")
         Text(
-            text = stringResource(id = body),
+            text = annotatedStringRes(
+                body,
+                *bodyArgs.map { stringResource(id = it) }.toTypedArray(),
+            ),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -74,9 +80,10 @@ fun QrLoginErrorScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        WCOutlinedButton(
+        WCTextButton(
             onClick = onSecondaryClicked,
             text = stringResource(id = secondaryActionLabel),
+            allCaps = false,
             modifier = Modifier.fillMaxWidth()
         )
     }

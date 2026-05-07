@@ -2,13 +2,18 @@ package com.woocommerce.android.ui.login.qrlogin
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -23,6 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -39,8 +46,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.copyToClipboard
+import com.woocommerce.android.extensions.windowHeightSizeClass
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -119,6 +130,15 @@ fun QrLoginPrologueScreen(
 
 @Composable
 private fun Hero() {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    // Tablets have enough vertical room for the portrait stack in landscape too — only the
+    // compact height bucket (phones in landscape) needs the compacted hero.
+    val isCompactHeight = LocalContext.current.windowHeightSizeClass == WindowSizeClass.Compact
+    if (isLandscape && isCompactHeight) HeroLandscape() else HeroPortrait()
+}
+
+@Composable
+private fun HeroPortrait() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,11 +173,66 @@ private fun Hero() {
     }
 }
 
+/**
+ * Landscape phones only have ~400dp of vertical space, so the portrait hero pushes the bottom
+ * CTAs off-screen. Pair the QR icon with the title on a single row and keep the URL line and
+ * step hint horizontally centered below — everything fits without scrolling and reads as a
+ * single centered block.
+ */
 @Composable
-private fun QrIconBadge() {
+private fun HeroLandscape() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimensionResource(id = R.dimen.major_100)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            QrIconBadge(
+                size = dimensionResource(id = R.dimen.image_major_50),
+                iconSize = dimensionResource(id = R.dimen.image_minor_80),
+            )
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = colorResource(id = R.color.prologue_login_on_background),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
+            )
+        }
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.login_qr_prologue_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = colorResource(id = R.color.prologue_login_on_background_secondary)
+            )
+            UrlBadge()
+        }
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
+        Text(
+            text = stringResource(id = R.string.login_qr_prologue_step_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = colorResource(id = R.color.prologue_login_on_background_tertiary),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun QrIconBadge(
+    size: Dp = dimensionResource(id = R.dimen.image_major_72),
+    iconSize: Dp = dimensionResource(id = R.dimen.image_minor_100),
+) {
     Box(
         modifier = Modifier
-            .size(dimensionResource(id = R.dimen.image_major_72))
+            .size(size)
             .clip(CircleShape)
             .background(colorResource(id = R.color.prologue_login_url_badge_background)),
         contentAlignment = Alignment.Center
@@ -166,24 +241,32 @@ private fun QrIconBadge() {
             painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner),
             contentDescription = null,
             tint = colorResource(id = R.color.prologue_login_on_background),
-            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_100))
+            modifier = Modifier.size(iconSize)
         )
     }
 }
 
 @Composable
 private fun UrlBadge() {
+    val context = LocalContext.current
+    val url = stringResource(id = R.string.login_qr_prologue_url)
+    val clipboardLabel = stringResource(id = R.string.login_qr_prologue_url_clipboard_label)
+    val copiedMessage = stringResource(id = R.string.login_qr_prologue_url_copied)
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
             .background(colorResource(id = R.color.prologue_login_url_badge_background))
+            .clickable {
+                context.copyToClipboard(clipboardLabel, url)
+                Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+            }
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_125),
                 vertical = dimensionResource(id = R.dimen.major_85)
             )
     ) {
         Text(
-            text = stringResource(id = R.string.login_qr_prologue_url),
+            text = url,
             style = MaterialTheme.typography.titleLarge,
             color = colorResource(id = R.color.prologue_login_on_background),
             fontWeight = FontWeight.Bold,
@@ -201,9 +284,17 @@ private fun Buttons(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // White-on-purple to stand out from the purple prologue background. The default
+        // WCColoredButton uses the primary purple as its container, which blends into the
+        // background in light mode. Mirrors the existing legacy prologue's
+        // `Woo.Button.Colored.White` style.
         WCColoredButton(
             onClick = onScanClicked,
             text = stringResource(id = R.string.login_qr_prologue_scan_button),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.prologue_login_button_color),
+                contentColor = colorResource(id = R.color.color_on_surface),
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))

@@ -59,6 +59,7 @@ fun QrLoginScannerScreen(
             is UiState.Error -> QrLoginErrorScreen(
                 title = uiState.title,
                 body = uiState.body,
+                bodyArgs = uiState.bodyArgs,
                 primaryActionLabel = uiState.primaryAction.label,
                 onPrimaryClicked = when (uiState.primaryAction) {
                     is PrimaryAction.Retry -> onRetryExchange

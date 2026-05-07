@@ -19,5 +19,13 @@ sealed interface QrLoginPayload {
         val siteUrl: String
     ) : QrLoginPayload
 
+    /**
+     * The merchant scanned the wp-admin onboarding QR that links to the App Store / Play Store
+     * install pages (`https://woocommerce.com/mobile/?utm_source=wc_onboarding_mobile_task`).
+     * The app is already installed, so the install QR is useless here — surfaced as a dedicated
+     * error so we can explain the situation instead of falling back to "Not a WooCommerce code".
+     */
+    data object InstallQrCode : QrLoginPayload
+
     data object Invalid : QrLoginPayload
 }
