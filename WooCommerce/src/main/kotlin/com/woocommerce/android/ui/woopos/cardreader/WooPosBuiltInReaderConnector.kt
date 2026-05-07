@@ -117,14 +117,12 @@ class WooPosBuiltInReaderConnector @Inject constructor(
 
     private suspend fun initializeCardReaderManager() {
         withContext(Dispatchers.Main.immediate) {
-            if (!cardReaderManager.initialized) {
-                cardReaderManager.initialize(
-                    updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
-                    useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
-                    isDebug = BuildConfig.DEBUG,
-                )
-                logger.d("Card reader manager initialized for TTP (initialized=${cardReaderManager.initialized})")
-            }
+            if (cardReaderManager.initialized) return@withContext
+            cardReaderManager.initialize(
+                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                isDebug = BuildConfig.DEBUG,
+            )
             cardReaderManager.setupTapToPayUx(
                 CardReaderManager.TapToPayUxConfig(
                     primaryColor = R.color.color_primary,
@@ -133,6 +131,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
                     isDarkMode = resourceProvider.isDarkMode(),
                 )
             )
+            logger.d("Card reader manager initialized for TTP (initialized=${cardReaderManager.initialized})")
         }
     }
 }
