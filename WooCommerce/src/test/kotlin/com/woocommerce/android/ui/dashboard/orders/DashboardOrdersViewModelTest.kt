@@ -39,11 +39,11 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
         on { refreshTrigger } doReturn emptyFlow()
     }
     private val orderListRepository: OrderListRepository = mock {
-        onBlocking { hasOrdersLocally(any()) } doReturn false
+        on { hasOrdersLocally(any()) } doReturn false
         on { observeTopOrders(any(), any(), any()) } doReturn flowOf(Result.success(sampleOrders))
     }
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock {
-        onBlocking { invoke() } doReturn emptyList()
+        on { invoke() } doReturn emptyList()
     }
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }

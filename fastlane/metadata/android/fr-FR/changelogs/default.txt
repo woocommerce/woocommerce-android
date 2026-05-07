@@ -1,2 +1,0 @@
-24.6 :
-Woo POS simplifie encore davantage votre expérience de vente ! Suivez la synchronisation dès la configuration du catalogue, modifiez les tickets directement depuis le POS et bénéficiez d’actualisations plus rapides. Cette version corrige aussi un crash au démarrage, résout les problèmes de synchronisation du POS pour les boutiques avec des variations de produits, et améliore la validation des adresses pour les étiquettes d’expédition.

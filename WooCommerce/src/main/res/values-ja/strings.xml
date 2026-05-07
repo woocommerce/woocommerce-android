@@ -530,8 +530,6 @@ Language: ja_JP
     <string name="woopos_scanning_setup_device_selection_title">バーコードスキャナーを設定</string>
     <string name="woopos_scanning_setup_barcode_content_description">バーコード</string>
     <string name="woopos_scanning_setup_dialog_content_description">スキャナー設定ダイアログ</string>
-    <string name="woopos_eligibility_screen_UK_country_name">イギリス</string>
-    <string name="woopos_eligibility_screen_US_country_name">米国</string>
     <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>

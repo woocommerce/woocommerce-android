@@ -7,12 +7,15 @@ import com.woocommerce.android.ciab.CIABAffectedFeature
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.CoroutineScope
@@ -36,10 +39,13 @@ class MainSettingsPresenter @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val featureFlagRepository: FeatureFlagRepository,
+    private val pushNotificationRepository: PushNotificationRepository
 ) : MainSettingsContract.Presenter {
     override val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var appSettingsFragmentView: MainSettingsContract.View? = null
+    private var selectedSitePushNotificationsSelfDriven = false
 
     override val isChaChingSoundEnabled: Boolean
         get() = notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DEFAULT
@@ -83,19 +89,37 @@ class MainSettingsPresenter @Inject constructor(
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
     }
 
-    override fun setupApplicationPasswordsSettings() {
-        if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-            appSettingsFragmentView?.handleApplicationPasswordsSettings()
+    override fun setupNotificationsOption() {
+        if (!featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS)) {
+            appSettingsFragmentView?.handleNotificationsOption(showSmarterNotifications = false)
+            return
+        }
+
+        coroutineScope.launch {
+            selectedSitePushNotificationsSelfDriven = isSelectedSitePushNotificationsSelfDriven()
+            appSettingsFragmentView?.handleNotificationsOption(
+                showSmarterNotifications = selectedSitePushNotificationsSelfDriven
+            )
         }
     }
 
     override fun onNotificationsClicked() {
-        if (isChaChingSoundEnabled) {
+        if (featureFlagRepository.isEnabled(FeatureFlag.SMARTER_NOTIFICATIONS) &&
+            selectedSitePushNotificationsSelfDriven
+        ) {
+            appSettingsFragmentView?.showNotificationsSettingsScreen(showSmarterNotifications = true)
+        } else if (isChaChingSoundEnabled) {
             analyticsTracker.track(AnalyticsEvent.SETTINGS_NOTIFICATIONS_OPEN_CHANNEL_SETTINGS_BUTTON_TAPPED)
             appSettingsFragmentView?.showDeviceAppNotificationSettings()
         } else {
-            appSettingsFragmentView?.showNotificationsSettingsScreen()
+            appSettingsFragmentView?.showNotificationsSettingsScreen(showSmarterNotifications = false)
         }
+    }
+
+    private suspend fun isSelectedSitePushNotificationsSelfDriven(): Boolean {
+        return selectedSite.getIfExists()?.siteId?.let {
+            pushNotificationRepository.isWooPushTokenRegisteredForSite(it)
+        } == true
     }
 
     override val isCloseAccountOptionVisible: Boolean

@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -111,6 +112,7 @@ fun WooPosPaymentSuccessScreen(
                     }
                     .height(WooPosComponentSize.Small.value)
                     .adaptiveContentWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
                     .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
                 onClick = onNewTransactionClicked,
                 text = stringResource(R.string.woopos_new_order_button)
@@ -124,7 +126,8 @@ fun WooPosPaymentSuccessScreen(
                         end.linkTo(parent.end)
                     }
                     .height(WooPosComponentSize.Small.value)
-                    .adaptiveContentWidth(),
+                    .adaptiveContentWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value),
                 onClick = onReceiptClicked,
                 text = stringResource(R.string.woopos_receipt_button)
             )

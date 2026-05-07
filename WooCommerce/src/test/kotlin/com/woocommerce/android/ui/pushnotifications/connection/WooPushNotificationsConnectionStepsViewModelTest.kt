@@ -53,7 +53,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock {
-        onBlocking { invoke(forceRefresh = true) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+        on { invoke(forceRefresh = true) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
     private val stringUtils: StringUtils = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()

@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -58,6 +59,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
@@ -239,15 +241,20 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
+        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
         WooPosOutlinedButton(
             text = stringResource(R.string.woopos_payment_take_cash_payment_label),
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
-                .padding(bottom = WooPosSpacing.XLarge.value)
+                .then(
+                    if (isPhone) {
+                        Modifier.padding(WooPosSpacing.Large.value)
+                    } else {
+                        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+                    }
+                )
+                .navigationBarsPadding()
                 .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
         )
     }
@@ -331,7 +338,7 @@ private fun ReaderDisconnected(
             text = status.actionButtonLabel,
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .adaptiveContentWidth()
                 .height(WooPosComponentSize.Small.value)
         )
     }
@@ -342,7 +349,7 @@ private fun TotalsGrid(totals: Totals.Visible) {
     Column(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
-            .fillMaxWidth(0.5f),
+            .adaptiveContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -419,13 +426,15 @@ private fun TotalsGridRow(
 
 @Composable
 private fun TotalsLoading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = WooPosSpacing.XLarge.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
-            modifier = Modifier
-                .wrapContentSize(),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -454,6 +463,11 @@ private fun TotalsLoading() {
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
+        Spacer(
+            modifier = Modifier
+                .height(if (isPhone) WooPosSpacing.Large.value else WooPosSpacing.None.value)
+                .navigationBarsPadding()
+        )
     }
 }
 

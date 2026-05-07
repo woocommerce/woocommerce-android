@@ -106,8 +106,8 @@ class AddAttributeTermsViewModelTest : BaseUnitTest() {
         attributeId: Long = defaultAttributeId
     ) {
         termsListHandler = mock {
-            onBlocking { fetchAttributeTerms(attributeId) } doReturn attributesFirstPage
-            onBlocking { loadMore(attributeId) } doReturn attributesSecondPage
+            on { fetchAttributeTerms(attributeId) } doReturn attributesFirstPage
+            on { loadMore(attributeId) } doReturn attributesSecondPage
         }
 
         sut = AddAttributeTermsViewModel(

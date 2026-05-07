@@ -86,7 +86,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock {
-        onBlocking { getCachedVariationCount(any()) } doReturn 0
+        on { getCachedVariationCount(any()) } doReturn 0
     }
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
@@ -107,11 +107,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
     private val addonRepository: AddonRepository = mock {
-        onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
+        on { hasAnyProductSpecificAddons(any()) } doReturn false
     }
 
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
+        on { invoke() } doReturn false
     }
 
     private var savedState: SavedStateHandle =
@@ -141,7 +141,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
     private val customFieldsRepository: CustomFieldsRepository = mock {
-        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+        on { hasDisplayableCustomFields(any()) } doReturn false
     }
     private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 

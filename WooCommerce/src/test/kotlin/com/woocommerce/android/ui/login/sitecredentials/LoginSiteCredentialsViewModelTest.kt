@@ -63,9 +63,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
-        onBlocking { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
-        onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
-        onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
+        on { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
+        on { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
+        on { getSiteByLocalId(testSite.id) } doReturn testSite
     }
     private var isJetpackConnected: Boolean = false
     private val selectedSite: SelectedSite = mock()

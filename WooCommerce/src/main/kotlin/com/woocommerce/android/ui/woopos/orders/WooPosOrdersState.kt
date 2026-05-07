@@ -1,16 +1,9 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.runtime.Immutable
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
-@Immutable
-sealed class WooPosOrdersState {
-    abstract val pullToRefreshState: WooPosPullToRefreshState
-    abstract val searchInputState: WooPosSearchInputState
+object WooPosOrdersState {
 
     @Immutable
     sealed interface OrderAction {
@@ -24,24 +17,11 @@ sealed class WooPosOrdersState {
     }
 
     @Immutable
-    sealed class OrderActionsState {
-        @Immutable
-        data object Loading : OrderActionsState()
-
-        @Immutable
-        data class Loaded(val actions: List<OrderAction>) : OrderActionsState()
-    }
+    data class OrderActionsState(val actions: List<OrderAction>)
 
     @Immutable
     sealed class OrderDetailsViewState {
         abstract val orderId: Long
-
-        @Immutable
-        data class Lazy(
-            override val orderId: Long,
-            val order: Order,
-            val refundResult: RefundsFetchResult
-        ) : OrderDetailsViewState()
 
         @Immutable
         data class Computed(
@@ -142,61 +122,6 @@ sealed class WooPosOrdersState {
         val statusSlug: String,
         val createdAtMillis: Long
     )
-
-    @Immutable
-    data class Content(
-        val items: Items,
-        override val pullToRefreshState: WooPosPullToRefreshState,
-        override val searchInputState: WooPosSearchInputState,
-        val selectedDetails: OrderDetailsViewState.Computed.Details?,
-        val paginationState: WooPosPaginationState,
-        val dialogState: DialogState
-    ) : WooPosOrdersState() {
-        sealed class Items {
-            data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()
-            object Searching : Items()
-            data class Error(val title: String, val message: String) : Items()
-            data class NothingFound(val title: String, val message: String) : Items()
-        }
-
-        sealed class DialogState {
-            data object Hidden : DialogState()
-            data class IssueRefund(
-                val orderId: Long
-            ) : DialogState()
-
-            data class RefundDetails(
-                val label: String,
-                val items: List<OrderDetailsViewState.Computed.Details.LineItemRow>,
-                val itemsSubtotalLabel: String,
-                val itemsSubtotalAmount: String,
-                val tax: String,
-                val refundTotal: String,
-                val paymentMethodTitle: String?,
-            ) : DialogState()
-        }
-    }
-
-    @Immutable
-    data class Error(
-        val message: String,
-        override val searchInputState: WooPosSearchInputState
-    ) : WooPosOrdersState() {
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
-    }
-
-    @Immutable
-    data class Loading(
-        override val searchInputState: WooPosSearchInputState
-    ) : WooPosOrdersState() {
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
-    }
-
-    @Immutable
-    data class Empty(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        override val searchInputState: WooPosSearchInputState
-    ) : WooPosOrdersState()
 }
 
 enum class OrderStatusColorKey {

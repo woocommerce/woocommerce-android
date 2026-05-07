@@ -93,11 +93,11 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
 
         productRepository = mock {
-            onBlocking { fetchAndGetProductAggregate(PRODUCT_REMOTE_ID) } doReturn ProductAggregate(product)
+            on { fetchAndGetProductAggregate(PRODUCT_REMOTE_ID) } doReturn ProductAggregate(product)
         }
 
         variationRepository = mock {
-            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
+            on { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
         }
 
         viewModel = spy(
@@ -243,7 +243,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     fun `Show error and hide progress bar if variation generation failed`() = testBlocking {
         // given
         variationRepository.stub {
-            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+            on { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
         }
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
@@ -347,7 +347,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
 
         // When AddAllVariations fails
         variationRepository.stub {
-            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+            on { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
         }
         viewModel.onGenerateVariationsConfirmed(variationCandidates)
 

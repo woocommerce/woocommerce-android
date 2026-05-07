@@ -27,7 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_PRIVACY_SETTING
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -123,16 +122,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             startActivity(HelpActivity.createIntent(requireActivity(), HelpOrigin.SETTINGS, null))
         }
 
-        binding.optionNotifications.optionTitle = if (presenter.isChaChingSoundEnabled) {
-            getString(R.string.settings_notifs_device)
-        } else {
-            getString(R.string.settings_notifs)
-        }
-        binding.optionNotifications.optionValue = if (presenter.isChaChingSoundEnabled) {
-            getString(R.string.settings_notifs_device_detail)
-        } else {
-            null
-        }
         binding.optionNotifications.setOnClickListener {
             presenter.onNotificationsClicked()
         }
@@ -191,7 +180,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupAnnouncementOption()
         presenter.setupEnablePushNotificationsOption()
         presenter.setupJetpackInstallOption()
-        presenter.setupApplicationPasswordsSettings()
+        presenter.setupNotificationsOption()
 
         binding.optionEnablePushNotifications.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.SETTINGS_PUSH_NOTIFICATIONS_BUTTON_TAP)
@@ -259,9 +248,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         activity?.startActivity(intent)
     }
 
-    override fun showNotificationsSettingsScreen() {
+    override fun showNotificationsSettingsScreen(showSmarterNotifications: Boolean) {
         findNavController().navigateSafely(
-            MainSettingsFragmentDirections.actionMainSettingsFragmentToNotificationSettingsFragment()
+            MainSettingsFragmentDirections.actionMainSettingsFragmentToNotificationSettingsFragment(
+                showSmarterNotifications = showSmarterNotifications
+            )
         )
     }
 
@@ -296,10 +287,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun handleApplicationPasswordsSettings() {
-        binding.optionNotifications.hide()
-    }
-
     private fun showThemeChooser() {
         val currentTheme = AppPrefs.getAppTheme()
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
@@ -317,6 +304,19 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     override fun setEnablePushNotificationsOptionVisible(isVisible: Boolean) {
         binding.optionEnablePushNotifications.isVisible = isVisible
         updateStoreSettingsContainerVisibility()
+    }
+
+    override fun handleNotificationsOption(showSmarterNotifications: Boolean) {
+        binding.optionNotifications.optionTitle = if (!showSmarterNotifications && presenter.isChaChingSoundEnabled) {
+            getString(R.string.settings_notifs_device)
+        } else {
+            getString(R.string.settings_notifs)
+        }
+        binding.optionNotifications.optionValue = if (!showSmarterNotifications && presenter.isChaChingSoundEnabled) {
+            getString(R.string.settings_notifs_device_detail)
+        } else {
+            null
+        }
     }
 
     private fun updateStoreSettingsContainerVisibility() {

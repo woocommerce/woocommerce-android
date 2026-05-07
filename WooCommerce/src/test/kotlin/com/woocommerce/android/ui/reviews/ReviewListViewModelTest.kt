@@ -11,6 +11,7 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,19 +36,26 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val reviewListRepository: ReviewListRepository = mock()
     private val dispatcher: Dispatcher = mock()
-    private val savedState: SavedStateHandle = SavedStateHandle()
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
     private val reviewModerationHandler: ReviewModerationHandler = mock {
         on { pendingModerationStatus } doReturn emptyFlow()
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus = mock {
+        on { invoke() } doReturn true
+    }
 
     private val reviews = ProductReviewTestUtils.generateProductReviewList()
     private lateinit var viewModel: ReviewListViewModel
 
     @Before
     fun setup() {
+        doReturn(true).whenever(networkStatus).isConnected()
+        createViewModel()
+    }
+
+    private fun createViewModel(savedState: SavedStateHandle = SavedStateHandle()) {
         viewModel = spy(
             ReviewListViewModel(
                 networkStatus,
@@ -57,11 +65,10 @@ class ReviewListViewModelTest : BaseUnitTest() {
                 unseenReviewsCountHandler,
                 reviewModerationHandler,
                 analyticsTrackerWrapper,
+                supportsReviewsReadStatus,
                 savedState
             )
         )
-
-        doReturn(true).whenever(networkStatus).isConnected()
     }
 
     /**
@@ -431,4 +438,43 @@ class ReviewListViewModelTest : BaseUnitTest() {
         verify(reviewListRepository, times(1)).fetchOnlyUnreadProductReviews(loadMore = false)
         verify(reviewListRepository, times(1)).getCachedUnreadProductReviews()
     }
+
+    @Test
+    fun `given WPCom notifications are not the read-status source, when started, then unread filter is hidden`() =
+        testBlocking {
+            whenever(supportsReviewsReadStatus.invoke()).thenReturn(false)
+            doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(false).whenever(networkStatus).isConnected()
+
+            createViewModel()
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.liveData.value?.isUnreadFilterVisible).isFalse()
+        }
+
+    @Test
+    fun `given WPCom notifications are the read-status source, when started, then unread filter is visible`() =
+        testBlocking {
+            whenever(supportsReviewsReadStatus.invoke()).thenReturn(true)
+            doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(false).whenever(networkStatus).isConnected()
+
+            createViewModel()
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.liveData.value?.isUnreadFilterVisible).isTrue()
+        }
+
+    @Test
+    fun `given site is registered in both systems, when view model started, then unread filter is hidden`() =
+        testBlocking {
+            whenever(supportsReviewsReadStatus.invoke()).thenReturn(false)
+            doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(false).whenever(networkStatus).isConnected()
+
+            createViewModel()
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.liveData.value?.isUnreadFilterVisible).isFalse()
+        }
 }

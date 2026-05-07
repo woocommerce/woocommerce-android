@@ -530,8 +530,6 @@ Language: ru
     <string name="woopos_scanning_setup_device_selection_title">Настройка сканера штрихкодов</string>
     <string name="woopos_scanning_setup_barcode_content_description">Штрихкод</string>
     <string name="woopos_scanning_setup_dialog_content_description">Диалог настройки сканера</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Великобритания</string>
-    <string name="woopos_eligibility_screen_US_country_name">Соединённые Штаты</string>
     <string name="woopos_eligibility_screen_unable_to_load">Не удалось загрузить</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Система POS не поддерживает валюту вашего магазина. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Система POS не поддерживает валюту вашего магазина. В %1$s в настоящее время поддерживается только %2$s. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>

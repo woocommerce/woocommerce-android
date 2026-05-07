@@ -62,9 +62,9 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         on { refreshTrigger } doReturn emptyFlow()
     }
     private val couponRepository: CouponRepository = mock {
-        onBlocking { fetchMostActiveCoupons(any(), any()) } doReturn Result.success(sampleCouponReports)
-        onBlocking { getCoupons(any()) } doReturn sampleCoupons
-        onBlocking { fetchCoupons(any(), any(), any(), anyBoolean()) } doReturn Result.success(false)
+        on { fetchMostActiveCoupons(any(), any()) } doReturn Result.success(sampleCouponReports)
+        on { getCoupons(any()) } doReturn sampleCoupons
+        on { fetchCoupons(any(), any(), any(), anyBoolean()) } doReturn Result.success(false)
         on { observeCoupons(any()) } doReturn flowOf(sampleCoupons)
     }
     private val couponUtils: CouponUtils = mock {
@@ -79,7 +79,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
     }
     private val dateUtils: DateUtils = mock()
     private val parameterRepository: ParameterRepository = mock {
-        onBlocking { getParameters() } doReturn SiteParameters(
+        on { getParameters() } doReturn SiteParameters(
             currencyCode = "USD",
             currencySymbol = "$",
             currencyFormattingParameters = null,
@@ -92,7 +92,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
     private val customDateRangeDataStore: CouponsCustomDateRangeDataStore = mock {
         val rangeFlow = MutableStateFlow<StatsTimeRange?>(null)
         on { dateRange } doReturn rangeFlow
-        onBlocking { updateDateRange(any()) } doAnswer { rangeFlow.value = it.arguments[0] as StatsTimeRange }
+        on { updateDateRange(any()) } doAnswer { rangeFlow.value = it.arguments[0] as StatsTimeRange }
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 

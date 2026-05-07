@@ -26,7 +26,8 @@ fun Modifier.wooPosHomeRootContainer(
 
 private fun WooPosHomeState.isBarcodeListeningEnabled(): Boolean {
     val onScannableDestination =
-        screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
+        screenPositionState is WooPosHomeState.ScreenPositionState.Products ||
+            screenPositionState is WooPosHomeState.ScreenPositionState.Cart ||
             screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals
     return onScannableDestination && dialogState !is WooPosHomeState.DialogState.ScanningSetupDialog
 }

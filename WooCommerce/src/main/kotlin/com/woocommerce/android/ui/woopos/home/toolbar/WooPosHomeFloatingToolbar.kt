@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
@@ -32,7 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -255,25 +258,22 @@ private fun CardReaderStatusButton(
         label = "IllustrationColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
+            is WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
             WooPosCardReaderStatus.NotConnected -> WooPosTheme.colors.alert
+            WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
     }
 
-    val title = stringResource(
-        id = when (state) {
-            WooPosCardReaderStatus.Connected -> WooPosCardReaderStatus.Connected.title
-            WooPosCardReaderStatus.NotConnected -> WooPosCardReaderStatus.NotConnected.title
-        }
-    )
+    val title = stringResource(id = state.title)
 
     val borderColor by transition.animateColor(
         transitionSpec = { tween(durationMillis = animationDuration) },
         label = "BorderColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> Color.Transparent
+            is WooPosCardReaderStatus.Connected -> Color.Transparent
             WooPosCardReaderStatus.NotConnected -> MaterialTheme.colorScheme.primary
+            WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
     }
 
@@ -309,6 +309,11 @@ private fun CardReaderStatusButton(
                     modifier = Modifier.animateContentSize(),
                     title = title,
                 )
+
+                if (state is WooPosCardReaderStatus.Connected) {
+                    BatteryWarningIcon(batteryState = state.batteryState)
+                }
+
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
             }
         }
@@ -341,6 +346,29 @@ private fun Circle(
 }
 
 @Composable
+private fun BatteryWarningIcon(batteryState: WooPosHomeFloatingToolbarState.BatteryState) {
+    when (batteryState) {
+        WooPosHomeFloatingToolbarState.BatteryState.NOMINAL -> { }
+        WooPosHomeFloatingToolbarState.BatteryState.LOW -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_low),
+                contentDescription = stringResource(R.string.woopos_battery_low),
+                tint = WooPosTheme.colors.alert,
+                modifier = Modifier.size(WooPosIconSize.Small.value)
+            )
+        }
+        WooPosHomeFloatingToolbarState.BatteryState.CRITICAL -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_critical),
+                contentDescription = stringResource(R.string.woopos_battery_critical),
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(WooPosIconSize.Small.value)
+            )
+        }
+    }
+}
+
+@Composable
 private fun getToolbarAccessibilityLabels(
     cardReaderStatus: WooPosCardReaderStatus,
     menuCardDisabled: Boolean
@@ -350,12 +378,15 @@ private fun getToolbarAccessibilityLabels(
     )
 
     val cardReaderStatusContentDescription = when (cardReaderStatus) {
-        WooPosCardReaderStatus.Connected -> stringResource(
+        is WooPosCardReaderStatus.Connected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_connected_status_content_description
         )
 
         WooPosCardReaderStatus.NotConnected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_not_connected_status_content_description
+        )
+        WooPosCardReaderStatus.Reconnecting -> stringResource(
+            id = R.string.woopos_reader_reconnecting
         )
     }
     val floatingToolbarMenuOverlayContentDescription = when (menuCardDisabled) {
@@ -425,7 +456,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
             WooPosHomeFloatingToolbarState(
-                cardReaderStatus = WooPosCardReaderStatus.Connected,
+                cardReaderStatus = WooPosCardReaderStatus.Connected(),
                 menu = Menu.Visible(
                     listOf(
                         Menu.MenuItem(
@@ -442,6 +473,38 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                         ),
                     )
                 ),
+            )
+        )
+    }
+    Preview(state)
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosFloatingToolbarStatusConnectedBatteryLow() {
+    val state = remember {
+        mutableStateOf(
+            WooPosHomeFloatingToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected(
+                    batteryState = WooPosHomeFloatingToolbarState.BatteryState.LOW
+                ),
+                menu = Menu.Hidden
+            )
+        )
+    }
+    Preview(state)
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosFloatingToolbarStatusConnectedBatteryCritical() {
+    val state = remember {
+        mutableStateOf(
+            WooPosHomeFloatingToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected(
+                    batteryState = WooPosHomeFloatingToolbarState.BatteryState.CRITICAL
+                ),
+                menu = Menu.Hidden
             )
         )
     }

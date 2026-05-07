@@ -242,7 +242,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             on { getIfExists() }.then { testSite }
         }
         zendeskTicketRepository = mock {
-            onBlocking {
+            on {
                 createRequest(
                     any(),
                     any(),

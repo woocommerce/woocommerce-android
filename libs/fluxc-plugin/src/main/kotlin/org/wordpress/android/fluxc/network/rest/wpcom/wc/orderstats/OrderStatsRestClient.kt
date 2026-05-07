@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
@@ -54,9 +55,8 @@ class OrderStatsRestClient @Inject constructor(
      * Makes a GET call to `/wc-analytics/reports/revenue/stats`, retrieving data for the given
      * WooCommerce [SiteModel].
      *
-     * Does not send a `date_type` parameter, allowing the server to use the store's configured
-     * `woocommerce_date_type` setting (default: `date_paid`). This matches the behavior of the
-     * wp-admin Analytics dashboard, which also relies on the server-side default.
+     * Sends a `date_type` parameter when one is provided. Otherwise, the server uses the store's configured
+     * `woocommerce_date_type` setting (default: `date_paid`).
      *
      * @param[site] the site to fetch stats data for
      * @param[granularity] one of 'hour', 'day', 'week', 'month', or 'year'
@@ -65,6 +65,8 @@ class OrderStatsRestClient @Inject constructor(
      * @param[perPage] the number of items to return in a paginated response
      * @param[forceRefresh] a boolean value indicating whether we should avoid cached data
      * @param[revenueRangeId] a unique id for this request. We will use this id to save the response in the local db.
+     * @param[currency] the currency to use when fetching revenue stats.
+     * @param[orderDateType] the order date field to use when grouping revenue stats.
      *
      * Possible non-generic errors:
      * [OrderStatsErrorType.INVALID_PARAM] if [granularity], [startDate], or [endDate] are invalid or incompatible
@@ -78,8 +80,77 @@ class OrderStatsRestClient @Inject constructor(
         perPage: Int,
         forceRefresh: Boolean = false,
         revenueRangeId: String,
+        currency: String? = null,
+        orderDateType: WCAnalyticsOrderDateType? = null,
     ): FetchRevenueStatsResponsePayload {
         val url = WOOCOMMERCE.reports.revenue.stats.pathV4Analytics
+        val params = buildMap {
+            put("interval", OrderStatsApiUnit.fromStatsGranularity(granularity).toString())
+            put("after", startDate)
+            put("before", endDate)
+            put("per_page", perPage.toString())
+            put("order", "asc")
+            put("force_cache_refresh", forceRefresh.toString())
+            put("_fields", "totals,intervals")
+            currency?.let { put("currency", it) }
+            orderDateType?.let { put("date_type", it.value) }
+        }
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = params,
+            clazz = RevenueStatsApiResponse::class.java,
+            enableCaching = true,
+            forced = forceRefresh
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                response.data?.let {
+                    val model = WCRevenueStatsModel(
+                        localSiteId = site.localId(),
+                        interval = granularity.toString(),
+                        data = it.intervals.toString(),
+                        total = it.totals.toString(),
+                        startDate = startDate,
+                        endDate = endDate,
+                        rangeId = revenueRangeId,
+                    )
+
+                    FetchRevenueStatsResponsePayload(site, granularity, model)
+                } ?: FetchRevenueStatsResponsePayload(
+                    OrderStatsError(
+                        type = OrderStatsErrorType.GENERIC_ERROR,
+                        message = "Success response with empty data"
+                    ),
+                    site,
+                    granularity
+                )
+            }
+
+            is WPAPIResponse.Error -> {
+                val orderError = response.error.toOrderError()
+                FetchRevenueStatsResponsePayload(orderError, site, granularity)
+            }
+        }
+    }
+
+    /**
+     * Makes a GET call to `/wc-analytics/reports/orders/stats`, retrieving order analytics for the given
+     * WooCommerce [SiteModel].
+     */
+    @Suppress("LongParameterList")
+    suspend fun fetchOrdersStats(
+        site: SiteModel,
+        granularity: StatsGranularity,
+        startDate: String,
+        endDate: String,
+        perPage: Int,
+        forceRefresh: Boolean = false,
+        orderStatsRangeId: String,
+    ): FetchRevenueStatsResponsePayload {
+        val url = WOOCOMMERCE.reports.orders.stats.pathV4Analytics
         val params = mapOf(
             "interval" to OrderStatsApiUnit.fromStatsGranularity(granularity).toString(),
             "after" to startDate,
@@ -87,6 +158,7 @@ class OrderStatsRestClient @Inject constructor(
             "per_page" to perPage.toString(),
             "order" to "asc",
             "force_cache_refresh" to forceRefresh.toString(),
+            "_fields" to "totals,intervals",
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -101,23 +173,24 @@ class OrderStatsRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                        val model = WCRevenueStatsModel(
-                            localSiteId = site.localId(),
-                            interval = granularity.toString(),
-                            data = it.intervals.toString(),
-                            total = it.totals.toString(),
-                            startDate = startDate,
-                            endDate = endDate,
-                            rangeId = revenueRangeId,
-                        )
+                    val model = WCRevenueStatsModel(
+                        localSiteId = site.localId(),
+                        interval = granularity.toString(),
+                        data = it.intervals.toString(),
+                        total = it.totals.toString(),
+                        startDate = startDate,
+                        endDate = endDate,
+                        rangeId = orderStatsRangeId,
+                    )
 
                     FetchRevenueStatsResponsePayload(site, granularity, model)
                 } ?: FetchRevenueStatsResponsePayload(
-                        OrderStatsError(type = OrderStatsErrorType.GENERIC_ERROR,
-                                message = "Success response with empty data"
-                        ),
-                        site,
-                        granularity
+                    OrderStatsError(
+                        type = OrderStatsErrorType.GENERIC_ERROR,
+                        message = "Success response with empty data"
+                    ),
+                    site,
+                    granularity
                 )
             }
 

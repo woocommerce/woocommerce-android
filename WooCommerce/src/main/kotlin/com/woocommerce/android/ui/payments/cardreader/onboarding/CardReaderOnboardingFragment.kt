@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat.getColor
+import androidx.core.os.bundleOf
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity.Companion.WOO_POS_CARD_ONBOARDING_REQUEST_KEY
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -107,13 +109,21 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 }
 
                 is CardReaderOnboardingEvent.ContinueToConnection -> {
-                    findNavController().navigate(
-                        CardReaderOnboardingFragmentDirections
-                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
-                                event.cardReaderFlowParam,
-                                event.cardReaderType
-                            )
-                    )
+                    if (event.cardReaderFlowParam is CardReaderFlowParam.WooPosConnection) {
+                        parentFragmentManager.setFragmentResult(
+                            WOO_POS_CARD_ONBOARDING_REQUEST_KEY,
+                            bundleOf()
+                        )
+                        requireActivity().finish()
+                    } else {
+                        findNavController().navigate(
+                            CardReaderOnboardingFragmentDirections
+                                .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
+                                    event.cardReaderFlowParam,
+                                    event.cardReaderType
+                                )
+                        )
+                    }
                 }
 
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {

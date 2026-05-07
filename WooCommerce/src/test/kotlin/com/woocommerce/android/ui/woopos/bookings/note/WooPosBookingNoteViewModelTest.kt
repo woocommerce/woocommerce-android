@@ -65,8 +65,8 @@ class WooPosBookingNoteViewModelTest {
 
     private val analyticsTracker: WooPosBookingsAnalyticsTracker = mock()
     private val bookingsRepository = mock<BookingsRepository> {
-        onBlocking { getBooking(any()) } doReturn booking
-        onBlocking { updateNote(any(), any()) } doReturn Result.success(Unit)
+        on { getBooking(any()) } doReturn booking
+        on { updateNote(any(), any()) } doReturn Result.success(Unit)
     }
 
     private fun createSavedStateHandle() = SavedStateHandle(

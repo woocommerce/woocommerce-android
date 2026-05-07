@@ -78,13 +78,13 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val userEligibilityFetcher: UserEligibilityFetcher = mock()
     private val repository: SitePickerRepository = mock {
-        onBlocking { getSites() } doReturn defaultExpectedSiteList.toMutableList()
+        on { getSites() } doReturn defaultExpectedSiteList.toMutableList()
     }
     private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
     private val experimentTracker: ExperimentTracker = mock()
     private val getWooVisibleSites: GetWooVisibleSites = mock {
-        onBlocking { invoke() } doReturn defaultExpectedSiteList
+        on { invoke() } doReturn defaultExpectedSiteList
     }
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
     private val registerDevice: RegisterDevice = mock()

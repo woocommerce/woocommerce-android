@@ -530,8 +530,6 @@ Language: he_IL
     <string name="woopos_scanning_setup_device_selection_title">להגדיר סורק ברקוד</string>
     <string name="woopos_scanning_setup_barcode_content_description">ברקוד</string>
     <string name="woopos_scanning_setup_dialog_content_description">תיבת הדו-שיח להגדרת הסורק</string>
-    <string name="woopos_eligibility_screen_UK_country_name">בריטניה</string>
-    <string name="woopos_eligibility_screen_US_country_name">ארצות הברית</string>
     <string name="woopos_eligibility_screen_unable_to_load">לא ניתן לטעון</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">מערכת POS לא זמינה במטבע של החנות שלך. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">מערכת POS לא זמינה במטבע של החנות שלך. ב-⁦%1$s⁩, כרגע המערכת תומכת רק ב-⁦%2$s⁩. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>

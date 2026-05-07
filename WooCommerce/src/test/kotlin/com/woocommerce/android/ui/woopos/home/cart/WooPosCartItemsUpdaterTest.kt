@@ -38,16 +38,16 @@ class WooPosCartItemsUpdaterTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val formatPrice: WooPosFormatPrice = mock {
-        onBlocking { invoke(argThat { this == BigDecimal("10.0") }) }.thenReturn("10.0$")
-        onBlocking { invoke(argThat { this == BigDecimal("5.0") }) }.thenReturn("5.0$")
+        on { invoke(argThat { this == BigDecimal("10.0") }) }.thenReturn("10.0$")
+        on { invoke(argThat { this == BigDecimal("5.0") }) }.thenReturn("5.0$")
     }
     private val productsCache: WooPosProductsCache = mock()
     private val localCatalogStore: WooPosLocalCatalogStore = mock {
-        onBlocking { deleteProducts(any(), any()) }.thenReturn(Result.success(Unit))
-        onBlocking { deleteVariations(any(), any()) }.thenReturn(Result.success(Unit))
+        on { deleteProducts(any(), any()) }.thenReturn(Result.success(Unit))
+        on { deleteVariations(any(), any()) }.thenReturn(Result.success(Unit))
     }
     private val selectedSite: SelectedSite = mock {
-        onBlocking { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
+        on { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
     }
     private val crashLogger: CrashLogging = mock()
     private val logger: WooPosLogWrapper = mock()

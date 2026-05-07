@@ -35,6 +35,8 @@ data class WCRevenueStatsModel(
     class SubTotal {
         @SerializedName("orders_count")
         val ordersCount: Long? = null
+        @SerializedName("gross_sales")
+        val grossSales: Double? = null
         @SerializedName("total_sales")
         val totalSales: Double? = null
         @SerializedName("net_revenue")
@@ -54,6 +56,8 @@ data class WCRevenueStatsModel(
     class Total {
         @SerializedName("orders_count")
         val ordersCount: Int? = null
+        @SerializedName("gross_sales")
+        val grossSales: Double? = null
         @SerializedName("total_sales")
         val totalSales: Double? = null
         @SerializedName("net_revenue")

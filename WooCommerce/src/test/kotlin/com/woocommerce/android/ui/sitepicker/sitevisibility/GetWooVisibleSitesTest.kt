@@ -17,7 +17,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class GetWooVisibleSitesTest : BaseUnitTest() {
     private val sitePickerRepository: SitePickerRepository = mock()
     private val visibleSitesDataStore: VisibleWooSitesDataStore = mock {
-        onBlocking { isSiteVisible(any()) } doReturn flowOf(true)
+        on { isSiteVisible(any()) } doReturn flowOf(true)
     }
     private val selectedSite: SelectedSite = mock()
 
@@ -50,8 +50,8 @@ class GetWooVisibleSitesTest : BaseUnitTest() {
             hasWooCommerce = false
         }
         val visibleSitesDataStore = mock<VisibleWooSitesDataStore> {
-            onBlocking { isSiteVisible(101L) } doReturn flowOf(true)
-            onBlocking { isSiteVisible(202L) } doReturn flowOf(false)
+            on { isSiteVisible(101L) } doReturn flowOf(true)
+            on { isSiteVisible(202L) } doReturn flowOf(false)
         }
         val sut = GetWooVisibleSites(sitePickerRepository, visibleSitesDataStore, selectedSite)
         doReturn(listOf(wpComVisibleWooSite, hiddenWooSite, nonWooSite)).whenever(sitePickerRepository).getSites()

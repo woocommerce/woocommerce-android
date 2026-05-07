@@ -16,7 +16,7 @@ import org.mockito.kotlin.mock
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductTypeBottomSheetBuilderTest : BaseUnitTest() {
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isFeatureSupported(any()) } doReturn true

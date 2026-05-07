@@ -9,9 +9,13 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -19,12 +23,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -35,13 +39,17 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
-import java.util.*
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
     private val wooPushNotificationsStore: WooPushNotificationsStore = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
+    private val wpComPushNotificationStore: WpComPushNotificationStore = mock {
+        on {
+            registerDevice(any(), any())
+        } doReturn WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123")
+    }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper = mock()
     private val sharedPreferences: SharedPreferences = mock()
@@ -55,7 +63,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         on { data } doReturn flowOf(preferences)
     }
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport = mock {
-        onBlocking { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+        on { invoke(forceRefresh = false) } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
 
     private lateinit var sut: PushNotificationRepository
@@ -64,10 +72,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     fun setUp() {
         whenever(prefsWrapper.getFluxCPreferences()).thenReturn(sharedPreferences)
         whenever(siteModel.siteId).thenReturn(SITE_ID)
-        wheneverBlocking {
-            wpComPushNotificationStore.registerDevice(any(), any())
-        }.doReturn(WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123"))
-
         sut = PushNotificationRepository(
             wooPushNotificationsStore,
             appPrefsWrapper,
@@ -77,7 +81,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             pushNotificationsDataStore,
             notificationAnalyticsTracker,
             localeProvider,
-            checkWooPluginPushNotificationsSupport
+            checkWooPluginPushNotificationsSupport,
+            coroutinesTestRule.testDispatchers
         )
     }
 
@@ -226,11 +231,50 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `when unregisterDevice is called, then unregisters wpcom token`() = testBlocking {
         whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf())
+        setupWpComRegistration(isRegistered = true)
 
-        sut.unregisterDeviceFromAllPushes()
+        sut.unregisterDeviceFromPushNotifications()
 
         verify(wpComPushNotificationStore).unregisterWpComPushToken()
     }
+
+    @Test
+    fun `when unregister device is called, then waits for wpcom cleanup to finish`() = testBlocking {
+        // GIVEN
+        whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf())
+        setupWpComRegistration(isRegistered = true)
+        val unregisterGate = CompletableDeferred<Unit>()
+        whenever(wpComPushNotificationStore.unregisterWpComPushToken()).doSuspendableAnswer {
+            unregisterGate.await()
+            WpComPushNotificationStore.UnregisterDeviceResponsePayload()
+        }
+
+        // WHEN
+        val job = launch { sut.unregisterDeviceFromPushNotifications() }
+        runCurrent()
+
+        // THEN
+        assertThat(job.isCompleted).isFalse()
+
+        unregisterGate.complete(Unit)
+        advanceUntilIdle()
+        assertThat(job.isCompleted).isTrue()
+    }
+
+    @Test
+    fun `given site lookup throws, when unregister device is called, then still attempts wpcom cleanup`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooCommerceStore.getWooCommerceSites()).thenThrow(IllegalStateException("boom"))
+            setupWpComRegistration(isRegistered = true)
+
+            // WHEN
+            val result = runCatching { sut.unregisterDeviceFromPushNotifications() }
+
+            // THEN
+            assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
+            verify(wpComPushNotificationStore).unregisterWpComPushToken()
+        }
 
     @Test
     fun `given sites with stored tokens, when unregisterDevice called, then deletes tokens from server`() =
@@ -248,7 +292,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
 
-            sut.unregisterDeviceFromAllPushes()
+            sut.unregisterDeviceFromPushNotifications()
 
             verify(wooPushNotificationsStore).deletePushToken(site1, "token-id-1")
             verify(wooPushNotificationsStore).deletePushToken(site2, "token-id-2")
@@ -258,7 +302,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     fun `given site metadata stored, when unregistering woo token succeeds, then removes all site metadata keys`() =
         testBlocking {
             val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
-            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
             whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
@@ -272,11 +315,38 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.unregisterWooCoreTokensFromServer()
+            val result = sut.unregisterWooPushTokenForSite(site)
 
+            assertThat(result.isSuccess).isTrue()
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+        }
+
+    @Test
+    fun `given site without stored metadata, when unregistering single woo site, then succeeds without deleting token`() =
+        testBlocking {
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(null)
+
+            val result = sut.unregisterWooPushTokenForSite(siteModel)
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wooPushNotificationsStore, never()).deletePushToken(eq(siteModel), any())
+        }
+
+    @Test
+    fun `given site metadata stored, when unregistering single woo site fails, then returns failure and keeps metadata`() =
+        testBlocking {
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(siteModel, "token-id-1"))
+                .thenReturn(PN_UNREGISTER_ERROR)
+
+            val result = sut.unregisterWooPushTokenForSite(siteModel)
+
+            assertThat(result.isFailure).isTrue()
+            verify(pushNotificationsDataStore, never()).updateData(any())
         }
 
     @Test
@@ -293,10 +363,53 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
 
-            sut.unregisterDeviceFromAllPushes()
+            sut.unregisterDeviceFromPushNotifications()
 
             verify(wooPushNotificationsStore).deletePushToken(site1, "token-id-1")
             verify(wooPushNotificationsStore, never()).deletePushToken(eq(site2), any())
+        }
+
+    @Test
+    fun `given deletePushToken returns INVALID_ID error, when unregisterDevice called, then clears local token`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn 123L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(
+                WooResult(WooError(WooErrorType.INVALID_ID, BaseRequest.GenericErrorType.NOT_FOUND, "Not found"))
+            )
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.unregisterDeviceFromPushNotifications()
+
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_123"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_123"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_locale_123"))
+        }
+
+    @Test
+    fun `given deletePushToken returns non-INVALID_ID error, when unregisterDevice called, then keeps local token`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn 123L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site))
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(
+                WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN, "oops"))
+            )
+
+            sut.unregisterDeviceFromPushNotifications()
+
+            verify(pushNotificationsDataStore, never()).updateData(any())
         }
 
     @Test
@@ -559,6 +672,14 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         const val SITE_ID = 123L
 
         val PN_REGISTRATION_ERROR = WooResult<String>(
+            WooError(
+                WooErrorType.GENERIC_ERROR,
+                BaseRequest.GenericErrorType.UNKNOWN,
+                "oops"
+            )
+        )
+
+        val PN_UNREGISTER_ERROR = WooResult<Unit>(
             WooError(
                 WooErrorType.GENERIC_ERROR,
                 BaseRequest.GenericErrorType.UNKNOWN,

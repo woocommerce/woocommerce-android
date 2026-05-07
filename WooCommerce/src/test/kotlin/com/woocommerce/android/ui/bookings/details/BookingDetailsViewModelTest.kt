@@ -72,14 +72,14 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val bookingMapper = BookingMapper(dateFormatter, currencyFormatter, getLocations, resourceProvider)
     private val bookingsRepository = mock<BookingsRepository> {
         on { observeBooking(any()) } doReturn bookingFlow
-        onBlocking { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
-        onBlocking { fetchProductBookingLocation(any(), anyOrNull()) } doReturn Result.success(null)
+        on { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
+        on { fetchProductBookingLocation(any(), anyOrNull()) } doReturn Result.success(null)
     }
     private val networkStatus = mock<NetworkStatus> {
         on { isConnected() } doReturn true
     }
     private val paymentStatusResolver = mock<PaymentStatusResolver> {
-        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
+        on { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val orderDetailRepository = mock<OrderDetailRepository>()

@@ -55,8 +55,8 @@ class WooPosProductsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
-        onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+        on { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
+        on { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()

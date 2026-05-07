@@ -530,8 +530,6 @@ Language: zh_TW
     <string name="woopos_scanning_setup_device_selection_title">設定條碼掃描器</string>
     <string name="woopos_scanning_setup_barcode_content_description">條碼</string>
     <string name="woopos_scanning_setup_dialog_content_description">掃描器設定對話方塊</string>
-    <string name="woopos_eligibility_screen_UK_country_name">英國</string>
-    <string name="woopos_eligibility_screen_US_country_name">美國</string>
     <string name="woopos_eligibility_screen_unable_to_load">無法載入</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系統不支援商店的幣別。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系統不支援商店的幣別。 「%1$s」地區目前僅支援：%2$s。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>

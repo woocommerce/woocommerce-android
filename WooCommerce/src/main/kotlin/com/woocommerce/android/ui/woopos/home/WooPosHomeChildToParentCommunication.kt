@@ -52,6 +52,7 @@ sealed class ChildToParentEvent {
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
+    data object ShowCardReaderConnectionDialog : ChildToParentEvent()
 
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()
@@ -74,6 +75,8 @@ sealed class ChildToParentEvent {
 
     sealed class SettingsEvent : ChildToParentEvent() {
         data class ShowSyncErrorDialog(val errorMessage: String) : SettingsEvent()
+        data object ShowCardReaderConnectionDialog : SettingsEvent()
+        data object ShowCardReaderUpdateDialog : SettingsEvent()
     }
 }
 

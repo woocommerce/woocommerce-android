@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
@@ -23,9 +22,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class WooPosActivity : AppCompatActivity() {
     @Inject
-    lateinit var wooPosCardReaderFacade: WooPosCardReaderFacade
-
-    @Inject
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
 
     @Inject
@@ -36,17 +32,19 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // POS is session-based: cart, product cache, order cache, and data source selection
-        // all live in in-memory singletons. On process death these are lost, but Compose
-        // Navigation restores the back stack to the home screen, skipping the splash flow
-        // that initializes them — causing IllegalStateException in WooPosProductsDataSource.
-        // Passing null forces a fresh start from the splash screen, which re-initializes
-        // everything. On config changes the process stays alive and singletons survive,
-        // so going through splash again is instant (no loading screen).
-        super.onCreate(null)
+        // all live in in-memory singletons set up by the splash flow. On a config change
+        // (theme, rotation, font scale) the process stays alive and the singletons survive,
+        // so we preserve savedInstanceState and let Compose Navigation restore the back
+        // stack to the screen the user was on. On process death the OS spawns a fresh
+        // process with empty singletons; restoring the back stack to a non-splash route
+        // would skip initialization and crash in WooPosProductsDataSource — so we discard
+        // savedInstanceState to force a fresh splash. hasInitializedSession is process-
+        // scoped: it's reset to false in a new process, true after the first onCreate.
+        super.onCreate(if (hasInitializedSession) savedInstanceState else null)
+        hasInitializedSession = true
         WindowCompat.setDecorFitsSystemWindows(window, false)
         lockWooPosOrientation()
 
-        lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)
         lifecycle.addObserver(wooPosCouponCreationFacade)
         lifecycle.addObserver(wooPosPeriodicSyncFacade)
@@ -56,6 +54,10 @@ class WooPosActivity : AppCompatActivity() {
                 WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
             }
         }
+    }
+
+    companion object {
+        private var hasInitializedSession = false
     }
 }
 

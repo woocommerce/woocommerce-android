@@ -120,10 +120,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val pluginsInfo = HashMap<String, WooPlugin>()
     private val orderDetailRepository: OrderDetailRepository = mock {
-        onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
+        on { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
     }
     private val addonsRepository: AddonRepository = mock {
-        onBlocking { containsAddonsFrom(any()) } doReturn false
+        on { containsAddonsFrom(any()) } doReturn false
     }
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val orderDetailTracker: OrderDetailTracker = mock()
@@ -150,8 +150,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock()
     private val paymentReceiptHelper: PaymentReceiptHelper = mock {
-        onBlocking { isReceiptAvailable(any()) }.thenReturn(false)
-        onBlocking { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
+        on { isReceiptAvailable(any()) }.thenReturn(false)
+        on { getReceiptUrl(any()) }.thenReturn(Result.success("https://www.testname.com"))
     }
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)

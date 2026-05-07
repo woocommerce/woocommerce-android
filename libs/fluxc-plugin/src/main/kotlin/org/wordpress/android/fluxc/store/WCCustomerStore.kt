@@ -71,6 +71,40 @@ class WCCustomerStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchCustomers(
+        site: SiteModel,
+        search: String? = null,
+        email: String? = null,
+        include: List<Long>? = null,
+        orderby: String = "registered_date",
+        order: String = "desc",
+        page: Int? = null,
+        perPage: Int = 20,
+    ): WooResult<List<WCCustomerModel>> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchCustomers") {
+            val response = restClient.fetchCustomers(
+                site = site,
+                search = search,
+                email = email,
+                include = include,
+                orderby = orderby,
+                order = order,
+                page = page,
+                perPage = perPage,
+            )
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    val customers = response.result.map { mapper.mapToModel(site, it) }
+                    customerDao.upsertCustomers(customers)
+                    WooResult(customers)
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     /**
      * returns customers from analytics
      */

@@ -19,6 +19,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListRepository
 import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
 import com.woocommerce.android.ui.reviews.ReviewModerationHandler
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.ui.reviews.observeModerationEvents
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
@@ -39,7 +40,8 @@ class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val reviewModerationHandler: ReviewModerationHandler,
-    private val reviewListRepository: ReviewListRepository
+    private val reviewListRepository: ReviewListRepository,
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
@@ -117,8 +119,9 @@ class ProductReviewsViewModel @Inject constructor(
             } else {
                 productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
             }
+            syncUnreadFilterAvailability()
+            fetchProductReviews(navArgs.remoteProductId, loadMore = false)
         }
-        fetchProductReviews(navArgs.remoteProductId, loadMore = false)
     }
 
     private fun fetchProductReviews(
@@ -138,6 +141,7 @@ class ProductReviewsViewModel @Inject constructor(
                             ReviewListRepository.FetchReviewsResult.NothingFetched -> {
                                 // No action needed
                             }
+
                             is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
                                 if (result.requestResult == SUCCESS) {
                                     val reviews = reviewListRepository.getCachedProductReviews()
@@ -146,6 +150,7 @@ class ProductReviewsViewModel @Inject constructor(
                                     }
                                 }
                             }
+
                             is ReviewListRepository.FetchReviewsResult.ReviewsFetched -> {
                                 trackFetchProductReviewsResult(result.requestResult, loadMore)
                                 when (result.requestResult) {
@@ -219,12 +224,24 @@ class ProductReviewsViewModel @Inject constructor(
         )
     }
 
+    private suspend fun syncUnreadFilterAvailability() {
+        val isUnreadFilterSupported = supportsReviewsReadStatus()
+        productReviewsViewState = productReviewsViewState.copy(
+            isUnreadFilterSupported = isUnreadFilterSupported,
+            isUnreadFilterEnabled = productReviewsViewState.isUnreadFilterEnabled && isUnreadFilterSupported
+        )
+    }
+
     @Parcelize
     data class ProductReviewsViewState(
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
+        val isUnreadFilterSupported: Boolean = true,
         val isUnreadFilterEnabled: Boolean = false
-    ) : Parcelable
+    ) : Parcelable {
+        val isUnreadFilterVisible: Boolean
+            get() = isUnreadFilterSupported && (isEmptyViewVisible != true || isUnreadFilterEnabled)
+    }
 }

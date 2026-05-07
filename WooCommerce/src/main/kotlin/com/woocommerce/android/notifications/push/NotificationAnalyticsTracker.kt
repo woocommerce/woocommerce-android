@@ -4,9 +4,13 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +22,7 @@ class NotificationAnalyticsTracker @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     fun track(stat: AnalyticsEvent, siteId: Long) {
-        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val site = resolveNotificationSite(siteId) ?: return
         val properties = mutableMapOf<String, Any>().addCommonSiteProperties(site)
         analyticsTrackerWrapper.track(stat, properties)
     }
@@ -26,17 +30,20 @@ class NotificationAnalyticsTracker @Inject constructor(
     fun trackNotificationAnalytics(
         stat: AnalyticsEvent,
         siteId: Long,
-        remoteNoteId: Long,
-        noteTypeTrackingValue: String
+        notificationId: String?,
+        noteTypeTrackingValue: String,
+        source: NotificationSource?
     ) {
-        val site = siteStore.getSiteBySiteId(siteId) ?: return
-        val isFromSelectedSite = selectedSite.getIfExists()?.siteId == siteId
+        val site = resolveNotificationSite(siteId) ?: return
         val properties = mutableMapOf<String, Any>(
-            "notification_note_id" to remoteNoteId,
             "notification_type" to noteTypeTrackingValue,
             "push_notification_token" to appPrefsWrapper.getFCMToken(),
-            "is_from_selected_site" to isFromSelectedSite
+            "is_from_selected_site" to site.isSelectedSite()
         ).addCommonSiteProperties(site)
+        properties.putIfNotNull(
+            "push_notification_source" to source?.trackingValue,
+            "notification_note_id" to notificationId
+        )
         analyticsTrackerWrapper.track(stat, properties)
     }
 
@@ -47,7 +54,7 @@ class NotificationAnalyticsTracker @Inject constructor(
         errorType: String?,
         errorCode: String? = null
     ) {
-        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val site = resolveNotificationSite(siteId) ?: return
         val properties = mutableMapOf<String, Any>().apply {
             errorDescription?.let { this[AnalyticsTracker.KEY_ERROR_DESC] = it }
             errorType?.let { this[AnalyticsTracker.KEY_ERROR_TYPE] = it }
@@ -55,6 +62,25 @@ class NotificationAnalyticsTracker @Inject constructor(
         }.addCommonSiteProperties(site)
         analyticsTrackerWrapper.track(stat, properties)
     }
+
+    // Application-password sites have no wpcom site id, so the payload siteId is unreliable;
+    // fall back to the selected site we don't support multi-sites with app passwords.
+    private fun resolveNotificationSite(siteId: Long): SiteModel? {
+        return if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+            selectedSite.getOrNull()
+        } else {
+            siteStore.getSiteBySiteId(siteId)
+        }
+    }
+
+    // App-password sites don't have a reliable wpcom siteId to compare against, but multi-site
+    // is unsupported there so any app-password notification targets the one selected site.
+    private fun SiteModel.isSelectedSite() =
+        if (connectionType == SiteConnectionType.ApplicationPasswords) {
+            true
+        } else {
+            siteId == selectedSite.getOrNull()?.siteId
+        }
 
     private fun MutableMap<String, Any>.addCommonSiteProperties(site: SiteModel) = apply {
         this[AnalyticsTracker.IS_JETPACK_INSTALLED] = site.isJetpackInstalled

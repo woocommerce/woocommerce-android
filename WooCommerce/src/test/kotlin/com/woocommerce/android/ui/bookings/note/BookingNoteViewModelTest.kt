@@ -60,8 +60,8 @@ class BookingNoteViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = BookingNoteFragmentArgs(bookingId).toSavedStateHandle()
 
     private val bookingsRepository = mock<BookingsRepository> {
-        onBlocking { getBooking(any()) } doReturn booking
-        onBlocking { updateNote(any(), any()) } doReturn Result.success(Unit)
+        on { getBooking(any()) } doReturn booking
+        on { updateNote(any(), any()) } doReturn Result.success(Unit)
     }
 
     @Test

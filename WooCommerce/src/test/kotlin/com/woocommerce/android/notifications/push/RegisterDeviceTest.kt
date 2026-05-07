@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -32,7 +33,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import kotlin.time.Duration.Companion.milliseconds
@@ -48,7 +48,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         on { hasAccessToken() } doReturn true
     }
     private val pushNotificationRepository: PushNotificationRepository = mock {
-        onBlocking { shouldRegisterWooPushForSite(any(), any()) } doReturn true
+        on { shouldRegisterWooPushForSite(any(), any()) } doReturn true
     }
     private val featureFlagRepository: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1) } doReturn true
@@ -66,7 +66,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         on { getIfExists() } doReturn selectedSiteModel
     }
     private val getWooVisibleSites: GetWooVisibleSites = mock {
-        onBlocking { invoke() } doReturn listOf(siteOne, siteTwo)
+        on { invoke() } doReturn listOf(siteOne, siteTwo)
     }
     private val appCoroutineScope by lazy { CoroutineScope(coroutinesTestRule.testDispatcher) }
 
@@ -148,7 +148,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given login success trigger, when WPCom is not registered, then registers in WPCom`() = testBlocking {
         // GIVEN
-        wheneverBlocking { pushNotificationRepository.isWpComPushRegistered() }.thenReturn(false)
+        runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false) }
 
         // WHEN
         sut(LOGIN_SUCCESS)
@@ -160,7 +160,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given app foreground trigger, when WPCom is already registered, then skips WPCom registration`() = testBlocking {
         // GIVEN
-        wheneverBlocking { pushNotificationRepository.isWpComPushRegistered() }.thenReturn(true)
+        runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(true) }
 
         // WHEN
         sut(APP_FOREGROUND)
@@ -173,9 +173,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given no access token, when app foreground trigger runs, then does not register in WPCom`() = testBlocking {
         // GIVEN
         whenever(accountStore.hasAccessToken()).thenReturn(false)
-        wheneverBlocking {
-            pushNotificationRepository.isWpComPushRegistered()
-        }.thenReturn(false)
+        runBlocking {
+            whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false)
+        }
 
         // WHEN
         sut(APP_FOREGROUND)
@@ -245,11 +245,13 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given unforced run in progress, when site switch is kicked off, then it waits for unforced run to finish`() =
         testBlocking {
             // GIVEN
-            wheneverBlocking {
-                pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
-            }.doSuspendableAnswer {
-                delay(1000.milliseconds)
-                Result.success(Unit)
+            runBlocking {
+                whenever(
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
+                ).doSuspendableAnswer {
+                    delay(1000.milliseconds)
+                    Result.success(Unit)
+                }
             }
 
             // WHEN
@@ -288,14 +290,16 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         testBlocking {
             // GIVEN
             var isFirstCall = true
-            wheneverBlocking {
-                pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
-            }.doSuspendableAnswer {
-                if (isFirstCall) {
-                    isFirstCall = false
-                    delay(Long.MAX_VALUE.milliseconds) // Suspend indefinitely until cancelled
+            runBlocking {
+                whenever(
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, true)
+                ).doSuspendableAnswer {
+                    if (isFirstCall) {
+                        isFirstCall = false
+                        delay(Long.MAX_VALUE.milliseconds) // Suspend indefinitely until cancelled
+                    }
+                    Result.success(Unit)
                 }
-                Result.success(Unit)
             }
 
             // WHEN

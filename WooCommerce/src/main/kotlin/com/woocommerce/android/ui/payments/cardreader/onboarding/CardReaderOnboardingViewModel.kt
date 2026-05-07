@@ -454,7 +454,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
                 )
             }
-            is CardReaderFlowParam.WooPosConnection -> {
+            CardReaderFlowParam.WooPosConnection -> {
                 triggerEvent(
                     CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
                 )

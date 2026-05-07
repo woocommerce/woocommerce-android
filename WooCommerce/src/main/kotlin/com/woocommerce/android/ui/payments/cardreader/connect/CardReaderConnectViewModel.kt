@@ -22,7 +22,6 @@ import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.C
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
-import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -38,7 +37,6 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ReturnToWooPos
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowToastString
@@ -58,7 +56,6 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -84,8 +81,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    @StoreManagementMode storeManagementPaymentsFlowTracker: PaymentsFlowTracker,
-    @PointOfSaleMode pointOfSalePaymentsFlowTracker: PaymentsFlowTracker,
+    @StoreManagementMode private val tracker: PaymentsFlowTracker,
     private val dispatchers: CoroutineDispatchers,
     private val appPrefs: AppPrefsWrapper,
     private val developerOptionsRepository: DeveloperOptionsRepository,
@@ -98,12 +94,6 @@ class CardReaderConnectViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
-    private val tracker: PaymentsFlowTracker = when (arguments.cardReaderFlowParam) {
-        is CardReaderFlowParam.WooPosConnection -> pointOfSalePaymentsFlowTracker
-        is CardReaderFlowParam.CardReadersHub -> storeManagementPaymentsFlowTracker
-        is CardReaderFlowParam.PaymentOrRefund.Payment -> storeManagementPaymentsFlowTracker
-        is CardReaderFlowParam.PaymentOrRefund.Refund -> storeManagementPaymentsFlowTracker
-    }
 
     /**
      * This is a workaround for a bug in MultiLiveEvent, which can't be fixed without vital changes.
@@ -151,6 +141,7 @@ class CardReaderConnectViewModel @Inject constructor(
             onLocationPermissionsVerified()
         } else if (viewState.value !is MissingLocationPermissionsError) {
             if (shouldShowRationale) {
+                tracker.trackLocationPermissionPreAlertShown()
                 viewState.value = LocationPermissionRationale(::onLocationPermissionRationaleConfirmed)
             } else {
                 triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
@@ -166,6 +157,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (granted) {
             onLocationPermissionsVerified()
         } else {
+            tracker.trackLocationPermissionRequiredShown()
             viewState.value = MissingLocationPermissionsError(
                 onPrimaryActionClicked = ::onOpenPermissionsSettingsClicked,
                 onSecondaryActionClicked = ::onCancelClicked
@@ -302,6 +294,10 @@ class CardReaderConnectViewModel @Inject constructor(
                 CardReaderStatus.Connecting -> {
                     connectionStarted = true
                     viewState.value = provideConnectingState()
+                }
+
+                CardReaderStatus.Reconnecting -> {
+                    // Reconnecting is handled by the SDK, no action needed during connection flow
                 }
             }
         }
@@ -552,21 +548,16 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun exitFlow(connected: Boolean) {
-        val param = arguments.cardReaderFlowParam
-        when {
-            param is CardReaderFlowParam.WooPosConnection -> returnToWooPos()
-            !connected -> triggerEvent(ExitWithResult(false))
-            else -> triggerEvent(
+        if (!connected) {
+            triggerEvent(ExitWithResult(false))
+        } else {
+            triggerEvent(
                 ShowCardReaderTutorial(
                     arguments.cardReaderFlowParam,
                     arguments.cardReaderType
                 )
             )
         }
-    }
-
-    private fun returnToWooPos() {
-        triggerEvent(ReturnToWooPos)
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {

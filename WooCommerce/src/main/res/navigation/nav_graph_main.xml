@@ -108,10 +108,6 @@
             <argument
                 android:name="allOrderIds"
                 app:argType="long[]" />
-            <argument
-                android:name="remoteNoteId"
-                android:defaultValue="0L"
-                app:argType="long" />
         </action>
         <action
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
@@ -333,7 +329,14 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_moreMenu_to_aiAssistantHostFragment"
+            app:destination="@id/aiAssistantHostFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/aiAssistantHostFragment"
+        android:name="com.woocommerce.android.ui.aiassistant.AiAssistantHostFragment"
+        android:label="fragment_ai_assistant" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"

@@ -112,7 +112,7 @@ class WooPosProductsRemoteDataSourceTest {
         on { get() }.thenReturn(siteModel)
     }
     private val productsCache: WooPosProductsCache = mock {
-        onBlocking { getAll() }.thenReturn(sampleProducts)
+        on { getAll() }.thenReturn(sampleProducts)
     }
     private val productsIndex: WooPosProductsIndex = mock()
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()

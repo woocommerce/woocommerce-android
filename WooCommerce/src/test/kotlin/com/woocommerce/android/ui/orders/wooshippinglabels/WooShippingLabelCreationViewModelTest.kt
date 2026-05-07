@@ -263,7 +263,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     )
 
     private val orderDetailRepository: OrderDetailRepository = mock {
-        onBlocking { getOrderById(any()) } doReturn OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+        on { getOrderById(any()) } doReturn OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             shippingLines = defaultShippingLines,
             customer = Order.Customer(
                 billingAddress = defaultShipToAddress,
@@ -272,7 +272,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
     }
     private val getShipments: GetShipments = mock {
-        onBlocking { invoke(any()) } doReturn defaultShipments
+        on { invoke(any()) } doReturn defaultShipments
     }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), any()) } doAnswer {
@@ -297,7 +297,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         on { invoke() } doReturn flowOf(defaultOriginAddresses)
     }
     private val getShippingRates: GetShippingRates = mock {
-        onBlocking {
+        on {
             invoke(
                 any(),
                 any(),
@@ -311,7 +311,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         } doReturn Result.success(defaultShippingRates)
     }
     private val purchaseShippingLabel: PurchaseShippingLabel = mock {
-        onBlocking {
+        on {
             invoke(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
         } doReturn Result.success(
             PurchasedLabelData(
@@ -327,7 +327,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         on { invoke() } doReturn flowOf(defaultAccountSettings)
     }
     private val verifyDestinationAddress: VerifyDestinationAddress = mock {
-        onBlocking { invoke(orderId) } doReturn Result.success(DestinationShippingAddress(defaultShipToAddress, true))
+        on { invoke(orderId) } doReturn Result.success(DestinationShippingAddress(defaultShipToAddress, true))
     }
     private val observeShippingLabelNotice: ObserveShippingLabelNotice = mock {
         on { invoke(any(), any(), any(), any()) } doReturn flowOf(null)

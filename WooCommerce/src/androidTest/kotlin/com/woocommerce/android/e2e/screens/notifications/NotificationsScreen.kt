@@ -7,6 +7,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NewOrder
 
@@ -34,6 +35,8 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
                 noteType = NewOrder,
                 channelType = NotificationChannelType.NEW_ORDER
             ),
+            source = NotificationSource.WOO_DRIVEN,
+            analyticsId = null,
             isGroupNotification = false
         )
     }

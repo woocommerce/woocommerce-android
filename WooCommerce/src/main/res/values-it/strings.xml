@@ -530,8 +530,6 @@ Language: it
     <string name="woopos_scanning_setup_device_selection_title">Configura uno scanner di codici a barre</string>
     <string name="woopos_scanning_setup_barcode_content_description">Codice a barre</string>
     <string name="woopos_scanning_setup_dialog_content_description">Finestra di dialogo di configurazione dello scanner</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Nel Regno Unito</string>
-    <string name="woopos_eligibility_screen_US_country_name">Negli Stati Uniti</string>
     <string name="woopos_eligibility_screen_unable_to_load">Impossibile caricare</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Il sistema POS non è disponibile per la valuta del tuo negozio. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Il sistema POS non è disponibile per la valuta del tuo negozio. %1$s, l\'unica valuta al momento supportata è %2$s. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>

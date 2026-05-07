@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 
+private const val DEFAULT_WIDTH_FRACTION = 0.75f
 private const val ENTER_EXIT_DURATION_MS = 300
 
 @Composable
@@ -43,6 +44,7 @@ fun WooPosDialogWrapper(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
+    widthFraction: Float = DEFAULT_WIDTH_FRACTION,
     onCloseClick: (() -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
@@ -85,7 +87,7 @@ fun WooPosDialogWrapper(
                 modifier = modifier
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .fillMaxWidth(0.75f),
+                    .fillMaxWidth(widthFraction),
             ) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.XLarge.value)
