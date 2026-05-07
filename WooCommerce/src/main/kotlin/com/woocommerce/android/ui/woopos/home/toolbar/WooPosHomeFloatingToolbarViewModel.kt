@@ -3,13 +3,11 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
-import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -41,6 +39,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val effectiveReaderStatusProvider: WooPosEffectiveReaderStatusProvider,
     controllerFactory: WooPosCardReaderConnectionControllerFactory,
 ) : ViewModel() {
 
@@ -58,21 +57,33 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            cardReaderFacade.readerStatus.flatMapLatest { readerStatus ->
-                when (readerStatus) {
-                    is Connected -> cardReaderFacade.batteryStatus.map { batteryStatus ->
-                        WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
-                            batteryState = mapBatteryState(batteryStatus)
+            effectiveReaderStatusProvider.flow
+                .flatMapLatest { effective ->
+                    when (effective) {
+                        WooPosEffectiveReaderStatus.RemoteConnected -> flowOf(
+                            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
+                                batteryState = WooPosHomeFloatingToolbarState.BatteryState.NOMINAL
+                            )
+                        )
+                        WooPosEffectiveReaderStatus.BluetoothConnected ->
+                            cardReaderFacade.batteryStatus
+                                .map { batteryStatus ->
+                                    WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
+                                        batteryState = mapBatteryState(batteryStatus)
+                                    )
+                                }
+                        WooPosEffectiveReaderStatus.Reconnecting -> flowOf(
+                            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting
+                        )
+                        WooPosEffectiveReaderStatus.Connecting,
+                        WooPosEffectiveReaderStatus.Disconnected -> flowOf(
+                            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
                         )
                     }
-                    is NotConnected, Connecting -> flowOf(
-                        WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
-                    )
-                    Reconnecting -> flowOf(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting)
                 }
-            }.collect { cardReaderStatus ->
-                _state.value = _state.value.copy(cardReaderStatus = cardReaderStatus)
-            }
+                .collect { cardReaderStatus ->
+                    _state.value = _state.value.copy(cardReaderStatus = cardReaderStatus)
+                }
         }
     }
 

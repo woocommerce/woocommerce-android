@@ -13,15 +13,19 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AIAnalyticsDataSourceTest {
     private val selectedSite: SelectedSite = mock()
     private val orderStatsRestClient: OrderStatsRestClient = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val site = SiteModel().apply { id = SITE_ID }
 
     private lateinit var dataSource: AIAnalyticsDataSource
@@ -32,6 +36,7 @@ class AIAnalyticsDataSourceTest {
         dataSource = AIAnalyticsDataSource(
             selectedSite = selectedSite,
             orderStatsRestClient = orderStatsRestClient,
+            wooCommerceStore = wooCommerceStore,
         )
     }
 
@@ -216,6 +221,15 @@ class AIAnalyticsDataSourceTest {
             assertThat(result.isFailure).isTrue
         }
 
+    @Test
+    fun `given selected site settings, when currency code is requested, then site currency is returned`() {
+        whenever(wooCommerceStore.getSiteSettings(site)).thenReturn(siteSettings(currencyCode = CURRENCY))
+
+        val currencyCode = dataSource.getSelectedSiteCurrencyCode()
+
+        assertThat(currencyCode).isEqualTo(CURRENCY)
+    }
+
     private fun successResponse(
         interval: AnalyticsInterval,
         total: String,
@@ -232,6 +246,21 @@ class AIAnalyticsDataSourceTest {
             total = total,
             rangeId = "unused",
         ),
+    )
+
+    private fun siteSettings(currencyCode: String) = Settings(
+        currencyCode = currencyCode,
+        currencyPosition = CurrencyPosition.LEFT,
+        currencyThousandSeparator = ",",
+        currencyDecimalSeparator = ".",
+        currencyDecimalNumber = 2,
+        countryCode = "US",
+        stateCode = "CA",
+        address = "",
+        address2 = "",
+        city = "",
+        postalCode = "",
+        couponsEnabled = true,
     )
 
     private companion object {

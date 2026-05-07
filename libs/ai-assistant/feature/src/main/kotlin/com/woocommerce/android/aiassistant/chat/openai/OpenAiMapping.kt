@@ -1,6 +1,6 @@
 package com.woocommerce.android.aiassistant.chat.openai
 
-import com.woocommerce.android.aiassistant.core.AssistantConfig
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -20,7 +20,9 @@ internal fun AssistantMessage.toOpenAi(): OpenAiMessage = when (this) {
     is AssistantMessage.System -> OpenAiMessage.System(content = content)
     is AssistantMessage.User -> OpenAiMessage.User(content = content)
     is AssistantMessage.Assistant -> OpenAiMessage.Assistant(
-        content = content,
+        // Jetpack AI rejects assistant tool-call replay messages when content is omitted/null.
+        // send an empty string instead.
+        content = content ?: "",
         toolCalls = toolCalls.takeIf { it.isNotEmpty() }?.map(ToolCall::toOpenAi),
     )
     is AssistantMessage.Tool -> OpenAiMessage.Tool(

@@ -348,6 +348,19 @@
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
+    <string name="dashboard_stats_revenue_type_gross">Gross</string>
+    <string name="dashboard_stats_revenue_type_net">Net</string>
+    <string name="dashboard_stats_revenue_type_total">Total</string>
+    <string name="dashboard_stats_paid_orders">Paid orders</string>
+    <string name="dashboard_stats_placed_orders">Placed orders</string>
+    <string name="dashboard_stats_completed_orders">Completed orders</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Order date type</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Choose which orders to include in your performance metrics for the selected time range.</string>
+    <string name="dashboard_stats_paid_orders_description">Count orders on the date the order was paid.</string>
+    <string name="dashboard_stats_placed_orders_description">Count orders on the date they were placed or created.</string>
+    <string name="dashboard_stats_completed_orders_description">Count orders on the date they were marked as completed.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">This is a store-wide setting, which also controls the “Date type” option in WooCommerce admin analytics settings.</string>
+    <string name="dashboard_stats_order_date_type_update_error">Unable to update order type. Please try again.</string>
     <string name="dashboard_stats_conversion">Conversion</string>
     <string name="dashboard_state_no_data">No revenue this period</string>
     <string name="dashboard_stats_error">Error fetching data</string>
@@ -1593,6 +1606,8 @@
         Card Reader Detail
     -->
     <string name="card_reader_detail_not_connected_header">Connect your card reader</string>
+    <string name="card_reader_detail_reconnecting_header">Reconnecting to card reader…</string>
+    <string name="card_reader_detail_reconnecting_cancel">Cancel reconnection</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting mobile payments and ordering card readers</string>
     <string name="card_reader_detail_not_connected_first_hint_label">Make sure card reader is charged</string>
     <string name="card_reader_detail_not_connected_second_hint_label">Turn card reader on and place it next to mobile device</string>
@@ -2211,6 +2226,7 @@
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
+    <string name="settings_logout_dialog_message">Logging you out.</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
@@ -2251,6 +2267,7 @@
     <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_push_notifications">Push notifications</string>
     <string name="settings_store_name">Store name</string>
     <string name="settings_enable_push_notifications">Enable Push Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
@@ -2258,6 +2275,12 @@
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
+    <string name="settings_notifs_new_orders">New orders</string>
+    <string name="settings_notifs_new_orders_subtitle">All orders</string>
+    <string name="settings_notifs_stock">Stock</string>
+    <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_new_reviews">New reviews</string>
+    <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -3131,6 +3154,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Take payments on the go</string>
 
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="more_menu_button_ai_assistant_description">Ask about your store</string>
+
     <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
@@ -3605,6 +3631,9 @@
 
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
+    <string name="woopos_reader_reconnecting">Reconnecting…</string>
+    <string name="woopos_battery_low">Card reader battery low</string>
+    <string name="woopos_battery_critical">Card reader battery critical</string>
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_button_from_cart_content_description">Remove %s from cart</string>
     <string name="woopos_product_item_content_description">Product %s, Price %s</string>
@@ -3806,8 +3835,8 @@
     <string name="woopos_coupons_pagination_error_description">Please check your internet connection and try again.</string>
 
     <string name="woopos_orders_empty_list_title">No orders found</string>
-    <string name="woopos_orders_empty_list_message">Explore how you can increase your store sales.</string>
-    <string name="woopos_orders_empty_action_label">Learn more</string>
+    <string name="woopos_orders_empty_list_message">Orders will appear here once you start processing sales on the POS.</string>
+    <string name="woopos_orders_empty_action_label">Refresh</string>
     <string name="woopos_orders_empty_list_image_description">No orders</string>
     <string name="woopos_orders_no_order_selected">No order selected.</string>
     <string name="woopos_orders_loading_error_title">Unable to load orders</string>
@@ -3989,8 +4018,6 @@
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">The POS system is not available for your store’s currency. Please check your store currency settings or contact support for assistance.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
-    <string name="woopos_eligibility_screen_US_country_name">the United States</string>
-    <string name="woopos_eligibility_screen_UK_country_name">the United Kingdom</string>
     <string name="woopos_eligibility_ciab_title">Pro plan required</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accept payments in person for just 2.70% + $0.10 per transaction. &lt;b&gt;Upgrade to Pro&lt;/b&gt; to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
@@ -4053,6 +4080,52 @@
     <string name="woopos_settings_refund_policy_label">Refund and return policy</string>
     <string name="woopos_settings_receipt_edit_button">Edit receipt information</string>
     <string name="woopos_settings_store_not_set">Not set</string>
+
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Card reader connection dialog</string>
+    <string name="woopos_card_reader_close_content_description">Close</string>
+    <string name="woopos_card_reader_scanning_title">Scanning for reader</string>
+    <string name="woopos_card_reader_scanning_instruction">Make sure your reader is charged and turned on</string>
+    <string name="woopos_card_reader_scanning_failed_title">Scanning failed</string>
+    <string name="woopos_card_reader_found_title">%s found</string>
+    <string name="woopos_card_reader_found_description">Do you want to connect to this reader?</string>
+    <string name="woopos_card_reader_connect_button">Connect</string>
+    <string name="woopos_card_reader_keep_searching_button">Keep searching</string>
+    <string name="woopos_card_reader_multiple_found_title">Multiple readers found</string>
+    <string name="woopos_card_reader_multiple_found_description">Choose a reader</string>
+    <string name="woopos_card_reader_connecting_title">Connecting</string>
+    <string name="woopos_card_reader_connecting_message">Please wait while we connect to your reader</string>
+    <string name="woopos_card_reader_connecting_failed_title">Connection failed</string>
+    <string name="woopos_card_reader_connected_title">Connected</string>
+    <string name="woopos_card_reader_battery_low_title">Battery too low</string>
+    <string name="woopos_card_reader_battery_low_message">The reader battery is critically low. Please charge the reader and try again.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth is off</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Enable Bluetooth to connect to a card reader.</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Enable Bluetooth</string>
+    <string name="woopos_card_reader_location_disabled_title">Location is off</string>
+    <string name="woopos_card_reader_location_disabled_message">Enable Location to connect to a card reader.</string>
+    <string name="woopos_card_reader_enable_location_button">Enable Location</string>
+    <string name="woopos_card_reader_location_permission_title">Location permission required</string>
+    <string name="woopos_card_reader_location_permission_message">Location permission is required to connect to a card reader via Bluetooth.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth permission required</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">Bluetooth permission is required to connect to a card reader.</string>
+    <string name="woopos_card_reader_grant_permission_button">Grant permission</string>
+    <string name="woopos_card_reader_invalid_address_title">Invalid merchant address</string>
+    <string name="woopos_card_reader_invalid_address_message">Your store address is missing or incomplete. Please update your store address in WooCommerce settings.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Invalid postal code</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">Your store postal code is missing or invalid. Please update your store address in WooCommerce settings.</string>
+    <string name="woopos_card_reader_retry_button">Retry</string>
+    <string name="woopos_card_reader_cancel_button">Cancel</string>
+    <string name="woopos_card_reader_updating_title">Updating software</string>
+    <string name="woopos_card_reader_updating_optional_title">Updating your reader\'s software</string>
+    <string name="woopos_card_reader_update_progress">%d%% complete</string>
+    <string name="woopos_card_reader_update_required_message">Your card reader software needs to be updated to collect payments. Cancelling will block your reader connection.</string>
+    <string name="woopos_card_reader_update_optional_message">Your card reader\'s software needs to be updated to keep running smoothly</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Canceling an ongoing software update is not recommended. Cancelling will block your reader connection.</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Cancel anyway</string>
+    <string name="woopos_card_reader_update_completed_title">Software updated</string>
+    <string name="woopos_card_reader_update_failed_title">Update failed</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
+    <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4479,4 +4552,6 @@
     <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
     <string name="woo_pos_promo_next_button">Next</string>
     <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">the United States</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">the United Kingdom</string>
 </resources>

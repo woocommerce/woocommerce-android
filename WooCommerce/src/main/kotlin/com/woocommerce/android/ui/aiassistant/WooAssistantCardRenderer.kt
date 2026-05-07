@@ -1,0 +1,29 @@
+package com.woocommerce.android.ui.aiassistant
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
+import com.woocommerce.android.util.CurrencyFormatter
+
+class WooAssistantCardRenderer(
+    currencyFormatter: CurrencyFormatter,
+) : AssistantCardRenderer {
+    private val orderCardRenderer = AiAssistantOrderCardRenderer(currencyFormatter)
+    private val productCardRenderer = AiAssistantProductCardRenderer(currencyFormatter)
+    private val statsCardRenderer = AiAssistantStatsCardRenderer(currencyFormatter)
+
+    @Composable
+    override fun Card(
+        card: AssistantCard,
+        onAction: (AssistantCardAction) -> Unit,
+        modifier: Modifier,
+    ) {
+        when (card) {
+            is AssistantCard.Order -> orderCardRenderer.Card(card, onAction, modifier)
+            is AssistantCard.Product -> productCardRenderer.Card(card, onAction, modifier)
+            is AssistantCard.Stats -> statsCardRenderer.Card(card, onAction, modifier)
+        }
+    }
+}
