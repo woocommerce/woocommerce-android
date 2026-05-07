@@ -454,6 +454,34 @@ class AgenticLoopAssistantRuntimeTest {
         }
 
     @Test
+    fun `given show cards success with orders analytics stats, when adapted, then order stats card is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-stats",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = showCardsUiStructured(ordersAnalyticsStatsPayload()),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            val statsCard = events.cardEvents().single().cards.single() as AssistantCard.Stats
+            assertThat(statsCard.id).isEqualTo(ANALYTICS_ORDERS_STATS_ID)
+            assertThat(statsCard.kind).isEqualTo(AssistantCard.Stats.Kind.Orders)
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.AverageOrderValue).chartPoints)
+                .containsExactly(AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10))
+        }
+
+    @Test
     fun `given analytics revenue validation error, when adapted, then no stats card is emitted`() = runTest {
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(
@@ -755,6 +783,31 @@ class AgenticLoopAssistantRuntimeTest {
         ),
     )
 
+    private fun ordersAnalyticsStatsPayload() = ShowCardPayload(
+        family = "analytics_stats",
+        id = ANALYTICS_ORDERS_STATS_ID,
+        title = "Analytics",
+        details = ShowCardDetails.AnalyticsStats(
+            after = "2026-05-01",
+            before = "2026-05-03",
+            currency = "USD",
+            kind = "orders",
+            totals = buildJsonObject {
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
+            },
+            intervalSubtotals = listOf(
+                buildJsonObject {
+                    put("interval", "2026-05-01")
+                    putJsonObject("subtotals") {
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
+                    }
+                },
+            ),
+        ),
+    )
+
     private fun expectedOrderCard(id: String, number: String) = AssistantCard.Order(
         remoteOrderId = id.toLong(),
         number = number,
@@ -767,6 +820,9 @@ class AgenticLoopAssistantRuntimeTest {
 
     private fun List<AssistantRuntimeEvent>.cardEvents() =
         filterIsInstance<AssistantRuntimeEvent.CardsResolved>()
+
+    private fun AssistantCard.Stats.metric(type: AssistantCard.Stats.MetricType): AssistantCard.Stats.Metric =
+        metrics.single { it.type == type }
 
     private class FakeAgenticLoop(
         private val events: List<LoopEvent>,
@@ -845,5 +901,7 @@ class AgenticLoopAssistantRuntimeTest {
     private companion object {
         private const val ANALYTICS_STATS_ID =
             "analytics_revenue:after:2026-05-01:before:2026-05-03:interval:day:currency:USD"
+        private const val ANALYTICS_ORDERS_STATS_ID =
+            "analytics_orders:after:2026-05-01:before:2026-05-03:interval:day:currency:none"
     }
 }
