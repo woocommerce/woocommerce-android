@@ -7,12 +7,15 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -40,6 +43,18 @@ class ProductVariationsToolHandlerTest {
         variationId: Long = 10L,
         price: String = "19.99",
         stockStatus: String = "instock",
+        attributes: String = "",
+        description: String = "",
+        weight: String = "",
+        length: String = "",
+        width: String = "",
+        height: String = "",
+        taxClass: String = "",
+        dateCreated: String = "",
+        dateModified: String = "",
+        menuOrder: Int = 0,
+        backorders: String = "",
+        image: String = "",
     ) = WCProductVariationModel(
         localSiteId = LocalId(1),
         remoteProductId = RemoteId(productId),
@@ -53,6 +68,18 @@ class ProductVariationsToolHandlerTest {
         stockQuantity = 3.0,
         stockStatus = stockStatus,
         price = price,
+        attributes = attributes,
+        description = description,
+        weight = weight,
+        length = length,
+        width = width,
+        height = height,
+        taxClass = taxClass,
+        dateCreated = dateCreated,
+        dateModified = dateModified,
+        menuOrder = menuOrder,
+        backorders = backorders,
+        image = image,
     )
 
     private fun toolCall(arguments: JsonObject): ToolCall =
@@ -138,7 +165,95 @@ class ProductVariationsToolHandlerTest {
         assertThat(requireNotNull(json["sku"]).jsonPrimitive.content).isEqualTo("SKU-10")
         assertThat(requireNotNull(json["regular_price"]).jsonPrimitive.content).isEqualTo("19.99")
         assertThat(requireNotNull(json["stock_status"]).jsonPrimitive.content).isEqualTo("instock")
+        assertThat(json.getValue("attributes").jsonArray).isEmpty()
     }
+
+    @Test
+    fun `given list mode result, when execute is called, then structured JSON contains variation rows with attributes`() =
+        runTest {
+            whenever(dataSource.fetchVariations(productId = 100L, page = 1, perPage = 20)).thenReturn(
+                Result.success(
+                    listOf(
+                        variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            price = "19.99",
+                            stockStatus = "instock",
+                            attributes = """[{"name":"Size","option":"M"}]""",
+                        )
+                    )
+                )
+            )
+
+            val result = handler.execute(toolCall(buildJsonObject { put("product_id", 100) }))
+
+            val row = (result as ToolResult.Success).structured.jsonObject
+                .getValue("variations").jsonArray.single().jsonObject
+            assertThat(row.getValue("id").jsonPrimitive.long).isEqualTo(10L)
+            assertThat(row.getValue("product_id").jsonPrimitive.long).isEqualTo(100L)
+            assertThat(row.getValue("attributes").jsonArray.single().jsonObject.getValue("option").jsonPrimitive.content)
+                .isEqualTo("M")
+        }
+
+    @Test
+    fun `given variation extras, when execute is called, then every allowed variation extra is included`() =
+        runTest {
+            whenever(dataSource.fetchVariations(productId = 100L, page = 1, perPage = 20)).thenReturn(
+                Result.success(
+                    listOf(
+                        variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            price = "19.99",
+                            description = "Red medium hoodie",
+                            weight = "1.25",
+                            length = "10",
+                            width = "5",
+                            height = "2",
+                            taxClass = "standard",
+                            dateCreated = "2026-05-01T10:00:00Z",
+                            dateModified = "2026-05-02T10:00:00Z",
+                            menuOrder = 3,
+                            backorders = "notify",
+                            image = """{"id":7,"src":"https://example.com/variation.jpg","alt":"Variation","name":"Front"}""",
+                            attributes = """[{"name":"Size","option":"M"}]""",
+                        )
+                    )
+                )
+            )
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("product_id", 100)
+                        putJsonArray("extra_fields") {
+                            add("image")
+                            add("description")
+                            add("weight")
+                            add("dimensions")
+                            add("tax_class")
+                            add("date_created")
+                            add("date_modified")
+                            add("menu_order")
+                            add("backorders")
+                        }
+                    }
+                )
+            )
+
+            val row = (result as ToolResult.Success).structured.jsonObject
+                .getValue("variations").jsonArray.single().jsonObject
+            assertThat(row.getValue("image").jsonObject.getValue("src").jsonPrimitive.content)
+                .isEqualTo("https://example.com/variation.jpg")
+            assertThat(row.getValue("description").jsonPrimitive.content).isEqualTo("Red medium hoodie")
+            assertThat(row.getValue("weight").jsonPrimitive.content).isEqualTo("1.25")
+            assertThat(row.getValue("dimensions").jsonObject.getValue("height").jsonPrimitive.content).isEqualTo("2")
+            assertThat(row.getValue("tax_class").jsonPrimitive.content).isEqualTo("standard")
+            assertThat(row.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
+            assertThat(row.getValue("date_modified").jsonPrimitive.content).isEqualTo("2026-05-02T10:00:00Z")
+            assertThat(row.getValue("menu_order").jsonPrimitive.int).isEqualTo(3)
+            assertThat(row.getValue("backorders").jsonPrimitive.content).isEqualTo("notify")
+        }
 
     @Test
     fun `given get mode, when execute is called, then page arguments are ignored and get variation is used`() =
