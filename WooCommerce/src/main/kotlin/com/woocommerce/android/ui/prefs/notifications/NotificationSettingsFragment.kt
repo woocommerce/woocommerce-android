@@ -43,6 +43,7 @@ class NotificationSettingsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.refreshNotificationSettings()
         AnalyticsTracker.trackViewShown(this)
     }
 

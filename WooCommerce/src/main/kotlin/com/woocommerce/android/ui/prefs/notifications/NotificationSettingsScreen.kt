@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -21,11 +22,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -42,17 +48,21 @@ fun NotificationSettingsScreen(
 ) {
     if (showSmarterNotifications) {
         viewModel.notificationTypeItems.observeAsState().value?.let {
+            val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.observeAsState(initial = true).value
+
             SmarterNotificationSettingsScreen(
                 items = it,
+                isAppNotificationsEnabled = isAppNotificationsEnabled,
                 onNotificationTypeEnabledChanged = viewModel::onNotificationTypeEnabledChanged,
-                onNotificationTypeClicked = viewModel::onNotificationTypeClicked
+                onNotificationTypeClicked = viewModel::onNotificationTypeClicked,
+                onDeviceNotificationSettingsClicked = viewModel::onDeviceNotificationSettingsClicked
             )
         }
     } else {
         viewModel.newOrderNotificationSoundStatus.observeAsState().value?.let {
             NotificationSettingsScreen(
                 orderNotificationSoundStatus = it,
-                onManageNotificationsClicked = viewModel::onManageNotificationsClicked,
+                onDeviceNotificationSettingsClicked = viewModel::onDeviceNotificationSettingsClicked,
                 onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
             )
         }
@@ -62,8 +72,10 @@ fun NotificationSettingsScreen(
 @Composable
 private fun SmarterNotificationSettingsScreen(
     items: List<NotificationTypeItem>,
+    isAppNotificationsEnabled: Boolean,
     onNotificationTypeEnabledChanged: (NotificationType, Boolean) -> Unit,
-    onNotificationTypeClicked: (NotificationType) -> Unit
+    onNotificationTypeClicked: (NotificationType) -> Unit,
+    onDeviceNotificationSettingsClicked: () -> Unit
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
         Column(
@@ -80,14 +92,62 @@ private fun SmarterNotificationSettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+            AnimatedVisibility(visible = !isAppNotificationsEnabled) {
+                SystemNotificationsDisabledWarning(
+                    onClick = onDeviceNotificationSettingsClicked,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun SystemNotificationsDisabledWarning(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_warning_filled_24dp),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(24.dp)
+        )
+
+        val textValue = stringResource(id = R.string.settings_notifs_app_notifications_disabled_warning)
+        val textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f)
+        val highlightedTextStyle = SpanStyle(
+            color = MaterialTheme.colorScheme.primary
+        )
+        val warningText = remember(textValue, highlightedTextStyle) {
+            AnnotatedString.fromHtml(textValue).flatMapAnnotations { range ->
+                if (range.item is LinkAnnotation) {
+                    listOf(AnnotatedString.Range(highlightedTextStyle, range.start, range.end))
+                } else {
+                    listOf(range)
+                }
+            }
+        }
+        Text(
+            text = warningText,
+            style = MaterialTheme.typography.bodySmall,
+            color = textColor,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
 @Composable
 private fun NotificationSettingsScreen(
     orderNotificationSoundStatus: NewOrderNotificationSoundStatus,
-    onManageNotificationsClicked: () -> Unit,
+    onDeviceNotificationSettingsClicked: () -> Unit,
     onEnableChaChingSoundClicked: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -100,7 +160,7 @@ private fun NotificationSettingsScreen(
             NotificationSettingsItem(
                 title = stringResource(id = R.string.settings_notifs_device),
                 subtitle = stringResource(id = R.string.settings_notifs_device_detail),
-                onClick = onManageNotificationsClicked,
+                onClick = onDeviceNotificationSettingsClicked,
                 modifier = Modifier.fillMaxWidth()
             )
             AnimatedVisibility(visible = orderNotificationSoundStatus.requiresAttention) {
@@ -220,8 +280,10 @@ private fun SmarterNotificationSettingsScreenPreview() {
                     isEnabled = true
                 )
             ),
+            isAppNotificationsEnabled = false,
             onNotificationTypeEnabledChanged = { _, _ -> },
-            onNotificationTypeClicked = {}
+            onNotificationTypeClicked = {},
+            onDeviceNotificationSettingsClicked = {}
         )
     }
 }
@@ -233,7 +295,7 @@ private fun NotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NotificationSettingsScreen(
             orderNotificationSoundStatus = NewOrderNotificationSoundStatus.DISABLED,
-            onManageNotificationsClicked = {},
+            onDeviceNotificationSettingsClicked = {},
             onEnableChaChingSoundClicked = {}
         )
     }
