@@ -10,6 +10,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -52,6 +53,12 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
     private val batteryStatusFlow = MutableStateFlow<CardReaderBatteryStatus>(
         CardReaderBatteryStatus.Unknown
     )
+    private val remoteSessionStateFlow = MutableStateFlow<WooPosRemoteReaderSession.State>(
+        WooPosRemoteReaderSession.State.Idle
+    )
+    private val remoteReaderSession: WooPosRemoteReaderSession = mock {
+        on { state }.thenReturn(remoteSessionStateFlow)
+    }
 
     @Test
     fun `given disconnected reader, when init, then shows disconnected state`() = runTest {
@@ -89,8 +96,10 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
-        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(uiState).isInstanceOf(
+            WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth::class.java
+        )
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth
         assertThat(connectedState.readerName).isEqualTo("Test Reader")
         assertThat(connectedState.batteryLevel).isEqualTo(0.75f)
         assertThat(connectedState.firmwareVersion).isEqualTo("1.2.3")
@@ -152,8 +161,10 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
-        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(uiState).isInstanceOf(
+            WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth::class.java
+        )
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth
         assertThat(connectedState.isSoftwareUpdateAvailable).isTrue()
     }
 
@@ -177,8 +188,10 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
-        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(uiState).isInstanceOf(
+            WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth::class.java
+        )
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth
         assertThat(connectedState.isSoftwareUpdateAvailable).isFalse()
     }
 
@@ -208,8 +221,10 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
-        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(uiState).isInstanceOf(
+            WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth::class.java
+        )
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth
         assertThat(connectedState.batteryLevel).isEqualTo(0.15f)
     }
 
@@ -219,6 +234,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         appPrefsWrapper = appPrefsWrapper,
         selectedSite = selectedSite,
         childrenToParentEventSender = childrenToParentEventSender,
+        remoteReaderSession = remoteReaderSession,
         controllerFactory = controllerFactory
     )
 }

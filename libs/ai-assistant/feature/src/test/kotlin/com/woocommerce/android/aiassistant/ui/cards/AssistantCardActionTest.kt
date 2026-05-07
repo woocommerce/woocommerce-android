@@ -17,4 +17,19 @@ class AssistantCardActionTest {
 
         assertThat(action).isEqualTo(AssistantCardAction.OpenProduct(remoteProductId = 456L))
     }
+
+    @Test
+    fun `given open analytics action, when created, then date range strings are preserved`() {
+        val action: AssistantCardAction = AssistantCardAction.OpenAnalytics(
+            after = "2026-05-01",
+            before = "2026-05-07",
+        )
+
+        assertThat(action).isEqualTo(
+            AssistantCardAction.OpenAnalytics(
+                after = "2026-05-01",
+                before = "2026-05-07",
+            )
+        )
+    }
 }

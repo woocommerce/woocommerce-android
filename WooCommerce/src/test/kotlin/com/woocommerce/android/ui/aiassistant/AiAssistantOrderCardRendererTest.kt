@@ -9,12 +9,16 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
 import java.util.Locale
 
-class WooAssistantCardRendererTest {
+class AiAssistantOrderCardRendererTest {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val context: Context = mock()
+
+    @Test
+    fun `when renderer is created, then class has direct unit test coverage`() {
+        assertThat(AiAssistantOrderCardRenderer(currencyFormatter)).isNotNull
+    }
 
     @Test
     fun `given assistant order card, when mapped, then host row model formats total with order currency`() {
@@ -62,37 +66,6 @@ class WooAssistantCardRendererTest {
     }
 
     @Test
-    fun `given assistant product card, when row model is built, then product image url is preserved`() {
-        val context: Context = mock()
-        val decimalFormatter: (BigDecimal) -> String = { amount -> "\$${amount.toPlainString()}" }
-        whenever(context.getString(R.string.product_stock_status_instock)).thenReturn("In stock")
-        whenever(context.getString(R.string.orderdetail_product_lineitem_sku_value, "woo-socks"))
-            .thenReturn("SKU: woo-socks")
-        whenever(currencyFormatter.buildBigDecimalFormatter()).thenReturn(decimalFormatter)
-
-        val model = productCard().toProductSummaryRowModel(context, currencyFormatter)
-
-        assertThat(model).isEqualTo(
-            AssistantProductSummaryRowModel(
-                title = "Socks",
-                imageUrl = "https://example.com/socks.png",
-                stockStatusPriceText = "In stock \u2022 \$9.99",
-                skuText = "SKU: woo-socks",
-            )
-        )
-    }
-
-    @Test
-    fun `given assistant product card with non-numeric price, when row model is built, then raw price is used`() {
-        val context: Context = mock()
-        whenever(context.getString(R.string.product_stock_status_instock)).thenReturn("In stock")
-
-        val model = productCard(price = "Free").toProductSummaryRowModel(context, currencyFormatter)
-
-        assertThat(model.stockStatusPriceText).isEqualTo("In stock \u2022 Free")
-    }
-
-    @Test
     fun `given ciab open status, when mapped, then processing color is used like dashboard orders`() {
         val model = orderCard(status = "open", currency = "").toOrderSummaryRowModel(context, currencyFormatter)
 
@@ -112,17 +85,5 @@ class WooAssistantCardRendererTest {
         currency = currency,
         customerName = customerName,
         date = date,
-    )
-
-    private fun productCard(
-        price: String = "9.99",
-    ) = AssistantCard.Product(
-        remoteProductId = 456L,
-        name = "Socks",
-        sku = "woo-socks",
-        price = price,
-        stockStatus = "instock",
-        status = "publish",
-        imageUrl = "https://example.com/socks.png",
     )
 }

@@ -12,15 +12,20 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
+internal const val ANALYTICS_REVENUE_TOOL_NAME = "analytics_revenue"
+
 internal class AnalyticsRevenueToolHandler @Inject constructor(
     private val dataSource: AIAnalyticsDataSource,
     @AiAssistantJson private val json: Json,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
-        name = "analytics_revenue",
+        name = ANALYTICS_REVENUE_TOOL_NAME,
         description = "Revenue analytics for a date range. Returns totals and per-interval subtotals. " +
-            "Prefer this over orders_list for aggregate revenue questions.",
+            "Prefer this over orders_list for aggregate revenue questions. Revenue/sales stats are card-backed: " +
+            "after any successful call for a revenue or sales stats question, do not stop with prose; call " +
+            "show_cards with family analytics_stats and an id built from the same after/before/interval/currency " +
+            "values. If currency was omitted, use currency:none in the id.",
         inputSchema = inputSchema {
             string("after", description = "Inclusive start date YYYY-MM-DD.", required = true)
             string("before", description = "Inclusive end date YYYY-MM-DD.", required = true)
@@ -48,16 +53,22 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
             return analyticsValidationError(call.id, it)
         }
 
+        val currency = normaliseCurrency(args.currency)
         return dataSource.fetchRevenueStats(
             after = analyticsDateAfterBound(args.after),
             before = analyticsDateBeforeBound(args.before),
             interval = interval,
-            currency = normaliseCurrency(args.currency),
+            currency = currency,
         ).fold(
             onSuccess = { stats ->
                 ToolResult.Success(
                     toolCallId = call.id,
-                    structured = analyticsStatsSummary(args.after, args.before, stats),
+                    structured = analyticsStatsSummary(
+                        after = args.after,
+                        before = args.before,
+                        stats = stats,
+                        currency = currency,
+                    ),
                 )
             },
             onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },

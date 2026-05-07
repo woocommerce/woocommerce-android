@@ -21,7 +21,7 @@ class WooCommerceConfirmationPreviewRendererTest {
     private val renderer = ConfirmationPreviewRenderer(context)
 
     @Test
-    fun `given order status update, when preview is rendered, then message uses string resource`() {
+    fun `given order status update, when preview is rendered, then message uses typed summary`() {
         val preview = builder.build(
             toolCall(
                 name = "orders_update",
@@ -36,16 +36,22 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         assertThat(rendered.summary).isEqualTo(
             context.getString(
-                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                R.string.ai_assistant_confirmation_order_update_summary,
                 "42",
-                "processing",
+                context.getString(
+                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
+                    "processing",
+                ),
             )
         )
         assertThat(rendered.message).isEqualTo(
             context.getString(
-                R.string.ai_assistant_confirmation_order_set_status_emails_customer,
+                R.string.ai_assistant_confirmation_order_update_summary,
                 "42",
-                "processing",
+                context.getString(
+                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
+                    "processing",
+                ),
             )
         )
         assertThat(rendered.fields).containsExactly(
@@ -76,7 +82,7 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
-        assertThat(rendered.summary).isEqualTo("Set order #42 to processing (emails the customer)")
+        assertThat(rendered.summary).isEqualTo("Update order #42: status -> processing (emails the customer)")
         assertThat(rendered.rows).containsExactly(
             RenderedConfirmationDiffRow(
                 name = "status",
