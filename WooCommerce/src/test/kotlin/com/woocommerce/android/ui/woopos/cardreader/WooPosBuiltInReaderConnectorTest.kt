@@ -121,6 +121,20 @@ class WooPosBuiltInReaderConnectorTest {
     }
 
     @Test
+    fun `given discovery emits empty reader list, when connect, then returns failure with no message`() = runTest {
+        whenever(locationRepository.getDefaultLocationId(any()))
+            .thenReturn(LocationIdFetchingResult.Success("loc"))
+        whenever(cardReaderManager.discoverReaders(any(), any()))
+            .thenReturn(flowOf(CardReaderDiscoveryEvents.ReadersFound(emptyList())))
+
+        val result = sut.connect()
+
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(BuiltInReaderDiscoveryFailedException::class.java)
+        assertThat(result.exceptionOrNull()?.message).isNull()
+    }
+
+    @Test
     fun `given reader discovered and connection succeeds, when connect, then returns success`() = runTest {
         val discoveredReader: CardReader = mock { on { id } doReturn "tap-to-pay" }
         whenever(locationRepository.getDefaultLocationId(any()))
