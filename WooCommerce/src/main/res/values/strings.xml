@@ -3746,6 +3746,7 @@
     <string name="woopos_settings_card_reader_documentation_title">Documentation</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Learn more about accepting mobile payments</string>
     <string name="woopos_settings_card_reader_connected_reader">Connected reader</string>
+    <string name="woopos_settings_card_reader_disconnect_button">Disconnect</string>
     <string name="woopos_settings_card_reader_update_firmware_title">Update firmware version</string>
     <string name="woopos_settings_card_reader_update_firmware_message">Update the firmware version to continue accepting payments.</string>
     <string name="woopos_settings_card_reader_transport_title">Transport</string>
