@@ -19,7 +19,9 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -206,6 +208,30 @@ class ShowCardsResolverTest {
     }
 
     @Test
+    fun `given orders analytics stats ref, when resolved, then resolver refetches orders stats only`() = runTest {
+        whenever(
+            analyticsDataSource.fetchOrdersStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
+            )
+        ).thenReturn(Result.success(orderAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID)))
+
+        verify(analyticsDataSource).fetchOrdersStats(
+            after = "2026-05-01T00:00:00",
+            before = "2026-05-07T23:59:59",
+            interval = AnalyticsInterval.DAY,
+        )
+        verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
+        val resolved = result.single() as ShowCardsResolution.Resolved
+        assertThat(resolved.summary.getValue("kind").jsonPrimitive.content).isEqualTo("orders")
+        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+    }
+
+    @Test
     fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
         whenever(
             analyticsDataSource.fetchRevenueStats(
@@ -217,6 +243,22 @@ class ShowCardsResolverTest {
         ).thenReturn(Result.failure(IllegalStateException("network")))
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
+
+        val missing = result.single() as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
+    }
+
+    @Test
+    fun `given orders analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
+        whenever(
+            analyticsDataSource.fetchOrdersStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
+            )
+        ).thenReturn(Result.failure(IllegalStateException("network")))
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID)))
 
         val missing = result.single() as ShowCardsResolution.Missing
         assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
