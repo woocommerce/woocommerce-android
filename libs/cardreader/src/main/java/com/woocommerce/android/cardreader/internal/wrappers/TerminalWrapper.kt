@@ -71,6 +71,11 @@ internal class TerminalWrapper {
         configuration: ConnectionConfiguration.TapToPayConnectionConfiguration
     ): Reader = Terminal.getInstance().connectReader(reader, configuration)
 
+    suspend fun connectToInternet(
+        reader: Reader,
+        configuration: ConnectionConfiguration.InternetConnectionConfiguration
+    ): Reader = Terminal.getInstance().connectReader(reader, configuration)
+
     suspend fun disconnectReader() = Terminal.getInstance().disconnectReader()
 
     fun clearCachedCredentials() {

@@ -5,7 +5,9 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
+import com.stripe.stripeterminal.external.callable.InternetReaderListener
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration.InternetConnectionConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
@@ -29,6 +31,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -65,17 +69,42 @@ internal class ConnectionManager(
 
                     is ExternalReaders -> {
                         checkIfNecessaryPermissionsAreGranted()
-                        discoverReadersAction.discoverExternalReaders(isSimulated)
+                        // Stripe SDK allows only one discoverReaders operation at a time. Run
+                        // internet discovery first (short-running). Skip the long-running
+                        // bluetooth scan if internet already returned a reader, so a BT timeout
+                        // doesn't overwrite a successful result in the UI.
+                        if (cardReaderTypesToDiscover.externalReaders.any { it.isInternetReader }) {
+                            flow {
+                                var foundInternetReader = false
+                                discoverReadersAction.discoverInternetReaders(isSimulated = isSimulated)
+                                    .collect { event ->
+                                        if (event is DiscoverReadersStatus.FoundReaders &&
+                                            event.readers.isNotEmpty()
+                                        ) {
+                                            foundInternetReader = true
+                                        }
+                                        emit(event)
+                                    }
+                                if (!foundInternetReader) {
+                                    emitAll(discoverReadersAction.discoverExternalReaders(isSimulated))
+                                }
+                            }
+                        } else {
+                            discoverReadersAction.discoverExternalReaders(isSimulated)
+                        }
                     }
                 }
             }
 
             UnspecifiedReaders -> {
                 checkIfNecessaryPermissionsAreGranted()
-                merge(
-                    discoverReadersAction.discoverBuildInReaders(isSimulated),
-                    discoverReadersAction.discoverExternalReaders(isSimulated)
-                )
+                // Stripe SDK serializes discoverReaders calls. Internet and Tap to Pay are
+                // short-running, so chain them before the long-running bluetooth discovery.
+                flow {
+                    emitAll(discoverReadersAction.discoverInternetReaders(isSimulated = isSimulated))
+                    emitAll(discoverReadersAction.discoverBuildInReaders(isSimulated))
+                    emitAll(discoverReadersAction.discoverExternalReaders(isSimulated))
+                }
             }
         }.map { state ->
             when (state) {
@@ -131,6 +160,11 @@ internal class ConnectionManager(
             try {
                 val reader = when (it.cardReader.deviceType) {
                     DeviceType.TAP_TO_PAY_DEVICE -> connectToBuiltInReader(cardReader, locationId)
+                    DeviceType.WISEPOS_E,
+                    DeviceType.STRIPE_S700,
+                    DeviceType.STRIPE_S710,
+                    DeviceType.STRIPE_T600,
+                    DeviceType.STRIPE_T610 -> connectToInternetReader(cardReader)
                     else -> connectToExternalReader(cardReader, locationId)
                 }
                 updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
@@ -227,6 +261,16 @@ internal class ConnectionManager(
                 locationId,
                 autoReconnectOnUnexpectedDisconnect = true,
                 tapToPayReaderListener
+            )
+        )
+    }
+
+    private suspend fun connectToInternetReader(cardReader: CardReaderImpl): Reader {
+        return terminal.connectToInternet(
+            cardReader.cardReader,
+            InternetConnectionConfiguration(
+                internetReaderListener = object : InternetReaderListener {},
+                failIfInUse = false
             )
         )
     }

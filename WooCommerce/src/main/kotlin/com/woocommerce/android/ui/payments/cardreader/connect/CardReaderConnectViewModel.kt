@@ -20,7 +20,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.S
 import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.TapToPayDevice
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeS700
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeS710
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeT600
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeT610
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePadeE
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.model.UiString
@@ -579,7 +584,12 @@ class CardReaderConnectViewModel @Inject constructor(
                 listOf(
                     Chipper2X,
                     StripeM2,
-                    WisePade3
+                    WisePade3,
+                    WisePadeE,
+                    StripeS700,
+                    StripeS710,
+                    StripeT600,
+                    StripeT610
                 )
             )
         }

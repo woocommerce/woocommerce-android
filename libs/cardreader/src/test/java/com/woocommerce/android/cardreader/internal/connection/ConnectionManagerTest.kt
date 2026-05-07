@@ -21,6 +21,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.toList
@@ -29,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -59,6 +61,8 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     fun setUp() {
         val defaultReaderStatus: StateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(terminalListenerImpl.readerStatus).thenReturn(defaultReaderStatus)
+        whenever(discoverReadersAction.discoverInternetReaders(anyOrNull(), anyBoolean()))
+            .thenReturn(emptyFlow())
 
         connectionManager = ConnectionManager(
             terminalWrapper,

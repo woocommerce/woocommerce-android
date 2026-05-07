@@ -11,7 +11,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeS700
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeS710
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeT600
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeT610
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePadeE
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteFingerprint
@@ -332,7 +337,10 @@ class WooPosCardReaderConnectionController(
                 .discover(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
                     cardReaderTypesToDiscover = ExternalReaders(
-                        listOf(Chipper2X, StripeM2, WisePade3)
+                        listOf(
+                            Chipper2X, StripeM2, WisePade3, WisePadeE,
+                            StripeS700, StripeS710, StripeT600, StripeT610,
+                        )
                     )
                 )
                 .flowOn(dispatchers.io)
