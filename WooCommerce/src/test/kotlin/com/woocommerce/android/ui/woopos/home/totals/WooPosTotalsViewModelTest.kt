@@ -2034,6 +2034,20 @@ class WooPosTotalsViewModelTest {
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
 
+    @Test
+    fun `given flag on and TTP Hidden, when ViewModel created, then reason not tracked`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Hidden)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
