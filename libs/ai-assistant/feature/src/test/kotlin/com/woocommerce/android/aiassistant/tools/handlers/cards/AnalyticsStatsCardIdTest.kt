@@ -11,6 +11,7 @@ class AnalyticsStatsCardIdTest {
 
         assertThat(parsed).isEqualTo(
             AnalyticsStatsCardId(
+                kind = AnalyticsStatsKind.Revenue,
                 after = "2026-05-01",
                 before = "2026-05-07",
                 interval = AnalyticsInterval.DAY,
@@ -27,6 +28,7 @@ class AnalyticsStatsCardIdTest {
 
         assertThat(parsed).isEqualTo(
             AnalyticsStatsCardId(
+                kind = AnalyticsStatsKind.Revenue,
                 after = "2026-05-01",
                 before = "2026-05-07",
                 interval = AnalyticsInterval.WEEK,
@@ -129,6 +131,7 @@ class AnalyticsStatsCardIdTest {
     @Test
     fun `given analytics stats query, when converted to synthetic id, then it round trips`() {
         val query = AnalyticsStatsCardId(
+            kind = AnalyticsStatsKind.Revenue,
             after = "2026-05-01",
             before = "2026-05-07",
             interval = AnalyticsInterval.MONTH,
@@ -141,6 +144,7 @@ class AnalyticsStatsCardIdTest {
     @Test
     fun `given analytics stats query without currency, when converted to synthetic id, then it round trips`() {
         val query = AnalyticsStatsCardId(
+            kind = AnalyticsStatsKind.Revenue,
             after = "2026-05-01",
             before = "2026-05-07",
             interval = AnalyticsInterval.YEAR,

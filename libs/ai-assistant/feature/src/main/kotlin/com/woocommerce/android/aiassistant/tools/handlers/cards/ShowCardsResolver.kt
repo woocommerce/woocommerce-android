@@ -11,6 +11,9 @@ import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -171,10 +174,8 @@ internal class DefaultShowCardsResolver @Inject constructor(
     private suspend fun resolveAnalyticsStats(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
         if (refs.isEmpty()) return emptyMap()
 
-        return buildMap {
-            refs.forEach { ref ->
-                put(ref, resolveAnalyticsStats(ref))
-            }
+        return coroutineScope {
+            refs.map { ref -> async { ref to resolveAnalyticsStats(ref) } }.awaitAll().toMap()
         }
     }
 
@@ -216,6 +217,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val summary = analyticsStatsSummary(
             after = query.after,
             before = query.before,
+            interval = query.interval,
             stats = stats,
             currency = displayCurrency,
         )

@@ -471,9 +471,6 @@ class AssistantCardPayloadParserTest {
         }
     }
 
-    private fun AssistantCard.Stats.metric(type: AssistantCard.Stats.MetricType): AssistantCard.Stats.Metric =
-        metrics.single { it.type == type }
-
     private companion object {
         private const val ANALYTICS_STATS_ID =
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"

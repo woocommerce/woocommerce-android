@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -28,7 +29,9 @@ fun AiAssistantStatsCard(
     modifier: Modifier = Modifier,
 ) {
     val contentDescription = stringResource(R.string.assistant_stats_card_open_content_description, state.period)
-    val metricsWithTrends = state.metrics.filter { shouldShowStatsTrendChart(it.chartValues) }
+    val metricsWithTrends = remember(state.metrics) {
+        state.metrics.filter { shouldShowStatsTrendChart(it.chartValues) }
+    }
     Column(
         modifier = modifier
             .clickable(role = Role.Button, onClick = onClick)

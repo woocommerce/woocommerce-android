@@ -39,6 +39,7 @@ import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
+import com.woocommerce.android.aiassistant.ui.cards.metric
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -820,9 +821,6 @@ class AgenticLoopAssistantRuntimeTest {
 
     private fun List<AssistantRuntimeEvent>.cardEvents() =
         filterIsInstance<AssistantRuntimeEvent.CardsResolved>()
-
-    private fun AssistantCard.Stats.metric(type: AssistantCard.Stats.MetricType): AssistantCard.Stats.Metric =
-        metrics.single { it.type == type }
 
     private class FakeAgenticLoop(
         private val events: List<LoopEvent>,

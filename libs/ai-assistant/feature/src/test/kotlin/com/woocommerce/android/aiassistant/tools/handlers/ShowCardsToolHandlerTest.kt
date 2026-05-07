@@ -292,7 +292,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.kind).isEqualTo("revenue")
         assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
         assertThat(details.intervalSubtotals).hasSize(1)
-        assertThat(assertSuccess(result).structured.toString()).doesNotContain("interval_subtotals")
+        assertThat(assertSuccess(result).structured.toString()).contains("interval_subtotals")
     }
 
     @Test
