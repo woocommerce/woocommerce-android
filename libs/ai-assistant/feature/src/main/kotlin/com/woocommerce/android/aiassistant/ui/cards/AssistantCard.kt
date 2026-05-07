@@ -21,6 +21,12 @@ sealed interface AssistantCard {
         val imageUrl: String,
     ) : AssistantCard
 
+    data class Customer(
+        val remoteCustomerId: Long,
+        val name: String,
+        val email: String,
+    ) : AssistantCard
+
     data class Stats(
         val id: String,
         val after: String,

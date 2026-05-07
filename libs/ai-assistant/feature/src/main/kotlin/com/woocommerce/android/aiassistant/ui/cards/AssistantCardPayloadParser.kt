@@ -30,6 +30,7 @@ internal object AssistantCardPayloadParser {
         when (card.family) {
             ORDER_FAMILY -> parseOrderCard(card)
             PRODUCT_FAMILY -> parseProductCard(card)
+            CUSTOMER_FAMILY -> parseCustomerCard(card)
             ANALYTICS_STATS_FAMILY -> parseStatsCard(card)
             else -> null
         }
@@ -61,6 +62,17 @@ internal object AssistantCardPayloadParser {
             stockStatus = details.stockStatus.orEmpty(),
             status = details.status.orEmpty(),
             imageUrl = details.imageUrl.orEmpty(),
+        )
+    }
+
+    private fun parseCustomerCard(card: ShowCardPayload): AssistantCard? {
+        val remoteCustomerId = card.id.toLongOrNull()?.takeIf { it > 0 } ?: return null
+        val details = card.details as? ShowCardDetails.Customer ?: return null
+
+        return AssistantCard.Customer(
+            remoteCustomerId = remoteCustomerId,
+            name = card.title,
+            email = details.email.orEmpty(),
         )
     }
 
@@ -121,6 +133,7 @@ internal object AssistantCardPayloadParser {
 
     private const val ORDER_FAMILY = "order"
     private const val PRODUCT_FAMILY = "product"
+    private const val CUSTOMER_FAMILY = "customer"
     private const val ANALYTICS_STATS_FAMILY = "analytics_stats"
     private const val ISO_LOCAL_DATE_LENGTH = 10
     private val TOTAL_SALES_KEYS = listOf("total_sales", "gross_sales")

@@ -22,6 +22,7 @@ internal fun AssistantCardAction.toNavDirections(
         is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
             mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
         )
+        is AssistantCardAction.OpenCustomer -> null
         is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
             after = after,
             before = before,

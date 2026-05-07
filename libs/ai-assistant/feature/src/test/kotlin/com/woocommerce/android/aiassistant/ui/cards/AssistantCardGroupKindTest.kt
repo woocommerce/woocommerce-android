@@ -30,6 +30,14 @@ class AssistantCardGroupKindTest {
     }
 
     @Test
+    fun `given only customer cards, when resolving group kind, then generic metadata is returned`() {
+        val metadata = listOf(customerCard()).toAssistantCardGroupMetadata()
+
+        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_generic)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
+    }
+
+    @Test
     fun `given mixed cards, when resolving group kind, then generic metadata is returned`() {
         val metadata = listOf(orderCard(), productCard(), statsCard()).toAssistantCardGroupMetadata()
 
@@ -66,5 +74,11 @@ class AssistantCardGroupKindTest {
         netSales = "120.15",
         totalSalesChartPoints = emptyList(),
         netSalesChartPoints = emptyList(),
+    )
+
+    private fun customerCard() = AssistantCard.Customer(
+        remoteCustomerId = 789L,
+        name = "Ada Lovelace",
+        email = "ada@example.com",
     )
 }

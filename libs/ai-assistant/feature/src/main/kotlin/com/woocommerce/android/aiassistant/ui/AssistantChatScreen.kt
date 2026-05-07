@@ -957,6 +957,7 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         when (card) {
             is AssistantCard.Order -> PreviewOrderCard(card, modifier)
             is AssistantCard.Product -> PreviewProductCard(card, modifier)
+            is AssistantCard.Customer -> PreviewCustomerCard(card, modifier)
             is AssistantCard.Stats -> PreviewStatsCard(card, modifier)
         }
     }
@@ -980,6 +981,28 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
                 text = listOf(card.customerName, card.status, card.unformattedTotal)
                     .filter { it.isNotBlank() }
                     .joinToString(" - "),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
+
+    @Composable
+    private fun PreviewCustomerCard(
+        card: AssistantCard.Customer,
+        modifier: Modifier,
+    ) {
+        Column(
+            modifier = modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = card.name,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = card.email,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
             )

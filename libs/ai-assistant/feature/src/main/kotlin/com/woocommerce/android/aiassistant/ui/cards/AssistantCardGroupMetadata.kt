@@ -13,16 +13,17 @@ internal fun List<AssistantCard>.toAssistantCardGroupMetadata(): AssistantCardGr
     val containsOrders = any { it is AssistantCard.Order }
     val containsProducts = any { it is AssistantCard.Product }
     val containsStats = any { it is AssistantCard.Stats }
+    val containsCustomers = any { it is AssistantCard.Customer }
     return when {
-        containsOrders && !containsProducts && !containsStats -> AssistantCardGroupMetadata(
+        containsOrders && !containsProducts && !containsStats && !containsCustomers -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_orders,
             iconRes = R.drawable.ic_assistant_card_group_orders,
         )
-        containsProducts && !containsOrders && !containsStats -> AssistantCardGroupMetadata(
+        containsProducts && !containsOrders && !containsStats && !containsCustomers -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_products,
             iconRes = R.drawable.ic_assistant_card_group_products,
         )
-        containsStats && !containsOrders && !containsProducts -> AssistantCardGroupMetadata(
+        containsStats && !containsOrders && !containsProducts && !containsCustomers -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_stats,
             iconRes = R.drawable.ic_assistant_card_group_stats,
         )
