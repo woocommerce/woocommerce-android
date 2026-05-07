@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.aisupportchat.networking
 
 import android.content.Context
 import com.android.volley.RequestQueue
+import com.google.gson.JsonObject
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.UserAgent
@@ -24,7 +25,7 @@ class SupportChatRestClient @Inject constructor(
     suspend fun sendMessage(
         botSlug: String,
         message: String,
-        context: Map<String, Any>
+        context: JsonObject
     ): Response<SupportChatResponse> = wpComGsonRequestBuilder.syncPostRequest(
         restClient = this,
         url = chatUrl(botSlug),

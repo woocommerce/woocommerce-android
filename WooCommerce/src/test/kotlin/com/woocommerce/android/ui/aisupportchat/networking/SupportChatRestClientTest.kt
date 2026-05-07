@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.aisupportchat.networking
 
 import com.android.volley.RequestQueue
 import com.android.volley.VolleyError
+import com.google.gson.JsonObject
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,16 +59,18 @@ class SupportChatRestClientTest : BaseUnitTest() {
             restClient.sendMessage(
                 botSlug = BOT_SLUG,
                 message = MESSAGE,
-                context = mapOf("site_id" to 1L, "app_version" to "0.1")
+                context = JsonObject().apply {
+                    addProperty("site_id", 1L)
+                    addProperty("app_version", "0.1")
+                }
             )
 
             assertThat(urlCaptor.firstValue)
                 .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
-            @Suppress("UNCHECKED_CAST")
-            val sentContext = bodyCaptor.firstValue["context"] as Map<String, Any>
-            assertThat(sentContext["site_id"]).isEqualTo(1L)
-            assertThat(sentContext["app_version"]).isEqualTo("0.1")
+            val sentContext = bodyCaptor.firstValue["context"] as JsonObject
+            assertThat(sentContext["site_id"].asLong).isEqualTo(1L)
+            assertThat(sentContext["app_version"].asString).isEqualTo("0.1")
         }
 
     @Test
@@ -102,7 +105,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
         val data = SupportChatResponse(chatId = CHAT_ID, sessionId = null, botSlug = BOT_SLUG, botVersion = null)
         stubPostResponse(data = data)
 
-        val result = restClient.sendMessage(BOT_SLUG, MESSAGE, emptyMap())
+        val result = restClient.sendMessage(BOT_SLUG, MESSAGE, JsonObject())
 
         assertThat(result).isInstanceOf(Response.Success::class.java)
         assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
@@ -115,7 +118,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
         )
         stubPostResponse(error = error)
 
-        val result = restClient.sendMessage(BOT_SLUG, MESSAGE, emptyMap())
+        val result = restClient.sendMessage(BOT_SLUG, MESSAGE, JsonObject())
 
         assertThat(result).isInstanceOf(Response.Error::class.java)
         assertThat((result as Response.Error).error.type).isEqualTo(BaseRequest.GenericErrorType.TIMEOUT)
