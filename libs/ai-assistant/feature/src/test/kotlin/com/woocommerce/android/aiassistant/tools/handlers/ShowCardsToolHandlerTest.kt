@@ -13,6 +13,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolut
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.add
@@ -98,6 +99,10 @@ class ShowCardsToolHandlerTest {
             "currency",
             "date_created",
             "customer_name",
+            "payment_method_title",
+            "customer_id",
+            "line_items_count",
+            "line_items",
         )
     }
 
@@ -110,7 +115,17 @@ class ShowCardsToolHandlerTest {
 
         val summary = firstResolvedSummary(result)
 
-        assertThat(summary.keys).containsExactly("id", "name", "sku", "price", "stock_status")
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "name",
+            "sku",
+            "price",
+            "type",
+            "stock_status",
+            "manage_stock",
+            "on_sale",
+            "stock_quantity",
+        )
     }
 
     @Test
@@ -481,6 +496,10 @@ class ShowCardsToolHandlerTest {
                     currency = "USD",
                     dateCreated = "2026-05-01T10:00:00Z",
                     customerName = "Jane Doe",
+                    paymentMethodTitle = "Credit Card",
+                    customerId = 55L,
+                    lineItemsCount = 1,
+                    lineItems = listOf(CompactOrderLineItem(id = 10L, name = "Socks", quantity = 1f)),
                 )
             ).jsonObject,
             card = ShowCardPayload(
@@ -509,7 +528,11 @@ class ShowCardsToolHandlerTest {
                     name = "Socks",
                     sku = "woo-socks",
                     price = "9.99",
+                    type = "simple",
                     stockStatus = "instock",
+                    manageStock = true,
+                    onSale = false,
+                    stockQuantity = 12.0,
                 )
             ).jsonObject,
             card = ShowCardPayload(

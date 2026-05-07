@@ -177,8 +177,22 @@ internal class ShowCardsToolHandler internal constructor(
             "currency",
             "date_created",
             "customer_name",
+            "payment_method_title",
+            "customer_id",
+            "line_items_count",
+            "line_items",
         )
-        val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
+        val PRODUCT_SUMMARY_KEYS = setOf(
+            "id",
+            "name",
+            "sku",
+            "price",
+            "type",
+            "stock_status",
+            "manage_stock",
+            "on_sale",
+            "stock_quantity",
+        )
         val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
             "id",
             "after",
