@@ -12,6 +12,7 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
@@ -231,6 +232,8 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     private fun showToolActivity(event: AssistantRuntimeEvent.ToolCallStarted) {
+        if (event.toolName == SHOW_CARDS_TOOL_NAME) return
+
         val messageId = activeAssistantMessageId ?: return
         _uiState.update { state ->
             state.copy(
@@ -310,16 +313,15 @@ class AssistantViewModel @AssistedInject constructor(
 
     private fun appendAssistantCards(cards: List<AssistantCard>) {
         val messageId = activeAssistantMessageId ?: return
-        val newSegments = cards
+        val newCards = cards
             .filter { activeCardKeys.add(it.toCardKey()) }
-            .map { AssistantUiSegment.Card(it) }
-        if (newSegments.isEmpty()) return
+        if (newCards.isEmpty()) return
 
         _uiState.update { state ->
             state.copy(
                 messages = state.messages.map { message ->
                     if (message.id == messageId) {
-                        message.copy(segments = message.segments + newSegments)
+                        message.appendCardGroup(newCards)
                     } else {
                         message
                     }
@@ -332,6 +334,7 @@ class AssistantViewModel @AssistedInject constructor(
         when (this) {
             is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
             is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+            is AssistantCard.Stats -> AssistantCardKey(family = "analytics_stats", id = id)
         }
 
     private fun appendAssistantText(delta: String) {
@@ -460,6 +463,28 @@ class AssistantViewModel @AssistedInject constructor(
         val updatedSegments = segments.toMutableList()
         updatedSegments[updatedSegments.lastIndex] = lastSegment.copy(text = lastSegment.text + delta)
         return copy(segments = updatedSegments)
+    }
+
+    private fun AssistantUiMessage.appendCardGroup(cards: List<AssistantCard>): AssistantUiMessage {
+        val latestGroupIndex = segments.indexOfLast { it is AssistantUiSegment.CardGroup }
+        val shouldMergeWithLatestGroup = latestGroupIndex != -1 &&
+            segments.drop(latestGroupIndex + 1).none { it.breaksCardGrouping() }
+
+        if (!shouldMergeWithLatestGroup) {
+            return copy(segments = segments + AssistantUiSegment.CardGroup(cards))
+        }
+
+        val updatedSegments = segments.toMutableList()
+        val latestGroup = updatedSegments[latestGroupIndex] as AssistantUiSegment.CardGroup
+        updatedSegments[latestGroupIndex] = latestGroup.copy(cards = latestGroup.cards + cards)
+        return copy(segments = updatedSegments)
+    }
+
+    private fun AssistantUiSegment.breaksCardGrouping(): Boolean = when (this) {
+        is AssistantUiSegment.Text -> text.isNotEmpty()
+        is AssistantUiSegment.ConfirmationCard -> true
+        is AssistantUiSegment.CardGroup -> false
+        is AssistantUiSegment.ToolActivity -> false
     }
 
     private fun AssistantUiMessage.withToolActivity(activity: AssistantToolActivity): AssistantUiMessage =

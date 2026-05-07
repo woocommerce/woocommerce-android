@@ -51,7 +51,7 @@ internal class ShowCardsReferenceValidator {
             ?: return state.rejectInvalidId(index, family)
 
         when {
-            !id.isValidShowCardsId() -> state.rejectInvalidId(index, family, id)
+            !id.isValidShowCardsId(family) -> state.rejectInvalidId(index, family, id)
             !state.seen.add(family to id) -> state.rejectDuplicate(index, family, id)
             state.validRefs.size >= MAX_SHOW_CARDS_REFS -> state.rejectOverLimit(index, family, id)
             else -> state.validRefs += ValidatedRef(index = index, family = family, id = id)
@@ -64,8 +64,12 @@ internal class ShowCardsReferenceValidator {
     private fun JsonPrimitive.stringContentOrNull(): String? =
         contentOrNull?.takeIf { isString }
 
-    private fun String.isValidShowCardsId(): Boolean =
-        toLongOrNull()?.let { it > 0L } == true
+    private fun String.isValidShowCardsId(family: ShowCardFamily): Boolean =
+        when (family) {
+            ShowCardFamily.Order,
+            ShowCardFamily.Product -> toLongOrNull()?.let { it > 0L } == true
+            ShowCardFamily.AnalyticsStats -> AnalyticsStatsCardId.parse(this) != null
+        }
 
     private fun ValidationState.rejectInvalidId(index: Int, family: ShowCardFamily) =
         reject(index, family.serializedName, reason = ShowCardsRejectionReason.InvalidId)

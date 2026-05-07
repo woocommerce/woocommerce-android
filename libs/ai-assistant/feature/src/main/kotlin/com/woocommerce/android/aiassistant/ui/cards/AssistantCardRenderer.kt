@@ -5,15 +5,8 @@ import androidx.compose.ui.Modifier
 
 interface AssistantCardRenderer {
     @Composable
-    fun OrderCard(
-        card: AssistantCard.Order,
-        onAction: (AssistantCardAction) -> Unit,
-        modifier: Modifier,
-    )
-
-    @Composable
-    fun ProductCard(
-        card: AssistantCard.Product,
+    fun Card(
+        card: AssistantCard,
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     )
