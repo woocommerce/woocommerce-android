@@ -2236,10 +2236,11 @@ class WooPosTotalsViewModelTest {
     @Test
     fun `given TTP in flight, when BuiltInReaderFailedPayment emitted, then toast shown to parent`() = runTest {
         // GIVEN
-        whenever(uiStringParser.asString(any())).thenReturn("Tap to Pay declined")
         val (vm, paymentState) = givenTtpInFlight()
         advanceUntilIdle()
         clearInvocations(childrenToParentEventSender)
+        // Override the helper-installed mock so we can assert the toast message we control.
+        whenever(uiStringParser.asString(any())).thenReturn("Tap to Pay declined")
 
         // WHEN
         paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
@@ -2250,7 +2251,9 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender, atLeastOnce()).sendToParent(
-            argThat { this is ChildToParentEvent.ToastMessageDisplayed }
+            argThat {
+                this is ChildToParentEvent.ToastMessageDisplayed && this.message == "Tap to Pay declined"
+            }
         )
         val state = vm.state.value as WooPosTotalsViewState.Checkout
         assertThat(state.isTapToPayInProgress).isFalse()
