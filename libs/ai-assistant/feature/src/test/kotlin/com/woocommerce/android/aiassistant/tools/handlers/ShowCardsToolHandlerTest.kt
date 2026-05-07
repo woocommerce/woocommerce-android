@@ -58,8 +58,11 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString())
             .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+        assertThat(descriptor.inputSchema.toString())
+            .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("\"cards\"")
     }
 
     @Test

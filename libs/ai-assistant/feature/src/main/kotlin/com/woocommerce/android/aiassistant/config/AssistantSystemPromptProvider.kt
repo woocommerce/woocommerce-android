@@ -172,9 +172,15 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             Pattern 6 - Analytics breakdowns.
             Merchant: "revenue by day this week"
-            GOOD: One call to the analytics revenue tool with the appropriate window and a daily-grain
-            parameter, then call `show_cards` with an ID-only `analytics_stats` reference using the same after,
-            before, interval, and currency-or-none query values, and answer with concise prose.
+            GOOD: For revenue breakdowns, call `analytics_revenue` with the appropriate window and grain, then
+            call `show_cards` with an ID-only `analytics_stats` reference shaped
+            `analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:interval:<hour|day|week|month|year>:
+            currency:<ISO|none>`
+            using the same after, before, interval, and currency-or-none query values. For order breakdowns,
+            call `analytics_orders`, then call `show_cards` with an ID-only `analytics_stats` reference shaped
+            `analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:interval:<hour|day|week|month|year>:
+            currency:none`.
+            Answer with concise prose.
             BAD: Ask "did you want by day or by week?" when the merchant already said "by day".
 
             Pattern 7 - Customer lists and cards.
