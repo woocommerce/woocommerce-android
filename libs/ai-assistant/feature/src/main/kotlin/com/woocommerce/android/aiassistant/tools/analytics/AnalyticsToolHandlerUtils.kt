@@ -14,11 +14,10 @@ import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 
-internal fun validateAnalyticsDate(value: String): Boolean = try {
+internal fun parseAnalyticsDate(value: String): LocalDate? = try {
     LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
-    true
 } catch (_: DateTimeParseException) {
-    false
+    null
 }
 
 internal fun analyticsDateAfterBound(value: String) = "${value}T00:00:00"
@@ -28,17 +27,15 @@ internal fun analyticsDateBeforeBound(value: String) = "${value}T23:59:59"
 internal fun normaliseCurrency(value: String?) = value?.trim()?.takeIf { it.isNotEmpty() }
 
 internal fun validateAnalyticsDateRange(
-    after: String,
-    before: String,
+    after: LocalDate,
+    before: LocalDate,
     interval: AnalyticsInterval,
 ): String? {
-    val afterDate = LocalDate.parse(after, DateTimeFormatter.ISO_LOCAL_DATE)
-    val beforeDate = LocalDate.parse(before, DateTimeFormatter.ISO_LOCAL_DATE)
-    if (afterDate.isAfter(beforeDate)) {
+    if (after.isAfter(before)) {
         return "after must be on or before before"
     }
 
-    val bucketCount = analyticsBucketCount(afterDate, beforeDate, interval)
+    val bucketCount = analyticsBucketCount(after, before, interval)
     return if (bucketCount > MAX_ANALYTICS_INTERVALS) {
         "Requested range contains $bucketCount ${interval.value} buckets; use a coarser interval or shorter range."
     } else {
@@ -77,11 +74,9 @@ internal fun analyticsStatsSummary(
     }
 }
 
-internal fun previousPeriodFor(after: String, before: String): Pair<String, String> {
-    val afterDate = LocalDate.parse(after, DateTimeFormatter.ISO_LOCAL_DATE)
-    val beforeDate = LocalDate.parse(before, DateTimeFormatter.ISO_LOCAL_DATE)
-    val inclusiveDays = ChronoUnit.DAYS.between(afterDate, beforeDate) + 1
-    val previousBefore = afterDate.minusDays(1)
+internal fun previousPeriodFor(after: LocalDate, before: LocalDate): Pair<String, String> {
+    val inclusiveDays = ChronoUnit.DAYS.between(after, before) + 1
+    val previousBefore = after.minusDays(1)
     val previousAfter = previousBefore.minusDays(inclusiveDays - 1)
     return previousAfter.format(DateTimeFormatter.ISO_LOCAL_DATE) to
         previousBefore.format(DateTimeFormatter.ISO_LOCAL_DATE)

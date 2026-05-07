@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -122,10 +123,7 @@ internal class CustomersListToolHandler @Inject constructor(
     }
 
     private fun JsonObject.toCustomerListArgs(): CustomerListArgs {
-        val unknownKeys = keys - ALLOWED_KEYS
-        require(unknownKeys.isEmpty()) {
-            "Unsupported customers_list argument(s): ${unknownKeys.joinToString(", ")}"
-        }
+        validateAllowedArguments(this, ALLOWED_KEYS, "customers_list").getOrThrow()
 
         val orderby = stringArg("orderby") ?: DEFAULT_ORDERBY
         require(orderby in ALLOWED_ORDERBY) {

@@ -54,10 +54,12 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
         if (args.compareTo != null && args.compareTo != COMPARE_TO_PREVIOUS_PERIOD) {
             return analyticsValidationError(call.id, "compare_to must be previous_period")
         }
-        if (!validateAnalyticsDate(args.after) || !validateAnalyticsDate(args.before)) {
+        val afterDate = parseAnalyticsDate(args.after)
+        val beforeDate = parseAnalyticsDate(args.before)
+        if (afterDate == null || beforeDate == null) {
             return analyticsValidationError(call.id, "after and before must be YYYY-MM-DD")
         }
-        validateAnalyticsDateRange(args.after, args.before, interval)?.let {
+        validateAnalyticsDateRange(afterDate, beforeDate, interval)?.let {
             return analyticsValidationError(call.id, it)
         }
 
@@ -69,7 +71,7 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
             return ToolResult.TransportError(toolCallId = call.id, retryable = true)
         }
         val previousPeriodStats = if (args.compareTo == COMPARE_TO_PREVIOUS_PERIOD) {
-            val (previousAfter, previousBefore) = previousPeriodFor(args.after, args.before)
+            val (previousAfter, previousBefore) = previousPeriodFor(afterDate, beforeDate)
             dataSource.fetchOrdersStats(
                 after = analyticsDateAfterBound(previousAfter),
                 before = analyticsDateBeforeBound(previousBefore),

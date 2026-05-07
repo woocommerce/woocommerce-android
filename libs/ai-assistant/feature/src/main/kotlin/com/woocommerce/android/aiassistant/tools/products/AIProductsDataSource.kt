@@ -142,7 +142,7 @@ internal class AIProductsDataSource @Inject constructor(
         val result = productStore.fetchProducts(
             site = site,
             offset = 0,
-            pageSize = pagedInclude.size.coerceIn(1, MAX_PAGE_SIZE),
+            pageSize = pagedInclude.size,
             sortType = fetchOptions.sortType,
             includedProductIds = pagedInclude,
             filterOptions = fetchOptions.filterOptions,

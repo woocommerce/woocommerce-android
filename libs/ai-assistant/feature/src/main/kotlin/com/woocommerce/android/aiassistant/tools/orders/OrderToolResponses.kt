@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
+import com.woocommerce.android.aiassistant.tools.truncated
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.wordpress.android.fluxc.model.order.CouponLine
@@ -115,7 +116,7 @@ internal suspend fun OrderEntity.toOrderDetailResponse(
     lineItemsLimit: Int = ORDER_DETAIL_LINE_ITEMS_LIMIT,
 ): OrderDetailResponse {
     val allLineItems = getLineItemList()
-    val compactCustomerNote = customerNote.compactCustomerNote()
+    val compactCustomerNote = customerNote.truncated(ORDER_CUSTOMER_NOTE_LIMIT)
     return OrderDetailResponse(
         id = orderId,
         number = number,
@@ -149,7 +150,7 @@ internal suspend fun OrderEntity.toOrderListRowResponse(
     lineItemsLimit: Int = ORDER_LIST_LINE_ITEMS_LIMIT,
 ): OrderListRowResponse {
     val allLineItems = getLineItemList()
-    val compactCustomerNote = customerNote.compactCustomerNote()
+    val compactCustomerNote = customerNote.truncated(ORDER_CUSTOMER_NOTE_LIMIT)
     return OrderListRowResponse(
         id = orderId,
         number = number,
@@ -176,16 +177,6 @@ internal suspend fun OrderEntity.toOrderListRowResponse(
 
 private fun OrderEntity.customerName(): String =
     listOf(billingFirstName, billingLastName).filter { it.isNotBlank() }.joinToString(" ")
-
-private data class CompactCustomerNote(
-    val value: String,
-    val truncated: Boolean,
-)
-
-private fun String.compactCustomerNote() = CompactCustomerNote(
-    value = take(ORDER_CUSTOMER_NOTE_LIMIT),
-    truncated = length > ORDER_CUSTOMER_NOTE_LIMIT,
-)
 
 private fun LineItem.toCompactLineItem() = CompactOrderLineItem(
     id = id,

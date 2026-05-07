@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.products
 
+import com.woocommerce.android.aiassistant.tools.truncated
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -111,6 +112,8 @@ internal fun WCProductModel.toProductDetailResponse(): ProductDetailResponse {
     val categoryList = safeCategoryList()
     val attributeList = safeAttributeList()
     val imageList = safeImageList()
+    val compactDescription = description.truncated(PRODUCT_TEXT_FIELD_LIMIT)
+    val compactShortDescription = shortDescription.truncated(PRODUCT_TEXT_FIELD_LIMIT)
 
     return ProductDetailResponse(
         id = remoteProductId,
@@ -134,10 +137,10 @@ internal fun WCProductModel.toProductDetailResponse(): ProductDetailResponse {
         variationsCount = variationIds.size,
         variationIds = variationIds.take(PRODUCT_VARIATION_IDS_LIMIT),
         variationIdsTruncated = variationIds.size > PRODUCT_VARIATION_IDS_LIMIT,
-        description = description.take(PRODUCT_TEXT_FIELD_LIMIT),
-        descriptionTruncated = description.length > PRODUCT_TEXT_FIELD_LIMIT,
-        shortDescription = shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT),
-        shortDescriptionTruncated = shortDescription.length > PRODUCT_TEXT_FIELD_LIMIT,
+        description = compactDescription.value,
+        descriptionTruncated = compactDescription.truncated,
+        shortDescription = compactShortDescription.value,
+        shortDescriptionTruncated = compactShortDescription.truncated,
         attributes = attributeList.take(PRODUCT_ATTRIBUTES_LIMIT).map { it.toCompactProductAttribute() },
         attributesTruncated = attributeList.size > PRODUCT_ATTRIBUTES_LIMIT,
         images = imageList.take(PRODUCT_IMAGES_LIMIT).map { it.toCompactProductImage() },
@@ -151,8 +154,10 @@ internal fun WCProductModel.toProductDetailResponse(): ProductDetailResponse {
     )
 }
 
-internal fun WCProductModel.toProductListRowResponse(): ProductListRowResponse =
-    ProductListRowResponse(
+internal fun WCProductModel.toProductListRowResponse(): ProductListRowResponse {
+    val compactDescription = description.truncated(PRODUCT_TEXT_FIELD_LIMIT)
+    val compactShortDescription = shortDescription.truncated(PRODUCT_TEXT_FIELD_LIMIT)
+    return ProductListRowResponse(
         id = remoteProductId,
         name = name,
         sku = sku,
@@ -171,11 +176,12 @@ internal fun WCProductModel.toProductListRowResponse(): ProductListRowResponse =
         dateCreated = dateCreated,
         dateModified = dateModified,
         image = safeImageList().firstOrNull()?.toCompactProductImage(),
-        shortDescription = shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT),
-        shortDescriptionTruncated = shortDescription.length > PRODUCT_TEXT_FIELD_LIMIT,
-        description = description.take(PRODUCT_TEXT_FIELD_LIMIT),
-        descriptionTruncated = description.length > PRODUCT_TEXT_FIELD_LIMIT,
+        shortDescription = compactShortDescription.value,
+        shortDescriptionTruncated = compactShortDescription.truncated,
+        description = compactDescription.value,
+        descriptionTruncated = compactDescription.truncated,
     )
+}
 
 private fun WCProductModel.safeCategoryList() = if (categories.isBlank()) emptyList() else getCategoryList()
 

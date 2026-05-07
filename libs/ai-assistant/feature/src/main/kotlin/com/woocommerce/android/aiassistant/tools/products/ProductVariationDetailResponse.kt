@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.products
 
+import com.woocommerce.android.aiassistant.tools.truncated
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -44,30 +45,33 @@ internal data class CompactVariationDimensions(
     val height: String,
 )
 
-internal fun WCProductVariationModel.toProductVariationDetailResponse() = ProductVariationDetailResponse(
-    id = remoteVariationId.value,
-    productId = remoteProductId.value,
-    status = status,
-    sku = sku,
-    regularPrice = regularPrice,
-    salePrice = salePrice,
-    onSale = onSale,
-    manageStock = manageStock,
-    stockQuantity = stockQuantity,
-    stockStatus = stockStatus,
-    price = price,
-    attributes = compactAttributes(),
-    image = getImageModel()?.toCompactProductImage(),
-    description = description.take(PRODUCT_TEXT_FIELD_LIMIT),
-    descriptionTruncated = description.length > PRODUCT_TEXT_FIELD_LIMIT,
-    weight = weight,
-    dimensions = CompactVariationDimensions(length, width, height),
-    taxClass = taxClass,
-    dateCreated = dateCreated,
-    dateModified = dateModified,
-    menuOrder = menuOrder,
-    backorders = backorders,
-)
+internal fun WCProductVariationModel.toProductVariationDetailResponse(): ProductVariationDetailResponse {
+    val compactDescription = description.truncated(PRODUCT_TEXT_FIELD_LIMIT)
+    return ProductVariationDetailResponse(
+        id = remoteVariationId.value,
+        productId = remoteProductId.value,
+        status = status,
+        sku = sku,
+        regularPrice = regularPrice,
+        salePrice = salePrice,
+        onSale = onSale,
+        manageStock = manageStock,
+        stockQuantity = stockQuantity,
+        stockStatus = stockStatus,
+        price = price,
+        attributes = compactAttributes(),
+        image = getImageModel()?.toCompactProductImage(),
+        description = compactDescription.value,
+        descriptionTruncated = compactDescription.truncated,
+        weight = weight,
+        dimensions = CompactVariationDimensions(length, width, height),
+        taxClass = taxClass,
+        dateCreated = dateCreated,
+        dateModified = dateModified,
+        menuOrder = menuOrder,
+        backorders = backorders,
+    )
+}
 
 private fun WCProductVariationModel.compactAttributes(): List<CompactVariationAttribute> =
     runCatching {
