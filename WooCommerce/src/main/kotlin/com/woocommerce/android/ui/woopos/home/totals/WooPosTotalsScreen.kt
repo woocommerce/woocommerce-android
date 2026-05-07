@@ -219,7 +219,9 @@ private fun TotalsLoaded(
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                         if (state.isTapToPayAvailable) {
-                            TapToPayPromoted(onUIEvent = onUIEvent)
+                            TapToPayPromoted(
+                                onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
+                            )
                         }
                     }
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
@@ -266,20 +268,9 @@ private fun TotalsLoaded(
         CheckoutPaymentButtons(onUIEvent = onUIEvent)
     }
 
-    val allMethods = buildList {
-        val readerConnected = state.readerStatus.isReaderConnected()
-        if (!readerConnected && state.isTapToPayAvailable) {
-            add(WooPosPaymentMethod.CARD_READER)
-        }
-        if (readerConnected && state.isTapToPayAvailable) {
-            add(WooPosPaymentMethod.TAP_TO_PAY)
-        }
-        add(WooPosPaymentMethod.SCAN_TO_PAY)
-        add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
-    }
     WooPosAllPaymentMethodsDialog(
         isVisible = state.isAllPaymentMethodsDialogVisible,
-        methods = allMethods,
+        methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
             method.toUIEvent()?.let(onUIEvent)
@@ -320,14 +311,6 @@ private fun CheckoutPaymentButtons(onUIEvent: (WooPosTotalsUIEvent) -> Unit) {
     }
 }
 
-private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = when (this) {
-    is WooPosTotalsViewState.ReaderStatus.Preparing,
-    is WooPosTotalsViewState.ReaderStatus.CheckingOrder,
-    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> true
-    is WooPosTotalsViewState.ReaderStatus.Disconnected,
-    WooPosTotalsViewState.ReaderStatus.Unavailable -> false
-}
-
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
@@ -337,8 +320,8 @@ private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) 
 
 @Composable
 private fun TapToPayPromoted(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
 ) {
     Column(
         modifier = modifier.padding(WooPosSpacing.XLarge.value),
@@ -346,7 +329,7 @@ private fun TapToPayPromoted(
         verticalArrangement = Arrangement.SpaceEvenly,
     ) {
         Image(
-            modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
+            modifier = Modifier.size(TAP_TO_PAY_IMAGE_SIZE.toAdaptiveComponentSize()),
             painter = painterResource(id = R.drawable.img_tap_to_pay_summary),
             contentDescription = stringResource(id = R.string.woopos_tap_to_pay_promoted_image_description),
         )
@@ -366,7 +349,7 @@ private fun TapToPayPromoted(
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
             text = stringResource(R.string.woopos_tap_to_pay_promoted_cta_button_label),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
+            onClick = onClick,
             modifier = Modifier
                 .adaptiveContentWidth()
                 .height(WooPosComponentSize.Small.value)
@@ -374,6 +357,8 @@ private fun TapToPayPromoted(
         )
     }
 }
+
+private val TAP_TO_PAY_IMAGE_SIZE = 140.dp
 
 @Composable
 private fun PreparingReader(title: String, subtitle: String) {
@@ -645,6 +630,31 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
                     subtitle = "To process this payment, please connect your reader.",
                     actionButtonLabel = "Connect to a reader",
                 ),
+            ),
+            onUIEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsScreenPreviewWithTapToPayPromoted() {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = Modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$420.00",
+                    orderTotalText = "$462.00",
+                    orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
+                    title = "Reader not connected",
+                    subtitle = "To process this payment, please connect your reader.",
+                    actionButtonLabel = "Connect to a reader",
+                ),
+                isTapToPayAvailable = true,
             ),
             onUIEvent = {},
         )
