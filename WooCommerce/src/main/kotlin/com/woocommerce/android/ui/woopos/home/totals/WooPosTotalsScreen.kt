@@ -248,20 +248,9 @@ private fun TotalsLoaded(
         CheckoutPaymentButtons(onUIEvent = onUIEvent)
     }
 
-    val allMethods = buildList {
-        val readerConnected = state.readerStatus.isReaderConnected()
-        if (!readerConnected && state.isTapToPayAvailable) {
-            add(WooPosPaymentMethod.CARD_READER)
-        }
-        if (readerConnected && state.isTapToPayAvailable) {
-            add(WooPosPaymentMethod.TAP_TO_PAY)
-        }
-        add(WooPosPaymentMethod.SCAN_TO_PAY)
-        add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
-    }
     WooPosAllPaymentMethodsDialog(
         isVisible = state.isAllPaymentMethodsDialogVisible,
-        methods = allMethods,
+        methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
             method.toUIEvent()?.let(onUIEvent)
@@ -300,14 +289,6 @@ private fun CheckoutPaymentButtons(onUIEvent: (WooPosTotalsUIEvent) -> Unit) {
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
         )
     }
-}
-
-private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = when (this) {
-    is WooPosTotalsViewState.ReaderStatus.Preparing,
-    is WooPosTotalsViewState.ReaderStatus.CheckingOrder,
-    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> true
-    is WooPosTotalsViewState.ReaderStatus.Disconnected,
-    WooPosTotalsViewState.ReaderStatus.Unavailable -> false
 }
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
