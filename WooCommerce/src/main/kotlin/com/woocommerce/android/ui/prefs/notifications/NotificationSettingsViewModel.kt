@@ -74,7 +74,7 @@ class NotificationSettingsViewModel @Inject constructor(
         when (type) {
             NotificationType.NEW_ORDERS -> triggerEvent(OpenNewOrderNotificationSettings)
             NotificationType.NEW_REVIEWS -> triggerEvent(OpenNewReviewNotificationSettings)
-            NotificationType.STOCK -> Unit
+            NotificationType.STOCK -> triggerEvent(OpenStockNotificationSettings)
         }
     }
 
@@ -116,6 +116,7 @@ class NotificationSettingsViewModel @Inject constructor(
     object OpenDeviceNotificationSettings : MultiLiveEvent.Event()
     object OpenNewOrderNotificationSettings : MultiLiveEvent.Event()
     object OpenNewReviewNotificationSettings : MultiLiveEvent.Event()
+    object OpenStockNotificationSettings : MultiLiveEvent.Event()
 
     data class NotificationTypeItem(
         val type: NotificationType,

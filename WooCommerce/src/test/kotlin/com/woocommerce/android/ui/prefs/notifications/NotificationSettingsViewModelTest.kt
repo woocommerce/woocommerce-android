@@ -228,4 +228,15 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
 
         assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenNewReviewNotificationSettings::class.java)
     }
+
+    @Test
+    fun `when stock notification type is clicked, then open stock settings`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onNotificationTypeClicked(NotificationType.STOCK)
+        }.last()
+
+        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenStockNotificationSettings::class.java)
+    }
 }

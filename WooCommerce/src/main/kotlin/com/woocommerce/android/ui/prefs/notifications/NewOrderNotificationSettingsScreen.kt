@@ -49,7 +49,7 @@ fun NewOrderNotificationSettingsScreen(viewModel: NewOrderNotificationSettingsVi
 }
 
 @Composable
-fun NewOrderNotificationSettingsScreen(
+private fun NewOrderNotificationSettingsScreen(
     viewState: ViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
     onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
