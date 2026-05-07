@@ -22,8 +22,8 @@ class AiAssistantCustomerCardRendererTest {
 
         assertThat(model).isEqualTo(
             AssistantCustomerSummaryRowModel(
-                title = "Ada Lovelace",
-                emailText = "ada@example.com",
+                name = "Ada Lovelace",
+                email = "ada@example.com",
             )
         )
     }
@@ -37,8 +37,8 @@ class AiAssistantCustomerCardRendererTest {
 
         assertThat(model).isEqualTo(
             AssistantCustomerSummaryRowModel(
-                title = "No name",
-                emailText = "No email address",
+                name = "No name",
+                email = "No email address",
             )
         )
     }
