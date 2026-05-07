@@ -2296,6 +2296,14 @@
     <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
     <string name="settings_notifs_new_orders">New orders</string>
     <string name="settings_notifs_new_orders_subtitle">All orders</string>
+    <string name="settings_notifs_new_orders_enable_title">Enable new order notifications</string>
+    <string name="settings_notifs_new_orders_enable_description">Get notified when an order is placed in your store.</string>
+    <string name="settings_notifs_notify_me_for">Notify me for</string>
+    <string name="settings_notifs_new_orders_all_title">All new orders</string>
+    <string name="settings_notifs_new_orders_all_description">Ping for every order, regardless of value.</string>
+    <string name="settings_notifs_new_orders_high_value_title">Only high-value orders</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filter to orders above your threshold.</string>
+    <string name="settings_notifs_new_orders_threshold">Threshold (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_new_reviews">New reviews</string>

@@ -165,4 +165,15 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
             notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled
         ).isFalse()
     }
+
+    @Test
+    fun `when new orders notification type is clicked, then open new orders settings`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onNotificationTypeClicked(NotificationType.NEW_ORDERS)
+        }.last()
+
+        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenNewOrderNotificationSettings::class.java)
+    }
 }

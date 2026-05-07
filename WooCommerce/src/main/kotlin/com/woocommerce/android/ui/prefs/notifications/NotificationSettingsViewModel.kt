@@ -65,6 +65,12 @@ class NotificationSettingsViewModel @Inject constructor(
         }
     }
 
+    fun onNotificationTypeClicked(type: NotificationType) {
+        if (type == NotificationType.NEW_ORDERS) {
+            triggerEvent(OpenNewOrderNotificationSettings)
+        }
+    }
+
     fun onManageNotificationsClicked() {
         triggerEvent(OpenDeviceNotificationSettings)
     }
@@ -97,6 +103,7 @@ class NotificationSettingsViewModel @Inject constructor(
     }
 
     object OpenDeviceNotificationSettings : MultiLiveEvent.Event()
+    object OpenNewOrderNotificationSettings : MultiLiveEvent.Event()
 
     data class NotificationTypeItem(
         val type: NotificationType,

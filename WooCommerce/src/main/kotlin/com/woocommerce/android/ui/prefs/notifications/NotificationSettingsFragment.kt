@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
@@ -48,6 +50,7 @@ class NotificationSettingsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NotificationSettingsViewModel.OpenDeviceNotificationSettings -> openDeviceNotificationSettings()
+                is NotificationSettingsViewModel.OpenNewOrderNotificationSettings -> openNewOrderNotificationSettings()
                 is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
                     event.actionText,
@@ -63,5 +66,12 @@ class NotificationSettingsFragment : BaseFragment() {
             putExtra("android.provider.extra.APP_PACKAGE", requireActivity().packageName)
         }
         requireActivity().startActivity(intent)
+    }
+
+    private fun openNewOrderNotificationSettings() {
+        findNavController().navigateSafely(
+            NotificationSettingsFragmentDirections
+                .actionNotificationSettingsFragmentToNewOrderNotificationSettingsFragment()
+        )
     }
 }
