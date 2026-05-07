@@ -146,7 +146,16 @@ class ProductVariationsToolHandlerTest {
     @Test
     fun `given get mode, when execute is called, then variation detail fields are returned`() = runTest {
         whenever(dataSource.getVariation(productId = 100L, variationId = 10L))
-            .thenReturn(Result.success(variation(productId = 100L, variationId = 10L, price = "19.99")))
+            .thenReturn(
+                Result.success(
+                    variation(
+                        productId = 100L,
+                        variationId = 10L,
+                        price = "19.99",
+                        attributes = """[{"name":"Size","option":"M"}]""",
+                    )
+                )
+            )
 
         val result = handler.execute(
             toolCall(
@@ -165,7 +174,9 @@ class ProductVariationsToolHandlerTest {
         assertThat(requireNotNull(json["sku"]).jsonPrimitive.content).isEqualTo("SKU-10")
         assertThat(requireNotNull(json["regular_price"]).jsonPrimitive.content).isEqualTo("19.99")
         assertThat(requireNotNull(json["stock_status"]).jsonPrimitive.content).isEqualTo("instock")
-        assertThat(json.getValue("attributes").jsonArray).isEmpty()
+        assertThat(json.getValue("attributes").jsonArray.single().jsonObject.getValue("option").jsonPrimitive.content)
+            .isEqualTo("M")
+        verify(dataSource).getVariation(productId = 100L, variationId = 10L)
     }
 
     @Test
