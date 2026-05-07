@@ -66,7 +66,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
             )
 
             assertThat(urlCaptor.firstValue)
-                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG")
+                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
             val sentContext = bodyCaptor.firstValue["context"] as JsonObject
             assertThat(sentContext["site_id"].asLong).isEqualTo(1L)
@@ -85,7 +85,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
             )
 
             assertThat(urlCaptor.firstValue)
-                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID")
+                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
             assertThat(bodyCaptor.firstValue).containsOnlyKeys("message")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
         }
@@ -97,7 +97,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
         restClient.fetchChat(botSlug = BOT_SLUG, chatId = CHAT_ID)
 
         assertThat(urlCaptor.firstValue)
-            .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID")
+            .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
     }
 
     @Test

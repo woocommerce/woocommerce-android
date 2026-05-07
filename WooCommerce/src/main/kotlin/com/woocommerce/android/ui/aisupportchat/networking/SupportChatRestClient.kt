@@ -5,6 +5,7 @@ import com.android.volley.RequestQueue
 import com.google.gson.JsonObject
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
@@ -56,12 +57,11 @@ class SupportChatRestClient @Inject constructor(
         clazz = SupportChatResponse::class.java
     )
 
-    private fun chatUrl(botSlug: String): String = "$ODIE_CHAT_BASE_URL/$botSlug"
+    private fun chatUrl(botSlug: String): String = WPCOMV2.odie.chat.bot_slug(botSlug).url
 
-    private fun chatUrl(botSlug: String, chatId: Long): String = "${chatUrl(botSlug)}/$chatId"
+    private fun chatUrl(botSlug: String, chatId: Long): String = WPCOMV2.odie.chat.bot_slug(botSlug).chat(chatId).url
 
     companion object {
-        private const val ODIE_CHAT_BASE_URL = "https://public-api.wordpress.com/wpcom/v2/odie/chat"
         private const val MESSAGE_KEY = "message"
         private const val CONTEXT_KEY = "context"
     }
