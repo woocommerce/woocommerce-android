@@ -2020,7 +2020,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when OnTapToPayClicked, then track entry-point analytics and do not navigate`() = runTest {
+    fun `when OnTapToPayClicked, then track checkout TTP analytics and do not navigate`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
         clearInvocations(childrenToParentEventSender)
@@ -2030,7 +2030,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.TapToPayEntryPointTapped)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutTapToPayPaymentTapped)
         verify(childrenToParentEventSender, never()).sendToParent(any())
     }
 
@@ -2061,6 +2061,20 @@ class WooPosTotalsViewModelTest {
             val state = viewModel.state.value as WooPosTotalsViewState.Checkout
             assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
         }
+
+    @Test
+    fun `given flag on and TTP Hidden, when ViewModel created, then reason not tracked`() = runTest {
+        // GIVEN
+        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Hidden)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
 
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))

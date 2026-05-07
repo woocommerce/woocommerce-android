@@ -117,10 +117,15 @@ class WooPosTotalsViewModel @Inject constructor(
     init {
         listenUpEvents()
         observeCardReaderStatus()
-        if (isTapToPayAvailable.isFeatureFlagEnabled()) {
-            (tapToPayAvailabilityStatus() as? TapToPayAvailabilityStatus.Result.NotAvailable)?.let {
-                paymentsFlowTracker.trackTapToPayNotAvailableReason(it, TAP_TO_PAY_SOURCE)
-            }
+        trackTapToPayUnavailableReasonIfNeeded()
+    }
+
+    private fun trackTapToPayUnavailableReasonIfNeeded() {
+        if (!isTapToPayAvailable.isFeatureFlagEnabled()) return
+        when (val result = tapToPayAvailabilityStatus()) {
+            is TapToPayAvailabilityStatus.Result.NotAvailable ->
+                paymentsFlowTracker.trackTapToPayNotAvailableReason(result, TAP_TO_PAY_SOURCE)
+            else -> Unit
         }
     }
 
@@ -227,8 +232,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun handleTapToPayClicked() = viewModelScope.launch {
-        totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
-        wooPosLogWrapper.d("Tap to Pay tapped in checkout. Payment flow not yet wired.")
+        totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped()
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
