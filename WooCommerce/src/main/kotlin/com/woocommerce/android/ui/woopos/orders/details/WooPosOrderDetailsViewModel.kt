@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsVi
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,8 +29,11 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -60,6 +64,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         if (singleOrderId != null) WooPosOrderDetailsState.Loading else WooPosOrderDetailsState.Idle
     )
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(extraBufferCapacity = 1)
+    val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private var loadOrderJob: Job? = null
     private var sideLoadJob: Job? = null
@@ -142,8 +149,12 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private fun handleActionClicked(action: OrderAction) {
         when (action) {
             is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is OrderAction.IssueRefund -> onIssueRefundButtonClicked(action.orderId)
+            is OrderAction.IssueRefund -> emitNav(WooPosNavigationEvent.OpenIssueRefund(action.orderId))
         }
+    }
+
+    private fun emitNav(event: WooPosNavigationEvent) {
+        viewModelScope.launch { _navigationEvent.emit(event) }
     }
 
     private fun onEmailReceiptButtonClicked(orderId: Long) {
@@ -153,18 +164,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onIssueRefundButtonClicked(orderId: Long) {
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        _state.value = current.copy(
-            dialogState = WooPosOrderDetailsState.DialogState.IssueRefund(orderId = orderId)
-        )
-    }
-
-    fun onIssueRefundDialogDismissed() {
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        _state.value = current.copy(
-            dialogState = WooPosOrderDetailsState.DialogState.Hidden
-        )
+    fun onBackFromIssueRefund() {
         refreshSelectedOrder()
     }
 

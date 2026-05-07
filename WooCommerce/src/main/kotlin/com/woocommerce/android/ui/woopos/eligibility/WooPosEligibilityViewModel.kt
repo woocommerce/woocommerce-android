@@ -9,6 +9,7 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosSupportedCountries
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -53,6 +54,7 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val getCountryName: WooPosGetStoreCountryName,
     private val getCountryCode: WooPosGetStoreCountryCode,
+    private val supportedCountries: WooPosSupportedCountries,
 ) : ViewModel() {
 
     private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
@@ -158,7 +160,7 @@ class WooPosEligibilityViewModel @Inject constructor(
                 resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
             WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> {
                 val countryCode = getCountryCode()
-                val supportedCurrency = WooPosCanBeLaunchedInTab.SUPPORTED_COUNTRY_CURRENCY_PAIRS
+                val supportedCurrency = supportedCountries.supportedCountryCurrencyPairs()
                     .find { (country, _) -> country.equals(countryCode, ignoreCase = true) }
                     ?.second?.uppercase()
 
