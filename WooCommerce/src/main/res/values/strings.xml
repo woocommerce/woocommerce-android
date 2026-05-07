@@ -1533,6 +1533,25 @@
     <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
     <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
 
+    <string name="card_reader_mode_ready_to_pair_header">Ready to pair</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">Open Woo POS on your tablet and pick this phone.</string>
+    <string name="card_reader_mode_ready_to_pair_store">Store: %1$s</string>
+    <string name="card_reader_mode_waiting_header">Paired with tablet</string>
+    <string name="card_reader_mode_waiting_subtitle">Waiting for payment…</string>
+    <string name="card_reader_mode_cancel">Cancel</string>
+    <string name="card_reader_mode_settings_row_label">Card Reader Mode</string>
+    <string name="card_reader_mode_device_identifier" translatable="false">%1$s · %2$s</string>
+    <string name="card_reader_mode_starting_header">Starting Card Reader Mode</string>
+    <string name="card_reader_mode_starting_subtitle">Setting up discovery on the local network…</string>
+    <string name="card_reader_mode_error_header">Card Reader Mode failed to start</string>
+    <string name="card_reader_mode_error_subtitle">Check your Wi-Fi connection and try again.</string>
+    <string name="card_reader_mode_error_close">Close</string>
+    <string name="card_reader_mode_location_permission_header">Location permission required</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android requires location access to use tap-to-pay on this phone. Your location stays on this device.</string>
+    <string name="card_reader_mode_location_permission_continue">Continue</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">Location permission is blocked. Open Settings and grant Location to use tap-to-pay on this phone.</string>
+    <string name="card_reader_mode_location_permission_open_settings">Open Settings</string>
+
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Your device is not supported. Please contact support for more details</string>
@@ -3163,6 +3182,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Take payments on the go</string>
 
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="more_menu_button_ai_assistant_description">Ask about your store</string>
+
     <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
@@ -3638,6 +3660,7 @@
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
     <string name="woopos_battery_low">Card reader battery low</string>
     <string name="woopos_battery_critical">Card reader battery critical</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -3724,8 +3747,12 @@
     <string name="woopos_settings_card_reader_documentation_title">Documentation</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Learn more about accepting mobile payments</string>
     <string name="woopos_settings_card_reader_connected_reader">Connected reader</string>
+    <string name="woopos_settings_card_reader_disconnect_button">Disconnect</string>
     <string name="woopos_settings_card_reader_update_firmware_title">Update firmware version</string>
     <string name="woopos_settings_card_reader_update_firmware_message">Update the firmware version to continue accepting payments.</string>
+    <string name="woopos_settings_card_reader_transport_title">Transport</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Fingerprint</string>
     <string name="woopos_settings_help_category">Get help and support</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Learn about which products are supported in POS</string>
     <string name="woopos_settings_help_documentation_subtitle">View guides and tutorials</string>
@@ -3815,6 +3842,9 @@
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
     <string name="woo_pos_payment_failed_go_back">Go back</string>
+
+    <string name="woopos_remote_payment_failed_connection_lost">Connection to the phone reader was lost. Please reconnect and try again.</string>
+    <string name="woopos_remote_payment_failed_generic">Something went wrong. Please try again.</string>
 
     <string name="woopos_card_payment_done_button">Done</string>
 
@@ -4098,6 +4128,9 @@
     <string name="woopos_card_reader_keep_searching_button">Keep searching</string>
     <string name="woopos_card_reader_multiple_found_title">Multiple readers found</string>
     <string name="woopos_card_reader_multiple_found_description">Choose a reader</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Phone reader</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Bluetooth reader</string>
+    <string name="woopos_card_reader_unknown_reader_name">Unknown reader</string>
     <string name="woopos_card_reader_connecting_title">Connecting</string>
     <string name="woopos_card_reader_connecting_message">Please wait while we connect to your reader</string>
     <string name="woopos_card_reader_connecting_failed_title">Connection failed</string>
@@ -4132,6 +4165,15 @@
     <string name="woopos_card_reader_update_failed_title">Update failed</string>
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
+
+    <string name="woopos_remote_ttp_hint_strip_text">Use an Android phone as a card reader</string>
+    <string name="woopos_remote_ttp_explainer_title">No card reader? No problem</string>
+    <string name="woopos_remote_ttp_explainer_intro">Use the Woo app on your phone to take card payments.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">Set up your phone</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">Open Woo on your phone, then go to Settings → Payments → Card Reader Mode.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Check compatibility</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Use the same Wi-Fi and sign in to the same store on both devices. Your phone needs Android 13 or newer, NFC, and Tap-to-Pay support.</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Got it</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4558,4 +4600,6 @@
     <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
     <string name="woo_pos_promo_next_button">Next</string>
     <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">the United States</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">the United Kingdom</string>
 </resources>

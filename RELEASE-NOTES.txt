@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.8
+-----
+- [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
+
 24.7
 -----
 - [***] Performance card on My Store now lets you switch between Gross, Net and Total revenue and pick the order date type (Paid, Placed or Completed) [https://github.com/woocommerce/woocommerce-android/pull/15750]
@@ -11,6 +15,7 @@
 - [*] Stop POS background catalog sync once the initial sync completes for users who never open POS [https://github.com/woocommerce/woocommerce-android/pull/15651]
 - [*] Replaced the POS Orders "Learn more" empty-state button with a "Refresh" action and updated the empty-state copy [https://github.com/woocommerce/woocommerce-android/pull/15694]
 - [*] Fixed product images failing to load when the Photon service is unavailable [https://github.com/woocommerce/woocommerce-android/pull/15646]
+- [***] Fixed bug where POS navigation was reset to home on config change [https://github.com/woocommerce/woocommerce-android/pull/15793]
 
 24.6
 -----

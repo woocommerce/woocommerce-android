@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLA
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_AI_ASSISTANT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_BOOKINGS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
@@ -38,6 +39,8 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -81,6 +84,7 @@ class MoreMenuViewModel @Inject constructor(
     observeBookingsVisibility: ObserveBookingsVisibility,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
     private val shouldShowBookingsInMenu = MutableStateFlow(false)
@@ -143,6 +147,7 @@ class MoreMenuViewModel @Inject constructor(
             inboxState = buttonsStates[MoreMenuItemButton.Type.Inbox]!!,
             paymentsState = buttonsStates[MoreMenuItemButton.Type.Payments]!!,
             bookingsButtonState = buttonsStates[MoreMenuItemButton.Type.Bookings]!!,
+            aiAssistantState = buttonsStates[MoreMenuItemButton.Type.AiAssistant]!!,
         )
     )
 
@@ -167,6 +172,7 @@ class MoreMenuViewModel @Inject constructor(
         inboxState: MoreMenuItemButton.State,
         paymentsState: MoreMenuItemButton.State,
         bookingsButtonState: MoreMenuItemButton.State,
+        aiAssistantState: MoreMenuItemButton.State,
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
@@ -177,6 +183,13 @@ class MoreMenuViewModel @Inject constructor(
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
                 state = paymentsState
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_ai_assistant,
+                description = R.string.more_menu_button_ai_assistant_description,
+                icon = R.drawable.ic_more_menu_ai_assistant,
+                onClick = ::onAiAssistantButtonClick,
+                state = aiAssistantState,
             ),
             MoreMenuItemButton(
                 title = R.string.bookings_tab_title,
@@ -345,6 +358,11 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewBookingsEvent)
     }
 
+    private fun onAiAssistantButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_AI_ASSISTANT)
+        triggerEvent(MoreMenuEvent.ViewAiAssistantEvent)
+    }
+
     private fun onPromoteProductsWithGoogle() {
         launch {
             val urlToOpen = determineUrlToOpen()
@@ -501,6 +519,7 @@ class MoreMenuViewModel @Inject constructor(
             MoreMenuItemButton.State.Loading
         }.toMutableMap().apply {
             this[MoreMenuItemButton.Type.Bookings] = MoreMenuItemButton.State.Hidden
+            this[MoreMenuItemButton.Type.AiAssistant] = MoreMenuItemButton.State.Hidden
         }
 
         return listOf(
@@ -517,7 +536,10 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Payments) {
                 ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
-            }
+            },
+            doCheckAvailability(MoreMenuItemButton.Type.AiAssistant) {
+                featureFlagRepository.isEnabled(FeatureFlag.AI_ASSISTANT)
+            },
         ).merge()
             .map { update ->
                 initialState[update.first] = update.second

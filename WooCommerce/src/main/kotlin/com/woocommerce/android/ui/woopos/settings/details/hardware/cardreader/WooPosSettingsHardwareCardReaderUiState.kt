@@ -1,11 +1,21 @@
 package com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader
 
-sealed class WooPosSettingsHardwareCardReaderUiState {
-    object Disconnected : WooPosSettingsHardwareCardReaderUiState()
-    data class Connected(
-        val readerName: String,
-        val batteryLevel: Float? = null,
-        val firmwareVersion: String? = null,
-        val isSoftwareUpdateAvailable: Boolean = false
-    ) : WooPosSettingsHardwareCardReaderUiState()
+sealed interface WooPosSettingsHardwareCardReaderUiState {
+    data object Disconnected : WooPosSettingsHardwareCardReaderUiState
+
+    sealed interface Connected : WooPosSettingsHardwareCardReaderUiState {
+        val readerName: String
+
+        data class Bluetooth(
+            override val readerName: String,
+            val batteryLevel: Float?,
+            val firmwareVersion: String?,
+            val isSoftwareUpdateAvailable: Boolean,
+        ) : Connected
+
+        data class Phone(
+            override val readerName: String,
+            val fingerprintSuffix: String?,
+        ) : Connected
+    }
 }
