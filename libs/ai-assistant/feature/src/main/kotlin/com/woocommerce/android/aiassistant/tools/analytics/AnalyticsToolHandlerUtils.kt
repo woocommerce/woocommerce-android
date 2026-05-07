@@ -52,19 +52,33 @@ internal fun analyticsValidationError(toolCallId: String, reason: String) =
 internal fun analyticsStatsSummary(
     after: String,
     before: String,
+    interval: AnalyticsInterval,
     stats: AnalyticsStats,
     currency: String? = null,
+    previousPeriodTotals: JsonObject? = null,
 ): JsonObject = buildJsonObject {
     put("after", after)
     put("before", before)
+    put("interval", interval.value)
     currency?.let { put("currency", it) }
     stats.totals?.let { put("totals", it) }
+    previousPeriodTotals?.let { put("previous_period_totals", it) }
     stats.intervals?.let { intervals ->
         put("interval_count", intervals.size)
         putJsonArray("interval_subtotals") {
             intervals.mapNotNull(::intervalSubtotal).forEach(::add)
         }
     }
+}
+
+internal fun previousPeriodFor(after: String, before: String): Pair<String, String> {
+    val afterDate = LocalDate.parse(after, DateTimeFormatter.ISO_LOCAL_DATE)
+    val beforeDate = LocalDate.parse(before, DateTimeFormatter.ISO_LOCAL_DATE)
+    val inclusiveDays = ChronoUnit.DAYS.between(afterDate, beforeDate) + 1
+    val previousBefore = afterDate.minusDays(1)
+    val previousAfter = previousBefore.minusDays(inclusiveDays - 1)
+    return previousAfter.format(DateTimeFormatter.ISO_LOCAL_DATE) to
+        previousBefore.format(DateTimeFormatter.ISO_LOCAL_DATE)
 }
 
 private fun intervalSubtotal(interval: JsonObject): JsonObject? {

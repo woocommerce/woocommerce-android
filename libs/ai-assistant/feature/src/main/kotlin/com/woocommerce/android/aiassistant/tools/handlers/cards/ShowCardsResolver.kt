@@ -167,6 +167,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 val summary = analyticsStatsSummary(
                     after = query.after,
                     before = query.before,
+                    interval = query.interval,
                     stats = stats,
                     currency = displayCurrency,
                 )

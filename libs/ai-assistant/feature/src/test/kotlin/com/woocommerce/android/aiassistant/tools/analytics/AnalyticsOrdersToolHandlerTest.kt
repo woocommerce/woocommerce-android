@@ -45,9 +45,15 @@ class AnalyticsOrdersToolHandlerTest {
             .getValue("enum")
             .jsonArray
             .map { it.jsonPrimitive.content }
+        val compareToValues = requireNotNull(properties["compare_to"])
+            .jsonObject
+            .getValue("enum")
+            .jsonArray
+            .map { it.jsonPrimitive.content }
 
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
+        assertThat(compareToValues).containsExactly("previous_period")
     }
 
     @Test
@@ -75,9 +81,92 @@ class AnalyticsOrdersToolHandlerTest {
             val structured = (result as ToolResult.Success).structured.jsonObject
             assertThat(structured.getValue("after").jsonPrimitive.content).isEqualTo("2026-04-01")
             assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
+            assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("week")
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(1)
             assertThat(structured.getValue("totals").jsonObject.getValue("orders_count").jsonPrimitive.int)
                 .isEqualTo(42)
+        }
+
+    @Test
+    fun `given previous period comparison, when execute succeeds, then previous totals are returned`() =
+        runTest {
+            whenever(
+                dataSource.fetchOrdersStats(
+                    after = "2026-05-01T00:00:00",
+                    before = "2026-05-07T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                )
+            ).thenReturn(Result.success(sampleStats()))
+            whenever(
+                dataSource.fetchOrdersStats(
+                    after = "2026-04-24T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                )
+            ).thenReturn(Result.success(previousStats()))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-05-01")
+                        put("before", "2026-05-07")
+                        put("compare_to", "previous_period")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            val structured = (result as ToolResult.Success).structured.jsonObject
+
+            assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("day")
+            assertThat(
+                structured.getValue("previous_period_totals")
+                    .jsonObject
+                    .getValue("orders_count")
+                    .jsonPrimitive
+                    .int
+            ).isEqualTo(24)
+            verify(dataSource).fetchOrdersStats(
+                after = "2026-04-24T00:00:00",
+                before = "2026-04-30T23:59:59",
+                interval = AnalyticsInterval.DAY,
+            )
+        }
+
+    @Test
+    fun `given unsupported compare_to, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                        put("compare_to", "last_year")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason).contains("compare_to")
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given unknown argument, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                        put("orderby", "orders_count")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason).contains("Unsupported analytics_orders argument")
+            verifyNoInteractions(dataSource)
         }
 
     @Test
@@ -227,5 +316,13 @@ class AnalyticsOrdersToolHandlerTest {
                 )
             },
         ),
+    )
+
+    private fun previousStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("orders_count", 24)
+            put("avg_order_value", "72.15")
+        },
+        intervals = emptyList(),
     )
 }
