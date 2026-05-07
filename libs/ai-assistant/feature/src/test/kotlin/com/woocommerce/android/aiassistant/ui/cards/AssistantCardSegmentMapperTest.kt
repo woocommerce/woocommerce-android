@@ -85,16 +85,21 @@ class AssistantCardSegmentMapperTest {
                 listOf(
                     AssistantCard.Stats(
                         id = ANALYTICS_STATS_ID,
+                        kind = AssistantCard.Stats.Kind.Revenue,
                         after = "2026-05-01",
                         before = "2026-05-07",
                         currency = "USD",
-                        totalSales = "170.35",
-                        netSales = "120.15",
-                        totalSalesChartPoints = listOf(
-                            AssistantCard.Stats.ChartPoint("2026-05-01", 170.35),
-                        ),
-                        netSalesChartPoints = listOf(
-                            AssistantCard.Stats.ChartPoint("2026-05-01", 120.15),
+                        metrics = listOf(
+                            AssistantCard.Stats.Metric(
+                                type = AssistantCard.Stats.MetricType.TotalSales,
+                                value = "170.35",
+                                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 170.35)),
+                            ),
+                            AssistantCard.Stats.Metric(
+                                type = AssistantCard.Stats.MetricType.NetSales,
+                                value = "120.15",
+                                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 120.15)),
+                            ),
                         ),
                     )
                 )

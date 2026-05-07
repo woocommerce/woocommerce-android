@@ -1370,16 +1370,21 @@ class AssistantViewModelTest {
         totalSales: String,
     ) = AssistantCard.Stats(
         id = "analytics_revenue:after:$after:before:$before:interval:day:currency:USD",
+        kind = AssistantCard.Stats.Kind.Revenue,
         after = after,
         before = before,
         currency = "USD",
-        totalSales = totalSales,
-        netSales = "100.15",
-        totalSalesChartPoints = listOf(
-            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
-        ),
-        netSalesChartPoints = listOf(
-            AssistantCard.Stats.ChartPoint("2026-05-01", 10.0),
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = totalSales,
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "100.15",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 10.0)),
+            ),
         ),
     )
 

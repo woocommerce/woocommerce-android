@@ -80,22 +80,39 @@ internal object AssistantCardPayloadParser {
         val details = card.details as? ShowCardDetails.AnalyticsStats ?: return null
         val after = details.after.takeIf { it.isIsoLocalDate() } ?: return null
         val before = details.before.takeIf { it.isIsoLocalDate() } ?: return null
+        val kind = details.kind.toStatsKind() ?: return null
 
         return AssistantCard.Stats(
             id = card.id,
+            kind = kind,
             after = after,
             before = before,
             currency = details.currency.orEmpty(),
-            totalSales = details.totals.stringValue(TOTAL_SALES_KEYS),
-            netSales = details.totals.stringValue(NET_SALES_KEYS),
-            totalSalesChartPoints = details.intervalSubtotals.mapNotNull {
-                it.toChartPoint(TOTAL_SALES_KEYS)
-            },
-            netSalesChartPoints = details.intervalSubtotals.mapNotNull {
-                it.toChartPoint(NET_SALES_KEYS)
-            },
+            metrics = details.toMetrics(kind),
         )
     }
+
+    private fun ShowCardDetails.AnalyticsStats.toMetrics(
+        kind: AssistantCard.Stats.Kind,
+    ): List<AssistantCard.Stats.Metric> =
+        when (kind) {
+            AssistantCard.Stats.Kind.Revenue -> revenueMetrics()
+            AssistantCard.Stats.Kind.Orders -> emptyList()
+        }
+
+    private fun ShowCardDetails.AnalyticsStats.revenueMetrics(): List<AssistantCard.Stats.Metric> =
+        listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = totals.stringValue(TOTAL_SALES_KEYS),
+                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(TOTAL_SALES_KEYS) },
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = totals.stringValue(NET_SALES_KEYS),
+                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(NET_SALES_KEYS) },
+            ),
+        )
 
     private fun JsonObject.toChartPoint(valueKeys: List<String>): AssistantCard.Stats.ChartPoint? {
         val date = chartDate() ?: return null
@@ -104,6 +121,13 @@ internal object AssistantCardPayloadParser {
 
         return AssistantCard.Stats.ChartPoint(date = date, value = value)
     }
+
+    private fun String.toStatsKind(): AssistantCard.Stats.Kind? =
+        when (this) {
+            REVENUE_KIND -> AssistantCard.Stats.Kind.Revenue
+            ORDERS_KIND -> AssistantCard.Stats.Kind.Orders
+            else -> null
+        }
 
     private fun JsonObject.chartDate(): String? {
         val intervalDate = stringValue("interval")?.takeIf { it.isIsoLocalDate() }
@@ -136,6 +160,8 @@ internal object AssistantCardPayloadParser {
     private const val CUSTOMER_FAMILY = "customer"
     private const val ANALYTICS_STATS_FAMILY = "analytics_stats"
     private const val ISO_LOCAL_DATE_LENGTH = 10
+    private const val REVENUE_KIND = "revenue"
+    private const val ORDERS_KIND = "orders"
     private val TOTAL_SALES_KEYS = listOf("total_sales", "gross_sales")
     private val NET_SALES_KEYS = listOf("net_revenue")
     private val ISO_LOCAL_DATE_SHAPE = Regex("\\d{4}-\\d{2}-\\d{2}")

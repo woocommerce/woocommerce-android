@@ -116,8 +116,9 @@ class AssistantCardUiStructuredParserTest {
 
         assertThat(entries.single().key).isEqualTo(AssistantCardKey("analytics_stats", ANALYTICS_STATS_ID))
         val card = entries.single().card as AssistantCard.Stats
-        assertThat(card.totalSales).isEqualTo("170.35")
-        assertThat(card.netSalesChartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 120.15))
+        assertThat(card.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("170.35")
+        assertThat(card.metric(AssistantCard.Stats.MetricType.NetSales).chartPoints)
+            .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 120.15))
     }
 
     private fun analyticsStatsPayload() = ShowCardPayload(
@@ -143,6 +144,9 @@ class AssistantCardUiStructuredParserTest {
             ),
         ),
     )
+
+    private fun AssistantCard.Stats.metric(type: AssistantCard.Stats.MetricType): AssistantCard.Stats.Metric =
+        metrics.single { it.type == type }
 
     private companion object {
         private const val ANALYTICS_STATS_ID =

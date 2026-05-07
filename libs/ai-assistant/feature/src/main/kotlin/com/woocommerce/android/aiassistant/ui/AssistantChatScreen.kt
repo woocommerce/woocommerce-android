@@ -709,8 +709,8 @@ private fun AssistantStatsCardGroupNoTrendPreview() {
             AssistantCardGroupSegment(
                 cards = listOf(
                     sampleStatsCard(
-                        totalSalesChartPoints = emptyList(),
-                        netSalesChartPoints = emptyList(),
+                        totalSalesChartValues = emptyList(),
+                        netSalesChartValues = emptyList(),
                     )
                 ),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
@@ -1042,14 +1042,15 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         AiAssistantStatsCard(
             state = AiAssistantStatsCardState(
                 period = "${card.after} - ${card.before}",
-                totalSales = listOf(card.totalSales, card.currency)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" "),
-                netSales = listOf(card.netSales, card.currency)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" "),
-                totalSalesChartValues = card.totalSalesChartPoints.map { it.value },
-                netSalesChartValues = card.netSalesChartPoints.map { it.value },
+                metrics = card.metrics.map { metric ->
+                    AiAssistantStatsCardState.Metric(
+                        type = metric.type,
+                        value = listOf(metric.value, card.currency)
+                            .filter { it.isNotBlank() }
+                            .joinToString(" "),
+                        chartValues = metric.chartPoints.map { it.value },
+                    )
+                },
             ),
             onClick = {},
             modifier = modifier,
@@ -1078,17 +1079,26 @@ private fun sampleProductCard() = AssistantCard.Product(
 )
 
 private fun sampleStatsCard(
-    totalSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_SALES_CHART_POINTS,
-    netSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_NET_SALES_CHART_POINTS,
+    totalSalesChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_SALES_CHART_POINTS,
+    netSalesChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_NET_SALES_CHART_POINTS,
 ) = AssistantCard.Stats(
     id = "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD",
+    kind = AssistantCard.Stats.Kind.Revenue,
     after = "2026-05-01",
     before = "2026-05-07",
     currency = "USD",
-    totalSales = "170.35",
-    netSales = "120.15",
-    totalSalesChartPoints = totalSalesChartPoints,
-    netSalesChartPoints = netSalesChartPoints,
+    metrics = listOf(
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.TotalSales,
+            value = "170.35",
+            chartPoints = totalSalesChartValues,
+        ),
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.NetSales,
+            value = "120.15",
+            chartPoints = netSalesChartValues,
+        ),
+    ),
 )
 
 private val SAMPLE_TOTAL_SALES_CHART_POINTS = listOf(

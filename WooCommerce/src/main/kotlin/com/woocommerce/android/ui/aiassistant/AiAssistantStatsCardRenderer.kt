@@ -87,8 +87,11 @@ internal fun AssistantCard.Stats.toStatsCardState(
     locale: Locale = Locale.getDefault(),
 ): AiAssistantStatsCardState = AiAssistantStatsCardState(
     period = formatStatsPeriod(after, before, unavailableValue, locale),
-    totalSales = formatStatsMoney(totalSales, currency, currencyFormatter, unavailableValue),
-    netSales = formatStatsMoney(netSales, currency, currencyFormatter, unavailableValue),
-    totalSalesChartValues = totalSalesChartPoints.map { it.value },
-    netSalesChartValues = netSalesChartPoints.map { it.value },
+    metrics = metrics.map { metric ->
+        AiAssistantStatsCardState.Metric(
+            type = metric.type,
+            value = formatStatsMoney(metric.value, currency, currencyFormatter, unavailableValue),
+            chartValues = metric.chartPoints.map { it.value },
+        )
+    },
 )

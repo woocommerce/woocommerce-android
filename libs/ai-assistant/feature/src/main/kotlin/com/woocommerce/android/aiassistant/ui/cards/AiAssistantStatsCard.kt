@@ -28,8 +28,7 @@ fun AiAssistantStatsCard(
     modifier: Modifier = Modifier,
 ) {
     val contentDescription = stringResource(R.string.assistant_stats_card_open_content_description, state.period)
-    val showTotalSalesTrend = shouldShowStatsTrendChart(state.totalSalesChartValues)
-    val showNetSalesTrend = shouldShowStatsTrendChart(state.netSalesChartValues)
+    val metricsWithTrends = state.metrics.filter { shouldShowStatsTrendChart(it.chartValues) }
     Column(
         modifier = modifier
             .clickable(role = Role.Button, onClick = onClick)
@@ -48,33 +47,23 @@ fun AiAssistantStatsCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            StatsMetric(
-                label = stringResource(R.string.assistant_stats_card_total_sales_label),
-                value = state.totalSales,
-                modifier = Modifier.weight(1f),
-            )
-            StatsMetric(
-                label = stringResource(R.string.assistant_stats_card_net_sales_label),
-                value = state.netSales,
-                modifier = Modifier.weight(1f),
-            )
+            state.metrics.forEach { metric ->
+                StatsMetric(
+                    label = stringResource(metric.type.labelRes()),
+                    value = metric.value,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
-        if (showTotalSalesTrend || showNetSalesTrend) {
+        if (metricsWithTrends.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(32.dp),
             ) {
-                if (showTotalSalesTrend) {
+                metricsWithTrends.forEach { metric ->
                     StatsTrendColumn(
-                        label = stringResource(R.string.assistant_stats_card_total_sales_label),
-                        values = state.totalSalesChartValues,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-                if (showNetSalesTrend) {
-                    StatsTrendColumn(
-                        label = stringResource(R.string.assistant_stats_card_net_sales_label),
-                        values = state.netSalesChartValues,
+                        label = stringResource(metric.type.labelRes()),
+                        values = metric.chartValues,
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -82,6 +71,14 @@ fun AiAssistantStatsCard(
         }
     }
 }
+
+private fun AssistantCard.Stats.MetricType.labelRes(): Int =
+    when (this) {
+        AssistantCard.Stats.MetricType.TotalSales -> R.string.assistant_stats_card_total_sales_label
+        AssistantCard.Stats.MetricType.NetSales -> R.string.assistant_stats_card_net_sales_label
+        AssistantCard.Stats.MetricType.TotalOrders -> R.string.assistant_stats_card_total_orders_label
+        AssistantCard.Stats.MetricType.AverageOrderValue -> R.string.assistant_stats_card_average_order_value_label
+    }
 
 @Composable
 private fun StatsMetric(
@@ -221,10 +218,18 @@ private fun sampleStatsCardState(
     netSalesChartValues: List<Double> = SAMPLE_NET_SALES_CHART_VALUES,
 ) = AiAssistantStatsCardState(
     period = "May 1 - May 7, 2026",
-    totalSales = "$170.35",
-    netSales = "$120.15",
-    totalSalesChartValues = totalSalesChartValues,
-    netSalesChartValues = netSalesChartValues,
+    metrics = listOf(
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.TotalSales,
+            value = "$170.35",
+            chartValues = totalSalesChartValues,
+        ),
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.NetSales,
+            value = "$120.15",
+            chartValues = netSalesChartValues,
+        ),
+    ),
 )
 
 private val SAMPLE_TOTAL_SALES_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)

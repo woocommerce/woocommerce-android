@@ -67,13 +67,22 @@ class AssistantCardGroupKindTest {
 
     private fun statsCard() = AssistantCard.Stats(
         id = "analytics_revenue",
+        kind = AssistantCard.Stats.Kind.Revenue,
         after = "2026-05-01",
         before = "2026-05-07",
         currency = "USD",
-        totalSales = "170.35",
-        netSales = "120.15",
-        totalSalesChartPoints = emptyList(),
-        netSalesChartPoints = emptyList(),
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = emptyList(),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = emptyList(),
+            ),
+        ),
     )
 
     private fun customerCard() = AssistantCard.Customer(

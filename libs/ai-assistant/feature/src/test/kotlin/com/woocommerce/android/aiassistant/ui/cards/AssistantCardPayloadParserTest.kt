@@ -217,18 +217,27 @@ class AssistantCardPayloadParserTest {
         assertThat(cards).containsExactly(
             AssistantCard.Stats(
                 id = ANALYTICS_STATS_ID,
+                kind = AssistantCard.Stats.Kind.Revenue,
                 after = "2026-05-01",
                 before = "2026-05-07",
                 currency = "USD",
-                totalSales = "170.35",
-                netSales = "120.15",
-                totalSalesChartPoints = listOf(
-                    AssistantCard.Stats.ChartPoint("2026-05-01", 50.0),
-                    AssistantCard.Stats.ChartPoint("2026-05-02", 120.35),
-                ),
-                netSalesChartPoints = listOf(
-                    AssistantCard.Stats.ChartPoint("2026-05-01", 35.0),
-                    AssistantCard.Stats.ChartPoint("2026-05-02", 85.15),
+                metrics = listOf(
+                    AssistantCard.Stats.Metric(
+                        type = AssistantCard.Stats.MetricType.TotalSales,
+                        value = "170.35",
+                        chartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 50.0),
+                            AssistantCard.Stats.ChartPoint("2026-05-02", 120.35),
+                        ),
+                    ),
+                    AssistantCard.Stats.Metric(
+                        type = AssistantCard.Stats.MetricType.NetSales,
+                        value = "120.15",
+                        chartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 35.0),
+                            AssistantCard.Stats.ChartPoint("2026-05-02", 85.15),
+                        ),
+                    ),
                 ),
             )
         )
@@ -259,8 +268,9 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.totalSales).isEqualTo("190.00")
-        assertThat(statsCard.totalSalesChartPoints)
+        val totalSales = statsCard.metric(AssistantCard.Stats.MetricType.TotalSales)
+        assertThat(totalSales.value).isEqualTo("190.00")
+        assertThat(totalSales.chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 90.0))
     }
 
@@ -284,9 +294,9 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.totalSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-04", 75.0))
-        assertThat(statsCard.netSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-04", 60.0))
     }
 
@@ -307,9 +317,9 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.totalSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-02", 90.0))
-        assertThat(statsCard.netSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 70.0))
     }
 
@@ -381,6 +391,9 @@ class AssistantCardPayloadParserTest {
             else -> error("Unsupported test value $value")
         }
     }
+
+    private fun AssistantCard.Stats.metric(type: AssistantCard.Stats.MetricType): AssistantCard.Stats.Metric =
+        metrics.single { it.type == type }
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
