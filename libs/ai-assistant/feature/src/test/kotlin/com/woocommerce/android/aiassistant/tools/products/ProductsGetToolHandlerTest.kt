@@ -146,7 +146,14 @@ class ProductsGetToolHandlerTest {
 
     @Test
     fun `given unknown argument, when execute is called, then ValidationError is returned`() = runTest {
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 42); put("unexpected", true) }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 42)
+                    put("unexpected", true)
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
     }

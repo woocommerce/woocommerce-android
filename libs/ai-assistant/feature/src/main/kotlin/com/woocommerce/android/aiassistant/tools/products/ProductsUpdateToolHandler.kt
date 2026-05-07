@@ -48,6 +48,7 @@ internal class ProductsUpdateToolHandler @Inject constructor(
         safetyLevel = ToolSafetyLevel.UNSAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
         validateAllowedArguments(call.arguments, PRODUCTS_UPDATE_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
             return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")

@@ -8,8 +8,8 @@ import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject

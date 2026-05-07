@@ -7,8 +7,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -161,7 +161,9 @@ class OrdersListToolHandlerTest {
                 datePaid = "2026-05-01T10:30:00Z",
                 shippingTotal = "6.00",
                 discountTotal = "2.00",
-                lineItems = """[{"id":1,"name":"Socks","quantity":1,"sku":"SOCK","total":"12.00","product_id":7,"variation_id":0}]""",
+                lineItems = """
+                    [{"id":1,"name":"Socks","quantity":1,"sku":"SOCK","total":"12.00","product_id":7,"variation_id":0}]
+                """.trimIndent(),
             )
             whenever(dataSource.fetchOrders(search = null)).thenReturn(
                 Result.success(AIOrdersDataSource.OrdersPage(orders = listOf(order), canLoadMore = false))
@@ -187,20 +189,7 @@ class OrdersListToolHandlerTest {
 
             val row = (result as ToolResult.Success).structured.jsonObject
                 .getValue("orders").jsonArray.single().jsonObject
-            assertThat(row.getValue("payment_method_title").jsonPrimitive.content).isEqualTo("Credit Card")
-            assertThat(row.getValue("customer_email").jsonPrimitive.content).isEqualTo("jane@example.com")
-            assertThat(row.getValue("customer_note").jsonPrimitive.content).isEqualTo("Leave at the desk")
-            assertThat(row.getValue("date_paid").jsonPrimitive.content).isEqualTo("2026-05-01T10:30:00Z")
-            assertThat(row.getValue("shipping_total").jsonPrimitive.content).isEqualTo("6.00")
-            assertThat(row.getValue("discount_total").jsonPrimitive.content).isEqualTo("2.00")
-            assertThat(row.getValue("billing").jsonObject.getValue("phone").jsonPrimitive.content)
-                .isEqualTo("555-0100")
-            assertThat(row.getValue("shipping").jsonObject.getValue("city").jsonPrimitive.content)
-                .isEqualTo("Seattle")
-            assertThat(row.getValue("line_items_count").jsonPrimitive.int).isEqualTo(1)
-            assertThat(row.getValue("line_items_truncated").jsonPrimitive.boolean).isFalse
-            assertThat(row.getValue("line_items").jsonArray.single().jsonObject.getValue("sku").jsonPrimitive.content)
-                .isEqualTo("SOCK")
+            assertOrderListExtras(row)
         }
 
     @Test
@@ -307,4 +296,21 @@ class OrdersListToolHandlerTest {
             val error = result as ToolResult.ValidationError
             assertThat(error.toolCallId).isEqualTo("call-1")
         }
+
+    private fun assertOrderListExtras(row: JsonObject) {
+        assertThat(row.getValue("payment_method_title").jsonPrimitive.content).isEqualTo("Credit Card")
+        assertThat(row.getValue("customer_email").jsonPrimitive.content).isEqualTo("jane@example.com")
+        assertThat(row.getValue("customer_note").jsonPrimitive.content).isEqualTo("Leave at the desk")
+        assertThat(row.getValue("date_paid").jsonPrimitive.content).isEqualTo("2026-05-01T10:30:00Z")
+        assertThat(row.getValue("shipping_total").jsonPrimitive.content).isEqualTo("6.00")
+        assertThat(row.getValue("discount_total").jsonPrimitive.content).isEqualTo("2.00")
+        assertThat(row.getValue("billing").jsonObject.getValue("phone").jsonPrimitive.content)
+            .isEqualTo("555-0100")
+        assertThat(row.getValue("shipping").jsonObject.getValue("city").jsonPrimitive.content)
+            .isEqualTo("Seattle")
+        assertThat(row.getValue("line_items_count").jsonPrimitive.int).isEqualTo(1)
+        assertThat(row.getValue("line_items_truncated").jsonPrimitive.boolean).isFalse
+        assertThat(row.getValue("line_items").jsonArray.single().jsonObject.getValue("sku").jsonPrimitive.content)
+            .isEqualTo("SOCK")
+    }
 }

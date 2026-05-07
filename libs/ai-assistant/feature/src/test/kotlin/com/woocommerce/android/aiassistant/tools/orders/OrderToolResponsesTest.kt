@@ -48,7 +48,13 @@ class OrderToolResponsesTest {
             val lineItems = structured.getValue("line_items").jsonArray
             assertThat(lineItems).hasSize(10)
             assertThat(lineItems.first().jsonObject.keys).containsExactly(
-                "id", "name", "quantity", "sku", "total", "product_id", "variation_id"
+                "id",
+                "name",
+                "quantity",
+                "sku",
+                "total",
+                "product_id",
+                "variation_id"
             )
         }
 

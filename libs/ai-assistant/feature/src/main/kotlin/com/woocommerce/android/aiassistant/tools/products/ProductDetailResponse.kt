@@ -105,6 +105,7 @@ internal data class ProductListRowResponse(
     @SerialName("description_truncated") val descriptionTruncated: Boolean? = null,
 )
 
+@Suppress("LongMethod")
 internal fun WCProductModel.toProductDetailResponse(extraFields: Set<String> = emptySet()): ProductDetailResponse {
     val variationIds = getVariationIdList()
     val categoryList = getCategoryList()
@@ -134,7 +135,11 @@ internal fun WCProductModel.toProductDetailResponse(extraFields: Set<String> = e
         variationIds = variationIds.take(PRODUCT_VARIATION_IDS_LIMIT),
         variationIdsTruncated = variationIds.size > PRODUCT_VARIATION_IDS_LIMIT,
         description = if ("description" in extraFields) description.take(PRODUCT_TEXT_FIELD_LIMIT) else null,
-        descriptionTruncated = if ("description" in extraFields) description.length > PRODUCT_TEXT_FIELD_LIMIT else null,
+        descriptionTruncated = if ("description" in extraFields) {
+            description.length > PRODUCT_TEXT_FIELD_LIMIT
+        } else {
+            null
+        },
         shortDescription = if ("short_description" in extraFields) {
             shortDescription.take(PRODUCT_TEXT_FIELD_LIMIT)
         } else {
@@ -197,7 +202,11 @@ internal fun WCProductModel.toProductListRowResponse(extraFields: Set<String> = 
             null
         },
         description = if ("description" in extraFields) description.take(PRODUCT_TEXT_FIELD_LIMIT) else null,
-        descriptionTruncated = if ("description" in extraFields) description.length > PRODUCT_TEXT_FIELD_LIMIT else null,
+        descriptionTruncated = if ("description" in extraFields) {
+            description.length > PRODUCT_TEXT_FIELD_LIMIT
+        } else {
+            null
+        },
     )
 
 private fun WCProductModel.ProductTriplet.toCompactProductTerm() = CompactProductTerm(

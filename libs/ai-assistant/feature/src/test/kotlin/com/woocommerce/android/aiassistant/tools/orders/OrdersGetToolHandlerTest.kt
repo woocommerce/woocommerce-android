@@ -109,7 +109,14 @@ class OrdersGetToolHandlerTest {
 
     @Test
     fun `given unknown arg, when execute is called, then ValidationError is returned`() = runTest {
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("unexpected", "x") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("unexpected", "x")
+                }
+            )
+        )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         assertThat((result as ToolResult.ValidationError).reason).contains("Unsupported orders_get argument")
@@ -120,7 +127,9 @@ class OrdersGetToolHandlerTest {
         val order = makeOrder(
             couponLines = """[{"id":10,"code":"SAVE10","discount":"5.00","discount_tax":"0.50"}]""",
             feeLines = """[{"id":20,"name":"Rush","total":"7.00","total_tax":"0.70","tax_status":"taxable"}]""",
-            taxLines = """[{"id":30,"rate_id":40,"rate_code":"US-CA","label":"CA Tax","tax_total":"3.00","shipping_tax_total":"0.30"}]""",
+            taxLines = """
+                [{"id":30,"rate_id":40,"rate_code":"US-CA","label":"CA Tax","tax_total":"3.00","shipping_tax_total":"0.30"}]
+            """.trimIndent(),
         )
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(order))
 

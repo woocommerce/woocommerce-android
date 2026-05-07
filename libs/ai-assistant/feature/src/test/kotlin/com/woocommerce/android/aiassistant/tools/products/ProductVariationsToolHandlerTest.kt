@@ -174,8 +174,9 @@ class ProductVariationsToolHandlerTest {
         assertThat(requireNotNull(json["sku"]).jsonPrimitive.content).isEqualTo("SKU-10")
         assertThat(requireNotNull(json["regular_price"]).jsonPrimitive.content).isEqualTo("19.99")
         assertThat(requireNotNull(json["stock_status"]).jsonPrimitive.content).isEqualTo("instock")
-        assertThat(json.getValue("attributes").jsonArray.single().jsonObject.getValue("option").jsonPrimitive.content)
-            .isEqualTo("M")
+        val option = json.getValue("attributes").jsonArray.single()
+            .jsonObject.getValue("option").jsonPrimitive.content
+        assertThat(option).isEqualTo("M")
         verify(dataSource).getVariation(productId = 100L, variationId = 10L)
     }
 
@@ -202,7 +203,9 @@ class ProductVariationsToolHandlerTest {
                 .getValue("variations").jsonArray.single().jsonObject
             assertThat(row.getValue("id").jsonPrimitive.long).isEqualTo(10L)
             assertThat(row.getValue("product_id").jsonPrimitive.long).isEqualTo(100L)
-            assertThat(row.getValue("attributes").jsonArray.single().jsonObject.getValue("option").jsonPrimitive.content)
+            assertThat(
+                row.getValue("attributes").jsonArray.single().jsonObject.getValue("option").jsonPrimitive.content
+            )
                 .isEqualTo("M")
         }
 
@@ -226,7 +229,9 @@ class ProductVariationsToolHandlerTest {
                             dateModified = "2026-05-02T10:00:00Z",
                             menuOrder = 3,
                             backorders = "notify",
-                            image = """{"id":7,"src":"https://example.com/variation.jpg","alt":"Variation","name":"Front"}""",
+                            image = """
+                                {"id":7,"src":"https://example.com/variation.jpg","alt":"Variation","name":"Front"}
+                            """.trimIndent(),
                             attributes = """[{"name":"Size","option":"M"}]""",
                         )
                     )

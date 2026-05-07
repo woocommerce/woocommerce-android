@@ -9,9 +9,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -194,21 +194,7 @@ class OrdersBulkUpdateToolHandlerTest {
 
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         val structured = (result as ToolResult.Success).structured.jsonObject
-        assertThat(requireNotNull(structured["tool"]).jsonPrimitive.content).isEqualTo("orders_bulk_update")
-        assertThat(requireNotNull(structured["requested_count"]).jsonPrimitive.int).isEqualTo(2)
-        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.int).isEqualTo(1)
-        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.int).isEqualTo(1)
-        assertThat(requireNotNull(structured["partial_success"]).jsonPrimitive.boolean).isTrue
-        assertThat(requireNotNull(structured["patch_keys"]).jsonArray.map { it.jsonPrimitive.content })
-            .containsExactly("status", "customer_note", "billing_email")
-        assertThat(requireNotNull(structured["updated_ids"]).jsonArray.single().jsonPrimitive.long).isEqualTo(123L)
-        val failed = requireNotNull(structured["failed"]).jsonArray.single().jsonObject
-        assertThat(failed.keys).containsExactly("id", "code", "message", "status")
-        assertThat(requireNotNull(failed["id"]).jsonPrimitive.long).isEqualTo(456L)
-        assertThat(requireNotNull(failed["code"]).jsonPrimitive.content)
-            .isEqualTo("woocommerce_rest_shop_order_invalid_id")
-        assertThat(requireNotNull(failed["message"]).jsonPrimitive.content).isEqualTo("Invalid ID.")
-        assertThat(requireNotNull(failed["status"]).jsonPrimitive.content).isEqualTo("400")
+        assertBulkUpdateSummary(structured)
     }
 
     @Test
@@ -233,8 +219,13 @@ class OrdersBulkUpdateToolHandlerTest {
             val result = handler.execute(
                 toolCall(
                     buildJsonObject {
-                        putJsonArray("ids") { add(1); add(2) }
-                        putJsonObject("patch") { put("status", "completed") }
+                        putJsonArray("ids") {
+                            add(1)
+                            add(2)
+                        }
+                        putJsonObject("patch") {
+                            put("status", "completed")
+                        }
                     }
                 )
             )
@@ -270,5 +261,23 @@ class OrdersBulkUpdateToolHandlerTest {
 
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
         assertThat((result as ToolResult.TransportError).retryable).isTrue
+    }
+
+    private fun assertBulkUpdateSummary(structured: JsonObject) {
+        assertThat(requireNotNull(structured["tool"]).jsonPrimitive.content).isEqualTo("orders_bulk_update")
+        assertThat(requireNotNull(structured["requested_count"]).jsonPrimitive.int).isEqualTo(2)
+        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.int).isEqualTo(1)
+        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.int).isEqualTo(1)
+        assertThat(requireNotNull(structured["partial_success"]).jsonPrimitive.boolean).isTrue
+        assertThat(requireNotNull(structured["patch_keys"]).jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("status", "customer_note", "billing_email")
+        assertThat(requireNotNull(structured["updated_ids"]).jsonArray.single().jsonPrimitive.long).isEqualTo(123L)
+        val failed = requireNotNull(structured["failed"]).jsonArray.single().jsonObject
+        assertThat(failed.keys).containsExactly("id", "code", "message", "status")
+        assertThat(requireNotNull(failed["id"]).jsonPrimitive.long).isEqualTo(456L)
+        assertThat(requireNotNull(failed["code"]).jsonPrimitive.content)
+            .isEqualTo("woocommerce_rest_shop_order_invalid_id")
+        assertThat(requireNotNull(failed["message"]).jsonPrimitive.content).isEqualTo("Invalid ID.")
+        assertThat(requireNotNull(failed["status"]).jsonPrimitive.content).isEqualTo("400")
     }
 }

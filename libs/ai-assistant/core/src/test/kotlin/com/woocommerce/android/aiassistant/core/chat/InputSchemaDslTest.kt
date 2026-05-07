@@ -63,9 +63,14 @@ class InputSchemaDslTest {
         assertThat(extraFields.getValue("type").jsonPrimitive.content).isEqualTo("array")
         assertThat(extraFields.getValue("items").jsonObject.getValue("type").jsonPrimitive.content)
             .isEqualTo("string")
-        assertThat(extraFields.getValue("items").jsonObject.getValue("enum").jsonArray.map {
-            it.jsonPrimitive.content
-        }).containsExactly("billing", "line_items")
+        assertThat(
+            extraFields.getValue("items").jsonObject.getValue("enum").jsonArray.map {
+                it.jsonPrimitive.content
+            }
+        ).containsExactly(
+            "billing",
+            "line_items",
+        )
     }
 
     @Test

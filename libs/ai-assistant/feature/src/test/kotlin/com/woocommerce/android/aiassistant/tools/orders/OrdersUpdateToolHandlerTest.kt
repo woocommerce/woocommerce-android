@@ -94,12 +94,21 @@ class OrdersUpdateToolHandlerTest {
     fun `given update succeeds, when execute is called, then widened updated order detail is returned`() = runTest {
         val updated = makeOrder(
             status = "completed",
-            lineItems = """[{"id":1,"name":"Socks","quantity":1,"sku":"SOCK","total":"12.00","product_id":7,"variation_id":0}]""",
+            lineItems = """
+                [{"id":1,"name":"Socks","quantity":1,"sku":"SOCK","total":"12.00","product_id":7,"variation_id":0}]
+            """.trimIndent(),
         )
         whenever(dataSource.updateOrderStatus(123L, "completed")).thenReturn(Result.success(Unit))
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(updated))
 
-        val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "completed") }))
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "completed")
+                }
+            )
+        )
 
         val json = (result as ToolResult.Success).structured.jsonObject
         assertThat(json.keys).doesNotContain("order_id")
@@ -112,7 +121,13 @@ class OrdersUpdateToolHandlerTest {
     @Test
     fun `given unknown arg, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(
-            toolCall(buildJsonObject { put("id", 123); put("status", "completed"); put("extra_fields", "billing") })
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "completed")
+                    put("extra_fields", "billing")
+                }
+            )
         )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
@@ -124,7 +139,14 @@ class OrdersUpdateToolHandlerTest {
             whenever(dataSource.updateOrderStatus(123L, "completed")).thenReturn(Result.success(Unit))
             whenever(dataSource.getOrder(123L)).thenReturn(Result.failure(RuntimeException("fetch failed")))
 
-            val result = handler.execute(toolCall(buildJsonObject { put("id", 123); put("status", "completed") }))
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("id", 123)
+                        put("status", "completed")
+                    }
+                )
+            )
 
             val json = (result as ToolResult.Success).structured.jsonObject
             assertThat(json.getValue("order_id").jsonPrimitive.long).isEqualTo(123L)

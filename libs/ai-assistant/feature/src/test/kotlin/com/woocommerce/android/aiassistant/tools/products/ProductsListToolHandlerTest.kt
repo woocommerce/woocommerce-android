@@ -160,22 +160,7 @@ class ProductsListToolHandlerTest {
 
             val row = (result as ToolResult.Success).structured.jsonObject
                 .getValue("products").jsonArray.single().jsonObject
-            assertThat(row.getValue("regular_price").jsonPrimitive.content).isEqualTo("12.99")
-            assertThat(row.getValue("sale_price").jsonPrimitive.content).isEqualTo("9.99")
-            assertThat(row.getValue("on_sale").jsonPrimitive.boolean).isTrue
-            assertThat(row.getValue("stock_quantity").jsonPrimitive.double).isEqualTo(4.0)
-            assertThat(row.getValue("manage_stock").jsonPrimitive.boolean).isTrue
-            assertThat(row.getValue("categories").jsonArray.single().jsonObject.getValue("name").jsonPrimitive.content)
-                .isEqualTo("Clothing")
-            assertThat(row.getValue("tags").jsonArray.single().jsonObject.getValue("name").jsonPrimitive.content)
-                .isEqualTo("Featured")
-            assertThat(row.getValue("total_sales").jsonPrimitive.long).isEqualTo(20L)
-            assertThat(row.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
-            assertThat(row.getValue("date_modified").jsonPrimitive.content).isEqualTo("2026-05-02T10:00:00Z")
-            assertThat(row.getValue("image").jsonObject.getValue("src").jsonPrimitive.content)
-                .isEqualTo("https://example.com/socks.jpg")
-            assertThat(row.getValue("short_description").jsonPrimitive.content).isEqualTo("Short socks")
-            assertThat(row.getValue("description").jsonPrimitive.content).isEqualTo("Long socks")
+            assertProductListExtras(row)
         }
 
     @Test
@@ -231,4 +216,24 @@ class ProductsListToolHandlerTest {
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         }
+
+    private fun assertProductListExtras(row: JsonObject) {
+        val category = row.getValue("categories").jsonArray.single().jsonObject
+        val tag = row.getValue("tags").jsonArray.single().jsonObject
+        val image = row.getValue("image").jsonObject
+
+        assertThat(row.getValue("regular_price").jsonPrimitive.content).isEqualTo("12.99")
+        assertThat(row.getValue("sale_price").jsonPrimitive.content).isEqualTo("9.99")
+        assertThat(row.getValue("on_sale").jsonPrimitive.boolean).isTrue
+        assertThat(row.getValue("stock_quantity").jsonPrimitive.double).isEqualTo(4.0)
+        assertThat(row.getValue("manage_stock").jsonPrimitive.boolean).isTrue
+        assertThat(category.getValue("name").jsonPrimitive.content).isEqualTo("Clothing")
+        assertThat(tag.getValue("name").jsonPrimitive.content).isEqualTo("Featured")
+        assertThat(row.getValue("total_sales").jsonPrimitive.long).isEqualTo(20L)
+        assertThat(row.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(row.getValue("date_modified").jsonPrimitive.content).isEqualTo("2026-05-02T10:00:00Z")
+        assertThat(image.getValue("src").jsonPrimitive.content).isEqualTo("https://example.com/socks.jpg")
+        assertThat(row.getValue("short_description").jsonPrimitive.content).isEqualTo("Short socks")
+        assertThat(row.getValue("description").jsonPrimitive.content).isEqualTo("Long socks")
+    }
 }

@@ -167,7 +167,13 @@ class ProductVariationsUpdateToolHandlerTest {
             ).thenReturn(Result.success(variation))
 
             val result = handler.execute(
-                toolCall(buildJsonObject { put("product_id", 100); put("id", 10); put("sku", "SKU-M") })
+                toolCall(
+                    buildJsonObject {
+                        put("product_id", 100)
+                        put("id", 10)
+                        put("sku", "SKU-M")
+                    }
+                )
             )
 
             val json = (result as ToolResult.Success).structured.jsonObject

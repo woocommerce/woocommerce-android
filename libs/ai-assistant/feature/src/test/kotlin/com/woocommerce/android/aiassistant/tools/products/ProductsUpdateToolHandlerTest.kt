@@ -171,10 +171,19 @@ class ProductsUpdateToolHandlerTest {
                 totalSales = 7L,
                 categories = """[{"id":1,"name":"Clothing","slug":"clothing"}]""",
             )
-            whenever(dataSource.updateProduct(productId = 42L, update = AIProductsDataSource.ProductUpdate(name = "Socks")))
+            whenever(
+                dataSource.updateProduct(productId = 42L, update = AIProductsDataSource.ProductUpdate(name = "Socks"))
+            )
                 .thenReturn(Result.success(product))
 
-            val result = handler.execute(toolCall(buildJsonObject { put("id", 42); put("name", "Socks") }))
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("id", 42)
+                        put("name", "Socks")
+                    }
+                )
+            )
 
             val json = (result as ToolResult.Success).structured.jsonObject
             assertThat(json.getValue("id").jsonPrimitive.long).isEqualTo(42L)
@@ -187,7 +196,13 @@ class ProductsUpdateToolHandlerTest {
     @Test
     fun `given unknown argument, when product update executes, then ValidationError is returned`() = runTest {
         val result = handler.execute(
-            toolCall(buildJsonObject { put("id", 42); put("name", "Socks"); put("unexpected", true) })
+            toolCall(
+                buildJsonObject {
+                    put("id", 42)
+                    put("name", "Socks")
+                    put("unexpected", true)
+                }
+            )
         )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
