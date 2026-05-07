@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -60,7 +62,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorContext = status.type::class.java.simpleName,
                     errorType = ErrorReason.Scanner.name,
                 )
-                _uiState.value = Error(reason = ErrorReason.Scanner, retryTicket = null)
+                _uiState.value = makeErrorState(ErrorReason.Scanner, ticket = null)
             }
             CodeScannerStatus.NotFound -> Unit
         }
@@ -98,7 +100,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorContext = null,
                     errorType = ErrorReason.InstallQrCode.name,
                 )
-                _uiState.value = Error(reason = ErrorReason.InstallQrCode, retryTicket = null)
+                _uiState.value = makeErrorState(ErrorReason.InstallQrCode, ticket = null)
             }
             QrLoginPayload.Invalid -> {
                 trackScanFailure(
@@ -106,7 +108,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     errorContext = null,
                     errorType = ErrorReason.InvalidPayload.name,
                 )
-                _uiState.value = Error(reason = ErrorReason.InvalidPayload, retryTicket = null)
+                _uiState.value = makeErrorState(ErrorReason.InvalidPayload, ticket = null)
             }
         }
     }
@@ -129,10 +131,7 @@ class QrLoginScannerViewModel @Inject constructor(
                         errorType = reason.name,
                         extras = httpCode?.let { mapOf(AnalyticsTracker.KEY_ERROR_CODE to it) }.orEmpty()
                     )
-                    _uiState.value = Error(
-                        reason = reason,
-                        retryTicket = ticket.takeIf { reason.isRetryEligible() }
-                    )
+                    _uiState.value = makeErrorState(reason, ticket)
                 }
             )
         }
@@ -155,7 +154,7 @@ class QrLoginScannerViewModel @Inject constructor(
      * via the standard "Scan a new code" action.
      */
     fun onRetryExchange() {
-        val ticket = (_uiState.value as? Error)?.retryTicket ?: return
+        val ticket = ((_uiState.value as? Error)?.primaryAction as? PrimaryAction.Retry)?.ticket ?: return
         startExchange(ticket)
     }
 
@@ -196,11 +195,77 @@ class QrLoginScannerViewModel @Inject constructor(
         )
     }
 
-    private fun ErrorReason.isRetryEligible(): Boolean = when (this) {
+    /**
+     * Builds the [Error] state for [reason], picking a [PrimaryAction] that matches what the
+     * button can actually do. Retry-with-the-same-ticket is only offered for transient failures
+     * (network / server / rate-limited) when we still hold the ticket; everything else routes to
+     * the scanner. The label travels with the action so the button copy can never disagree with
+     * its behavior.
+     */
+    private fun makeErrorState(reason: ErrorReason, ticket: QrLoginPayload.Ticket?): Error {
+        val (title, body) = reason.toTitleAndBody()
+        return Error(
+            reason = reason,
+            title = title,
+            body = body,
+            bodyArgs = reason.toBodyArgs(),
+            primaryAction = reason.toPrimaryAction(ticket),
+        )
+    }
+
+    private fun ErrorReason.toTitleAndBody(): Pair<Int, Int> = when (this) {
+        ErrorReason.InvalidPayload ->
+            R.string.login_qr_scanner_error_payload_title to R.string.login_qr_scanner_error_payload_body
+        ErrorReason.InstallQrCode ->
+            R.string.login_qr_scanner_error_install_qr_title to R.string.login_qr_scanner_error_install_qr_body
+        ErrorReason.Scanner ->
+            R.string.login_qr_scanner_error_generic_title to R.string.login_qr_scanner_error_generic_body
+        ErrorReason.TokenRejected ->
+            R.string.login_qr_scanner_error_token_title to R.string.login_qr_scanner_error_token_body
+        ErrorReason.EndpointMissing ->
+            R.string.login_qr_endpoint_missing_title to R.string.login_qr_endpoint_missing_body
+        ErrorReason.RateLimited ->
+            R.string.login_qr_scanner_error_rate_limited_title to R.string.login_qr_scanner_error_rate_limited_body
+        ErrorReason.Network ->
+            R.string.login_qr_scanner_error_network_title to R.string.login_qr_scanner_error_network_body
+        ErrorReason.ServerError ->
+            R.string.login_qr_scanner_error_server_title to R.string.login_qr_scanner_error_server_body
+        ErrorReason.SiteAuthFailure ->
+            R.string.login_qr_scanner_error_site_auth_title to R.string.login_qr_scanner_error_site_auth_body
+        ErrorReason.NotAWooSite ->
+            R.string.login_qr_scanner_error_not_woo_title to R.string.login_qr_scanner_error_not_woo_body
+        ErrorReason.UserNotEligible ->
+            R.string.login_qr_scanner_error_user_role_title to R.string.login_qr_scanner_error_user_role_body
+        ErrorReason.Unknown ->
+            R.string.login_qr_scanner_error_generic_title to R.string.login_qr_scanner_error_generic_body
+    }
+
+    /**
+     * String-resource args substituted into the body via `%1$s`, `%2$s`, … placeholders. Strings
+     * declare their own `<b>…</b>` markup around the placeholders so translators can't break it.
+     */
+    private fun ErrorReason.toBodyArgs(): List<Int> = when (this) {
+        ErrorReason.InstallQrCode -> listOf(
+            R.string.login_qr_scanner_error_install_qr_body_button,
+            R.string.login_qr_prologue_url,
+        )
+        else -> emptyList()
+    }
+
+    private fun ErrorReason.toPrimaryAction(ticket: QrLoginPayload.Ticket?): PrimaryAction = when (this) {
+        ErrorReason.RateLimited,
         ErrorReason.Network,
-        ErrorReason.ServerError,
-        ErrorReason.RateLimited -> true
-        else -> false
+        ErrorReason.ServerError -> ticket?.let(PrimaryAction::Retry)
+            ?: PrimaryAction.ScanAgain(R.string.login_qr_error_primary_retry)
+        ErrorReason.Scanner -> PrimaryAction.ScanAgain(R.string.login_qr_error_primary_retry)
+        ErrorReason.EndpointMissing -> PrimaryAction.ScanAgain(R.string.login_qr_endpoint_missing_retry)
+        ErrorReason.InvalidPayload,
+        ErrorReason.InstallQrCode,
+        ErrorReason.TokenRejected,
+        ErrorReason.SiteAuthFailure,
+        ErrorReason.NotAWooSite,
+        ErrorReason.UserNotEligible,
+        ErrorReason.Unknown -> PrimaryAction.ScanAgain(R.string.login_qr_error_primary_scan)
     }
 
     private fun Throwable.toReason(): ErrorReason = when (this) {
@@ -248,7 +313,25 @@ class QrLoginScannerViewModel @Inject constructor(
         data object Idle : UiState
         data class Confirming(val ticket: QrLoginPayload.Ticket, val host: String) : UiState
         data object Authenticating : UiState
-        data class Error(val reason: ErrorReason, val retryTicket: QrLoginPayload.Ticket?) : UiState
+        data class Error(
+            val reason: ErrorReason,
+            @StringRes val title: Int,
+            @StringRes val body: Int,
+            val bodyArgs: List<Int> = emptyList(),
+            val primaryAction: PrimaryAction,
+        ) : UiState
+    }
+
+    sealed interface PrimaryAction {
+        @get:StringRes val label: Int
+
+        /** Re-runs the exchange with the same ticket — only safe for transient failures. */
+        data class Retry(val ticket: QrLoginPayload.Ticket) : PrimaryAction {
+            override val label: Int = R.string.login_qr_error_primary_retry
+        }
+
+        /** Sends the user back to the scanner to capture a fresh code. */
+        data class ScanAgain(@StringRes override val label: Int) : PrimaryAction
     }
 
     enum class ErrorReason {
