@@ -6,7 +6,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.int
@@ -18,6 +20,7 @@ import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -55,6 +58,26 @@ class ProductsListToolHandlerTest {
 
     private fun toolCall(arguments: JsonObject): ToolCall =
         ToolCall(id = "call-1", name = "products_list", arguments = arguments)
+
+    @Test
+    fun `given descriptor, when inspected, then supported parity query args are exposed`() {
+        val properties = handler.descriptor.inputSchema.getValue("properties").jsonObject
+
+        assertThat(properties.keys).contains(
+            "category",
+            "sku",
+            "include",
+            "stock_status",
+            "orderby",
+            "order",
+        )
+        assertThat(properties.keys).doesNotContain("tag")
+        val orderbyValues = properties.getValue("orderby").jsonObject
+            .getValue("enum").jsonArray
+            .map { it.jsonPrimitive.content }
+        assertThat(orderbyValues)
+            .containsExactly("date", "title", "popularity")
+    }
 
     @Test
     fun `given products are returned, when execute is called, then structured JSON contains count and ids`() =
@@ -194,6 +217,157 @@ class ProductsListToolHandlerTest {
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         }
+
+    @Test
+    fun `given category stock and sorting args, when execute is called, then args are passed to data source`() =
+        runTest {
+            whenever(
+                dataSource.fetchProducts(
+                    search = null,
+                    status = null,
+                    page = 1,
+                    perPage = 20,
+                    category = 7,
+                    sku = null,
+                    include = null,
+                    stockStatus = "instock",
+                    orderby = "date",
+                    order = "desc",
+                )
+            ).thenReturn(Result.success(AIProductsDataSource.ProductsPage(products = emptyList(), canLoadMore = false)))
+
+            handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("category", 7)
+                        put("stock_status", "instock")
+                        put("orderby", "date")
+                        put("order", "desc")
+                    }
+                )
+            )
+
+            verify(dataSource).fetchProducts(
+                search = null,
+                status = null,
+                page = 1,
+                perPage = 20,
+                category = 7,
+                sku = null,
+                include = null,
+                stockStatus = "instock",
+                orderby = "date",
+                order = "desc",
+            )
+        }
+
+    @Test
+    fun `given sku arg, when execute is called, then sku is passed to data source`() = runTest {
+        whenever(
+            dataSource.fetchProducts(
+                search = null,
+                status = null,
+                page = 1,
+                perPage = 20,
+                category = null,
+                sku = "SKU-1",
+                include = null,
+                stockStatus = null,
+                orderby = null,
+                order = null,
+            )
+        ).thenReturn(Result.success(AIProductsDataSource.ProductsPage(products = emptyList(), canLoadMore = false)))
+
+        handler.execute(toolCall(buildJsonObject { put("sku", "SKU-1") }))
+
+        verify(dataSource).fetchProducts(
+            search = null,
+            status = null,
+            page = 1,
+            perPage = 20,
+            category = null,
+            sku = "SKU-1",
+            include = null,
+            stockStatus = null,
+            orderby = null,
+            order = null,
+        )
+    }
+
+    @Test
+    fun `given include arg, when execute is called, then include is passed to data source`() = runTest {
+        whenever(
+            dataSource.fetchProducts(
+                search = null,
+                status = null,
+                page = 1,
+                perPage = 20,
+                category = null,
+                sku = null,
+                include = listOf(10L, 11L),
+                stockStatus = null,
+                orderby = null,
+                order = null,
+            )
+        ).thenReturn(Result.success(AIProductsDataSource.ProductsPage(products = emptyList(), canLoadMore = false)))
+
+        handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put(
+                        "include",
+                        buildJsonArray {
+                            add(10)
+                            add(11)
+                        }
+                    )
+                }
+            )
+        )
+
+        verify(dataSource).fetchProducts(
+            search = null,
+            status = null,
+            page = 1,
+            perPage = 20,
+            category = null,
+            sku = null,
+            include = listOf(10L, 11L),
+            stockStatus = null,
+            orderby = null,
+            order = null,
+        )
+    }
+
+    @Test
+    fun `given tag arg, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(toolCall(buildJsonObject { put("tag", 3) }))
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
+    fun `given unsupported orderby arg, when execute is called, then ValidationError is returned`() = runTest {
+        listOf("id", "price", "rating").forEach { orderby ->
+            val result = handler.execute(toolCall(buildJsonObject { put("orderby", orderby) }))
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        }
+    }
+
+    @Test
+    fun `given include with sku, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("sku", "SKU-1")
+                    put("include", buildJsonArray { add(10) })
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
 
     private fun assertProductListExtras(row: JsonObject) {
         val category = row.getValue("categories").jsonArray.single().jsonObject

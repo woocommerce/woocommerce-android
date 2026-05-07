@@ -41,6 +41,17 @@ class OrdersUpdateToolHandlerTest {
         ToolCall(id = "call-1", name = "orders_update", arguments = arguments)
 
     @Test
+    fun `given descriptor, when inspected, then note and email are optional editable fields`() {
+        val properties = handler.descriptor.inputSchema.getValue("properties").jsonObject
+
+        assertThat(properties.keys).contains("id", "status", "customer_note", "billing_email")
+        assertThat(handler.descriptor.inputSchema.getValue("required").jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("id")
+        assertThat(properties.getValue("status").jsonObject.getValue("enum").jsonArray.map { it.jsonPrimitive.content })
+            .doesNotContain("refunded")
+    }
+
+    @Test
     fun `given missing id, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(toolCall(buildJsonObject { put("status", "processing") }))
 
@@ -48,7 +59,7 @@ class OrdersUpdateToolHandlerTest {
     }
 
     @Test
-    fun `given missing status, when execute is called, then ValidationError is returned`() = runTest {
+    fun `given no editable fields, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(toolCall(buildJsonObject { put("id", 123) }))
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
@@ -69,9 +80,24 @@ class OrdersUpdateToolHandlerTest {
     }
 
     @Test
-    fun `given valid status, when execute is called, then updateOrderStatus is called and success is returned`() =
+    fun `given refunded status, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("status", "refunded")
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
+    fun `given valid status, when execute is called, then updateOrder is called and success is returned`() =
         runTest {
-            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(Result.success(Unit))
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "processing")))
+                .thenReturn(Result.success(Unit))
             whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder(status = "processing")))
 
             val result = handler.execute(
@@ -87,7 +113,47 @@ class OrdersUpdateToolHandlerTest {
             val json = (result as ToolResult.Success).structured.jsonObject
             assertThat(requireNotNull(json["id"]).jsonPrimitive.long).isEqualTo(123L)
             assertThat(requireNotNull(json["status"]).jsonPrimitive.content).isEqualTo("processing")
-            verify(dataSource).updateOrderStatus(123L, "processing")
+            verify(dataSource).updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "processing"))
+        }
+
+    @Test
+    fun `given customer note only, when execute is called, then updateOrder is called with note patch`() =
+        runTest {
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(customerNote = "Leave at side door")))
+                .thenReturn(Result.success(Unit))
+            whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder()))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("id", 123)
+                        put("customer_note", "Leave at side door")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            verify(dataSource).updateOrder(123L, AIOrdersDataSource.OrderPatch(customerNote = "Leave at side door"))
+        }
+
+    @Test
+    fun `given billing email only, when execute is called, then updateOrder is called with billing email patch`() =
+        runTest {
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(billingEmail = "customer@example.com")))
+                .thenReturn(Result.success(Unit))
+            whenever(dataSource.getOrder(123L)).thenReturn(Result.success(makeOrder()))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("id", 123)
+                        put("billing_email", "customer@example.com")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            verify(dataSource).updateOrder(123L, AIOrdersDataSource.OrderPatch(billingEmail = "customer@example.com"))
         }
 
     @Test
@@ -98,7 +164,8 @@ class OrdersUpdateToolHandlerTest {
                 [{"id":1,"name":"Socks","quantity":1,"sku":"SOCK","total":"12.00","product_id":7,"variation_id":0}]
             """.trimIndent(),
         )
-        whenever(dataSource.updateOrderStatus(123L, "completed")).thenReturn(Result.success(Unit))
+        whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "completed")))
+            .thenReturn(Result.success(Unit))
         whenever(dataSource.getOrder(123L)).thenReturn(Result.success(updated))
 
         val result = handler.execute(
@@ -136,7 +203,8 @@ class OrdersUpdateToolHandlerTest {
     @Test
     fun `given update succeeds but follow-up fetch fails, when execute is called, then success fallback is returned`() =
         runTest {
-            whenever(dataSource.updateOrderStatus(123L, "completed")).thenReturn(Result.success(Unit))
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "completed")))
+                .thenReturn(Result.success(Unit))
             whenever(dataSource.getOrder(123L)).thenReturn(Result.failure(RuntimeException("fetch failed")))
 
             val result = handler.execute(
@@ -153,13 +221,13 @@ class OrdersUpdateToolHandlerTest {
             assertThat(json.getValue("status").jsonPrimitive.content).isEqualTo("completed")
             assertThat(json.getValue("response_partial").jsonPrimitive.boolean).isTrue
             assertThat(json.getValue("warning").jsonPrimitive.content)
-                .isEqualTo("Order status updated, but updated order details could not be fetched.")
+                .isEqualTo("Order updated, but updated order details could not be fetched.")
         }
 
     @Test
     fun `given invalid order id failure, when execute is called, then invalid id TransportError is returned`() =
         runTest {
-            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "processing"))).thenReturn(
                 Result.failure(orderFailure(WCOrderStore.OrderErrorType.INVALID_ID))
             )
 
@@ -171,7 +239,7 @@ class OrdersUpdateToolHandlerTest {
     @Test
     fun `given local missing order failure, when execute is called, then not found TransportError is returned`() =
         runTest {
-            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "processing"))).thenReturn(
                 Result.failure(
                     OnChangedException(WCOrderStore.OrderError(message = "Order with id 123 not found"))
                 )
@@ -185,7 +253,7 @@ class OrdersUpdateToolHandlerTest {
     @Test
     fun `given validation order failure, when execute is called, then validation TransportError is returned`() =
         runTest {
-            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "processing"))).thenReturn(
                 Result.failure(orderFailure(WCOrderStore.OrderErrorType.ORDER_STATUS_NOT_FOUND))
             )
 
@@ -197,7 +265,7 @@ class OrdersUpdateToolHandlerTest {
     @Test
     fun `given generic update failure, when execute is called, then outcome unknown TransportError is returned`() =
         runTest {
-            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+            whenever(dataSource.updateOrder(123L, AIOrdersDataSource.OrderPatch(status = "processing"))).thenReturn(
                 Result.failure(RuntimeException("network error"))
             )
 

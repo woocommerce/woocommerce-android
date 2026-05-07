@@ -35,7 +35,13 @@ class WooCommerceConfirmationSnapshotResolverTest {
 
     @Test
     fun `given order update, when resolving snapshot, then current order fields are returned`() = runTest {
-        val order = OrderEntity(localSiteId = LocalId(1), orderId = 42L, status = "wc-pending")
+        val order = OrderEntity(
+            localSiteId = LocalId(1),
+            orderId = 42L,
+            status = "wc-pending",
+            customerNote = "Existing note",
+            billingEmail = "buyer@example.com",
+        )
         val request = confirmationRequest(
             toolName = "orders_update",
             arguments = buildJsonObject {
@@ -54,7 +60,13 @@ class WooCommerceConfirmationSnapshotResolverTest {
 
         val snapshot = resolver.resolve(request)
 
-        assertThat(requireNotNull(snapshot).currentValues).isEqualTo(mapOf("status" to "pending"))
+        assertThat(requireNotNull(snapshot).currentValues).isEqualTo(
+            mapOf(
+                "status" to "pending",
+                "customer_note" to "Existing note",
+                "billing_email" to "buyer@example.com",
+            )
+        )
     }
 
     @Test

@@ -67,7 +67,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
-    fun `given single order update has unsupported fields, when preview is built, then they are ignored`() {
+    fun `given single order update has note and email, when preview is built, then fields are included`() {
         val call = toolCall(
             name = "orders_update",
             arguments = buildJsonObject {
@@ -91,6 +91,16 @@ class WooCommerceConfirmationPreviewBuilderTest {
                 name = "status",
                 value = raw("pending"),
                 label = label(R.string.ai_assistant_confirmation_field_status),
+            ),
+            ConfirmationPreviewField(
+                name = "customer_note",
+                value = string(R.string.ai_assistant_confirmation_field_value_updated),
+                label = label(R.string.ai_assistant_confirmation_field_customer_note),
+            ),
+            ConfirmationPreviewField(
+                name = "billing_email",
+                value = raw("buyer@example.com"),
+                label = label(R.string.ai_assistant_confirmation_field_billing_email),
             ),
         )
     }

@@ -126,6 +126,20 @@ class OrdersBulkUpdateToolHandlerTest {
     }
 
     @Test
+    fun `given refunded status, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("ids", buildJsonArray { add(123) })
+                    put("patch", buildJsonObject { put("status", "refunded") })
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
     fun `given unknown patch argument, when bulk order update executes, then ValidationError is returned`() = runTest {
         val result = handler.execute(
             toolCall(

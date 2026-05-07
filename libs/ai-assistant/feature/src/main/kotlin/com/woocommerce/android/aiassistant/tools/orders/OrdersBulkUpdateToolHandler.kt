@@ -28,7 +28,7 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
     override val descriptor = ToolDescriptor(
         name = TOOL_NAME,
         description = "Update multiple orders with the same patch. Accepts status, customer_note, and " +
-            "billing_email. Status changes such as completed/cancelled/refunded can trigger customer emails. " +
+            "billing_email. Status changes such as completed/cancelled can trigger customer emails. " +
             "Bulk writes require confirmation. Do NOT use this to issue refunds.",
         inputSchema = buildJsonObject {
             put("type", "object")
@@ -158,7 +158,6 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
             "on-hold",
             "completed",
             "cancelled",
-            "refunded",
             "failed",
         )
     }

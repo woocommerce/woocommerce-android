@@ -34,6 +34,24 @@ internal class ProductsListToolHandler @Inject constructor(
                 values = listOf("any", "draft", "pending", "private", "publish"),
                 description = "Publication status; default 'any'.",
             )
+            integer("category", description = "Category ID filter.")
+            string("sku", description = "Exact SKU lookup.")
+            array("include", itemType = "integer", description = "Product IDs to include.")
+            enum(
+                "stock_status",
+                values = PRODUCT_STOCK_STATUSES.toList(),
+                description = "Stock status filter.",
+            )
+            enum(
+                "orderby",
+                values = PRODUCT_ORDER_BY_VALUES.toList(),
+                description = "Sort field. Supported values: date, title, popularity.",
+            )
+            enum(
+                "order",
+                values = PRODUCT_SORT_ORDERS.toList(),
+                description = "Sort direction.",
+            )
             integer("page", description = "1-based page number; default 1.")
             integer("per_page", description = "Max items; clamped 1-50, default 20.")
         },
@@ -47,11 +65,20 @@ internal class ProductsListToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
+        args.validate()?.let { message ->
+            return ToolResult.ValidationError(call.id, message)
+        }
         return dataSource.fetchProducts(
             search = args.search,
             status = args.status,
             page = args.page,
             perPage = args.perPage,
+            category = args.category,
+            sku = args.sku,
+            include = args.include,
+            stockStatus = args.stockStatus,
+            orderby = args.orderby,
+            order = args.order,
         ).fold(
             onSuccess = { page ->
                 val products = page.products
@@ -72,9 +99,37 @@ internal class ProductsListToolHandler @Inject constructor(
     private data class Args(
         val search: String? = null,
         val status: String? = null,
+        val category: Int? = null,
+        val sku: String? = null,
+        val include: List<Long>? = null,
+        @SerialName("stock_status") val stockStatus: String? = null,
+        val orderby: String? = null,
+        val order: String? = null,
         val page: Int = 1,
         @SerialName("per_page") val perPage: Int = 20,
-    )
+    ) {
+        fun validate(): String? = listOfNotNull(
+            invalidEnumMessage(status, PRODUCT_STATUSES, "status"),
+            invalidEnumMessage(stockStatus, PRODUCT_STOCK_STATUSES, "stock_status"),
+            invalidEnumMessage(orderby, PRODUCT_ORDER_BY_VALUES, "orderby"),
+            invalidEnumMessage(order, PRODUCT_SORT_ORDERS, "order"),
+            "include must contain at least one product ID.".takeIf { include != null && include.isEmpty() },
+            "include cannot be combined with search, sku, orderby, or order.".takeIf { hasAmbiguousInclude() },
+            "orderby and order cannot be combined with search or sku.".takeIf { hasSearchSortCombination() },
+        ).firstOrNull()
+
+        private fun hasAmbiguousInclude(): Boolean =
+            !include.isNullOrEmpty() && (hasSearchQuery() || hasSkuQuery() || hasSort())
+
+        private fun hasSearchSortCombination(): Boolean =
+            (hasSearchQuery() || hasSkuQuery()) && hasSort()
+
+        private fun hasSearchQuery(): Boolean = !search.isNullOrBlank()
+
+        private fun hasSkuQuery(): Boolean = !sku.isNullOrBlank()
+
+        private fun hasSort(): Boolean = orderby != null || order != null
+    }
 
     @Serializable
     private data class ProductListResponse(
@@ -85,4 +140,23 @@ internal class ProductsListToolHandler @Inject constructor(
     )
 }
 
-private val PRODUCTS_LIST_ALLOWED_ARGS = setOf("search", "status", "page", "per_page")
+private val PRODUCTS_LIST_ALLOWED_ARGS = setOf(
+    "search",
+    "status",
+    "category",
+    "sku",
+    "include",
+    "stock_status",
+    "orderby",
+    "order",
+    "page",
+    "per_page",
+)
+
+private val PRODUCT_STATUSES = setOf("any", "draft", "pending", "private", "publish")
+private val PRODUCT_STOCK_STATUSES = setOf("instock", "outofstock", "onbackorder")
+private val PRODUCT_ORDER_BY_VALUES = setOf("date", "title", "popularity")
+private val PRODUCT_SORT_ORDERS = setOf("asc", "desc")
+
+private fun invalidEnumMessage(value: String?, allowed: Set<String>, name: String): String? =
+    value?.takeUnless { it in allowed }?.let { "'$it' is not an allowed $name." }

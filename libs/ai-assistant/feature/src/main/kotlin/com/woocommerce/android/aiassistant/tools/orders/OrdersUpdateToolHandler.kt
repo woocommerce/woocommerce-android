@@ -26,21 +26,23 @@ internal class OrdersUpdateToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "orders_update",
-        description = "Update an order's status. Status changes such as completed/cancelled/refunded fire " +
-            "customer emails — the merchant confirms before this dispatches. Do NOT use this to issue a " +
-            "refund — moving an order to 'refunded' only changes the status, it does not return funds.",
+        description = "Update an order's status, customer_note, or billing_email. Status changes such as " +
+            "completed/cancelled fire customer emails — the merchant confirms before this dispatches. " +
+            "Do NOT use this to issue refunds.",
         inputSchema = inputSchema {
             integer("id", description = "The order ID. Required.", required = true)
             enum(
                 "status",
-                values = listOf("pending", "processing", "on-hold", "completed", "cancelled", "refunded", "failed"),
-                description = "New order status.",
-                required = true,
+                values = ALLOWED_STATUSES.toList(),
+                description = "New order status. Refunds are not allowed through chat tools.",
             )
+            string("customer_note", description = "Customer note to save on the order.")
+            string("billing_email", description = "Billing email to save on the order.")
         },
         safetyLevel = ToolSafetyLevel.UNSAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
         validateAllowedArguments(call.arguments, ORDERS_UPDATE_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
             return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
@@ -48,10 +50,13 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
-        if (args.status !in ALLOWED_STATUSES) {
+        if (!args.hasUpdates()) {
+            return ToolResult.ValidationError(call.id, "At least one order field must be provided.")
+        }
+        if (args.status != null && args.status !in ALLOWED_STATUSES) {
             return ToolResult.ValidationError(call.id, "'${args.status}' is not an allowed status.")
         }
-        return dataSource.updateOrderStatus(args.id, args.status).fold(
+        return dataSource.updateOrder(args.id, args.toPatch()).fold(
             onSuccess = {
                 dataSource.getOrder(args.id).fold(
                     onSuccess = { order ->
@@ -68,7 +73,7 @@ internal class OrdersUpdateToolHandler @Inject constructor(
                                     orderId = args.id,
                                     status = args.status,
                                     responsePartial = true,
-                                    warning = "Order status updated, but updated order details could not be fetched.",
+                                    warning = "Order updated, but updated order details could not be fetched.",
                                 )
                             ) as JsonObject,
                         )
@@ -86,12 +91,25 @@ internal class OrdersUpdateToolHandler @Inject constructor(
     }
 
     @Serializable
-    private data class Args(val id: Long, val status: String)
+    private data class Args(
+        val id: Long,
+        val status: String? = null,
+        @SerialName("customer_note") val customerNote: String? = null,
+        @SerialName("billing_email") val billingEmail: String? = null,
+    ) {
+        fun hasUpdates(): Boolean = status != null || customerNote != null || billingEmail != null
+
+        fun toPatch(): AIOrdersDataSource.OrderPatch = AIOrdersDataSource.OrderPatch(
+            status = status,
+            customerNote = customerNote,
+            billingEmail = billingEmail,
+        )
+    }
 
     @Serializable
     private data class UpdateResult(
         @SerialName("order_id") val orderId: Long,
-        val status: String,
+        val status: String? = null,
         @SerialName("response_partial") val responsePartial: Boolean = false,
         val warning: String? = null,
     )
@@ -105,13 +123,12 @@ internal class OrdersUpdateToolHandler @Inject constructor(
             "on-hold",
             "completed",
             "cancelled",
-            "refunded",
             "failed"
         )
     }
 }
 
-private val ORDERS_UPDATE_ALLOWED_ARGS = setOf("id", "status")
+private val ORDERS_UPDATE_ALLOWED_ARGS = setOf("id", "status", "customer_note", "billing_email")
 
 private fun Throwable.toOrderUpdateFailureKind(): ToolFailureKind {
     val orderError = (this as? OnChangedException)?.error as? WCOrderStore.OrderError

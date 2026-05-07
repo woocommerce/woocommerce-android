@@ -57,6 +57,18 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
                     )
                 )
             }
+            if (arguments.containsKey("customer_note")) {
+                add(
+                    messageField(
+                        name = "customer_note",
+                        value = string(R.string.ai_assistant_confirmation_field_value_updated),
+                        label = R.string.ai_assistant_confirmation_field_customer_note,
+                    )
+                )
+            }
+            arguments.stringValue("billing_email")?.let {
+                add(textField("billing_email", it, R.string.ai_assistant_confirmation_field_billing_email))
+            }
         }
 
         return ConfirmationPreview(

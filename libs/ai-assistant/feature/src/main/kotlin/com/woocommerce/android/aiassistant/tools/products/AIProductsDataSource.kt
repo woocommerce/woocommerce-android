@@ -5,8 +5,11 @@ import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 internal class AIProductsDataSource @Inject constructor(
@@ -43,44 +46,139 @@ internal class AIProductsDataSource @Inject constructor(
         status: String? = null,
         page: Int = 1,
         perPage: Int = PAGE_SIZE,
+        category: Int? = null,
+        sku: String? = null,
+        include: List<Long>? = null,
+        stockStatus: String? = null,
+        orderby: String? = null,
+        order: String? = null,
     ): Result<ProductsPage> {
         val site = selectedSite.get()
         val normalisedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
+        val normalisedSku = sku?.trim()?.takeIf { it.isNotEmpty() }
+        val normalisedInclude = include?.distinct()?.takeIf { it.isNotEmpty() }
         val clampedPerPage = perPage.coerceIn(1, MAX_PAGE_SIZE)
         val offset = (page - 1) * clampedPerPage
-        val filterOptions = buildMap<ProductFilterOption, String> {
-            if (status != null && status != "any") put(ProductFilterOption.STATUS, status)
-        }
+        val sortType = resolveSortType(orderby, order)
+        val filterOptions = productFilterOptions(status, category, stockStatus)
 
-        return if (normalisedSearch != null) {
-            val result = productStore.searchProductsByNameAndSku(
-                site = site,
-                searchNameOrSkuQuery = normalisedSearch,
-                offset = offset,
-                pageSize = clampedPerPage,
-                filterOptions = filterOptions,
-            )
-            if (result.isError) {
-                Result.failure(OnChangedException(requireNotNull(result.error)))
-            } else {
-                val searchResult = requireNotNull(result.model)
-                Result.success(ProductsPage(products = searchResult.products, canLoadMore = searchResult.canLoadMore))
-            }
-        } else {
-            val result = productStore.fetchProducts(
-                site = site,
-                offset = offset,
-                pageSize = clampedPerPage,
-                filterOptions = filterOptions,
-            )
-            if (result.isError) {
-                Result.failure(OnChangedException(requireNotNull(result.error)))
-            } else {
-                val products = requireNotNull(result.model)
-                Result.success(ProductsPage(products = products, canLoadMore = products.size >= clampedPerPage))
-            }
+        return when {
+            normalisedSku != null -> fetchProductsBySku(site, normalisedSku, offset, clampedPerPage, filterOptions)
+            normalisedSearch != null -> searchProducts(site, normalisedSearch, offset, clampedPerPage, filterOptions)
+            normalisedInclude != null -> fetchIncludedProducts(site, normalisedInclude, offset, sortType, filterOptions)
+            else -> fetchProductPage(site, offset, clampedPerPage, sortType, filterOptions)
         }
     }
+
+    private fun productFilterOptions(
+        status: String?,
+        category: Int?,
+        stockStatus: String?,
+    ): Map<ProductFilterOption, String> = buildMap {
+        if (status != null && status != "any") put(ProductFilterOption.STATUS, status)
+        category?.let { put(ProductFilterOption.CATEGORY, it.toString()) }
+        stockStatus?.let { put(ProductFilterOption.STOCK_STATUS, it) }
+    }
+
+    private suspend fun fetchProductsBySku(
+        site: SiteModel,
+        sku: String,
+        offset: Int,
+        pageSize: Int,
+        filterOptions: Map<ProductFilterOption, String>,
+    ): Result<ProductsPage> {
+        val result = productStore.searchProducts(
+            site = site,
+            searchString = sku,
+            skuSearchOptions = SkuSearchOptions.ExactSearch,
+            offset = offset,
+            pageSize = pageSize,
+            filterOptions = filterOptions,
+        )
+        return result.toProductsPage()
+    }
+
+    private suspend fun searchProducts(
+        site: SiteModel,
+        search: String,
+        offset: Int,
+        pageSize: Int,
+        filterOptions: Map<ProductFilterOption, String>,
+    ): Result<ProductsPage> {
+        val result = productStore.searchProductsByNameAndSku(
+            site = site,
+            searchNameOrSkuQuery = search,
+            offset = offset,
+            pageSize = pageSize,
+            filterOptions = filterOptions,
+        )
+        return result.toProductsPage()
+    }
+
+    private suspend fun fetchIncludedProducts(
+        site: SiteModel,
+        include: List<Long>,
+        offset: Int,
+        sortType: ProductSorting,
+        filterOptions: Map<ProductFilterOption, String>,
+    ): Result<ProductsPage> {
+        val result = productStore.fetchProducts(
+            site = site,
+            offset = offset,
+            pageSize = include.size.coerceIn(1, MAX_PAGE_SIZE),
+            sortType = sortType,
+            includedProductIds = include,
+            filterOptions = filterOptions,
+            forceRefresh = false,
+        )
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            Result.success(
+                ProductsPage(
+                    products = productStore.getProductsByRemoteIds(site, include),
+                    canLoadMore = false,
+                )
+            )
+        }
+    }
+
+    private suspend fun fetchProductPage(
+        site: SiteModel,
+        offset: Int,
+        pageSize: Int,
+        sortType: ProductSorting,
+        filterOptions: Map<ProductFilterOption, String>,
+    ): Result<ProductsPage> {
+        val result = productStore.fetchProducts(
+            site = site,
+            offset = offset,
+            pageSize = pageSize,
+            sortType = sortType,
+            filterOptions = filterOptions,
+        )
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            val products = requireNotNull(result.model)
+            Result.success(ProductsPage(products = products, canLoadMore = products.size >= pageSize))
+        }
+    }
+
+    private fun WooResult<WCProductStore.ProductSearchResult>.toProductsPage(): Result<ProductsPage> =
+        if (isError) {
+            Result.failure(OnChangedException(requireNotNull(error)))
+        } else {
+            val searchResult = requireNotNull(model)
+            Result.success(ProductsPage(products = searchResult.products, canLoadMore = searchResult.canLoadMore))
+        }
+
+    private fun resolveSortType(orderby: String?, order: String?): ProductSorting =
+        when (orderby) {
+            "date" -> if (order == "asc") ProductSorting.DATE_ASC else ProductSorting.DATE_DESC
+            "popularity" -> if (order == "asc") ProductSorting.POPULARITY_ASC else ProductSorting.POPULARITY_DESC
+            else -> if (order == "desc") ProductSorting.TITLE_DESC else ProductSorting.TITLE_ASC
+        }
 
     suspend fun getProduct(productId: Long): Result<WCProductModel> {
         val site = selectedSite.get()
