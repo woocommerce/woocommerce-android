@@ -2,15 +2,20 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -19,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -36,7 +42,8 @@ fun NewOrderNotificationSettingsScreen(viewModel: NewOrderNotificationSettingsVi
             viewState = viewState,
             onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
             onNotificationPreferenceChanged = viewModel::onNotificationPreferenceChanged,
-            onThresholdAmountChanged = viewModel::onThresholdAmountChanged
+            onThresholdAmountChanged = viewModel::onThresholdAmountChanged,
+            onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
         )
     }
 }
@@ -46,7 +53,8 @@ fun NewOrderNotificationSettingsScreen(
     viewState: ViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
     onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
-    onThresholdAmountChanged: (BigDecimal) -> Unit
+    onThresholdAmountChanged: (BigDecimal) -> Unit,
+    onEnableChaChingSoundClicked: () -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -58,6 +66,22 @@ fun NewOrderNotificationSettingsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
+            AnimatedVisibility(
+                visible = viewState.newOrderNotificationSoundStatus != NewOrderNotificationSoundStatus.DEFAULT
+            ) {
+                val subtitle = if (
+                    viewState.newOrderNotificationSoundStatus == NewOrderNotificationSoundStatus.DISABLED
+                ) {
+                    R.string.settings_notifs_enable_chaching_sound_description
+                } else {
+                    R.string.settings_notifs_restore_chaching_sound_description
+                }
+                NotificationSettingsAction(
+                    title = stringResource(R.string.settings_notifs_enable_chaching_sound),
+                    subtitle = stringResource(subtitle),
+                    onClick = onEnableChaChingSoundClicked
+                )
+            }
             EnableNotificationsCard(
                 title = stringResource(R.string.settings_notifs_new_orders_enable_title),
                 description = stringResource(R.string.settings_notifs_new_orders_enable_description),
@@ -117,6 +141,40 @@ private fun ThresholdAmountField(
 }
 
 @Composable
+private fun NotificationSettingsAction(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NewOrderNotificationSettingsScreenPreview() {
@@ -124,11 +182,13 @@ private fun NewOrderNotificationSettingsScreenPreview() {
         NewOrderNotificationSettingsScreen(
             viewState = ViewState(
                 notificationPreference = NotificationPreference.HighValueOrders,
-                currencySymbol = "$"
+                currencySymbol = "$",
+                newOrderNotificationSoundStatus = NewOrderNotificationSoundStatus.SOUND_MODIFIED
             ),
             onNotificationsEnabledChanged = {},
             onNotificationPreferenceChanged = {},
-            onThresholdAmountChanged = {}
+            onThresholdAmountChanged = {},
+            onEnableChaChingSoundClicked = {}
         )
     }
 }
