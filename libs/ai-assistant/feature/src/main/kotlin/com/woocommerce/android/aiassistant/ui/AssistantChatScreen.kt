@@ -45,6 +45,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -104,6 +106,8 @@ fun AssistantChatScreen(
     onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var inputText by rememberSaveable { mutableStateOf("") }
 
     AssistantChatScreen(
@@ -115,6 +119,8 @@ fun AssistantChatScreen(
                 val message = inputText
                 inputText = ""
                 viewModel.onSendMessage(message)
+                focusManager.clearFocus()
+                keyboardController?.hide()
             }
         },
         onSendSuggestion = { prompt ->
