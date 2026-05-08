@@ -10,8 +10,11 @@ import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -30,6 +33,10 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
 
     private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         whenever(selectedSite.get()).thenReturn(site)
+        whenever(wooCommerceStore.getProductSettings(site)).thenReturn(null)
+        whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+            WooResult(WCProductSettingsModel(defaultLowStockThreshold = null))
+        )
         prepareMocks()
         viewModel = NewStockNotificationSettingsViewModel(
             savedStateHandle = SavedStateHandle(),
@@ -48,7 +55,7 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewState.lowStockNotificationsEnabled).isTrue()
         assertThat(viewState.outOfStockNotificationsEnabled).isTrue()
         assertThat(viewState.backorderNotificationsEnabled).isTrue()
-        assertThat(viewState.defaultLowStockThreshold).isEqualTo(5)
+        assertThat(viewState.defaultLowStockThreshold).isNull()
     }
 
     @Test
@@ -61,30 +68,60 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when default low stock threshold is refreshed, then fetch latest value`() = testBlocking {
+    fun `when view is loaded, then fetch default low stock threshold`() = testBlocking {
         setup {
             whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
                 WooResult(WCProductSettingsModel(defaultLowStockThreshold = 2))
             )
         }
 
-        viewModel.refreshDefaultLowStockThreshold()
+        assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
+    }
+
+    @Test
+    fun `when cached low stock threshold exists, then expose cached value while fetching latest value`() = testBlocking {
+        setup {
+            whenever(wooCommerceStore.getProductSettings(site)).thenReturn(
+                WCProductSettingsModel(defaultLowStockThreshold = 2)
+            )
+            whenever(wooCommerceStore.fetchSiteProductSettings(site)).doSuspendableAnswer {
+                delay(1_000)
+                WooResult(WCProductSettingsModel(defaultLowStockThreshold = 3))
+            }
+        }
+
+        runCurrent()
 
         assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
     }
 
     @Test
-    fun `when default low stock threshold is refreshed without a value, then keep fallback value`() =
+    fun `when store settings web view is closed, then refresh default low stock threshold`() = testBlocking {
+        setup {
+            whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+                WooResult(WCProductSettingsModel(defaultLowStockThreshold = 2)),
+                WooResult(WCProductSettingsModel(defaultLowStockThreshold = 3))
+            )
+        }
+
+        viewModel.onStoreSettingsWebViewClosed()
+
+        assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(3)
+    }
+
+    @Test
+    fun `when default low stock threshold refresh returns no value, then keep current threshold`() =
         testBlocking {
             setup {
                 whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+                    WooResult(WCProductSettingsModel(defaultLowStockThreshold = 2)),
                     WooResult(WCProductSettingsModel(defaultLowStockThreshold = null))
                 )
             }
 
-            viewModel.refreshDefaultLowStockThreshold()
+            viewModel.onStoreSettingsWebViewClosed()
 
-            assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(5)
+            assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
         }
 
     @Test

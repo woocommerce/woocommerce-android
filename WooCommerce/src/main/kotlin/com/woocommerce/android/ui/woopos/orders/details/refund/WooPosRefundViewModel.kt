@@ -219,8 +219,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     fun onUIEvent(event: WooPosRefundUIEvent) {
         when (event) {
-            WooPosRefundUIEvent.DialogOpened -> loadRefundableItems()
-            WooPosRefundUIEvent.DialogDismissed -> handleDialogDismissed()
+            WooPosRefundUIEvent.RefundFlowOpened -> loadRefundableItems()
+            WooPosRefundUIEvent.RefundFlowDismissed -> handleRefundFlowDismissed()
             WooPosRefundUIEvent.RetryLoadRefundableItems -> loadRefundableItems()
             WooPosRefundUIEvent.RetryCreateRefund -> {
                 val contentState = contentStateBeforeRefund
@@ -241,7 +241,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleDialogDismissed() {
+    private fun handleRefundFlowDismissed() {
         val currentState = _state.value
         if (currentState is WooPosRefundState.Content &&
             currentState.step != WooPosRefundState.Content.RefundStep.Processing
@@ -251,7 +251,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
                 WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
                 WooPosRefundState.Content.RefundStep.Processing ->
-                    error("Processing step should be unreachable in handleDialogDismissed")
+                    error("Processing step should be unreachable in handleRefundFlowDismissed")
             }
 
             viewModelScope.launch {
@@ -286,8 +286,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 trackConfirmRefundTapped(currentState)
                 processRefund(currentState)
             }
-            WooPosRefundUIEvent.DialogDismissed,
-            WooPosRefundUIEvent.DialogOpened,
+            WooPosRefundUIEvent.RefundFlowDismissed,
+            WooPosRefundUIEvent.RefundFlowOpened,
             WooPosRefundUIEvent.RetryLoadRefundableItems,
             WooPosRefundUIEvent.RetryCreateRefund,
             WooPosRefundUIEvent.CancelRefund -> Unit

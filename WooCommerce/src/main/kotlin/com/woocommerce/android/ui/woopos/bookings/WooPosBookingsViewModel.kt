@@ -79,7 +79,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
-    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(extraBufferCapacity = 1)
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private val _toastEvent = MutableSharedFlow<String>()
@@ -412,25 +412,24 @@ class WooPosBookingsViewModel @Inject constructor(
         clipboardHelper.copyToClipboard(text)
     }
 
-    fun onIssueRefundDialogDismissed() {
-        val currentState = _state.value as? WooPosBookingsState.Content ?: return
-        _state.value = currentState.copy(
-            dialogState = WooPosBookingsState.Content.DialogState.Hidden
-        )
+    fun onBackFromIssueRefund() {
+        if (_state.value !is WooPosBookingsState.Content) return
         selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     private fun handleCollectPayment() {
         val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
-        viewModelScope.launch {
-            _navigationEvent.emit(
-                WooPosNavigationEvent.OpenCardPayment(
-                    orderId = details.orderId,
-                    source = CardPaymentSource.BOOKINGS,
-                    showCashPaymentButton = true,
-                )
+        emitNav(
+            WooPosNavigationEvent.OpenCardPayment(
+                orderId = details.orderId,
+                source = CardPaymentSource.BOOKINGS,
+                showCashPaymentButton = true,
             )
-        }
+        )
+    }
+
+    private fun emitNav(event: WooPosNavigationEvent) {
+        viewModelScope.launch { _navigationEvent.emit(event) }
     }
 
     private fun handleAttendanceToggle(attended: Boolean) {
@@ -545,20 +544,19 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                viewModelScope.launch {
-                    _navigationEvent.emit(
-                        WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId)
-                    )
-                }
+                emitNav(WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId))
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
-                viewModelScope.launch { analyticsTracker.trackIssueRefundTapped() }
-                val currentState = _state.value as? WooPosBookingsState.Content ?: return
-                _state.value = currentState.copy(
-                    dialogState = WooPosBookingsState.Content.DialogState.IssueRefund(
-                        orderId = action.orderId
+                if (_state.value !is WooPosBookingsState.Content) return
+                viewModelScope.launch {
+                    analyticsTracker.trackIssueRefundTapped()
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenIssueRefund(
+                            orderId = action.orderId,
+                            disablePartialRefund = true,
+                        )
                     )
-                )
+                }
             }
             is WooPosBookingsState.BookingAction.CancelBooking -> {
                 showCancelConfirmationDialog(action.bookingId)

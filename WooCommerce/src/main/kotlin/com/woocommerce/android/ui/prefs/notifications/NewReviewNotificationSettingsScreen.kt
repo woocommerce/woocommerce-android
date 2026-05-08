@@ -67,7 +67,7 @@ private fun NewReviewNotificationSettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             EnableNotificationsCard(
-                title = stringResource(R.string.settings_notifs_new_reviews_enable_title),
+                title = stringResource(R.string.settings_notifs_enable_title),
                 description = stringResource(R.string.settings_notifs_new_reviews_enable_description),
                 isEnabled = viewState.notificationsEnabled,
                 onEnabledChanged = onNotificationsEnabledChanged

@@ -2,16 +2,13 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.runtime.collectAsState
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
-import com.woocommerce.android.ui.woopos.orders.details.refund.REFUND_REASON_RESULT_KEY
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
@@ -69,23 +66,9 @@ private fun NavGraphBuilder.ordersComposable(
             )
         },
     ) { backStackEntry ->
-        val navigatedFromEmailReceiptSent = backStackEntry.savedStateHandle
-            .getStateFlow(EMAIL_RECEIPT_SENT, false)
-            .collectAsState()
-
-        val refundReasonResult = backStackEntry.savedStateHandle
-            .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)
-            .collectAsState()
-
-        backStackEntry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
-        if (refundReasonResult.value != null) {
-            backStackEntry.savedStateHandle.remove<String>(REFUND_REASON_RESULT_KEY)
-        }
-
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,
-            navigatedFromEmailReceiptSent = navigatedFromEmailReceiptSent.value,
-            refundReasonResult = refundReasonResult.value
+            backStackEntry = backStackEntry,
         )
     }
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
@@ -64,12 +65,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
+import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewModel
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
+import com.woocommerce.android.ui.woopos.orders.details.refund.ISSUE_REFUND_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
@@ -87,8 +89,7 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    navigatedFromEmailReceiptSent: Boolean,
-    refundReasonResult: String? = null,
+    backStackEntry: NavBackStackEntry,
 ) {
     val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
@@ -97,9 +98,31 @@ fun WooPosOrdersScreen(
     val listState by listViewModel.state.collectAsState()
     val detailState by detailViewModel.state.collectAsState()
 
-    LaunchedEffect(navigatedFromEmailReceiptSent) {
-        if (navigatedFromEmailReceiptSent) {
+    val emailReceiptSent = backStackEntry.savedStateHandle
+        .getStateFlow(EMAIL_RECEIPT_SENT, false)
+        .collectAsState()
+
+    LaunchedEffect(emailReceiptSent.value) {
+        if (emailReceiptSent.value) {
             detailViewModel.onBackFromSuccessfullySendingEmailReceipt()
+            backStackEntry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
+        }
+    }
+
+    val issueRefundDismissed = backStackEntry.savedStateHandle
+        .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(issueRefundDismissed.value) {
+        if (issueRefundDismissed.value) {
+            detailViewModel.onBackFromIssueRefund()
+            backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        detailViewModel.navigationEvent.collect { event ->
+            onNavigationEvent(event)
         }
     }
 
@@ -127,10 +150,7 @@ fun WooPosOrdersScreen(
         onOrdersLoadingErrorRetryButtonClicked = listViewModel::onOrdersLoadingErrorRetryButtonClicked,
         onUIEvent = detailViewModel::onUIEvent,
         onRetryDetailLoad = detailViewModel::retryLoadOrder,
-        onIssueRefundDialogDismissed = detailViewModel::onIssueRefundDialogDismissed,
         onRefundDetailsDialogDismissed = detailViewModel::onRefundDetailsDialogDismissed,
-        onNavigationEvent = onNavigationEvent,
-        refundReasonUpdate = refundReasonResult
     )
 }
 
@@ -152,10 +172,7 @@ private fun WooPosOrdersScreen(
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onRetryDetailLoad: () -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit,
     onRefundDetailsDialogDismissed: () -> Unit,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -260,10 +277,7 @@ private fun WooPosOrdersScreen(
         if (loadedDetailState != null) {
             OrdersDialogs(
                 dialogState = loadedDetailState.dialogState,
-                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed,
                 onRefundDetailsDialogDismissed = onRefundDetailsDialogDismissed,
-                onNavigationEvent = onNavigationEvent,
-                refundReasonUpdate = refundReasonUpdate,
             )
         }
     }
@@ -272,29 +286,16 @@ private fun WooPosOrdersScreen(
 @Composable
 private fun OrdersDialogs(
     dialogState: WooPosOrderDetailsState.DialogState,
-    onIssueRefundDialogDismissed: () -> Unit,
     onRefundDetailsDialogDismissed: () -> Unit,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    refundReasonUpdate: String?,
 ) {
     val retainedDialog = rememberRetained(
         when (dialogState) {
-            is WooPosOrderDetailsState.DialogState.IssueRefund -> dialogState
             is WooPosOrderDetailsState.DialogState.RefundDetails -> dialogState
             WooPosOrderDetailsState.DialogState.Hidden -> null
         }
     )
 
     when (retainedDialog) {
-        is WooPosOrderDetailsState.DialogState.IssueRefund -> {
-            WooPosIssueRefundDialog(
-                orderId = retainedDialog.orderId,
-                isVisible = dialogState is WooPosOrderDetailsState.DialogState.IssueRefund,
-                onDismissRequest = onIssueRefundDialogDismissed,
-                onNavigationEvent = onNavigationEvent,
-                refundReasonUpdate = refundReasonUpdate
-            )
-        }
         is WooPosOrderDetailsState.DialogState.RefundDetails -> {
             WooPosRefundDetailsDialog(
                 dialogState = retainedDialog,
@@ -783,9 +784,7 @@ fun WooPosOrdersScreenPreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onRetryDetailLoad = {},
-            onIssueRefundDialogDismissed = {},
-            onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {}
+            onRefundDetailsDialogDismissed = {}
         )
     }
 }
@@ -820,9 +819,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onRetryDetailLoad = {},
-            onIssueRefundDialogDismissed = {},
-            onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {}
+            onRefundDetailsDialogDismissed = {}
         )
     }
 }
@@ -857,9 +854,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onRetryDetailLoad = {},
-            onIssueRefundDialogDismissed = {},
-            onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {}
+            onRefundDetailsDialogDismissed = {}
         )
     }
 }
@@ -886,9 +881,7 @@ fun WooPosOrdersEmptyStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onRetryDetailLoad = {},
-            onIssueRefundDialogDismissed = {},
             onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {},
         )
     }
 }
@@ -959,10 +952,8 @@ private fun sampleOrderDetails(
     total = "$17.00",
     totalPaid = "$17.00",
     paymentMethodTitle = "WooCommerce In-Person Payments",
-    actionsState = WooPosOrdersState.OrderActionsState(
-        listOf(
-            WooPosOrdersState.OrderAction.IssueRefund(id),
-            WooPosOrdersState.OrderAction.EmailReceipt(id)
-        )
+    actions = listOf(
+        WooPosOrdersState.OrderAction.IssueRefund(id),
+        WooPosOrdersState.OrderAction.EmailReceipt(id)
     )
 )
