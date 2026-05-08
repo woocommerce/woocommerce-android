@@ -63,9 +63,7 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
             wooCommerceStore.getProductSettings(site)?.defaultLowStockThreshold?.let { threshold ->
                 updateDefaultLowStockThreshold(threshold)
             } ?: run {
-                if (_viewState.value.defaultLowStockThreshold == null) {
-                    _viewState.update { it.copy(isDefaultLowStockThresholdLoading = true) }
-                }
+                _viewState.update { it.copy(isDefaultLowStockThresholdLoading = true) }
             }
 
             val result = wooCommerceStore.fetchSiteProductSettings(site)
@@ -84,10 +82,8 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     }
 
     private fun finishDefaultLowStockThresholdRefresh() {
-        if (_viewState.value.defaultLowStockThreshold == null) {
-            _viewState.update {
-                it.copy(isDefaultLowStockThresholdLoading = false)
-            }
+        _viewState.update {
+            it.copy(isDefaultLowStockThresholdLoading = false)
         }
     }
 
