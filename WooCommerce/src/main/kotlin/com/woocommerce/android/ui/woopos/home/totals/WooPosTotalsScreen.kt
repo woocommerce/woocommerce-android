@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,17 +42,14 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -65,7 +60,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
-import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosTotalsScreen(
@@ -197,9 +191,7 @@ private fun TotalsLoaded(
                 verticalArrangement = Arrangement.Center,
             ) {
                 when (val readerStatus = state.readerStatus) {
-                    is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                        ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
-                    }
+                    is WooPosTotalsViewState.ReaderStatus.Disconnected -> Unit
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
                         PreparingReader(
                             title = readerStatus.title,
@@ -241,21 +233,20 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(
-                    if (isPhone) {
-                        Modifier.padding(WooPosSpacing.Large.value)
-                    } else {
-                        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
-                    }
-                )
-                .navigationBarsPadding()
-                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+        val isReaderDisconnected = state.readerStatus is WooPosTotalsViewState.ReaderStatus.Disconnected
+        val methods = if (isReaderDisconnected) {
+            listOf(WooPosPaymentMethod.CARD_READER, WooPosPaymentMethod.CASH)
+        } else {
+            listOf(WooPosPaymentMethod.CASH)
+        }
+        WooPosCheckoutPaymentButtons(
+            methods = methods,
+            onMethodClicked = { method ->
+                when (method) {
+                    WooPosPaymentMethod.CARD_READER -> onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
+                    WooPosPaymentMethod.CASH -> onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
+                }
+            },
         )
     }
 }
@@ -300,48 +291,6 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
     )
-}
-
-@Composable
-private fun ReaderDisconnected(
-    modifier: Modifier = Modifier,
-    status: WooPosTotalsViewState.ReaderStatus.Disconnected,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
-) {
-    Column(
-        modifier = modifier.padding(WooPosSpacing.XLarge.value),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Image(
-            modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
-            imageVector = WooPosIcons.CardReaderNotConnected,
-            contentDescription = stringResource(id = R.string.woopos_reader_not_connected_description),
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
-        WooPosText(
-            text = status.title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        WooPosText(
-            text = status.subtitle,
-            style = WooPosTypography.BodyLarge,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosButton(
-            text = status.actionButtonLabel,
-            onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
-            modifier = Modifier
-                .adaptiveContentWidth()
-                .height(WooPosComponentSize.Small.value)
-        )
-    }
 }
 
 @Composable
@@ -619,19 +568,6 @@ fun WooPosTotalsScreenPreviewForFreeOrders() {
             ),
             onUIEvent = {},
         )
-    }
-}
-
-@Composable
-@WooPosPreview
-fun TotalsErrorPreview() {
-    val readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
-        title = "Reader not connected",
-        subtitle = "To process this payment, please connect your reader.",
-        actionButtonLabel = "Connect to a reader",
-    )
-    WooPosTheme {
-        ReaderDisconnected(modifier = Modifier, status = readerStatus) {}
     }
 }
 
