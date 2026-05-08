@@ -32,6 +32,11 @@ data class AssistantUiState(
             error != null &&
             messages.lastOrNull()?.error == null
 
+    val shouldShowEmptyState: Boolean
+        get() = status == AssistantUiStatus.IDLE &&
+            !shouldShowFallbackError &&
+            messages.none { it.hasVisibleContent(this) }
+
     /**
      * Mirrors iOS `streamingState == .sending`: dots are visible from submit until the active assistant
      * message starts streaming actual text. Tool activity segments don't count as "text", so the dots

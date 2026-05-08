@@ -379,4 +379,40 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).url)
                 .isEqualTo(urlAuthFull)
         }
+
+    @Test
+    fun `given canonical site URL is https but siteAddress is http, when login fails with INVALID_NONCE, then ViewModel retries with the canonical https URL and succeeds`() =
+        testBlocking {
+            val canonicalHttpsAddress = "https://site.com"
+            val canonicalSite = SiteModel().apply {
+                hasWooCommerce = true
+                url = canonicalHttpsAddress
+            }
+            val invalidNonce = CookieNonceAuthenticationException(
+                errorMessage = UiStringText("INVALID_NONCE"),
+                errorType = Nonce.CookieNonceErrorType.INVALID_NONCE,
+                networkStatusCode = null
+            )
+
+            setup {
+                whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                    .thenReturn(Result.failure(invalidNonce))
+                whenever(wpApiSiteRepository.fetchSite(siteAddress))
+                    .thenReturn(Result.success(canonicalSite))
+                whenever(wpApiSiteRepository.login(canonicalHttpsAddress, testUsername, testPassword))
+                    .thenReturn(Result.success(Unit))
+                whenever(wpApiSiteRepository.fetchSite(canonicalHttpsAddress, testUsername, testPassword))
+                    .thenReturn(Result.success(canonicalSite))
+            }
+
+            viewModel.viewState.observeForTesting {
+                viewModel.onUsernameChanged(testUsername)
+                viewModel.onPasswordChanged(testPassword)
+                viewModel.onContinueClick()
+            }
+
+            verify(wpApiSiteRepository).login(siteAddress, testUsername, testPassword)
+            verify(wpApiSiteRepository).login(canonicalHttpsAddress, testUsername, testPassword)
+            assertThat(viewModel.event.value).isEqualTo(LoggedIn(canonicalSite.id))
+        }
 }
