@@ -29,6 +29,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     private val fineLocationPermissionCheck: WooPosFineLocationPermissionCheck,
     private val logger: WooPosLogWrapper,
 ) {
+    @Suppress("ReturnCount")
     suspend fun connect(): Result<Unit> {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             return Result.success(Unit)
