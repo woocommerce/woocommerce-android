@@ -4,7 +4,8 @@
 
 24.8
 -----
-
+- [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
+- [*] Fixed login getting stuck in a retry loop when an http URL was returned for an HTTPS-only site [https://github.com/woocommerce/woocommerce-android/pull/15846]
 
 24.7
 -----

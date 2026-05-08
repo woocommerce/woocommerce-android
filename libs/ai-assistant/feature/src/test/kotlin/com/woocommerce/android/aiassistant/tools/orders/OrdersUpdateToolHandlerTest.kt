@@ -1,6 +1,8 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -16,6 +18,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCOrderStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrdersUpdateToolHandlerTest {
@@ -83,12 +86,57 @@ class OrdersUpdateToolHandlerTest {
         }
 
     @Test
-    fun `given update fails, when execute is called, then retryable TransportError is returned`() = runTest {
-        whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
-            Result.failure(RuntimeException("network error"))
-        )
+    fun `given invalid order id failure, when execute is called, then invalid id TransportError is returned`() =
+        runTest {
+            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+                Result.failure(orderFailure(WCOrderStore.OrderErrorType.INVALID_ID))
+            )
 
-        val result = handler.execute(
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given local missing order failure, when execute is called, then not found TransportError is returned`() =
+        runTest {
+            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+                Result.failure(
+                    OnChangedException(WCOrderStore.OrderError(message = "Order with id 123 not found"))
+                )
+            )
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given validation order failure, when execute is called, then validation TransportError is returned`() =
+        runTest {
+            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+                Result.failure(orderFailure(WCOrderStore.OrderErrorType.ORDER_STATUS_NOT_FOUND))
+            )
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given generic update failure, when execute is called, then outcome unknown TransportError is returned`() =
+        runTest {
+            whenever(dataSource.updateOrderStatus(123L, "processing")).thenReturn(
+                Result.failure(RuntimeException("network error"))
+            )
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.OUTCOME_UNKNOWN)
+        }
+
+    private suspend fun executeValidUpdate(): ToolResult =
+        handler.execute(
             toolCall(
                 buildJsonObject {
                     put("id", 123)
@@ -97,7 +145,13 @@ class OrdersUpdateToolHandlerTest {
             )
         )
 
+    private fun orderFailure(type: WCOrderStore.OrderErrorType): OnChangedException =
+        OnChangedException(WCOrderStore.OrderError(type = type))
+
+    private fun assertTransportErrorKind(result: ToolResult, kind: ToolFailureKind) {
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
-        assertThat((result as ToolResult.TransportError).retryable).isTrue
+        val error = result as ToolResult.TransportError
+        assertThat(error.retryable).isTrue
+        assertThat(error.kind).isEqualTo(kind)
     }
 }

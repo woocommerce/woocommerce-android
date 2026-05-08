@@ -11,6 +11,10 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
@@ -21,6 +25,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
@@ -32,10 +37,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.net.InetAddress
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -74,6 +82,12 @@ class WooPosCardPaymentViewModelTest {
     private val priceFormat: WooPosFormatPrice = mock {
         on { invoke(any<BigDecimal>()) } doReturn "$0.00"
     }
+    private val remoteReaderSessionStateFlow =
+        MutableStateFlow<WooPosRemoteReaderSession.State>(WooPosRemoteReaderSession.State.Idle)
+    private val remoteReaderSession: WooPosRemoteReaderSession = mock {
+        on { state }.thenReturn(remoteReaderSessionStateFlow)
+    }
+    private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow = mock()
 
     private val testOrder: Order = Order.getEmptyOrder(Date(), Date()).copy(
         productsTotal = BigDecimal.TEN,
@@ -113,6 +127,8 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
+            remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+            effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         )
     }
 
@@ -402,6 +418,8 @@ class WooPosCardPaymentViewModelTest {
             analyticsTracker = analyticsTracker,
             cardPaymentRepository = cardPaymentRepository,
             priceFormat = priceFormat,
+            remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+            effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
         )
         advanceUntilIdle()
 
@@ -638,4 +656,85 @@ class WooPosCardPaymentViewModelTest {
         val failedState = viewModel.state.value as WooPosCardPaymentState.PaymentFailed
         assertThat(failedState.isDismissButtonVisible).isTrue()
     }
+
+    @Test
+    fun `given remote payment in progress, when onBackClicked, then no GoBack emitted`() = runTest {
+        // GIVEN
+        readerStatusFlow.value = CardReaderStatus.NotConnected()
+        remoteReaderSessionStateFlow.value = WooPosRemoteReaderSession.State.Connected(
+            reader = simulatedRemoteReader(),
+            readerSerial = "SIM-1",
+        )
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
+            .doSuspendableAnswer { awaitCancellation() }
+
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.navigationEvent.test {
+            viewModel.onBackClicked()
+
+            // THEN
+            expectNoEvents()
+        }
+    }
+
+    @Test
+    fun `given remote payment in progress, when onDismissClicked, then no GoBack emitted`() = runTest {
+        // GIVEN
+        readerStatusFlow.value = CardReaderStatus.NotConnected()
+        remoteReaderSessionStateFlow.value = WooPosRemoteReaderSession.State.Connected(
+            reader = simulatedRemoteReader(),
+            readerSerial = "SIM-1",
+        )
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
+            .doSuspendableAnswer { awaitCancellation() }
+
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.navigationEvent.test {
+            viewModel.onDismissClicked()
+
+            // THEN
+            expectNoEvents()
+        }
+    }
+
+    @Test
+    fun `given remote payment failed, when onRetryClicked, then remote flow is invoked again`() = runTest {
+        // GIVEN
+        readerStatusFlow.value = CardReaderStatus.NotConnected()
+        remoteReaderSessionStateFlow.value = WooPosRemoteReaderSession.State.Connected(
+            reader = simulatedRemoteReader(),
+            readerSerial = "SIM-1",
+        )
+        whenever(remoteReaderPaymentFlow.collect(any(), any()))
+            .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
+
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+
+        // WHEN
+        viewModel.onRetryClicked()
+        advanceUntilIdle()
+
+        // THEN
+        verify(remoteReaderPaymentFlow, times(2)).collect(any(), any())
+    }
+
+    private fun simulatedRemoteReader() =
+        WooPosDiscoveredReader.Phone(
+            serviceName = "woopos-remote-test",
+            deviceId = "test-device-id",
+            name = "phone",
+            host = InetAddress.getByName("127.0.0.1"),
+            port = 1234,
+            fingerprintBase64 = "fp",
+            siteHash = "site-hash",
+            isSimulated = true,
+        )
 }

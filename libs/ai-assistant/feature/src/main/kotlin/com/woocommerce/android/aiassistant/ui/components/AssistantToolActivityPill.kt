@@ -1,6 +1,8 @@
 package com.woocommerce.android.aiassistant.ui.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,13 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.ui.AssistantToolActivity
+import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
+import com.woocommerce.android.aiassistant.ui.assistantStatusGreen
 import com.woocommerce.android.aiassistant.ui.labelRes
 
 /**
- * In-thread affordance announcing the tool the assistant is running. Reads as a pill but uses a
- * 12dp rounded rectangle to match the iOS reference. Leading affordance is the animated three-dot
- * pulse (matches [AssistantTypingIndicator]) while the tool runs and a static checkmark once the
- * tool finishes — completed activities are preserved in the thread as a step history.
+ * In-thread affordance announcing the tool the assistant is running. Leading affordance is the
+ * animated three-dot pulse (matches [AssistantTypingIndicator]) while the tool runs and a static
+ * checkmark once the tool finishes — completed activities are preserved in the thread as a step
+ * history.
  */
 @Composable
 internal fun AssistantToolActivityPill(
@@ -42,19 +46,21 @@ internal fun AssistantToolActivityPill(
     val label = stringResource(activity.labelRes())
     val description = stringResource(R.string.assistant_chat_tool_activity_content_description, label)
     Surface(
-        modifier = modifier.semantics {
-            contentDescription = description
-            if (activity.status == AssistantToolActivity.Status.RUNNING) {
-                liveRegion = LiveRegionMode.Polite
-            }
-        },
+        modifier = modifier
+            .animateContentSize(animationSpec = tween(durationMillis = 220))
+            .semantics {
+                contentDescription = description
+                if (activity.status == AssistantToolActivity.Status.RUNNING) {
+                    liveRegion = LiveRegionMode.Polite
+                }
+            },
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, assistantOutlineColor()),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ToolActivityLeadingAffordance(status = activity.status)
@@ -63,8 +69,8 @@ internal fun AssistantToolActivityPill(
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Normal,
             )
         }
     }
@@ -74,7 +80,7 @@ internal fun AssistantToolActivityPill(
 private fun ToolActivityLeadingAffordance(status: AssistantToolActivity.Status) {
     when (status) {
         AssistantToolActivity.Status.RUNNING -> AssistantInFlightDots(
-            color = MaterialTheme.colorScheme.primary,
+            color = assistantStatusGreen(),
             dotSize = InFlightDotsToolPillSize,
             spacing = InFlightDotsToolPillSpacing,
         )
@@ -82,7 +88,7 @@ private fun ToolActivityLeadingAffordance(status: AssistantToolActivity.Status) 
             painter = painterResource(R.drawable.ic_assistant_tool_completed),
             contentDescription = null,
             modifier = Modifier.size(14.dp),
-            tint = MaterialTheme.colorScheme.primary,
+            tint = assistantStatusGreen(),
         )
     }
 }
