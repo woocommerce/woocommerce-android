@@ -239,7 +239,15 @@ private fun TotalsLoaded(
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                         when {
-                            state.isTapToPayInProgress -> TapToPayConnecting()
+                            state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.Preparing ->
+                                PreparingReader(
+                                    title = stringResource(R.string.woopos_tap_to_pay_preparing_title),
+                                    subtitle = stringResource(R.string.woopos_tap_to_pay_preparing_subtitle),
+                                )
+
+                            state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.SdkActive ->
+                                TapToPayConnecting()
+
                             state.isTapToPayAvailable -> TapToPayPromoted(onUIEvent = onUIEvent)
                             else -> ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
                         }

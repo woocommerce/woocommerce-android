@@ -2277,51 +2277,36 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given TTP in flight, when PaymentSuccessful, then OrderSuccessfullyPaidByCard sent and flags reset`() = runTest {
+    fun `given TTP in flight, when LoadingData emitted, then tapToPayProgress becomes SdkActive`() = runTest {
         // GIVEN
         val (vm, paymentState) = givenTtpInFlight()
         advanceUntilIdle()
 
         // WHEN
-        paymentState.value = CardReaderPaymentState.PaymentSuccessful.BuiltInReaderPaymentSuccessful(
-            amountWithCurrencyLabel = "$10.00",
-            onPrintReceiptClicked = {},
-            onSendReceiptClicked = {},
-            onSaveUserClicked = {},
-        )
+        paymentState.value = CardReaderPaymentState.LoadingData {}
         advanceUntilIdle()
 
         // THEN
-        verify(childrenToParentEventSender, atLeastOnce()).sendToParent(ChildToParentEvent.OrderSuccessfullyPaidByCard)
         val state = vm.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isTapToPayInProgress).isFalse()
-        assertThat(state.paymentButtonsState).isEqualTo(WooPosTotalsViewState.PaymentButtonsState.Enabled)
+        assertThat(state.tapToPayProgress).isEqualTo(WooPosTotalsViewState.TapToPayProgress.SdkActive)
     }
 
     @Test
-    fun `given TTP in flight, when BuiltInReaderFailedPayment emitted, then toast shown to parent`() = runTest {
+    fun `given TTP in flight, when PaymentCapturing emitted, then PaymentInProgress state shown`() = runTest {
         // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
+            .thenReturn("Processing payment")
+        whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle))
+            .thenReturn("Please wait…")
         val (vm, paymentState) = givenTtpInFlight()
         advanceUntilIdle()
-        clearInvocations(childrenToParentEventSender)
-        // Override the helper-installed mock so we can assert the toast message we control.
-        whenever(uiStringParser.asString(any())).thenReturn("Tap to Pay declined")
 
         // WHEN
-        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
-            errorType = PaymentFlowError.NoNetwork,
-            onRetry = {},
-        )
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.BuiltInReaderPaymentCapturing("")
         advanceUntilIdle()
 
         // THEN
-        verify(childrenToParentEventSender, atLeastOnce()).sendToParent(
-            argThat {
-                this is ChildToParentEvent.ToastMessageDisplayed && this.message == "Tap to Pay declined"
-            }
-        )
-        val state = vm.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isTapToPayInProgress).isFalse()
+        assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
     }
 
     @Test
@@ -2332,8 +2317,74 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         val state = vm.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isTapToPayInProgress).isTrue()
+        assertThat(state.tapToPayProgress).isNotNull()
         assertThat(state.paymentButtonsState).isEqualTo(WooPosTotalsViewState.PaymentButtonsState.Disabled)
+    }
+
+    @Test
+    fun `given TTP failed with Canceled, when state emitted, then silently returns to checkout`() = runTest {
+        // GIVEN
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.Canceled,
+            onRetry = {},
+        )
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(vm.state.value).isNotInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
+        verify(childrenToParentEventSender, never()).sendToParent(ChildToParentEvent.PaymentFailed)
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+    }
+
+    @Test
+    fun `given TTP failed with onRetry, when retry clicked, then SDK onRetry invoked`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        var retryCalled = false
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.NonCancelable(
+            errorType = PaymentFlowError.NoNetwork,
+            onRetry = { retryCalled = true },
+        )
+        advanceUntilIdle()
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(retryCalled).isTrue()
+    }
+
+    @Test
+    fun `given TTP failed without onRetry, when retry clicked, then returns to checkout`() = runTest {
+        // GIVEN
+        mockPaymentFailedTexts()
+        whenever(resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method))
+            .thenReturn("Try another payment method")
+        val (vm, paymentState) = givenTtpInFlight()
+        advanceUntilIdle()
+        paymentState.value = CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment.Cancelable(
+            errorType = PaymentFlowError.NoNetwork,
+            amountWithCurrencyLabel = "",
+            onCancel = {},
+            onRetry = null,
+        )
+        advanceUntilIdle()
+        clearInvocations(childrenToParentEventSender)
+
+        // WHEN
+        vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
     }
 
     private suspend fun givenTtpInFlight(): Pair<
