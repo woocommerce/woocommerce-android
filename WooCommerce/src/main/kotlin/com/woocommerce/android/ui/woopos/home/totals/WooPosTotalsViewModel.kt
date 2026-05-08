@@ -190,6 +190,7 @@ class WooPosTotalsViewModel @Inject constructor(
         createDraftOrderJob?.cancel()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
