@@ -78,11 +78,11 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -2271,7 +2271,10 @@ class WooPosTotalsViewModelTest {
         assertThat(state.paymentButtonsState).isEqualTo(WooPosTotalsViewState.PaymentButtonsState.Disabled)
     }
 
-    private suspend fun givenTtpInFlight(): Pair<WooPosTotalsViewModel, MutableStateFlow<CardReaderPaymentOrRefundState>> {
+    private suspend fun givenTtpInFlight(): Pair<
+        WooPosTotalsViewModel,
+        MutableStateFlow<CardReaderPaymentOrRefundState>
+        > {
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
         val mockController: CardReaderPaymentController = mock()
