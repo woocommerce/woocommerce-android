@@ -1,0 +1,82 @@
+package org.wordpress.android.fluxc.utils
+
+import com.google.gson.Gson
+import com.google.gson.annotations.JsonAdapter
+import com.google.gson.annotations.SerializedName
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import java.math.BigDecimal
+
+class NullJsonAdapterTests {
+    data class StringExample(
+        @JsonAdapter(NullJsonAdapter::class, nullSafe = false)
+        @SerializedName("an_id")
+        val id: String?
+    )
+
+    data class NumberExample(
+        @JsonAdapter(NullJsonAdapter::class, nullSafe = false)
+        @SerializedName("amount")
+        val amount: BigDecimal?
+    )
+
+    private val gson = Gson()
+
+    @Test
+    fun `when passing null string in json, then it should be deserialized to null value`() {
+        val json = """{
+            "an_id": null
+            }"""
+
+        val example = gson.fromJson(json, StringExample::class.java)
+
+        assertThat(example.id).isNull()
+    }
+
+    @Test
+    fun `when serializing a null string value, then it should be exposed to the json`() {
+        val example = StringExample(null)
+
+        val json = gson.toJson(example)
+
+        assertThat(json).contains(""""an_id":null""")
+    }
+
+    @Test
+    fun `when passing non-null string value in json, then it should be deserialized to the correct value`() {
+        val json = """{
+            "an_id": "some_id"
+            }"""
+
+        val example = gson.fromJson(json, StringExample::class.java)
+
+        assertThat(example.id).isEqualTo("some_id")
+    }
+
+    @Test
+    fun `when serializing a non-null string value, then it should be correctly serialized`() {
+        val example = StringExample("some_id")
+
+        val json = gson.toJson(example)
+
+        assertThat(json).contains(""""an_id":"some_id"""")
+    }
+
+    @Test
+    fun `when serializing a null number value, then it should be exposed to the json`() {
+        val example = NumberExample(null)
+
+        val json = gson.toJson(example)
+
+        assertThat(json).contains(""""amount":null""")
+    }
+
+    @Test
+    fun `when serializing a non-null number value, then it should be correctly serialized`() {
+        val example = NumberExample(BigDecimal("100.50"))
+
+        val json = gson.toJson(example)
+
+        assertThat(json).contains(""""amount":100.50""")
+    }
+}
