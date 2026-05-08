@@ -140,6 +140,46 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given idle state with no visible content, when checking empty state, then it is visible`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.IDLE,
+            messages = emptyList(),
+            error = null,
+        )
+
+        assertThat(state.shouldShowEmptyState).isTrue()
+    }
+
+    @Test
+    fun `given idle state with messages, when checking empty state, then it is hidden`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.IDLE,
+            messages = listOf(
+                AssistantUiMessage("message-1", AssistantUiMessage.Role.USER, "Show today's sales"),
+            ),
+        )
+
+        assertThat(state.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
+    fun `given streaming state with no messages, when checking empty state, then it is hidden`() {
+        val state = AssistantUiState(status = AssistantUiStatus.STREAMING)
+
+        assertThat(state.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
+    fun `given fallback error state with no messages, when checking empty state, then it is hidden`() {
+        val state = AssistantUiState(
+            status = AssistantUiStatus.ERROR,
+            error = AssistantUiError.NETWORK,
+        )
+
+        assertThat(state.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
     fun `given streaming with active empty assistant message, when checking typing indicator, then it is visible`() {
         val state = AssistantUiState(
             messages = listOf(
@@ -421,6 +461,140 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given assistant message with two running tool activities, when ordering segments, then only latest pill is kept in place`() {
+        val firstToolActivity = toolActivity(
+            toolCallId = "call-1",
+            toolName = "analytics_revenue",
+            status = AssistantToolActivity.Status.RUNNING,
+        )
+        val secondToolActivity = toolActivity(
+            toolCallId = "call-2",
+            toolName = "orders_list",
+            status = AssistantToolActivity.Status.RUNNING,
+        )
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(firstToolActivity, secondToolActivity),
+        )
+
+        val orderedSegments = message.orderedSegments(
+            AssistantUiState(
+                status = AssistantUiStatus.STREAMING,
+                activeAssistantMessageId = "message-1",
+            )
+        )
+
+        assertThat(orderedSegments).containsExactly(secondToolActivity)
+    }
+
+    @Test
+    fun `given assistant message with completed then running tool activities and text in between, when ordering segments, then only latest pill is kept in place`() {
+        val firstToolActivity = toolActivity(
+            toolCallId = "call-1",
+            toolName = "analytics_revenue",
+            status = AssistantToolActivity.Status.COMPLETED,
+        )
+        val text = AssistantUiSegment.Text("Looking up your latest orders.")
+        val secondToolActivity = toolActivity(
+            toolCallId = "call-2",
+            toolName = "orders_list",
+            status = AssistantToolActivity.Status.RUNNING,
+        )
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(firstToolActivity, text, secondToolActivity),
+        )
+
+        val orderedSegments = message.orderedSegments(
+            AssistantUiState(
+                status = AssistantUiStatus.STREAMING,
+                activeAssistantMessageId = "message-1",
+            )
+        )
+
+        assertThat(orderedSegments).containsExactly(text, secondToolActivity)
+    }
+
+    @Test
+    fun `given finished turn with two completed tool activities, when ordering segments, then only latest completed pill remains`() {
+        val firstToolActivity = toolActivity(
+            toolCallId = "call-1",
+            toolName = "analytics_revenue",
+            status = AssistantToolActivity.Status.COMPLETED,
+        )
+        val text = AssistantUiSegment.Text("Done.")
+        val secondToolActivity = toolActivity(
+            toolCallId = "call-2",
+            toolName = "orders_list",
+            status = AssistantToolActivity.Status.COMPLETED,
+        )
+        val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(firstToolActivity, text, secondToolActivity, cardGroup),
+        )
+
+        val orderedSegments = message.orderedSegments(AssistantUiState(status = AssistantUiStatus.IDLE))
+
+        assertThat(orderedSegments).containsExactly(text, secondToolActivity, cardGroup)
+    }
+
+    @Test
+    fun `given assistant message with single tool activity, when ordering segments, then it is preserved`() {
+        val toolActivity = toolActivity(
+            toolCallId = "call-1",
+            toolName = "orders_list",
+            status = AssistantToolActivity.Status.RUNNING,
+        )
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.ASSISTANT,
+            segments = listOf(toolActivity),
+        )
+
+        val orderedSegments = message.orderedSegments(
+            AssistantUiState(
+                status = AssistantUiStatus.STREAMING,
+                activeAssistantMessageId = "message-1",
+            )
+        )
+
+        assertThat(orderedSegments).containsExactly(toolActivity)
+    }
+
+    @Test
+    fun `given user message with multiple tool activity shaped segments, when ordering segments, then segments are returned unchanged`() {
+        val firstToolActivity = toolActivity(
+            toolCallId = "call-1",
+            toolName = "analytics_revenue",
+            status = AssistantToolActivity.Status.COMPLETED,
+        )
+        val text = AssistantUiSegment.Text("Show revenue and orders.")
+        val secondToolActivity = toolActivity(
+            toolCallId = "call-2",
+            toolName = "orders_list",
+            status = AssistantToolActivity.Status.RUNNING,
+        )
+        val message = AssistantUiMessage(
+            id = "message-1",
+            role = AssistantUiMessage.Role.USER,
+            segments = listOf(firstToolActivity, text, secondToolActivity),
+        )
+
+        val orderedSegments = message.orderedSegments(
+            AssistantUiState(
+                status = AssistantUiStatus.STREAMING,
+                activeAssistantMessageId = "message-1",
+            )
+        )
+
+        assertThat(orderedSegments).containsExactly(firstToolActivity, text, secondToolActivity)
+    }
+
+    @Test
     fun `given non-streaming error and finished states, when ordering segments, then card groups are visible`() {
         val cardGroup = AssistantUiSegment.CardGroup(listOf(orderCard()))
         val text = AssistantUiSegment.Text("Here is the order.")
@@ -444,6 +618,18 @@ class AssistantUiStateTest {
                 .containsExactly(text, cardGroup)
         }
     }
+
+    private fun toolActivity(
+        toolCallId: String,
+        toolName: String,
+        status: AssistantToolActivity.Status,
+    ) = AssistantUiSegment.ToolActivity(
+        AssistantToolActivity(
+            toolCallId = toolCallId,
+            toolName = toolName,
+            status = status,
+        )
+    )
 
     private fun orderCard() = AssistantCard.Order(
         remoteOrderId = 123L,

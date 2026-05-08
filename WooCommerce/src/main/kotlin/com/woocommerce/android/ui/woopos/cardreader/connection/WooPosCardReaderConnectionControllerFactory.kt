@@ -9,8 +9,12 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.LocationUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +33,10 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
     @PointOfSaleMode private val tracker: PaymentsFlowTracker,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val onboardingErrorMapper: WooPosOnboardingErrorMapper,
+    private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream,
+    private val remoteReaderSession: WooPosRemoteReaderSession,
+    private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     fun create(scope: CoroutineScope): WooPosCardReaderConnectionController {
         return WooPosCardReaderConnectionController(
@@ -45,6 +53,10 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
             tracker = tracker,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             onboardingErrorMapper = onboardingErrorMapper,
+            unifiedDiscoveryStream = unifiedDiscoveryStream,
+            remoteReaderSession = remoteReaderSession,
+            wooPosAnalyticsTracker = wooPosAnalyticsTracker,
+            featureFlagRepository = featureFlagRepository,
         )
     }
 }

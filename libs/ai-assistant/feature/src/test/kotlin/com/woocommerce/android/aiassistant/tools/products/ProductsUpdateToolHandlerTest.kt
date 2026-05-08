@@ -1,6 +1,8 @@
 package com.woocommerce.android.aiassistant.tools.products
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +24,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.store.WCProductStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductsUpdateToolHandlerTest {
@@ -178,15 +184,100 @@ class ProductsUpdateToolHandlerTest {
     }
 
     @Test
-    fun `given update fails, when execute is called, then retryable TransportError is returned`() = runTest {
+    fun `given invalid product id failure, when execute is called, then invalid id TransportError is returned`() =
+        runTest {
+            whenever(
+                dataSource.updateProduct(
+                    productId = 42L,
+                    update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
+                )
+            ).thenReturn(
+                Result.failure(productFailure(WCProductStore.ProductErrorType.INVALID_PRODUCT_ID))
+            )
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given product not found failure, when execute is called, then not found TransportError is returned`() =
+        runTest {
+            whenever(
+                dataSource.updateProduct(
+                    productId = 42L,
+                    update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
+                )
+            ).thenReturn(Result.failure(AIProductsDataSource.ProductNotFoundException(42L)))
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given validation product failure, when execute is called, then validation TransportError is returned`() =
+        runTest {
+            whenever(
+                dataSource.updateProduct(
+                    productId = 42L,
+                    update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
+                )
+            ).thenReturn(
+                Result.failure(productFailure(WCProductStore.ProductErrorType.DUPLICATE_SKU))
+            )
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given invalid id Woo failure, when execute is called, then invalid id TransportError is returned`() =
+        runTest {
+            whenever(
+                dataSource.updateProduct(
+                    productId = 42L,
+                    update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
+                )
+            ).thenReturn(Result.failure(wooFailure(WooErrorType.INVALID_ID)))
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.DETERMINISTIC_FAILURE)
+        }
+
+    @Test
+    fun `given generic product update failure, when execute is called, then outcome unknown TransportError is returned`() =
+        runTest {
+            whenever(
+                dataSource.updateProduct(
+                    productId = 42L,
+                    update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
+                )
+            ).thenReturn(Result.failure(RuntimeException("network error")))
+
+            val result = executeValidUpdate()
+
+            assertTransportErrorKind(result, ToolFailureKind.OUTCOME_UNKNOWN)
+        }
+
+    @Test
+    fun `given generic Woo failure, when execute is called, then outcome unknown TransportError is returned`() = runTest {
         whenever(
             dataSource.updateProduct(
                 productId = 42L,
                 update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
             )
-        ).thenReturn(Result.failure(RuntimeException("network error")))
+        ).thenReturn(Result.failure(wooFailure(WooErrorType.API_ERROR)))
 
-        val result = handler.execute(
+        val result = executeValidUpdate()
+
+        assertTransportErrorKind(result, ToolFailureKind.OUTCOME_UNKNOWN)
+    }
+
+    private suspend fun executeValidUpdate(): ToolResult =
+        handler.execute(
             toolCall(
                 buildJsonObject {
                     put("id", 42)
@@ -195,7 +286,16 @@ class ProductsUpdateToolHandlerTest {
             )
         )
 
+    private fun productFailure(type: WCProductStore.ProductErrorType): OnChangedException =
+        OnChangedException(WCProductStore.ProductError(type = type))
+
+    private fun wooFailure(type: WooErrorType): OnChangedException =
+        OnChangedException(WooError(type = type, original = GenericErrorType.UNKNOWN))
+
+    private fun assertTransportErrorKind(result: ToolResult, kind: ToolFailureKind) {
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
-        assertThat((result as ToolResult.TransportError).retryable).isTrue
+        val error = result as ToolResult.TransportError
+        assertThat(error.retryable).isTrue
+        assertThat(error.kind).isEqualTo(kind)
     }
 }

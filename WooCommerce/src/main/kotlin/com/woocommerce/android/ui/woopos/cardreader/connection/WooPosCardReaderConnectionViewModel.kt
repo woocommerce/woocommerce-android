@@ -16,10 +16,11 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory,
     private val permissionUtils: WooPosPermissionUtils,
 ) : ViewModel() {
-
     private val controller: WooPosCardReaderConnectionController by lazy {
         controllerFactory.create(viewModelScope)
     }
+
+    fun onRemoteTapToPayHintClicked() = controller.showRemoteTapToPayExplainer()
 
     val state: StateFlow<WooPosCardReaderConnectionState> = controller.state
 
@@ -70,6 +71,9 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
 
     fun onBackPressed() {
         when (val currentState = state.value) {
+            is WooPosCardReaderConnectionState.RemoteTapToPayExplainer -> {
+                controller.hideRemoteTapToPayExplainer()
+            }
             is WooPosCardReaderConnectionState.UpdateRequired -> {
                 if (currentState.showCancelWarning) {
                     dismissDialog()
@@ -97,7 +101,7 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
             is WooPosCardReaderConnectionState.MissingLocationPermission,
             is WooPosCardReaderConnectionState.MultipleReadersFound,
             is WooPosCardReaderConnectionState.ReaderFound,
-            WooPosCardReaderConnectionState.Scanning,
+            is WooPosCardReaderConnectionState.Scanning,
             is WooPosCardReaderConnectionState.ScanningFailed,
             WooPosCardReaderConnectionState.UpdateCompleted,
             is WooPosCardReaderConnectionState.UpdateFailed,

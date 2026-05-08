@@ -31,7 +31,7 @@ class WooPosCardReaderConnectionViewModelTest {
     private val permissionUtils: WooPosPermissionUtils = mock()
 
     private val controllerStateFlow = MutableStateFlow<WooPosCardReaderConnectionState>(
-        WooPosCardReaderConnectionState.Scanning
+        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false)
     )
     private val controllerEventFlow = MutableSharedFlow<WooPosCardReaderConnectionController.ControllerEvent>()
 
@@ -172,7 +172,7 @@ class WooPosCardReaderConnectionViewModelTest {
     fun `given Scanning state, when onBackPressed, then calls controller cancel`() = runTest {
         // GIVEN
         setupControllerMocks()
-        controllerStateFlow.value = WooPosCardReaderConnectionState.Scanning
+        controllerStateFlow.value = WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = false)
         val viewModel = createViewModel()
 
         // WHEN
@@ -260,6 +260,37 @@ class WooPosCardReaderConnectionViewModelTest {
         // THEN
         verify(controller).onOnboardingCompleted()
     }
+
+    @Test
+    fun `when onRemoteTapToPayHintClicked called, then delegates to controller showRemoteTapToPayExplainer`() =
+        runTest {
+            // GIVEN
+            setupControllerMocks()
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onRemoteTapToPayHintClicked()
+
+            // THEN
+            verify(controller).showRemoteTapToPayExplainer()
+        }
+
+    @Test
+    fun `given RemoteTapToPayExplainer state, when onBackPressed, then calls controller hideRemoteTapToPayExplainer`() =
+        runTest {
+            // GIVEN
+            setupControllerMocks()
+            controllerStateFlow.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
+                onDismissClicked = {},
+            )
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onBackPressed()
+
+            // THEN
+            verify(controller).hideRemoteTapToPayExplainer()
+        }
 
     @Test
     fun `given OnboardingError state, when onBackPressed, then calls controller cancel`() = runTest {
