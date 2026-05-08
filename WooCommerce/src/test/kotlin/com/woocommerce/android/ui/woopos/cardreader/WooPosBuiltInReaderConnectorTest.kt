@@ -11,18 +11,16 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -33,6 +31,9 @@ import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosBuiltInReaderConnectorTest {
+    @get:Rule
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
     private val locationRepository: CardReaderLocationRepository = mock()
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val developerOptionsRepository: DeveloperOptionsRepository = mock {
@@ -61,20 +62,16 @@ class WooPosBuiltInReaderConnectorTest {
     )
 
     @Before
-    fun setUp() = runTest {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
-        whenever(onboardingChecker.getOnboardingState()).thenReturn(
-            CardReaderOnboardingState.OnboardingCompleted(
-                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
-                version = null,
-                countryCode = "US",
+    fun setUp() {
+        runBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = null,
+                    countryCode = "US",
+                )
             )
-        )
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+        }
     }
 
     @Test

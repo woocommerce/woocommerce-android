@@ -81,11 +81,11 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -1184,6 +1184,64 @@ class WooPosTotalsViewModelTest {
             assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
             val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
             assertThat(successState.orderTotalText).isEqualTo("Paid 5.00$ in Cash")
+        }
+
+    @Test
+    fun `given payment success state, when OnBackClicked, then sends OnNewTransactionStarted to parent`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+            verify(childrenToParentEventSender, never()).sendToParent(BackFromCheckoutToCartClicked)
+        }
+
+    @Test
+    fun `given payment success state, when OnBackClicked, then does not track CreateNewOrderTapped`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+
+            // WHEN
+            viewModel.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker, never()).track(CreateNewOrderTapped)
         }
 
     @Test
@@ -2329,7 +2387,10 @@ class WooPosTotalsViewModelTest {
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
     }
 
-    private suspend fun givenTtpInFlight(): Pair<WooPosTotalsViewModel, MutableStateFlow<CardReaderPaymentOrRefundState>> {
+    private suspend fun givenTtpInFlight(): Pair<
+        WooPosTotalsViewModel,
+        MutableStateFlow<CardReaderPaymentOrRefundState>
+        > {
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
         val mockController: CardReaderPaymentController = mock()

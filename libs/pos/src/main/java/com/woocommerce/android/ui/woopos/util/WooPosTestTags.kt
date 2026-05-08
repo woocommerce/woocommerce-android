@@ -7,7 +7,6 @@ object WooPosTestTags {
     const val CARD_READER_PAYMENT_BUTTON = "woo_pos_card_reader_payment_button"
     const val CARD_READER_PAYMENT_METHOD_BUTTON = "woo_pos_card_reader_payment_method_button"
     const val TAP_TO_PAY_PAYMENT_BUTTON = "woo_pos_tap_to_pay_payment_button"
-    const val ALL_PAYMENT_METHODS_BUTTON = "woo_pos_all_payment_methods_button"
     const val OTHER_PAYMENT_METHODS_BUTTON = "woo_pos_other_payment_methods_button"
     const val SCAN_TO_PAY_PAYMENT_BUTTON = "woo_pos_scan_to_pay_payment_button"
     const val MARK_ORDER_AS_PAID_PAYMENT_BUTTON = "woo_pos_mark_order_as_paid_payment_button"

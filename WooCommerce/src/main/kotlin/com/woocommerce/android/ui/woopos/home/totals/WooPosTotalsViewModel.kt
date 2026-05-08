@@ -227,6 +227,7 @@ class WooPosTotalsViewModel @Inject constructor(
         createDraftOrderJob?.cancel()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
@@ -471,6 +472,10 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
                     retryPaymentCollectionFromScratch()
+                }
+
+                is WooPosTotalsViewState.PaymentSuccess -> {
+                    childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
                 }
 
                 else -> {
