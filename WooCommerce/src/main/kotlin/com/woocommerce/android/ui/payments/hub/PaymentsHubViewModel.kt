@@ -45,6 +45,8 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingEr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -74,6 +76,7 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -205,9 +208,14 @@ class PaymentsHubViewModel @Inject constructor(
         )
     ).apply {
         addTapToPay()
+        addCardReaderMode()
         addCardReaderManuals()
         addLearnMoreAboutIPP()
     }
+
+    private val isPhoneEligibleAsCardReader: Boolean
+        get() = tapToPayAvailabilityStatus().isAvailable &&
+            featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
 
     private fun MutableList<ListItem>.addTapToPay() {
         if (tapToPayAvailabilityStatus().isAvailable) {
@@ -238,13 +246,29 @@ class PaymentsHubViewModel @Inject constructor(
         }
     }
 
+    private fun MutableList<ListItem>.addCardReaderMode() {
+        if (!isPhoneEligibleAsCardReader) return
+        add(
+            NonToggleableListItem(
+                icon = R.drawable.ic_smartphone_24dp,
+                label = UiStringRes(R.string.card_reader_mode_settings_row_label),
+                index = 10,
+                onClick = ::onCardReaderModeClicked,
+            )
+        )
+    }
+
+    private fun onCardReaderModeClicked() {
+        triggerEvent(PaymentsHubEvents.NavigateToCardReaderMode)
+    }
+
     private fun MutableList<ListItem>.addCardReaderManuals() {
         if (countryConfig is CardReaderConfigForSupportedCountry) {
             add(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 10,
+                    index = 11,
                     onClick = { onCardReaderManualsClicked(countryConfig) }
                 )
             )
@@ -256,7 +280,7 @@ class PaymentsHubViewModel @Inject constructor(
             LearnMoreListItem(
                 icon = R.drawable.ic_info_outline_20dp,
                 label = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true),
-                index = 11,
+                index = 12,
                 onClick = ::onLearnMoreIppClicked
             )
         )
@@ -535,6 +559,8 @@ class PaymentsHubViewModel @Inject constructor(
         ) : PaymentsHubEvents()
 
         object CardReaderUpdateScreen : PaymentsHubEvents()
+
+        data object NavigateToCardReaderMode : PaymentsHubEvents()
     }
 
     enum class CashOnDeliverySource {

@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
+import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsViewModel.NotificationType
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -29,16 +30,19 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
     }
     private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val showTestNotification: ShowTestNotification = mock()
+    private val wooNotificationBuilder: WooNotificationBuilder = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: NotificationSettingsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(wooNotificationBuilder.isNotificationsEnabled()).thenReturn(true)
         prepareMocks()
         viewModel = NotificationSettingsViewModel(
             savedStateHandle = SavedStateHandle(),
             resourceProvider = resourceProvider,
             notificationChannelsHandler = notificationChannelsHandler,
             showTestNotification = showTestNotification,
+            wooNotificationBuilder = wooNotificationBuilder,
             analyticsTracker = analyticsTracker
         )
     }
@@ -80,15 +84,52 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when manage notifications is clicked, then open device settings`() = testBlocking {
+    fun `when device notification settings action is clicked, then open device settings`() = testBlocking {
         setup()
 
         val event = viewModel.event.runAndCaptureValues {
-            viewModel.onManageNotificationsClicked()
+            viewModel.onDeviceNotificationSettingsClicked()
         }.last()
 
         assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenDeviceNotificationSettings::class.java)
     }
+
+    @Test
+    fun `given system app notifications are enabled, when view model is loaded, then expose enabled state`() =
+        testBlocking {
+            setup {
+                whenever(wooNotificationBuilder.isNotificationsEnabled()).thenReturn(true)
+            }
+
+            val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.captureValues().last()
+
+            assertThat(isAppNotificationsEnabled).isTrue()
+        }
+
+    @Test
+    fun `given system app notifications are disabled, when view model is loaded, then expose disabled state`() =
+        testBlocking {
+            setup {
+                whenever(wooNotificationBuilder.isNotificationsEnabled()).thenReturn(false)
+            }
+
+            val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.captureValues().last()
+
+            assertThat(isAppNotificationsEnabled).isFalse()
+        }
+
+    @Test
+    fun `when device notification settings may have changed, then update system app notification state`() =
+        testBlocking {
+            setup {
+                whenever(wooNotificationBuilder.isNotificationsEnabled()).thenReturn(false, true)
+            }
+
+            viewModel.refreshNotificationSettings()
+            val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.captureValues().last()
+
+            assertThat(isAppNotificationsEnabled).isTrue()
+        }
 
     @Test
     fun `when enable cha ching sound is clicked, then recreate notification channel`() = testBlocking {
@@ -164,5 +205,38 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
         assertThat(
             notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled
         ).isFalse()
+    }
+
+    @Test
+    fun `when new orders notification type is clicked, then open new orders settings`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onNotificationTypeClicked(NotificationType.NEW_ORDERS)
+        }.last()
+
+        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenNewOrderNotificationSettings::class.java)
+    }
+
+    @Test
+    fun `when new reviews notification type is clicked, then open new reviews settings`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onNotificationTypeClicked(NotificationType.NEW_REVIEWS)
+        }.last()
+
+        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenNewReviewNotificationSettings::class.java)
+    }
+
+    @Test
+    fun `when stock notification type is clicked, then open stock settings`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onNotificationTypeClicked(NotificationType.STOCK)
+        }.last()
+
+        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenStockNotificationSettings::class.java)
     }
 }
