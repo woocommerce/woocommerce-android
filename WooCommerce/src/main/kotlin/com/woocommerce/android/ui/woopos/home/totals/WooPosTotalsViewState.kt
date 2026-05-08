@@ -12,7 +12,29 @@ sealed class WooPosTotalsViewState : Parcelable {
         val readerStatus: ReaderStatus,
         val isTapToPayAvailable: Boolean = false,
         val isAllPaymentMethodsDialogVisible: Boolean = false,
-    ) : WooPosTotalsViewState()
+        // UI-only rendering hint covering the TTP loading window. `Preparing` is the
+        // pre-overlay phase (location lookup + SDK init + reader connect); `SdkActive`
+        // is set once the Stripe overlay surfaces. Mirrors the VM-side `isTapToPayPayment`
+        // for the duration the in-app loading affordance is visible.
+        val tapToPayProgress: TapToPayProgress? = null,
+    ) : WooPosTotalsViewState() {
+        val paymentButtonsState: PaymentButtonsState
+            get() = if (tapToPayProgress != null) PaymentButtonsState.Disabled else PaymentButtonsState.Enabled
+    }
+
+    sealed class TapToPayProgress : Parcelable {
+        @Parcelize
+        data object Preparing : TapToPayProgress()
+
+        @Parcelize
+        data object SdkActive : TapToPayProgress()
+    }
+
+    @Parcelize
+    enum class PaymentButtonsState : Parcelable {
+        Enabled,
+        Disabled,
+    }
 
     sealed class Totals : Parcelable {
         @Parcelize

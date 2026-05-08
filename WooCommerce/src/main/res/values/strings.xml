@@ -3815,6 +3815,11 @@
     <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Pay with Tap to pay</string>
     <string name="woopos_tap_to_pay_promoted_image_description">Tap to Pay on phone illustration</string>
+    <string name="woopos_tap_to_pay_preparing_title">Getting ready</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Preparing Tap to Pay</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Tap to Pay couldn\'t start. Please try again.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Tap to Pay couldn\'t start: %1$s</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Grant location permission to use Tap to Pay.</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">Edit order</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">Remove coupons</string>
