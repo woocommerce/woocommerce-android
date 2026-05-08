@@ -266,7 +266,7 @@ GEM
     nanaimo (0.4.0)
     nap (1.1.0)
     naturally (2.3.0)
-    nokogiri (1.19.1)
+    nokogiri (1.19.3)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     octokit (6.1.1)
@@ -369,7 +369,7 @@ DEPENDENCIES
   fastlane (~> 2.216)
   fastlane-plugin-firebase_app_distribution (~> 0.10)
   fastlane-plugin-wpmreleasetoolkit (~> 13.8)
-  nokogiri
+  nokogiri (>= 1.19.3)
   openssl (~> 4.0)
   rmagick (~> 4.1)
   rubocop (~> 1.65)

@@ -90,10 +90,12 @@ class CardReaderPaymentViewModel @Inject constructor(
         isTTPPaymentInProgress = ::isTTPPaymentInProgress,
     )
 
-    val viewStateData: LiveData<ViewState> =
+    private val derivedPaymentState: LiveData<ViewState> =
         paymentController.paymentState.map(paymentStateMapper()).asLiveData(coroutineContext)
 
-    override val event: LiveData<MultiLiveEvent.Event> =
+    val viewStateData: LiveData<ViewState> = derivedPaymentState
+
+    private val mappedControllerEvents: LiveData<MultiLiveEvent.Event> =
         paymentController.event.asLiveData(coroutineContext).map {
             when (it) {
                 CardReaderPaymentEvent.ContactSupportTapped -> ContactSupport
@@ -113,6 +115,12 @@ class CardReaderPaymentViewModel @Inject constructor(
                 is CardReaderPaymentEvent.ShowErrorMessage -> MultiLiveEvent.Event.ShowSnackbar(it.message)
             }
         }
+
+    override val event: LiveData<MultiLiveEvent.Event> = mappedControllerEvents
+
+    fun onCancelClicked() {
+        viewStateData.value?.onSecondaryActionClicked?.invoke()
+    }
 
     fun start() = paymentController.start()
 

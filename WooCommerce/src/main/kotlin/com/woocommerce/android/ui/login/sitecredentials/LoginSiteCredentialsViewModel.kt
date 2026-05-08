@@ -69,9 +69,24 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val SUCCESS_PARAMETER = "success"
         private const val USERNAME_PARAMETER = "user_login"
         private const val PASSWORD_PARAMETER = "password"
+        private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
     }
 
-    private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
+    private var siteAddress: String
+        get() = savedStateHandle[SITE_ADDRESS_KEY]!!
+        set(value) {
+            savedStateHandle[SITE_ADDRESS_KEY] = value
+        }
+
+    // The URL the WP.com `connect/site-info` endpoint reports as the canonical site URL is
+    // sometimes wrong — its cache can return an http URL for a site that 301s to https. Once
+    // FluxC's WP-API discovery resolves the real scheme, we adopt it and re-attempt login
+    // (guarded so a misbehaving server can't trigger a ping-pong update).
+    private var hasReconciledSiteUrl: Boolean
+        get() = savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] ?: false
+        set(value) {
+            savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] = value
+        }
 
     private val authError = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
@@ -253,6 +268,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loadingMessage.value = R.string.login_site_credentials_fetching_site
         wpApiSiteRepository.fetchSite(url = siteAddress).fold(
             onSuccess = { site ->
+                val canonicalUrl = site.url
+                if (!hasReconciledSiteUrl && !canonicalUrl.isNullOrEmpty() && canonicalUrl != siteAddress) {
+                    hasReconciledSiteUrl = true
+                    siteAddress = canonicalUrl
+                    login()
+                    return@fold
+                }
                 if (site.hasWooCommerce) {
                     fetchedSiteId.value = site.id
                     loadingMessage.value = 0
