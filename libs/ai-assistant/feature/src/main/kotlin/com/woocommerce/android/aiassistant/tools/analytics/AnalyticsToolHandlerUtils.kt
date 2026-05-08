@@ -53,9 +53,11 @@ internal fun analyticsStatsSummary(
     after: String,
     before: String,
     stats: AnalyticsStats,
+    currency: String? = null,
 ): JsonObject = buildJsonObject {
     put("after", after)
     put("before", before)
+    currency?.let { put("currency", it) }
     stats.totals?.let { put("totals", it) }
     stats.intervals?.let { intervals ->
         put("interval_count", intervals.size)

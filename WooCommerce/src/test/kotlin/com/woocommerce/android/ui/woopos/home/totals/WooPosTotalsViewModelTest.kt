@@ -32,6 +32,9 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
@@ -159,6 +162,10 @@ class WooPosTotalsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val remoteReaderSession: WooPosRemoteReaderSession = mock {
+        on { state }.thenReturn(MutableStateFlow(WooPosRemoteReaderSession.State.Idle))
+    }
+    private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow = mock()
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
@@ -1142,6 +1149,64 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given payment success state, when OnBackClicked, then sends OnNewTransactionStarted to parent`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+            verify(childrenToParentEventSender, never()).sendToParent(BackFromCheckoutToCartClicked)
+        }
+
+    @Test
+    fun `given payment success state, when OnBackClicked, then does not track CreateNewOrderTapped`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+
+            // WHEN
+            viewModel.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker, never()).track(CreateNewOrderTapped)
+        }
+
+    @Test
     fun `given checkout started and order contains only free products, when vm created, then totals state correctly calculated`() =
         runTest {
             // GIVEN
@@ -1942,6 +2007,49 @@ class WooPosTotalsViewModelTest {
             )
         }
 
+    @Test
+    fun `given remote payment failed, when RetryFailedTransactionClicked, then remote flow is invoked again`() =
+        runTest {
+            // GIVEN
+            mockPaymentFailedTexts()
+            givenCardReaderConnectedAndNetworkAvailable()
+            whenever(cardReaderFacade.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.NotConnected())
+            )
+            val remoteState = MutableStateFlow<WooPosRemoteReaderSession.State>(
+                WooPosRemoteReaderSession.State.Connected(
+                    reader = simulatedRemoteReader(),
+                    readerSerial = "SIM-1",
+                )
+            )
+            whenever(remoteReaderSession.state).thenReturn(remoteState)
+            whenever(remoteReaderPaymentFlow.collect(any(), any()))
+                .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
+
+            val vm = createViewModelAndSetupForSuccessfulOrderCreation()
+            advanceUntilIdle()
+            assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
+
+            // WHEN
+            vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(remoteReaderPaymentFlow, org.mockito.kotlin.times(2)).collect(any(), any())
+        }
+
+    private fun simulatedRemoteReader() =
+        com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader.Phone(
+            serviceName = "woopos-remote-test",
+            deviceId = "test-device-id",
+            name = "phone",
+            host = java.net.InetAddress.getByName("127.0.0.1"),
+            port = 1234,
+            fingerprintBase64 = "fp",
+            siteHash = "site-hash",
+            isSimulated = true,
+        )
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
@@ -2093,5 +2201,7 @@ class WooPosTotalsViewModelTest {
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
+        remoteReaderPaymentFlow = remoteReaderPaymentFlow,
+        effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
     )
 }

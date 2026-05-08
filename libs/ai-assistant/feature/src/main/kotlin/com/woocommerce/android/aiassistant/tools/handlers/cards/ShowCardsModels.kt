@@ -15,7 +15,8 @@ internal data class ShowCardsArguments(
 
 internal enum class ShowCardFamily(val serializedName: String) {
     Order("order"),
-    Product("product");
+    Product("product"),
+    AnalyticsStats("analytics_stats");
 
     companion object {
         fun from(value: String): ShowCardFamily? =
@@ -64,6 +65,16 @@ internal data class ProductSummary(
     val sku: String? = null,
     val price: String? = null,
     @SerialName("stock_status") val stockStatus: String? = null,
+)
+
+@Serializable
+internal data class AnalyticsStatsSummary(
+    val id: String,
+    val after: String,
+    val before: String,
+    val currency: String? = null,
+    val totals: JsonObject,
+    @SerialName("interval_subtotals") val intervalSubtotals: List<JsonObject> = emptyList(),
 )
 
 @Serializable
@@ -144,5 +155,15 @@ internal sealed interface ShowCardDetails {
         @SerialName("stock_status") val stockStatus: String? = null,
         val status: String? = null,
         @SerialName("image_url") val imageUrl: String? = null,
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("analytics_stats")
+    data class AnalyticsStats(
+        val after: String,
+        val before: String,
+        val currency: String? = null,
+        val totals: JsonObject,
+        @SerialName("interval_subtotals") val intervalSubtotals: List<JsonObject> = emptyList(),
     ) : ShowCardDetails
 }
