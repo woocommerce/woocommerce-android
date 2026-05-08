@@ -31,7 +31,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosBuiltInReaderConnectorTest {
     private val locationRepository: CardReaderLocationRepository = mock()
@@ -119,6 +118,20 @@ class WooPosBuiltInReaderConnectorTest {
         val result = sut.connect()
 
         assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given discovery emits empty reader list, when connect, then returns failure with no message`() = runTest {
+        whenever(locationRepository.getDefaultLocationId(any()))
+            .thenReturn(LocationIdFetchingResult.Success("loc"))
+        whenever(cardReaderManager.discoverReaders(any(), any()))
+            .thenReturn(flowOf(CardReaderDiscoveryEvents.ReadersFound(emptyList())))
+
+        val result = sut.connect()
+
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(BuiltInReaderDiscoveryFailedException::class.java)
+        assertThat(result.exceptionOrNull()?.message).isNull()
     }
 
     @Test

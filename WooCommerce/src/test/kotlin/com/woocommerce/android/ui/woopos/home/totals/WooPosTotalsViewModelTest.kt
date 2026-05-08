@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
@@ -81,6 +82,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -2159,6 +2161,57 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given missing location permission, when TTP clicked, then permission request event is emitted`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(builtInReaderConnector.connect()).thenReturn(
+            Result.failure(MissingFineLocationPermissionException())
+        )
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN / THEN
+        viewModel.screenEvents.test {
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked)
+            assertThat(awaitItem()).isEqualTo(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+        }
+    }
+
+    @Test
+    fun `given permission granted result, when received, then connect is re-attempted`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(builtInReaderConnector.connect()).thenReturn(Result.success(Unit))
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted = true))
+        advanceUntilIdle()
+
+        // THEN
+        verify(builtInReaderConnector).connect()
+    }
+
+    @Test
+    fun `given permission denied result, when received, then connect is not attempted`() = runTest {
+        // GIVEN
+        whenever(resourceProvider.getString(R.string.woopos_tap_to_pay_missing_location_permission_message))
+            .thenReturn("Grant location to use TTP")
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted = false))
+        advanceUntilIdle()
+
+        // THEN
+        verify(builtInReaderConnector, never()).connect()
+        verify(childrenToParentEventSender).sendToParent(
+            argThat {
+                this is ChildToParentEvent.ToastMessageDisplayed && this.message == "Grant location to use TTP"
+            }
+        )
+    }
+
+    @Test
     fun `given TTP in flight, when LoadingData emitted, then tapToPayProgress becomes SdkActive`() = runTest {
         // GIVEN
         val (vm, paymentState) = givenTtpInFlight()
@@ -2189,6 +2242,18 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
+    }
+
+    @Test
+    fun `given TTP starting, when in progress, then paymentButtonsState is Disabled`() = runTest {
+        // GIVEN
+        val (vm, _) = givenTtpInFlight()
+        advanceUntilIdle()
+
+        // THEN
+        val state = vm.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.tapToPayProgress).isNotNull()
+        assertThat(state.paymentButtonsState).isEqualTo(WooPosTotalsViewState.PaymentButtonsState.Disabled)
     }
 
     @Test
