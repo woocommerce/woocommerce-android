@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -57,6 +58,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -76,6 +79,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -162,6 +166,10 @@ class WooPosTotalsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
+        on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
+    }
     private val remoteReaderSession: WooPosRemoteReaderSession = mock {
         on { state }.thenReturn(MutableStateFlow(WooPosRemoteReaderSession.State.Idle))
     }
@@ -2008,6 +2016,64 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given flag on and TTP NotAvailable, when ViewModel created, then NotAvailable reason tracked once`() = runTest {
+        // GIVEN
+        val notAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(notAvailable)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker).trackTapToPayNotAvailableReason(notAvailable, "woo_pos_checkout")
+    }
+
+    @Test
+    fun `given flag on and TTP Available, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
+    fun `given flag off and TTP NotAvailable, when ViewModel created, then NotAvailable reason not tracked`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(false)
+        whenever(tapToPayAvailabilityStatus.invoke())
+            .thenReturn(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
+    fun `given flag on and TTP Hidden, when ViewModel created, then reason not tracked`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Hidden)
+        clearInvocations(tracker)
+
+        // WHEN
+        createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
+    }
+
+    @Test
     fun `given remote payment failed, when RetryFailedTransactionClicked, then remote flow is invoked again`() =
         runTest {
             // GIVEN
@@ -2201,6 +2267,9 @@ class WooPosTotalsViewModelTest {
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
+        featureFlagRepository = featureFlagRepository,
+        tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
+        paymentsFlowTracker = tracker,
         remoteReaderPaymentFlow = remoteReaderPaymentFlow,
         effectiveReaderStatusProvider = WooPosEffectiveReaderStatusProvider(cardReaderFacade, remoteReaderSession),
     )
