@@ -14,7 +14,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     private val builder = WooCommerceConfirmationPreviewBuilder()
 
     @Test
-    fun `given order status update emails customer, when preview is built, then typed summary is included`() {
+    fun `given order status update emails customer, when preview is built, then summary mentions notification`() {
         val call = toolCall(
             name = "orders_update",
             arguments = buildJsonObject {
@@ -29,20 +29,12 @@ class WooCommerceConfirmationPreviewBuilderTest {
             string(
                 R.string.ai_assistant_confirmation_order_update_summary,
                 raw("42"),
-                string(
-                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
-                    raw("processing"),
-                ),
             )
         )
         assertThat(preview.message).isEqualTo(
             string(
                 R.string.ai_assistant_confirmation_order_update_summary,
                 raw("42"),
-                string(
-                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
-                    raw("processing"),
-                ),
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -68,9 +60,8 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_order_update_summary,
+                R.string.ai_assistant_confirmation_order_update_title,
                 raw("3000000000"),
-                string(R.string.ai_assistant_confirmation_change_summary_status, raw("pending")),
             )
         )
     }
@@ -91,9 +82,8 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_order_update_summary,
+                R.string.ai_assistant_confirmation_order_update_title,
                 raw("42"),
-                string(R.string.ai_assistant_confirmation_change_summary_status, raw("pending")),
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -106,7 +96,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
-    fun `given bulk order status update emails customers, when preview is built, then nested summary is included`() {
+    fun `given bulk order status update emails customers, when preview is built, then summary mentions notification`() {
         val call = toolCall(
             name = "orders_bulk_update",
             arguments = buildJsonObject {
@@ -118,16 +108,11 @@ class WooCommerceConfirmationPreviewBuilderTest {
         val preview = builder.build(call)
 
         assertThat(preview.isBulk).isTrue()
-        val summary = string(
-            R.string.ai_assistant_confirmation_change_summary_status_emails_customers,
-            raw("completed"),
-        )
         assertThat(preview.message).isEqualTo(
             quantity(
                 quantity = 5,
                 singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
                 multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
-                summary,
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -140,7 +125,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
-    fun `given one order bulk status update emails customer, when preview is built, then singular impact is used`() {
+    fun `given one order bulk status update emails customer, when preview is built, then singular summary is used`() {
         val call = toolCall(
             name = "orders_bulk_update",
             arguments = buildJsonObject {
@@ -151,22 +136,24 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         val preview = builder.build(call)
 
-        val summary = string(
-            R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
-            raw("completed"),
-        )
         assertThat(preview.message).isEqualTo(
             quantity(
                 quantity = 1,
                 singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
                 multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
-                summary,
             )
+        )
+        assertThat(preview.fields).containsExactly(
+            ConfirmationPreviewField(
+                name = "status",
+                value = raw("completed"),
+                label = label(R.string.ai_assistant_confirmation_field_status),
+            ),
         )
     }
 
     @Test
-    fun `given product price and stock update, when preview is built, then exact changes are included`() {
+    fun `given product price and stock update, when preview is built, then title omits field summary`() {
         val call = toolCall(
             name = "products_update",
             arguments = buildJsonObject {
@@ -178,13 +165,8 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         val preview = builder.build(call)
 
-        val summary = string(
-            R.string.ai_assistant_confirmation_message_list_separator,
-            string(R.string.ai_assistant_confirmation_change_summary_regular_price, raw("24.99")),
-            string(R.string.ai_assistant_confirmation_change_summary_stock_quantity, raw("100")),
-        )
         assertThat(preview.message).isEqualTo(
-            string(R.string.ai_assistant_confirmation_product_update_summary, raw("7"), summary)
+            string(R.string.ai_assistant_confirmation_product_update_title, raw("7"))
         )
         assertThat(preview.fields).containsExactly(
             ConfirmationPreviewField(
@@ -215,9 +197,8 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_product_update_summary,
+                R.string.ai_assistant_confirmation_product_update_title,
                 raw("7"),
-                string(R.string.ai_assistant_confirmation_change_summary_regular_price, raw("24.99")),
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -247,17 +228,11 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         val preview = builder.build(call)
 
-        val summary = string(
-            R.string.ai_assistant_confirmation_message_list_separator,
-            string(R.string.ai_assistant_confirmation_change_summary_regular_price, raw("19.99")),
-            string(R.string.ai_assistant_confirmation_change_summary_status, raw("draft")),
-        )
         assertThat(preview.message).isEqualTo(
             quantity(
                 quantity = 2,
-                singular = R.string.ai_assistant_confirmation_products_bulk_update_summary_single,
-                multiple = R.string.ai_assistant_confirmation_products_bulk_update_summary_multiple,
-                summary,
+                singular = R.string.ai_assistant_confirmation_products_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_products_bulk_update_title_multiple,
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -295,10 +270,9 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_product_variation_update_summary,
+                R.string.ai_assistant_confirmation_product_variation_update_title,
                 raw("8"),
                 raw("7"),
-                expectedProductVariationSummary(),
             )
         )
         assertThat(preview.fields).containsExactlyElementsOf(expectedProductVariationFields())
@@ -344,11 +318,19 @@ class WooCommerceConfirmationPreviewBuilderTest {
             ),
             snapshot = ConfirmationSnapshot(
                 currentValues = mapOf(
+                    "name" to "Classic T-Shirt",
                     "regular_price" to "19.99",
                 )
             ),
         )
 
+        assertThat(preview.message).isEqualTo(
+            string(
+                R.string.ai_assistant_confirmation_product_update_title_with_name,
+                raw("Classic T-Shirt"),
+                raw("7"),
+            )
+        )
         assertThat(preview.rows).containsExactly(
             ConfirmationPreviewField(
                 name = "regular_price",
@@ -417,9 +399,8 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_order_update_summary,
+                R.string.ai_assistant_confirmation_order_update_title,
                 raw("42"),
-                string(R.string.ai_assistant_confirmation_change_summary_empty),
             )
         )
         assertThat(preview.fields).isEmpty()
@@ -457,9 +438,8 @@ class WooCommerceConfirmationPreviewBuilderTest {
 
         assertThat(preview.message).isEqualTo(
             string(
-                R.string.ai_assistant_confirmation_product_update_summary,
+                R.string.ai_assistant_confirmation_product_update_title,
                 raw("7"),
-                string(R.string.ai_assistant_confirmation_change_summary_status, raw("draft")),
             )
         )
         assertThat(preview.fields).containsExactly(
@@ -569,18 +549,16 @@ class WooCommerceConfirmationPreviewBuilderTest {
         assertThat(orderPreview.message).isEqualTo(
             quantity(
                 quantity = 2,
-                singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
-                multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
-                string(R.string.ai_assistant_confirmation_change_summary_empty),
+                singular = R.string.ai_assistant_confirmation_orders_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_orders_bulk_update_title_multiple,
             )
         )
         assertThat(orderPreview.fields).isEmpty()
         assertThat(productPreview.message).isEqualTo(
             quantity(
                 quantity = 2,
-                singular = R.string.ai_assistant_confirmation_products_bulk_update_summary_single,
-                multiple = R.string.ai_assistant_confirmation_products_bulk_update_summary_multiple,
-                string(R.string.ai_assistant_confirmation_change_summary_empty),
+                singular = R.string.ai_assistant_confirmation_products_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_products_bulk_update_title_multiple,
             )
         )
         assertThat(productPreview.fields).isEmpty()
@@ -632,18 +610,6 @@ class WooCommerceConfirmationPreviewBuilderTest {
         vararg args: ConfirmationPreviewText,
     ) = ConfirmationPreviewText.Quantity(quantity, singular, multiple, args.toList())
 
-    private fun expectedProductVariationSummary() = listOf(
-        string(R.string.ai_assistant_confirmation_change_summary_regular_price, raw("19.99")),
-        string(
-            R.string.ai_assistant_confirmation_change_summary_sale_price,
-            string(R.string.ai_assistant_confirmation_field_value_off),
-        ),
-        string(R.string.ai_assistant_confirmation_change_summary_stock_quantity, raw("3")),
-        string(R.string.ai_assistant_confirmation_change_summary_stock_status, raw("instock")),
-        string(R.string.ai_assistant_confirmation_change_summary_status, raw("publish")),
-        string(R.string.ai_assistant_confirmation_change_summary_sku, raw("VAR-8")),
-    ).toLocalizedList()
-
     private fun expectedProductVariationFields() = listOf(
         ConfirmationPreviewField(
             name = "regular_price",
@@ -676,9 +642,4 @@ class WooCommerceConfirmationPreviewBuilderTest {
             label = label(R.string.ai_assistant_confirmation_field_sku),
         ),
     )
-
-    private fun List<ConfirmationPreviewText>.toLocalizedList(): ConfirmationPreviewText =
-        reduce { left, right ->
-            string(R.string.ai_assistant_confirmation_message_list_separator, left, right)
-        }
 }
