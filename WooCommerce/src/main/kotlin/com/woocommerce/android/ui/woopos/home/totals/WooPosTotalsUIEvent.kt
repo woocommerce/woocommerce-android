@@ -12,6 +12,7 @@ sealed class WooPosTotalsUIEvent {
     data object OnStartReceiptFlowClicked : WooPosTotalsUIEvent()
     data object OnCashPaymentClicked : WooPosTotalsUIEvent()
     data object OnTapToPayClicked : WooPosTotalsUIEvent()
+    data class OnAllPaymentMethodsVisibilityChanged(val isVisible: Boolean) : WooPosTotalsUIEvent()
     data object ConnectReaderClicked : WooPosTotalsUIEvent()
     data object OnBackClicked : WooPosTotalsUIEvent()
 }

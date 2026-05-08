@@ -190,6 +190,7 @@ class WooPosTotalsViewModel @Inject constructor(
         createDraftOrderJob?.cancel()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
@@ -206,6 +207,9 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> handleTapToPayClicked()
+
+            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged ->
+                handleAllPaymentMethodsVisibilityChanged(event.isVisible)
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
 
@@ -247,6 +251,11 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleTapToPayClicked() = viewModelScope.launch {
         totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped()
+    }
+
+    private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
+        val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = isVisible)
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
