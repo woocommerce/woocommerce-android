@@ -21,14 +21,24 @@ internal fun AssistantUiMessage.orderedSegments(state: AssistantUiState): List<A
     } else {
         segments
     }
-    val hasAssistantText = displaySegments.any { it is AssistantUiSegment.Text && it.text.isNotEmpty() }
-    if (isStreaming || !hasAssistantText) return displaySegments
+    val collapsedSegments = displaySegments.collapseToolActivityToLatest()
+    val hasAssistantText = collapsedSegments.any { it is AssistantUiSegment.Text && it.text.isNotEmpty() }
+    if (isStreaming || !hasAssistantText) return collapsedSegments
 
-    return displaySegments.filterNot { it is AssistantUiSegment.CardGroup } +
-        displaySegments.filterIsInstance<AssistantUiSegment.CardGroup>()
+    return collapsedSegments.filterNot { it is AssistantUiSegment.CardGroup } +
+        collapsedSegments.filterIsInstance<AssistantUiSegment.CardGroup>()
 }
 
 private fun AssistantUiState.isStreamingMessage(message: AssistantUiMessage): Boolean =
     status == AssistantUiStatus.STREAMING &&
         message.role == AssistantUiMessage.Role.ASSISTANT &&
         message.id == activeAssistantMessageId
+
+private fun List<AssistantUiSegment>.collapseToolActivityToLatest(): List<AssistantUiSegment> {
+    val latestToolActivityIndex = indexOfLast { it is AssistantUiSegment.ToolActivity }
+    if (latestToolActivityIndex == -1) return this
+
+    return filterIndexed { index, segment ->
+        segment !is AssistantUiSegment.ToolActivity || index == latestToolActivityIndex
+    }
+}
