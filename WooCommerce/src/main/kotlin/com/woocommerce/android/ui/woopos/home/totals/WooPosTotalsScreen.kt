@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -42,6 +43,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
@@ -65,12 +67,14 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     viewModel: WooPosTotalsViewModel = hiltViewModel(),
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     val state = viewModel.state.collectAsState().value
     WooPosTotalsScreen(
         modifier = modifier,
         state = state,
         onUIEvent = viewModel::onUIEvent,
+        onPhoneBack = onPhoneBack,
     )
 }
 
@@ -79,6 +83,7 @@ private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsViewState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     Box(modifier = modifier) {
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Checkout) {
@@ -86,6 +91,7 @@ private fun WooPosTotalsScreen(
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent,
+                    onPhoneBack = onPhoneBack,
                 )
             }
         }
@@ -171,6 +177,7 @@ private fun StateChangeAnimated(
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier
@@ -178,6 +185,19 @@ private fun TotalsLoaded(
             .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        if (onPhoneBack != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WooPosBackButton(
+                    modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                    onClick = onPhoneBack,
+                )
+            }
+        }
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -500,6 +520,30 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                 ),
             ),
             onUIEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsScreenPhoneBackPreview(modifier: Modifier = Modifier) {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$420.00",
+                    orderTotalText = "$462.00",
+                    orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
+                    title = "Ready for payment",
+                    subtitle = "Tap, swipe or insert card",
+                ),
+            ),
+            onUIEvent = {},
+            onPhoneBack = {},
         )
     }
 }
