@@ -10,6 +10,8 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
+import com.woocommerce.android.notifications.push.PushNotificationRepository
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -18,6 +20,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -29,17 +33,26 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val showTestNotification: ShowTestNotification,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    selectedSite: SelectedSite,
+    private val pushNotificationRepository: PushNotificationRepository
 ) : ScopedViewModel(savedStateHandle) {
-    private val currencyParameters = parameterRepository.getParameters()
+    private val site: SiteModel = selectedSite.get()
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            currencySymbol = currencyParameters.currencySymbol.orEmpty(),
+            currencySymbol = parameterRepository.getParameters().currencySymbol.orEmpty(),
             newOrderNotificationSoundStatus = notificationChannelsHandler.checkNewOrderNotificationSound()
         )
     )
+    private var savedOrderPreferences = _viewState.value.toStoreOrderPreferences()
+
     val viewState = _viewState.asLiveData()
+
+    init {
+        observeCachedNotificationPreferences()
+        fetchNotificationPreferences()
+    }
 
     fun onNotificationsEnabledChanged(isEnabled: Boolean) {
         _viewState.update { it.copy(notificationsEnabled = isEnabled) }
@@ -85,6 +98,64 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         )
         refreshNotificationSettings()
     }
+
+    private fun observeCachedNotificationPreferences() {
+        launch {
+            pushNotificationRepository.observeWooNotificationPreferences(site).collect { preferences ->
+                preferences?.storeOrder?.let { orderPreferences ->
+                    if (hasUnsavedOrderPreferences(_viewState.value.toStoreOrderPreferences())) {
+                        savedOrderPreferences = orderPreferences
+                    } else {
+                        applyOrderPreferences(orderPreferences)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchNotificationPreferences() {
+        launch {
+            pushNotificationRepository.fetchWooNotificationPreferences(site)
+                .onFailure {
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionStringSnackbar(
+                            message = resourceProvider.getString(R.string.settings_notifs_error_fetch),
+                            actionText = resourceProvider.getString(R.string.retry),
+                        ) {
+                            fetchNotificationPreferences()
+                        }
+                    )
+                }
+        }
+    }
+
+    private fun applyOrderPreferences(orderPreferences: StoreOrderPreferences) {
+        val updatedViewState = orderPreferences.toViewState(_viewState.value)
+        savedOrderPreferences = updatedViewState.toStoreOrderPreferences()
+        _viewState.value = updatedViewState
+    }
+
+    private fun hasUnsavedOrderPreferences(orderPreferences: StoreOrderPreferences) =
+        orderPreferences != savedOrderPreferences
+
+    private fun StoreOrderPreferences.toViewState(current: ViewState): ViewState =
+        current.copy(
+            notificationsEnabled = enabled ?: current.notificationsEnabled,
+            notificationPreference = if (minAmount == null) {
+                NotificationPreference.AllOrders
+            } else {
+                NotificationPreference.HighValueOrders
+            },
+            thresholdAmount = minAmount ?: current.thresholdAmount
+        )
+
+    private fun ViewState.toStoreOrderPreferences() = StoreOrderPreferences(
+        enabled = notificationsEnabled,
+        minAmount = when (notificationPreference) {
+            NotificationPreference.AllOrders -> null
+            NotificationPreference.HighValueOrders -> thresholdAmount
+        }
+    )
 
     data class ViewState(
         val notificationsEnabled: Boolean = true,
