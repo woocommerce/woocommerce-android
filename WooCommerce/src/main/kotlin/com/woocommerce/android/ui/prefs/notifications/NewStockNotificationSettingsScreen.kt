@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -162,10 +165,12 @@ private fun StockNotificationOption(
 
 @Composable
 private fun LowStockDetails(
-    defaultLowStockThreshold: Int,
+    defaultLowStockThreshold: Int?,
     enabled: Boolean,
     onEditStoreSettingsClicked: () -> Unit
 ) {
+    val thresholdPlaceholderId = "thresholdPlaceholder"
+    val thresholdText = defaultLowStockThreshold ?: LOW_STOCK_THRESHOLD_PLACEHOLDER
     val text = clickableAnnotatedStringRes(
         stringResId = R.string.settings_notifs_stock_low_stock_threshold,
         onUrlClick = {
@@ -173,37 +178,67 @@ private fun LowStockDetails(
                 onEditStoreSettingsClicked()
             }
         },
-        defaultLowStockThreshold
+        thresholdText
     )
-    val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
     val openInNewIconId = "openInNewIcon"
-    val textWithIcon = buildAnnotatedString {
-        append(text)
-        append(" ")
-        if (linkAnnotation != null) {
-            pushLink(linkAnnotation)
-            appendInlineContent(openInNewIconId, "[Icon]")
-            pop()
-        } else {
-            appendInlineContent(openInNewIconId, "[Icon]")
+    val textWithIcon = remember(text) {
+        val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
+        val thresholdPlaceholderStart = text.text.indexOf(LOW_STOCK_THRESHOLD_PLACEHOLDER)
+        val thresholdPlaceholderEnd = thresholdPlaceholderStart + LOW_STOCK_THRESHOLD_PLACEHOLDER.length
+        buildAnnotatedString {
+            if (thresholdPlaceholderStart >= 0) {
+                append(text.subSequence(0, thresholdPlaceholderStart))
+                appendInlineContent(thresholdPlaceholderId, "[Threshold]")
+                append(text.subSequence(thresholdPlaceholderEnd, text.length))
+            } else {
+                append(text)
+            }
+            append(" ")
+            if (linkAnnotation != null) {
+                pushLink(linkAnnotation)
+                appendInlineContent(openInNewIconId, "[Icon]")
+                pop()
+            } else {
+                appendInlineContent(openInNewIconId, "[Icon]")
+            }
         }
     }
     val iconColor = MaterialTheme.colorScheme.primary
-    val inlineContent = mapOf(
-        openInNewIconId to InlineTextContent(
-            Placeholder(
-                width = 16.sp,
-                height = 16.sp,
-                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
-            )
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
-                contentDescription = null,
-                tint = iconColor
+    val inlineContent = buildMap {
+        if (defaultLowStockThreshold == null) {
+            put(
+                thresholdPlaceholderId,
+                InlineTextContent(
+                    Placeholder(
+                        width = 8.sp,
+                        height = 12.sp,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
+                    )
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(8.dp),
+                        strokeWidth = 1.5.dp
+                    )
+                }
             )
         }
-    )
+        put(
+            openInNewIconId,
+            InlineTextContent(
+                Placeholder(
+                    width = 16.sp,
+                    height = 16.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
+                )
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
+                    contentDescription = null,
+                    tint = iconColor
+                )
+            }
+        )
+    }
 
     Text(
         text = textWithIcon,
@@ -229,3 +264,5 @@ private fun NewStockNotificationSettingsScreenPreview() {
         )
     }
 }
+
+private const val LOW_STOCK_THRESHOLD_PLACEHOLDER = "{lowStockThreshold}"

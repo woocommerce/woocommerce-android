@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 15:58:12+0000
+Translation-Revision-Date: 2026-04-24 17:55:52+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">Teamlid wijzigen</string>
+    <string name="booking_reschedule_screen_title">Reservering opnieuw inplannen</string>
+    <string name="booking_details_reschedule_button">Opnieuw inplannen</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">Ik ga akkoord met de &lt;a href=\"fedex-tos\"&gt;FedEx-servicevoorwaarden&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">Om FedEx-verzendlabels aan te schaffen, moet je akkoord gaan met de volgende voorwaarden:</string>
+    <string name="wpp_shipping_fedex_tos_title">Servicevoorwaarden FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">We konden de verzendkosten niet laden. Voeg een voor- en achternaam toe aan het bestemmingsadres en probeer het opnieuw.</string>
+    <string name="woopos_settings_receipt_edit_button">Gegevens betalingsbewijs bewerken</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d van %2$d artikelen</string>
+    <string name="woopos_home_syncing_catalog_preparing">Catalogus voorbereiden …</string>
+    <string name="product_type_bookable_service_desc">Een service die klanten online kunnen boeken</string>
+    <string name="product_type_bookable_service_title">Dienst</string>
+    <string name="settings_troubleshoot_connection">Problemen met verbinding oplossen</string>
+    <string name="connectivity_tool_copy">Kopiëren</string>
+    <string name="connectivity_tool_technical_details_copied">Technische details zijn gekopieerd naar je klembord.</string>
+    <string name="connectivity_tool_technical_details_title">Technische details</string>
+    <string name="connectivity_tool_view_technical_details">Technische gegevens weergeven</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Producten ophalen in je winkel</string>
+    <string name="user_role_access_error_fetch_failed">We konden je rol in deze winkel niet verifiëren. Probeer het nog eens. Als het probleem zich blijft voordoen, neem je contact op met support.</string>
     <string name="woopos_eligibility_learn_more_label">Meer informatie</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. &lt;b&gt;Upgrade naar Pro&lt;/b&gt; om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime voorraadsynchronisatie en synchronisatie van bestellingen.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. Upgrade naar Pro om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime synchronisatie van voorraad en bestellingen.</string>
@@ -30,7 +49,6 @@ Language: nl
     <string name="woo_push_notifications_introduction_connected_body">Je bent slechts één stap verwijderd van meldingen voor nieuwe bestellingen, beoordelingen en meer.</string>
     <string name="woo_push_notifications_introduction_connected_title">Ontvang pushmeldingen voor je winkel</string>
     <string name="my_store_widget_push_notifications_description">Schakel pushmeldingen in om op de hoogte te blijven van nieuwe bestellingen en beoordelingen.</string>
-    <string name="dashboard_stats_net_sales">Netto-omzet</string>
     <string name="woopos_search_products_and_variations">Producten en variaties zoeken</string>
     <string name="woopos_bookings_details_customer_guest_badge">Gast</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Plugin bijwerken</string>
@@ -1201,10 +1219,6 @@ Language: nl
     <string name="delete_product_category_failed">Fout bij verwijderen van categorie</string>
     <string name="delete_product_category_success">Productcategorie verwijderd</string>
     <string name="update_product_category_success">Productcategorie bijgewerkt</string>
-    <string name="domain_picker_suggestions_error">Kan domeinsuggesties niet laden</string>
-    <string name="domain_picker_suggestions_title">Suggesties</string>
-    <string name="domain_picker_hint">Typ een domein</string>
-    <string name="domain_picker_title">Kies een domein</string>
     <string name="analytics_section_see_all">Alle winkelanalyses bekijken</string>
     <string name="my_store_custom_range_granularity_year">Jaarlijks</string>
     <string name="my_store_custom_range_granularity_month">Maandelijks</string>
@@ -1971,7 +1985,6 @@ Language: nl
     <string name="store_onboarding_launch_store_back_to_store_button">Terug naar winkel</string>
     <string name="store_onboarding_launch_store_share_url_button">URL delen</string>
     <string name="store_onboarding_launch_store_button">Mijn winkel publiceren</string>
-    <string name="domains_search_domains">Domeinen zoeken</string>
     <string name="login_site_credentials_http_error">Login mislukt met statuscode %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Het is niet gelukt om in te loggen omdat we de admin-URL van je winkel niet konden identificeren</string>
     <string name="login_site_credentials_custom_login_url">Het is niet gelukt om in te loggen omdat we de login-URL van je winkel niet konden identificeren</string>
@@ -2016,41 +2029,12 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_try_payment">Probeer een betaling</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
-    <string name="domain_registration_generic_error">Er is een fout opgetreden tijdens domeinregistratie</string>
-    <string name="domain_registration_state_picker_dialog_title">Selecteer provincie</string>
-    <string name="domain_registration_country_picker_dialog_title">Selecteer land</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Domeinnaam wordt geregistreerd…</string>
-    <string name="domain_contact_information_register_domain_button">Registreer domein</string>
-    <string name="domain_contact_information_postal_code_hint">Postcode</string>
-    <string name="domain_contact_information_state_not_available_hint">Status (niet beschikbaar)</string>
-    <string name="domain_contact_information_state_hint">Provincie</string>
-    <string name="domain_contact_information_city_hint">Plaats</string>
-    <string name="domain_contact_information_address_hint_two">Adres 2</string>
-    <string name="domain_contact_information_address_hint">Adres</string>
-    <string name="domain_contact_information_country_hint">Land</string>
-    <string name="domain_contact_information_country_code_hint">Landcode</string>
-    <string name="domain_contact_information_phone_number_hint">Telefoonnummer</string>
-    <string name="domain_contact_information_organization_hint">Organisatie (optioneel)</string>
-    <string name="domain_contact_information_description">Om je op weg te helpen, hebben je contactgegevens van WordPress.com\n alvast ingevuld. Controleer of dit de juiste gegevens zijn die je voor dit domein wilt gebruiken.</string>
-    <string name="domain_contact_information_title">Contactgegevens domein</string>
-    <string name="domain_privacy_option_off_title">Openbaar registreren</string>
-    <string name="domain_privacy_option_on_title">Privé registreren met privacybescherming</string>
-    <string name="domain_registration_contact_form_input_error">Voer een geldige %s in</string>
-    <string name="domain_registration_privacy_protection_tos">Door dit domein te registreren, ga je akkoord met onze &lt;a href=\'\'&gt;algemene voorwaarden&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">Domeineigenaren moeten contactgegevens delen in een openbare database met alle domeinen.\n Met Privacybescherming publiceren we onze eigen informatie in plaats van die van jou en sturen we berichten privé naar je door.</string>
-    <string name="domain_registration_privacy_protection_title">Privacybescherming</string>
-    <string name="domains_access_error_title">Alleen winkelbeheerders hebben toegang tot de domeininstellingen.</string>
     <string name="login_jetpack_installation_continue_magic_link">Of ga verder met Magic Link</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Voer het wachtwoord voor je WordPress.com account in om Jetpack te installeren</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Voer het wachtwoord voor je WordPress.com account in om verbinding te maken met Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Log in met je WordPress.com account om Jetpack te installeren</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Log in met je WordPress.com account om verbinding te maken met Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">Je kunt de domeininstellingen vinden onder Instellingen &gt; Domeinen</string>
-    <string name="domains_purchase_successful_delay_notice">Je siteadres wordt ingesteld. Het kan tot 30 minuten duren voor je domein werkt.</string>
-    <string name="domains_purchase_successful_heading">Gefeliciteerd met je aankoop</string>
-    <string name="domains_free_with_credits">Het eerste jaar gratis</string>
     <string name="settings_confirm_logout_site_credentials">Weet je zeker dat je wilt uitloggen bij je account?</string>
-    <string name="domains_generic_error_title">Kan sitedomeinen niet laden</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d voltooid</string>
     <string name="store_onboarding_task_launch_store_description">Publiceer je site voor iedereen, wanneer je maar wilt!</string>
     <string name="store_onboarding_task_launch_store_title">Lanceer je winkel</string>
@@ -2061,19 +2045,6 @@ Language: nl
     <string name="card_reader_payment_failed_device_is_not_supported">Je apparaat wordt niet ondersteund. Neem contact op met de ondersteuning voor meer informatie</string>
     <string name="card_reader_payment_failed_nfc_disabled">De app kon de kaartlezer niet inschakelen omdat de NFC-chip is uitgeschakeld</string>
     <string name="card_reader_payment_failed_canceled">Transactie is geannuleerd</string>
-    <string name="domains_redirect_notice">Het aangeschafte domein zal gebruikers doorsturen naar</string>
-    <string name="domains_select_domain">Selecteer domein</string>
-    <string name="domains_add_domain_button_title">Een domein toevoegen</string>
-    <string name="domains_your_domains">Je sitedomeinen</string>
-    <string name="domains_primary_address">Primair site-adres</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over domeinen en hoe je domeingerelateerde acties kan ondernemen.</string>
-    <string name="domains_search_for_domain_button_title">Zoek naar een domein</string>
-    <string name="domains_purchase_redirect_notice">Het aangeschafte domein zal gebruikers doorsturen naar je primaire adres.</string>
-    <string name="domains_claim_your_free_domain_link">Domein ophalen</string>
-    <string name="domains_claim_your_free_domain_description">Je hebt een gratis één-jaar domein registratie met je abonnement.</string>
-    <string name="domains_claim_your_free_domain_title">Haal je gratis domein op</string>
-    <string name="domains_your_free_store_address">Jouw gratis winkeladres</string>
-    <string name="domains">Domeinen</string>
     <string name="feedback_banner_ipp_cta_button">Deel je feedback</string>
     <string name="feedback_banner_ipp_message_beginner">Geef een beoordeling over je eerste ervaring met fysieke betalingen.</string>
     <string name="feedback_banner_ipp_title_beginner">Tevreden met je fysieke betaling?</string>
@@ -2092,7 +2063,6 @@ Language: nl
     <string name="analytics_session_card_title">Sessies</string>
     <string name="analytics_session_no_data">Geen sessies deze periode</string>
     <string name="date_compared_to">Vergeleken met</string>
-    <string name="domain">Domein</string>
     <string name="login_application_passwords_help">Wat zijn applicatiewachtwoorden?</string>
     <string name="login_application_passwords_unavailable">Het lijkt erop dat de functie Applicatiewachtwoorden is uitgeschakeld op je site %1$s.\n Schakel dit in om de WooCommerce-app te kunnen gebruiken.</string>
     <string name="login_open_installation_page">Installatiepagina openen</string>
@@ -2108,7 +2078,6 @@ Language: nl
     <string name="product_bulk_update_regular_price">Reguliere prijs bijwerken</string>
     <string name="variations_bulk_creation_no_candidates_message">Alle variaties zijn al gegenereerd.</string>
     <string name="variations_bulk_creation_no_candidates_title">Geen variaties om te genereren</string>
-    <string name="domain_picker_empty_suggestions">Geen beschikbare domeinen voor deze zoekopdracht</string>
     <string name="variations_bulk_creation_progress_title">Variaties aan het genereren</string>
     <string name="variations_bulk_creation_confirmation_message">Dit voegt een nieuwe variatie toe voor elke mogelijke combinatie van variatie-eigenschappen (%1$d variaties).</string>
     <string name="variations_bulk_creation_confirmation_title">Alle variaties genereren?</string>
@@ -2165,7 +2134,6 @@ Language: nl
     <string name="update_simulated_reader">Gesimuleerde kaartlezer bijwerken</string>
     <string name="login_jetpack_connect">Verbinden met Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Winkel koppelen</string>
-    <string name="domain_picker_subtitle">Dit is de plek waar mensen je online kunnen vinden. Maak je geen zorgen, je kan dit later altijd veranderen.</string>
     <string name="analytics_visitors_subtitle">Bezoekers</string>
     <string name="or_use_password_below_qr_code_scan_option">Of log in met een wachtwoord</string>
     <string name="simulated_reader_toast">Gesimuleerde kaartlezer is uitgeschakeld</string>

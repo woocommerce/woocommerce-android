@@ -106,14 +106,13 @@ fun NotificationModel.getNoteTitle(resourceProvider: ResourceProvider): String {
 }
 
 fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String? {
-    return when (this.type) {
-        NotificationModel.Kind.STORE_ORDER -> this.getMessageSnippet()
-        NotificationModel.Kind.COMMENT -> "${this.getTitleSnippet()}: ${this.getMessageSnippet()}"
-        NotificationModel.Kind.STOCK -> getMessageSnippet() ?: getBodySnippet() ?: getTitleSnippet()
+    return when (type) {
+        NotificationModel.Kind.STORE_ORDER, NotificationModel.Kind.STOCK -> getMessageSnippet()
+        NotificationModel.Kind.COMMENT -> "${getTitleSnippet()}: ${getMessageSnippet()}"
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
-        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.getTitleSnippet()
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> getTitleSnippet()
 
         else -> resourceProvider.getString(R.string.support_push_notification_message)
     }
@@ -122,5 +121,3 @@ fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String
 fun NotificationModel.getTitleSnippet() = this.subject?.getOrNull(0)?.text?.split('\n')?.first()
 
 fun NotificationModel.getMessageSnippet() = this.subject?.getOrNull(1)?.text?.split('\n')?.first()
-
-private fun NotificationModel.getBodySnippet() = this.body?.firstNotNullOfOrNull { it.text }?.split('\n')?.first()

@@ -135,9 +135,6 @@ sealed class WooPosBookingsState {
 
         sealed class DialogState {
             data object Hidden : DialogState()
-            data class IssueRefund(
-                val orderId: Long
-            ) : DialogState()
 
             sealed class CancelBooking : DialogState() {
                 abstract val bookingId: Long

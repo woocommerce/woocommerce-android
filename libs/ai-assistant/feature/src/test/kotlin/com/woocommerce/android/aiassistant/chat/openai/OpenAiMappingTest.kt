@@ -1,7 +1,7 @@
 package com.woocommerce.android.aiassistant.chat.openai
 
 import com.woocommerce.android.aiassistant.chat.assistantJsonForTests
-import com.woocommerce.android.aiassistant.core.AssistantConfig
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -9,7 +9,6 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
@@ -71,7 +70,7 @@ class OpenAiMappingTest {
         assertThat(systemMessage.getValue("role").jsonPrimitive.content).isEqualTo("system")
         assertThat(userMessage.getValue("role").jsonPrimitive.content).isEqualTo("user")
         assertThat(assistantMessage.getValue("role").jsonPrimitive.content).isEqualTo("assistant")
-        assertThat(assistantMessage.getValue("content")).isEqualTo(JsonNull)
+        assertThat(assistantMessage.getValue("content").jsonPrimitive.content).isEmpty()
         assertThat(
             assistantMessage.getValue("tool_calls").jsonArray.single().jsonObject
                 .getValue("function").jsonObject

@@ -25,6 +25,10 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
 
+    init {
+        refreshDefaultLowStockThreshold()
+    }
+
     fun onNotificationsEnabledChanged(isEnabled: Boolean) {
         _viewState.update { it.copy(notificationsEnabled = isEnabled) }
     }
@@ -39,14 +43,8 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         }
     }
 
-    fun refreshDefaultLowStockThreshold() {
-        launch {
-            val productSettings = wooCommerceStore.fetchSiteProductSettings(selectedSite.get()).model
-
-            productSettings?.defaultLowStockThreshold?.let { threshold ->
-                updateDefaultLowStockThreshold(threshold)
-            }
-        }
+    fun onStoreSettingsWebViewClosed() {
+        refreshDefaultLowStockThreshold()
     }
 
     fun onEditStoreSettingsClicked() {
@@ -58,10 +56,24 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         )
     }
 
-    private fun updateDefaultLowStockThreshold(threshold: Int) {
-        if (_viewState.value.defaultLowStockThreshold != threshold) {
-            _viewState.update { it.copy(defaultLowStockThreshold = threshold) }
+    private fun refreshDefaultLowStockThreshold() {
+        launch {
+            val site = selectedSite.get()
+
+            wooCommerceStore.getProductSettings(site)?.defaultLowStockThreshold?.let { threshold ->
+                updateDefaultLowStockThreshold(threshold)
+            }
+
+            val productSettings = wooCommerceStore.fetchSiteProductSettings(site).model
+
+            productSettings?.defaultLowStockThreshold?.let { threshold ->
+                updateDefaultLowStockThreshold(threshold)
+            }
         }
+    }
+
+    private fun updateDefaultLowStockThreshold(threshold: Int) {
+        _viewState.update { it.copy(defaultLowStockThreshold = threshold) }
     }
 
     data class ViewState(
@@ -69,7 +81,7 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         val lowStockNotificationsEnabled: Boolean = true,
         val outOfStockNotificationsEnabled: Boolean = true,
         val backorderNotificationsEnabled: Boolean = true,
-        val defaultLowStockThreshold: Int = 5
+        val defaultLowStockThreshold: Int? = null
     )
 
     enum class StockNotificationType {

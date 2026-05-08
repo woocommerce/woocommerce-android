@@ -5,16 +5,19 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -29,6 +32,7 @@ interface CardReaderManager {
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability>
     val batteryStatus: Flow<CardReaderBatteryStatus>
     val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
+    val connectionTokenProvider: CompositeConnectionTokenProvider
 
     fun initialize(
         updateFrequency: SimulatorUpdateFrequency,
@@ -50,6 +54,22 @@ interface CardReaderManager {
     fun cancelReconnection()
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
+
+    /**
+     * Creates a Stripe PaymentIntent without collecting or capturing it. Used by the tablet
+     * side of the remote Tap-to-Pay flow, where the phone does the collect + process step
+     * and the tablet captures on completion.
+     */
+    suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult
+
+    /**
+     * Retrieves a PaymentIntent by its client secret and drives Stripe `processPaymentIntent`
+     * (collect + confirm) on the locally connected reader. Used by the phone side of the remote
+     * Tap-to-Pay flow. The returned status is the PaymentIntent's status after processing —
+     * typically `requires_capture`.
+     */
+    suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult
+
     suspend fun refundInteracPayment(
         refundParams: RefundParams,
         refundConfig: RefundConfig
