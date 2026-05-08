@@ -106,13 +106,13 @@ fun NotificationModel.getNoteTitle(resourceProvider: ResourceProvider): String {
 }
 
 fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String? {
-    return when (this.type) {
-        NotificationModel.Kind.STORE_ORDER, NotificationModel.Kind.STOCK -> this.getMessageSnippet()
-        NotificationModel.Kind.COMMENT -> "${this.getTitleSnippet()}: ${this.getMessageSnippet()}"
+    return when (type) {
+        NotificationModel.Kind.STORE_ORDER, NotificationModel.Kind.STOCK -> getMessageSnippet()
+        NotificationModel.Kind.COMMENT -> "${getTitleSnippet()}: ${getMessageSnippet()}"
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
-        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.getTitleSnippet()
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> getTitleSnippet()
 
         else -> resourceProvider.getString(R.string.support_push_notification_message)
     }
