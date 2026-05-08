@@ -21,7 +21,7 @@ class WooCommerceConfirmationPreviewRendererTest {
     private val renderer = ConfirmationPreviewRenderer(context)
 
     @Test
-    fun `given order status update, when preview is rendered, then message uses typed summary`() {
+    fun `given order status update that emails customer, when preview is rendered, then message uses summary`() {
         val preview = builder.build(
             toolCall(
                 name = "orders_update",
@@ -38,20 +38,12 @@ class WooCommerceConfirmationPreviewRendererTest {
             context.getString(
                 R.string.ai_assistant_confirmation_order_update_summary,
                 "42",
-                context.getString(
-                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
-                    "processing",
-                ),
             )
         )
         assertThat(rendered.message).isEqualTo(
             context.getString(
                 R.string.ai_assistant_confirmation_order_update_summary,
                 "42",
-                context.getString(
-                    R.string.ai_assistant_confirmation_change_summary_status_emails_customer,
-                    "processing",
-                ),
             )
         )
         assertThat(rendered.fields).containsExactly(
@@ -82,7 +74,7 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
-        assertThat(rendered.summary).isEqualTo("Update order #42: status -> processing (emails the customer)")
+        assertThat(rendered.summary).isEqualTo("Update order #42: emails the customer")
         assertThat(rendered.rows).containsExactly(
             RenderedConfirmationDiffRow(
                 name = "status",
@@ -132,7 +124,14 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
-        assertThat(rendered.message).isEqualTo("Update 1 order: status -> completed (emails the customer)")
+        assertThat(rendered.message).isEqualTo("Update 1 order: emails the customer")
+        assertThat(rendered.rows).containsExactly(
+            RenderedConfirmationDiffRow(
+                name = "status",
+                label = context.getString(R.string.ai_assistant_confirmation_field_status),
+                value = "completed",
+            )
+        )
     }
 
     @Test
@@ -155,7 +154,38 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
-        assertThat(rendered.message).isEqualTo("Update 2 products: price -> 19.99, status -> draft")
+        assertThat(rendered.message).isEqualTo("Update 2 products")
+    }
+
+    @Test
+    fun `given product snapshot has name, when preview is rendered, then message includes product name`() {
+        val preview = builder.build(
+            toolCall(
+                name = "products_update",
+                arguments = buildJsonObject {
+                    put("id", 7)
+                    put("regular_price", "24.99")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf(
+                    "name" to "Classic T-Shirt",
+                    "regular_price" to "19.99",
+                )
+            ),
+        )
+
+        val rendered = renderer.render(preview)
+
+        assertThat(rendered.message).isEqualTo("Update product Classic T-Shirt (#7)")
+        assertThat(rendered.rows).containsExactly(
+            RenderedConfirmationDiffRow(
+                name = "regular_price",
+                label = context.getString(R.string.ai_assistant_confirmation_field_regular_price),
+                value = "24.99",
+                beforeValue = "19.99",
+            )
+        )
     }
 
     @Test
@@ -178,10 +208,7 @@ class WooCommerceConfirmationPreviewRendererTest {
 
         val rendered = renderer.render(preview)
 
-        assertThat(rendered.message).isEqualTo(
-            "Update variation #8 for product #7: " +
-                "price -> 19.99, sale -> Off, stock -> 3, stock status -> instock, status -> publish, SKU -> VAR-8"
-        )
+        assertThat(rendered.message).isEqualTo("Update variation #8 for product #7")
         assertThat(rendered.fields).contains(
             RenderedConfirmationPreviewField(
                 name = "sale_price",

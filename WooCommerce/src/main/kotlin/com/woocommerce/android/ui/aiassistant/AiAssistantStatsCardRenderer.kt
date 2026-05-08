@@ -8,13 +8,12 @@ import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
-import com.woocommerce.android.util.CurrencyFormatter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 internal class AiAssistantStatsCardRenderer(
-    private val currencyFormatter: CurrencyFormatter,
+    private val currencyFormatter: AiAssistantCurrencyFormatter,
 ) {
     @Composable
     fun Card(
@@ -73,7 +72,7 @@ private fun String.toStatsLocalDate(): LocalDate? =
 private fun formatStatsMoney(
     value: String,
     currency: String,
-    currencyFormatter: CurrencyFormatter,
+    currencyFormatter: AiAssistantCurrencyFormatter,
     unavailableValue: String,
 ): String =
     when {
@@ -83,7 +82,7 @@ private fun formatStatsMoney(
     }
 
 internal fun AssistantCard.Stats.toStatsCardState(
-    currencyFormatter: CurrencyFormatter,
+    currencyFormatter: AiAssistantCurrencyFormatter,
     unavailableValue: String,
     locale: Locale = Locale.getDefault(),
 ): AiAssistantStatsCardState = AiAssistantStatsCardState(

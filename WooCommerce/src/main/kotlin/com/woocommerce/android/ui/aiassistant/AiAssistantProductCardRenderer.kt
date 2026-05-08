@@ -11,11 +11,10 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.compose.ProductSummaryRow
 import com.woocommerce.android.ui.products.compose.ProductSummaryRowInfo
-import com.woocommerce.android.util.CurrencyFormatter
 import java.math.BigDecimal
 
 internal class AiAssistantProductCardRenderer(
-    private val currencyFormatter: CurrencyFormatter,
+    private val currencyFormatter: AiAssistantCurrencyFormatter,
 ) {
     @Composable
     fun Card(
@@ -46,7 +45,7 @@ internal data class AssistantProductSummaryRowModel(
 
 internal fun AssistantCard.Product.toProductSummaryRowModel(
     context: Context,
-    currencyFormatter: CurrencyFormatter,
+    currencyFormatter: AiAssistantCurrencyFormatter,
 ): AssistantProductSummaryRowModel {
     fun formatProductPrice(): String =
         price.toBigDecimalOrNull()

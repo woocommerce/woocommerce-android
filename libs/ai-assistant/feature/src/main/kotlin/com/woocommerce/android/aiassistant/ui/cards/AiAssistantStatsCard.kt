@@ -62,7 +62,7 @@ fun AiAssistantStatsCard(
         if (showTotalSalesTrend || showNetSalesTrend) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(32.dp),
             ) {
                 if (showTotalSalesTrend) {
                     StatsTrendColumn(

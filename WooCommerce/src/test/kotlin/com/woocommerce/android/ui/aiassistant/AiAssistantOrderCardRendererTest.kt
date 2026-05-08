@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.aiassistant
 import android.content.Context
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
-import com.woocommerce.android.util.CurrencyFormatter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -12,7 +11,7 @@ import org.mockito.kotlin.whenever
 import java.util.Locale
 
 class AiAssistantOrderCardRendererTest {
-    private val currencyFormatter: CurrencyFormatter = mock()
+    private val currencyFormatter: AiAssistantCurrencyFormatter = mock()
     private val context: Context = mock()
 
     @Test

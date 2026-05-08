@@ -1,9 +1,11 @@
 package com.woocommerce.android.aiassistant.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -29,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,12 +45,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,8 +66,10 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardChrome
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
+import com.woocommerce.android.aiassistant.ui.cards.toAssistantCardGroupMetadata
 import com.woocommerce.android.aiassistant.ui.components.AssistantComposer
 import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCardSegment
+import com.woocommerce.android.aiassistant.ui.components.AssistantEmptyState
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -99,6 +106,8 @@ fun AssistantChatScreen(
     onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var inputText by rememberSaveable { mutableStateOf("") }
 
     AssistantChatScreen(
@@ -110,12 +119,24 @@ fun AssistantChatScreen(
                 val message = inputText
                 inputText = ""
                 viewModel.onSendMessage(message)
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            }
+        },
+        onSendSuggestion = { prompt ->
+            if (!state.isTurnActive) {
+                inputText = ""
+                viewModel.onSendMessage(prompt)
             }
         },
         onCancelTurn = viewModel::onCancelTurn,
         onRetry = viewModel::onRetry,
         onConfirmWrite = viewModel::onConfirmWrite,
         onCancelWrite = viewModel::onCancelWrite,
+        onRestartConversation = {
+            inputText = ""
+            viewModel.onRestartConversation()
+        },
         onBack = onBack,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
@@ -129,10 +150,12 @@ fun AssistantChatScreen(
     inputText: String,
     onInputTextChange: (String) -> Unit,
     onSendMessage: () -> Unit,
+    onSendSuggestion: (String) -> Unit,
     onCancelTurn: () -> Unit,
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
+    onRestartConversation: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
@@ -140,10 +163,11 @@ fun AssistantChatScreen(
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = assistantCanvasColor(),
         topBar = {
             AssistantTopAppBar(
-                status = state.status,
+                showRestartAction = state.messages.isNotEmpty(),
+                onRestartConversation = onRestartConversation,
                 onBack = onBack,
             )
         }
@@ -153,15 +177,22 @@ fun AssistantChatScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            AssistantMessageThread(
-                state = state,
-                onRetry = onRetry,
-                onConfirmWrite = onConfirmWrite,
-                onCancelWrite = onCancelWrite,
-                assistantCardRenderer = assistantCardRenderer,
-                onCardAction = onCardAction,
-                modifier = Modifier.weight(1f),
-            )
+            if (state.shouldShowEmptyState) {
+                AssistantEmptyState(
+                    onSuggestionClick = onSendSuggestion,
+                    modifier = Modifier.weight(1f),
+                )
+            } else {
+                AssistantMessageThread(
+                    state = state,
+                    onRetry = onRetry,
+                    onConfirmWrite = onConfirmWrite,
+                    onCancelWrite = onCancelWrite,
+                    assistantCardRenderer = assistantCardRenderer,
+                    onCardAction = onCardAction,
+                    modifier = Modifier.weight(1f),
+                )
+            }
             AssistantStatusPanel(state = state)
             AssistantComposer(
                 inputText = inputText,
@@ -178,58 +209,64 @@ fun AssistantChatScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AssistantTopAppBar(
-    status: AssistantUiStatus,
+    showRestartAction: Boolean,
+    onRestartConversation: () -> Unit,
     onBack: () -> Unit,
 ) {
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(R.string.assistant_chat_title),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_assistant_back),
-                    contentDescription = stringResource(R.string.assistant_chat_back_content_description),
-                )
-            }
-        },
-        actions = {
-            AssistantStatusLabel(status = status)
-        },
-        windowInsets = WindowInsets()
-    )
-}
-
-@Composable
-private fun AssistantStatusLabel(status: AssistantUiStatus) {
-    val statusLabel = status.toHeaderText()
-    val statusContentDescription = stringResource(
-        R.string.assistant_chat_status_content_description,
-        statusLabel,
-    )
-    Surface(
-        modifier = Modifier
-            .padding(end = 12.dp)
-            .widthIn(max = 156.dp)
-            .semantics { contentDescription = statusContentDescription },
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-    ) {
-        Text(
-            text = statusLabel,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelSmall,
+    Column {
+        TopAppBar(
+            title = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_assistant_sparkle),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = stringResource(R.string.assistant_chat_title),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_assistant_back),
+                        contentDescription = stringResource(R.string.assistant_chat_back_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            },
+            actions = {
+                if (showRestartAction) {
+                    IconButton(onClick = onRestartConversation) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_assistant_new_chat),
+                            contentDescription = stringResource(
+                                R.string.assistant_chat_restart_content_description
+                            ),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = assistantCanvasColor(),
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+            windowInsets = WindowInsets(),
         )
+        HorizontalDivider(color = assistantOutlineColor().copy(alpha = 0.6f))
     }
 }
 
@@ -292,7 +329,7 @@ private fun AssistantMessageThread(
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
+        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
     ) {
         items(
@@ -307,18 +344,26 @@ private fun AssistantMessageThread(
                 onCancelWrite = onCancelWrite,
                 assistantCardRenderer = assistantCardRenderer,
                 onCardAction = onCardAction,
+                modifier = Modifier.animateItem(),
             )
         }
         if (showTypingIndicator) {
             item(key = TYPING_INDICATOR_ITEM_KEY) {
-                AssistantTypingIndicator()
+                AssistantRevealOnFirstComposition(
+                    modifier = Modifier.animateItem(),
+                ) {
+                    AssistantTypingIndicator()
+                }
             }
         }
     }
 }
 
 private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
+private const val REVEAL_ANIMATION_DURATION_MS = 180
+private const val REVEAL_SLIDE_OFFSET_DIVISOR = 3
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
+private val USER_BUBBLE_MAX_WIDTH = 280.dp
 
 private data class AssistantThreadScrollSignal(
     val renderedItemCount: Int,
@@ -378,16 +423,17 @@ private fun AssistantMessageBubble(
     onCancelWrite: () -> Unit,
     assistantCardRenderer: AssistantCardRenderer?,
     onCardAction: (AssistantCardAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
     val rowArrangement = if (isUser) Arrangement.End else Arrangement.Start
     val description = message.contentDescription(isUser = isUser)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) { contentDescription = description },
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         displaySegments.forEach { segment ->
             Row(
@@ -435,12 +481,36 @@ private fun AssistantMessageSegment(
             assistantCardRenderer = assistantCardRenderer,
             onCardAction = onCardAction,
         )
-        is AssistantUiSegment.ToolActivity -> AssistantToolActivityPill(activity = segment.activity)
+        is AssistantUiSegment.ToolActivity -> AssistantRevealOnFirstComposition {
+            AssistantToolActivityPill(activity = segment.activity)
+        }
         is AssistantUiSegment.ConfirmationCard -> AssistantConfirmationCardSegment(
             confirmation = segment.model,
             onConfirmWrite = onConfirmWrite,
             onCancelWrite = onCancelWrite,
         )
+    }
+}
+
+@Composable
+private fun AssistantRevealOnFirstComposition(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        enter = fadeIn(animationSpec = tween(REVEAL_ANIMATION_DURATION_MS)) +
+            slideInVertically(animationSpec = tween(REVEAL_ANIMATION_DURATION_MS)) { fullHeight ->
+                fullHeight / REVEAL_SLIDE_OFFSET_DIVISOR
+            },
+    ) {
+        content()
     }
 }
 
@@ -451,9 +521,11 @@ private fun AssistantCardGroupSegment(
     onCardAction: (AssistantCardAction) -> Unit,
 ) {
     if (assistantCardRenderer == null || cards.isEmpty()) return
+    val metadata = cards.toAssistantCardGroupMetadata()
 
     AssistantCardChrome(
-        title = stringResource(cards.groupHeaderRes()),
+        title = stringResource(metadata.titleRes),
+        leadingIconRes = metadata.iconRes,
         modifier = Modifier.fillMaxWidth(),
     ) {
         cards.forEachIndexed { index, card ->
@@ -465,67 +537,35 @@ private fun AssistantCardGroupSegment(
             if (index < cards.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 14.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant,
+                    color = assistantOutlineColor().copy(alpha = 0.5f),
                 )
             }
         }
     }
 }
 
-private fun List<AssistantCard>.groupHeaderRes(): Int {
-    val containsOrders = any { it is AssistantCard.Order }
-    val containsProducts = any { it is AssistantCard.Product }
-    val containsStats = any { it is AssistantCard.Stats }
-    return when {
-        containsOrders && !containsProducts && !containsStats -> R.string.assistant_chat_card_group_orders
-        containsProducts && !containsOrders && !containsStats -> R.string.assistant_chat_card_group_products
-        containsStats && !containsOrders && !containsProducts -> R.string.assistant_chat_card_group_stats
-        else -> R.string.assistant_chat_card_group_generic
-    }
-}
-
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
-    val bubbleColor = if (isUser) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surface
+    if (!isUser) {
+        Text(
+            text = text,
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        return
     }
-    val textColor = if (isUser) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-    val shape = RoundedCornerShape(
-        topStart = 16.dp,
-        topEnd = 16.dp,
-        bottomStart = if (isUser) 16.dp else 4.dp,
-        bottomEnd = if (isUser) 4.dp else 16.dp,
-    )
 
     Box(
         modifier = Modifier
-            .then(if (isUser) Modifier.widthIn(max = 360.dp) else Modifier.fillMaxWidth())
-            .background(bubbleColor, shape)
-            .then(
-                if (isUser) {
-                    Modifier
-                } else {
-                    Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = shape,
-                    )
-                }
-            )
+            .widthIn(max = USER_BUBBLE_MAX_WIDTH)
+            .background(assistantUserBubbleColor(), RoundedCornerShape(16.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
         Text(
             text = text,
-            modifier = if (isUser) Modifier else Modifier.widthIn(max = 360.dp),
-            color = textColor,
+            color = assistantUserBubbleContentColor(),
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = if (isUser) TextAlign.End else TextAlign.Start,
         )
     }
 }
@@ -602,21 +642,11 @@ private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
     }
 }
 
-@Composable
-private fun AssistantUiStatus.toHeaderText(): String = when (this) {
-    AssistantUiStatus.IDLE -> stringResource(R.string.assistant_chat_status_idle)
-    AssistantUiStatus.STREAMING -> stringResource(R.string.assistant_chat_status_streaming)
-    AssistantUiStatus.AWAITING_CONFIRMATION -> stringResource(
-        R.string.assistant_chat_status_awaiting_confirmation
-    )
-    AssistantUiStatus.ERROR -> stringResource(R.string.assistant_chat_status_error)
-}
-
 @Preview(showBackground = true, widthDp = 390, heightDp = 180)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 180, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantTextBubblePreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -644,7 +674,7 @@ private fun AssistantTextBubblePreview() {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 260, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantCardGroupSegmentPreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(sampleOrderCard(), sampleProductCard(), sampleStatsCard()),
@@ -659,7 +689,7 @@ private fun AssistantCardGroupSegmentPreview() {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 380, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantStatsCardGroupSegmentPreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(sampleStatsCard()),
@@ -674,7 +704,7 @@ private fun AssistantStatsCardGroupSegmentPreview() {
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 380, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun AssistantStatsCardGroupNoTrendPreview() {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = assistantCanvasColor()) {
         Column(modifier = Modifier.padding(16.dp)) {
             AssistantCardGroupSegment(
                 cards = listOf(
@@ -692,21 +722,56 @@ private fun AssistantStatsCardGroupNoTrendPreview() {
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 720)
 @Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "Large Font", showBackground = true, widthDp = 390, heightDp = 720, fontScale = 1.5f)
 @Composable
-private fun AssistantChatScreenToolActivityPreview() {
+private fun AssistantChatScreenEmptyStatePreview() {
+    AssistantChatScreen(
+        state = AssistantUiState(),
+        inputText = "",
+        onInputTextChange = {},
+        onSendMessage = {},
+        onSendSuggestion = {},
+        onCancelTurn = {},
+        onRetry = {},
+        onConfirmWrite = {},
+        onCancelWrite = {},
+        onRestartConversation = {},
+        onBack = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
     AssistantChatScreen(
         state = AssistantUiState(
             messages = listOf(
-                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Find order 123"),
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Show revenue and latest orders"),
                 AssistantUiMessage(
                     id = "preview-2",
                     role = AssistantUiMessage.Role.ASSISTANT,
                     segments = listOf(
-                        AssistantUiSegment.Text(""),
+                        AssistantUiSegment.Text("I checked this week's revenue and am loading your latest orders."),
                         AssistantUiSegment.ToolActivity(
                             AssistantToolActivity(
-                                toolCallId = "call-preview",
-                                toolName = "orders_get",
+                                toolCallId = "call-revenue",
+                                toolName = "analytics_revenue",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-customer",
+                                toolName = "customers_list",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-orders",
+                                toolName = "orders_list",
+                                status = AssistantToolActivity.Status.RUNNING,
                             )
                         ),
                     ),
@@ -718,10 +783,57 @@ private fun AssistantChatScreenToolActivityPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
+        onBack = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 720)
+@Preview(name = "Dark", showBackground = true, widthDp = 390, heightDp = 720, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
+    AssistantChatScreen(
+        state = AssistantUiState(
+            messages = listOf(
+                AssistantUiMessage("preview-1", AssistantUiMessage.Role.USER, "Show revenue and latest orders"),
+                AssistantUiMessage(
+                    id = "preview-2",
+                    role = AssistantUiMessage.Role.ASSISTANT,
+                    segments = listOf(
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-revenue",
+                                toolName = "analytics_revenue",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                        AssistantUiSegment.Text("Here are this week's sales and your most recent order."),
+                        AssistantUiSegment.ToolActivity(
+                            AssistantToolActivity(
+                                toolCallId = "call-orders",
+                                toolName = "orders_list",
+                                status = AssistantToolActivity.Status.COMPLETED,
+                            )
+                        ),
+                    ),
+                ),
+            ),
+            status = AssistantUiStatus.IDLE,
+        ),
+        inputText = "",
+        onInputTextChange = {},
+        onSendMessage = {},
+        onSendSuggestion = {},
+        onCancelTurn = {},
+        onRetry = {},
+        onConfirmWrite = {},
+        onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
@@ -742,10 +854,12 @@ private fun AssistantChatScreenTypingPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }
@@ -777,10 +891,12 @@ private fun AssistantChatScreenPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
         assistantCardRenderer = PreviewAssistantCardRenderer,
     )
@@ -821,10 +937,12 @@ private fun AssistantChatScreenConfirmationPreview() {
         inputText = "",
         onInputTextChange = {},
         onSendMessage = {},
+        onSendSuggestion = {},
         onCancelTurn = {},
         onRetry = {},
         onConfirmWrite = {},
         onCancelWrite = {},
+        onRestartConversation = {},
         onBack = {},
     )
 }

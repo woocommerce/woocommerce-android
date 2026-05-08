@@ -189,7 +189,7 @@ class AgenticLoopAssistantRuntimeTest {
                     ),
                     state = AssistantConfirmationCardState.PENDING,
                     preview = RenderedConfirmationPreview(
-                        message = "Update order #123: status -> processing (emails the customer)",
+                        message = "Update order #123: emails the customer",
                         fields = listOf(
                             RenderedConfirmationPreviewField(
                                 name = "status",
