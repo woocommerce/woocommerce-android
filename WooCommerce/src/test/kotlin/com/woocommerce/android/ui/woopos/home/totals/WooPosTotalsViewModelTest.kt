@@ -1149,6 +1149,64 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given payment success state, when OnBackClicked, then sends OnNewTransactionStarted to parent`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+            verify(childrenToParentEventSender, never()).sendToParent(BackFromCheckoutToCartClicked)
+        }
+
+    @Test
+    fun `given payment success state, when OnBackClicked, then does not track CreateNewOrderTapped`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+
+            // WHEN
+            viewModel.onUIEvent(OnBackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker, never()).track(CreateNewOrderTapped)
+        }
+
+    @Test
     fun `given checkout started and order contains only free products, when vm created, then totals state correctly calculated`() =
         runTest {
             // GIVEN
