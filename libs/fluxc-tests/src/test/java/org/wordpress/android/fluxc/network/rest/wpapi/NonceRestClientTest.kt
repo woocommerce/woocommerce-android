@@ -233,6 +233,50 @@ class NonceRestClientTest {
     }
 
     @Test
+    fun `given http site that 302s to https on wp-login, when requesting nonce, then retries POST against https`() =
+        test {
+            val httpSite = "http://example.com"
+            val httpsSite = "https://example.com"
+            val nonceUrl = "$httpsSite/wp-admin/admin-ajax.php?action=rest-nonce"
+            givenPostRedirect(siteUrl = httpSite, location = "$httpsSite/wp-login.php")
+            givenPostRedirect(siteUrl = httpsSite, location = nonceUrl)
+            whenever(wpApiEncodedRequestBuilder.syncGetRequest(subject, nonceUrl))
+                .thenReturn(WPAPIResponse.Success("expectedNONCE", emptyList()))
+
+            val actual = subject.requestNonce(httpSite, "user", "pwd")
+
+            assertIs<Nonce.Available>(actual)
+            assertEquals("expectedNONCE", actual.value)
+        }
+
+    @Test
+    fun `given redirect to a different host, when requesting nonce, then returns INVALID_NONCE without following`() =
+        test {
+            val httpSite = "http://example.com"
+            givenPostRedirect(siteUrl = httpSite, location = "https://attacker.example/wp-login.php")
+
+            val actual = subject.requestNonce(httpSite, "user", "pwd")
+
+            assertIs<Nonce.FailedRequest>(actual)
+            assertEquals(Nonce.CookieNonceErrorType.INVALID_NONCE, actual.type)
+        }
+
+    @Test
+    fun `given a second scheme upgrade redirect, when requesting nonce, then recursion guard returns INVALID_NONCE`() =
+        test {
+            val httpSite = "http://example.com"
+            val httpsSite = "https://example.com"
+            givenPostRedirect(siteUrl = httpSite, location = "$httpsSite/wp-login.php")
+            // After the upgrade retry, the upgraded host redirects back to itself again — pathological
+            // case that should NOT recurse a third time.
+            givenPostRedirect(siteUrl = httpsSite, location = "$httpsSite/wp-login.php")
+
+            val actual = subject.requestNonce(httpSite, "user", "pwd")
+
+            assertIs<Nonce.FailedRequest>(actual)
+        }
+
+    @Test
     fun `when basic auth required, then NetworkResponse returns correct error type`() = test {
         val error = WPAPINetworkError(
             BaseNetworkError(
@@ -273,6 +317,30 @@ class NonceRestClientTest {
 
     private suspend fun givenNonceRequestResponse(response: WPAPIResponse<String>) {
         whenever(wpApiEncodedRequestBuilder.syncGetRequest(subject, nonceRequestUrl))
+            .thenReturn(response)
+    }
+
+    private suspend fun givenPostRedirect(siteUrl: String, location: String, statusCode: Int = 302) {
+        val wpLoginUrl = "$siteUrl/wp-login.php"
+        val nonceRedirectUrl = "$siteUrl/wp-admin/admin-ajax.php?action=rest-nonce"
+        val body = mapOf("log" to "user", "pwd" to "pwd", "redirect_to" to nonceRedirectUrl)
+        val response = WPAPIResponse.Error<String>(
+            WPAPINetworkError(
+                BaseNetworkError(
+                    VolleyError(
+                        NetworkResponse(
+                            statusCode,
+                            byteArrayOf(),
+                            false,
+                            System.currentTimeMillis(),
+                            listOf(com.android.volley.Header("Location", location))
+                        )
+                    )
+                ),
+                null
+            )
+        )
+        whenever(wpApiEncodedRequestBuilder.syncPostRequest(subject, wpLoginUrl, body = body))
             .thenReturn(response)
     }
 }

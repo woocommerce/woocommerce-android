@@ -6,7 +6,9 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -15,10 +17,12 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -28,7 +32,7 @@ import kotlinx.coroutines.flow.Flow
 internal class CardReaderManagerImpl(
     private var application: Application,
     private val terminal: TerminalWrapper,
-    private val tokenProvider: TokenProvider,
+    private val tokenProvider: CompositeConnectionTokenProvider,
     private val logWrapper: LogWrapper,
     private val paymentManager: PaymentManager,
     private val interacRefundManager: InteracRefundManager,
@@ -54,6 +58,8 @@ internal class CardReaderManagerImpl(
     override val batteryStatus = connectionManager.batteryStatus
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
+
+    override val connectionTokenProvider: CompositeConnectionTokenProvider = tokenProvider
 
     override fun initialize(
         updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
@@ -99,7 +105,14 @@ internal class CardReaderManagerImpl(
 
     override suspend fun disconnectReader(): Boolean {
         if (!terminal.isInitialized()) error("Terminal not initialized")
-        if (terminal.getConnectedReader() == null) return false
+        if (terminal.getConnectedReader() == null) {
+            // Don't clobber Reconnecting — that's a legit transient state where Stripe's
+            // auto-reconnect is in flight and connectedReader is null by design.
+            if (terminalListener.readerStatus.value is CardReaderStatus.Connected) {
+                terminalListener.updateReaderStatus(CardReaderStatus.NotConnected())
+            }
+            return false
+        }
         return connectionManager.disconnectReader()
     }
 
@@ -111,6 +124,17 @@ internal class CardReaderManagerImpl(
     override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
         resetBluetoothDisplayMessage()
         return paymentManager.acceptPayment(paymentInfo)
+    }
+
+    override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        return paymentManager.createPaymentIntentOnly(paymentInfo)
+    }
+
+    override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        resetBluetoothDisplayMessage()
+        return paymentManager.retrieveAndCollectPayment(clientSecret)
     }
 
     override suspend fun refundInteracPayment(

@@ -78,6 +78,8 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.PhoneBackFromCheckoutClicked -> handleSystemBackClicked()
+
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden

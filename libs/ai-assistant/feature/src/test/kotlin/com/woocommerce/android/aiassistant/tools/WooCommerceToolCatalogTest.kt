@@ -2,10 +2,12 @@ package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHandler
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsRevenueToolHandler
 import com.woocommerce.android.aiassistant.tools.customers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.orders.OrdersBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
@@ -35,7 +37,7 @@ class WooCommerceToolCatalogTest {
         ProductVariationsUpdateToolHandler(mock(), mock()),
         AnalyticsRevenueToolHandler(mock(), mock()),
         AnalyticsOrdersToolHandler(mock(), mock()),
-        ShowCardsToolHandler(),
+        ShowCardsToolHandler(mock<ShowCardsResolver>()),
         CustomersListToolHandler(mock()),
     )
 
@@ -71,10 +73,17 @@ class WooCommerceToolCatalogTest {
             "products_bulk_update",
             "product_variations_update",
         )
+        val bulkWriteToolNames = setOf("orders_bulk_update", "products_bulk_update")
 
         writeToolNames.forEach { name ->
             assertThat(byName.getValue(name).descriptor.safetyLevel)
                 .`as`("$name should be UNSAFE")
+                .isEqualTo(ToolSafetyLevel.UNSAFE)
+        }
+
+        bulkWriteToolNames.forEach { name ->
+            assertThat(byName.getValue(name).descriptor.safetyLevel)
+                .`as`("$name bulk writes should be UNSAFE")
                 .isEqualTo(ToolSafetyLevel.UNSAFE)
         }
 
@@ -84,5 +93,49 @@ class WooCommerceToolCatalogTest {
                 .`as`("$name should be SAFE")
                 .isEqualTo(ToolSafetyLevel.SAFE)
         }
+    }
+
+    @Test
+    fun `when descriptors are inspected, then no deletion tools are present`() {
+        val forbiddenNameParts = listOf("delete", "remove", "destructive")
+        val names = allHandlers.map { it.descriptor.name }
+
+        forbiddenNameParts.forEach { forbidden ->
+            assertThat(names.filter { it.contains(forbidden) })
+                .`as`("catalog should not contain $forbidden tools")
+                .isEmpty()
+        }
+    }
+
+    @Test
+    fun `when descriptors are retrieved, then write-tool descriptions include allowlisted fields and constraints`() {
+        val byName = allHandlers.associateBy { it.descriptor.name }
+
+        val ordersUpdate = byName.getValue("orders_update").descriptor.description
+        assertThat(ordersUpdate).contains("status")
+        assertThat(ordersUpdate).contains("customer emails")
+
+        val ordersBulkUpdate = byName.getValue("orders_bulk_update").descriptor.description
+        assertThat(ordersBulkUpdate).contains("status")
+        assertThat(ordersBulkUpdate).contains("Bulk writes require confirmation")
+
+        val productsUpdate = byName.getValue("products_update").descriptor.description
+        assertThat(productsUpdate).contains("regular_price")
+        assertThat(productsUpdate).contains("stock_quantity")
+
+        val productsBulkUpdate = byName.getValue("products_bulk_update").descriptor.description
+        assertThat(productsBulkUpdate).contains("regular_price")
+        assertThat(productsBulkUpdate).contains("Bulk writes require confirmation")
+    }
+
+    @Test
+    fun `when descriptors are inspected, then every UNSAFE tool has a dedicated confirmation preview`() {
+        val confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder()
+        val unsafeToolNames = allHandlers
+            .map { it.descriptor }
+            .filter { it.safetyLevel == ToolSafetyLevel.UNSAFE }
+            .map { it.name }
+
+        assertThat(unsafeToolNames).allMatch(confirmationPreviewBuilder::supportsDedicatedPreview)
     }
 }

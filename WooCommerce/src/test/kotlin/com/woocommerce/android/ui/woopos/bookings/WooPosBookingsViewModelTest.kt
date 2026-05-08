@@ -34,8 +34,10 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -580,7 +582,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given non-content state, when onIssueRefundDialogDismissed, then state remains unchanged`() = runTest {
+    fun `given non-content state, when onBackFromIssueRefund, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
@@ -591,10 +593,11 @@ class WooPosBookingsViewModelTest {
         val beforeState = viewModel.state.value
 
         // WHEN
-        viewModel.onIssueRefundDialogDismissed()
+        viewModel.onBackFromIssueRefund()
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(beforeState)
+        verifyBlocking(bookingsRepository, never()) { fetchBooking(any()) }
     }
 
     @Test
@@ -787,30 +790,32 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given content loaded, when IssueRefund action clicked, then issue refund dialog is shown`() =
+    fun `given content loaded, when IssueRefund action clicked, then navigation event is emitted`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            // WHEN
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                    )
                 )
-            )
-            advanceUntilIdle()
+                advanceUntilIdle()
 
-            // THEN
-            val state = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(state.dialogState)
-                .isInstanceOf(WooPosBookingsState.Content.DialogState.IssueRefund::class.java)
-            val dialogState = state.dialogState as WooPosBookingsState.Content.DialogState.IssueRefund
-            assertThat(dialogState.orderId).isEqualTo(10L)
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenIssueRefund::class.java)
+                val issueRefundEvent = event as WooPosNavigationEvent.OpenIssueRefund
+                assertThat(issueRefundEvent.orderId).isEqualTo(10L)
+                assertThat(issueRefundEvent.disablePartialRefund).isTrue()
+            }
         }
 
     @Test
-    fun `given non-Content state, when IssueRefund action clicked, then state remains unchanged`() =
+    fun `given non-Content state, when IssueRefund action clicked, then no navigation event emitted`() =
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
@@ -826,44 +831,37 @@ class WooPosBookingsViewModelTest {
             advanceUntilIdle()
             val beforeState = viewModel.state.value
 
-            // WHEN
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                    )
                 )
-            )
-            advanceUntilIdle()
+                advanceUntilIdle()
 
-            // THEN
-            assertThat(viewModel.state.value).isEqualTo(beforeState)
-            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+                // THEN
+                expectNoEvents()
+                assertThat(viewModel.state.value).isEqualTo(beforeState)
+                assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+            }
         }
 
     @Test
-    fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed, then dialog is hidden`() =
+    fun `when onBackFromIssueRefund, then selected booking is refreshed`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
-
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                )
-            )
-            advanceUntilIdle()
-            val state = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(state.dialogState)
-                .isInstanceOf(WooPosBookingsState.Content.DialogState.IssueRefund::class.java)
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
 
             // WHEN
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(updatedState.dialogState)
-                .isInstanceOf(WooPosBookingsState.Content.DialogState.Hidden::class.java)
+            verify(bookingsRepository).fetchBooking(bookingId)
         }
 
     @Test
@@ -1106,21 +1104,14 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given IssueRefund dialog dismissed, when refreshing, then pullToRefreshState stays Enabled`() =
+    fun `when onBackFromIssueRefund, then pullToRefreshState stays Enabled`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                )
-            )
-            advanceUntilIdle()
-
             // WHEN
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN
@@ -1185,7 +1176,7 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `when issue refund dialog dismissed, then single booking is fetched instead of full refresh`() =
+    fun `when issue refund dismissed, then single booking is fetched instead of full refresh`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
@@ -1193,15 +1184,8 @@ class WooPosBookingsViewModelTest {
             val content = viewModel.state.value as WooPosBookingsState.Content
             val bookingId = content.selectedDetails!!.id
 
-            viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingMenuActionClicked(
-                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                )
-            )
-            advanceUntilIdle()
-
             // WHEN
-            viewModel.onIssueRefundDialogDismissed()
+            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN

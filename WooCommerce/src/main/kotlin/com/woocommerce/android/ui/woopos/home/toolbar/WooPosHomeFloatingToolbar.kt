@@ -4,7 +4,6 @@ import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -39,7 +37,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -48,14 +45,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderIndicatorDot
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderStatusText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.WooPosCardReaderStatus
 
@@ -230,7 +227,7 @@ private fun MenuButtonWithPopUpMenu(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 repeat(3) {
-                    Circle(size = 6.dp, color = MaterialTheme.colorScheme.onSurface)
+                    WooPosReaderIndicatorDot(size = 6.dp, color = MaterialTheme.colorScheme.onSurface)
                     if (it < 2) {
                         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                     }
@@ -303,9 +300,9 @@ private fun CardReaderStatusButton(
                     .height(WooPosIconSize.Large.value),
             ) {
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                Circle(size = 14.dp, color = illustrationColor)
+                WooPosReaderIndicatorDot(size = 14.dp, color = illustrationColor)
                 Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
-                ReaderStatusText(
+                WooPosReaderStatusText(
                     modifier = Modifier.animateContentSize(),
                     title = title,
                 )
@@ -318,31 +315,6 @@ private fun CardReaderStatusButton(
             }
         }
     }
-}
-
-@Composable
-private fun ReaderStatusText(
-    modifier: Modifier,
-    title: String,
-) {
-    WooPosText(
-        modifier = modifier.padding(horizontal = WooPosSpacing.Small.value),
-        text = title,
-        style = WooPosTypography.BodyMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-    )
-}
-
-@Composable
-private fun Circle(
-    size: Dp,
-    color: Color
-) {
-    Box(
-        modifier = Modifier
-            .size(size)
-            .background(color = color, shape = CircleShape)
-    )
 }
 
 @Composable

@@ -156,6 +156,14 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
+    fun setLastConnectedPhoneDeviceId(deviceId: String) = AppPrefs.setLastConnectedPhoneDeviceId(deviceId)
+
+    fun getLastConnectedPhoneDeviceId() = AppPrefs.getLastConnectedPhoneDeviceId()
+
+    fun removeLastConnectedPhoneDeviceId() = AppPrefs.removeLastConnectedPhoneDeviceId()
+
+    var wooPosRemoteReaderDeviceUUID by AppPrefs::wooPosRemoteReaderDeviceUUID
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }

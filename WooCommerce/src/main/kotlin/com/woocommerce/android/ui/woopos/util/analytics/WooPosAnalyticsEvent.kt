@@ -91,6 +91,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "checkout_cash_payment_tapped"
         }
 
+        data object CheckoutTapToPayPaymentTapped : Event() {
+            override val name: String = "checkout_tap_to_pay_payment_tapped"
+        }
+
         data object CashPaymentTapped : Event() {
             override val name: String = "cash_payment_tapped"
         }
@@ -612,6 +616,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ReaderReadyForCardPayment : Event() {
             override val name: String
                 get() = "reader_ready_for_card_payment"
+        }
+
+        data object RemoteTapToPayExplainerShown : Event() {
+            override val name: String = "remote_ttp_explainer_shown"
         }
 
         data object SimpleProductExplanationDialogShown : Event() {

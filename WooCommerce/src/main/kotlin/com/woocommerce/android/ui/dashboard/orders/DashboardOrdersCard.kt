@@ -1,11 +1,8 @@
 package com.woocommerce.android.ui.dashboard.orders
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,10 +16,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +32,6 @@ import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -49,6 +43,8 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.View
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Error
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
+import com.woocommerce.android.ui.orders.compose.OrderSummaryRow
+import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -172,7 +168,10 @@ fun TopOrders(
             EmptyView()
         } else {
             orders.forEach { order ->
-                OrderListItem(order, onOrderClicked)
+                OrderSummaryRow(
+                    order = order.toOrderSummaryRowModel(),
+                    onClick = { onOrderClicked(order) },
+                )
 
                 Divider(
                     modifier = Modifier
@@ -183,6 +182,16 @@ fun TopOrders(
         }
     }
 }
+
+private fun OrderItem.toOrderSummaryRowModel() = OrderSummaryRowModel(
+    number = number,
+    date = date,
+    customerName = customerName,
+    status = status,
+    statusColor = statusColor,
+    totalPrice = totalPrice,
+    isPosOrder = isPosOrder,
+)
 
 @Composable
 private fun Loading() {
@@ -256,89 +265,6 @@ private fun LoadingItem() {
                 .width(70.dp)
                 .constrainAs(total) {
                     top.linkTo(status.bottom)
-                    end.linkTo(parent.end)
-                }
-        )
-    }
-}
-
-@Suppress("DestructuringDeclarationWithTooManyEntries")
-@Composable
-private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusable(true)
-            .clickable(onClick = { onOrderClicked(order) })
-            .padding(16.dp)
-    ) {
-        val (number, date, name, statusRow, total) = createRefs()
-
-        Text(
-            text = order.number,
-            style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier.constrainAs(number) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-            }
-        )
-
-        Text(
-            text = order.date,
-            style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .constrainAs(date) {
-                    top.linkTo(parent.top)
-                    start.linkTo(number.end)
-                }
-        )
-
-        Text(
-            text = order.customerName,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .constrainAs(name) {
-                    top.linkTo(number.bottom)
-                    start.linkTo(parent.start)
-                }
-        )
-
-        Row(
-            modifier = Modifier
-                .constrainAs(statusRow) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                },
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            WCTag(
-                text = order.status,
-                textColor = colorResource(id = R.color.color_on_secondary),
-                backgroundColor = colorResource(id = order.statusColor),
-                fontWeight = FontWeight.Normal
-            )
-
-            if (order.isPosOrder) {
-                WCTag(
-                    text = stringResource(id = R.string.pos_badge),
-                    textColor = colorResource(id = R.color.tag_text_pos),
-                    backgroundColor = colorResource(id = R.color.tag_bg_pos),
-                    fontWeight = FontWeight.Normal
-                )
-            }
-        }
-
-        Text(
-            text = order.totalPrice,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .constrainAs(total) {
-                    top.linkTo(statusRow.bottom)
                     end.linkTo(parent.end)
                 }
         )

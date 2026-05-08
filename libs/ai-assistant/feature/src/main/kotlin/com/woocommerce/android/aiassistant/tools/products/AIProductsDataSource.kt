@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.products
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -34,6 +35,8 @@ internal class AIProductsDataSource @Inject constructor(
         "Product $productId has type '$productType'. This tool only updates simple products. " +
             "For variable products, update individual variations instead."
     )
+
+    class ProductNotFoundException(productId: Long) : NoSuchElementException("Product $productId not found")
 
     suspend fun fetchProducts(
         search: String? = null,
@@ -82,6 +85,66 @@ internal class AIProductsDataSource @Inject constructor(
     suspend fun getProduct(productId: Long): Result<WCProductModel> {
         val site = selectedSite.get()
         return getProduct(site, productId)
+    }
+
+    suspend fun getProducts(productIds: List<Long>): Result<CachedLookupResult<WCProductModel>> {
+        val ids = productIds.distinct()
+        if (ids.isEmpty()) {
+            return Result.success(
+                CachedLookupResult(
+                    items = emptyList(),
+                    cacheHitCount = 0,
+                    cacheMissCount = 0,
+                    fetchAttempted = false,
+                    fetchFailed = false,
+                )
+            )
+        }
+
+        val site = selectedSite.get()
+        val cachedProducts = productStore.getProductsByRemoteIds(site, ids)
+        val cachedIds = cachedProducts.map { it.remoteProductId }.toSet()
+        val idsToFetch = ids.filterNot { it in cachedIds }
+        if (idsToFetch.isEmpty()) {
+            return Result.success(
+                CachedLookupResult(
+                    items = cachedProducts,
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = 0,
+                    fetchAttempted = false,
+                    fetchFailed = false,
+                )
+            )
+        }
+
+        val result = productStore.fetchProducts(
+            site = site,
+            offset = 0,
+            pageSize = idsToFetch.size,
+            includedProductIds = idsToFetch,
+            forceRefresh = false,
+        )
+        return if (result.isError) {
+            Result.success(
+                CachedLookupResult(
+                    items = cachedProducts,
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = idsToFetch.size,
+                    fetchAttempted = true,
+                    fetchFailed = true,
+                )
+            )
+        } else {
+            Result.success(
+                CachedLookupResult(
+                    items = productStore.getProductsByRemoteIds(site, ids),
+                    cacheHitCount = cachedIds.size,
+                    cacheMissCount = idsToFetch.size,
+                    fetchAttempted = true,
+                    fetchFailed = false,
+                )
+            )
+        }
     }
 
     suspend fun updateProduct(productId: Long, update: ProductUpdate): Result<WCProductModel> {
@@ -154,7 +217,7 @@ internal class AIProductsDataSource @Inject constructor(
         } else {
             val product = productStore.getProductByRemoteId(site, productId)
             product?.let { Result.success(it) }
-                ?: Result.failure(IllegalStateException("Product $productId not found after fetch"))
+                ?: Result.failure(ProductNotFoundException(productId))
         }
     }
 

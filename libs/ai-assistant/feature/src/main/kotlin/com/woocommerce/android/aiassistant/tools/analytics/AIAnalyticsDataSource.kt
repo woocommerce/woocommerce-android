@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 internal class AIAnalyticsDataSource @Inject constructor(
@@ -17,6 +18,7 @@ internal class AIAnalyticsDataSource @Inject constructor(
     // Do not route AI analytics through WCStatsStore: it persists stats in RevenueStatsEntity, while shared
     // date/interval cache readers ignore rangeId/source/currency. AI-only responses could then pollute those reads.
     private val orderStatsRestClient: OrderStatsRestClient,
+    private val wooCommerceStore: WooCommerceStore,
 ) {
     suspend fun fetchRevenueStats(
         after: String,
@@ -51,6 +53,12 @@ internal class AIAnalyticsDataSource @Inject constructor(
             orderStatsRangeId = ORDERS_RANGE_ID,
         )
     }
+
+    fun getSelectedSiteCurrencyCode(): String? =
+        wooCommerceStore.getSiteSettings(selectedSite.get())
+            ?.currencyCode
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
 
     private suspend fun fetchStats(
         fetch: suspend (SiteModel) -> FetchRevenueStatsResponsePayload,
