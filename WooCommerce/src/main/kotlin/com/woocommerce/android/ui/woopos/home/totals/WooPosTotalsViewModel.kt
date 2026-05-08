@@ -88,6 +88,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private const val KEY_STATE = "woo_pos_totals_data_state"
+        private const val KEY_IS_TAP_TO_PAY_PAYMENT = "woo_pos_is_tap_to_pay_payment"
         private const val TAP_TO_PAY_SOURCE = "woo_pos_checkout"
         private val InitialState = WooPosTotalsViewState.Loading
     }
@@ -114,11 +115,15 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
+    // Persisted hook handed to `CardReaderPaymentController` so the SDK-overlay-up state survives
+    // process death — the controller flips this when the Stripe overlay opens/closes.
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
 
-    private var isTapToPayPayment: Boolean = false
+    // Persisted ViewModel-side flag covering the entire TTP flow (connect → SDK overlay → terminal).
+    // Drives the `listenToPaymentState` mode dispatch and silences the reader-status observer.
+    private var isTapToPayPayment: Boolean by TTPPaymentProgressDelegate(savedState, KEY_IS_TAP_TO_PAY_PAYMENT)
 
     private fun createCardReaderPaymentController(
         orderId: Long,
@@ -135,8 +140,15 @@ class WooPosTotalsViewModel @Inject constructor(
     init {
         listenUpEvents()
         observeCardReaderStatus()
-        (tapToPayAvailabilityStatus() as? TapToPayAvailabilityStatus.Result.NotAvailable)?.let {
-            paymentsFlowTracker.trackTapToPayNotAvailableReason(it, TAP_TO_PAY_SOURCE)
+        trackTapToPayUnavailableReasonIfNeeded()
+    }
+
+    private fun trackTapToPayUnavailableReasonIfNeeded() {
+        if (!isTapToPayAvailable.isFeatureFlagEnabled()) return
+        when (val result = tapToPayAvailabilityStatus()) {
+            is TapToPayAvailabilityStatus.Result.NotAvailable ->
+                paymentsFlowTracker.trackTapToPayNotAvailableReason(result, TAP_TO_PAY_SOURCE)
+            else -> Unit
         }
     }
 
@@ -150,7 +162,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     is NotConnected, is Connecting -> {
                         val state = uiState.value
                         if (state !is WooPosTotalsViewState.Checkout) return@collect
-                        uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+                        uiState.value = state.copy(readerStatus = buildReaderDisconnectedState())
                         cancelPaymentAction()
                     }
 
@@ -165,7 +177,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             // Built-in (Tap to Pay) reader sessions are user-driven via the TTP CTA.
                             // Auto-collecting against a still-connected built-in reader from a previous
                             // transaction would block other payment methods on the next checkout.
-                            uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+                            uiState.value = state.copy(readerStatus = buildReaderDisconnectedState())
                             return@collect
                         }
                         uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
@@ -189,13 +201,14 @@ class WooPosTotalsViewModel @Inject constructor(
         if (isTapToPayPayment) {
             isTTPPaymentInProgress = false
         }
-        isTapToPayPayment = false
+        resetTapToPayProgress()
     }
 
     private fun cancelCreateOrderDraftAction() {
         createDraftOrderJob?.cancel()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
@@ -211,9 +224,13 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnCashPaymentClicked -> handleCashPaymentClicked()
 
-            WooPosTotalsUIEvent.OnTapToPayClicked,
-            is WooPosTotalsUIEvent.OnFineLocationPermissionResult,
-            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> handleNewPaymentMethodEvent(event)
+            WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
+
+            is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
+                onFineLocationPermissionResult(event.granted)
+
+            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged ->
+                handleAllPaymentMethodsVisibilityChanged(event.isVisible)
 
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
 
@@ -253,42 +270,36 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun handleNewPaymentMethodEvent(event: WooPosTotalsUIEvent) {
-        when (event) {
-            WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
-            is WooPosTotalsUIEvent.OnFineLocationPermissionResult -> onFineLocationPermissionResult(event.granted)
-            is WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged -> {
-                val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-                uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = event.isVisible)
-            }
-            else -> Unit
-        }
+    private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
+        val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
+        uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = isVisible)
     }
 
     private fun startTapToPayPayment() {
-        if (isTapToPayPayment) return
-        viewModelScope.launch {
-            totalsAnalyticsTracker.trackTapToPayEntryPointTapped()
-
-            val orderId = dataState.value.orderId
-            if (orderId == EMPTY_ORDER_ID) {
-                wooPosLogWrapper.e("Tap to Pay tapped before order draft was created")
-                return@launch
-            }
-            if (!networkStatus.isConnected()) {
-                childrenToParentEventSender.sendToParent(
-                    ToastMessageDisplayed(resourceProvider.getString(R.string.woopos_no_internet_message))
-                )
-                return@launch
-            }
-
-            attemptTapToPayConnect(orderId)
+        val orderId = dataState.value.orderId
+        if (orderId == EMPTY_ORDER_ID) {
+            wooPosLogWrapper.e("Tap to Pay tapped before order draft was created")
+            return
         }
+        viewModelScope.launch { totalsAnalyticsTracker.trackCheckoutTapToPayPaymentTapped() }
+        launchTapToPayConnect(orderId)
+    }
+
+    private fun launchTapToPayConnect(orderId: Long) {
+        if (isTapToPayPayment) return
+        isTapToPayPayment = true
+        setTapToPayInProgress(true)
+        viewModelScope.launch { attemptTapToPayConnect(orderId) }
     }
 
     private suspend fun attemptTapToPayConnect(orderId: Long) {
-        isTapToPayPayment = true
-        setTapToPayInProgress(true)
+        if (!networkStatus.isConnected()) {
+            childrenToParentEventSender.sendToParent(
+                ToastMessageDisplayed(resourceProvider.getString(R.string.woopos_no_internet_message))
+            )
+            resetTapToPayProgress()
+            return
+        }
         builtInReaderConnector.connect().fold(
             onSuccess = {
                 createCardReaderPaymentController(orderId, CardReaderType.BUILT_IN)
@@ -297,23 +308,24 @@ class WooPosTotalsViewModel @Inject constructor(
             },
             onFailure = { error ->
                 wooPosLogWrapper.e("Tap to Pay connection failed", error)
-                isTapToPayPayment = false
-                setTapToPayInProgress(false)
+                resetTapToPayProgress()
                 when (error) {
                     is MissingFineLocationPermissionException ->
-                        _screenEvents.tryEmit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+                        viewModelScope.launch {
+                            _screenEvents.emit(WooPosTotalsScreenEvent.RequestFineLocationPermission)
+                        }
 
                     is BuiltInReaderDiscoveryFailedException -> {
-                        val detail = error.message?.takeIf { it.isNotBlank() }
-                        val message = if (detail != null) {
+                        val reason = error.message?.takeIf { it.isNotBlank() }
+                        val toastMessage = if (reason != null) {
                             resourceProvider.getString(
                                 R.string.woopos_tap_to_pay_payment_failed_with_reason_message,
-                                detail,
+                                reason,
                             )
                         } else {
                             resourceProvider.getString(R.string.woopos_tap_to_pay_payment_failed_message)
                         }
-                        childrenToParentEventSender.sendToParent(ToastMessageDisplayed(message))
+                        childrenToParentEventSender.sendToParent(ToastMessageDisplayed(toastMessage))
                     }
 
                     else -> childrenToParentEventSender.sendToParent(
@@ -326,38 +338,32 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
+    private fun resetTapToPayProgress() {
+        isTapToPayPayment = false
+        setTapToPayInProgress(false)
+    }
+
     private fun setTapToPayInProgress(inProgress: Boolean) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        val nextButtonsState = if (inProgress) {
-            WooPosTotalsViewState.PaymentButtonsState.Disabled
-        } else {
-            WooPosTotalsViewState.PaymentButtonsState.Enabled
-        }
-        if (checkout.isTapToPayInProgress != inProgress ||
-            checkout.paymentButtonsState != nextButtonsState
-        ) {
-            uiState.value = checkout.copy(
-                isTapToPayInProgress = inProgress,
-                paymentButtonsState = nextButtonsState,
-            )
+        if (checkout.isTapToPayInProgress != inProgress) {
+            uiState.value = checkout.copy(isTapToPayInProgress = inProgress)
         }
     }
 
     private fun onFineLocationPermissionResult(granted: Boolean) {
-        viewModelScope.launch {
-            if (granted) {
-                val orderId = dataState.value.orderId
-                if (orderId != EMPTY_ORDER_ID) {
-                    attemptTapToPayConnect(orderId)
-                }
-            } else {
+        if (!granted) {
+            viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(
                     ToastMessageDisplayed(
                         resourceProvider.getString(R.string.woopos_tap_to_pay_missing_location_permission_message)
                     )
                 )
             }
+            return
         }
+        val orderId = dataState.value.orderId
+        if (orderId == EMPTY_ORDER_ID) return
+        launchTapToPayConnect(orderId)
     }
 
     private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
@@ -541,62 +547,73 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun listenToPaymentState() {
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
-                when (paymentState) {
-                    is CardReaderPaymentState.ProcessingPayment -> {
-                        if (isTapToPayPayment) return@collect
-                        handleProcessingPaymentState(paymentState)
-                    }
-
-                    is CardReaderPaymentState.LoadingData -> {
-                        if (isTapToPayPayment) return@collect
-                        handleReaderLoadingPaymentState()
-                    }
-
-                    is CardReaderPaymentState.PaymentCapturing -> {
-                        if (isTapToPayPayment) return@collect
-                        handleCapturingPaymentState()
-                    }
-
-                    is CardReaderPaymentState.PaymentSuccessful -> {
-                        val wasTapToPay = isTapToPayPayment
-                        if (wasTapToPay) {
-                            isTTPPaymentInProgress = false
-                        }
-                        isTapToPayPayment = false
-                        setTapToPayInProgress(false)
-                        if (wasTapToPay) {
-                            launch { builtInReaderConnector.disconnectIfConnected() }
-                        }
-                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
-                    }
-
-                    is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
-                        uiState.value = buildPaymentFailedState(paymentState)
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
-                    }
-
-                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
-                        wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
-                        isTTPPaymentInProgress = false
-                        isTapToPayPayment = false
-                        setTapToPayInProgress(false)
-                        launch { builtInReaderConnector.disconnectIfConnected() }
-                        childrenToParentEventSender.sendToParent(
-                            ToastMessageDisplayed(uiStringParser.asString(paymentState.errorType.message))
-                        )
-                    }
-
-                    CardReaderPaymentState.ReFetchingOrder -> Unit
-
-                    is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
-                    is CardReaderPaymentState.PrintingReceipt,
-                    CardReaderPaymentState.SharingReceipt -> {
-                        throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
-                    }
+                if (isTapToPayPayment) {
+                    handleTapToPayPaymentState(paymentState)
+                } else {
+                    handleExternalReaderPaymentState(paymentState)
                 }
             }
         }
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+    }
+
+    private suspend fun handleTapToPayPaymentState(paymentState: CardReaderPaymentOrRefundState) {
+        when (paymentState) {
+            is CardReaderPaymentState.PaymentSuccessful -> {
+                isTTPPaymentInProgress = false
+                resetTapToPayProgress()
+                viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
+                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+            }
+
+            is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
+                wooPosLogWrapper.e("Tap to Pay payment failed: ${paymentState.errorType}")
+                isTTPPaymentInProgress = false
+                resetTapToPayProgress()
+                viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
+                childrenToParentEventSender.sendToParent(
+                    ToastMessageDisplayed(uiStringParser.asString(paymentState.errorType.message))
+                )
+            }
+
+            // Stripe SDK owns the user-visible UI for these states during TTP, so the in-app screen stays put.
+            is CardReaderPaymentState.ProcessingPayment,
+            is CardReaderPaymentState.LoadingData,
+            is CardReaderPaymentState.PaymentCapturing,
+            is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment,
+            CardReaderPaymentState.ReFetchingOrder -> Unit
+
+            is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+            is CardReaderPaymentState.PrintingReceipt,
+            CardReaderPaymentState.SharingReceipt ->
+                throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+        }
+    }
+
+    private suspend fun handleExternalReaderPaymentState(paymentState: CardReaderPaymentOrRefundState) {
+        when (paymentState) {
+            is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
+
+            is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
+
+            is CardReaderPaymentState.PaymentCapturing -> handleCapturingPaymentState()
+
+            is CardReaderPaymentState.PaymentSuccessful ->
+                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+
+            is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                uiState.value = buildPaymentFailedState(paymentState)
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
+            }
+
+            is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
+            CardReaderPaymentState.ReFetchingOrder -> Unit
+
+            is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+            is CardReaderPaymentState.PrintingReceipt,
+            CardReaderPaymentState.SharingReceipt ->
+                throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+        }
     }
 
     private suspend fun handleCapturingPaymentState() {
@@ -885,7 +902,7 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             when (cardReaderFacade.readerStatus.value) {
                 is Connected -> buildPreparingReaderStatusState()
-                else -> buildTotalsReaderNotConnectedError()
+                else -> buildReaderDisconnectedState()
             }
         }
         return WooPosTotalsViewState.Checkout(
@@ -904,7 +921,7 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun buildTotalsReaderNotConnectedError(): WooPosTotalsViewState.ReaderStatus.Disconnected =
+    private fun buildReaderDisconnectedState(): WooPosTotalsViewState.ReaderStatus.Disconnected =
         WooPosTotalsViewState.ReaderStatus.Disconnected(
             title = resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title),
             subtitle = resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_subtitle),

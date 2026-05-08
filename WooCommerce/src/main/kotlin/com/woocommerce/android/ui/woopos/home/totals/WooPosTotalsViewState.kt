@@ -12,9 +12,13 @@ sealed class WooPosTotalsViewState : Parcelable {
         val readerStatus: ReaderStatus,
         val isTapToPayAvailable: Boolean = false,
         val isAllPaymentMethodsDialogVisible: Boolean = false,
+        // UI-only rendering hint covering the TTP loading window. Mirrors the VM-side
+        // `isTapToPayPayment` for the duration the in-app loading affordance is visible.
         val isTapToPayInProgress: Boolean = false,
-        val paymentButtonsState: PaymentButtonsState = PaymentButtonsState.Enabled,
-    ) : WooPosTotalsViewState()
+    ) : WooPosTotalsViewState() {
+        val paymentButtonsState: PaymentButtonsState
+            get() = if (isTapToPayInProgress) PaymentButtonsState.Disabled else PaymentButtonsState.Enabled
+    }
 
     @Parcelize
     enum class PaymentButtonsState : Parcelable {

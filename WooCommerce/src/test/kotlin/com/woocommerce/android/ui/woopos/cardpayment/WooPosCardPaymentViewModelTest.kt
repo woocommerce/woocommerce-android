@@ -57,7 +57,7 @@ class WooPosCardPaymentViewModelTest {
         on { event }.thenReturn(controllerEventFlow)
     }
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock {
-        on { create(any(), any(), any(), any()) }.thenReturn(paymentController)
+        on { create(any(), any(), any(), any(), any()) }.thenReturn(paymentController)
     }
     private val networkStatus: WooPosNetworkStatus = mock {
         on { isConnected() }.thenReturn(true)

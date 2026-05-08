@@ -29,6 +29,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     private val fineLocationPermissionCheck: WooPosFineLocationPermissionCheck,
     private val logger: WooPosLogWrapper,
 ) {
+    @Suppress("ReturnCount")
     suspend fun connect(): Result<Unit> {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             return Result.success(Unit)
@@ -117,14 +118,12 @@ class WooPosBuiltInReaderConnector @Inject constructor(
 
     private suspend fun initializeCardReaderManager() {
         withContext(Dispatchers.Main.immediate) {
-            if (!cardReaderManager.initialized) {
-                cardReaderManager.initialize(
-                    updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
-                    useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
-                    isDebug = BuildConfig.DEBUG,
-                )
-                logger.d("Card reader manager initialized for TTP (initialized=${cardReaderManager.initialized})")
-            }
+            if (cardReaderManager.initialized) return@withContext
+            cardReaderManager.initialize(
+                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                isDebug = BuildConfig.DEBUG,
+            )
             cardReaderManager.setupTapToPayUx(
                 CardReaderManager.TapToPayUxConfig(
                     primaryColor = R.color.color_primary,
@@ -133,12 +132,13 @@ class WooPosBuiltInReaderConnector @Inject constructor(
                     isDarkMode = resourceProvider.isDarkMode(),
                 )
             )
+            logger.d("Card reader manager initialized for TTP (initialized=${cardReaderManager.initialized})")
         }
     }
 }
 
-class MissingFineLocationPermissionException :
+internal class MissingFineLocationPermissionException :
     IllegalStateException("ACCESS_FINE_LOCATION permission is required for Tap to Pay")
 
-class BuiltInReaderDiscoveryFailedException(message: String?) :
-    IllegalStateException(message ?: "No built-in reader available")
+internal class BuiltInReaderDiscoveryFailedException(message: String?) :
+    IllegalStateException(message)
