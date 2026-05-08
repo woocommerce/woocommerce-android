@@ -33,13 +33,11 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
-import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.max
-import kotlin.math.pow
 
 private const val DEFAULT_DECIMALS_NUMBER = 2
 
@@ -418,7 +416,7 @@ private class FullFormattingCurrencyEditText(
         if (isInitialized && !isChangingText) {
             isChangingText = true
 
-            val cleanValue = clean(text, decimals)
+            val cleanValue = WCCurrencyUtils.cleanFullFormattedCurrencyInput(text, decimals)
             if (cleanValue != null) {
                 // When the user types backspace on a field that already contained `0`
                 val shouldClearTheField = supportsEmptyState &&
@@ -482,22 +480,6 @@ private class FullFormattingCurrencyEditText(
         } else {
             val decimalFormat = DecimalFormat("0.${"0".repeat(decimals)}")
             decimalFormat.format(value)
-        }
-    }
-
-    companion object TextCleaner {
-        /**
-         * Cleans the [text] so that it only has numerical characters and has the correct number of fractional digits.
-         */
-        fun clean(text: CharSequence?, decimals: Int): BigDecimal? {
-            val nonNumericPattern = Regex("[^0-9\\-]")
-            var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: return null
-
-            if (decimals > 0) {
-                cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
-            }
-
-            return cleanValue
         }
     }
 }

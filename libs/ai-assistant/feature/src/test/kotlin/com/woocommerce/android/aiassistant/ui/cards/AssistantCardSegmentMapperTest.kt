@@ -4,6 +4,9 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.ui.AssistantUiSegment
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -69,6 +72,36 @@ class AssistantCardSegmentMapperTest {
         assertThat(segments).isEmpty()
     }
 
+    @Test
+    fun `given analytics stats payload, when mapped, then grouped segment includes stats card`() {
+        val segments = AssistantCardSegmentMapper.toSegments(
+            ShowCardsUiStructured(
+                cards = listOf(analyticsStatsPayload())
+            )
+        )
+
+        assertThat(segments).containsExactly(
+            AssistantUiSegment.CardGroup(
+                listOf(
+                    AssistantCard.Stats(
+                        id = ANALYTICS_STATS_ID,
+                        after = "2026-05-01",
+                        before = "2026-05-07",
+                        currency = "USD",
+                        totalSales = "170.35",
+                        netSales = "120.15",
+                        totalSalesChartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 170.35),
+                        ),
+                        netSalesChartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 120.15),
+                        ),
+                    )
+                )
+            )
+        )
+    }
+
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
         id = id,
@@ -94,4 +127,33 @@ class AssistantCardSegmentMapperTest {
             imageUrl = "https://example.com/socks.png",
         ),
     )
+
+    private fun analyticsStatsPayload() = ShowCardPayload(
+        family = "analytics_stats",
+        id = ANALYTICS_STATS_ID,
+        title = "Analytics",
+        details = ShowCardDetails.AnalyticsStats(
+            after = "2026-05-01",
+            before = "2026-05-07",
+            currency = "USD",
+            totals = buildJsonObject {
+                put("total_sales", "170.35")
+                put("net_revenue", "120.15")
+            },
+            intervalSubtotals = listOf(
+                buildJsonObject {
+                    put("interval", "2026-05-01")
+                    putJsonObject("subtotals") {
+                        put("total_sales", "170.35")
+                        put("net_revenue", "120.15")
+                    }
+                }
+            ),
+        ),
+    )
+
+    private companion object {
+        private const val ANALYTICS_STATS_ID =
+            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+    }
 }

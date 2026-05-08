@@ -3,6 +3,12 @@ package com.woocommerce.android.aiassistant.ui.cards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 internal object AssistantCardPayloadParser {
     fun parse(payload: ShowCardsUiStructured): List<AssistantCard> =
@@ -24,6 +30,7 @@ internal object AssistantCardPayloadParser {
         when (card.family) {
             ORDER_FAMILY -> parseOrderCard(card)
             PRODUCT_FAMILY -> parseProductCard(card)
+            ANALYTICS_STATS_FAMILY -> parseStatsCard(card)
             else -> null
         }
 
@@ -57,6 +64,66 @@ internal object AssistantCardPayloadParser {
         )
     }
 
+    private fun parseStatsCard(card: ShowCardPayload): AssistantCard? {
+        val details = card.details as? ShowCardDetails.AnalyticsStats ?: return null
+        val after = details.after.takeIf { it.isIsoLocalDate() } ?: return null
+        val before = details.before.takeIf { it.isIsoLocalDate() } ?: return null
+
+        return AssistantCard.Stats(
+            id = card.id,
+            after = after,
+            before = before,
+            currency = details.currency.orEmpty(),
+            totalSales = details.totals.stringValue(TOTAL_SALES_KEYS),
+            netSales = details.totals.stringValue(NET_SALES_KEYS),
+            totalSalesChartPoints = details.intervalSubtotals.mapNotNull {
+                it.toChartPoint(TOTAL_SALES_KEYS)
+            },
+            netSalesChartPoints = details.intervalSubtotals.mapNotNull {
+                it.toChartPoint(NET_SALES_KEYS)
+            },
+        )
+    }
+
+    private fun JsonObject.toChartPoint(valueKeys: List<String>): AssistantCard.Stats.ChartPoint? {
+        val date = chartDate() ?: return null
+        val subtotals = get("subtotals") as? JsonObject ?: return null
+        val value = subtotals.numericValue(valueKeys) ?: return null
+
+        return AssistantCard.Stats.ChartPoint(date = date, value = value)
+    }
+
+    private fun JsonObject.chartDate(): String? {
+        val intervalDate = stringValue("interval")?.takeIf { it.isIsoLocalDate() }
+        if (intervalDate != null) return intervalDate
+
+        return stringValue("date_start")
+            ?.take(ISO_LOCAL_DATE_LENGTH)
+            ?.takeIf { it.isIsoLocalDate() }
+    }
+
+    private fun JsonObject.stringValue(keys: List<String>): String =
+        keys.firstNotNullOfOrNull { key -> get(key)?.stringContentOrNull() }.orEmpty()
+
+    private fun JsonObject.numericValue(keys: List<String>): Double? =
+        keys.firstNotNullOfOrNull { key -> get(key)?.stringContentOrNull()?.toDoubleOrNull() }
+
+    private fun JsonObject.stringValue(key: String): String? =
+        get(key)?.stringContentOrNull()
+
+    private fun JsonElement.stringContentOrNull(): String? =
+        takeUnless { it == JsonNull }
+            ?.let { runCatching { it.jsonPrimitive.content }.getOrNull() }
+
+    private fun String.isIsoLocalDate(): Boolean =
+        ISO_LOCAL_DATE_SHAPE.matches(this) &&
+            runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.isSuccess
+
     private const val ORDER_FAMILY = "order"
     private const val PRODUCT_FAMILY = "product"
+    private const val ANALYTICS_STATS_FAMILY = "analytics_stats"
+    private const val ISO_LOCAL_DATE_LENGTH = 10
+    private val TOTAL_SALES_KEYS = listOf("total_sales", "gross_sales")
+    private val NET_SALES_KEYS = listOf("net_revenue")
+    private val ISO_LOCAL_DATE_SHAPE = Regex("\\d{4}-\\d{2}-\\d{2}")
 }

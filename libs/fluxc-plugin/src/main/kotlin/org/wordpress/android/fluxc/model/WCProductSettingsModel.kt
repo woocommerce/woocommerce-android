@@ -12,4 +12,5 @@ data class WCProductSettingsModel(
     @PrimaryKey val localSiteId: LocalId = LocalId(0),
     val weightUnit: String = "",
     val dimensionUnit: String = "",
+    val defaultLowStockThreshold: Int? = null,
 )

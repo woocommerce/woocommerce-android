@@ -61,13 +61,12 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
 
         return ConfirmationPreview(
             message = string(
-                R.string.ai_assistant_confirmation_order_update_summary,
+                if (status.emailsCustomer()) {
+                    R.string.ai_assistant_confirmation_order_update_summary
+                } else {
+                    R.string.ai_assistant_confirmation_order_update_title
+                },
                 raw(id.toString()),
-                fields.toChangeSummary(
-                    statusEmailImpact = status
-                        ?.takeIf { it in CUSTOMER_NOTIFYING_STATUSES }
-                        ?.let { R.string.ai_assistant_confirmation_change_summary_status_emails_customer },
-                ),
             ),
             fields = fields,
         )
@@ -79,8 +78,8 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         val patch = arguments.objectValue("patch")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_orders_bulk_update_generic))
         val fields = buildList {
-            patch.stringValue("status")?.let {
-                add(textField("status", it, R.string.ai_assistant_confirmation_field_status))
+            patch.stringValue("status")?.let { status ->
+                add(textField("status", status, R.string.ai_assistant_confirmation_field_status))
             }
             if (patch.containsKey("customer_note")) {
                 add(
@@ -95,23 +94,20 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
                 add(textField("billing_email", it, R.string.ai_assistant_confirmation_field_billing_email))
             }
         }
-        val summary = fields.toChangeSummary(
-            statusEmailImpact = patch.stringValue("status")
-                ?.takeIf { it in CUSTOMER_NOTIFYING_STATUSES }
-                ?.let {
-                    if (ids.size == 1) {
-                        R.string.ai_assistant_confirmation_change_summary_status_emails_customer
-                    } else {
-                        R.string.ai_assistant_confirmation_change_summary_status_emails_customers
-                    }
-                },
-        )
+        val emailsCustomer = patch.stringValue("status").emailsCustomer()
         return ConfirmationPreview(
             message = quantity(
                 quantity = ids.size,
-                singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
-                multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
-                summary,
+                singular = if (emailsCustomer) {
+                    R.string.ai_assistant_confirmation_orders_bulk_update_summary_single
+                } else {
+                    R.string.ai_assistant_confirmation_orders_bulk_update_title_single
+                },
+                multiple = if (emailsCustomer) {
+                    R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple
+                } else {
+                    R.string.ai_assistant_confirmation_orders_bulk_update_title_multiple
+                },
             ),
             fields = fields,
             isBulk = true,
@@ -123,11 +119,7 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_product_update_generic))
         val fields = productFields(arguments, snapshot)
         return ConfirmationPreview(
-            message = string(
-                R.string.ai_assistant_confirmation_product_update_summary,
-                raw(id.toString()),
-                fields.toChangeSummary(),
-            ),
+            message = productUpdateTitle(id, snapshot),
             fields = fields,
         )
     }
@@ -141,9 +133,8 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         return ConfirmationPreview(
             message = quantity(
                 quantity = ids.size,
-                singular = R.string.ai_assistant_confirmation_products_bulk_update_summary_single,
-                multiple = R.string.ai_assistant_confirmation_products_bulk_update_summary_multiple,
-                fields.toChangeSummary(),
+                singular = R.string.ai_assistant_confirmation_products_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_products_bulk_update_title_multiple,
             ),
             fields = fields,
             isBulk = true,
@@ -162,10 +153,9 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         val fields = variationFields(arguments, snapshot)
         return ConfirmationPreview(
             message = string(
-                R.string.ai_assistant_confirmation_product_variation_update_summary,
+                R.string.ai_assistant_confirmation_product_variation_update_title,
                 raw(variationId.toString()),
                 raw(productId.toString()),
-                fields.toChangeSummary(),
             ),
             fields = fields,
         )
@@ -312,42 +302,19 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
             string(R.string.ai_assistant_confirmation_generic_tool_call, raw(toolName))
         )
 
-    private fun List<ConfirmationPreviewField>.toChangeSummary(
-        @StringRes statusEmailImpact: Int? = null,
-    ): ConfirmationPreviewText {
-        if (isEmpty()) {
-            return string(R.string.ai_assistant_confirmation_change_summary_empty)
-        }
-
-        return map { field ->
-            when (field.name) {
-                "regular_price" -> string(
-                    R.string.ai_assistant_confirmation_change_summary_regular_price,
-                    field.value,
+    private fun productUpdateTitle(
+        id: Long,
+        snapshot: ConfirmationSnapshot?,
+    ): ConfirmationPreviewText =
+        snapshot?.currentValues?.get("name")
+            ?.takeIf { it.isNotBlank() }
+            ?.let { name ->
+                string(
+                    R.string.ai_assistant_confirmation_product_update_title_with_name,
+                    raw(name),
+                    raw(id.toString()),
                 )
-                "sale_price" -> string(R.string.ai_assistant_confirmation_change_summary_sale_price, field.value)
-                "stock_quantity" -> string(
-                    R.string.ai_assistant_confirmation_change_summary_stock_quantity,
-                    field.value,
-                )
-                "stock_status" -> string(
-                    R.string.ai_assistant_confirmation_change_summary_stock_status,
-                    field.value,
-                )
-                "sku" -> string(R.string.ai_assistant_confirmation_change_summary_sku, field.value)
-                "customer_note" -> string(R.string.ai_assistant_confirmation_change_summary_customer_note)
-                "billing_email" -> string(
-                    R.string.ai_assistant_confirmation_change_summary_billing_email,
-                    field.value,
-                )
-                "status" -> string(
-                    statusEmailImpact ?: R.string.ai_assistant_confirmation_change_summary_status,
-                    field.value,
-                )
-                else -> string(R.string.ai_assistant_confirmation_change_summary_field, raw(field.name), field.value)
-            }
-        }.toLocalizedList()
-    }
+            } ?: string(R.string.ai_assistant_confirmation_product_update_title, raw(id.toString()))
 
     private fun textField(
         name: String,
@@ -381,11 +348,6 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
         "sale_price" -> salePriceValue(value)
         else -> raw(value)
     }
-
-    private fun List<ConfirmationPreviewText>.toLocalizedList(): ConfirmationPreviewText =
-        reduceOrNull { left, right ->
-            string(R.string.ai_assistant_confirmation_message_list_separator, left, right)
-        } ?: string(R.string.ai_assistant_confirmation_change_summary_empty)
 
     private fun raw(value: String) = ConfirmationPreviewText.Raw(value)
 
@@ -422,6 +384,9 @@ internal class WooCommerceConfirmationPreviewBuilder @Inject constructor() {
 
     private fun JsonObject.objectValue(name: String): JsonObject? =
         this[name]?.asJsonObjectOrNull()
+
+    private fun String?.emailsCustomer(): Boolean =
+        this?.let { it in CUSTOMER_NOTIFYING_STATUSES } == true
 
     private fun JsonElement.asJsonArrayOrNull(): JsonArray? = runCatching { jsonArray }.getOrNull()
 
