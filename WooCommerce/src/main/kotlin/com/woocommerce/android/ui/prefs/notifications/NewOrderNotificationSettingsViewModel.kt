@@ -84,6 +84,13 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         updateOrderPreferences(_viewState.value.copy(thresholdAmount = amount.coerceAtLeast(MIN_THRESHOLD_AMOUNT)))
     }
 
+    fun savePendingOrderPreferences() {
+        val orderPreferences = _viewState.value.toStoreOrderPreferences()
+        appCoroutineScope.launch(coroutineDispatchers.main) {
+            saveOrderPreferences(orderPreferences)
+        }
+    }
+
     fun refreshNotificationSettings() {
         _viewState.update {
             it.copy(newOrderNotificationSoundStatus = notificationChannelsHandler.checkNewOrderNotificationSound())
