@@ -52,7 +52,9 @@ class ProductDetailResponseTest {
         val response = product.toProductDetailResponse()
 
         assertThat(response.description).isEqualTo("Long description")
+        assertThat(response.descriptionTruncated).isNull()
         assertThat(response.shortDescription).isEqualTo("Short description")
+        assertThat(response.shortDescriptionTruncated).isNull()
         val attribute = requireNotNull(response.attributes).single()
         assertThat(attribute.name).isEqualTo("Size")
         assertThat(attribute.options).containsExactly("M", "L")
@@ -65,5 +67,20 @@ class ProductDetailResponseTest {
         assertThat(response.crossSellIds).containsExactly(11L, 12L)
         assertThat(response.upsellIds).containsExactly(21L)
         assertThat(response.relatedIds).containsExactly(31L, 32L)
+    }
+
+    @Test
+    fun `given short product descriptions, when list row response is built, then truncation markers are omitted`() {
+        val product = WCProductModel(
+            remoteId = RemoteId(42L),
+            name = "Hoodie",
+            description = "Long description",
+            shortDescription = "Short description",
+        )
+
+        val response = product.toProductListRowResponse()
+
+        assertThat(response.descriptionTruncated).isNull()
+        assertThat(response.shortDescriptionTruncated).isNull()
     }
 }

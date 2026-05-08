@@ -36,8 +36,17 @@ internal class OrdersUpdateToolHandler @Inject constructor(
                 values = ALLOWED_STATUSES.toList(),
                 description = "New order status. Refunds are not allowed through chat tools.",
             )
-            string("customer_note", description = "Customer note to save on the order.")
-            string("billing_email", description = "Billing email to save on the order.")
+            string(
+                "customer_note",
+                description = "Customer note to save on the order.",
+                maxLength = ORDER_CUSTOMER_NOTE_MAX_LENGTH,
+            )
+            string(
+                "billing_email",
+                description = "Billing email to save on the order.",
+                maxLength = ORDER_BILLING_EMAIL_MAX_LENGTH,
+                format = "email",
+            )
         },
         safetyLevel = ToolSafetyLevel.UNSAFE,
     )
@@ -55,6 +64,9 @@ internal class OrdersUpdateToolHandler @Inject constructor(
         }
         if (args.status != null && args.status !in ALLOWED_STATUSES) {
             return ToolResult.ValidationError(call.id, "'${args.status}' is not an allowed status.")
+        }
+        validateOrderWriteArguments(args.customerNote, args.billingEmail)?.let {
+            return ToolResult.ValidationError(call.id, it)
         }
         return dataSource.updateOrder(args.id, args.toPatch()).fold(
             onSuccess = {

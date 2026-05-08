@@ -17,7 +17,9 @@ import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -49,6 +51,12 @@ class OrdersUpdateToolHandlerTest {
             .containsExactly("id")
         assertThat(properties.getValue("status").jsonObject.getValue("enum").jsonArray.map { it.jsonPrimitive.content })
             .doesNotContain("refunded")
+        assertThat(properties.getValue("customer_note").jsonObject.getValue("maxLength").jsonPrimitive.content)
+            .isEqualTo(ORDER_CUSTOMER_NOTE_MAX_LENGTH.toString())
+        val billingEmail = properties.getValue("billing_email").jsonObject
+        assertThat(billingEmail.getValue("maxLength").jsonPrimitive.content)
+            .isEqualTo(ORDER_BILLING_EMAIL_MAX_LENGTH.toString())
+        assertThat(billingEmail.getValue("format").jsonPrimitive.content).isEqualTo("email")
     }
 
     @Test
@@ -155,6 +163,66 @@ class OrdersUpdateToolHandlerTest {
             assertThat(result).isInstanceOf(ToolResult.Success::class.java)
             verify(dataSource).updateOrder(123L, AIOrdersDataSource.OrderPatch(billingEmail = "customer@example.com"))
         }
+
+    @Test
+    fun `given too long customer note, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("customer_note", "a".repeat(ORDER_CUSTOMER_NOTE_MAX_LENGTH + 1))
+                }
+            )
+        )
+
+        assertThat(result).isEqualTo(
+            ToolResult.ValidationError(
+                toolCallId = "call-1",
+                reason = "customer_note must be at most $ORDER_CUSTOMER_NOTE_MAX_LENGTH characters.",
+            )
+        )
+        verify(dataSource, never()).updateOrder(any(), any())
+    }
+
+    @Test
+    fun `given invalid billing email, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("billing_email", "not-an-email")
+                }
+            )
+        )
+
+        assertThat(result).isEqualTo(
+            ToolResult.ValidationError(
+                toolCallId = "call-1",
+                reason = "billing_email must be a valid email address.",
+            )
+        )
+        verify(dataSource, never()).updateOrder(any(), any())
+    }
+
+    @Test
+    fun `given too long billing email, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 123)
+                    put("billing_email", "${"a".repeat(ORDER_BILLING_EMAIL_MAX_LENGTH)}@example.com")
+                }
+            )
+        )
+
+        assertThat(result).isEqualTo(
+            ToolResult.ValidationError(
+                toolCallId = "call-1",
+                reason = "billing_email must be at most $ORDER_BILLING_EMAIL_MAX_LENGTH characters.",
+            )
+        )
+        verify(dataSource, never()).updateOrder(any(), any())
+    }
 
     @Test
     fun `given update succeeds, when execute is called, then widened updated order detail is returned`() = runTest {

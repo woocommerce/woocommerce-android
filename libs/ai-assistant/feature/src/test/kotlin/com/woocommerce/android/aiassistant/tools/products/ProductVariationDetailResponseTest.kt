@@ -38,4 +38,17 @@ class ProductVariationDetailResponseTest {
         assertThat(response.description).isEqualTo(longDescription.take(PRODUCT_TEXT_FIELD_LIMIT))
         assertThat(response.descriptionTruncated).isTrue
     }
+
+    @Test
+    fun `given short variation description, when detail response is built, then truncation marker is omitted`() {
+        val variation = WCProductVariationModel(
+            remoteProductId = RemoteId(100L),
+            remoteVariationId = RemoteId(10L),
+            description = "Short description",
+        )
+
+        val response = variation.toProductVariationDetailResponse()
+
+        assertThat(response.descriptionTruncated).isNull()
+    }
 }

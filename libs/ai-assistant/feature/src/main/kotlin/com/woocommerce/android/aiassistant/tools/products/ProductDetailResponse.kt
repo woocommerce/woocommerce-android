@@ -138,9 +138,9 @@ internal fun WCProductModel.toProductDetailResponse(): ProductDetailResponse {
         variationIds = variationIds.take(PRODUCT_VARIATION_IDS_LIMIT),
         variationIdsTruncated = variationIds.size > PRODUCT_VARIATION_IDS_LIMIT,
         description = compactDescription.value,
-        descriptionTruncated = compactDescription.truncated,
+        descriptionTruncated = compactDescription.truncated.takeIf { it },
         shortDescription = compactShortDescription.value,
-        shortDescriptionTruncated = compactShortDescription.truncated,
+        shortDescriptionTruncated = compactShortDescription.truncated.takeIf { it },
         attributes = attributeList.take(PRODUCT_ATTRIBUTES_LIMIT).map { it.toCompactProductAttribute() },
         attributesTruncated = attributeList.size > PRODUCT_ATTRIBUTES_LIMIT,
         images = imageList.take(PRODUCT_IMAGES_LIMIT).map { it.toCompactProductImage() },
@@ -177,9 +177,9 @@ internal fun WCProductModel.toProductListRowResponse(): ProductListRowResponse {
         dateModified = dateModified,
         image = safeImageList().firstOrNull()?.toCompactProductImage(),
         shortDescription = compactShortDescription.value,
-        shortDescriptionTruncated = compactShortDescription.truncated,
+        shortDescriptionTruncated = compactShortDescription.truncated.takeIf { it },
         description = compactDescription.value,
-        descriptionTruncated = compactDescription.truncated,
+        descriptionTruncated = compactDescription.truncated.takeIf { it },
     )
 }
 

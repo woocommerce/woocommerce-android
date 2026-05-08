@@ -49,8 +49,15 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
                             put("type", "string")
                             putJsonArray("enum") { ALLOWED_STATUSES.forEach { add(it) } }
                         }
-                        putJsonObject("customer_note") { put("type", "string") }
-                        putJsonObject("billing_email") { put("type", "string") }
+                        putJsonObject("customer_note") {
+                            put("type", "string")
+                            put("maxLength", ORDER_CUSTOMER_NOTE_MAX_LENGTH)
+                        }
+                        putJsonObject("billing_email") {
+                            put("type", "string")
+                            put("maxLength", ORDER_BILLING_EMAIL_MAX_LENGTH)
+                            put("format", "email")
+                        }
                     }
                 }
             }
@@ -86,6 +93,9 @@ internal class OrdersBulkUpdateToolHandler @Inject constructor(
         }
         if (args.patch.status != null && args.patch.status !in ALLOWED_STATUSES) {
             return ToolResult.ValidationError(call.id, "'${args.patch.status}' is not an allowed status.")
+        }
+        validateOrderWriteArguments(args.patch.customerNote, args.patch.billingEmail)?.let {
+            return ToolResult.ValidationError(call.id, it)
         }
 
         return dataSource.bulkUpdateOrders(

@@ -121,6 +121,16 @@ class OrderToolResponsesTest {
     }
 
     @Test
+    fun `given short customer note, when detail response is built, then truncation marker is omitted`() = runTest {
+        val structured = json.encodeToJsonElement(
+            order(customerNote = "Short note").toOrderDetailResponse()
+        ).jsonObject
+
+        assertThat(structured.getValue("customer_note").jsonPrimitive.content).isEqualTo("Short note")
+        assertThat(structured).doesNotContainKey("customer_note_truncated")
+    }
+
+    @Test
     fun `given long customer note, when list row response is built, then note is capped with marker`() = runTest {
         val structured = json.encodeToJsonElement(
             order(customerNote = "a".repeat(501)).toOrderListRowResponse()
@@ -128,6 +138,16 @@ class OrderToolResponsesTest {
 
         assertThat(structured.getValue("customer_note").jsonPrimitive.content).isEqualTo("a".repeat(500))
         assertThat(structured.getValue("customer_note_truncated").jsonPrimitive.boolean).isTrue()
+    }
+
+    @Test
+    fun `given short customer note, when list row response is built, then truncation marker is omitted`() = runTest {
+        val structured = json.encodeToJsonElement(
+            order(customerNote = "Short note").toOrderListRowResponse()
+        ).jsonObject
+
+        assertThat(structured.getValue("customer_note").jsonPrimitive.content).isEqualTo("Short note")
+        assertThat(structured).doesNotContainKey("customer_note_truncated")
     }
 
     private fun order(

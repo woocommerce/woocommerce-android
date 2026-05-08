@@ -64,6 +64,12 @@ class OrdersBulkUpdateToolHandlerTest {
         assertThat(requireNotNull(patch["additionalProperties"]).jsonPrimitive.content).isEqualTo("false")
         assertThat(requireNotNull(patch["minProperties"]).jsonPrimitive.content).isEqualTo("1")
         assertThat(patchProperties.keys).containsExactlyInAnyOrder("status", "customer_note", "billing_email")
+        assertThat(patchProperties.getValue("customer_note").jsonObject.getValue("maxLength").jsonPrimitive.content)
+            .isEqualTo(ORDER_CUSTOMER_NOTE_MAX_LENGTH.toString())
+        val billingEmail = patchProperties.getValue("billing_email").jsonObject
+        assertThat(billingEmail.getValue("maxLength").jsonPrimitive.content)
+            .isEqualTo(ORDER_BILLING_EMAIL_MAX_LENGTH.toString())
+        assertThat(billingEmail.getValue("format").jsonPrimitive.content).isEqualTo("email")
     }
 
     @Test
@@ -137,6 +143,51 @@ class OrdersBulkUpdateToolHandlerTest {
         )
 
         assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
+    fun `given too long customer note, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("ids", buildJsonArray { add(123) })
+                    put(
+                        "patch",
+                        buildJsonObject {
+                            put("customer_note", "a".repeat(ORDER_CUSTOMER_NOTE_MAX_LENGTH + 1))
+                        }
+                    )
+                }
+            )
+        )
+
+        assertThat(result).isEqualTo(
+            ToolResult.ValidationError(
+                toolCallId = "call-1",
+                reason = "customer_note must be at most $ORDER_CUSTOMER_NOTE_MAX_LENGTH characters.",
+            )
+        )
+        verify(dataSource, never()).bulkUpdateOrders(any(), any())
+    }
+
+    @Test
+    fun `given invalid billing email, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("ids", buildJsonArray { add(123) })
+                    put("patch", buildJsonObject { put("billing_email", "not-an-email") })
+                }
+            )
+        )
+
+        assertThat(result).isEqualTo(
+            ToolResult.ValidationError(
+                toolCallId = "call-1",
+                reason = "billing_email must be a valid email address.",
+            )
+        )
+        verify(dataSource, never()).bulkUpdateOrders(any(), any())
     }
 
     @Test

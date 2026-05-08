@@ -11,7 +11,8 @@ class InputSchemaDslTest {
     @Test
     fun `given primitive properties, when building the schema, then the JSON shape is correct`() {
         val schema = inputSchema {
-            string("search", description = "Filter by customer name")
+            string("search", description = "Filter by customer name", maxLength = 120)
+            string("email", format = "email")
             boolean("force", description = "Skip cache")
             array("include", itemType = "integer", description = "IDs to include")
         }
@@ -23,6 +24,9 @@ class InputSchemaDslTest {
         val search = requireNotNull(props["search"]).jsonObject
         assertThat(search["type"]?.jsonPrimitive?.contentOrNull).isEqualTo("string")
         assertThat(search["description"]?.jsonPrimitive?.contentOrNull).isEqualTo("Filter by customer name")
+        assertThat(search["maxLength"]?.jsonPrimitive?.contentOrNull).isEqualTo("120")
+        assertThat(requireNotNull(props["email"]).jsonObject["format"]?.jsonPrimitive?.content)
+            .isEqualTo("email")
         assertThat(requireNotNull(props["force"]).jsonObject["type"]?.jsonPrimitive?.content).isEqualTo("boolean")
 
         val include = requireNotNull(props["include"]).jsonObject

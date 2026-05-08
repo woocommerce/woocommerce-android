@@ -15,8 +15,21 @@ class InputSchemaBuilder {
     private val properties = mutableMapOf<String, JsonObject>()
     private val requiredKeys = mutableListOf<String>()
 
-    fun string(name: String, description: String? = null, required: Boolean = false) =
-        prop(name, "string", description, required)
+    fun string(
+        name: String,
+        description: String? = null,
+        required: Boolean = false,
+        maxLength: Int? = null,
+        format: String? = null,
+    ) {
+        properties[name] = buildJsonObject {
+            put("type", "string")
+            description?.let { put("description", it) }
+            maxLength?.let { put("maxLength", it) }
+            format?.let { put("format", it) }
+        }
+        if (required) requiredKeys += name
+    }
 
     fun integer(name: String, description: String? = null, required: Boolean = false) =
         prop(name, "integer", description, required)

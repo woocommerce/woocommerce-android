@@ -62,7 +62,7 @@ internal fun WCProductVariationModel.toProductVariationDetailResponse(): Product
         attributes = compactAttributes(),
         image = getImageModel()?.toCompactProductImage(),
         description = compactDescription.value,
-        descriptionTruncated = compactDescription.truncated,
+        descriptionTruncated = compactDescription.truncated.takeIf { it },
         weight = weight,
         dimensions = CompactVariationDimensions(length, width, height),
         taxClass = taxClass,
