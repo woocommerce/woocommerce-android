@@ -126,6 +126,24 @@ class AssistantViewModel @AssistedInject constructor(
         cancelOpenConfirmationSegments()
     }
 
+    fun onRestartConversation() {
+        val shouldCancelTurn = _uiState.value.isTurnActive
+        turnJob?.cancel()
+        turnJob = null
+        activeAssistantMessageId = null
+        history = emptyList()
+        lastTurnBaseHistory = emptyList()
+        lastUserMessage = null
+        activeCardKeys.clear()
+        _uiState.value = AssistantUiState()
+
+        if (shouldCancelTurn) {
+            viewModelScope.launch {
+                runtime.cancelTurn(conversationId)
+            }
+        }
+    }
+
     private fun startTurn(message: String, isRetry: Boolean) {
         turnJob?.cancel()
         activeCardKeys.clear()
@@ -334,6 +352,7 @@ class AssistantViewModel @AssistedInject constructor(
         when (this) {
             is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
             is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+            is AssistantCard.Stats -> AssistantCardKey(family = "analytics_stats", id = id)
         }
 
     private fun appendAssistantText(delta: String) {

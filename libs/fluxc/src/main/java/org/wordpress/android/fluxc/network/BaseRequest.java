@@ -86,7 +86,8 @@ public abstract class BaseRequest<T> extends Request<T> {
         }
 
         public BaseNetworkError(@NonNull GenericErrorType error, @NonNull VolleyError volleyError) {
-            this.message = volleyError.getMessage();
+            String volleyErrorMessage = volleyError.getMessage();
+            this.message = volleyErrorMessage != null ? volleyErrorMessage : "";
             this.type = error;
             this.volleyError = volleyError;
         }

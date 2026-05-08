@@ -14,6 +14,7 @@ import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
@@ -29,6 +30,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFail
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
+import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -510,6 +512,35 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
         }
+
+    @Test
+    fun `given supported country, when createPaymentIntentOnly called, then returns Success`() = testBlocking {
+        // GIVEN
+        val paymentIntent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
+        whenever(paymentIntent.clientSecret).thenReturn("secret")
+        whenever(createPaymentAction.createPaymentIntent(any()))
+            .thenReturn(CreatePaymentStatus.Success(paymentIntent))
+
+        // WHEN
+        val result = manager.createPaymentIntentOnly(createPaymentInfo())
+
+        // THEN
+        assertThat(result).isInstanceOf(CreatePaymentIntentResult.Success::class.java)
+    }
+
+    @Test
+    fun `given unsupported country, when createPaymentIntentOnly called, then returns Failed`() = testBlocking {
+        // GIVEN
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any()))
+            .thenReturn(CardReaderConfigForUnsupportedCountry)
+
+        // WHEN
+        val result = manager.createPaymentIntentOnly(createPaymentInfo(countryCode = "ZZ"))
+
+        // THEN
+        assertThat(result).isInstanceOf(CreatePaymentIntentResult.Failed::class.java)
+        verify(createPaymentAction, never()).createPaymentIntent(any())
+    }
 
     private fun createPaymentIntent(
         status: PaymentIntentStatus,

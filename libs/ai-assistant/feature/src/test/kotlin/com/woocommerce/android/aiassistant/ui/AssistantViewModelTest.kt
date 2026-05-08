@@ -529,6 +529,56 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given completed conversation, when restarted, then state is cleared and next turn uses empty history`() =
+        runTest {
+            val completedHistory = listOf(
+                AssistantMessage.User("Previous question"),
+                AssistantMessage.Assistant("Previous answer"),
+            )
+            viewModel.onSendMessage("Previous question")
+            runtime.emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = LoopOutcome.COMPLETED,
+                    updatedHistory = completedHistory,
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.onRestartConversation()
+            viewModel.onSendMessage("New question")
+
+            assertThat(viewModel.uiState.value.messages).containsExactly(
+                AssistantUiMessage(id = "message-3", role = AssistantUiMessage.Role.USER, text = "New question"),
+                AssistantUiMessage(id = "message-4", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
+            )
+            assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
+            assertThat(viewModel.uiState.value.error).isNull()
+            assertThat(viewModel.uiState.value.canRetry).isFalse()
+            assertThat(runtime.startRequests.last()).isEqualTo(
+                AssistantTurnRequest(
+                    conversationId = CONVERSATION_ID,
+                    siteId = SITE_ID,
+                    toolScope = ToolScope.GLOBAL,
+                    userMessage = "New question",
+                    history = emptyList(),
+                )
+            )
+        }
+
+    @Test
+    fun `given active turn, when restarted, then state is cleared and runtime turn is cancelled`() = runTest {
+        viewModel.onSendMessage("Hello")
+        runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Partial"))
+        advanceUntilIdle()
+
+        viewModel.onRestartConversation()
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value).isEqualTo(AssistantUiState())
+        assertThat(runtime.cancelledConversationIds).containsExactly(CONVERSATION_ID)
+    }
+
+    @Test
     fun `given retry fails, when retried again, then retry still uses original pre-turn history`() = runTest {
         val priorHistory = listOf(
             AssistantMessage.User("Previous question"),
@@ -810,6 +860,26 @@ class AssistantViewModelTest {
                 AssistantUiSegment.CardGroup(listOf(order, product)),
             )
     }
+
+    @Test
+    fun `given duplicate stats card date ranges across one turn, when cards arrive, then first seen card is kept`() =
+        runTest {
+            viewModel.onSendMessage("Show sales")
+            val firstStats = givenStatsCard(after = "2026-05-01", before = "2026-05-07", totalSales = "123.45")
+            val duplicateStats = givenStatsCard(after = "2026-05-01", before = "2026-05-07", totalSales = "999.99")
+            val secondStats = givenStatsCard(after = "2026-05-08", before = "2026-05-14", totalSales = "456.78")
+
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstStats)))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateStats, secondStats)))
+            advanceUntilIdle()
+
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).containsExactly(
+                AssistantUiSegment.CardGroup(listOf(firstStats, secondStats)),
+            )
+        }
 
     @Test
     fun `given finished history contains card shaped tool json, when reduced, then no card segment is created`() =
@@ -1292,6 +1362,25 @@ class AssistantViewModelTest {
         stockStatus = "instock",
         status = "publish",
         imageUrl = "https://example.com/socks.png",
+    )
+
+    private fun givenStatsCard(
+        after: String,
+        before: String,
+        totalSales: String,
+    ) = AssistantCard.Stats(
+        id = "analytics_revenue:after:$after:before:$before:interval:day:currency:USD",
+        after = after,
+        before = before,
+        currency = "USD",
+        totalSales = totalSales,
+        netSales = "100.15",
+        totalSalesChartPoints = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        ),
+        netSalesChartPoints = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 10.0),
+        ),
     )
 
     private class FakeAssistantRuntime : AssistantRuntime {

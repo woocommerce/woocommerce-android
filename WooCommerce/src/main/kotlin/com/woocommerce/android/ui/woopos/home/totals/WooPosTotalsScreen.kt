@@ -107,7 +107,8 @@ private fun WooPosTotalsScreen(
                 WooPosPaymentSuccessScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
-                    onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+                    onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) },
+                    onBackPressed = { onUIEvent(WooPosTotalsUIEvent.OnBackClicked) },
                 )
             }
         }
@@ -608,6 +609,30 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                 ),
             ),
             onUIEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsScreenPhoneBackPreview(modifier: Modifier = Modifier) {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$420.00",
+                    orderTotalText = "$462.00",
+                    orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
+                    title = "Ready for payment",
+                    subtitle = "Tap, swipe or insert card",
+                ),
+            ),
+            onUIEvent = {},
+            onPhoneBack = {},
         )
     }
 }

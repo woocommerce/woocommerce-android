@@ -53,11 +53,14 @@ class WCSettingsMapper
     fun mapProductSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCProductSettingsModel {
         val weightUnit = getValueForSettingsField(response, "woocommerce_weight_unit")
         val dimensionUnit = getValueForSettingsField(response, "woocommerce_dimension_unit")
+        val defaultLowStockThreshold = getValueForSettingsField(response, "woocommerce_notify_low_stock_amount")
+            ?.toIntOrNull()
 
         return WCProductSettingsModel(
             localSiteId = site.localId(),
             dimensionUnit = dimensionUnit ?: "",
             weightUnit = weightUnit ?: "",
+            defaultLowStockThreshold = defaultLowStockThreshold,
         )
     }
 
