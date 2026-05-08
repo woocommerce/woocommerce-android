@@ -115,10 +115,14 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
+    // Persisted hook handed to `CardReaderPaymentController` so the SDK-overlay-up state survives
+    // process death — the controller flips this when the Stripe overlay opens/closes.
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
 
     private var cardReaderPaymentController: CardReaderPaymentController? = null
 
+    // Persisted ViewModel-side flag covering the entire TTP flow (connect → SDK overlay → terminal).
+    // Drives the `listenToPaymentState` mode dispatch and silences the reader-status observer.
     private var isTapToPayPayment: Boolean by TTPPaymentProgressDelegate(savedState, KEY_IS_TAP_TO_PAY_PAYMENT)
 
     private fun createCardReaderPaymentController(
@@ -158,7 +162,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     is NotConnected, is Connecting -> {
                         val state = uiState.value
                         if (state !is WooPosTotalsViewState.Checkout) return@collect
-                        uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+                        uiState.value = state.copy(readerStatus = buildReaderDisconnectedState())
                         cancelPaymentAction()
                     }
 
@@ -173,7 +177,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             // Built-in (Tap to Pay) reader sessions are user-driven via the TTP CTA.
                             // Auto-collecting against a still-connected built-in reader from a previous
                             // transaction would block other payment methods on the next checkout.
-                            uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+                            uiState.value = state.copy(readerStatus = buildReaderDisconnectedState())
                             return@collect
                         }
                         uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
@@ -197,7 +201,7 @@ class WooPosTotalsViewModel @Inject constructor(
         if (isTapToPayPayment) {
             isTTPPaymentInProgress = false
         }
-        isTapToPayPayment = false
+        resetTapToPayProgress()
     }
 
     private fun cancelCreateOrderDraftAction() {
@@ -897,7 +901,7 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             when (cardReaderFacade.readerStatus.value) {
                 is Connected -> buildPreparingReaderStatusState()
-                else -> buildTotalsReaderNotConnectedError()
+                else -> buildReaderDisconnectedState()
             }
         }
         return WooPosTotalsViewState.Checkout(
@@ -916,7 +920,7 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun buildTotalsReaderNotConnectedError(): WooPosTotalsViewState.ReaderStatus.Disconnected =
+    private fun buildReaderDisconnectedState(): WooPosTotalsViewState.ReaderStatus.Disconnected =
         WooPosTotalsViewState.ReaderStatus.Disconnected(
             title = resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title),
             subtitle = resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_subtitle),
