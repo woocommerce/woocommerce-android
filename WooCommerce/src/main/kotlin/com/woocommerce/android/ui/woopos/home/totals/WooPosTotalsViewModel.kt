@@ -164,47 +164,43 @@ class WooPosTotalsViewModel @Inject constructor(
                 .combine(dataState) { effective, data -> effective to data }
                 .collect { (effective, data) ->
                     if (isTapToPayPayment) return@collect
+                    val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return@collect
                     when (effective) {
-                        WooPosEffectiveReaderStatus.RemoteConnected -> {
-                            val state = uiState.value
-                            if (state !is WooPosTotalsViewState.Checkout) return@collect
-                            if (state.readerStatus !is WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
-                                uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
-                            }
-                            if (data.orderId != EMPTY_ORDER_ID) collectPaymentRemote()
-                        }
-
-                        WooPosEffectiveReaderStatus.BluetoothConnected -> {
-                            val state = uiState.value
-                            if (state !is WooPosTotalsViewState.Checkout) return@collect
-                            // Built-in (Tap to Pay) reader sessions are user-driven via the TTP CTA.
-                            // Auto-collecting against a still-connected built-in reader from a previous
-                            // transaction would block other payment methods on the next checkout.
-                            val btStatus = cardReaderFacade.readerStatus.value
-                            if (btStatus is Connected && ReaderType.isBuiltInReaderType(btStatus.cardReader.type)) {
-                                uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
-                                return@collect
-                            }
-                            if (state.readerStatus !is WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
-                                uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
-                            }
-                            if (data.orderId != EMPTY_ORDER_ID) collectPayment()
-                        }
-
-                        WooPosEffectiveReaderStatus.Reconnecting -> {
-                            // We start payment right away so this state not worth handling
-                        }
-
+                        WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
+                        WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
                         WooPosEffectiveReaderStatus.Connecting,
-                        WooPosEffectiveReaderStatus.Disconnected -> {
-                            val state = uiState.value
-                            if (state !is WooPosTotalsViewState.Checkout) return@collect
-                            uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
-                            cancelPaymentAction()
-                        }
+                        WooPosEffectiveReaderStatus.Disconnected -> handleReaderDisconnected(state)
+                        WooPosEffectiveReaderStatus.Reconnecting -> Unit
                     }
                 }
         }
+    }
+
+    private suspend fun handleRemoteConnected(state: WooPosTotalsViewState.Checkout, data: TotalsDataState) {
+        if (state.readerStatus !is WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
+            uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
+        }
+        if (data.orderId != EMPTY_ORDER_ID) collectPaymentRemote()
+    }
+
+    private suspend fun handleBluetoothConnected(state: WooPosTotalsViewState.Checkout, data: TotalsDataState) {
+        // Built-in (Tap to Pay) reader sessions are user-driven via the TTP CTA.
+        // Auto-collecting against a still-connected built-in reader from a previous
+        // transaction would block other payment methods on the next checkout.
+        val btStatus = cardReaderFacade.readerStatus.value
+        if (btStatus is Connected && ReaderType.isBuiltInReaderType(btStatus.cardReader.type)) {
+            uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+            return
+        }
+        if (state.readerStatus !is WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
+            uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
+        }
+        if (data.orderId != EMPTY_ORDER_ID) collectPayment()
+    }
+
+    private fun handleReaderDisconnected(state: WooPosTotalsViewState.Checkout) {
+        uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+        cancelPaymentAction()
     }
 
     private fun buildPreparingReaderStatusState() = WooPosTotalsViewState.ReaderStatus.Preparing(
@@ -409,7 +405,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun lastFailedPaymentWasTapToPay(): Boolean =
         cardReaderPaymentController?.paymentState?.value is
-            CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
+        CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
 
     private suspend fun returnToCheckoutAfterTapToPayFailed() {
         cardReaderPaymentController?.stop()

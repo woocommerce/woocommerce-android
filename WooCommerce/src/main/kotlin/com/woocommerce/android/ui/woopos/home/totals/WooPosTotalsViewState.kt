@@ -23,8 +23,11 @@ sealed class WooPosTotalsViewState : Parcelable {
     }
 
     sealed class TapToPayProgress : Parcelable {
-        @Parcelize data object Preparing : TapToPayProgress()
-        @Parcelize data object SdkActive : TapToPayProgress()
+        @Parcelize
+        data object Preparing : TapToPayProgress()
+
+        @Parcelize
+        data object SdkActive : TapToPayProgress()
     }
 
     @Parcelize
