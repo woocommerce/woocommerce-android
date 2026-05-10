@@ -9,8 +9,8 @@ import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry

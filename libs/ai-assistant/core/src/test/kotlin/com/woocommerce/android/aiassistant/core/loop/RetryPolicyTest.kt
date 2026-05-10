@@ -90,7 +90,7 @@ class RetryPolicyTest {
     }
 
     @Test
-    fun `given BadRequest when deciding retry then does not retry`() {
+    fun `given BadRequest, when deciding retry, then does not retry`() {
         val decision = policy.decide(
             LoopFailureContext(AssistantError.BadRequest(), visibleOutputStarted = false, retryCount = 0)
         )

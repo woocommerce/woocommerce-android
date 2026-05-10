@@ -9,8 +9,8 @@ import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
-import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
@@ -38,6 +38,7 @@ class AgenticLoopImpl(
     private val json: Json,
 ) : AgenticLoop {
 
+    @Suppress("LongMethod")
     override fun runTurn(
         conversationId: String,
         userMessage: String,
@@ -63,15 +64,11 @@ class AgenticLoopImpl(
             ) ?: return@flow
             visibleOutputStarted = stream.visibleOutputStarted
 
-            val assembledResults = assembler.assemble(stream.toolCallDeltas)
-            val callsForHistory = assembledResults.map { it.toHistoryToolCall() }
-            val validCalls = assembledResults
-                .filterIsInstance<ToolCallAssembler.AssemblyResult.Success>()
-                .map { it.call }
+            val assembledToolCalls = assembler.assembleToolCalls(stream)
 
             val newAssistantMsg = AssistantMessage.Assistant(
                 content = stream.assistantText.takeIf { it.isNotEmpty() },
-                toolCalls = callsForHistory,
+                toolCalls = assembledToolCalls.callsForHistory,
             )
 
             if (stream.finishReason == null) {
@@ -89,7 +86,12 @@ class AgenticLoopImpl(
                 return@flow
             }
 
-            val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors, replayTracker)
+            val toolExecution = executeTools(
+                assembledToolCalls.results,
+                assembledToolCalls.validCalls,
+                toolDescriptors,
+                replayTracker,
+            )
             if (toolExecution is ToolExecutionOutcome.Cancelled) {
                 emitCancelledToolExecution(toolExecution, stream.assistantText, history, newTurnMessages)
                 return@flow
@@ -108,12 +110,10 @@ class AgenticLoopImpl(
             iteration++
         }
 
-        pendingInvalidToolCallError?.let { error ->
-            emit(LoopEvent.Failed(error))
-            emit(failedFinish(history + newTurnMessages, RetryAffordance.None, error))
-            return@flow
-        }
-        emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, history + newTurnMessages))
+        emitMaxIterationsOrInvalidToolCallFailure(
+            pendingInvalidToolCallError,
+            history + newTurnMessages,
+        )
     }
 
     private fun buildInitialTurn(
@@ -204,6 +204,18 @@ class AgenticLoopImpl(
                 error = AssistantError.Cancelled,
             )
         )
+    }
+
+    private suspend fun FlowCollector<LoopEvent>.emitMaxIterationsOrInvalidToolCallFailure(
+        invalidToolCallError: AssistantError.InvalidToolCall?,
+        updatedHistory: List<AssistantMessage>,
+    ) {
+        invalidToolCallError?.let { error ->
+            emit(LoopEvent.Failed(error))
+            emit(failedFinish(updatedHistory, RetryAffordance.None, error))
+            return
+        }
+        emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, updatedHistory))
     }
 
     private suspend fun FlowCollector<LoopEvent>.executeTools(
@@ -345,6 +357,23 @@ class AgenticLoopImpl(
         val currentUserTurn: AssistantMessage.User,
         val modelMessages: List<AssistantMessage>,
     )
+
+    private data class AssembledToolCalls(
+        val results: List<ToolCallAssembler.AssemblyResult>,
+        val callsForHistory: List<ToolCall>,
+        val validCalls: List<ToolCall>,
+    )
+
+    private fun ToolCallAssembler.assembleToolCalls(stream: StreamResult): AssembledToolCalls {
+        val results = assemble(stream.toolCallDeltas)
+        return AssembledToolCalls(
+            results = results,
+            callsForHistory = results.map { it.toHistoryToolCall() },
+            validCalls = results
+                .filterIsInstance<ToolCallAssembler.AssemblyResult.Success>()
+                .map { it.call },
+        )
+    }
 
     private sealed interface ToolExecutionOutcome {
         data class Completed(val completed: List<CompletedToolCall>) : ToolExecutionOutcome

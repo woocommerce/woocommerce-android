@@ -1,10 +1,10 @@
 package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
-import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
-import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import kotlinx.coroutines.CancellationException
@@ -73,7 +73,7 @@ class WooCommerceToolRegistryTest {
         }
 
     @Test
-    fun `given handler throws when executing then returns transport error`() = runTest {
+    fun `given handler throws, when executing, then returns transport error`() = runTest {
         val handler = FakeToolHandler(fakeDescriptor("orders_update")) {
             throw IllegalStateException("raw backend payload")
         }
@@ -95,7 +95,7 @@ class WooCommerceToolRegistryTest {
     }
 
     @Test(expected = CancellationException::class)
-    fun `given handler is cancelled when executing then propagates cancellation`() = runTest {
+    fun `given handler is cancelled, when executing, then propagates cancellation`() = runTest {
         val handler = FakeToolHandler(fakeDescriptor("orders_update")) {
             throw CancellationException("cancelled")
         }

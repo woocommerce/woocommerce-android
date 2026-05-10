@@ -5,8 +5,10 @@ import okhttp3.Response
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import kotlin.math.min
 import javax.inject.Inject
+import kotlin.math.min
+
+private const val MILLIS_PER_SECOND = 1_000L
 
 internal class TransportDiagnosticsFactory @Inject constructor() {
     fun from(
@@ -72,7 +74,7 @@ private fun String.parseRetryAfterSeconds(): Long? =
     toLongOrNull()
         ?.takeIf { it >= 0 }
         ?.let { seconds ->
-            runCatching { Math.multiplyExact(seconds, 1_000L) }.getOrNull()
+            runCatching { Math.multiplyExact(seconds, MILLIS_PER_SECOND) }.getOrNull()
         }
         ?.takeIf { it > 0 }
         ?.let { min(it, TransportDiagnosticsFactory.MAX_RETRY_AFTER_MS) }

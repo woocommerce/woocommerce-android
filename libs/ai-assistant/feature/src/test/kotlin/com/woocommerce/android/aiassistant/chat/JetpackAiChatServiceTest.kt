@@ -185,7 +185,7 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
-    fun `given 400 response when streaming then emits BadRequest`() = runTest {
+    fun `given 400 response, when streaming, then emits BadRequest`() = runTest {
         server.enqueue(MockResponse().setResponseCode(400))
 
         val service = newService()
@@ -198,7 +198,7 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
-    fun `given 400 response when streaming then failure carries http status diagnostics`() = runTest {
+    fun `given 400 response, when streaming, then failure carries http status diagnostics`() = runTest {
         server.enqueue(MockResponse().setResponseCode(400))
 
         val service = newService()
@@ -210,7 +210,7 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
-    fun `given non special 4xx responses when streaming then emits BadRequest`() = runTest {
+    fun `given non special 4xx responses, when streaming, then emits BadRequest`() = runTest {
         listOf(402, 404, 422).forEach { code ->
             server.enqueue(MockResponse().setResponseCode(code))
         }

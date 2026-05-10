@@ -2,11 +2,11 @@ package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
-import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.coroutines.CancellationException

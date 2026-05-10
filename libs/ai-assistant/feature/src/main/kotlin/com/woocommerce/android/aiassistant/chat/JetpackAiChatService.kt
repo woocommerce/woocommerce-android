@@ -150,20 +150,28 @@ internal class JetpackAiChatService @Inject constructor(
 
     private fun toAssistantException(t: Throwable?, response: Response?): MappedError {
         val code = response?.code
-        val kind = when {
-            code == HTTP_UNAUTHORIZED || code == HTTP_FORBIDDEN -> ChatStreamError.AUTH
-            code == HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
-            code == HTTP_TOO_MANY_REQUESTS -> ChatStreamError.RATE_LIMIT
-            code == HTTP_BAD_REQUEST -> ChatStreamError.BAD_REQUEST
-            code != null && code in HTTP_CLIENT_ERROR_RANGE -> ChatStreamError.BAD_REQUEST
-            code != null && code in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
-            t is UnknownHostException || t is ConnectException -> ChatStreamError.NETWORK
-            t is SocketTimeoutException -> ChatStreamError.TIMEOUT
-            t is IOException -> ChatStreamError.NETWORK
-            else -> ChatStreamError.UNKNOWN
-        }
+        val kind = response.toStreamError() ?: t.toStreamError()
         val diagnostics = Diagnostics(transport = transportDiagnosticsFactory.from(response))
         return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED, diagnostics = diagnostics)
+    }
+
+    private fun Response?.toStreamError(): ChatStreamError? = when (val code = this?.code) {
+        HTTP_UNAUTHORIZED,
+        HTTP_FORBIDDEN -> ChatStreamError.AUTH
+        HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
+        HTTP_TOO_MANY_REQUESTS -> ChatStreamError.RATE_LIMIT
+        HTTP_BAD_REQUEST -> ChatStreamError.BAD_REQUEST
+        in HTTP_CLIENT_ERROR_RANGE -> ChatStreamError.BAD_REQUEST
+        in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
+        else -> null
+    }
+
+    private fun Throwable?.toStreamError(): ChatStreamError = when (this) {
+        is UnknownHostException,
+        is ConnectException -> ChatStreamError.NETWORK
+        is SocketTimeoutException -> ChatStreamError.TIMEOUT
+        is IOException -> ChatStreamError.NETWORK
+        else -> ChatStreamError.UNKNOWN
     }
 
     private fun mapError(t: Throwable): MappedError = when (t) {
