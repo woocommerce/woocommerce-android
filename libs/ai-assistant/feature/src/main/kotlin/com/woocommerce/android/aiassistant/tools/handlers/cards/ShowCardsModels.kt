@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
+import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -56,6 +57,10 @@ internal data class OrderSummary(
     val currency: String? = null,
     @SerialName("date_created") val dateCreated: String? = null,
     @SerialName("customer_name") val customerName: String? = null,
+    @SerialName("payment_method_title") val paymentMethodTitle: String? = null,
+    @SerialName("customer_id") val customerId: Long? = null,
+    @SerialName("line_items_count") val lineItemsCount: Int? = null,
+    @SerialName("line_items") val lineItems: List<CompactOrderLineItem> = emptyList(),
 )
 
 @Serializable
@@ -64,7 +69,11 @@ internal data class ProductSummary(
     val name: String? = null,
     val sku: String? = null,
     val price: String? = null,
+    val type: String? = null,
     @SerialName("stock_status") val stockStatus: String? = null,
+    @SerialName("manage_stock") val manageStock: Boolean? = null,
+    @SerialName("on_sale") val onSale: Boolean? = null,
+    @SerialName("stock_quantity") val stockQuantity: Double? = null,
 )
 
 @Serializable

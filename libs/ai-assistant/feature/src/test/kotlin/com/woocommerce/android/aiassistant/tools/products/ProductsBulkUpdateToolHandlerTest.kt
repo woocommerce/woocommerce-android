@@ -9,13 +9,17 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -128,6 +132,24 @@ class ProductsBulkUpdateToolHandlerTest {
     }
 
     @Test
+    fun `given unknown patch argument, when bulk product update executes, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    putJsonArray("ids") { add(42) }
+                    putJsonObject("patch") {
+                        put("regular_price", "12.50")
+                        put("unexpected", true)
+                    }
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        verify(dataSource, never()).bulkUpdateProducts(any(), any())
+    }
+
+    @Test
     fun `given valid patch, when execute succeeds, then structured summary is returned`() = runTest {
         whenever(
             dataSource.bulkUpdateProducts(
@@ -174,11 +196,15 @@ class ProductsBulkUpdateToolHandlerTest {
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         val structured = (result as ToolResult.Success).structured.jsonObject
         assertThat(requireNotNull(structured["tool"]).jsonPrimitive.content).isEqualTo("products_bulk_update")
-        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.content).isEqualTo("2")
-        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.content).isEqualTo("0")
+        assertThat(requireNotNull(structured["requested_count"]).jsonPrimitive.int).isEqualTo(2)
+        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.int).isEqualTo(2)
+        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.int).isEqualTo(0)
+        assertThat(requireNotNull(structured["partial_success"]).jsonPrimitive.boolean).isFalse
+        assertThat(requireNotNull(structured["patch_keys"]).jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("name", "regular_price", "stock_quantity", "status")
         assertThat(requireNotNull(structured["updated_ids"]).jsonArray.map { it.jsonPrimitive.long })
             .containsExactly(42L, 43L)
-        assertThat(structured["failed"]).isNull()
+        assertThat(requireNotNull(structured["failed"]).jsonArray).isEmpty()
     }
 
     @Test
@@ -221,15 +247,74 @@ class ProductsBulkUpdateToolHandlerTest {
 
         assertThat(result).isInstanceOf(ToolResult.Success::class.java)
         val structured = (result as ToolResult.Success).structured.jsonObject
-        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.content).isEqualTo("1")
-        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.content).isEqualTo("1")
+        assertThat(requireNotNull(structured["requested_count"]).jsonPrimitive.int).isEqualTo(2)
+        assertThat(requireNotNull(structured["updated_count"]).jsonPrimitive.int).isEqualTo(1)
+        assertThat(requireNotNull(structured["failed_count"]).jsonPrimitive.int).isEqualTo(1)
+        assertThat(requireNotNull(structured["partial_success"]).jsonPrimitive.boolean).isTrue
+        assertThat(requireNotNull(structured["patch_keys"]).jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("name")
         val failed = requireNotNull(structured["failed"]).jsonArray.single().jsonObject
+        assertThat(failed.keys).containsExactly("id", "code", "message", "status")
         assertThat(requireNotNull(failed["id"]).jsonPrimitive.long).isEqualTo(43L)
         assertThat(requireNotNull(failed["code"]).jsonPrimitive.content)
             .isEqualTo("woocommerce_rest_product_invalid_id")
         assertThat(requireNotNull(failed["message"]).jsonPrimitive.content).isEqualTo("Invalid ID.")
         assertThat(requireNotNull(failed["status"]).jsonPrimitive.content).isEqualTo("400")
+        assertThat(structured).doesNotContainKey("variable_parent_price_skipped_ids")
     }
+
+    @Test
+    fun `given partial product failures, when execute succeeds, then compact receipt includes counts and patch keys`() =
+        runTest {
+            whenever(
+                dataSource.bulkUpdateProducts(
+                    productIds = listOf(42L, 43L),
+                    update = AIProductsDataSource.ProductUpdate(regularPrice = "12.50")
+                )
+            ).thenReturn(
+                Result.success(
+                    AIProductsDataSource.BulkUpdateResult(
+                        updatedIds = listOf(42L),
+                        failedProducts = listOf(
+                            WCProductStore.UpdateProductsResult.FailedProduct(
+                                id = 43L,
+                                errorCode = "woocommerce_rest_product_invalid_id",
+                                errorMessage = "Invalid ID.",
+                                errorStatus = 400,
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        putJsonArray("ids") {
+                            add(42)
+                            add(43)
+                        }
+                        putJsonObject("patch") {
+                            put("regular_price", "12.50")
+                        }
+                    }
+                )
+            )
+
+            val json = (result as ToolResult.Success).structured.jsonObject
+            assertThat(json.getValue("tool").jsonPrimitive.content).isEqualTo("products_bulk_update")
+            assertThat(json.getValue("requested_count").jsonPrimitive.int).isEqualTo(2)
+            assertThat(json.getValue("updated_count").jsonPrimitive.int).isEqualTo(1)
+            assertThat(json.getValue("failed_count").jsonPrimitive.int).isEqualTo(1)
+            assertThat(json.getValue("partial_success").jsonPrimitive.boolean).isTrue
+            assertThat(json.getValue("patch_keys").jsonArray.map { it.jsonPrimitive.content })
+                .containsExactly("regular_price")
+            assertThat(json.getValue("updated_ids").jsonArray.map { it.jsonPrimitive.long }).containsExactly(42L)
+            val failed = json.getValue("failed").jsonArray.single().jsonObject
+            assertThat(failed.keys).containsExactly("id", "code", "message", "status")
+            assertThat(failed.getValue("id").jsonPrimitive.long).isEqualTo(43L)
+            assertThat(json).doesNotContainKey("variable_parent_price_skipped_ids")
+        }
 
     @Test
     fun `given update fails, when execute is called, then retryable TransportError is returned`() = runTest {

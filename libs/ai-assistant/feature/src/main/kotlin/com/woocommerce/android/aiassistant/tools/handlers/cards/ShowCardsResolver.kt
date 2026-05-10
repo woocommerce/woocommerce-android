@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateAfterBou
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateBeforeBound
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsStatsSummary
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
+import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -14,6 +15,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
@@ -59,18 +61,21 @@ internal class DefaultShowCardsResolver @Inject constructor(
         if (refs.isEmpty()) return emptyMap()
 
         val ids = refs.map { it.id.toLong() }
-        return ordersDataSource.getOrders(ids).fold(
-            onSuccess = { orders ->
-                val ordersById = orders.items.associateBy { it.orderId }
-                refs.associateWith { ref ->
+        val orders = ordersDataSource.getOrders(ids).getOrElse {
+            return refs.associateWith { ref ->
+                ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed)
+            }
+        }
+        val ordersById = orders.items.associateBy { it.orderId }
+        return buildMap {
+            for (ref in refs) {
+                put(
+                    ref,
                     ordersById[ref.id.toLong()]?.toResolved(ref)
                         ?: ShowCardsResolution.Missing(ref, orders.missingReason())
-                }
-            },
-            onFailure = {
-                refs.associateWith { ref -> ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed) }
-            },
-        )
+                )
+            }
+        }
     }
 
     private suspend fun resolveProducts(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
@@ -91,32 +96,39 @@ internal class DefaultShowCardsResolver @Inject constructor(
         )
     }
 
-    private fun OrderEntity.toResolved(ref: ValidatedRef) = ShowCardsResolution.Resolved(
-        ref = ref,
-        summary = jsonObject(
-            OrderSummary(
-                id = ref.id,
-                number = number,
-                status = status,
-                total = total,
-                currency = currency,
-                dateCreated = dateCreated,
-                customerName = customerName,
-            )
-        ),
-        card = ShowCardPayload(
-            family = ShowCardFamily.Order.serializedName,
-            id = ref.id,
-            title = number.toDisplayOrderNumber(orderId),
-            details = ShowCardDetails.Order(
-                status = status.takeIf { it.isNotBlank() },
-                total = total.takeIf { it.isNotBlank() },
-                currency = currency.takeIf { it.isNotBlank() },
-                dateCreated = dateCreated.takeIf { it.isNotBlank() },
-                customerName = customerName.takeIf { it.isNotBlank() },
+    private suspend fun OrderEntity.toResolved(ref: ValidatedRef): ShowCardsResolution.Resolved {
+        val lineItems = getLineItemList()
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = jsonObject(
+                OrderSummary(
+                    id = ref.id,
+                    number = number,
+                    status = status,
+                    total = total,
+                    currency = currency,
+                    dateCreated = dateCreated,
+                    customerName = customerName,
+                    paymentMethodTitle = paymentMethodTitle.takeIf { it.isNotBlank() },
+                    customerId = customerId.takeIf { it > 0L },
+                    lineItemsCount = lineItems.size,
+                    lineItems = lineItems.take(SHOW_CARDS_LINE_ITEMS_LIMIT).map { it.toCompactLineItem() },
+                )
             ),
-        ),
-    )
+            card = ShowCardPayload(
+                family = ShowCardFamily.Order.serializedName,
+                id = ref.id,
+                title = number.toDisplayOrderNumber(orderId),
+                details = ShowCardDetails.Order(
+                    status = status.takeIf { it.isNotBlank() },
+                    total = total.takeIf { it.isNotBlank() },
+                    currency = currency.takeIf { it.isNotBlank() },
+                    dateCreated = dateCreated.takeIf { it.isNotBlank() },
+                    customerName = customerName.takeIf { it.isNotBlank() },
+                ),
+            ),
+        )
+    }
 
     private fun WCProductModel.toResolved(ref: ValidatedRef) = ShowCardsResolution.Resolved(
         ref = ref,
@@ -126,7 +138,11 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 name = name,
                 sku = sku,
                 price = price,
+                type = type,
                 stockStatus = stockStatus,
+                manageStock = manageStock,
+                onSale = onSale,
+                stockQuantity = stockQuantity,
             )
         ),
         card = ShowCardPayload(
@@ -167,6 +183,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
                 val summary = analyticsStatsSummary(
                     after = query.after,
                     before = query.before,
+                    interval = query.interval,
                     stats = stats,
                     currency = displayCurrency,
                 )
@@ -221,5 +238,17 @@ private val OrderEntity.customerName: String
         .filter { it.isNotBlank() }
         .joinToString(" ")
 
+private fun LineItem.toCompactLineItem() = CompactOrderLineItem(
+    id = id,
+    name = name,
+    quantity = quantity,
+    sku = sku,
+    total = total,
+    productId = productId,
+    variationId = variationId,
+)
+
 private fun CachedLookupResult<*>.missingReason(): ShowCardsRejectionReason =
     if (fetchFailed) ShowCardsRejectionReason.FetchFailed else ShowCardsRejectionReason.NotFound
+
+private const val SHOW_CARDS_LINE_ITEMS_LIMIT = 5
