@@ -182,6 +182,35 @@ class TransportDiagnosticsFactoryTest {
         assertThat(diagnostics?.bodySnippet).isNull()
     }
 
+    @Test
+    fun `given raw http data with sensitive body, when building diagnostics, then snippet is redacted and capped`() {
+        val diagnostics = factory.fromRawHttp(
+            statusCode = 409,
+            headers = emptyMap(),
+            bodyBytes = """
+                {"code":"rest_invalid_param","message":"Authorization: Bearer secret-token"}
+            """.trimIndent().toByteArray(),
+        )
+
+        assertThat(diagnostics?.httpStatus).isEqualTo(409)
+        assertThat(diagnostics?.bodySnippet).contains("rest_invalid_param")
+        assertThat(diagnostics?.bodySnippet).contains("[REDACTED]")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("secret-token")
+    }
+
+    @Test
+    fun `given raw http headers with mixed case names, when building diagnostics, then semantic allowlist works`() {
+        val diagnostics = factory.fromRawHttp(
+            statusCode = 429,
+            headers = mapOf("x-wp-request-id" to "request-123", "retry-after" to "2"),
+            bodyBytes = null,
+            nowMillis = FIXED_NOW_MS,
+        )
+
+        assertThat(diagnostics?.requestId).isEqualTo("request-123")
+        assertThat(diagnostics?.retryAfterMs).isEqualTo(2_000L)
+    }
+
     private fun response(
         code: Int = 400,
         headers: Map<String, String> = emptyMap(),

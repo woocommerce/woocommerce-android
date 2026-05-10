@@ -24,15 +24,34 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
         )
     }
 
+    fun fromRawHttp(
+        statusCode: Int?,
+        headers: Map<String, String>? = null,
+        bodyBytes: ByteArray? = null,
+        nowMillis: Long = System.currentTimeMillis(),
+    ): TransportDiagnostics? {
+        val normalizedHeaders = headers.orEmpty()
+        val diagnostics = TransportDiagnostics(
+            httpStatus = statusCode,
+            requestId = normalizedHeaders.firstAllowlistedRequestId(),
+            retryAfterMs = normalizedHeaders.header(RETRY_AFTER_HEADER)?.parseRetryAfter(nowMillis),
+            bodySnippet = bodyBytes.safeBodySnippet(),
+        )
+        return diagnostics.takeIf {
+            it.httpStatus != null ||
+                it.requestId != null ||
+                it.retryAfterMs != null ||
+                it.bodySnippet != null
+        }
+    }
+
     private fun Response.firstAllowlistedRequestId(): String? =
         REQUEST_ID_HEADER_NAMES
             .firstNotNullOfOrNull { name -> header(name)?.takeIf { it.isNotBlank() } }
 
     companion object {
-        private val REQUEST_ID_HEADER_NAMES = listOf(
+        internal val REQUEST_ID_HEADER_NAMES = listOf(
             "X-Request-Id",
-            "X-Request-ID",
-            "X-WP-Request-ID",
             "X-WP-Request-Id",
         )
         const val MAX_RETRY_AFTER_MS = 5 * 60 * 1000L
@@ -54,6 +73,13 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
     }
 }
 
+private fun Map<String, String>.firstAllowlistedRequestId(): String? =
+    TransportDiagnosticsFactory.REQUEST_ID_HEADER_NAMES
+        .firstNotNullOfOrNull { name -> header(name)?.takeIf { it.isNotBlank() } }
+
+private fun Map<String, String>.header(name: String): String? =
+    entries.firstOrNull { (key, _) -> key.equals(name, ignoreCase = true) }?.value
+
 private fun Response.safeBodySnippet(): String? =
     runCatching {
         peekBody(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_BYTES)
@@ -62,6 +88,15 @@ private fun Response.safeBodySnippet(): String? =
             ?.redactSensitiveValues()
             ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_CHARS)
     }.getOrNull()
+
+private fun ByteArray?.safeBodySnippet(): String? =
+    this
+        ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_BYTES.toInt())
+        ?.toByteArray()
+        ?.decodeToString()
+        ?.takeIf { it.isNotBlank() }
+        ?.redactSensitiveValues()
+        ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_CHARS)
 
 private fun String.redactSensitiveValues(): String =
     replace(TransportDiagnosticsFactory.SENSITIVE_JSON_VALUE_PATTERN) { match ->
