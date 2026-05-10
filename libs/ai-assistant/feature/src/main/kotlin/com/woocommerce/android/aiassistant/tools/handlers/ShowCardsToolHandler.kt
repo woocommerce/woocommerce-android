@@ -55,8 +55,8 @@ internal class ShowCardsToolHandler internal constructor(
 
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
-        description = "Show rich cards in the Android UI for order/product/customer entity references or an " +
-            "analytics_stats ID produced after a successful analytics_orders result.",
+        description = "Show rich cards in the Android UI for order/product/variation/customer entity references " +
+            "or an analytics_stats ID produced after a successful analytics_orders result.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
@@ -73,6 +73,7 @@ internal class ShowCardsToolHandler internal constructor(
                                 putJsonArray("enum") {
                                     add("order")
                                     add("product")
+                                    add("variation")
                                     add("analytics_stats")
                                     add("customer")
                                 }
@@ -81,7 +82,8 @@ internal class ShowCardsToolHandler internal constructor(
                                 put("type", "string")
                                 put(
                                     "description",
-                                    "Entity id. For analytics_stats, pass the exact card_id returned by " +
+                                    "Entity id. For variation, use strict {parentProductId}/{variationId}. " +
+                                        "For analytics_stats, pass the exact card_id returned by " +
                                         "analytics_orders. Manual form: " +
                                         "analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
                                         "interval:<hour|day|week|month|year> for analytics_stats.",
@@ -166,6 +168,7 @@ internal class ShowCardsToolHandler internal constructor(
         val allowedKeys = when (family) {
             ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
             ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
+            ShowCardFamily.Variation -> VARIATION_SUMMARY_KEYS
             ShowCardFamily.AnalyticsStats -> ANALYTICS_STATS_SUMMARY_KEYS
             ShowCardFamily.Customer -> CUSTOMER_SUMMARY_KEYS
         }
@@ -198,6 +201,17 @@ internal class ShowCardsToolHandler internal constructor(
             "stock_quantity",
         )
         val CUSTOMER_SUMMARY_KEYS = setOf("id", "name", "email")
+        val VARIATION_SUMMARY_KEYS = setOf(
+            "id",
+            "product_id",
+            "variation_id",
+            "name",
+            "sku",
+            "price",
+            "stock_status",
+            "status",
+            "attributes",
+        )
         val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
             "id",
             "after",

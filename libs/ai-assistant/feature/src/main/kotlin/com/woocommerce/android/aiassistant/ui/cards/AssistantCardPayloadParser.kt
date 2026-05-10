@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui.cards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.handlers.cards.VariationCardId
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -74,7 +75,7 @@ internal object AssistantCardPayloadParser {
         return AssistantCard.Variation(
             parentProductId = parentProductId,
             variationId = variationId,
-            name = details.name ?: card.title,
+            name = details.name.orEmpty(),
             sku = details.sku.orEmpty(),
             price = details.price.orEmpty(),
             stockStatus = details.stockStatus.orEmpty(),
@@ -175,11 +176,8 @@ internal object AssistantCardPayloadParser {
             runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.isSuccess
 
     private fun String.toVariationIdParts(): Pair<Long, Long>? {
-        val parts = split("/")
-        if (parts.size != 2) return null
-        val parentProductId = parts[0].toLongOrNull()?.takeIf { it > 0L } ?: return null
-        val variationId = parts[1].toLongOrNull()?.takeIf { it > 0L } ?: return null
-        return parentProductId to variationId
+        val id = VariationCardId.parse(this) ?: return null
+        return id.productId to id.variationId
     }
 
     private const val ORDER_FAMILY = "order"

@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsStats
 import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
@@ -26,12 +27,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 class ShowCardsResolverTest {
     private val ordersDataSource: AIOrdersDataSource = mock()
     private val productsDataSource: AIProductsDataSource = mock()
+    private val variationsDataSource: AIProductVariationsDataSource = mock()
     private val analyticsDataSource: AIAnalyticsDataSource = mock()
     private val customersDataSource: AICustomersDataSource = mock()
     private val json = Json {
@@ -43,6 +46,7 @@ class ShowCardsResolverTest {
     private val resolver = DefaultShowCardsResolver(
         ordersDataSource = ordersDataSource,
         productsDataSource = productsDataSource,
+        variationsDataSource = variationsDataSource,
         analyticsDataSource = analyticsDataSource,
         customersDataSource = customersDataSource,
         json = json,
@@ -111,7 +115,7 @@ class ShowCardsResolverTest {
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
         )
-        verifyNoInteractions(ordersDataSource, productsDataSource)
+        verifyNoInteractions(ordersDataSource, productsDataSource, variationsDataSource)
         val resolved = result.single() as ShowCardsResolution.Resolved
         assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo(ANALYTICS_STATS_ID)
         assertThat(resolved.summary.getValue("after").jsonPrimitive.content).isEqualTo("2026-05-01")
@@ -128,6 +132,32 @@ class ShowCardsResolverTest {
         assertThat(details.totals.getValue("orders_count").jsonPrimitive.content).isEqualTo("42")
         assertThat(details.intervalSubtotals).hasSize(2)
     }
+
+    @Test
+    fun `given variation ref, when resolved, then resolver fetches variation with parent and variation ids`() =
+        runTest {
+            whenever(variationsDataSource.getVariation(productId = 100L, variationId = 10L))
+                .thenReturn(Result.success(variation(productId = 100L, variationId = 10L)))
+
+            val result = resolver.resolve(listOf(ref(ShowCardFamily.Variation, "100/10")))
+
+            verify(variationsDataSource).getVariation(productId = 100L, variationId = 10L)
+            val resolved = result.single() as ShowCardsResolution.Resolved
+            assertThat(resolved.card.id).isEqualTo("100/10")
+            assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo("100/10")
+            assertThat(resolved.summary.getValue("product_id").jsonPrimitive.content).isEqualTo("100")
+            assertThat(resolved.summary.getValue("variation_id").jsonPrimitive.content).isEqualTo("10")
+            val details = resolved.card.details as ShowCardDetails.Variation
+            assertThat(details.productId).isEqualTo(100L)
+            assertThat(details.variationId).isEqualTo(10L)
+            assertThat(details.sku).isEqualTo("woo-socks-blue")
+            assertThat(details.price).isEqualTo("12.99")
+            assertThat(details.stockStatus).isEqualTo("instock")
+            assertThat(details.status).isEqualTo("publish")
+            assertThat(details.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
+            assertThat(details.attributes.map { it.name }).containsExactly("Size", "Color")
+            assertThat(details.attributes.map { it.option }).containsExactly("M", "Blue")
+        }
 
     @Test
     fun `given analytics stats ref, when resolved, then site currency is used for display`() = runTest {
@@ -552,6 +582,20 @@ class ShowCardsResolverTest {
         stockQuantity = stockQuantity,
         status = "publish",
         images = """[{"id":7,"src":"$PRODUCT_IMAGE_URL"}]""",
+    )
+
+    private fun variation(
+        productId: Long,
+        variationId: Long,
+    ) = WCProductVariationModel(
+        remoteProductId = RemoteId(productId),
+        remoteVariationId = RemoteId(variationId),
+        sku = "woo-socks-blue",
+        price = "12.99",
+        stockStatus = "instock",
+        status = "publish",
+        image = """{"id":7,"src":"$PRODUCT_IMAGE_URL"}""",
+        attributes = """[{"id":1,"name":"Size","option":"M"},{"id":2,"name":"Color","option":"Blue"}]""",
     )
 
     private fun customer(

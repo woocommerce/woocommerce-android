@@ -69,6 +69,7 @@ internal class ShowCardsReferenceValidator {
             ShowCardFamily.Order,
             ShowCardFamily.Product,
             ShowCardFamily.Customer -> toLongOrNull()?.let { it > 0L } == true
+            ShowCardFamily.Variation -> VariationCardId.parse(this) != null
             ShowCardFamily.AnalyticsStats -> AnalyticsStatsCardId.parse(this) != null
         }
 

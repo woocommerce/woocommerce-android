@@ -11,6 +11,8 @@ import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
+import com.woocommerce.android.aiassistant.tools.products.toProductVariationDetailResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -20,6 +22,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -47,6 +50,7 @@ internal sealed interface ShowCardsResolution {
 internal class DefaultShowCardsResolver @Inject constructor(
     private val ordersDataSource: AIOrdersDataSource,
     private val productsDataSource: AIProductsDataSource,
+    private val variationsDataSource: AIProductVariationsDataSource,
     private val analyticsDataSource: AIAnalyticsDataSource,
     private val customersDataSource: AICustomersDataSource,
     @AiAssistantJson private val json: Json,
@@ -54,12 +58,14 @@ internal class DefaultShowCardsResolver @Inject constructor(
     override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> {
         val orderResults = resolveOrders(refs.filter { it.family == ShowCardFamily.Order })
         val productResults = resolveProducts(refs.filter { it.family == ShowCardFamily.Product })
+        val variationResults = resolveVariations(refs.filter { it.family == ShowCardFamily.Variation })
         val analyticsResults = resolveAnalyticsStats(refs.filter { it.family == ShowCardFamily.AnalyticsStats })
         val customerResults = resolveCustomers(refs.filter { it.family == ShowCardFamily.Customer })
 
         return refs.map { ref ->
             orderResults[ref]
                 ?: productResults[ref]
+                ?: variationResults[ref]
                 ?: analyticsResults[ref]
                 ?: customerResults[ref]
                 ?: ShowCardsResolution.Missing(
@@ -170,6 +176,61 @@ internal class DefaultShowCardsResolver @Inject constructor(
             ),
         ),
     )
+
+    private suspend fun resolveVariations(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
+        if (refs.isEmpty()) return emptyMap()
+
+        return coroutineScope {
+            refs.map { ref -> async { ref to resolveVariation(ref) } }.awaitAll().toMap()
+        }
+    }
+
+    private suspend fun resolveVariation(ref: ValidatedRef): ShowCardsResolution {
+        val id = VariationCardId.parse(ref.id)
+            ?: return ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.InvalidId)
+
+        return variationsDataSource.getVariation(
+            productId = id.productId,
+            variationId = id.variationId,
+        ).fold(
+            onSuccess = { variation -> variation.toResolved(ref) },
+            onFailure = { ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed) },
+        )
+    }
+
+    private fun WCProductVariationModel.toResolved(ref: ValidatedRef): ShowCardsResolution.Resolved {
+        val detail = toProductVariationDetailResponse()
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = jsonObject(
+                VariationSummary(
+                    id = ref.id,
+                    productId = detail.productId,
+                    variationId = detail.id,
+                    sku = detail.sku.takeIf { it.isNotBlank() },
+                    price = detail.price.takeIf { it.isNotBlank() },
+                    stockStatus = detail.stockStatus.takeIf { it.isNotBlank() },
+                    status = detail.status.takeIf { it.isNotBlank() },
+                    attributes = detail.attributes,
+                )
+            ),
+            card = ShowCardPayload(
+                family = ShowCardFamily.Variation.serializedName,
+                id = ref.id,
+                title = "Variation ${detail.id}",
+                details = ShowCardDetails.Variation(
+                    productId = detail.productId,
+                    variationId = detail.id,
+                    sku = detail.sku.takeIf { it.isNotBlank() },
+                    price = detail.price.takeIf { it.isNotBlank() },
+                    stockStatus = detail.stockStatus.takeIf { it.isNotBlank() },
+                    status = detail.status.takeIf { it.isNotBlank() },
+                    imageUrl = detail.image?.src?.takeIf { it.isNotBlank() },
+                    attributes = detail.attributes,
+                ),
+            ),
+        )
+    }
 
     private suspend fun resolveAnalyticsStats(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
         if (refs.isEmpty()) return emptyMap()

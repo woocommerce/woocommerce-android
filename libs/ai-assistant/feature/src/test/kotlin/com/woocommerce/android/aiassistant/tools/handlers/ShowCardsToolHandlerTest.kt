@@ -14,7 +14,9 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolut
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.VariationSummary
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
@@ -40,12 +42,13 @@ class ShowCardsToolHandlerTest {
     private val handler = handlerWith(FakeResolver.empty())
 
     @Test
-    fun `when descriptor is inspected, then show cards accepts order product analytics stats and customer references`() {
+    fun `when descriptor is inspected, then show cards accepts order product variation analytics stats and customer refs`() {
         val descriptor = handler.descriptor
 
         assertThat(descriptor.name).isEqualTo("show_cards")
         assertThat(descriptor.description).contains("order")
         assertThat(descriptor.description).contains("product")
+        assertThat(descriptor.description).contains("variation")
         assertThat(descriptor.description).contains("analytics_stats")
         assertThat(descriptor.description).contains("customer")
         assertThat(descriptor.inputSchema.toString()).contains("references")
@@ -53,6 +56,7 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("id")
         assertThat(descriptor.inputSchema.toString()).contains("order")
         assertThat(descriptor.inputSchema.toString()).contains("product")
+        assertThat(descriptor.inputSchema.toString()).contains("variation")
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString())
@@ -182,6 +186,42 @@ class ShowCardsToolHandlerTest {
         assertThat(validated(result)).isEqualTo(1)
         assertThat(rejectedReasons(result)).isEmpty()
         assertThat(resolvedIds(result)).containsExactly(ANALYTICS_STATS_ID)
+    }
+
+    @Test
+    fun `given variation composite id, when executed, then ref validates and resolved id is preserved`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(variationCard(id = "100/10")),
+            referencesJson = """[{ "family": "variation", "id": "100/10" }]"""
+        )
+
+        assertThat(validated(result)).isEqualTo(1)
+        assertThat(rejectedReasons(result)).isEmpty()
+        assertThat(resolvedFamilies(result)).containsExactly("variation")
+        assertThat(resolvedIds(result)).containsExactly("100/10")
+    }
+
+    @Test
+    fun `given invalid variation composite ids, when executed, then refs are rejected as invalid id`() = runTest {
+        val refs = listOf("100", "100/", "/10", "0/10", "100/0", "abc/10", "100/abc", "100:10")
+            .joinToString(separator = ",") { id -> """{ "family": "variation", "id": "$id" }""" }
+
+        val result = callShowCards(
+            resolver = FakeResolver.empty(),
+            referencesJson = "[$refs]"
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly(
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+        )
     }
 
     @Test
@@ -605,6 +645,40 @@ class ShowCardsToolHandlerTest {
                     stockStatus = "instock",
                     status = "publish",
                     imageUrl = PRODUCT_IMAGE_URL,
+                ),
+            )
+        )
+    }
+
+    private fun variationCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.Variation, id = id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = json.encodeToJsonElement(
+                VariationSummary(
+                    id = id,
+                    productId = 100L,
+                    variationId = 10L,
+                    sku = "woo-socks-blue",
+                    price = "12.99",
+                    stockStatus = "instock",
+                    status = "publish",
+                    attributes = listOf(CompactVariationAttribute(name = "Size", option = "M")),
+                )
+            ).jsonObject,
+            card = ShowCardPayload(
+                family = "variation",
+                id = id,
+                title = "Variation 10",
+                details = ShowCardDetails.Variation(
+                    productId = 100L,
+                    variationId = 10L,
+                    sku = "woo-socks-blue",
+                    price = "12.99",
+                    stockStatus = "instock",
+                    status = "publish",
+                    attributes = listOf(CompactVariationAttribute(name = "Size", option = "M")),
                 ),
             )
         )
