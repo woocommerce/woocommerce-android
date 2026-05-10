@@ -84,6 +84,19 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given tool transport body snippet, when mapping ui error and copy, then snippet is not exposed`() {
+        val error = AssistantError.ToolFailed(
+            toolName = "orders_update",
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(bodySnippet = "raw backend secret"),
+            )
+        )
+
+        assertThat(error.toAssistantUiError()).isEqualTo(AssistantUiError.TOOL_FAILED)
+        assertThat(error.toMessageRes()).isEqualTo(R.string.assistant_chat_error_tool_failed)
+    }
+
+    @Test
     fun `given target bottom extends below viewport, when checking pin state, then target is not pinned`() {
         assertThat(
             isRenderedTargetPinnedToViewportEnd(

@@ -65,4 +65,31 @@ class AssistantTelemetryTest {
         assertThat(event.toString()).doesNotContain("raw exception message")
         assertThat(event.toString()).doesNotContain("HANDLER_EXCEPTION")
     }
+
+    @Test
+    fun `given tool error with transport snippet, when building telemetry event, then body snippet is excluded`() {
+        val error = AssistantError.ToolFailed(
+            toolName = "orders_update",
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(
+                    httpStatus = 409,
+                    bodySnippet = "raw backend secret",
+                ),
+                tool = ToolDiagnostics(
+                    toolName = "orders_update",
+                    failureKind = ToolFailureKind.DETERMINISTIC_FAILURE,
+                    retryable = false,
+                    source = ToolFailureSource.TOOL_RESULT,
+                )
+            )
+        )
+
+        val event = error.toAssistantTelemetryEvent()
+
+        assertThat(event.httpStatus).isEqualTo(409)
+        assertThat(event.toolName).isEqualTo("orders_update")
+        assertThat(event.toolFailureKind).isEqualTo(ToolFailureKind.DETERMINISTIC_FAILURE)
+        assertThat(event.toolRetryable).isFalse()
+        assertThat(event.toString()).doesNotContain("raw backend secret")
+    }
 }
