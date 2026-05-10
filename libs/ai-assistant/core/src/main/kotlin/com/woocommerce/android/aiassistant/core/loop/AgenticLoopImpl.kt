@@ -5,11 +5,14 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
+import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
@@ -50,6 +53,7 @@ class AgenticLoopImpl(
         var visibleOutputStarted = false
         val replayTracker = ToolReplayTracker(json)
         var iteration = 0
+        var pendingInvalidToolCallError: AssistantError.InvalidToolCall? = null
 
         while (iteration < MAX_ITERATIONS) {
             val stream = streamWithRetry(
@@ -92,6 +96,7 @@ class AgenticLoopImpl(
             }
 
             val completedTools = (toolExecution as ToolExecutionOutcome.Completed).completed
+            pendingInvalidToolCallError = completedTools.terminalInvalidToolCallError()
             modelMessages = modelMessages + newAssistantMsg
             newTurnMessages.add(newAssistantMsg)
             modelMessages = appendCompletedToolMessages(modelMessages, newTurnMessages, completedTools)
@@ -103,6 +108,11 @@ class AgenticLoopImpl(
             iteration++
         }
 
+        pendingInvalidToolCallError?.let { error ->
+            emit(LoopEvent.Failed(error))
+            emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
+            return@flow
+        }
         emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, history + newTurnMessages))
     }
 
@@ -206,7 +216,12 @@ class AgenticLoopImpl(
         for (r in assembledResults) {
             if (r is ToolCallAssembler.AssemblyResult.MalformedArguments) {
                 val result = ToolResult.ValidationError(r.callId, "Malformed arguments for ${r.toolName}")
-                completedTools += CompletedToolCall(r.toHistoryToolCall(), result, ToolSafetyLevel.SAFE)
+                completedTools += CompletedToolCall(
+                    historyToolCall = r.toHistoryToolCall(),
+                    result = result,
+                    safetyLevel = ToolSafetyLevel.SAFE,
+                    invalidToolCallError = invalidToolCallError(r.toolName),
+                )
                 emit(LoopEvent.ToolCallFinished(result))
             }
         }
@@ -218,6 +233,7 @@ class AgenticLoopImpl(
                         call,
                         replayDecision.result,
                         descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                        invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
                     )
                     emit(LoopEvent.ToolCallFinished(replayDecision.result))
                 }
@@ -226,6 +242,7 @@ class AgenticLoopImpl(
                         call,
                         replayDecision.result,
                         descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                        invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
                     )
                     emit(LoopEvent.ToolCallFinished(replayDecision.result))
                 }
@@ -233,7 +250,12 @@ class AgenticLoopImpl(
                     val result = executeToolIfAllowed(call, descriptor)
                         ?: return ToolExecutionOutcome.Cancelled(completedTools)
                     replayTracker.record(replayDecision.signature, result)
-                    completedTools += CompletedToolCall(call, result, descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE)
+                    completedTools += CompletedToolCall(
+                        historyToolCall = call,
+                        result = result,
+                        safetyLevel = descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                        invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
+                    )
                     emit(LoopEvent.ToolCallFinished(result))
                 }
             }
@@ -333,6 +355,29 @@ class AgenticLoopImpl(
         val historyToolCall: ToolCall,
         val result: ToolResult,
         val safetyLevel: ToolSafetyLevel,
+        val invalidToolCallError: AssistantError.InvalidToolCall? = null,
+    )
+
+    private fun List<CompletedToolCall>.terminalInvalidToolCallError(): AssistantError.InvalidToolCall? {
+        if (isEmpty() || any { completed -> completed.result !is ToolResult.ValidationError }) {
+            return null
+        }
+        val invalidErrors = mapNotNull(CompletedToolCall::invalidToolCallError)
+        return invalidErrors.firstOrNull().takeIf { invalidErrors.size == size }
+    }
+
+    private fun ToolDescriptor?.invalidToolCallErrorFor(call: ToolCall): AssistantError.InvalidToolCall? =
+        if (this == null) invalidToolCallError(call.name) else null
+
+    private fun invalidToolCallError(toolName: String) = AssistantError.InvalidToolCall(
+        toolName = toolName,
+        diagnostics = Diagnostics(
+            tool = ToolDiagnostics(
+                toolName = toolName,
+                retryable = false,
+                source = ToolFailureSource.INVALID_TOOL_CALL,
+            )
+        )
     )
 
     private fun List<CompletedToolCall>.firstUnsafeTransportFailureError(): AssistantError? =
@@ -342,16 +387,38 @@ class AgenticLoopImpl(
             if (completed.safetyLevel != ToolSafetyLevel.UNSAFE) {
                 return@firstNotNullOfOrNull null
             }
+            val diagnostics = result.diagnostics.withToolDiagnostics(
+                toolName = completed.historyToolCall.name,
+                failureKind = result.kind,
+                retryable = result.retryable,
+                source = result.diagnostics.tool?.source ?: ToolFailureSource.TOOL_RESULT,
+            )
 
             when (result.kind) {
                 ToolFailureKind.OUTCOME_UNKNOWN -> AssistantError.OutcomeUnknown(
                     toolName = completed.historyToolCall.name,
+                    diagnostics = diagnostics,
                 )
                 ToolFailureKind.DETERMINISTIC_FAILURE -> AssistantError.ToolFailed(
                     toolName = completed.historyToolCall.name,
+                    diagnostics = diagnostics,
                 )
             }
         }
+
+    private fun Diagnostics.withToolDiagnostics(
+        toolName: String,
+        failureKind: ToolFailureKind,
+        retryable: Boolean,
+        source: ToolFailureSource,
+    ) = copy(
+        tool = ToolDiagnostics(
+            toolName = toolName,
+            failureKind = failureKind,
+            retryable = retryable,
+            source = source,
+        )
+    )
 
     private fun messagesWithPartialText(
         messages: List<AssistantMessage>,

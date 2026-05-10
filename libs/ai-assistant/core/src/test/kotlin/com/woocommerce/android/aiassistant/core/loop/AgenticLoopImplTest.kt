@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
@@ -158,7 +159,46 @@ class AgenticLoopImplTest {
         val malformedError = events.filterIsInstance<LoopEvent.ToolCallFinished>()
             .firstOrNull { it.result is ToolResult.ValidationError }
         assertThat(malformedError).isNotNull
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+        assertThat(finished.error).isNull()
     }
+
+    @Test
+    fun `given terminal malformed tool call arguments, when running turn, then InvalidToolCall is emitted`() =
+        runTest {
+            val malformedTurn = flow {
+                emit(
+                    AssistantEvent.ToolCallDelta(
+                        index = 0,
+                        id = "call_bad",
+                        name = "echo",
+                        argumentsDelta = "{bad json",
+                    )
+                )
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            }
+            val loop = loopWith(
+                malformedTurn,
+                malformedTurn,
+                malformedTurn,
+                malformedTurn,
+                malformedTurn,
+            )
+
+            val events = loop.runTurn("conv", "go", history, context).toList()
+
+            val failed = events.filterIsInstance<LoopEvent.Failed>().single()
+            assertThat(failed.error).isInstanceOf(AssistantError.InvalidToolCall::class.java)
+            val error = failed.error as AssistantError.InvalidToolCall
+            assertThat(error.toolName).isEqualTo("echo")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("echo")
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.INVALID_TOOL_CALL)
+            assertThat(error.diagnostics.tool?.retryable).isFalse()
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.error).isSameAs(failed.error)
+        }
 
     @Test
     fun `given malformed tool call arguments, when running another turn, then tool message references prior assistant tool call id`() = runTest {
@@ -269,6 +309,43 @@ class AgenticLoopImplTest {
             .filterIsInstance<ToolResult.ValidationError>()
         assertThat(validationErrors).isNotEmpty
     }
+
+    @Test
+    fun `given terminal unknown tool name, when running turn, then InvalidToolCall is emitted`() =
+        runTest {
+            val unknownToolTurn = flow {
+                emit(
+                    AssistantEvent.ToolCallDelta(
+                        index = 0,
+                        id = "call_unknown",
+                        name = "nonexistent_tool",
+                        argumentsDelta = "{}",
+                    )
+                )
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            }
+            val loop = loopWith(
+                unknownToolTurn,
+                unknownToolTurn,
+                unknownToolTurn,
+                unknownToolTurn,
+                unknownToolTurn,
+                registry = NoOpToolRegistry(),
+            )
+
+            val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+            val failed = events.filterIsInstance<LoopEvent.Failed>().single()
+            assertThat(failed.error).isInstanceOf(AssistantError.InvalidToolCall::class.java)
+            val error = failed.error as AssistantError.InvalidToolCall
+            assertThat(error.toolName).isEqualTo("nonexistent_tool")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("nonexistent_tool")
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.INVALID_TOOL_CALL)
+            assertThat(error.diagnostics.tool?.retryable).isFalse()
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.error).isSameAs(failed.error)
+        }
 
     @Test
     fun `given validation error reason containing quotes, when result is re-submitted, then tool message content is valid json`() = runTest {
@@ -821,7 +898,12 @@ class AgenticLoopImplTest {
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
             assertThat(finished.retryAvailable).isFalse()
-            assertThat(finished.error).isEqualTo(AssistantError.OutcomeUnknown(toolName = "orders_update"))
+            assertThat(finished.error).isInstanceOf(AssistantError.OutcomeUnknown::class.java)
+            val error = finished.error as AssistantError.OutcomeUnknown
+            assertThat(error.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.OUTCOME_UNKNOWN)
+            assertThat(error.diagnostics.tool?.retryable).isTrue()
             assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result)
                 .isEqualTo(
                     ToolResult.TransportError(
@@ -884,7 +966,12 @@ class AgenticLoopImplTest {
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
             assertThat(finished.retryAvailable).isFalse()
-            assertThat(finished.error).isEqualTo(AssistantError.ToolFailed(toolName = "orders_update"))
+            assertThat(finished.error).isInstanceOf(AssistantError.ToolFailed::class.java)
+            val error = finished.error as AssistantError.ToolFailed
+            assertThat(error.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.DETERMINISTIC_FAILURE)
+            assertThat(error.diagnostics.tool?.retryable).isTrue()
             job.cancel()
         }
 
