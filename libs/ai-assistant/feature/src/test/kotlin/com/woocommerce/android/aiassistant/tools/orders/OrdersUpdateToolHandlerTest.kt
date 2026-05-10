@@ -4,6 +4,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -37,6 +38,7 @@ class OrdersUpdateToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun toolCall(arguments: JsonObject): ToolCall =

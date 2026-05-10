@@ -103,6 +103,21 @@ class ToolFailureDiagnosticsFactoryTest {
     }
 
     @Test
+    fun `given woo error with null status in error data, when building transport error, then transport diagnostics are absent`() {
+        val error = OnChangedException(wooError(errorData = wooErrorData(hasStatus = true, status = JSONObject.NULL)))
+
+        val result = factory.transportError(
+            toolCallId = TOOL_CALL_ID,
+            toolName = "customers_list",
+            error = error,
+            retryable = false,
+        )
+
+        assertThat(result.diagnostics.tool?.toolName).isEqualTo("customers_list")
+        assertThat(result.diagnostics.transport).isNull()
+    }
+
+    @Test
     fun `given product error, when building transport error, then tool diagnostics are present and transport is absent`() {
         val error = OnChangedException(WCProductStore.ProductError(message = "network error"))
 

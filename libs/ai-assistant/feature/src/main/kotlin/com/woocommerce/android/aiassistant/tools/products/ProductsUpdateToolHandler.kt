@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.products
 
 import com.woocommerce.android.OnChangedException
-import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -27,9 +26,7 @@ import javax.inject.Inject
 internal class ProductsUpdateToolHandler @Inject constructor(
     private val dataSource: AIProductsDataSource,
     @AiAssistantJson private val json: Json,
-    private val diagnosticsFactory: ToolFailureDiagnosticsFactory = ToolFailureDiagnosticsFactory(
-        TransportDiagnosticsFactory()
-    ),
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(

@@ -1,6 +1,5 @@
 package com.woocommerce.android.aiassistant.tools.analytics
 
-import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -22,9 +21,7 @@ import javax.inject.Inject
 internal class AnalyticsOrdersToolHandler @Inject constructor(
     private val dataSource: AIAnalyticsDataSource,
     @AiAssistantJson private val json: Json,
-    private val diagnosticsFactory: ToolFailureDiagnosticsFactory = ToolFailureDiagnosticsFactory(
-        TransportDiagnosticsFactory()
-    ),
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
@@ -82,12 +79,7 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
             before = analyticsDateBeforeBound(args.before),
             interval = interval,
         ).getOrElse { error ->
-            return diagnosticsFactory.transportError(
-                toolCallId = call.id,
-                toolName = descriptor.name,
-                error = error,
-                retryable = true,
-            )
+            return transportError(call, error)
         }
         val previousPeriodStats = if (args.compareTo == COMPARE_TO_PREVIOUS_PERIOD) {
             val (previousAfter, previousBefore) = previousPeriodFor(afterDate, beforeDate)
@@ -125,6 +117,14 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
         before = args.before,
         interval = interval,
     ).toSyntheticId()
+
+    private fun transportError(call: ToolCall, error: Throwable): ToolResult.TransportError =
+        diagnosticsFactory.transportError(
+            toolCallId = call.id,
+            toolName = descriptor.name,
+            error = error,
+            retryable = true,
+        )
 
     @Serializable
     private data class Args(

@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.customers
 
 import com.woocommerce.android.OnChangedException
-import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -28,9 +27,7 @@ import javax.inject.Inject
 
 internal class CustomersListToolHandler @Inject constructor(
     private val dataSource: AICustomersDataSource,
-    private val diagnosticsFactory: ToolFailureDiagnosticsFactory = ToolFailureDiagnosticsFactory(
-        TransportDiagnosticsFactory()
-    ),
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
     override val descriptor = ToolDescriptor(
         name = "customers_list",

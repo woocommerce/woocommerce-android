@@ -1,6 +1,5 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
-import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -21,9 +20,7 @@ import javax.inject.Inject
 internal class OrdersListToolHandler @Inject constructor(
     private val dataSource: AIOrdersDataSource,
     @AiAssistantJson private val json: Json,
-    private val diagnosticsFactory: ToolFailureDiagnosticsFactory = ToolFailureDiagnosticsFactory(
-        TransportDiagnosticsFactory()
-    ),
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
@@ -99,7 +96,6 @@ internal class OrdersListToolHandler @Inject constructor(
                 ToolResult.Success(toolCallId = call.id, structured = json.encodeToJsonElement(response) as JsonObject)
             },
             onFailure = { error ->
-                // TODO Improve retryable detection logic to avoid unnecessary retries.
                 diagnosticsFactory.transportError(
                     toolCallId = call.id,
                     toolName = descriptor.name,

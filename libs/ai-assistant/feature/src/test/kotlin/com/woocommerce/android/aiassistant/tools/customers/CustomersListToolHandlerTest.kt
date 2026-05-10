@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.tools.handlers.StubToolHandler
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -40,7 +41,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 
 class CustomersListToolHandlerTest {
     private val dataSource: AICustomersDataSource = mock()
-    private val handler = CustomersListToolHandler(dataSource)
+    private val handler = CustomersListToolHandler(dataSource, testToolFailureDiagnosticsFactory())
 
     @Test
     fun `when descriptor is inspected, then it exposes iOS-compatible schema and is safe`() {

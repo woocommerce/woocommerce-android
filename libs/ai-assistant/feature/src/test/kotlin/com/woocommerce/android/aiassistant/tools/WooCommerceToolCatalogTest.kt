@@ -22,21 +22,22 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 
 class WooCommerceToolCatalogTest {
+    private val diagnosticsFactory = testToolFailureDiagnosticsFactory()
 
     private val allHandlers: Set<AssistantToolHandler> = setOf(
-        OrdersListToolHandler(mock(), mock()),
-        OrdersGetToolHandler(mock(), mock()),
-        OrdersUpdateToolHandler(mock(), mock()),
-        OrdersBulkUpdateToolHandler(mock(), mock()),
-        ProductsListToolHandler(mock(), mock()),
-        ProductsGetToolHandler(mock(), mock()),
-        ProductsUpdateToolHandler(mock(), mock()),
-        ProductsBulkUpdateToolHandler(mock(), mock()),
-        ProductVariationsToolHandler(mock(), mock()),
-        ProductVariationsUpdateToolHandler(mock(), mock()),
-        AnalyticsOrdersToolHandler(mock(), mock()),
+        OrdersListToolHandler(mock(), mock(), diagnosticsFactory),
+        OrdersGetToolHandler(mock(), mock(), diagnosticsFactory),
+        OrdersUpdateToolHandler(mock(), mock(), diagnosticsFactory),
+        OrdersBulkUpdateToolHandler(mock(), mock(), diagnosticsFactory),
+        ProductsListToolHandler(mock(), mock(), diagnosticsFactory),
+        ProductsGetToolHandler(mock(), mock(), diagnosticsFactory),
+        ProductsUpdateToolHandler(mock(), mock(), diagnosticsFactory),
+        ProductsBulkUpdateToolHandler(mock(), mock(), diagnosticsFactory),
+        ProductVariationsToolHandler(mock(), mock(), diagnosticsFactory),
+        ProductVariationsUpdateToolHandler(mock(), mock(), diagnosticsFactory),
+        AnalyticsOrdersToolHandler(mock(), mock(), diagnosticsFactory),
         ShowCardsToolHandler(mock<ShowCardsResolver>()),
-        CustomersListToolHandler(mock()),
+        CustomersListToolHandler(mock(), diagnosticsFactory),
     )
 
     @Test
