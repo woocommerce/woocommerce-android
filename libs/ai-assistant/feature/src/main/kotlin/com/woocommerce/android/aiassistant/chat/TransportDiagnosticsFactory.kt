@@ -18,6 +18,7 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
             httpStatus = response.code,
             requestId = response.firstAllowlistedRequestId(),
             retryAfterMs = response.header(RETRY_AFTER_HEADER)?.parseRetryAfter(nowMillis),
+            bodySnippet = response.safeBodySnippet(),
         )
     }
 
@@ -33,9 +34,31 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
             "X-WP-Request-Id",
         )
         const val MAX_RETRY_AFTER_MS = 5 * 60 * 1000L
+        const val MAX_BODY_SNIPPET_BYTES = 4096L
+        const val MAX_BODY_SNIPPET_CHARS = 2048
         private const val RETRY_AFTER_HEADER = "Retry-After"
+        val SENSITIVE_HEADER_PATTERN = Regex(
+            pattern = """(?im)\b(Authorization|Cookie|Set-Cookie)\s*:\s*[^\r\n]+""",
+        )
+        val BEARER_TOKEN_PATTERN = Regex(
+            pattern = """(?i)\bBearer\s+[A-Za-z0-9._~+/\-=]+""",
+        )
     }
 }
+
+private fun Response.safeBodySnippet(): String? =
+    runCatching {
+        peekBody(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_BYTES)
+            .string()
+            .takeIf { it.isNotBlank() }
+            ?.redactSensitiveValues()
+            ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_CHARS)
+    }.getOrNull()
+
+private fun String.redactSensitiveValues(): String =
+    replace(TransportDiagnosticsFactory.SENSITIVE_HEADER_PATTERN) { match ->
+        "${match.groupValues[1]}: [REDACTED]"
+    }.replace(TransportDiagnosticsFactory.BEARER_TOKEN_PATTERN, "Bearer [REDACTED]")
 
 private fun String.parseRetryAfter(nowMillis: Long): Long? =
     trim()

@@ -4,7 +4,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
@@ -62,6 +64,18 @@ class AssistantUiStateTest {
             .isEqualTo(R.string.assistant_chat_error_unknown)
         assertThat(AssistantError.ToolFailed(toolName = "orders_update", cause = rawCause).toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_tool_failed)
+    }
+
+    @Test
+    fun `given transport body snippet, when mapping ui error and copy, then snippet is not exposed`() {
+        val error = AssistantError.BadRequest(
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(bodySnippet = "raw upstream token abc123"),
+            )
+        )
+
+        assertThat(error.toAssistantUiError()).isEqualTo(AssistantUiError.BAD_REQUEST)
+        assertThat(error.toMessageRes()).isEqualTo(R.string.assistant_chat_error_upstream_failure)
     }
 
     @Test
