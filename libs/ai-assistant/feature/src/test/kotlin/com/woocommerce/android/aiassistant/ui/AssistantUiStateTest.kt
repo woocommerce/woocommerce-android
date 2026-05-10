@@ -26,9 +26,9 @@ class AssistantUiStateTest {
     @Test
     fun `given transient assistant errors, when checking retry action support, then retry is supported`() {
         val retryableErrors = listOf(
-            AssistantError.Network,
-            AssistantError.Timeout,
-            AssistantError.RateLimit,
+            AssistantError.Network(),
+            AssistantError.Timeout(),
+            AssistantError.RateLimit(),
         )
 
         retryableErrors.forEach { error ->
@@ -38,11 +38,11 @@ class AssistantUiStateTest {
 
     @Test
     fun `given assistant errors, when mapping to message resources, then product copy resources are returned`() {
-        assertThat(AssistantError.Network.toMessageRes()).isEqualTo(R.string.assistant_chat_error_network)
-        assertThat(AssistantError.Timeout.toMessageRes()).isEqualTo(R.string.assistant_chat_error_timeout)
-        assertThat(AssistantError.RateLimit.toMessageRes()).isEqualTo(R.string.assistant_chat_error_rate_limit)
-        assertThat(AssistantError.Auth.toMessageRes()).isEqualTo(R.string.assistant_chat_error_auth)
-        assertThat(AssistantError.UpstreamFailure.toMessageRes())
+        assertThat(AssistantError.Network().toMessageRes()).isEqualTo(R.string.assistant_chat_error_network)
+        assertThat(AssistantError.Timeout().toMessageRes()).isEqualTo(R.string.assistant_chat_error_timeout)
+        assertThat(AssistantError.RateLimit().toMessageRes()).isEqualTo(R.string.assistant_chat_error_rate_limit)
+        assertThat(AssistantError.Auth().toMessageRes()).isEqualTo(R.string.assistant_chat_error_auth)
+        assertThat(AssistantError.UpstreamFailure().toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_upstream_failure)
         assertThat(AssistantError.ToolFailed(toolName = "orders_update").toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_tool_failed)
@@ -129,7 +129,7 @@ class AssistantUiStateTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     text = "",
                     error = AssistantMessageError(
-                        error = AssistantError.Network,
+                        error = AssistantError.Network(),
                         canRetry = true,
                     ),
                 ),

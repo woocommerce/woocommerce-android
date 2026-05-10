@@ -3,12 +3,14 @@ package com.woocommerce.android.aiassistant.chat
 import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -178,6 +180,18 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 400 response when streaming then failure carries http status diagnostics`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(400))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(400)
+    }
+
+    @Test
     fun `given 503, when streaming, then a Failed UPSTREAM_FAILURE event is emitted`() = runTest {
         server.enqueue(MockResponse().setResponseCode(503))
 
@@ -208,6 +222,7 @@ class JetpackAiChatServiceTest {
         streamParser = ChatStreamParser(assistantJson),
         json = assistantJson,
         baseUrl = server.url("/").toString().removeSuffix("/"),
+        transportDiagnosticsFactory = TransportDiagnosticsFactory(),
     )
 
     private fun simpleRequest(): ChatRequest = ChatRequest(

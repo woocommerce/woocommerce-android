@@ -7,14 +7,17 @@ package com.woocommerce.android.aiassistant.core.chat
  * and the retry rules match. [cause] is only attached for [UNKNOWN] — every
  * other widening is total and lossless.
  */
-fun ChatStreamError.toAssistantError(cause: Throwable? = null): AssistantError = when (this) {
-    ChatStreamError.NETWORK -> AssistantError.Network
-    ChatStreamError.TIMEOUT -> AssistantError.Timeout
-    ChatStreamError.AUTH -> AssistantError.Auth
-    ChatStreamError.RATE_LIMIT -> AssistantError.RateLimit
-    ChatStreamError.BAD_REQUEST -> AssistantError.BadRequest
-    ChatStreamError.UPSTREAM_FAILURE -> AssistantError.UpstreamFailure
-    ChatStreamError.INVALID_STREAM -> AssistantError.UpstreamFailure
+fun ChatStreamError.toAssistantError(
+    cause: Throwable? = null,
+    diagnostics: Diagnostics = Diagnostics(),
+): AssistantError = when (this) {
+    ChatStreamError.NETWORK -> AssistantError.Network(diagnostics)
+    ChatStreamError.TIMEOUT -> AssistantError.Timeout(diagnostics)
+    ChatStreamError.AUTH -> AssistantError.Auth(diagnostics)
+    ChatStreamError.RATE_LIMIT -> AssistantError.RateLimit(diagnostics)
+    ChatStreamError.BAD_REQUEST -> AssistantError.BadRequest(diagnostics)
+    ChatStreamError.UPSTREAM_FAILURE -> AssistantError.UpstreamFailure(diagnostics)
+    ChatStreamError.INVALID_STREAM -> AssistantError.UpstreamFailure(diagnostics)
     ChatStreamError.CANCELLED -> AssistantError.Cancelled
-    ChatStreamError.UNKNOWN -> AssistantError.Unknown(cause = cause)
+    ChatStreamError.UNKNOWN -> AssistantError.Unknown(cause = cause, diagnostics = diagnostics)
 }

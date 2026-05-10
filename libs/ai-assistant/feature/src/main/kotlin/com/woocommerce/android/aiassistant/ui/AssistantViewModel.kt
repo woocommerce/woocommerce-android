@@ -379,7 +379,7 @@ class AssistantViewModel @AssistedInject constructor(
     }
 
     private fun AssistantRuntimeEvent.Finished.toAssistantUiStatus(): AssistantUiStatus = when {
-        error == AssistantError.Cancelled -> AssistantUiStatus.ERROR
+        error is AssistantError.Cancelled -> AssistantUiStatus.ERROR
         else -> outcome.toAssistantUiStatus()
     }
 

@@ -30,12 +30,12 @@ object ConservativeRetryPolicy : RetryPolicy {
     }
 
     private fun isRetryable(error: AssistantError): Boolean = when (error) {
-        AssistantError.Network,
-        AssistantError.Timeout,
-        AssistantError.RateLimit -> true
-        AssistantError.Auth,
-        AssistantError.BadRequest,
-        AssistantError.UpstreamFailure,
+        is AssistantError.Network,
+        is AssistantError.Timeout,
+        is AssistantError.RateLimit -> true
+        is AssistantError.Auth,
+        is AssistantError.BadRequest,
+        is AssistantError.UpstreamFailure,
         is AssistantError.ToolFailed,
         is AssistantError.InvalidToolCall,
         is AssistantError.OutcomeUnknown,

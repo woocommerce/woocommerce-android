@@ -271,7 +271,7 @@ class AssistantViewModelTest {
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Find order 123")),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -290,7 +290,7 @@ class AssistantViewModelTest {
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Hello")),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -324,7 +324,7 @@ class AssistantViewModelTest {
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
                     retryAvailable = true,
-                    error = AssistantError.Network,
+                    error = AssistantError.Network(),
                 )
             )
             advanceUntilIdle()
@@ -338,7 +338,7 @@ class AssistantViewModelTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     text = "",
                     error = AssistantMessageError(
-                        error = AssistantError.Network,
+                        error = AssistantError.Network(),
                         canRetry = true,
                     ),
                 )
@@ -407,7 +407,7 @@ class AssistantViewModelTest {
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
                     retryAvailable = true,
-                    error = AssistantError.UpstreamFailure,
+                    error = AssistantError.UpstreamFailure(),
                 )
             )
             advanceUntilIdle()
@@ -421,7 +421,7 @@ class AssistantViewModelTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     text = "",
                     error = AssistantMessageError(
-                        error = AssistantError.UpstreamFailure,
+                        error = AssistantError.UpstreamFailure(),
                         canRetry = false,
                     ),
                 )
@@ -510,7 +510,7 @@ class AssistantViewModelTest {
                     AssistantMessage.Assistant("Partial answer"),
                 ),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -601,7 +601,7 @@ class AssistantViewModelTest {
                     AssistantMessage.Assistant("First failure"),
                 ),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -615,7 +615,7 @@ class AssistantViewModelTest {
                     AssistantMessage.Assistant("Second failure"),
                 ),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -633,7 +633,7 @@ class AssistantViewModelTest {
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("First")),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -655,7 +655,7 @@ class AssistantViewModelTest {
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("First")),
                 retryAvailable = true,
-                error = AssistantError.Network,
+                error = AssistantError.Network(),
             )
         )
         advanceUntilIdle()
@@ -669,7 +669,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("Second"),
                 ),
                 retryAvailable = true,
-                error = AssistantError.Timeout,
+                error = AssistantError.Timeout(),
             )
         )
         advanceUntilIdle()
@@ -1042,7 +1042,7 @@ class AssistantViewModelTest {
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Find order 123")),
                     retryAvailable = true,
-                    error = AssistantError.Network,
+                    error = AssistantError.Network(),
                 )
             )
             advanceUntilIdle()

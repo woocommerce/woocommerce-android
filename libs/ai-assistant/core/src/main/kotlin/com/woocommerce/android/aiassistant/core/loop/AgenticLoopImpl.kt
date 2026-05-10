@@ -72,7 +72,7 @@ class AgenticLoopImpl(
 
             if (stream.finishReason == null) {
                 newTurnMessages.add(newAssistantMsg)
-                emit(failedFinish(history + newTurnMessages, retryAvailable = false, AssistantError.UpstreamFailure))
+                emit(failedFinish(history + newTurnMessages, retryAvailable = false, AssistantError.UpstreamFailure()))
                 return@flow
             }
 
@@ -153,7 +153,7 @@ class AgenticLoopImpl(
                 visibleOutputStarted = visibleOutputStarted,
             )
 
-            val widenedError = failure.kind.toAssistantError(failure.cause)
+            val widenedError = failure.kind.toAssistantError(failure.cause, failure.diagnostics)
             if (widenedError == AssistantError.Cancelled) {
                 emitStoppedCancellation(fullHistory, assistantText.toString())
                 return null

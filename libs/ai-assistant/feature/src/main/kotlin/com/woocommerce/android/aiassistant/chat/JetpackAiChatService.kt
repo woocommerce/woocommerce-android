@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.di.AssistantBaseUrl
 import com.woocommerce.android.aiassistant.di.AssistantOkHttpClient
@@ -50,6 +51,7 @@ internal class JetpackAiChatService @Inject constructor(
     private val streamParser: ChatStreamParser,
     @AiAssistantJson private val json: Json,
     @AssistantBaseUrl private val baseUrl: String,
+    private val transportDiagnosticsFactory: TransportDiagnosticsFactory,
 ) : ChatService {
 
     override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
@@ -94,7 +96,7 @@ internal class JetpackAiChatService @Inject constructor(
             val mapped = mapError(e)
             return TurnOutcome(
                 eventsEmitted = eventsEmitted,
-                failure = AssistantEvent.Failed(mapped.kind, mapped.cause),
+                failure = AssistantEvent.Failed(mapped.kind, mapped.cause, mapped.diagnostics),
                 retryableAuthFailure = mapped.retryableAuthFailure,
             )
         }
@@ -159,11 +161,12 @@ internal class JetpackAiChatService @Inject constructor(
             t is IOException -> ChatStreamError.NETWORK
             else -> ChatStreamError.UNKNOWN
         }
-        return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED)
+        val diagnostics = Diagnostics(transport = transportDiagnosticsFactory.from(response))
+        return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED, diagnostics = diagnostics)
     }
 
     private fun mapError(t: Throwable): MappedError = when (t) {
-        is MappedException -> MappedError(t.kind, t.cause, t.retryableAuthFailure)
+        is MappedException -> MappedError(t.kind, t.cause, t.retryableAuthFailure, t.diagnostics)
         is AssistantAuthException -> MappedError(ChatStreamError.AUTH, t)
         is UnknownHostException, is ConnectException -> MappedError(ChatStreamError.NETWORK, t)
         is SocketTimeoutException -> MappedError(ChatStreamError.TIMEOUT, t)
@@ -177,14 +180,16 @@ internal class JetpackAiChatService @Inject constructor(
         val kind: ChatStreamError,
         val cause: Throwable?,
         val retryableAuthFailure: Boolean = false,
+        val diagnostics: Diagnostics = Diagnostics(),
     ) {
-        fun toException(): MappedException = MappedException(kind, cause, retryableAuthFailure)
+        fun toException(): MappedException = MappedException(kind, cause, retryableAuthFailure, diagnostics)
     }
 
     private class MappedException(
         val kind: ChatStreamError,
         cause: Throwable?,
         val retryableAuthFailure: Boolean,
+        val diagnostics: Diagnostics,
     ) : RuntimeException(kind.name, cause)
 
     companion object {

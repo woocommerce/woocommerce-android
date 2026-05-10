@@ -7,12 +7,12 @@ class AssistantErrorTest {
     @Test
     fun `given each variant, when listed, then all eleven kinds are present and distinct`() {
         val variants: List<AssistantError> = listOf(
-            AssistantError.Network,
-            AssistantError.Auth,
-            AssistantError.RateLimit,
-            AssistantError.BadRequest,
-            AssistantError.Timeout,
-            AssistantError.UpstreamFailure,
+            AssistantError.Network(),
+            AssistantError.Auth(),
+            AssistantError.RateLimit(),
+            AssistantError.BadRequest(),
+            AssistantError.Timeout(),
+            AssistantError.UpstreamFailure(),
             AssistantError.ToolFailed(toolName = "create_order"),
             AssistantError.InvalidToolCall(toolName = "create_order"),
             AssistantError.OutcomeUnknown(toolName = "create_order"),
@@ -28,10 +28,10 @@ class AssistantErrorTest {
     fun `given OutcomeUnknown, when compared to Network and Timeout, then it is a distinct type`() {
         val outcomeUnknown: AssistantError = AssistantError.OutcomeUnknown(toolName = "create_order")
 
-        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Network)
-        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Timeout)
-        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Network::class)
-        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Timeout::class)
+        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Network())
+        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Timeout())
+        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Network()::class)
+        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Timeout()::class)
     }
 
     @Test

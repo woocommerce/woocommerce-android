@@ -179,12 +179,12 @@ enum class AssistantUiError {
 sealed interface AssistantPendingNavigation
 
 fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
-    AssistantError.Network -> AssistantUiError.NETWORK
-    AssistantError.Auth -> AssistantUiError.AUTH
-    AssistantError.RateLimit -> AssistantUiError.RATE_LIMIT
-    AssistantError.BadRequest -> AssistantUiError.BAD_REQUEST
-    AssistantError.Timeout -> AssistantUiError.TIMEOUT
-    AssistantError.UpstreamFailure -> AssistantUiError.UPSTREAM_FAILURE
+    is AssistantError.Network -> AssistantUiError.NETWORK
+    is AssistantError.Auth -> AssistantUiError.AUTH
+    is AssistantError.RateLimit -> AssistantUiError.RATE_LIMIT
+    is AssistantError.BadRequest -> AssistantUiError.BAD_REQUEST
+    is AssistantError.Timeout -> AssistantUiError.TIMEOUT
+    is AssistantError.UpstreamFailure -> AssistantUiError.UPSTREAM_FAILURE
     is AssistantError.ToolFailed -> AssistantUiError.TOOL_FAILED
     is AssistantError.InvalidToolCall -> AssistantUiError.INVALID_TOOL_CALL
     is AssistantError.OutcomeUnknown -> AssistantUiError.OUTCOME_UNKNOWN
@@ -193,12 +193,12 @@ fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
 }
 
 internal fun AssistantError.supportsRetryAction(): Boolean = when (this) {
-    AssistantError.Network,
-    AssistantError.Timeout,
-    AssistantError.RateLimit -> true
-    AssistantError.Auth,
-    AssistantError.BadRequest,
-    AssistantError.UpstreamFailure,
+    is AssistantError.Network,
+    is AssistantError.Timeout,
+    is AssistantError.RateLimit -> true
+    is AssistantError.Auth,
+    is AssistantError.BadRequest,
+    is AssistantError.UpstreamFailure,
     is AssistantError.ToolFailed,
     is AssistantError.InvalidToolCall,
     is AssistantError.OutcomeUnknown,
@@ -208,12 +208,12 @@ internal fun AssistantError.supportsRetryAction(): Boolean = when (this) {
 
 @StringRes
 internal fun AssistantError.toMessageRes(): Int = when (this) {
-    AssistantError.Network -> R.string.assistant_chat_error_network
-    AssistantError.Auth -> R.string.assistant_chat_error_auth
-    AssistantError.RateLimit -> R.string.assistant_chat_error_rate_limit
-    AssistantError.BadRequest -> R.string.assistant_chat_error_upstream_failure
-    AssistantError.Timeout -> R.string.assistant_chat_error_timeout
-    AssistantError.UpstreamFailure -> R.string.assistant_chat_error_upstream_failure
+    is AssistantError.Network -> R.string.assistant_chat_error_network
+    is AssistantError.Auth -> R.string.assistant_chat_error_auth
+    is AssistantError.RateLimit -> R.string.assistant_chat_error_rate_limit
+    is AssistantError.BadRequest -> R.string.assistant_chat_error_upstream_failure
+    is AssistantError.Timeout -> R.string.assistant_chat_error_timeout
+    is AssistantError.UpstreamFailure -> R.string.assistant_chat_error_upstream_failure
     is AssistantError.ToolFailed -> R.string.assistant_chat_error_tool_failed
     is AssistantError.InvalidToolCall -> R.string.assistant_chat_error_invalid_tool_call
     is AssistantError.OutcomeUnknown -> R.string.assistant_chat_error_outcome_unknown
