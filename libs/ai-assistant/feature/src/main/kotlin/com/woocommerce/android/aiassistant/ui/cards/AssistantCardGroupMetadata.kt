@@ -27,6 +27,10 @@ internal fun List<AssistantCard>.toAssistantCardGroupMetadata(): AssistantCardGr
             titleRes = R.string.assistant_chat_card_group_stats,
             iconRes = R.drawable.ic_assistant_card_group_stats,
         )
+        containsCustomers && !containsOrders && !containsProducts && !containsStats -> AssistantCardGroupMetadata(
+            titleRes = R.string.assistant_chat_card_group_customers,
+            iconRes = R.drawable.ic_assistant_card_group_customers,
+        )
         else -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_generic,
             iconRes = R.drawable.ic_assistant_card_group_generic,
