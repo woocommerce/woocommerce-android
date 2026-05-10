@@ -12,6 +12,7 @@ fun ChatStreamError.toAssistantError(cause: Throwable? = null): AssistantError =
     ChatStreamError.TIMEOUT -> AssistantError.Timeout
     ChatStreamError.AUTH -> AssistantError.Auth
     ChatStreamError.RATE_LIMIT -> AssistantError.RateLimit
+    ChatStreamError.BAD_REQUEST -> AssistantError.BadRequest
     ChatStreamError.UPSTREAM_FAILURE -> AssistantError.UpstreamFailure
     ChatStreamError.INVALID_STREAM -> AssistantError.UpstreamFailure
     ChatStreamError.CANCELLED -> AssistantError.Cancelled

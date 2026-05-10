@@ -122,6 +122,7 @@ class WooAssistantHeadless(
         AssistantError.Cancelled -> "CANCELLED"
         AssistantError.Network -> "NETWORK"
         AssistantError.RateLimit -> "RATE_LIMIT"
+        AssistantError.BadRequest -> "BAD_REQUEST"
         AssistantError.Timeout -> "TIMEOUT"
         AssistantError.UpstreamFailure -> "UPSTREAM_FAILURE"
         is AssistantError.InvalidToolCall -> "INVALID_TOOL_CALL:$toolName"

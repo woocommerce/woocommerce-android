@@ -167,6 +167,17 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 400 response when streaming then emits BadRequest`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(400))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        assertThat(failed.kind).isEqualTo(ChatStreamError.BAD_REQUEST)
+    }
+
+    @Test
     fun `given 503, when streaming, then a Failed UPSTREAM_FAILURE event is emitted`() = runTest {
         server.enqueue(MockResponse().setResponseCode(503))
 

@@ -15,6 +15,7 @@ sealed class AssistantError {
     data object Network : AssistantError()
     data object Auth : AssistantError()
     data object RateLimit : AssistantError()
+    data object BadRequest : AssistantError()
     data object Timeout : AssistantError()
     data object UpstreamFailure : AssistantError()
     data class ToolFailed(val toolName: String, val cause: Throwable? = null) : AssistantError()

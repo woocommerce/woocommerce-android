@@ -5,11 +5,12 @@ import org.junit.Test
 
 class AssistantErrorTest {
     @Test
-    fun `given each variant, when listed, then all ten kinds are present and distinct`() {
+    fun `given each variant, when listed, then all eleven kinds are present and distinct`() {
         val variants: List<AssistantError> = listOf(
             AssistantError.Network,
             AssistantError.Auth,
             AssistantError.RateLimit,
+            AssistantError.BadRequest,
             AssistantError.Timeout,
             AssistantError.UpstreamFailure,
             AssistantError.ToolFailed(toolName = "create_order"),
@@ -19,8 +20,8 @@ class AssistantErrorTest {
             AssistantError.Unknown(),
         )
 
-        assertThat(variants).hasSize(10)
-        assertThat(variants.map { it::class }.toSet()).hasSize(10)
+        assertThat(variants).hasSize(11)
+        assertThat(variants.map { it::class }.toSet()).hasSize(11)
     }
 
     @Test

@@ -33,6 +33,13 @@ object ConservativeRetryPolicy : RetryPolicy {
         AssistantError.Network,
         AssistantError.Timeout,
         AssistantError.RateLimit -> true
-        else -> false
+        AssistantError.Auth,
+        AssistantError.BadRequest,
+        AssistantError.UpstreamFailure,
+        is AssistantError.ToolFailed,
+        is AssistantError.InvalidToolCall,
+        is AssistantError.OutcomeUnknown,
+        AssistantError.Cancelled,
+        is AssistantError.Unknown -> false
     }
 }
