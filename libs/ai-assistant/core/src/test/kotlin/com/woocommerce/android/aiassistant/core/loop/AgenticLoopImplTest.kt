@@ -857,7 +857,7 @@ class AgenticLoopImplTest {
     }
 
     @Test
-    fun `given confirmed unsafe tool returns transport error, when running turn, then outcome unknown fails without retry`() =
+    fun `given unsafe unknown transport error with diagnostics, when turn finishes, then OutcomeUnknown preserves transport and fills tool diagnostics`() =
         runTest {
             val unsafeDescriptor = ToolDescriptor(
                 name = "orders_update",
@@ -873,12 +873,15 @@ class AgenticLoopImplTest {
                         toolCallId = call.id,
                         retryable = true,
                         diagnostics = Diagnostics(
-                            transport = TransportDiagnostics(bodySnippet = "raw backend payload"),
+                            transport = TransportDiagnostics(
+                                httpStatus = 409,
+                                bodySnippet = "raw backend payload",
+                            ),
                             tool = ToolDiagnostics(
                                 toolName = "orders_update",
                                 failureKind = ToolFailureKind.OUTCOME_UNKNOWN,
                                 retryable = true,
-                                source = ToolFailureSource.TOOL_RESULT,
+                                source = ToolFailureSource.HANDLER_EXCEPTION,
                             )
                         )
                     )
@@ -919,6 +922,9 @@ class AgenticLoopImplTest {
             assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
             assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.OUTCOME_UNKNOWN)
             assertThat(error.diagnostics.tool?.retryable).isTrue()
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.HANDLER_EXCEPTION)
+            assertThat(error.diagnostics.transport?.httpStatus).isEqualTo(409)
+            assertThat(error.diagnostics.transport?.bodySnippet).isEqualTo("raw backend payload")
             val toolResult = events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result
             assertThat(toolResult).isInstanceOf(ToolResult.TransportError::class.java)
             val toolMessage = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single()
@@ -930,7 +936,7 @@ class AgenticLoopImplTest {
         }
 
     @Test
-    fun `given confirmed unsafe tool returns deterministic transport error, when running turn, then tool failed fails without retry`() =
+    fun `given unsafe deterministic transport error with diagnostics, when turn finishes, then ToolFailed preserves transport and fills tool diagnostics`() =
         runTest {
             val unsafeDescriptor = ToolDescriptor(
                 name = "orders_update",
@@ -944,8 +950,14 @@ class AgenticLoopImplTest {
                 override suspend fun execute(call: ToolCall): ToolResult =
                     ToolResult.TransportError(
                         toolCallId = call.id,
-                        retryable = true,
+                        retryable = false,
                         kind = ToolFailureKind.DETERMINISTIC_FAILURE,
+                        diagnostics = Diagnostics(
+                            transport = TransportDiagnostics(
+                                httpStatus = 400,
+                                bodySnippet = "deterministic backend payload",
+                            )
+                        )
                     )
             }
             val safetyOrchestrator = SafetyOrchestratorImpl()
@@ -983,8 +995,64 @@ class AgenticLoopImplTest {
             assertThat(error.toolName).isEqualTo("orders_update")
             assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
             assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.DETERMINISTIC_FAILURE)
-            assertThat(error.diagnostics.tool?.retryable).isTrue()
+            assertThat(error.diagnostics.tool?.retryable).isFalse()
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.TOOL_RESULT)
+            assertThat(error.diagnostics.transport?.httpStatus).isEqualTo(400)
+            assertThat(error.diagnostics.transport?.bodySnippet).isEqualTo("deterministic backend payload")
             job.cancel()
+        }
+
+    @Test
+    fun `given transport error has raw body snippet, when tool result is sent to model, then model content stays generic`() =
+        runTest {
+            var secondCallMessages: List<AssistantMessage>? = null
+            val service = object : ChatService {
+                private var count = 0
+
+                override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
+                    count++
+                    return if (count == 1) {
+                        flow {
+                            emit(
+                                AssistantEvent.ToolCallDelta(
+                                    index = 0,
+                                    id = "call_1",
+                                    name = "echo",
+                                    argumentsDelta = """{"msg":"hi"}""",
+                                )
+                            )
+                            emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                        }
+                    } else {
+                        secondCallMessages = request.messages
+                        flowOf(AssistantEvent.Finish(FinishReason.STOP))
+                    }
+                }
+            }
+            val registry = stubRegistry(
+                result = ToolResult.TransportError(
+                    toolCallId = "call_1",
+                    retryable = true,
+                    diagnostics = Diagnostics(
+                        transport = TransportDiagnostics(httpStatus = 503, bodySnippet = "raw backend secret"),
+                    ),
+                )
+            )
+            val loop = AgenticLoopImpl(
+                service,
+                registry,
+                ConservativeRetryPolicy,
+                passThroughBudgeter(),
+                SafetyOrchestratorImpl(),
+                json,
+            )
+
+            loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+            val toolMessage = requireNotNull(secondCallMessages).filterIsInstance<AssistantMessage.Tool>().single()
+            assertThat(toolMessage.content).isEqualTo("""{"error":"Tool execution failed"}""")
+            assertThat(toolMessage.content).doesNotContain("raw backend secret")
+            assertThat(toolMessage.content).doesNotContain("503")
         }
 
     @Test
