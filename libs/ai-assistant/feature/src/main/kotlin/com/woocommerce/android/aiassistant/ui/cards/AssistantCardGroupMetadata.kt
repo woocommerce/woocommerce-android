@@ -9,31 +9,49 @@ internal data class AssistantCardGroupMetadata(
     @DrawableRes val iconRes: Int,
 )
 
-internal fun List<AssistantCard>.toAssistantCardGroupMetadata(): AssistantCardGroupMetadata {
-    val containsOrders = any { it is AssistantCard.Order }
-    val containsProducts = any { it is AssistantCard.Product }
-    val containsStats = any { it is AssistantCard.Stats }
-    val containsCustomers = any { it is AssistantCard.Customer }
-    return when {
-        containsOrders && !containsProducts && !containsStats && !containsCustomers -> AssistantCardGroupMetadata(
+internal fun List<AssistantCard>.toAssistantCardGroupMetadata(): AssistantCardGroupMetadata =
+    map { it.groupKind }
+        .distinct()
+        .singleOrNull()
+        ?.metadata
+        ?: GENERIC_METADATA
+
+private enum class AssistantCardGroupKind {
+    Order,
+    Product,
+    Stats,
+    Customer,
+}
+
+private val AssistantCard.groupKind: AssistantCardGroupKind
+    get() = when (this) {
+        is AssistantCard.Order -> AssistantCardGroupKind.Order
+        is AssistantCard.Product -> AssistantCardGroupKind.Product
+        is AssistantCard.Stats -> AssistantCardGroupKind.Stats
+        is AssistantCard.Customer -> AssistantCardGroupKind.Customer
+    }
+
+private val AssistantCardGroupKind.metadata: AssistantCardGroupMetadata
+    get() = when (this) {
+        AssistantCardGroupKind.Order -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_orders,
             iconRes = R.drawable.ic_assistant_card_group_orders,
         )
-        containsProducts && !containsOrders && !containsStats && !containsCustomers -> AssistantCardGroupMetadata(
+        AssistantCardGroupKind.Product -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_products,
             iconRes = R.drawable.ic_assistant_card_group_products,
         )
-        containsStats && !containsOrders && !containsProducts && !containsCustomers -> AssistantCardGroupMetadata(
+        AssistantCardGroupKind.Stats -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_stats,
             iconRes = R.drawable.ic_assistant_card_group_stats,
         )
-        containsCustomers && !containsOrders && !containsProducts && !containsStats -> AssistantCardGroupMetadata(
+        AssistantCardGroupKind.Customer -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_customers,
             iconRes = R.drawable.ic_assistant_card_group_customers,
         )
-        else -> AssistantCardGroupMetadata(
-            titleRes = R.string.assistant_chat_card_group_generic,
-            iconRes = R.drawable.ic_assistant_card_group_generic,
-        )
     }
-}
+
+private val GENERIC_METADATA = AssistantCardGroupMetadata(
+    titleRes = R.string.assistant_chat_card_group_generic,
+    iconRes = R.drawable.ic_assistant_card_group_generic,
+)
