@@ -23,7 +23,12 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
     override val descriptor = ToolDescriptor(
         name = ANALYTICS_ORDERS_TOOL_NAME,
         description = "Order analytics for a date range. Returns totals and per-interval subtotals. " +
-            "Prefer this over orders_list for aggregate order-count questions.",
+            "Prefer this over orders_list for aggregate order-count questions. For breakdown requests, set the " +
+            "interval parameter directly to the implied dimension. When a request combines a grouping grain " +
+            "with a date window, interval follows the grouping grain. Order stats are card-backed: after any " +
+            "successful call for an aggregate order stats question, do not stop with prose; call show_cards " +
+            "with family analytics_stats and an id built from the same after/before/interval values and " +
+            "currency:none.",
         inputSchema = inputSchema {
             string("after", description = "Inclusive start date YYYY-MM-DD.", required = true)
             string("before", description = "Inclusive end date YYYY-MM-DD.", required = true)

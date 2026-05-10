@@ -38,6 +38,7 @@ class AnalyticsOrdersToolHandlerTest {
 
     @Test
     fun `when descriptor is inspected, then after and before are required and interval is constrained`() {
+        val description = handler.descriptor.description
         val schema = handler.descriptor.inputSchema
         val properties = requireNotNull(schema["properties"]).jsonObject
         val required = requireNotNull(schema["required"]).jsonArray.map { it.jsonPrimitive.content }
@@ -52,6 +53,13 @@ class AnalyticsOrdersToolHandlerTest {
             .jsonArray
             .map { it.jsonPrimitive.content }
 
+        assertThat(description).contains("show_cards")
+        assertThat(description).contains("grouping grain with a date window")
+        assertThat(description).contains("interval follows the grouping grain")
+        assertThat(description).contains("Order stats are card-backed")
+        assertThat(description).contains("do not stop with prose")
+        assertThat(description).contains("family analytics_stats")
+        assertThat(description).contains("currency:none")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
         assertThat(compareToValues).containsExactly("previous_period")
