@@ -12,7 +12,7 @@ class WooAssistantCardRenderer internal constructor(
 ) : AssistantCardRenderer {
     private val orderCardRenderer = AiAssistantOrderCardRenderer(currencyFormatter)
     private val productCardRenderer = AiAssistantProductCardRenderer(currencyFormatter)
-    private val variationCardRenderer = AiAssistantVariationCardRenderer()
+    private val variationCardRenderer = AiAssistantVariationCardRenderer(currencyFormatter)
     private val statsCardRenderer = AiAssistantStatsCardRenderer(currencyFormatter)
     private val customerCardRenderer = AiAssistantCustomerCardRenderer()
 
