@@ -10,7 +10,6 @@ import com.woocommerce.android.aiassistant.tools.analytics.analyticsStatsSummary
 import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
-import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import com.woocommerce.android.aiassistant.tools.products.toProductVariationDetailResponse
 import kotlinx.coroutines.async
@@ -49,7 +48,7 @@ internal sealed interface ShowCardsResolution {
 
 internal class DefaultShowCardsResolver @Inject constructor(
     private val ordersDataSource: AIOrdersDataSource,
-    private val productsDataSource: AIProductsDataSource,
+    private val productsDataSource: com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource,
     private val variationsDataSource: AIProductVariationsDataSource,
     private val analyticsDataSource: AIAnalyticsDataSource,
     private val customersDataSource: AICustomersDataSource,

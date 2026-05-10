@@ -6,7 +6,6 @@ import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsInterval
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsStats
 import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
-import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -33,7 +32,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 class ShowCardsResolverTest {
     private val ordersDataSource: AIOrdersDataSource = mock()
-    private val productsDataSource: AIProductsDataSource = mock()
+    private val productsDataSource: com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource = mock()
     private val variationsDataSource: AIProductVariationsDataSource = mock()
     private val analyticsDataSource: AIAnalyticsDataSource = mock()
     private val customersDataSource: AICustomersDataSource = mock()
