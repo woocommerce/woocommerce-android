@@ -45,10 +45,11 @@ internal class ToolFailureDiagnosticsFactory @Inject constructor(
 
     private fun Any.transportDiagnostics(): TransportDiagnostics? =
         when (this) {
-            is WCOrderStore.OrderError -> networkError
-                ?.volleyError
-                ?.networkResponse
-                ?.transportDiagnostics()
+            is WCOrderStore.OrderError ->
+                networkError
+                    ?.volleyError
+                    ?.networkResponse
+                    ?.transportDiagnostics()
             is WooError -> errorData.transportDiagnostics()
             else -> null
         }

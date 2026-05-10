@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
+import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -7,7 +8,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
-import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
