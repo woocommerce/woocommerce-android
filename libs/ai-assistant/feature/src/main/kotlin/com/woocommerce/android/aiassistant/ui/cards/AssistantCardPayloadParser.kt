@@ -30,6 +30,7 @@ internal object AssistantCardPayloadParser {
         when (card.family) {
             ORDER_FAMILY -> parseOrderCard(card)
             PRODUCT_FAMILY -> parseProductCard(card)
+            VARIATION_FAMILY -> parseVariationCard(card)
             CUSTOMER_FAMILY -> parseCustomerCard(card)
             ANALYTICS_STATS_FAMILY -> parseStatsCard(card)
             else -> null
@@ -62,6 +63,32 @@ internal object AssistantCardPayloadParser {
             stockStatus = details.stockStatus.orEmpty(),
             status = details.status.orEmpty(),
             imageUrl = details.imageUrl.orEmpty(),
+        )
+    }
+
+    private fun parseVariationCard(card: ShowCardPayload): AssistantCard? {
+        val details = card.details as? ShowCardDetails.Variation ?: return null
+        val (parentProductId, variationId) = card.id.toVariationIdParts() ?: return null
+        if (parentProductId != details.productId || variationId != details.variationId) return null
+
+        return AssistantCard.Variation(
+            parentProductId = parentProductId,
+            variationId = variationId,
+            name = details.name ?: card.title,
+            sku = details.sku.orEmpty(),
+            price = details.price.orEmpty(),
+            stockStatus = details.stockStatus.orEmpty(),
+            status = details.status.orEmpty(),
+            imageUrl = details.imageUrl.orEmpty(),
+            attributes = details.attributes.mapNotNull { attribute ->
+                val name = attribute.name?.takeIf { it.isNotBlank() }
+                val option = attribute.option?.takeIf { it.isNotBlank() }
+                if (name != null && option != null) {
+                    AssistantCard.Variation.Attribute(name = name, option = option)
+                } else {
+                    null
+                }
+            },
         )
     }
 
@@ -147,8 +174,17 @@ internal object AssistantCardPayloadParser {
         ISO_LOCAL_DATE_SHAPE.matches(this) &&
             runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.isSuccess
 
+    private fun String.toVariationIdParts(): Pair<Long, Long>? {
+        val parts = split("/")
+        if (parts.size != 2) return null
+        val parentProductId = parts[0].toLongOrNull()?.takeIf { it > 0L } ?: return null
+        val variationId = parts[1].toLongOrNull()?.takeIf { it > 0L } ?: return null
+        return parentProductId to variationId
+    }
+
     private const val ORDER_FAMILY = "order"
     private const val PRODUCT_FAMILY = "product"
+    private const val VARIATION_FAMILY = "variation"
     private const val CUSTOMER_FAMILY = "customer"
     private const val ANALYTICS_STATS_FAMILY = "analytics_stats"
     private const val ISO_LOCAL_DATE_LENGTH = 10

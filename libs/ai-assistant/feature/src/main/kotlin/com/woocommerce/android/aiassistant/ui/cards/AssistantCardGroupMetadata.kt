@@ -27,6 +27,7 @@ private val AssistantCard.groupKind: AssistantCardGroupKind
     get() = when (this) {
         is AssistantCard.Order -> AssistantCardGroupKind.Order
         is AssistantCard.Product -> AssistantCardGroupKind.Product
+        is AssistantCard.Variation -> AssistantCardGroupKind.Product
         is AssistantCard.Stats -> AssistantCardGroupKind.Stats
         is AssistantCard.Customer -> AssistantCardGroupKind.Customer
     }

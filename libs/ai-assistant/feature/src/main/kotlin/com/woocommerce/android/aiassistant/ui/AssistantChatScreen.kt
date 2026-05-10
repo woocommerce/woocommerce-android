@@ -957,6 +957,7 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         when (card) {
             is AssistantCard.Order -> PreviewOrderCard(card, modifier)
             is AssistantCard.Product -> PreviewProductCard(card, modifier)
+            is AssistantCard.Variation -> PreviewVariationCard(card, modifier)
             is AssistantCard.Customer -> PreviewCustomerCard(card, modifier)
             is AssistantCard.Stats -> PreviewStatsCard(card, modifier)
         }
@@ -1012,6 +1013,31 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
     @Composable
     private fun PreviewProductCard(
         card: AssistantCard.Product,
+        modifier: Modifier,
+    ) {
+        Column(
+            modifier = modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = card.name,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = listOf(card.stockStatus, card.price)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" - "),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
+
+    @Composable
+    private fun PreviewVariationCard(
+        card: AssistantCard.Variation,
         modifier: Modifier,
     ) {
         Column(

@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui.cards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -128,6 +129,52 @@ class AssistantCardPayloadParserTest {
                 stockStatus = "instock",
                 status = "publish",
                 imageUrl = "https://example.com/socks.png",
+            )
+        )
+    }
+
+    @Test
+    fun `given variation payload, when parsed, then variation card contains parent product and variation fields`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    ShowCardPayload(
+                        family = "variation",
+                        id = "100/10",
+                        title = "Blue socks",
+                        details = ShowCardDetails.Variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            name = "Blue socks",
+                            sku = "woo-socks-blue",
+                            price = "12.99",
+                            stockStatus = "instock",
+                            status = "publish",
+                            imageUrl = "https://example.com/blue-socks.png",
+                            attributes = listOf(
+                                CompactVariationAttribute(name = "Size", option = "M"),
+                                CompactVariationAttribute(name = "Color", option = "Blue"),
+                            ),
+                        ),
+                    )
+                )
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Variation(
+                parentProductId = 100L,
+                variationId = 10L,
+                name = "Blue socks",
+                sku = "woo-socks-blue",
+                price = "12.99",
+                stockStatus = "instock",
+                status = "publish",
+                imageUrl = "https://example.com/blue-socks.png",
+                attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "Size", option = "M"),
+                    AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                ),
             )
         )
     }

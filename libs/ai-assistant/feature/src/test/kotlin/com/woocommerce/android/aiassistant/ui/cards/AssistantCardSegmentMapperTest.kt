@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui.cards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import com.woocommerce.android.aiassistant.ui.AssistantUiSegment
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -116,6 +117,36 @@ class AssistantCardSegmentMapperTest {
         )
     }
 
+    @Test
+    fun `given variation payload, when mapped, then grouped segment contains typed variation card`() {
+        val segments = AssistantCardSegmentMapper.toSegments(
+            ShowCardsUiStructured(
+                cards = listOf(variationPayload())
+            )
+        )
+
+        assertThat(segments).containsExactly(
+            AssistantUiSegment.CardGroup(
+                listOf(
+                    AssistantCard.Variation(
+                        parentProductId = 100L,
+                        variationId = 10L,
+                        name = "Blue socks",
+                        sku = "woo-socks-blue",
+                        price = "12.99",
+                        stockStatus = "instock",
+                        status = "publish",
+                        imageUrl = "https://example.com/blue-socks.png",
+                        attributes = listOf(
+                            AssistantCard.Variation.Attribute(name = "Size", option = "M"),
+                            AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                        ),
+                    )
+                )
+            )
+        )
+    }
+
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
         id = id,
@@ -139,6 +170,26 @@ class AssistantCardSegmentMapperTest {
             stockStatus = "instock",
             status = "publish",
             imageUrl = "https://example.com/socks.png",
+        ),
+    )
+
+    private fun variationPayload() = ShowCardPayload(
+        family = "variation",
+        id = "100/10",
+        title = "Blue socks",
+        details = ShowCardDetails.Variation(
+            productId = 100L,
+            variationId = 10L,
+            name = "Blue socks",
+            sku = "woo-socks-blue",
+            price = "12.99",
+            stockStatus = "instock",
+            status = "publish",
+            imageUrl = "https://example.com/blue-socks.png",
+            attributes = listOf(
+                CompactVariationAttribute(name = "Size", option = "M"),
+                CompactVariationAttribute(name = "Color", option = "Blue"),
+            ),
         ),
     )
 
