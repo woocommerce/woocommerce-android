@@ -1,6 +1,8 @@
 package com.woocommerce.android.aiassistant.core.loop
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -32,6 +34,30 @@ class RetryPolicyTest {
     }
 
     @Test
+    fun `given rate limit with retry after, when deciding, then RetryNow uses diagnostic delay`() {
+        val decision = policy.decide(
+            LoopFailureContext(
+                AssistantError.RateLimit(
+                    diagnostics = Diagnostics(transport = TransportDiagnostics(retryAfterMs = 12_000L)),
+                ),
+                visibleOutputStarted = false,
+                retryCount = 0,
+            )
+        )
+
+        assertThat((decision as RetryDecision.RetryNow).backoffMs).isEqualTo(12_000L)
+    }
+
+    @Test
+    fun `given rate limit without retry after, when deciding, then RetryNow uses default delay`() {
+        val decision = policy.decide(
+            LoopFailureContext(AssistantError.RateLimit(), visibleOutputStarted = false, retryCount = 0)
+        )
+
+        assertThat((decision as RetryDecision.RetryNow).backoffMs).isEqualTo(500L)
+    }
+
+    @Test
     fun `given network error after visible output, when deciding, then ShowManualRetry is returned`() {
         val decision = policy.decide(
             LoopFailureContext(AssistantError.Network(), visibleOutputStarted = true, retryCount = 0)
@@ -60,6 +86,15 @@ class RetryPolicyTest {
         val decision = policy.decide(
             LoopFailureContext(AssistantError.UpstreamFailure(), visibleOutputStarted = false, retryCount = 0)
         )
+        assertThat(decision).isEqualTo(RetryDecision.DoNotRetry)
+    }
+
+    @Test
+    fun `given BadRequest when deciding retry then does not retry`() {
+        val decision = policy.decide(
+            LoopFailureContext(AssistantError.BadRequest(), visibleOutputStarted = false, retryCount = 0)
+        )
+
         assertThat(decision).isEqualTo(RetryDecision.DoNotRetry)
     }
 

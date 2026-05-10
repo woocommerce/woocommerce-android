@@ -40,6 +40,11 @@ class AssistantErrorMapperTest {
     }
 
     @Test
+    fun `given ChatStreamError BAD_REQUEST, when widened, then it does not return Unknown`() {
+        assertThat(ChatStreamError.BAD_REQUEST.toAssistantError()).isNotInstanceOf(AssistantError.Unknown::class.java)
+    }
+
+    @Test
     fun `given ChatStreamError UPSTREAM_FAILURE, when widened, then returns UpstreamFailure`() {
         assertThat(ChatStreamError.UPSTREAM_FAILURE.toAssistantError()).isEqualTo(AssistantError.UpstreamFailure())
     }

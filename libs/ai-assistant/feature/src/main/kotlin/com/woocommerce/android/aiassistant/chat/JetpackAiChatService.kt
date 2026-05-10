@@ -155,6 +155,7 @@ internal class JetpackAiChatService @Inject constructor(
             code == HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
             code == HTTP_TOO_MANY_REQUESTS -> ChatStreamError.RATE_LIMIT
             code == HTTP_BAD_REQUEST -> ChatStreamError.BAD_REQUEST
+            code != null && code in HTTP_CLIENT_ERROR_RANGE -> ChatStreamError.BAD_REQUEST
             code != null && code in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
             t is UnknownHostException || t is ConnectException -> ChatStreamError.NETWORK
             t is SocketTimeoutException -> ChatStreamError.TIMEOUT
@@ -202,6 +203,7 @@ internal class JetpackAiChatService @Inject constructor(
         private const val HTTP_BAD_REQUEST = 400
         private const val HTTP_REQUEST_TIMEOUT = 408
         private const val HTTP_TOO_MANY_REQUESTS = 429
+        private val HTTP_CLIENT_ERROR_RANGE = 400..499
         private val HTTP_SERVER_ERROR_RANGE = 500..599
     }
 }

@@ -39,6 +39,11 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given BadRequest, when checking retry action support, then retry is not supported`() {
+        assertThat(AssistantError.BadRequest().supportsRetryAction()).isFalse()
+    }
+
+    @Test
     fun `given assistant errors, when mapping to message resources, then product copy resources are returned`() {
         assertThat(AssistantError.Network().toMessageRes()).isEqualTo(R.string.assistant_chat_error_network)
         assertThat(AssistantError.Timeout().toMessageRes()).isEqualTo(R.string.assistant_chat_error_timeout)

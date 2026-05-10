@@ -26,7 +26,7 @@ object ConservativeRetryPolicy : RetryPolicy {
         !isRetryable(failure.error) -> RetryDecision.DoNotRetry
         failure.visibleOutputStarted -> RetryDecision.ShowManualRetry
         failure.retryCount >= MAX_AUTO_RETRIES -> RetryDecision.ShowManualRetry
-        else -> RetryDecision.RetryNow(BACKOFF_MS)
+        else -> RetryDecision.RetryNow(failure.error.retryBackoffMs())
     }
 
     private fun isRetryable(error: AssistantError): Boolean = when (error) {
@@ -42,4 +42,7 @@ object ConservativeRetryPolicy : RetryPolicy {
         AssistantError.Cancelled,
         is AssistantError.Unknown -> false
     }
+
+    private fun AssistantError.retryBackoffMs(): Long =
+        (this as? AssistantError.RateLimit)?.diagnostics?.transport?.retryAfterMs ?: BACKOFF_MS
 }

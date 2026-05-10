@@ -169,6 +169,22 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 429 with retry after, when streaming, then RateLimit carries retry delay diagnostics`() = runTest {
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(429)
+                .setHeader("Retry-After", "7")
+        )
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat((error as AssistantError.RateLimit).diagnostics.transport?.retryAfterMs).isEqualTo(7_000L)
+    }
+
+    @Test
     fun `given 400 response when streaming then emits BadRequest`() = runTest {
         server.enqueue(MockResponse().setResponseCode(400))
 
@@ -177,6 +193,8 @@ class JetpackAiChatServiceTest {
 
         val failed = events.single() as AssistantEvent.Failed
         assertThat(failed.kind).isEqualTo(ChatStreamError.BAD_REQUEST)
+        assertThat(failed.kind.toAssistantError(failed.cause, failed.diagnostics))
+            .isNotInstanceOf(AssistantError.Unknown::class.java)
     }
 
     @Test
@@ -189,6 +207,25 @@ class JetpackAiChatServiceTest {
         val failed = events.single() as AssistantEvent.Failed
         val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
         assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(400)
+    }
+
+    @Test
+    fun `given non special 4xx responses when streaming then emits BadRequest`() = runTest {
+        listOf(402, 404, 422).forEach { code ->
+            server.enqueue(MockResponse().setResponseCode(code))
+        }
+
+        val service = newService()
+        val failures = List(3) {
+            service.streamTurn(simpleRequest()).toList().single() as AssistantEvent.Failed
+        }
+
+        assertThat(failures.map { it.kind }).containsExactly(
+            ChatStreamError.BAD_REQUEST,
+            ChatStreamError.BAD_REQUEST,
+            ChatStreamError.BAD_REQUEST,
+        )
+        assertThat(failures.map { it.diagnostics.transport?.httpStatus }).containsExactly(402, 404, 422)
     }
 
     @Test
