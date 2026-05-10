@@ -42,7 +42,7 @@ class ShowCardsToolHandlerTest {
     private val handler = handlerWith(FakeResolver.empty())
 
     @Test
-    fun `when descriptor is inspected, then show cards accepts order product variation analytics stats and customer refs`() {
+    fun `when descriptor is inspected, then show cards accepts order product variation analytics stats and customer references`() {
         val descriptor = handler.descriptor
 
         assertThat(descriptor.name).isEqualTo("show_cards")
@@ -59,6 +59,7 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("variation")
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("customer")
+        assertThat(descriptor.inputSchema.toString()).contains("{parentProductId}/{variationId}")
         assertThat(descriptor.inputSchema.toString())
             .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
         assertThat(descriptor.description).doesNotContain("analytics_revenue")
@@ -168,6 +169,29 @@ class ShowCardsToolHandlerTest {
         val summary = firstResolvedSummary(result)
 
         assertThat(summary.keys).containsExactly("id", "name", "email")
+    }
+
+    @Test
+    fun `given resolved variation, when executed, then summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(variationCard(id = "100/10")),
+            referencesJson = """[{ "family": "variation", "id": "100/10" }]"""
+        )
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "product_id",
+            "variation_id",
+            "name",
+            "sku",
+            "price",
+            "stock_status",
+            "status",
+            "attributes",
+        )
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("image_url")
     }
 
     @Test
@@ -660,6 +684,7 @@ class ShowCardsToolHandlerTest {
                     id = id,
                     productId = 100L,
                     variationId = 10L,
+                    name = "Blue socks",
                     sku = "woo-socks-blue",
                     price = "12.99",
                     stockStatus = "instock",

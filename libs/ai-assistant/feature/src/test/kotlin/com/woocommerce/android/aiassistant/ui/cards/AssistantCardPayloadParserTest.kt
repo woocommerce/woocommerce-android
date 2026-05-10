@@ -206,6 +206,72 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
+    fun `given invalid variation payloads, when parsed, then variation cards are ignored`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    variationPayload(id = "100", productId = 100L, variationId = 10L),
+                    variationPayload(id = "100/11", productId = 100L, variationId = 10L),
+                    ShowCardPayload(
+                        family = "variation",
+                        id = "100/10",
+                        title = "Wrong details",
+                        details = ShowCardDetails.Product(sku = "woo-socks"),
+                    ),
+                )
+            )
+        )
+
+        assertThat(cards).isEmpty()
+    }
+
+    @Test
+    fun `given variation payload with blank optional fields, when parsed, then blank values are normalized`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    ShowCardPayload(
+                        family = "variation",
+                        id = "100/10",
+                        title = "Variation 10",
+                        details = ShowCardDetails.Variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            name = null,
+                            sku = null,
+                            price = null,
+                            stockStatus = null,
+                            status = null,
+                            imageUrl = null,
+                            attributes = listOf(
+                                CompactVariationAttribute(name = "Size", option = ""),
+                                CompactVariationAttribute(name = "", option = "Blue"),
+                                CompactVariationAttribute(name = "Color", option = "Blue"),
+                            ),
+                        ),
+                    )
+                )
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Variation(
+                parentProductId = 100L,
+                variationId = 10L,
+                name = "",
+                sku = "",
+                price = "",
+                stockStatus = "",
+                status = "",
+                imageUrl = "",
+                attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                ),
+            )
+        )
+    }
+
+    @Test
     fun `given customer payload, when parsed, then customer card contains displayed fields`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(

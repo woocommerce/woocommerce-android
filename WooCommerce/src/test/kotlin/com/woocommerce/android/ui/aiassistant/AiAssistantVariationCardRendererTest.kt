@@ -53,6 +53,21 @@ class AiAssistantVariationCardRendererTest {
     }
 
     @Test
+    fun `given variation card has non numeric price, when row model is built, then raw price is used`() {
+        val context: Context = mock()
+
+        val model = variationCard(
+            sku = "",
+            price = "From 12.99",
+            stockStatus = "",
+            status = "publish",
+            attributes = emptyList(),
+        ).toVariationSummaryRowModel(context, currencyFormatter)
+
+        assertThat(model.supportingTexts).containsExactly("From 12.99")
+    }
+
+    @Test
     fun `given variation card has blank name and non blank sku, when row model is built, then title uses sku label`() {
         val context: Context = mock()
         whenever(context.getString(R.string.orderdetail_product_lineitem_sku_value, "woo-socks-blue"))

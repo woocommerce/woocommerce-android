@@ -57,12 +57,15 @@ class ShowCardsResolverTest {
         val orderOne = order(id = 1L, number = "1001")
         val orderTwo = order(id = 2L, number = "1002")
         val product = product(id = 3L, name = "Socks")
+        val variation = variation(productId = 3L, variationId = 10L)
         val customer = customer(id = 4L, firstName = "Ada", lastName = "Lovelace", email = "ada@example.com")
         val stats = analyticsStats()
         whenever(ordersDataSource.getOrders(listOf(1L, 2L))).thenReturn(
             Result.success(orderLookup(orderTwo, orderOne))
         )
         whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(productLookup(product)))
+        whenever(variationsDataSource.getVariation(productId = 3L, variationId = 10L))
+            .thenReturn(Result.success(variation))
         givenCustomersFetch(ids = listOf(4L), customer)
         whenever(
             analyticsDataSource.fetchOrdersStats(
@@ -77,6 +80,7 @@ class ShowCardsResolverTest {
                 ref(ShowCardFamily.Order, "1"),
                 ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID),
                 ref(ShowCardFamily.Product, "3"),
+                ref(ShowCardFamily.Variation, "3/10"),
                 ref(ShowCardFamily.Customer, "4"),
                 ref(ShowCardFamily.Order, "2"),
             )
@@ -84,11 +88,13 @@ class ShowCardsResolverTest {
 
         verify(ordersDataSource).getOrders(listOf(1L, 2L))
         verify(productsDataSource).getProducts(listOf(3L))
+        verify(variationsDataSource).getVariation(productId = 3L, variationId = 10L)
         verifyCustomersFetch(ids = listOf(4L))
         assertThat(result.map { it.ref.family.serializedName to it.ref.id }).containsExactly(
             "order" to "1",
             "analytics_stats" to ANALYTICS_STATS_ID,
             "product" to "3",
+            "variation" to "3/10",
             "customer" to "4",
             "order" to "2",
         )
@@ -158,6 +164,17 @@ class ShowCardsResolverTest {
             assertThat(details.attributes.map { it.name }).containsExactly("Size", "Color")
             assertThat(details.attributes.map { it.option }).containsExactly("M", "Blue")
         }
+
+    @Test
+    fun `given variation fetch fails, when resolved, then ref is fetch failed`() = runTest {
+        whenever(variationsDataSource.getVariation(productId = 100L, variationId = 10L))
+            .thenReturn(Result.failure(IllegalStateException("network")))
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.Variation, "100/10")))
+
+        val missing = result.single() as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
+    }
 
     @Test
     fun `given analytics stats ref, when resolved, then site currency is used for display`() = runTest {
