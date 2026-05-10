@@ -185,6 +185,19 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 408 response, when streaming, then emits Timeout before generic bad request`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(408))
+        server.enqueue(MockResponse().setResponseCode(408))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        assertThat(failed.kind).isEqualTo(ChatStreamError.TIMEOUT)
+        assertThat(failed.diagnostics.transport?.httpStatus).isEqualTo(408)
+    }
+
+    @Test
     fun `given 400 response, when streaming, then emits BadRequest`() = runTest {
         server.enqueue(MockResponse().setResponseCode(400))
 

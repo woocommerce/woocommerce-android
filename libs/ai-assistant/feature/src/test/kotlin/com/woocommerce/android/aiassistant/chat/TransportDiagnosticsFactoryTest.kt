@@ -43,6 +43,16 @@ class TransportDiagnosticsFactoryTest {
     }
 
     @Test
+    fun `given retry after zero seconds header, when building diagnostics, then zero retry delay is captured`() {
+        val diagnostics = factory.from(
+            response(headers = mapOf("Retry-After" to "0")),
+            nowMillis = FIXED_NOW_MS,
+        )
+
+        assertThat(diagnostics?.retryAfterMs).isEqualTo(0L)
+    }
+
+    @Test
     fun `given retry after http date header, when building diagnostics, then retry delay is captured`() {
         val diagnostics = factory.from(
             response(headers = mapOf("Retry-After" to "Sun, 10 May 2026 17:43:30 GMT")),
@@ -100,6 +110,48 @@ class TransportDiagnosticsFactoryTest {
         assertThat(diagnostics?.bodySnippet).doesNotContain("secret-cookie")
         assertThat(diagnostics?.bodySnippet).doesNotContain("secret-set-cookie")
         assertThat(diagnostics?.bodySnippet).doesNotContain("another-secret")
+    }
+
+    @Test
+    fun `given json sensitive body values, when building diagnostics, then snippet is redacted`() {
+        val diagnostics = factory.from(
+            response(
+                body = """
+                    {
+                        "authorization": "Basic json-authorization-secret",
+                        "cookie": "session=json-cookie-secret",
+                        "set-cookie": "wp=json-set-cookie-secret",
+                        "message": "diagnostic detail"
+                    }
+                """.trimIndent()
+            ),
+        )
+
+        assertThat(diagnostics?.bodySnippet).contains("[REDACTED]")
+        assertThat(diagnostics?.bodySnippet).contains("diagnostic detail")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("json-authorization-secret")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("json-cookie-secret")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("json-set-cookie-secret")
+    }
+
+    @Test
+    fun `given key value sensitive body values, when building diagnostics, then snippet is redacted`() {
+        val diagnostics = factory.from(
+            response(
+                body = """
+                    authorization=Basic key-value-authorization-secret
+                    cookie=session=key-value-cookie-secret
+                    set-cookie=wp=key-value-set-cookie-secret
+                    message=diagnostic detail
+                """.trimIndent()
+            ),
+        )
+
+        assertThat(diagnostics?.bodySnippet).contains("[REDACTED]")
+        assertThat(diagnostics?.bodySnippet).contains("diagnostic detail")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("key-value-authorization-secret")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("key-value-cookie-secret")
+        assertThat(diagnostics?.bodySnippet).doesNotContain("key-value-set-cookie-secret")
     }
 
     @Test

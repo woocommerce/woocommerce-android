@@ -42,6 +42,12 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
         val SENSITIVE_HEADER_PATTERN = Regex(
             pattern = """(?im)\b(Authorization|Cookie|Set-Cookie)\s*:\s*[^\r\n]+""",
         )
+        val SENSITIVE_JSON_VALUE_PATTERN = Regex(
+            pattern = """(?i)(["'](?:Authorization|Cookie|Set-Cookie)["']\s*:\s*)(["'])(?:\\.|(?!\2).)*\2""",
+        )
+        val SENSITIVE_KEY_VALUE_PATTERN = Regex(
+            pattern = """(?im)\b(Authorization|Cookie|Set-Cookie)\s*=\s*[^\r\n&]+""",
+        )
         val BEARER_TOKEN_PATTERN = Regex(
             pattern = """(?i)\bBearer\s+[A-Za-z0-9._~+/\-=]+""",
         )
@@ -58,8 +64,12 @@ private fun Response.safeBodySnippet(): String? =
     }.getOrNull()
 
 private fun String.redactSensitiveValues(): String =
-    replace(TransportDiagnosticsFactory.SENSITIVE_HEADER_PATTERN) { match ->
+    replace(TransportDiagnosticsFactory.SENSITIVE_JSON_VALUE_PATTERN) { match ->
+        "${match.groupValues[1]}${match.groupValues[2]}[REDACTED]${match.groupValues[2]}"
+    }.replace(TransportDiagnosticsFactory.SENSITIVE_HEADER_PATTERN) { match ->
         "${match.groupValues[1]}: [REDACTED]"
+    }.replace(TransportDiagnosticsFactory.SENSITIVE_KEY_VALUE_PATTERN) { match ->
+        "${match.groupValues[1]}=[REDACTED]"
     }.replace(TransportDiagnosticsFactory.BEARER_TOKEN_PATTERN, "Bearer [REDACTED]")
 
 private fun String.parseRetryAfter(nowMillis: Long): Long? =
@@ -76,7 +86,6 @@ private fun String.parseRetryAfterSeconds(): Long? =
         ?.let { seconds ->
             runCatching { Math.multiplyExact(seconds, MILLIS_PER_SECOND) }.getOrNull()
         }
-        ?.takeIf { it > 0 }
         ?.let { min(it, TransportDiagnosticsFactory.MAX_RETRY_AFTER_MS) }
 
 private fun String.parseRetryAfterDate(nowMillis: Long): Long? =
