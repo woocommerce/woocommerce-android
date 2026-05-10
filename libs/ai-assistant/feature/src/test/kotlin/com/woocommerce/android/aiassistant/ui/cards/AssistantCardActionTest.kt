@@ -19,6 +19,21 @@ class AssistantCardActionTest {
     }
 
     @Test
+    fun `given open product variation action, when created, then parent product and variation ids are preserved`() {
+        val action: AssistantCardAction = AssistantCardAction.OpenProductVariation(
+            parentProductId = 100L,
+            variationId = 10L,
+        )
+
+        assertThat(action).isEqualTo(
+            AssistantCardAction.OpenProductVariation(
+                parentProductId = 100L,
+                variationId = 10L,
+            )
+        )
+    }
+
+    @Test
     fun `given open customer action, when created, then remote customer id is preserved`() {
         val action: AssistantCardAction = AssistantCardAction.OpenCustomer(remoteCustomerId = 789L)
 

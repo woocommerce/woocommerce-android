@@ -27,7 +27,7 @@ internal class AiAssistantVariationCardRenderer(
         ProductSummaryRow(
             title = rowModel.title,
             imageUrl = rowModel.imageUrl,
-            onClick = {},
+            onClick = { onAction(card.toOpenProductVariationAction()) },
             modifier = modifier,
         ) {
             rowModel.supportingTexts.forEach { text ->
@@ -36,6 +36,12 @@ internal class AiAssistantVariationCardRenderer(
         }
     }
 }
+
+internal fun AssistantCard.Variation.toOpenProductVariationAction(): AssistantCardAction =
+    AssistantCardAction.OpenProductVariation(
+        parentProductId = parentProductId,
+        variationId = variationId,
+    )
 
 internal data class AssistantVariationSummaryRowModel(
     val title: String,

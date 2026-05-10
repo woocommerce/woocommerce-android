@@ -45,9 +45,16 @@ class AiAssistantHostFragment : BaseFragment() {
 
     private fun onCardAction(action: AssistantCardAction) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val direction = cardActionNavigator.directionFor(action) ?: return@launch
+            val target = cardActionNavigator.targetFor(action) ?: return@launch
             if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                findNavController().navigateSafely(direction)
+                when (target) {
+                    is WooAssistantCardNavigationTarget.Direction -> {
+                        findNavController().navigateSafely(target.directions)
+                    }
+                    is WooAssistantCardNavigationTarget.DeepLink -> {
+                        findNavController().navigate(android.net.Uri.parse(target.uri))
+                    }
+                }
             }
         }
     }

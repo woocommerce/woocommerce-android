@@ -75,6 +75,18 @@ class AiAssistantVariationCardRendererTest {
         assertThat(model.title).isEqualTo("Variation 10")
     }
 
+    @Test
+    fun `given variation card, when open action is built, then both ids are emitted`() {
+        val action = variationCard().toOpenProductVariationAction()
+
+        assertThat(action).isEqualTo(
+            com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction.OpenProductVariation(
+                parentProductId = 100L,
+                variationId = 10L,
+            )
+        )
+    }
+
     private fun variationCard(
         name: String = "Blue socks",
         sku: String = "woo-socks-blue",
