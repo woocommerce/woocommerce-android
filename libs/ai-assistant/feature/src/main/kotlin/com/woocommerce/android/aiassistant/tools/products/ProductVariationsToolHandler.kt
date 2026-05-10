@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.products
 
+import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -8,6 +9,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,6 +26,9 @@ import javax.inject.Inject
 internal class ProductVariationsToolHandler @Inject constructor(
     private val dataSource: AIProductVariationsDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory = ToolFailureDiagnosticsFactory(
+        TransportDiagnosticsFactory()
+    ),
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
@@ -57,7 +62,14 @@ internal class ProductVariationsToolHandler @Inject constructor(
 
         return result.fold(
             onSuccess = { ToolResult.Success(toolCallId = call.id, structured = it) },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
+            },
         )
     }
 

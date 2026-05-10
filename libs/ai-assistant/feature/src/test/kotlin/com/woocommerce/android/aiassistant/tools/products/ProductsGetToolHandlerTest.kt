@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.products
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +17,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.store.WCProductStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductsGetToolHandlerTest {
@@ -105,12 +107,16 @@ class ProductsGetToolHandlerTest {
     }
 
     @Test
-    fun `given data source fails, when execute is called, then retryable TransportError is returned`() = runTest {
-        whenever(dataSource.getProduct(99L)).thenReturn(Result.failure(RuntimeException("not found")))
+    fun `given data source fails, when execute is called, then lossy diagnostics are returned`() = runTest {
+        val error = OnChangedException(WCProductStore.ProductError(message = "not found"))
+        whenever(dataSource.getProduct(99L)).thenReturn(Result.failure(error))
 
         val result = handler.execute(toolCall(buildJsonObject { put("id", 99) }))
 
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
-        assertThat((result as ToolResult.TransportError).retryable).isTrue
+        result as ToolResult.TransportError
+        assertThat(result.retryable).isTrue
+        assertThat(result.diagnostics.tool?.toolName).isEqualTo("products_get")
+        assertThat(result.diagnostics.transport).isNull()
     }
 }

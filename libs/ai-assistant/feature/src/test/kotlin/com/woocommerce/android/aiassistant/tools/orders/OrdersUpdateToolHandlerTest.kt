@@ -360,6 +360,7 @@ class OrdersUpdateToolHandlerTest {
         val error = result as ToolResult.TransportError
         assertThat(error.retryable).isTrue
         assertThat(error.kind).isEqualTo(kind)
+        assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
     }
 
     private fun makeOrder(

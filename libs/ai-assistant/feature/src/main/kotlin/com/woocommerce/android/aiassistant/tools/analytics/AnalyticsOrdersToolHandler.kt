@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.analytics
 
+import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -8,6 +9,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsCardId
 import com.woocommerce.android.aiassistant.tools.handlers.cards.toSyntheticId
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
@@ -20,6 +22,9 @@ import javax.inject.Inject
 internal class AnalyticsOrdersToolHandler @Inject constructor(
     private val dataSource: AIAnalyticsDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory = ToolFailureDiagnosticsFactory(
+        TransportDiagnosticsFactory()
+    ),
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
@@ -76,8 +81,13 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
             after = analyticsDateAfterBound(args.after),
             before = analyticsDateBeforeBound(args.before),
             interval = interval,
-        ).getOrElse {
-            return ToolResult.TransportError(toolCallId = call.id, retryable = true)
+        ).getOrElse { error ->
+            return diagnosticsFactory.transportError(
+                toolCallId = call.id,
+                toolName = descriptor.name,
+                error = error,
+                retryable = true,
+            )
         }
         val previousPeriodStats = if (args.compareTo == COMPARE_TO_PREVIOUS_PERIOD) {
             val (previousAfter, previousBefore) = previousPeriodFor(afterDate, beforeDate)

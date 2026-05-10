@@ -1,5 +1,8 @@
 package com.woocommerce.android.aiassistant.tools.orders
 
+import com.android.volley.NetworkResponse
+import com.android.volley.VolleyError
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,8 +19,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
+import org.wordpress.android.fluxc.store.WCOrderStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrdersGetToolHandlerTest {
@@ -138,9 +144,9 @@ class OrdersGetToolHandlerTest {
         }
 
     @Test
-    fun `given the data source fails, when execute is called, then retryable TransportError is returned`() =
+    fun `given the data source fails with retained response, when execute is called, then diagnostics are returned`() =
         runTest {
-            whenever(dataSource.getOrder(7L)).thenReturn(Result.failure(IllegalStateException("network error")))
+            whenever(dataSource.getOrder(7L)).thenReturn(Result.failure(orderFailureWithResponse(statusCode = 409)))
 
             val result = handler.execute(toolCall(buildJsonObject { put("id", 7) }))
 
@@ -148,5 +154,19 @@ class OrdersGetToolHandlerTest {
             val error = result as ToolResult.TransportError
             assertThat(error.toolCallId).isEqualTo("call-1")
             assertThat(error.retryable).isTrue
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_get")
+            assertThat(error.diagnostics.transport?.httpStatus).isEqualTo(409)
         }
+
+    private fun orderFailureWithResponse(statusCode: Int): OnChangedException {
+        val response = NetworkResponse(
+            statusCode,
+            """{"code":"rest_invalid_param","message":"Bearer secret"}""".toByteArray(),
+            false,
+            0,
+            emptyList(),
+        )
+        val networkError = WPAPINetworkError(BaseNetworkError(VolleyError(response)))
+        return OnChangedException(WCOrderStore.OrderError(networkError = networkError))
+    }
 }

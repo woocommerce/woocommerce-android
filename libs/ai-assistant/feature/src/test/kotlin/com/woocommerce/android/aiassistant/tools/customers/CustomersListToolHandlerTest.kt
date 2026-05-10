@@ -19,6 +19,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -325,8 +326,63 @@ class CustomersListToolHandlerTest {
             val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
             // then
-            assertThat(result).isEqualTo(ToolResult.TransportError(toolCallId = TOOL_CALL_ID, retryable = true))
+            assertCustomerTransportError(result, retryable = true)
         }
+    }
+
+    @Test
+    fun `given woo error with numeric status, when executed, then status diagnostics are returned`() = runTest {
+        // given
+        val error = WooError(
+            type = WooErrorType.TIMEOUT,
+            original = TIMEOUT,
+            message = "Timed out",
+            errorData = wooErrorData(hasStatus = true, status = 503),
+        )
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.failure(OnChangedException(error)))
+
+        // when
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        // then
+        assertCustomerTransportError(result, retryable = true, httpStatus = 503)
+        assertThat((result as ToolResult.TransportError).diagnostics.transport?.bodySnippet).isNull()
+    }
+
+    @Test
+    fun `given woo error without status, when executed, then transport diagnostics are absent`() = runTest {
+        // given
+        val error = WooError(
+            type = WooErrorType.API_ERROR,
+            original = SERVER_ERROR,
+            message = "Server error",
+            errorData = wooErrorData(hasStatus = false),
+        )
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.failure(OnChangedException(error)))
+
+        // when
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        // then
+        assertCustomerTransportError(result, retryable = false)
+    }
+
+    @Test
+    fun `given woo error with non numeric status, when executed, then transport diagnostics are absent`() = runTest {
+        // given
+        val error = WooError(
+            type = WooErrorType.API_ERROR,
+            original = SERVER_ERROR,
+            message = "Server error",
+            errorData = wooErrorData(hasStatus = true, status = "503"),
+        )
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.failure(OnChangedException(error)))
+
+        // when
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        // then
+        assertCustomerTransportError(result, retryable = false)
     }
 
     @Test
@@ -339,7 +395,7 @@ class CustomersListToolHandlerTest {
             val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
             // then
-            assertThat(result).isEqualTo(ToolResult.TransportError(toolCallId = TOOL_CALL_ID, retryable = false))
+            assertCustomerTransportError(result, retryable = false)
         }
     }
 
@@ -352,7 +408,7 @@ class CustomersListToolHandlerTest {
         val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
         // then
-        assertThat(result).isEqualTo(ToolResult.TransportError(toolCallId = TOOL_CALL_ID, retryable = false))
+        assertCustomerTransportError(result, retryable = false)
     }
 
     private fun toolCall(arguments: JsonObject) = ToolCall(
@@ -396,6 +452,31 @@ class CustomersListToolHandlerTest {
     )
 
     private fun JsonArray.stringValues() = map { it.jsonPrimitive.contentOrNull }
+
+    private fun assertCustomerTransportError(
+        result: ToolResult,
+        retryable: Boolean,
+        httpStatus: Int? = null,
+    ) {
+        assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
+        result as ToolResult.TransportError
+        assertThat(result.toolCallId).isEqualTo(TOOL_CALL_ID)
+        assertThat(result.retryable).isEqualTo(retryable)
+        assertThat(result.diagnostics.tool?.toolName).isEqualTo("customers_list")
+        if (httpStatus == null) {
+            assertThat(result.diagnostics.transport).isNull()
+        } else {
+            assertThat(result.diagnostics.transport?.httpStatus).isEqualTo(httpStatus)
+        }
+    }
+
+    private fun wooErrorData(
+        hasStatus: Boolean,
+        status: Any? = null,
+    ) = mock<JSONObject>().apply {
+        whenever(has("status")).thenReturn(hasStatus)
+        whenever(opt("status")).thenReturn(status)
+    }
 
     private companion object {
         const val TOOL_CALL_ID = "call_1"
