@@ -5,6 +5,7 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
@@ -270,7 +271,7 @@ class AssistantViewModelTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Find order 123")),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -289,7 +290,7 @@ class AssistantViewModelTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Hello")),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -323,7 +324,7 @@ class AssistantViewModelTest {
                 AssistantRuntimeEvent.Finished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
-                    retryAvailable = true,
+                    retryAffordance = RetryAffordance.Manual,
                     error = AssistantError.Network(),
                 )
             )
@@ -370,7 +371,7 @@ class AssistantViewModelTest {
                         AssistantMessage.User("Update order 42"),
                         AssistantMessage.Assistant("I'll update that order."),
                     ),
-                    retryAvailable = false,
+                    retryAffordance = RetryAffordance.None,
                     error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
                 )
             )
@@ -406,7 +407,7 @@ class AssistantViewModelTest {
                 AssistantRuntimeEvent.Finished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
-                    retryAvailable = true,
+                    retryAffordance = RetryAffordance.Manual,
                     error = AssistantError.UpstreamFailure(),
                 )
             )
@@ -444,7 +445,7 @@ class AssistantViewModelTest {
                 AssistantRuntimeEvent.Finished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
-                    retryAvailable = false,
+                    retryAffordance = RetryAffordance.None,
                     error = normalizedError,
                 )
             )
@@ -509,7 +510,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("Current question"),
                     AssistantMessage.Assistant("Partial answer"),
                 ),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -600,7 +601,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("Current question"),
                     AssistantMessage.Assistant("First failure"),
                 ),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -614,7 +615,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("Current question"),
                     AssistantMessage.Assistant("Second failure"),
                 ),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -632,7 +633,7 @@ class AssistantViewModelTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("First")),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -654,7 +655,7 @@ class AssistantViewModelTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("First")),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Network(),
             )
         )
@@ -668,7 +669,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("First"),
                     AssistantMessage.User("Second"),
                 ),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Timeout(),
             )
         )
@@ -937,7 +938,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("Hello"),
                     AssistantMessage.Assistant("Partial"),
                 ),
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = AssistantError.Cancelled,
             )
         )
@@ -960,7 +961,7 @@ class AssistantViewModelTest {
                     AssistantMessage.User("Hello"),
                     AssistantMessage.Assistant("Partial"),
                 ),
-                retryAvailable = true,
+                retryAffordance = RetryAffordance.Manual,
                 error = AssistantError.Cancelled,
             )
         )
@@ -1041,7 +1042,7 @@ class AssistantViewModelTest {
                 AssistantRuntimeEvent.Finished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Find order 123")),
-                    retryAvailable = true,
+                    retryAffordance = RetryAffordance.Manual,
                     error = AssistantError.Network(),
                 )
             )

@@ -6,14 +6,17 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
@@ -440,7 +443,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isFalse
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
         assertThat(callCount).isEqualTo(1)
     }
 
@@ -466,7 +469,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.Manual)
         assertThat(callCount).isEqualTo(ConservativeRetryPolicy.MAX_AUTO_RETRIES + 1)
     }
 
@@ -491,7 +494,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.Manual)
     }
 
     @Test
@@ -532,7 +535,7 @@ class AgenticLoopImplTest {
                 .isEqualTo(AssistantError.Cancelled)
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
             assertThat(finished.updatedHistory).containsExactly(
                 AssistantMessage.System("You are a helpful assistant."),
@@ -558,7 +561,7 @@ class AgenticLoopImplTest {
                 .isEqualTo(AssistantError.Cancelled)
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
             assertThat(finished.updatedHistory).containsExactly(
                 AssistantMessage.System("You are a helpful assistant."),
@@ -866,7 +869,19 @@ class AgenticLoopImplTest {
                 override fun descriptors() = listOf(unsafeDescriptor)
 
                 override suspend fun execute(call: ToolCall): ToolResult =
-                    ToolResult.TransportError(toolCallId = call.id, retryable = true)
+                    ToolResult.TransportError(
+                        toolCallId = call.id,
+                        retryable = true,
+                        diagnostics = Diagnostics(
+                            transport = TransportDiagnostics(bodySnippet = "raw backend payload"),
+                            tool = ToolDiagnostics(
+                                toolName = "orders_update",
+                                failureKind = ToolFailureKind.OUTCOME_UNKNOWN,
+                                retryable = true,
+                                source = ToolFailureSource.TOOL_RESULT,
+                            )
+                        )
+                    )
             }
             val safetyOrchestrator = SafetyOrchestratorImpl()
             val loop = loopWith(
@@ -897,23 +912,20 @@ class AgenticLoopImplTest {
 
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isInstanceOf(AssistantError.OutcomeUnknown::class.java)
             val error = finished.error as AssistantError.OutcomeUnknown
             assertThat(error.toolName).isEqualTo("orders_update")
             assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
             assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.OUTCOME_UNKNOWN)
             assertThat(error.diagnostics.tool?.retryable).isTrue()
-            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result)
-                .isEqualTo(
-                    ToolResult.TransportError(
-                        toolCallId = "call_1",
-                        retryable = true,
-                        kind = ToolFailureKind.OUTCOME_UNKNOWN,
-                    )
-                )
-            assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single().toolCallId)
-                .isEqualTo("call_1")
+            val toolResult = events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result
+            assertThat(toolResult).isInstanceOf(ToolResult.TransportError::class.java)
+            val toolMessage = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single()
+            assertThat(toolMessage.toolCallId).isEqualTo("call_1")
+            assertThat(toolMessage.content).isEqualTo("""{"error":"Tool execution failed"}""")
+            assertThat(toolMessage.content).doesNotContain("raw backend payload")
+            assertThat(toolMessage.content).doesNotContain("orders_update")
             job.cancel()
         }
 
@@ -965,7 +977,7 @@ class AgenticLoopImplTest {
 
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isInstanceOf(AssistantError.ToolFailed::class.java)
             val error = finished.error as AssistantError.ToolFailed
             assertThat(error.toolName).isEqualTo("orders_update")
@@ -1052,7 +1064,7 @@ class AgenticLoopImplTest {
 
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isNull()
             assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
             val assistantMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
@@ -1140,7 +1152,7 @@ class AgenticLoopImplTest {
             assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isNull()
             assertThat(secondModelTurnRequested).isFalse
 
@@ -1283,7 +1295,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isFalse()
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
         assertThat(finished.error).isEqualTo(AssistantError.UpstreamFailure())
     }
 

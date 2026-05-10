@@ -76,7 +76,7 @@ class AgenticLoopImpl(
 
             if (stream.finishReason == null) {
                 newTurnMessages.add(newAssistantMsg)
-                emit(failedFinish(history + newTurnMessages, retryAvailable = false, AssistantError.UpstreamFailure()))
+                emit(failedFinish(history + newTurnMessages, RetryAffordance.None, AssistantError.UpstreamFailure()))
                 return@flow
             }
 
@@ -102,7 +102,7 @@ class AgenticLoopImpl(
             modelMessages = appendCompletedToolMessages(modelMessages, newTurnMessages, completedTools)
             completedTools.firstUnsafeTransportFailureError()?.let { error ->
                 emit(LoopEvent.Failed(error))
-                emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
+                emit(failedFinish(history + newTurnMessages, RetryAffordance.None, error))
                 return@flow
             }
             iteration++
@@ -110,7 +110,7 @@ class AgenticLoopImpl(
 
         pendingInvalidToolCallError?.let { error ->
             emit(LoopEvent.Failed(error))
-            emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
+            emit(failedFinish(history + newTurnMessages, RetryAffordance.None, error))
             return@flow
         }
         emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, history + newTurnMessages))
@@ -179,12 +179,12 @@ class AgenticLoopImpl(
                 }
                 is RetryDecision.ShowManualRetry -> {
                     val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
-                    emit(failedFinish(failedHistory, retryAvailable = true, widenedError))
+                    emit(failedFinish(failedHistory, RetryAffordance.Manual, widenedError))
                     return null
                 }
                 is RetryDecision.DoNotRetry -> {
                     val failedHistory = messagesWithPartialText(fullHistory, assistantText.toString())
-                    emit(failedFinish(failedHistory, retryAvailable = false, widenedError))
+                    emit(failedFinish(failedHistory, RetryAffordance.None, widenedError))
                     return null
                 }
             }
@@ -200,7 +200,7 @@ class AgenticLoopImpl(
             LoopEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = messagesWithPartialText(fullHistory, assistantText),
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = AssistantError.Cancelled,
             )
         )
@@ -317,7 +317,7 @@ class AgenticLoopImpl(
         outcome.completed.forEach { completed ->
             newTurnMessages.add(completed.toToolMessage())
         }
-        emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, retryAvailable = false))
+        emit(LoopEvent.Finished(LoopOutcome.STOPPED, history + newTurnMessages, RetryAffordance.None))
     }
 
     private fun appendCompletedToolMessages(
@@ -463,9 +463,9 @@ class AgenticLoopImpl(
 
     private fun failedFinish(
         history: List<AssistantMessage>,
-        retryAvailable: Boolean,
+        retryAffordance: RetryAffordance,
         error: AssistantError,
-    ) = LoopEvent.Finished(LoopOutcome.FAILED, history, retryAvailable = retryAvailable, error = error)
+    ) = LoopEvent.Finished(LoopOutcome.FAILED, history, retryAffordance = retryAffordance, error = error)
 
     companion object {
         internal const val MAX_ITERATIONS = 5

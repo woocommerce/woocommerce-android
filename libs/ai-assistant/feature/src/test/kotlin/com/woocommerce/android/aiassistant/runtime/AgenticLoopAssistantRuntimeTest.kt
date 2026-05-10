@@ -5,15 +5,18 @@ import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -34,6 +37,9 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStruc
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryErrorKind
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEvent
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
@@ -132,7 +138,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
                         updatedHistory = updatedHistory,
-                        retryAvailable = false,
+                        retryAffordance = RetryAffordance.None,
                     )
                 )
             ),
@@ -144,10 +150,50 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = updatedHistory,
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = AssistantError.Cancelled,
             )
         )
+    }
+
+    @Test
+    fun `when loop finish carries error, then runtime records sanitized telemetry`() = runTest {
+        val telemetry = RecordingAssistantTelemetry()
+        val error = AssistantError.BadRequest(
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(
+                    httpStatus = 400,
+                    requestId = "request-1",
+                    retryAfterMs = 1_000L,
+                    bodySnippet = "raw backend payload",
+                )
+            )
+        )
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.FAILED,
+                        updatedHistory = emptyList(),
+                        retryAffordance = RetryAffordance.None,
+                        error = error,
+                    )
+                )
+            ),
+            assistantTelemetry = telemetry,
+        )
+
+        runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(telemetry.events).containsExactly(
+            AssistantTelemetryEvent(
+                kind = AssistantTelemetryErrorKind.BAD_REQUEST,
+                httpStatus = 400,
+                requestId = "request-1",
+                retryAfterMs = 1_000L,
+            )
+        )
+        assertThat(telemetry.events.single().toString()).doesNotContain("raw backend payload")
     }
 
     @Test
@@ -267,7 +313,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
                         updatedHistory = updatedHistory,
-                        retryAvailable = false,
+                        retryAffordance = RetryAffordance.None,
                     )
                 )
             ),
@@ -280,7 +326,7 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = updatedHistory,
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = null,
             )
         )
@@ -640,6 +686,7 @@ class AgenticLoopAssistantRuntimeTest {
         safetyOrchestrator: SafetyOrchestrator = FakeSafetyOrchestrator(),
         snapshotResolver: WooCommerceConfirmationSnapshotResolver = FakeSnapshotResolver(),
         systemPrompt: String = "system prompt v1",
+        assistantTelemetry: AssistantTelemetry = RecordingAssistantTelemetry(),
     ) = AgenticLoopAssistantRuntime(
         agenticLoop = agenticLoop,
         toolRegistry = EmptyToolRegistry,
@@ -650,6 +697,7 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
+        assistantTelemetry = assistantTelemetry,
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -891,6 +939,14 @@ class AgenticLoopAssistantRuntimeTest {
         variationsDataSource = mock<AIProductVariationsDataSource>(),
     ) {
         override suspend fun resolve(request: ConfirmationRequest): ConfirmationSnapshot? = snapshot
+    }
+
+    private class RecordingAssistantTelemetry : AssistantTelemetry {
+        val events = mutableListOf<AssistantTelemetryEvent>()
+
+        override fun trackAssistantError(event: AssistantTelemetryEvent) {
+            events += event
+        }
     }
 
     private companion object {

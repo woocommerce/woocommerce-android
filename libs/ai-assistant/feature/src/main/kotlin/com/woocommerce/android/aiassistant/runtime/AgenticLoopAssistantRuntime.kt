@@ -17,6 +17,8 @@ import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
+import com.woocommerce.android.aiassistant.telemetry.toAssistantTelemetryEvent
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
@@ -36,6 +38,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
     private val cardParser: AssistantCardUiStructuredParser,
     private val systemPromptProvider: AssistantSystemPromptProvider,
+    private val assistantTelemetry: AssistantTelemetry,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -80,12 +83,16 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     )
                 }
                 is LoopEvent.Finished -> {
+                    val error = event.error ?: pendingError
+                    if (error != null) {
+                        assistantTelemetry.trackAssistantError(error.toAssistantTelemetryEvent())
+                    }
                     emit(
                         AssistantRuntimeEvent.Finished(
                             outcome = event.outcome,
                             updatedHistory = event.updatedHistory,
-                            retryAvailable = event.retryAvailable,
-                            error = event.error ?: pendingError,
+                            retryAffordance = event.retryAffordance,
+                            error = error,
                         )
                     )
                     pendingError = null

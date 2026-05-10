@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
@@ -396,7 +397,7 @@ class AssistantViewModel @AssistedInject constructor(
 
     private fun AssistantRuntimeEvent.Finished.canRetry(): Boolean =
         outcome == LoopOutcome.FAILED &&
-            retryAvailable &&
+            retryAffordance == RetryAffordance.Manual &&
             error?.supportsRetryAction() == true
 
     private fun List<AssistantUiMessage>.withoutRetryActions(): List<AssistantUiMessage> =
