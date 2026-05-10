@@ -88,14 +88,18 @@ internal fun AssistantCard.Variation.toVariationSummaryRowModel(
     val skuText = sku
         .takeIf { it.isNotBlank() }
         ?.let { context.getString(R.string.orderdetail_product_lineitem_sku_value, it) }
+    val title = name
+        .takeIf { it.isNotBlank() }
+        ?: skuText
+        ?: context.getString(R.string.ai_assistant_variation_card_id_title, variationId)
 
     return AssistantVariationSummaryRowModel(
-        title = name,
+        title = title,
         imageUrl = imageUrl,
         supportingTexts = listOfNotNull(
             attributesText(),
             statusStockPriceText(),
-            skuText,
+            skuText.takeIf { name.isNotBlank() },
         ),
     )
 }
