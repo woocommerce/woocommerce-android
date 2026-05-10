@@ -8,6 +8,9 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsCardId
+import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsKind
+import com.woocommerce.android.aiassistant.tools.handlers.cards.toSyntheticId
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,8 +32,8 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
             "interval parameter directly to the implied dimension. When a request combines a grouping grain " +
             "with a date window, interval follows the grouping grain. Revenue/sales stats are card-backed: " +
             "after any successful call for a revenue or sales stats question, do not stop with prose; call " +
-            "show_cards with family analytics_stats and an id built from the same after/before/interval/currency " +
-            "values. If currency was omitted, use currency:none in the id.",
+            "show_cards with family analytics_stats and the exact card_id returned by this tool. " +
+            "Revenue card_id starts with analytics_revenue and uses currency:none when currency is omitted.",
         inputSchema = inputSchema {
             string("after", description = "Inclusive start date YYYY-MM-DD.", required = true)
             string("before", description = "Inclusive end date YYYY-MM-DD.", required = true)
@@ -72,6 +75,7 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
         }
 
         val currency = normaliseCurrency(args.currency)
+        val cardId = analyticsRevenueCardId(args, interval, currency)
         val stats = dataSource.fetchRevenueStats(
             after = analyticsDateAfterBound(args.after),
             before = analyticsDateBeforeBound(args.before),
@@ -101,6 +105,7 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
                 before = args.before,
                 interval = interval,
                 stats = stats,
+                cardId = cardId,
                 currency = currency,
                 previousPeriodTotals = previousPeriodTotals,
                 previousPeriodPartial = previousPeriodPartial,
@@ -108,6 +113,18 @@ internal class AnalyticsRevenueToolHandler @Inject constructor(
             ),
         )
     }
+
+    private fun analyticsRevenueCardId(
+        args: Args,
+        interval: AnalyticsInterval,
+        currency: String?,
+    ) = AnalyticsStatsCardId(
+        kind = AnalyticsStatsKind.Revenue,
+        after = args.after,
+        before = args.before,
+        interval = interval,
+        currency = currency,
+    ).toSyntheticId()
 
     @Serializable
     private data class Args(

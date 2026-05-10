@@ -8,6 +8,9 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsCardId
+import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsKind
+import com.woocommerce.android.aiassistant.tools.handlers.cards.toSyntheticId
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,8 +30,7 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
             "interval parameter directly to the implied dimension. When a request combines a grouping grain " +
             "with a date window, interval follows the grouping grain. Order stats are card-backed: after any " +
             "successful call for an aggregate order stats question, do not stop with prose; call show_cards " +
-            "with family analytics_stats and an id built from the same after/before/interval values and " +
-            "currency:none.",
+            "with family analytics_stats and the exact card_id returned by this tool.",
         inputSchema = inputSchema {
             string("after", description = "Inclusive start date YYYY-MM-DD.", required = true)
             string("before", description = "Inclusive end date YYYY-MM-DD.", required = true)
@@ -67,6 +69,7 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
         validateAnalyticsDateRange(afterDate, beforeDate, interval)?.let {
             return analyticsValidationError(call.id, it)
         }
+        val cardId = analyticsOrdersCardId(args, interval)
 
         val stats = dataSource.fetchOrdersStats(
             after = analyticsDateAfterBound(args.after),
@@ -95,12 +98,24 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
                 before = args.before,
                 interval = interval,
                 stats = stats,
+                cardId = cardId,
                 previousPeriodTotals = previousPeriodTotals,
                 previousPeriodPartial = previousPeriodPartial,
                 previousPeriodWarning = PREVIOUS_PERIOD_WARNING.takeIf { previousPeriodPartial },
             ),
         )
     }
+
+    private fun analyticsOrdersCardId(
+        args: Args,
+        interval: AnalyticsInterval,
+    ) = AnalyticsStatsCardId(
+        kind = AnalyticsStatsKind.Orders,
+        after = args.after,
+        before = args.before,
+        interval = interval,
+        currency = null,
+    ).toSyntheticId()
 
     @Serializable
     private data class Args(

@@ -59,7 +59,8 @@ class AnalyticsOrdersToolHandlerTest {
         assertThat(description).contains("Order stats are card-backed")
         assertThat(description).contains("do not stop with prose")
         assertThat(description).contains("family analytics_stats")
-        assertThat(description).contains("currency:none")
+        assertThat(description).contains("exact card_id")
+        assertThat(description).contains("card_id")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
         assertThat(compareToValues).containsExactly("previous_period")
@@ -91,6 +92,9 @@ class AnalyticsOrdersToolHandlerTest {
             assertThat(structured.getValue("after").jsonPrimitive.content).isEqualTo("2026-04-01")
             assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
             assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("week")
+            assertThat(structured.getValue("card_id").jsonPrimitive.content).isEqualTo(
+                "analytics_orders:after:2026-04-01:before:2026-04-30:interval:week"
+            )
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(1)
             assertThat(structured.getValue("totals").jsonObject.getValue("orders_count").jsonPrimitive.int)
                 .isEqualTo(42)

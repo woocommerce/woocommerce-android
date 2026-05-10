@@ -60,7 +60,8 @@ class AnalyticsRevenueToolHandlerTest {
         assertThat(description).contains("do not stop with prose")
         assertThat(description).contains("family analytics_stats")
         assertThat(description).contains("analytics_stats")
-        assertThat(description).contains("same after/before/interval/currency")
+        assertThat(description).contains("exact card_id")
+        assertThat(description).contains("card_id")
         assertThat(description).contains("currency:none")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
@@ -93,6 +94,9 @@ class AnalyticsRevenueToolHandlerTest {
             assertThat(structured.getValue("after").jsonPrimitive.content).isEqualTo("2026-04-01")
             assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
             assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("day")
+            assertThat(structured.getValue("card_id").jsonPrimitive.content).isEqualTo(
+                "analytics_revenue:after:2026-04-01:before:2026-04-30:interval:day:currency:none"
+            )
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(2)
             assertThat(structured.getValue("totals").jsonObject.getValue("net_revenue").jsonPrimitive.content)
                 .isEqualTo("120.15")
@@ -139,6 +143,9 @@ class AnalyticsRevenueToolHandlerTest {
 
             assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("day")
             assertThat(structured.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+            assertThat(structured.getValue("card_id").jsonPrimitive.content).isEqualTo(
+                "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            )
             assertThat(
                 structured.getValue("previous_period_totals")
                     .jsonObject

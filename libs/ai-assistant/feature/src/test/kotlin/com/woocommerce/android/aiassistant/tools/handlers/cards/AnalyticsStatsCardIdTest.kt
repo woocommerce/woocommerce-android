@@ -38,6 +38,32 @@ class AnalyticsStatsCardIdTest {
     }
 
     @Test
+    fun `given valid orders id without currency segment, when parsed, then query fields are returned`() {
+        val parsed = AnalyticsStatsCardId.parse(
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
+        )
+
+        assertThat(parsed).isEqualTo(
+            AnalyticsStatsCardId(
+                kind = AnalyticsStatsKind.Orders,
+                after = "2026-05-01",
+                before = "2026-05-07",
+                interval = AnalyticsInterval.DAY,
+                currency = null,
+            )
+        )
+    }
+
+    @Test
+    fun `given revenue id without currency segment, when parsed, then id is rejected`() {
+        assertThat(
+            AnalyticsStatsCardId.parse(
+                "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day"
+            )
+        ).isNull()
+    }
+
+    @Test
     fun `given malformed section counts, when parsed, then id is rejected`() {
         assertThat(
             AnalyticsStatsCardId.parse("analytics_revenue:after:2026-05-01:before:2026-05-07")
@@ -152,6 +178,21 @@ class AnalyticsStatsCardIdTest {
         )
 
         assertThat(query.toSyntheticId()).endsWith(":currency:none")
+        assertThat(AnalyticsStatsCardId.parse(query.toSyntheticId())).isEqualTo(query)
+    }
+
+    @Test
+    fun `given orders analytics stats query, when converted to synthetic id, then it omits currency and round trips`() {
+        val query = AnalyticsStatsCardId(
+            kind = AnalyticsStatsKind.Orders,
+            after = "2026-05-01",
+            before = "2026-05-07",
+            interval = AnalyticsInterval.DAY,
+            currency = null,
+        )
+
+        assertThat(query.toSyntheticId())
+            .isEqualTo("analytics_orders:after:2026-05-01:before:2026-05-07:interval:day")
         assertThat(AnalyticsStatsCardId.parse(query.toSyntheticId())).isEqualTo(query)
     }
 

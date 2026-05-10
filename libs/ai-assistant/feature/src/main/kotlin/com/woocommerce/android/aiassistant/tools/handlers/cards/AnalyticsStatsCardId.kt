@@ -16,15 +16,12 @@ internal data class AnalyticsStatsCardId(
         fun parse(id: String): AnalyticsStatsCardId? {
             val parts = id.takeIf { it.length <= MAX_ANALYTICS_STATS_ID_LENGTH }
                 ?.split(":")
-                ?.takeIf { it.size == ANALYTICS_STATS_ID_PART_COUNT }
                 ?.takeIf { it.hasExpectedAnalyticsStatsIdLabels() }
             val kind = parts?.get(TOOL_INDEX)?.let(AnalyticsStatsKind::fromPrefix)
             val interval = parts?.get(INTERVAL_VALUE_INDEX)?.let(AnalyticsInterval::fromValue)
-            val parsedCurrency = parts?.get(CURRENCY_VALUE_INDEX)?.toParsedCurrency()
+            val parsedCurrency = parts?.parsedCurrency(kind)
 
-            return parts?.toAnalyticsStatsCardId(kind, interval, parsedCurrency)?.takeIf {
-                it.hasValidDateRange() && it.kind.acceptsCurrency(parts[CURRENCY_VALUE_INDEX])
-            }
+            return parts?.toAnalyticsStatsCardId(kind, interval, parsedCurrency)?.takeIf { it.hasValidDateRange() }
         }
     }
 }
@@ -63,12 +60,27 @@ private fun List<String>.toAnalyticsStatsCardId(
     }
 }
 
-private fun List<String>.hasExpectedAnalyticsStatsIdLabels(): Boolean =
-    AnalyticsStatsKind.fromPrefix(get(TOOL_INDEX)) != null &&
-        get(AFTER_LABEL_INDEX) == AFTER_LABEL &&
-        get(BEFORE_LABEL_INDEX) == BEFORE_LABEL &&
-        get(INTERVAL_LABEL_INDEX) == INTERVAL_LABEL &&
-        get(CURRENCY_LABEL_INDEX) == CURRENCY_LABEL
+private fun List<String>.hasExpectedAnalyticsStatsIdLabels(): Boolean {
+    val kind = getOrNull(TOOL_INDEX)?.let(AnalyticsStatsKind::fromPrefix) ?: return false
+    val hasBaseLabels = getOrNull(AFTER_LABEL_INDEX) == AFTER_LABEL &&
+        getOrNull(BEFORE_LABEL_INDEX) == BEFORE_LABEL &&
+        getOrNull(INTERVAL_LABEL_INDEX) == INTERVAL_LABEL
+
+    return hasBaseLabels && when (size) {
+        ANALYTICS_ORDERS_STATS_ID_PART_COUNT -> kind == AnalyticsStatsKind.Orders
+        ANALYTICS_STATS_ID_PART_COUNT_WITH_CURRENCY -> get(CURRENCY_LABEL_INDEX) == CURRENCY_LABEL
+        else -> false
+    }
+}
+
+private fun List<String>.parsedCurrency(kind: AnalyticsStatsKind?): ParsedCurrency? =
+    when (size) {
+        ANALYTICS_ORDERS_STATS_ID_PART_COUNT -> ParsedCurrency(null)
+        ANALYTICS_STATS_ID_PART_COUNT_WITH_CURRENCY -> get(CURRENCY_VALUE_INDEX)
+            .toParsedCurrency()
+            ?.takeIf { kind?.acceptsCurrency(get(CURRENCY_VALUE_INDEX)) == true }
+        else -> null
+    }
 
 private fun String.toParsedCurrency(): ParsedCurrency? =
     when (this) {
@@ -88,6 +100,9 @@ private fun AnalyticsStatsKind.acceptsCurrency(currency: String): Boolean =
     this != AnalyticsStatsKind.Orders || currency == NO_CURRENCY_VALUE
 
 internal fun AnalyticsStatsCardId.toSyntheticId(): String {
+    if (kind == AnalyticsStatsKind.Orders) {
+        return "${kind.idPrefix}:$AFTER_LABEL:$after:$BEFORE_LABEL:$before:$INTERVAL_LABEL:${interval.value}"
+    }
     val currencyValue = currency ?: NO_CURRENCY_VALUE
     return "${kind.idPrefix}:$AFTER_LABEL:$after:$BEFORE_LABEL:$before:" +
         "$INTERVAL_LABEL:${interval.value}:$CURRENCY_LABEL:$currencyValue"
@@ -99,7 +114,8 @@ private const val INTERVAL_LABEL = "interval"
 private const val CURRENCY_LABEL = "currency"
 private const val NO_CURRENCY_VALUE = "none"
 private const val MAX_ANALYTICS_STATS_ID_LENGTH = 160
-private const val ANALYTICS_STATS_ID_PART_COUNT = 9
+private const val ANALYTICS_ORDERS_STATS_ID_PART_COUNT = 7
+private const val ANALYTICS_STATS_ID_PART_COUNT_WITH_CURRENCY = 9
 private const val TOOL_INDEX = 0
 private const val AFTER_LABEL_INDEX = 1
 private const val AFTER_VALUE_INDEX = 2

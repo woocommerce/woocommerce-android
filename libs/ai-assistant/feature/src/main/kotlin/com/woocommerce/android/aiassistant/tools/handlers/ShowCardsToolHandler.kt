@@ -81,10 +81,12 @@ internal class ShowCardsToolHandler internal constructor(
                                 put("type", "string")
                                 put(
                                     "description",
-                                    "Entity id, analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
+                                    "Entity id. For analytics_stats, pass the exact card_id returned by " +
+                                        "analytics_revenue or analytics_orders. Manual forms: " +
+                                        "analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
                                         "interval:<hour|day|week|month|year>:currency:<ISO|none>, or " +
                                         "analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
-                                        "interval:<hour|day|week|month|year>:currency:none for analytics_stats.",
+                                        "interval:<hour|day|week|month|year> for analytics_stats.",
                                 )
                             }
                         }

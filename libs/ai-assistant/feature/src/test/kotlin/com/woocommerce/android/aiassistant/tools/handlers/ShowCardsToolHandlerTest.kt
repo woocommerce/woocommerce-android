@@ -60,6 +60,7 @@ class ShowCardsToolHandlerTest {
             .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
         assertThat(descriptor.inputSchema.toString())
             .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+        assertThat(descriptor.inputSchema.toString()).contains("card_id")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"cards\"")
@@ -188,6 +189,25 @@ class ShowCardsToolHandlerTest {
         assertThat(resolvedSummaries(result).map { it.getValue("kind").jsonPrimitive.content })
             .containsExactly("revenue", "orders")
     }
+
+    @Test
+    fun `given orders analytics stats id without currency, when executed, then ref validates and resolves`() =
+        runTest {
+            val result = callShowCards(
+                resolver = FakeResolver.resolving(
+                    analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY, kind = "orders"),
+                ),
+                referencesJson = """
+                    [
+                      { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY" }
+                    ]
+                """.trimIndent()
+            )
+
+            assertThat(validated(result)).isEqualTo(1)
+            assertThat(rejectedReasons(result)).isEmpty()
+            assertThat(resolvedIds(result)).containsExactly(ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY)
+        }
 
     @Test
     fun `given resolver returns summary extras, when executed, then structured excludes private fields`() = runTest {
@@ -765,5 +785,7 @@ class ShowCardsToolHandlerTest {
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
         private const val ANALYTICS_ORDERS_STATS_ID =
             "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+        private const val ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY =
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

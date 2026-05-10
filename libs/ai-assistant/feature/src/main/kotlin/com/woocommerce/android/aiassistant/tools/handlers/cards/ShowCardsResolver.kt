@@ -219,6 +219,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
             before = query.before,
             interval = query.interval,
             stats = stats,
+            cardId = ref.id,
             currency = displayCurrency,
         )
         val totals = summary["totals"] as? JsonObject ?: JsonObject(emptyMap())

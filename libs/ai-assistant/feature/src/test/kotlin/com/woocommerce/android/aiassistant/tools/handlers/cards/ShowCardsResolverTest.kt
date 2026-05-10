@@ -232,6 +232,33 @@ class ShowCardsResolverTest {
     }
 
     @Test
+    fun `given orders analytics stats ref without currency, when resolved, then resolver refetches orders stats`() =
+        runTest {
+            whenever(
+                analyticsDataSource.fetchOrdersStats(
+                    after = "2026-05-01T00:00:00",
+                    before = "2026-05-07T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                )
+            ).thenReturn(Result.success(orderAnalyticsStats()))
+            whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
+
+            val result = resolver.resolve(
+                listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY))
+            )
+
+            verify(analyticsDataSource).fetchOrdersStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
+            )
+            verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
+            val resolved = result.single() as ShowCardsResolution.Resolved
+            assertThat(resolved.summary.getValue("kind").jsonPrimitive.content).isEqualTo("orders")
+            assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        }
+
+    @Test
     fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
         whenever(
             analyticsDataSource.fetchRevenueStats(
@@ -706,5 +733,7 @@ class ShowCardsResolverTest {
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
         private const val ANALYTICS_ORDERS_STATS_ID =
             "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+        private const val ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY =
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }
