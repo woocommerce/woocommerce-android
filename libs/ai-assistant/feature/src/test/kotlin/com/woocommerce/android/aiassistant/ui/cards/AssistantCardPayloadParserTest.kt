@@ -180,6 +180,32 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
+    fun `given single variation payload, when parsed, then one variation card is returned`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(variationPayload(id = "100/10", productId = 100L, variationId = 10L))
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Variation(
+                parentProductId = 100L,
+                variationId = 10L,
+                name = "Blue socks",
+                sku = "woo-socks-blue",
+                price = "12.99",
+                stockStatus = "instock",
+                status = "publish",
+                imageUrl = "https://example.com/blue-socks.png",
+                attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "Size", option = "M"),
+                    AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                ),
+            )
+        )
+    }
+
+    @Test
     fun `given customer payload, when parsed, then customer card contains displayed fields`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
@@ -565,6 +591,30 @@ class AssistantCardPayloadParserTest {
         id = id,
         title = title,
         details = ShowCardDetails.Order(status = "processing"),
+    )
+
+    private fun variationPayload(
+        id: String,
+        productId: Long,
+        variationId: Long,
+    ) = ShowCardPayload(
+        family = "variation",
+        id = id,
+        title = "Blue socks",
+        details = ShowCardDetails.Variation(
+            productId = productId,
+            variationId = variationId,
+            name = "Blue socks",
+            sku = "woo-socks-blue",
+            price = "12.99",
+            stockStatus = "instock",
+            status = "publish",
+            imageUrl = "https://example.com/blue-socks.png",
+            attributes = listOf(
+                CompactVariationAttribute(name = "Size", option = "M"),
+                CompactVariationAttribute(name = "Color", option = "Blue"),
+            ),
+        ),
     )
 
     private fun analyticsStatsPayload(

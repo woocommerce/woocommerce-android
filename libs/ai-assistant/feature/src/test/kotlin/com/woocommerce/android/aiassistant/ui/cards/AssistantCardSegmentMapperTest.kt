@@ -147,6 +147,25 @@ class AssistantCardSegmentMapperTest {
         )
     }
 
+    @Test
+    fun `given multiple variation payloads, when mapped, then grouped segment preserves variation order`() {
+        val segments = AssistantCardSegmentMapper.toSegments(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    variationPayload(id = "100/10", productId = 100L, variationId = 10L, name = "Blue socks"),
+                    variationPayload(id = "100/11", productId = 100L, variationId = 11L, name = "Red socks"),
+                    variationPayload(id = "101/10", productId = 101L, variationId = 10L, name = "Green socks"),
+                )
+            )
+        )
+
+        val cardGroup = segments.single() as AssistantUiSegment.CardGroup
+        val variations = cardGroup.cards.filterIsInstance<AssistantCard.Variation>()
+        assertThat(variations.map { "${it.parentProductId}/${it.variationId}" })
+            .containsExactly("100/10", "100/11", "101/10")
+        assertThat(variations.map { it.name }).containsExactly("Blue socks", "Red socks", "Green socks")
+    }
+
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
         id = id,
@@ -173,14 +192,19 @@ class AssistantCardSegmentMapperTest {
         ),
     )
 
-    private fun variationPayload() = ShowCardPayload(
+    private fun variationPayload(
+        id: String = "100/10",
+        productId: Long = 100L,
+        variationId: Long = 10L,
+        name: String = "Blue socks",
+    ) = ShowCardPayload(
         family = "variation",
-        id = "100/10",
-        title = "Blue socks",
+        id = id,
+        title = name,
         details = ShowCardDetails.Variation(
-            productId = 100L,
-            variationId = 10L,
-            name = "Blue socks",
+            productId = productId,
+            variationId = variationId,
+            name = name,
             sku = "woo-socks-blue",
             price = "12.99",
             stockStatus = "instock",
