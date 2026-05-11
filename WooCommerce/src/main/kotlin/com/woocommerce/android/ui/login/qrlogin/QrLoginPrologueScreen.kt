@@ -311,20 +311,25 @@ private fun CameraPermissionDialog(
     onPrimary: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    // The caller already guards against [CameraDenialState.Hidden]; surfacing an error here
+    // catches future call sites that forget to.
+    require(state != CameraDenialState.Hidden) {
+        "CameraPermissionDialog must not be composed for the Hidden state"
+    }
     val title = when (state) {
         CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_title
         CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_title
-        CameraDenialState.Hidden -> return
+        CameraDenialState.Hidden -> error("unreachable")
     }
     val body = when (state) {
         CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_body
         CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_body
-        CameraDenialState.Hidden -> return
+        CameraDenialState.Hidden -> error("unreachable")
     }
     val primaryLabel = when (state) {
         CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_allow_button
         CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_settings_button
-        CameraDenialState.Hidden -> return
+        CameraDenialState.Hidden -> error("unreachable")
     }
     AlertDialog(
         onDismissRequest = onCancel,

@@ -14,8 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.DynamicEdgeToEdgeActivity
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -47,9 +45,6 @@ class QrLoginPrologueFragment : Fragment() {
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
-    @Inject
-    lateinit var analyticsTracker: AnalyticsTrackerWrapper
-
     private var listener: Listener? = null
 
     // registerForActivityResult must run before STARTED — declare it as a property so it
@@ -70,8 +65,8 @@ class QrLoginPrologueFragment : Fragment() {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         QrLoginPrologueScreen(
             cameraDenial = uiState.cameraDenial,
-            onScanClicked = ::handleScanClicked,
-            onFallbackClicked = ::handleFallbackClicked,
+            onScanClicked = { viewModel.onScanClicked(isCameraPermissionGranted()) },
+            onFallbackClicked = viewModel::onFallbackClicked,
             onCameraDenialPrimaryClicked = viewModel::onCameraDenialPrimaryClicked,
             onCameraDenialCancelled = viewModel::onCameraDenialCancelled,
         )
@@ -80,8 +75,7 @@ class QrLoginPrologueFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? DynamicEdgeToEdgeActivity)?.enableDynamicEdgeToEdge(forceDarkStatusBar = true)
         if (savedInstanceState == null) {
-            analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
-            unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_PROLOGUE)
+            viewModel.onPrologueShown()
         }
         observeDispatches()
     }
@@ -101,18 +95,6 @@ class QrLoginPrologueFragment : Fragment() {
         listener = null
     }
 
-    private fun handleScanClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
-        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_SCAN)
-        viewModel.onScanClicked(isCameraPermissionGranted = isCameraPermissionGranted())
-    }
-
-    private fun handleFallbackClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
-        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
-        listener?.onQrLoginFallbackClicked()
-    }
-
     private fun observeDispatches() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -122,6 +104,8 @@ class QrLoginPrologueFragment : Fragment() {
                     WooPermissionUtils.showAppSettings(requireContext(), openInNewStack = false)
                 is QrLoginPrologueViewModel.Dispatch.NavigateToScanner ->
                     listener?.onQrLoginScanClicked()
+                is QrLoginPrologueViewModel.Dispatch.NavigateToFallback ->
+                    listener?.onQrLoginFallbackClicked()
             }
         }
     }
