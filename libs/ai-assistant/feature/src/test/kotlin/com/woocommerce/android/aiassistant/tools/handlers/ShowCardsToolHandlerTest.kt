@@ -102,7 +102,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given resolved order, when executed, then summary contains only allowlisted fields`() = runTest {
+    fun `given resolved order, when executed, then summary contains typed order fields`() = runTest {
         val result = callShowCards(FakeResolver.resolving(orderCard(id = "123")))
 
         val summary = firstResolvedSummary(result)
@@ -123,7 +123,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given resolved product, when executed, then summary contains only allowlisted fields`() = runTest {
+    fun `given resolved product, when executed, then summary contains typed product fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(productCard(id = "456")),
             referencesJson = """[{ "family": "product", "id": "456" }]"""
@@ -145,7 +145,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given resolved analytics stats, when executed, then summary contains only allowlisted fields`() = runTest {
+    fun `given resolved analytics stats, when executed, then summary contains typed analytics fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(analyticsStatsCard(id = ANALYTICS_STATS_ID)),
             referencesJson = """[{ "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }]"""
@@ -164,7 +164,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given resolved customer, when executed, then summary contains only allowlisted fields`() = runTest {
+    fun `given resolved customer, when executed, then summary contains typed customer fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(customerCard(id = "123")),
             referencesJson = """[{ "family": "customer", "id": "123" }]"""
@@ -176,7 +176,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given resolved variation, when executed, then summary contains only allowlisted fields`() = runTest {
+    fun `given resolved variation, when executed, then summary contains typed variation fields`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(variationCard(id = "100/10")),
             referencesJson = """[{ "family": "variation", "id": "100/10" }]"""

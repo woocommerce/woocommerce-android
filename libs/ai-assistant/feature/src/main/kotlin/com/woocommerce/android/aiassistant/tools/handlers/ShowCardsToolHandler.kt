@@ -11,7 +11,6 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_R
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
-import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
@@ -24,7 +23,6 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.toJsonObject
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -158,7 +156,7 @@ internal class ShowCardsToolHandler internal constructor(
         ResolvedRef(
             family = ref.family.serializedName,
             id = ref.id,
-            summary = summary.toJsonObject(json).filterAllowedKeysFor(ref.family),
+            summary = summary.toJsonObject(json),
         )
 
     private fun ShowCardsResolution.Missing.toMissingRef(): MissingRef =
@@ -168,61 +166,4 @@ internal class ShowCardsToolHandler internal constructor(
             reason = reason,
         )
 
-    private fun JsonObject.filterAllowedKeysFor(family: ShowCardFamily): JsonObject {
-        val allowedKeys = when (family) {
-            ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
-            ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
-            ShowCardFamily.Variation -> VARIATION_SUMMARY_KEYS
-            ShowCardFamily.AnalyticsStats -> ANALYTICS_STATS_SUMMARY_KEYS
-            ShowCardFamily.Customer -> CUSTOMER_SUMMARY_KEYS
-        }
-        return JsonObject(filterKeys { it in allowedKeys })
-    }
-
-    private companion object {
-        val ORDER_SUMMARY_KEYS = setOf(
-            "id",
-            "number",
-            "status",
-            "total",
-            "currency",
-            "date_created",
-            "customer_name",
-            "payment_method_title",
-            "customer_id",
-            "line_items_count",
-            "line_items",
-        )
-        val PRODUCT_SUMMARY_KEYS = setOf(
-            "id",
-            "name",
-            "sku",
-            "price",
-            "type",
-            "stock_status",
-            "manage_stock",
-            "on_sale",
-            "stock_quantity",
-        )
-        val CUSTOMER_SUMMARY_KEYS = setOf("id", "name", "email")
-        val VARIATION_SUMMARY_KEYS = setOf(
-            "id",
-            "product_id",
-            "variation_id",
-            "name",
-            "sku",
-            "price",
-            "stock_status",
-            "status",
-            "attributes",
-        )
-        val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
-            "id",
-            "after",
-            "before",
-            "currency",
-            "totals",
-            "interval_subtotals",
-        )
-    }
 }
