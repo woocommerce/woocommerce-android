@@ -75,7 +75,7 @@ internal fun AssistantComposer(
                     .fillMaxWidth()
                     .heightIn(min = COMPOSER_MIN_HEIGHT),
                 shape = RoundedCornerShape(COMPOSER_CORNER_RADIUS),
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surfaceContainer,
                 border = BorderStroke(1.dp, assistantOutlineColor()),
                 tonalElevation = 2.dp,
                 shadowElevation = if (isSystemInDarkTheme()) 0.dp else 2.dp,
