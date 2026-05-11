@@ -60,7 +60,7 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueViewModel.CameraP
 fun QrLoginPrologueScreen(
     cameraPermissionDialog: CameraPermissionDialogState?,
     onScanClicked: () -> Unit,
-    onFallbackClicked: () -> Unit,
+    onSiteAddressLoginClicked: () -> Unit,
     onCameraDenialPrimaryClicked: () -> Unit,
     onCameraDenialCancelled: () -> Unit,
 ) {
@@ -90,8 +90,8 @@ fun QrLoginPrologueScreen(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Hero scrolls so the fallback link below stays visible in landscape on phones
-            // where the static layout would otherwise push it off the bottom edge.
+            // Hero scrolls so the site-address login link below stays visible in landscape on
+            // phones where the static layout would otherwise push it off the bottom edge.
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,7 +101,7 @@ fun QrLoginPrologueScreen(
             ) {
                 Hero()
             }
-            Buttons(onScanClicked = onScanClicked, onFallbackClicked = onFallbackClicked)
+            Buttons(onScanClicked = onScanClicked, onSiteAddressLoginClicked = onSiteAddressLoginClicked)
         }
     }
 
@@ -264,7 +264,7 @@ private fun UrlBadge() {
 @Composable
 private fun Buttons(
     onScanClicked: () -> Unit,
-    onFallbackClicked: () -> Unit
+    onSiteAddressLoginClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -285,7 +285,7 @@ private fun Buttons(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCTextButton(
-            onClick = onFallbackClicked,
+            onClick = onSiteAddressLoginClicked,
             contentPadding = PaddingValues(vertical = dimensionResource(id = R.dimen.major_75)),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -328,7 +328,7 @@ private fun QrLoginPrologueScreenPreview() {
         QrLoginPrologueScreen(
             cameraPermissionDialog = null,
             onScanClicked = {},
-            onFallbackClicked = {},
+            onSiteAddressLoginClicked = {},
             onCameraDenialPrimaryClicked = {},
             onCameraDenialCancelled = {},
         )

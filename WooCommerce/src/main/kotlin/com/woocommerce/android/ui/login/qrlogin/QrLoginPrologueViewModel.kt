@@ -45,7 +45,7 @@ class QrLoginPrologueViewModel @Inject constructor(
         }
     }
 
-    fun onFallbackClicked() {
+    fun onSiteAddressLoginClicked() {
         analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
         unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
         triggerEvent(Dispatch.NavigateToSiteAddressLogin)

@@ -64,7 +64,7 @@ class QrLoginPrologueFragment : Fragment() {
         QrLoginPrologueScreen(
             cameraPermissionDialog = uiState.cameraPermissionDialog,
             onScanClicked = { viewModel.onScanClicked(isCameraPermissionGranted()) },
-            onFallbackClicked = viewModel::onFallbackClicked,
+            onSiteAddressLoginClicked = viewModel::onSiteAddressLoginClicked,
             onCameraDenialPrimaryClicked = viewModel::onCameraDenialPrimaryClicked,
             onCameraDenialCancelled = viewModel::onCameraDenialCancelled,
         )
