@@ -103,6 +103,26 @@ class SupportChatResponseDeserializationTest {
     }
 
     @Test
+    fun `given missing required fields, when decoded, then Gson uses JVM defaults`() {
+        val json = """
+            {
+              "messages": [
+                {
+                  "role": "bot"
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = gson.fromJson(json, SupportChatResponse::class.java)
+        val message = response.messages.single()
+
+        assertThat(response.chatId).isZero
+        assertThat(message.messageId).isZero
+        assertThat(message.content).isNull()
+    }
+
+    @Test
     fun `given support chat flags, when decoded from empty json, then constructor defaults are preserved`() {
         val hasNoArgConstructor = SupportChatFlags::class.java.declaredConstructors.any { it.parameterCount == 0 }
 
