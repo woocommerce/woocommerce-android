@@ -20,14 +20,18 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import okhttp3.sse.EventSource
-import okhttp3.sse.EventSourceListener
-import okhttp3.sse.EventSources
+import okio.BufferedSource
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -130,32 +134,128 @@ internal class JetpackAiChatService @Inject constructor(
             .post(buildRequestBody(request).toRequestBody(APPLICATION_JSON))
             .build()
 
-        val listener = object : EventSourceListener() {
-            override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
-                trySend(data)
-            }
+        val call = httpClient.newCall(httpRequest)
+        call.enqueue(
+            object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    if (call.isCanceled()) {
+                        close()
+                    } else {
+                        close(mapError(e).toException())
+                    }
+                }
 
-            override fun onClosed(eventSource: EventSource) {
-                close()
-            }
+                override fun onResponse(call: Call, response: Response) {
+                    response.use {
+                        val body = it.body
+                        val contentType = body.contentType()
+                        if (!it.isSuccessful || !contentType.isEventStream()) {
+                            val bodyBytes = body.bytes()
+                            close(toAssistantException(null, it, bodyBytes, contentType).toException())
+                            return
+                        }
 
-            override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
-                close(toAssistantException(t, response).toException())
+                        try {
+                            readEventStream(body.source()) { data ->
+                                trySend(data).isSuccess
+                            }
+                            close()
+                        } catch (e: IOException) {
+                            if (call.isCanceled()) {
+                                close()
+                            } else {
+                                close(mapError(e).toException())
+                            }
+                        } catch (ce: CancellationException) {
+                            throw ce
+                        } catch (e: Exception) {
+                            close(mapError(e).toException())
+                        }
+                    }
+                }
             }
-        }
+        )
 
-        val eventSource = EventSources.createFactory(httpClient).newEventSource(httpRequest, listener)
-        awaitClose { eventSource.cancel() }
+        awaitClose { call.cancel() }
     }.buffer(Channel.UNLIMITED)
 
-    private fun toAssistantException(t: Throwable?, response: Response?): MappedError {
-        val code = response?.code
-        val kind = response.toStreamError() ?: t.toStreamError()
-        val diagnostics = Diagnostics(transport = transportDiagnosticsFactory.from(response))
+    private fun readEventStream(
+        source: BufferedSource,
+        emitData: (String) -> Boolean,
+    ) {
+        val dataLines = mutableListOf<String>()
+        var keepReading = true
+        while (keepReading) {
+            val line = source.readUtf8Line()
+            keepReading = when {
+                line == null -> false
+                line.isEmpty() -> flushEventData(dataLines, emitData)
+                else -> {
+                    line.toSseDataValue()?.let(dataLines::add)
+                    true
+                }
+            }
+        }
+        if (dataLines.isNotEmpty()) {
+            emitData(dataLines.joinToString(separator = "\n"))
+        }
+    }
+
+    private fun flushEventData(
+        dataLines: MutableList<String>,
+        emitData: (String) -> Boolean,
+    ): Boolean {
+        if (dataLines.isEmpty()) return true
+        val keepReading = emitData(dataLines.joinToString(separator = "\n"))
+        dataLines.clear()
+        return keepReading
+    }
+
+    private fun String.toSseDataValue(): String? {
+        if (startsWith(SSE_COMMENT_PREFIX)) return null
+
+        val separatorIndex = indexOf(SSE_FIELD_SEPARATOR)
+        val fieldName = if (separatorIndex == -1) this else substring(0, separatorIndex)
+        if (fieldName != SSE_DATA_FIELD) return null
+
+        val rawValue = if (separatorIndex == -1) "" else substring(separatorIndex + 1)
+        return rawValue.removePrefix(SSE_VALUE_PREFIX)
+    }
+
+    private fun toAssistantException(
+        t: Throwable?,
+        response: Response?,
+        bodyBytes: ByteArray? = null,
+        contentType: MediaType? = null,
+    ): MappedError {
+        val logicalStatus = bodyBytes.logicalErrorStatus()
+        val code = logicalStatus ?: response?.code
+        val kind = code.toStreamError()
+            ?: if (bodyBytes != null && response?.isSuccessful == true && contentType.isJson()) {
+                // A JSON response means the SSE stream was not established, even when the proxy returns HTTP 200.
+                ChatStreamError.BAD_REQUEST
+            } else if (bodyBytes != null && response?.isSuccessful == true) {
+                ChatStreamError.INVALID_STREAM
+            } else {
+                response.toStreamError() ?: t.toStreamError()
+            }
+        val diagnostics = Diagnostics(
+            transport = if (bodyBytes == null) {
+                transportDiagnosticsFactory.from(response)
+            } else {
+                transportDiagnosticsFactory.fromRawHttp(
+                    statusCode = code,
+                    headers = response?.headersMap(),
+                    bodyBytes = bodyBytes,
+                )
+            }
+        )
         return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED, diagnostics = diagnostics)
     }
 
-    private fun Response?.toStreamError(): ChatStreamError? = when (val code = this?.code) {
+    private fun Response?.toStreamError(): ChatStreamError? = this?.code.toStreamError()
+
+    private fun Int?.toStreamError(): ChatStreamError? = when (this) {
         HTTP_UNAUTHORIZED,
         HTTP_FORBIDDEN -> ChatStreamError.AUTH
         HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
@@ -165,6 +265,36 @@ internal class JetpackAiChatService @Inject constructor(
         in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
         else -> null
     }
+
+    private fun ByteArray?.logicalErrorStatus(): Int? =
+        this
+            ?.decodeToString()
+            ?.let { body ->
+                runCatching {
+                    json.parseToJsonElement(body)
+                        .jsonObject["data"]
+                        ?.jsonObject
+                        ?.get(ERROR_STATUS_FIELD)
+                        ?.jsonPrimitive
+                        ?.contentOrNull
+                        ?.toIntOrNull()
+                }.getOrNull()
+            }
+
+    private fun Response.headersMap(): Map<String, String> =
+        headers.names().associateWith { name -> header(name).orEmpty() }
+
+    private fun MediaType?.isEventStream(): Boolean =
+        this != null &&
+            type.equals(SSE_CONTENT_TYPE, ignoreCase = true) &&
+            subtype.equals(SSE_CONTENT_SUBTYPE, ignoreCase = true)
+
+    private fun MediaType?.isJson(): Boolean =
+        this != null && subtype.hasJsonSubtype()
+
+    private fun String.hasJsonSubtype(): Boolean =
+        equals(JSON_CONTENT_SUBTYPE, ignoreCase = true) ||
+            endsWith(JSON_CONTENT_SUFFIX, ignoreCase = true)
 
     private fun Throwable?.toStreamError(): ChatStreamError = when (this) {
         is UnknownHostException,
@@ -213,5 +343,14 @@ internal class JetpackAiChatService @Inject constructor(
         private const val HTTP_TOO_MANY_REQUESTS = 429
         private val HTTP_CLIENT_ERROR_RANGE = 400..499
         private val HTTP_SERVER_ERROR_RANGE = 500..599
+        private const val ERROR_STATUS_FIELD = "status"
+        private const val SSE_COMMENT_PREFIX = ":"
+        private const val SSE_DATA_FIELD = "data"
+        private const val SSE_FIELD_SEPARATOR = ':'
+        private const val SSE_VALUE_PREFIX = " "
+        private const val SSE_CONTENT_TYPE = "text"
+        private const val SSE_CONTENT_SUBTYPE = "event-stream"
+        private const val JSON_CONTENT_SUBTYPE = "json"
+        private const val JSON_CONTENT_SUFFIX = "+json"
     }
 }

@@ -223,6 +223,47 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 200 json error with logical 400, when streaming, then emits BadRequest diagnostics`() = runTest {
+        server.enqueue(
+            jsonResponse(
+                """
+                {
+                  "code": "invalid_json_schema",
+                  "message": "Invalid schema for function parameters.",
+                  "data": {
+                    "status": 400
+                  }
+                }
+                """.trimIndent()
+            )
+        )
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat(error).isInstanceOf(AssistantError.BadRequest::class.java)
+        assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(400)
+        assertThat(error.diagnostics.transport?.bodySnippet).contains("invalid_json_schema")
+        assertThat(error.diagnostics.transport?.bodySnippet).contains("Invalid schema")
+    }
+
+    @Test
+    fun `given 200 empty json response, when streaming, then emits BadRequest with transport status`() = runTest {
+        server.enqueue(jsonResponse(""))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat(error).isInstanceOf(AssistantError.BadRequest::class.java)
+        assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(200)
+        assertThat(error.diagnostics.transport?.bodySnippet).isNull()
+    }
+
+    @Test
     fun `given non special 4xx responses, when streaming, then emits BadRequest`() = runTest {
         listOf(402, 404, 422).forEach { code ->
             server.enqueue(MockResponse().setResponseCode(code))
@@ -282,6 +323,11 @@ class JetpackAiChatServiceTest {
     private fun sseResponse(body: String): MockResponse = MockResponse()
         .setResponseCode(200)
         .setHeader("Content-Type", "text/event-stream")
+        .setBody(body)
+
+    private fun jsonResponse(body: String): MockResponse = MockResponse()
+        .setResponseCode(200)
+        .setHeader("Content-Type", "application/json; charset=UTF-8")
         .setBody(body)
 
     private class RecordingTokenProvider : JwtTokenProvider {
