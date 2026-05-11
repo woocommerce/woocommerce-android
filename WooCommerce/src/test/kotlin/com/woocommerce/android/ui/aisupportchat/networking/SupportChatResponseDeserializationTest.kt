@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.aisupportchat.networking
 
 import com.google.gson.Gson
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
@@ -33,9 +34,8 @@ class SupportChatResponseDeserializationTest {
         assertThat(flags.forwardToHumanSupport).isFalse
         assertThat(flags.loggedIn).isTrue
         assertThat(flags.branch).isNull()
-        val sources = requireNotNull(botContext.sources)
-        assertThat(sources).hasSize(1)
-        assertThat(sources[0].url).isEqualTo("https://woocommerce.com/help/orders")
+        assertThat(botContext.sources).hasSize(1)
+        assertThat(botContext.sources[0].url).isEqualTo("https://woocommerce.com/help/orders")
     }
 
     @Test
@@ -100,5 +100,35 @@ class SupportChatResponseDeserializationTest {
         assertThat(flags.cannedResponse).isFalse
         assertThat(flags.loggedIn).isFalse
         assertThat(flags.branch).isNull()
+    }
+
+    @Test
+    fun `given missing required fields, when decoded, then Gson uses JVM defaults`() {
+        val json = """
+            {
+              "messages": [
+                {
+                  "role": "bot"
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = gson.fromJson(json, SupportChatResponse::class.java)
+        val message = response.messages.single()
+
+        assertThat(response.chatId).isZero
+        assertThat(message.messageId).isZero
+        assertThat(message.content).isNull()
+    }
+
+    @Test
+    fun `given support chat flags, when decoded from empty json, then constructor defaults are preserved`() {
+        val hasNoArgConstructor = SupportChatFlags::class.java.declaredConstructors.any { it.parameterCount == 0 }
+
+        val flags = gson.fromJson("{}", SupportChatFlags::class.java)
+
+        assertThat(hasNoArgConstructor).isTrue
+        assertThat(flags).isEqualTo(SupportChatFlags())
     }
 }
