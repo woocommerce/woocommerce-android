@@ -40,7 +40,11 @@ class SupportChatRepository @Inject constructor(
         restClient.fetchChat(botSlug = botSlug, chatId = chatId).toResult()
     }
 
-    suspend fun registerChat(chatId: Long, botSlug: String, firstUserMessage: String): Unit = withContext(dispatchers.io) {
+    suspend fun registerChat(
+        chatId: Long,
+        botSlug: String,
+        firstUserMessage: String
+    ): Unit = withContext(dispatchers.io) {
         val selectedSiteModel = selectedSite.get()
         val now = currentTimeProvider.currentDate().time
         bookmarkDao.insertOrReplace(
