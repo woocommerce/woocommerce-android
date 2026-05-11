@@ -85,11 +85,13 @@ class QrLoginPayloadParser @Inject constructor() {
     private fun parseAppLoginDeeplink(raw: String?): QrLoginPayload.AppLogin? {
         val uri = parseDeepLink(raw, APP_LOGIN_HOST) ?: return null
         val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let { normalizeSiteUrl(it, allowHttp = true) } ?: return null
-        uri.queryParam(PARAM_WP_COM_EMAIL)?.takeIf { it.isNotBlank() }?.let { email ->
-            return QrLoginPayload.AppLogin.WpComEmail(siteUrl = siteUrl, wpComEmail = email)
+        val email = uri.queryParam(PARAM_WP_COM_EMAIL)?.takeIf { it.isNotBlank() }
+        val username = uri.queryParam(PARAM_USERNAME)?.takeIf { it.isNotBlank() }
+        return when {
+            email != null -> QrLoginPayload.AppLogin.WpComEmail(siteUrl = siteUrl, wpComEmail = email)
+            username != null -> QrLoginPayload.AppLogin.Credentials(siteUrl = siteUrl, username = username)
+            else -> null
         }
-        val username = uri.queryParam(PARAM_USERNAME)?.takeIf { it.isNotBlank() } ?: return null
-        return QrLoginPayload.AppLogin.Credentials(siteUrl = siteUrl, username = username)
     }
 
     /**
