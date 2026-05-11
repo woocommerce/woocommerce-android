@@ -29,12 +29,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderIndicatorDot
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderStatusText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -149,19 +152,10 @@ private fun ConnectedBluetoothContent(
                 modifier = Modifier
                     .padding(WooPosSpacing.Medium.value)
             ) {
-                Row {
-                    WooPosSettingsDetailsMenuItemInfo(
-                        title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
-                        subtitle = readerName,
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    WooPosOutlinedButtonSmall(
-                        text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
-                        onClick = onDisconnectClicked
-                    )
-                }
+                WooPosSettingsDetailsMenuItemInfo(
+                    title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
+                    subtitle = readerName,
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
@@ -192,6 +186,26 @@ private fun ConnectedBluetoothContent(
                             onClick = onUpdateClick
                         )
                     }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    WooPosReaderIndicatorDot(
+                        size = 14.dp,
+                        color = WooPosTheme.colors.success,
+                        modifier = Modifier.padding(start = WooPosSpacing.Medium.value),
+                    )
+                    WooPosReaderStatusText(
+                        title = stringResource(R.string.woopos_reader_connected),
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    WooPosOutlinedButtonSmall(
+                        text = stringResource(R.string.woopos_settings_card_reader_disconnect_button),
+                        onClick = onDisconnectClicked
+                    )
                 }
             }
         }

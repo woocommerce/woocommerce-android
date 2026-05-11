@@ -111,6 +111,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        DASHBOARD_REVENUE_STATS_TYPE,
         ACTIVE_TOP_PERFORMERS_GRANULARITY,
         DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
@@ -172,8 +173,11 @@ object AppPrefs {
         // last connected card reader's id
         LAST_CONNECTED_CARD_READER_ID,
 
-        // last connected phone reader's display name (for Woo POS remote tap-to-pay)
-        LAST_CONNECTED_PHONE_NAME,
+        // last connected phone reader's stable device id (for Woo POS remote tap-to-pay)
+        LAST_CONNECTED_PHONE_DEVICE_ID,
+
+        // this phone's stable device id when it advertises itself as a Woo POS remote tap-to-pay reader
+        WOO_POS_REMOTE_READER_DEVICE_UUID,
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
@@ -582,12 +586,17 @@ object AppPrefs {
 
     fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
 
-    fun setLastConnectedPhoneName(name: String) =
-        setString(UndeletablePrefKey.LAST_CONNECTED_PHONE_NAME, name)
+    fun setLastConnectedPhoneDeviceId(deviceId: String) =
+        setString(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID, deviceId)
 
-    fun getLastConnectedPhoneName() = getString(UndeletablePrefKey.LAST_CONNECTED_PHONE_NAME).orNullIfEmpty()
+    fun getLastConnectedPhoneDeviceId() =
+        getString(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID).orNullIfEmpty()
 
-    fun removeLastConnectedPhoneName() = remove(UndeletablePrefKey.LAST_CONNECTED_PHONE_NAME)
+    fun removeLastConnectedPhoneDeviceId() = remove(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID)
+
+    var wooPosRemoteReaderDeviceUUID: String
+        get() = getString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, "")
+        set(value) = setString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, value)
 
     fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
 
@@ -1003,6 +1012,12 @@ object AppPrefs {
     }
 
     fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
+
+    fun setDashboardRevenueStatsType(typeName: String) {
+        setString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE, typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = getString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE)
 
     fun setActiveTopPerformersTab(selectionName: String) {
         setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)

@@ -33,6 +33,7 @@ enum class HelpOrigin(private val stringValue: String) {
     ORDERS_LIST("origin:orders-list"),
     BLAZE_CAMPAIGN_CREATION("origin:blaze-native-campaign-creation"),
     CONNECTIVITY_TOOL("origin:connectivity-tool"),
+    AI_TROUBLESHOOTING("origin:ai-troubleshooting"),
     APPLICATION_PASSWORD_TUTORIAL("origin:application-password-tutorial"),
     POS("origin:point-of-sale");
 

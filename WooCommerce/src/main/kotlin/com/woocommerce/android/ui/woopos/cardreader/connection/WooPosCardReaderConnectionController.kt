@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "LargeClass")
 class WooPosCardReaderConnectionController(
     private val cardReaderManager: CardReaderManager,
     private val locationRepository: CardReaderLocationRepository,
@@ -292,7 +292,7 @@ class WooPosCardReaderConnectionController(
         withContext(dispatchers.io) {
             logger.d("disconnect(): clearing prefs")
             appPrefsWrapper.removeLastConnectedCardReaderId()
-            appPrefsWrapper.removeLastConnectedPhoneName()
+            appPrefsWrapper.removeLastConnectedPhoneDeviceId()
             cardReaderTrackingInfoKeeper.setTransport(null)
 
             logger.d("disconnect(): stopping remote session")
@@ -446,8 +446,8 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun findLastKnownPhone(phones: List<WooPosDiscoveredReader.Phone>): WooPosDiscoveredReader.Phone? {
-        val lastConnectedName = appPrefsWrapper.getLastConnectedPhoneName() ?: return null
-        return phones.find { it.name == lastConnectedName }
+        val lastDeviceId = appPrefsWrapper.getLastConnectedPhoneDeviceId() ?: return null
+        return phones.find { it.deviceId == lastDeviceId }
     }
 
     private fun continueSearching() {
@@ -489,13 +489,13 @@ class WooPosCardReaderConnectionController(
             is WooPosRemoteReaderSession.State.Connected -> {
                 logger.d("Remote reader connected: ${phone.name}")
                 tracker.trackConnectionSucceeded()
-                appPrefsWrapper.setLastConnectedPhoneName(phone.name)
+                appPrefsWrapper.setLastConnectedPhoneDeviceId(phone.deviceId)
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {
                 logger.e("Remote reader connection failed: ${result.message}")
                 tracker.trackConnectionFailed()
-                appPrefsWrapper.removeLastConnectedPhoneName()
+                appPrefsWrapper.removeLastConnectedPhoneDeviceId()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
                     onRetryClicked = { onPhoneConnectClicked(phone) },

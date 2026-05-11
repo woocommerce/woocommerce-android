@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 15:56:24+0000
+Translation-Revision-Date: 2026-04-24 17:55:46+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">Ekip üyesini değiştir</string>
+    <string name="booking_reschedule_screen_title">Rezervasyonu yeniden zamanlayın</string>
+    <string name="booking_details_reschedule_button">Yeniden zamanla</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">&lt;a href=\"fedex-tos\"&gt;FedEx Hizmet Koşulları&lt;/a&gt;\'nı kabul ediyorum.</string>
+    <string name="wpp_shipping_fedex_tos_description">FedEx gönderim etiketleri satın almak için aşağıdaki koşulları kabul etmeniz gerekir:</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx Hizmet Koşulları</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Gönderim ücretlerini yükleyemedik. Lütfen hedef adrese bir ad ve soyadı ekleyin ve yeniden deneyin.</string>
+    <string name="woopos_settings_receipt_edit_button">Makbuz bilgilerini düzenle</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d/%2$d öğe</string>
+    <string name="woopos_home_syncing_catalog_preparing">Katalog hazırlanıyor…</string>
+    <string name="product_type_bookable_service_desc">Müşterilerin çevrimiçi olarak rezervasyon yapabileceği bir hizmet</string>
+    <string name="product_type_bookable_service_title">Hizmet</string>
+    <string name="settings_troubleshoot_connection">Bağlantı Sorununu Giderin</string>
+    <string name="connectivity_tool_copy">Kopyala</string>
+    <string name="connectivity_tool_technical_details_copied">Teknik ayrıntılar panonuza kopyalandı.</string>
+    <string name="connectivity_tool_technical_details_title">Teknik ayrıntılar</string>
+    <string name="connectivity_tool_view_technical_details">VideoPress teknik bilgileri</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Mağazanızdaki ürünler alınıyor</string>
+    <string name="user_role_access_error_fetch_failed">Bu mağazadaki rolünüzü doğrulayamadık. Lütfen tekrar deneyin. Sorun devam ederse desteğe başvurun.</string>
     <string name="woopos_eligibility_learn_more_label">Daha Fazla Bilgi Edinin</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için &lt;b&gt;Pro\'ya yükseltin&lt;/b&gt;.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için Pro\'ya yükseltin.</string>
@@ -30,7 +49,6 @@ Language: tr
     <string name="woo_push_notifications_introduction_connected_body">Yeni siparişler, yorumlar ve daha fazlası için bildirim almanıza bir adım kaldı.</string>
     <string name="woo_push_notifications_introduction_connected_title">Mağazanız için anlık bildirimler alın</string>
     <string name="my_store_widget_push_notifications_description">Yeni siparişler ve incelemeler hakkında bilgi edinmek için anlık bildirimleri etkinleştirin.</string>
-    <string name="dashboard_stats_net_sales">Net Satışlar</string>
     <string name="woopos_search_products_and_variations">Ürünleri ve varyasyonları arayın</string>
     <string name="woopos_bookings_details_customer_guest_badge">Misafir</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Eklentiyi güncelle</string>
@@ -1201,10 +1219,6 @@ Language: tr
     <string name="delete_product_category_failed">Kategori silinirken hata oluştu</string>
     <string name="delete_product_category_success">Ürün kategorisi silindi</string>
     <string name="update_product_category_success">Ürün kategorisi güncellendi</string>
-    <string name="domain_picker_suggestions_error">Alan adı önerileri yüklenemiyor</string>
-    <string name="domain_picker_suggestions_title">Öneriler</string>
-    <string name="domain_picker_hint">Bir alan adı yazın</string>
-    <string name="domain_picker_title">Bir alan adı seçin</string>
     <string name="analytics_section_see_all">Tüm mağaza analizlerini görüntüle</string>
     <string name="my_store_custom_range_granularity_year">Yıllık</string>
     <string name="my_store_custom_range_granularity_month">Aylık</string>
@@ -1971,7 +1985,6 @@ Language: tr
     <string name="store_onboarding_launch_store_back_to_store_button">Mağazama Dön</string>
     <string name="store_onboarding_launch_store_share_url_button">URL paylaş</string>
     <string name="store_onboarding_launch_store_button">Mağazamı yayınla</string>
-    <string name="domains_search_domains">Alan adı ara</string>
     <string name="login_site_credentials_http_error">Durum kodu %1$s ile giriş başarısız oldu</string>
     <string name="login_site_credentials_custom_admin_url">Mağazanızın yönetici URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>
     <string name="login_site_credentials_custom_login_url">Mağazanızın giriş URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>
@@ -2016,41 +2029,12 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="domain_registration_generic_error">Alan adı kaydı sırasında bir hata oluştu</string>
-    <string name="domain_registration_state_picker_dialog_title">Eyalet seçin</string>
-    <string name="domain_registration_country_picker_dialog_title">Ülke seçin</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Alan adı kaydediliyor…</string>
-    <string name="domain_contact_information_register_domain_button">Alan adı kaydet</string>
-    <string name="domain_contact_information_postal_code_hint">Posta kodu</string>
-    <string name="domain_contact_information_state_not_available_hint">Eyalet (mevcut değil)</string>
-    <string name="domain_contact_information_state_hint">Eyalet</string>
-    <string name="domain_contact_information_city_hint">Şehir</string>
-    <string name="domain_contact_information_address_hint_two">Adres 2</string>
-    <string name="domain_contact_information_address_hint">Adres</string>
-    <string name="domain_contact_information_country_hint">Ülke</string>
-    <string name="domain_contact_information_country_code_hint">Ülke kodu</string>
-    <string name="domain_contact_information_phone_number_hint">Telefon</string>
-    <string name="domain_contact_information_organization_hint">Kuruluş (isteğe bağlı)</string>
-    <string name="domain_contact_information_description">Size kolaylık olması için, WordPress.com iletişim bilgilerinizi önceden doldurduk. Lütfen bu bilgilerin bu alan adında kullanmak istediğiniz doğru bilgiler olduğundan emin olmak için gözden geçirin.</string>
-    <string name="domain_contact_information_title">Alan adı iletişim bilgileri</string>
-    <string name="domain_privacy_option_off_title">Herkese açık olarak kaydet</string>
-    <string name="domain_privacy_option_on_title">Gizlilik koruması ile özel olarak kaydet</string>
-    <string name="domain_registration_contact_form_input_error">Lütfen geçerli bir %s girin</string>
-    <string name="domain_registration_privacy_protection_tos">Bu alan adını kaydederek &lt;a href=\'\'&gt;şartlar ve hükümler&lt;/a&gt;\'i kabul etmiş olursunuz</string>
-    <string name="domain_registration_privacy_protection_description">Alan adı sahiplerinin, tüm alan adlarının herkese açık bir veritabanında iletişim bilgilerini paylaşmaları gerekir. Privacy Protection özelliğiyle sizin bilgileriniz yerine kendi bilgilerimizi yayımlıyoruz ve her türlü iletişimi size gizlice iletiyoruz.</string>
-    <string name="domain_registration_privacy_protection_title">Gizlilik koruması</string>
-    <string name="domains_access_error_title">Alan adı ayarlarına yalnızca mağaza yöneticileri erişebilir</string>
     <string name="login_jetpack_installation_continue_magic_link">Veya Sihirli Bağlantıyı kullanmaya devam edin</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Jetpack\'i yüklemek için WordPress.com hesabınızın şifresini girin</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Jetpack\'e bağlanmak için WordPress.com hesabınızın şifresini girin</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Jetpack\'i yüklemek için WordPress.com hesabınızla oturum açın</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Jetpack\'i bağlamak için WordPress.com hesabınızla oturum açın.</string>
-    <string name="domains_purchase_successful_settings_notice">Alan adı ayarlarını Ayarlar &gt; Alan Adları\'nda bulabilirsiniz.</string>
-    <string name="domains_purchase_successful_delay_notice">Site adresiniz oluşturuluyor. Alan adınızın çalışmaya başlaması 30 dakika kadar sürebilir.</string>
-    <string name="domains_purchase_successful_heading">Satın aldığınız için tebrikler</string>
-    <string name="domains_free_with_credits">İlk yıl ücretsiz</string>
     <string name="settings_confirm_logout_site_credentials">Hesabınızla açılan oturumu kapatmak istediğinizden emin misiniz?</string>
-    <string name="domains_generic_error_title">Site alan adları yüklenemiyor </string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d tamamlandı</string>
     <string name="store_onboarding_task_launch_store_description">Sitenizi istediğiniz zaman dünyaya yayımlayın!</string>
     <string name="store_onboarding_task_launch_store_title">Mağazanızı yayınlayın</string>
@@ -2061,19 +2045,6 @@ Language: tr
     <string name="card_reader_payment_failed_device_is_not_supported">Cihazınız desteklenmiyor. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC çipi devre dışı olduğu için uygulama kart okuyucuyu etkinleştiremedi</string>
     <string name="card_reader_payment_failed_canceled">İşlem iptal edildi</string>
-    <string name="domains_redirect_notice">Satın alınan alan adı kullanıcıları şuraya yönlendirecek</string>
-    <string name="domains_select_domain">Alan adı seç</string>
-    <string name="domains_add_domain_button_title">Alan adı ekle</string>
-    <string name="domains_your_domains">Sitenizin alan adları</string>
-    <string name="domains_primary_address">Birincil site adresi</string>
-    <string name="domains_learn_more">Alan adları ve alan adlarıyla ilgili işlemlerin nasıl yapılacağı hakkında &lt;a href=\'\'&gt;&lt;u&gt;daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="domains_search_for_domain_button_title">Bir alan adı ara</string>
-    <string name="domains_purchase_redirect_notice">Satın alınan alan adı, kullanıcıları birincil adresinize yönlendirir.</string>
-    <string name="domains_claim_your_free_domain_link">Alan Adı Al</string>
-    <string name="domains_claim_your_free_domain_description">Paketiniz ücretsiz bir yıllık alan adı kaydını içerir.</string>
-    <string name="domains_claim_your_free_domain_title">Ücretsiz alan adınızı talep edin</string>
-    <string name="domains_your_free_store_address">Ücretsiz mağaza adresiniz</string>
-    <string name="domains">Alan adları</string>
     <string name="feedback_banner_ipp_cta_button">Görüşlerinizi paylaşın</string>
     <string name="feedback_banner_ipp_message_beginner">İlk şahsen ödeme deneyiminizi puanlayın.</string>
     <string name="feedback_banner_ipp_title_beginner">Şahsen ödemenizden memnun kaldınız mı?</string>
@@ -2092,7 +2063,6 @@ Language: tr
     <string name="analytics_session_card_title">Oturumlar</string>
     <string name="analytics_session_no_data">Bu oturumda seans yok</string>
     <string name="date_compared_to">Şununla karşılaştırma:</string>
-    <string name="domain">Alan Adı</string>
     <string name="login_application_passwords_help">Uygulama Şifreleri nedir?</string>
     <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
     <string name="login_open_installation_page">Kurulum sayfasını açın</string>
@@ -2108,7 +2078,6 @@ Language: tr
     <string name="product_bulk_update_regular_price">Normal fiyatı güncelle</string>
     <string name="variations_bulk_creation_no_candidates_message">Tüm varyasyonlar zaten oluşturuldu.</string>
     <string name="variations_bulk_creation_no_candidates_title">Oluşturulacak varyasyon yok</string>
-    <string name="domain_picker_empty_suggestions">Bu arama için uygun alan adı yok</string>
     <string name="variations_bulk_creation_progress_title">Varyasyon oluşturma</string>
     <string name="variations_bulk_creation_confirmation_message">Bu işlem, varyasyon niteliklerinin her olası kombinasyonu için yeni bir varyasyon oluşturur. (%1$d varyasyon)</string>
     <string name="variations_bulk_creation_confirmation_title">Tüm varyasyonlar oluşturulsun mu?</string>
@@ -2165,7 +2134,6 @@ Language: tr
     <string name="update_simulated_reader">Simüle Kart Okuyucuyu Güncelle</string>
     <string name="login_jetpack_connect">Jetpack\'e bağlan</string>
     <string name="login_jetpack_installation_screen_title">Mağazayı Bağla</string>
-    <string name="domain_picker_subtitle">Bu, insanların sizi internette bulacakları yerdir. Endişelenmeyin, daha sonra değiştirebilirsiniz.</string>
     <string name="analytics_visitors_subtitle">Ziyaretçiler</string>
     <string name="or_use_password_below_qr_code_scan_option">Veya şifre ile giriş yapın</string>
     <string name="simulated_reader_toast">Simüle Kart Okuyucu devre dışı bırakıldı</string>

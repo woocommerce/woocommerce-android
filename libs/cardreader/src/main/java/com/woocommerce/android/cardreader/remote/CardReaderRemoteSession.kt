@@ -70,10 +70,12 @@ class CardReaderRemoteSession internal constructor(
     private var readerWasConnected: Boolean = false
     private var useSimulatedReader: Boolean = false
     private var siteHash: String = ""
+    private var deviceId: String = ""
 
-    fun start(parentScope: CoroutineScope, siteHash: String, isSimulated: Boolean = false) {
+    fun start(parentScope: CoroutineScope, siteHash: String, deviceId: String, isSimulated: Boolean = false) {
         useSimulatedReader = isSimulated
         this.siteHash = siteHash
+        this.deviceId = deviceId
         startInternal(parentScope)
     }
 
@@ -136,7 +138,7 @@ class CardReaderRemoteSession internal constructor(
         server.start()
 
         val registration = nsdFactory.create(context)
-            .advertise(server.port, server.fingerprint, deviceName(), siteHash)
+            .advertise(server.port, server.fingerprint, deviceName(), siteHash, deviceId)
         nsdRegistration = registration
 
         logWrapper.d(

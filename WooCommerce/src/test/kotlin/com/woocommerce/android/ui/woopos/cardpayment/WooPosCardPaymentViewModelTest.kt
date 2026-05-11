@@ -65,7 +65,7 @@ class WooPosCardPaymentViewModelTest {
         on { event }.thenReturn(controllerEventFlow)
     }
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock {
-        on { create(any(), any(), any(), any()) }.thenReturn(paymentController)
+        on { create(any(), any(), any(), any(), any()) }.thenReturn(paymentController)
     }
     private val networkStatus: WooPosNetworkStatus = mock {
         on { isConnected() }.thenReturn(true)
@@ -728,6 +728,8 @@ class WooPosCardPaymentViewModelTest {
 
     private fun simulatedRemoteReader() =
         WooPosDiscoveredReader.Phone(
+            serviceName = "woopos-remote-test",
+            deviceId = "test-device-id",
             name = "phone",
             host = InetAddress.getByName("127.0.0.1"),
             port = 1234,

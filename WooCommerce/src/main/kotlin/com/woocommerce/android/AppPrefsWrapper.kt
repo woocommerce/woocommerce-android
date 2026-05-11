@@ -156,11 +156,13 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
-    fun setLastConnectedPhoneName(name: String) = AppPrefs.setLastConnectedPhoneName(name)
+    fun setLastConnectedPhoneDeviceId(deviceId: String) = AppPrefs.setLastConnectedPhoneDeviceId(deviceId)
 
-    fun getLastConnectedPhoneName() = AppPrefs.getLastConnectedPhoneName()
+    fun getLastConnectedPhoneDeviceId() = AppPrefs.getLastConnectedPhoneDeviceId()
 
-    fun removeLastConnectedPhoneName() = AppPrefs.removeLastConnectedPhoneName()
+    fun removeLastConnectedPhoneDeviceId() = AppPrefs.removeLastConnectedPhoneDeviceId()
+
+    var wooPosRemoteReaderDeviceUUID by AppPrefs::wooPosRemoteReaderDeviceUUID
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
@@ -235,6 +237,12 @@ open class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getActiveStoreStatsTab() = AppPrefs.getActiveStatsTab()
+
+    fun setDashboardRevenueStatsType(typeName: String) {
+        AppPrefs.setDashboardRevenueStatsType(typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = AppPrefs.getDashboardRevenueStatsType()
 
     fun setActiveTopPerformersTab(selectionName: String) {
         AppPrefs.setActiveTopPerformersTab(selectionName)

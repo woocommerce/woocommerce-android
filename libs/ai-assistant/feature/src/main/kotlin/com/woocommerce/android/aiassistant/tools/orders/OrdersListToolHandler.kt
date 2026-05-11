@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -53,6 +54,9 @@ internal class OrdersListToolHandler @Inject constructor(
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, ORDERS_LIST_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -82,6 +86,7 @@ internal class OrdersListToolHandler @Inject constructor(
                 val response = OrderListResponse(
                     count = orders.size,
                     ids = orders.map { it.orderId },
+                    orders = orders.map { it.toOrderListRowResponse() },
                     statusCounts = statusCounts,
                     totalRange = totalRange,
                 )
@@ -115,7 +120,21 @@ internal class OrdersListToolHandler @Inject constructor(
     private data class OrderListResponse(
         val count: Int,
         val ids: List<Long>,
+        val orders: List<OrderListRowResponse>,
         @SerialName("status_counts") val statusCounts: Map<String, Int>,
         @SerialName("total_range") val totalRange: TotalRange?,
     )
 }
+
+private val ORDERS_LIST_ALLOWED_ARGS = setOf(
+    "status",
+    "search",
+    "customer",
+    "include",
+    "after",
+    "before",
+    "orderby",
+    "order",
+    "page",
+    "per_page",
+)

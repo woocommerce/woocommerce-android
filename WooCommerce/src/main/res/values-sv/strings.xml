@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-07 13:57:39+0000
+Translation-Revision-Date: 2026-04-24 17:55:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_reschedule_change_team_member">Ändra teammedlem</string>
+    <string name="booking_reschedule_screen_title">Planera om bokning</string>
+    <string name="booking_details_reschedule_button">Planera om</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">Jag godkänner &lt;a href=\"fedex-tos\"&gt;FedEx användarvillkor&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">För att köpa FedEx fraktetiketter måste du godkänna följande villkor:</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx användarvillkor</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Vi kunde inte ladda fraktavgifter. Lägg till ett för- och efternamn till destinationsadressen och försök igen.</string>
+    <string name="woopos_settings_receipt_edit_button">Redigera kvittoinformation</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d av %2$d artiklar</string>
+    <string name="woopos_home_syncing_catalog_preparing">Förbereder katalog …</string>
+    <string name="product_type_bookable_service_desc">En tjänst som kunder kan boka online</string>
+    <string name="product_type_bookable_service_title">Tjänst</string>
+    <string name="settings_troubleshoot_connection">Felsök anslutning</string>
+    <string name="connectivity_tool_copy">Kopiera</string>
+    <string name="connectivity_tool_technical_details_copied">Tekniska detaljer har kopierats till ditt urklipp.</string>
+    <string name="connectivity_tool_technical_details_title">Tekniska detaljer</string>
+    <string name="connectivity_tool_view_technical_details">Visa tekniska detaljer</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Hämtar produkter i din butik</string>
+    <string name="user_role_access_error_fetch_failed">Vi kunde inte verifiera din roll i denna butik. Försök igen. Om problemet kvarstår, kontakta support.</string>
     <string name="woopos_eligibility_learn_more_label">Läs mer</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. &lt;b&gt;Uppgradera till Pro&lt;/b&gt; för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. Uppgradera till Pro för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
@@ -30,7 +49,6 @@ Language: sv_SE
     <string name="woo_push_notifications_introduction_connected_body">Du är ett steg ifrån att få aviseringar om nya beställningar, recensioner med mera.</string>
     <string name="woo_push_notifications_introduction_connected_title">Få pushnotiser för din butik</string>
     <string name="my_store_widget_push_notifications_description">Aktivera pushnotiser för att hålla koll på nya beställningar och recensioner.</string>
-    <string name="dashboard_stats_net_sales">Nettoförsäljning</string>
     <string name="woopos_search_products_and_variations">Sök produkter och varianter</string>
     <string name="woopos_bookings_details_customer_guest_badge">Gäst</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Uppdatera tillägg</string>
@@ -1201,10 +1219,6 @@ Language: sv_SE
     <string name="delete_product_category_failed">Fel vid borttagning av kategori</string>
     <string name="delete_product_category_success">Produktkategori borttagen</string>
     <string name="update_product_category_success">Produktkategori uppdaterad</string>
-    <string name="domain_picker_suggestions_error">Det gick inte att ladda domänförslag</string>
-    <string name="domain_picker_suggestions_title">Förslag</string>
-    <string name="domain_picker_hint">Skriv en domän</string>
-    <string name="domain_picker_title">Välj en domän</string>
     <string name="analytics_section_see_all">Visa alla butiksanalyser</string>
     <string name="my_store_custom_range_granularity_year">En gång om året</string>
     <string name="my_store_custom_range_granularity_month">En gång i månaden</string>
@@ -1971,7 +1985,6 @@ Language: sv_SE
     <string name="store_onboarding_launch_store_back_to_store_button">Tillbaka till min butik</string>
     <string name="store_onboarding_launch_store_share_url_button">Dela URL</string>
     <string name="store_onboarding_launch_store_button">Publicera min butik</string>
-    <string name="domains_search_domains">Sök domäner</string>
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>
     <string name="login_site_credentials_custom_login_url">Det gick inte att logga in, eftersom vi inte kan identifiera inloggnings-URL:en för din butik</string>
@@ -2016,41 +2029,12 @@ Language: sv_SE
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
-    <string name="domain_registration_generic_error">Ett fel uppstod under domänregistrering</string>
-    <string name="domain_registration_state_picker_dialog_title">Välj delstat</string>
-    <string name="domain_registration_country_picker_dialog_title">Välj land</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Registrerar domännamn …</string>
-    <string name="domain_contact_information_register_domain_button">Registrera domän</string>
-    <string name="domain_contact_information_postal_code_hint">Postnummer</string>
-    <string name="domain_contact_information_state_not_available_hint">Delstat (Inte tillgänglig)</string>
-    <string name="domain_contact_information_state_hint">Delstat</string>
-    <string name="domain_contact_information_city_hint">Ort</string>
-    <string name="domain_contact_information_address_hint_two">Adress 2</string>
-    <string name="domain_contact_information_address_hint">Adress</string>
-    <string name="domain_contact_information_country_hint">Land</string>
-    <string name="domain_contact_information_country_code_hint">Landskod</string>
-    <string name="domain_contact_information_phone_number_hint">Telefon</string>
-    <string name="domain_contact_information_organization_hint">Organisation (valfritt)</string>
-    <string name="domain_contact_information_description">För din bekvämlighet har vi förfyllt din WordPress.com\n        kontaktinformation. Granska det för att vara säker på att det är rätt information du vill använda för denna domän.</string>
-    <string name="domain_contact_information_title">Kontaktinformation för domän</string>
-    <string name="domain_privacy_option_off_title">Registrera publikt</string>
-    <string name="domain_privacy_option_on_title">Registrera privat med integritetsskydd</string>
-    <string name="domain_registration_contact_form_input_error">Ange en giltig %s</string>
-    <string name="domain_registration_privacy_protection_tos">I och med att du registrerar denna domän godkänner du våra &lt;a href=\'\'&gt;användarvillkor&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">Domänägare måste uppge kontaktinformation i en publik databas som omfattar alla domäner. Med integritetsskydd publicerar vi våra uppgifter istället för dina, och vidarebefordrar sedan privat eventuella meddelanden till dig.</string>
-    <string name="domain_registration_privacy_protection_title">Integritetsskydd</string>
-    <string name="domains_access_error_title">Endast butiksadministratörer kan komma åt domäninställningar</string>
     <string name="login_jetpack_installation_continue_magic_link">Eller fortsätt med magisk länk</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Ange lösenordet för ditt WordPress.com-konto för att installera Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Ange lösenordet för ditt WordPress.com-konto för att ansluta till Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att installera Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att ansluta Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">Du hittar domäninställningarna via Inställningar &gt; Domäner</string>
-    <string name="domains_purchase_successful_delay_notice">Din webbplatsadress håller på att konfigureras. Det kan dröja upp till 30 minuter innan din domän börjar fungera.</string>
-    <string name="domains_purchase_successful_heading">Grattis till dina köp</string>
-    <string name="domains_free_with_credits">Gratis första året</string>
     <string name="settings_confirm_logout_site_credentials">Är du säker på att du vill logga ut från ditt konto?</string>
-    <string name="domains_generic_error_title">Kan inte ladda webbplatsdomäner</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d har slutförts</string>
     <string name="store_onboarding_task_launch_store_description">Publicera din webbplats till världen när du vill!</string>
     <string name="store_onboarding_task_launch_store_title">Lansera din butik</string>
@@ -2061,19 +2045,6 @@ Language: sv_SE
     <string name="card_reader_payment_failed_device_is_not_supported">Din enhet stöds inte. Kontakta support för mer detaljer</string>
     <string name="card_reader_payment_failed_nfc_disabled">Appen kunde inte aktivera kortläsaren, eftersom NFC-chippet är inaktiverat</string>
     <string name="card_reader_payment_failed_canceled">Transaktionen avbröts</string>
-    <string name="domains_redirect_notice">Den köpta domänen kommer att omdirigera användare till</string>
-    <string name="domains_select_domain">Välj domän</string>
-    <string name="domains_add_domain_button_title">Lägg till en domän</string>
-    <string name="domains_your_domains">Domänerna för din webbplats</string>
-    <string name="domains_primary_address">Primär webbplatsadress</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om domäner och hur man vidtar domänrelaterade åtgärder.</string>
-    <string name="domains_search_for_domain_button_title">Sök efter en domän</string>
-    <string name="domains_purchase_redirect_notice">Den köpta domänen kommer omdirigera användare till din primära adress.</string>
-    <string name="domains_claim_your_free_domain_link">Gör anspråk på domän</string>
-    <string name="domains_claim_your_free_domain_description">Ditt paket inkluderar en gratis domännamnsregistrering i ett år.</string>
-    <string name="domains_claim_your_free_domain_title">Gör anspråk på din gratisdomän</string>
-    <string name="domains_your_free_store_address">Din gratis butiksadress</string>
-    <string name="domains">Domäner</string>
     <string name="feedback_banner_ipp_cta_button">Dela feedback</string>
     <string name="feedback_banner_ipp_message_beginner">Betygsätt din första upplevelse av personliga betalningar.</string>
     <string name="feedback_banner_ipp_title_beginner">Gillar du att använda personliga betalningar?</string>
@@ -2092,7 +2063,6 @@ Language: sv_SE
     <string name="analytics_session_card_title">Sessioner</string>
     <string name="analytics_session_no_data">Inga sessioner denna period</string>
     <string name="date_compared_to">Jämfört med</string>
-    <string name="domain">Domän</string>
     <string name="login_application_passwords_help">Vad är applikationslösenord?</string>
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
@@ -2108,7 +2078,6 @@ Language: sv_SE
     <string name="product_bulk_update_regular_price">Uppdatera ordinarie pris</string>
     <string name="variations_bulk_creation_no_candidates_message">Alla variationer har redan genererats.</string>
     <string name="variations_bulk_creation_no_candidates_title">Inga variationer att generera</string>
-    <string name="domain_picker_empty_suggestions">Inga tillgängliga domäner för denna sökning</string>
     <string name="variations_bulk_creation_progress_title">Genererar varianter</string>
     <string name="variations_bulk_creation_confirmation_message">Detta kommer skapa en ny variation för varje möjlig kombination av variationsattribut (%1$d variationer).</string>
     <string name="variations_bulk_creation_confirmation_title">Generera alla varianter?</string>
@@ -2165,7 +2134,6 @@ Language: sv_SE
     <string name="update_simulated_reader">Uppdatera simulerad kortläsare</string>
     <string name="login_jetpack_connect">Anslut Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Anslut butik</string>
-    <string name="domain_picker_subtitle">Det är här människor kommer hitta dig på Internet. Oroa dig inte, du kan ändra detta senare.</string>
     <string name="analytics_visitors_subtitle">Besökare</string>
     <string name="or_use_password_below_qr_code_scan_option">Eller logga in med lösenord</string>
     <string name="simulated_reader_toast">Den simulerade kortläsaren har inaktiverats</string>
