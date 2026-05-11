@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.aisupportchat.networking
 
 import com.google.gson.Gson
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
@@ -99,5 +100,15 @@ class SupportChatResponseDeserializationTest {
         assertThat(flags.cannedResponse).isFalse
         assertThat(flags.loggedIn).isFalse
         assertThat(flags.branch).isNull()
+    }
+
+    @Test
+    fun `given support chat flags, when decoded from empty json, then constructor defaults are preserved`() {
+        val hasNoArgConstructor = SupportChatFlags::class.java.declaredConstructors.any { it.parameterCount == 0 }
+
+        val flags = gson.fromJson("{}", SupportChatFlags::class.java)
+
+        assertThat(hasNoArgConstructor).isTrue
+        assertThat(flags).isEqualTo(SupportChatFlags())
     }
 }
