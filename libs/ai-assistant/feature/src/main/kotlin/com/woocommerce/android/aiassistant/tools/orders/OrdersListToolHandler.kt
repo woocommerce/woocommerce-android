@@ -24,8 +24,9 @@ internal class OrdersListToolHandler @Inject constructor(
     override val descriptor = ToolDescriptor(
         name = "orders_list",
         description = "List orders, optionally filtered by status, date range, or customer. Use to find " +
-            "specific orders, list pending fulfilment, or pull the most recent N. For aggregate sales " +
-            "numbers prefer analytics_orders / analytics_revenue. For prose questions about a specific " +
+            "specific orders, list pending fulfilment, or pull the most recent N. For aggregate sales, revenue, " +
+            "order count, or average order value numbers prefer analytics_orders. For prose questions about " +
+            "a specific " +
             "order's payment method, customer email, etc., call orders_get with the ID.",
         inputSchema = inputSchema {
             enum(

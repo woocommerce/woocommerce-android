@@ -105,8 +105,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             the merchant which day or window they meant when their wording already named one.
             For analytics requests, the grouping phrase controls `interval`; the time phrase controls `after`
             and `before`. For example, "revenue by day this month" means interval day with this-month
-            after/before dates, not interval month. Aggregate sales, revenue, and order metric questions should
-            use analytics tools, not row counts from list tools.
+            after/before dates, not interval month. Aggregate sales, revenue, order count, and average order
+            value questions should use analytics_orders, not row counts from list tools.
 
             # Tools
 
@@ -172,9 +172,12 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             Pattern 6 - Analytics breakdowns.
             Merchant: "revenue by day this week"
-            GOOD: One call to the analytics revenue tool with the appropriate window and a daily-grain
-            parameter, then call `show_cards` with an ID-only `analytics_stats` reference using the same after,
-            before, interval, and currency-or-none query values, and answer with concise prose.
+            GOOD: One analytics read call with the appropriate window and a daily-grain parameter, then call
+            `show_cards` to render the matching analytics card.
+            Answer with concise prose.
+            When a request combines a grouping grain with a date window, the grouping phrase controls interval
+            and the time phrase controls after/before. Do not turn a monthly window into interval=month when the
+            merchant asked for a smaller grouping grain.
             BAD: Ask "did you want by day or by week?" when the merchant already said "by day".
 
             Pattern 7 - Customer lists and cards.

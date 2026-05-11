@@ -32,11 +32,21 @@ sealed interface AssistantCard {
         val after: String,
         val before: String,
         val currency: String,
-        val totalSales: String,
-        val netSales: String,
-        val totalSalesChartPoints: List<ChartPoint>,
-        val netSalesChartPoints: List<ChartPoint>,
+        val metrics: List<Metric>,
     ) : AssistantCard {
+        enum class MetricType {
+            TotalSales,
+            NetSales,
+            TotalOrders,
+            AverageOrderValue
+        }
+
+        data class Metric(
+            val type: MetricType,
+            val value: String,
+            val chartPoints: List<ChartPoint>,
+        )
+
         data class ChartPoint(
             val date: String,
             val value: Double,

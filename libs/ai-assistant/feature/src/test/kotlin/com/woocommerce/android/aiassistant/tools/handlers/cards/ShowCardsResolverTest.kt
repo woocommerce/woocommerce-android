@@ -61,11 +61,10 @@ class ShowCardsResolverTest {
         whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(productLookup(product)))
         givenCustomersFetch(ids = listOf(4L), customer)
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = "USD",
             )
         ).thenReturn(Result.success(stats))
 
@@ -95,23 +94,22 @@ class ShowCardsResolverTest {
     }
 
     @Test
-    fun `given analytics stats ref, when resolved, then resolver refetches stats from parsed id`() = runTest {
+    fun `given analytics stats ref, when resolved, then resolver refetches orders stats from parsed id`() = runTest {
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = "USD",
             )
-        ).thenReturn(Result.success(analyticsStats()))
+        ).thenReturn(Result.success(unifiedAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
-        verify(analyticsDataSource).fetchRevenueStats(
+        verify(analyticsDataSource).fetchOrdersStats(
             after = "2026-05-01T00:00:00",
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
-            currency = "USD",
         )
         verifyNoInteractions(ordersDataSource, productsDataSource)
         val resolved = result.single() as ShowCardsResolution.Resolved
@@ -127,28 +125,27 @@ class ShowCardsResolverTest {
         assertThat(resolved.card.title).isEqualTo("Analytics")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
         assertThat(details.totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
+        assertThat(details.totals.getValue("orders_count").jsonPrimitive.content).isEqualTo("42")
         assertThat(details.intervalSubtotals).hasSize(2)
     }
 
     @Test
-    fun `given analytics stats ref with currency none, when resolved, then site currency is used for display`() = runTest {
+    fun `given analytics stats ref, when resolved, then site currency is used for display`() = runTest {
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = null,
             )
-        ).thenReturn(Result.success(analyticsStats()))
+        ).thenReturn(Result.success(unifiedAnalyticsStats()))
         whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
-        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID_NO_CURRENCY)))
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
-        verify(analyticsDataSource).fetchRevenueStats(
+        verify(analyticsDataSource).fetchOrdersStats(
             after = "2026-05-01T00:00:00",
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
-            currency = null,
         )
         val resolved = result.single() as ShowCardsResolution.Resolved
         assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
@@ -157,13 +154,34 @@ class ShowCardsResolverTest {
     }
 
     @Test
-    fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
+    fun `given orders analytics stats ref, when resolved, then resolver refetches orders stats only`() = runTest {
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = "USD",
+            )
+        ).thenReturn(Result.success(orderAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
+
+        verify(analyticsDataSource).fetchOrdersStats(
+            after = "2026-05-01T00:00:00",
+            before = "2026-05-07T23:59:59",
+            interval = AnalyticsInterval.DAY,
+        )
+        val resolved = result.single() as ShowCardsResolution.Resolved
+        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+    }
+
+    @Test
+    fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
+        whenever(
+            analyticsDataSource.fetchOrdersStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
             )
         ).thenReturn(Result.failure(IllegalStateException("network")))
 
@@ -564,6 +582,31 @@ class ShowCardsResolverTest {
         ),
     )
 
+    private fun orderAnalyticsStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("orders_count", "42")
+            put("avg_order_value", "85.30")
+        },
+        intervals = listOf(
+            orderAnalyticsInterval("2026-05-01", "12", "80.10"),
+            orderAnalyticsInterval("2026-05-02", "30", "87.38"),
+        ),
+    )
+
+    private fun unifiedAnalyticsStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("total_sales", "170.35")
+            put("gross_sales", "190.00")
+            put("net_revenue", "120.15")
+            put("orders_count", "42")
+            put("avg_order_value", "85.30")
+        },
+        intervals = listOf(
+            unifiedAnalyticsInterval("2026-05-01", "50.00", "35.00", "12", "80.10"),
+            unifiedAnalyticsInterval("2026-05-02", "120.35", "85.15", "30", "87.38"),
+        ),
+    )
+
     private fun analyticsInterval(
         interval: String,
         totalSales: String,
@@ -577,6 +620,36 @@ class ShowCardsResolverTest {
         }
     }
 
+    private fun orderAnalyticsInterval(
+        interval: String,
+        ordersCount: String,
+        averageOrderValue: String,
+    ) = buildJsonObject {
+        put("interval", interval)
+        put("date_start", "$interval 00:00:00")
+        putJsonObject("subtotals") {
+            put("orders_count", ordersCount)
+            put("avg_order_value", averageOrderValue)
+        }
+    }
+
+    private fun unifiedAnalyticsInterval(
+        interval: String,
+        totalSales: String,
+        netRevenue: String,
+        ordersCount: String,
+        averageOrderValue: String,
+    ) = buildJsonObject {
+        put("interval", interval)
+        put("date_start", "$interval 00:00:00")
+        putJsonObject("subtotals") {
+            put("total_sales", totalSales)
+            put("net_revenue", netRevenue)
+            put("orders_count", ordersCount)
+            put("avg_order_value", averageOrderValue)
+        }
+    }
+
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
         private val ORDER_LINE_ITEMS_JSON = """
@@ -586,8 +659,6 @@ class ShowCardsResolverTest {
             ]
         """.trimIndent()
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-        private const val ANALYTICS_STATS_ID_NO_CURRENCY =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.tools.handlers.cards
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.analytics.AIAnalyticsDataSource
+import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsStats
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateAfterBound
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateBeforeBound
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsStatsSummary
@@ -10,6 +11,9 @@ import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -170,64 +174,75 @@ internal class DefaultShowCardsResolver @Inject constructor(
     private suspend fun resolveAnalyticsStats(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
         if (refs.isEmpty()) return emptyMap()
 
-        return buildMap {
-            refs.forEach { ref ->
-                put(ref, resolveAnalyticsStats(ref))
-            }
+        return coroutineScope {
+            refs.map { ref -> async { ref to resolveAnalyticsStats(ref) } }.awaitAll().toMap()
         }
     }
 
     private suspend fun resolveAnalyticsStats(ref: ValidatedRef): ShowCardsResolution {
         val query = AnalyticsStatsCardId.parse(ref.id)
             ?: return ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.InvalidId)
-        return analyticsDataSource.fetchRevenueStats(
-            after = analyticsDateAfterBound(query.after),
-            before = analyticsDateBeforeBound(query.before),
+        val after = analyticsDateAfterBound(query.after)
+        val before = analyticsDateBeforeBound(query.before)
+        val statsResult = analyticsDataSource.fetchOrdersStats(
+            after = after,
+            before = before,
             interval = query.interval,
-            currency = query.currency,
-        ).fold(
+        )
+
+        return statsResult.fold(
             onSuccess = { stats ->
-                val displayCurrency = query.currency ?: analyticsDataSource.getSelectedSiteCurrencyCode()
-                val summary = analyticsStatsSummary(
-                    after = query.after,
-                    before = query.before,
-                    interval = query.interval,
-                    stats = stats,
-                    currency = displayCurrency,
-                )
-                val totals = summary["totals"] as? JsonObject ?: JsonObject(emptyMap())
-                val intervalSubtotals = (summary["interval_subtotals"] as? JsonArray)
-                    ?.mapNotNull { it as? JsonObject }
-                    .orEmpty()
-                ShowCardsResolution.Resolved(
-                    ref = ref,
-                    summary = jsonObject(
-                        AnalyticsStatsSummary(
-                            id = ref.id,
-                            after = query.after,
-                            before = query.before,
-                            currency = displayCurrency,
-                            totals = totals,
-                            intervalSubtotals = intervalSubtotals,
-                        )
-                    ),
-                    card = ShowCardPayload(
-                        family = ShowCardFamily.AnalyticsStats.serializedName,
-                        id = ref.id,
-                        title = "Analytics",
-                        details = ShowCardDetails.AnalyticsStats(
-                            after = query.after,
-                            before = query.before,
-                            currency = displayCurrency,
-                            totals = totals,
-                            intervalSubtotals = intervalSubtotals,
-                        ),
-                    ),
-                )
+                analyticsStatsResolution(ref = ref, query = query, stats = stats)
             },
             onFailure = {
                 ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed)
             },
+        )
+    }
+
+    private fun analyticsStatsResolution(
+        ref: ValidatedRef,
+        query: AnalyticsStatsCardId,
+        stats: AnalyticsStats,
+    ): ShowCardsResolution.Resolved {
+        val displayCurrency = analyticsDataSource.getSelectedSiteCurrencyCode()
+        val summary = analyticsStatsSummary(
+            after = query.after,
+            before = query.before,
+            interval = query.interval,
+            stats = stats,
+            cardId = ref.id,
+            currency = displayCurrency,
+        )
+        val totals = summary["totals"] as? JsonObject ?: JsonObject(emptyMap())
+        val intervalSubtotals = (summary["interval_subtotals"] as? JsonArray)
+            ?.mapNotNull { it as? JsonObject }
+            .orEmpty()
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = jsonObject(
+                AnalyticsStatsSummary(
+                    id = ref.id,
+                    after = query.after,
+                    before = query.before,
+                    currency = displayCurrency,
+                    totals = totals,
+                    intervalSubtotals = intervalSubtotals,
+                )
+            ),
+            card = ShowCardPayload(
+                family = ShowCardFamily.AnalyticsStats.serializedName,
+                id = ref.id,
+                title = "Analytics",
+                details = ShowCardDetails.AnalyticsStats(
+                    after = query.after,
+                    before = query.before,
+                    currency = displayCurrency,
+                    totals = totals,
+                    intervalSubtotals = intervalSubtotals,
+                ),
+            ),
         )
     }
 

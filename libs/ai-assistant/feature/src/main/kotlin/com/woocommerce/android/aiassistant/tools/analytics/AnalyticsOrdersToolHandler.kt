@@ -8,6 +8,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsCardId
+import com.woocommerce.android.aiassistant.tools.handlers.cards.toSyntheticId
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,8 +24,14 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = ANALYTICS_ORDERS_TOOL_NAME,
-        description = "Order analytics for a date range. Returns totals and per-interval subtotals. " +
-            "Prefer this over orders_list for aggregate order-count questions.",
+        description = "Aggregate analytics for a date range. Returns totals and per-interval subtotals for " +
+            "sales, revenue, total orders, and average order value. Prefer analytics_orders over orders_list " +
+            "for aggregate sales, revenue, order-count, or average order value questions. For breakdown " +
+            "requests, set the interval parameter directly to the implied dimension. When a request combines " +
+            "a grouping grain with a date window, interval follows the grouping grain. Analytics stats are " +
+            "card-backed: card_id starts with analytics_orders. After any successful aggregate analytics " +
+            "call, do not stop with prose; call show_cards with family analytics_stats and the exact card_id " +
+            "returned by this tool.",
         inputSchema = inputSchema {
             string("after", description = "Inclusive start date YYYY-MM-DD.", required = true)
             string("before", description = "Inclusive end date YYYY-MM-DD.", required = true)
@@ -62,6 +70,7 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
         validateAnalyticsDateRange(afterDate, beforeDate, interval)?.let {
             return analyticsValidationError(call.id, it)
         }
+        val cardId = analyticsOrdersCardId(args, interval)
 
         val stats = dataSource.fetchOrdersStats(
             after = analyticsDateAfterBound(args.after),
@@ -90,12 +99,22 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
                 before = args.before,
                 interval = interval,
                 stats = stats,
+                cardId = cardId,
                 previousPeriodTotals = previousPeriodTotals,
                 previousPeriodPartial = previousPeriodPartial,
                 previousPeriodWarning = PREVIOUS_PERIOD_WARNING.takeIf { previousPeriodPartial },
             ),
         )
     }
+
+    private fun analyticsOrdersCardId(
+        args: Args,
+        interval: AnalyticsInterval,
+    ) = AnalyticsStatsCardId(
+        after = args.after,
+        before = args.before,
+        interval = interval,
+    ).toSyntheticId()
 
     @Serializable
     private data class Args(

@@ -56,7 +56,7 @@ internal class ShowCardsToolHandler internal constructor(
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
         description = "Show rich cards in the Android UI for order/product/customer entity references or an " +
-            "analytics_stats ID produced after a successful analytics_revenue result.",
+            "analytics_stats ID produced after a successful analytics_orders result.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
@@ -81,8 +81,10 @@ internal class ShowCardsToolHandler internal constructor(
                                 put("type", "string")
                                 put(
                                     "description",
-                                    "Entity id, or analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
-                                        "interval:<hour|day|week|month|year>:currency:<ISO|none> for analytics_stats.",
+                                    "Entity id. For analytics_stats, pass the exact card_id returned by " +
+                                        "analytics_orders. Manual form: " +
+                                        "analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
+                                        "interval:<hour|day|week|month|year> for analytics_stats.",
                                 )
                             }
                         }
@@ -202,6 +204,7 @@ internal class ShowCardsToolHandler internal constructor(
             "before",
             "currency",
             "totals",
+            "interval_subtotals",
         )
     }
 }

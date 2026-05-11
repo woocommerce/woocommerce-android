@@ -76,26 +76,42 @@ internal object AssistantCardPayloadParser {
         )
     }
 
-    private fun parseStatsCard(card: ShowCardPayload): AssistantCard? {
-        val details = card.details as? ShowCardDetails.AnalyticsStats ?: return null
-        val after = details.after.takeIf { it.isIsoLocalDate() } ?: return null
-        val before = details.before.takeIf { it.isIsoLocalDate() } ?: return null
+    private fun parseStatsCard(card: ShowCardPayload): AssistantCard? =
+        (card.details as? ShowCardDetails.AnalyticsStats)?.toStatsCard(card.id)
 
-        return AssistantCard.Stats(
-            id = card.id,
-            after = after,
-            before = before,
-            currency = details.currency.orEmpty(),
-            totalSales = details.totals.stringValue(TOTAL_SALES_KEYS),
-            netSales = details.totals.stringValue(NET_SALES_KEYS),
-            totalSalesChartPoints = details.intervalSubtotals.mapNotNull {
-                it.toChartPoint(TOTAL_SALES_KEYS)
-            },
-            netSalesChartPoints = details.intervalSubtotals.mapNotNull {
-                it.toChartPoint(NET_SALES_KEYS)
-            },
-        )
+    private fun ShowCardDetails.AnalyticsStats.toStatsCard(id: String): AssistantCard? {
+        val afterDate = after.takeIf { it.isIsoLocalDate() }
+        val beforeDate = before.takeIf { it.isIsoLocalDate() }
+
+        return if (afterDate != null && beforeDate != null) {
+            AssistantCard.Stats(
+                id = id,
+                after = afterDate,
+                before = beforeDate,
+                currency = currency.orEmpty(),
+                metrics = analyticsMetrics(),
+            )
+        } else {
+            null
+        }
     }
+
+    private fun ShowCardDetails.AnalyticsStats.analyticsMetrics(): List<AssistantCard.Stats.Metric> =
+        listOf(
+            metric(AssistantCard.Stats.MetricType.TotalSales, TOTAL_SALES_KEYS),
+            metric(AssistantCard.Stats.MetricType.NetSales, NET_SALES_KEYS),
+            metric(AssistantCard.Stats.MetricType.TotalOrders, ORDERS_COUNT_KEYS),
+            metric(AssistantCard.Stats.MetricType.AverageOrderValue, AVERAGE_ORDER_VALUE_KEYS),
+        )
+
+    private fun ShowCardDetails.AnalyticsStats.metric(
+        type: AssistantCard.Stats.MetricType,
+        keys: List<String>,
+    ) = AssistantCard.Stats.Metric(
+        type = type,
+        value = totals.stringValue(keys),
+        chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(keys) },
+    )
 
     private fun JsonObject.toChartPoint(valueKeys: List<String>): AssistantCard.Stats.ChartPoint? {
         val date = chartDate() ?: return null
@@ -138,5 +154,7 @@ internal object AssistantCardPayloadParser {
     private const val ISO_LOCAL_DATE_LENGTH = 10
     private val TOTAL_SALES_KEYS = listOf("total_sales", "gross_sales")
     private val NET_SALES_KEYS = listOf("net_revenue")
+    private val ORDERS_COUNT_KEYS = listOf("orders_count")
+    private val AVERAGE_ORDER_VALUE_KEYS = listOf("avg_order_value")
     private val ISO_LOCAL_DATE_SHAPE = Regex("\\d{4}-\\d{2}-\\d{2}")
 }

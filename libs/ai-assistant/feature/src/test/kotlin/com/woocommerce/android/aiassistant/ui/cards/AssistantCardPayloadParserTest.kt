@@ -207,7 +207,7 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
-    fun `given analytics stats payload, when parsed, then total and net sales card contains chart points`() {
+    fun `given analytics stats payload, when parsed, then unified metrics contain chart points`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(analyticsStatsPayload())
@@ -220,15 +220,39 @@ class AssistantCardPayloadParserTest {
                 after = "2026-05-01",
                 before = "2026-05-07",
                 currency = "USD",
-                totalSales = "170.35",
-                netSales = "120.15",
-                totalSalesChartPoints = listOf(
-                    AssistantCard.Stats.ChartPoint("2026-05-01", 50.0),
-                    AssistantCard.Stats.ChartPoint("2026-05-02", 120.35),
-                ),
-                netSalesChartPoints = listOf(
-                    AssistantCard.Stats.ChartPoint("2026-05-01", 35.0),
-                    AssistantCard.Stats.ChartPoint("2026-05-02", 85.15),
+                metrics = listOf(
+                    AssistantCard.Stats.Metric(
+                        type = AssistantCard.Stats.MetricType.TotalSales,
+                        value = "170.35",
+                        chartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 50.0),
+                            AssistantCard.Stats.ChartPoint("2026-05-02", 120.35),
+                        ),
+                    ),
+                    AssistantCard.Stats.Metric(
+                        type = AssistantCard.Stats.MetricType.NetSales,
+                        value = "120.15",
+                        chartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 35.0),
+                            AssistantCard.Stats.ChartPoint("2026-05-02", 85.15),
+                        ),
+                    ),
+                    AssistantCard.Stats.Metric(
+                        type = AssistantCard.Stats.MetricType.TotalOrders,
+                        value = "42",
+                        chartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+                            AssistantCard.Stats.ChartPoint("2026-05-02", 30.0),
+                        ),
+                    ),
+                    AssistantCard.Stats.Metric(
+                        type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                        value = "85.30",
+                        chartPoints = listOf(
+                            AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
+                            AssistantCard.Stats.ChartPoint("2026-05-02", 87.38),
+                        ),
+                    ),
                 ),
             )
         )
@@ -259,8 +283,9 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.totalSales).isEqualTo("190.00")
-        assertThat(statsCard.totalSalesChartPoints)
+        val totalSales = statsCard.metric(AssistantCard.Stats.MetricType.TotalSales)
+        assertThat(totalSales.value).isEqualTo("190.00")
+        assertThat(totalSales.chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 90.0))
     }
 
@@ -284,9 +309,9 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.totalSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-04", 75.0))
-        assertThat(statsCard.netSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-04", 60.0))
     }
 
@@ -307,9 +332,9 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.totalSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-02", 90.0))
-        assertThat(statsCard.netSalesChartPoints)
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).chartPoints)
             .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 70.0))
     }
 
@@ -322,6 +347,170 @@ class AssistantCardPayloadParserTest {
         )
 
         assertThat(cards).isEmpty()
+    }
+
+    @Test
+    fun `given orders analytics stats payload, when parsed, then unified metrics are used`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    analyticsStatsPayload(
+                        id = ANALYTICS_STATS_ID,
+                        totals = buildJsonObject {
+                            put("total_sales", "170.35")
+                            put("net_revenue", "120.15")
+                            put("orders_count", 42)
+                            put("avg_order_value", "85.30")
+                        },
+                        intervalSubtotals = listOf(
+                            unifiedAnalyticsInterval("2026-05-01", "50.00", "35.00", "12", "80.10"),
+                            unifiedAnalyticsInterval("2026-05-02", "120.35", "85.15", "30", "87.38"),
+                        ),
+                    )
+                )
+            )
+        )
+
+        val statsCard = cards.single() as AssistantCard.Stats
+        assertThat(statsCard.metrics).containsExactly(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint("2026-05-01", 50.0),
+                    AssistantCard.Stats.ChartPoint("2026-05-02", 120.35),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint("2026-05-01", 35.0),
+                    AssistantCard.Stats.ChartPoint("2026-05-02", 85.15),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+                    AssistantCard.Stats.ChartPoint("2026-05-02", 30.0),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
+                    AssistantCard.Stats.ChartPoint("2026-05-02", 87.38),
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun `given orders analytics stats payload missing metrics, when parsed, then blank order metrics remain`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    analyticsStatsPayload(
+                        id = ANALYTICS_STATS_ID,
+                        totals = buildJsonObject {},
+                        intervalSubtotals = listOf(
+                            buildJsonObject {
+                                put("interval", "2026-05-01")
+                                putJsonObject("subtotals") {}
+                            }
+                        ),
+                    )
+                )
+            )
+        )
+
+        val statsCard = cards.single() as AssistantCard.Stats
+        assertThat(statsCard.metrics).containsExactly(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "",
+                chartPoints = emptyList(),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "",
+                chartPoints = emptyList(),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "",
+                chartPoints = emptyList(),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "",
+                chartPoints = emptyList(),
+            ),
+        )
+    }
+
+    @Test
+    fun `given analytics stats payload with unified totals, when parsed, then four metrics are rendered`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    analyticsStatsPayload(
+                        id = ANALYTICS_STATS_ID,
+                        totals = buildJsonObject {
+                            put("total_sales", "170.35")
+                            put("net_revenue", "120.15")
+                            put("orders_count", "42")
+                            put("avg_order_value", "85.30")
+                        },
+                        intervalSubtotals = listOf(
+                            unifiedAnalyticsInterval("2026-05-01", "50.00", "35.00", "12", "80.10"),
+                        ),
+                    )
+                )
+            )
+        )
+
+        val statsCard = cards.single() as AssistantCard.Stats
+        assertThat(statsCard.id).isEqualTo(ANALYTICS_STATS_ID)
+        assertThat(statsCard.metrics.map { it.type }).containsExactly(
+            AssistantCard.Stats.MetricType.TotalSales,
+            AssistantCard.Stats.MetricType.NetSales,
+            AssistantCard.Stats.MetricType.TotalOrders,
+            AssistantCard.Stats.MetricType.AverageOrderValue,
+        )
+    }
+
+    @Test
+    fun `given analytics stats payload without order totals, when parsed, then missing unified metrics are blank`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    analyticsStatsPayload(
+                        id = ANALYTICS_STATS_ID,
+                        totals = buildJsonObject {
+                            put("total_sales", "170.35")
+                            put("net_revenue", "120.15")
+                        },
+                        intervalSubtotals = listOf(
+                            revenueOnlyInterval("2026-05-01", totalSales = "50.00", netRevenue = "35.00"),
+                        ),
+                    )
+                )
+            )
+        )
+
+        val statsCard = cards.single() as AssistantCard.Stats
+        assertThat(statsCard.metrics.map { it.type }).containsExactly(
+            AssistantCard.Stats.MetricType.TotalSales,
+            AssistantCard.Stats.MetricType.NetSales,
+            AssistantCard.Stats.MetricType.TotalOrders,
+            AssistantCard.Stats.MetricType.AverageOrderValue,
+        )
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEmpty()
+        assertThat(statsCard.metric(AssistantCard.Stats.MetricType.AverageOrderValue).value).isEmpty()
     }
 
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
@@ -339,10 +528,12 @@ class AssistantCardPayloadParserTest {
             put("total_sales", "170.35")
             put("gross_sales", "190.00")
             put("net_revenue", "120.15")
+            put("orders_count", "42")
+            put("avg_order_value", "85.30")
         },
         intervalSubtotals: List<JsonObject> = listOf(
-            analyticsInterval("2026-05-01", totalSales = "50.00", netRevenue = "35.00"),
-            analyticsInterval("2026-05-02", totalSales = "120.35", netRevenue = "85.15"),
+            unifiedAnalyticsInterval("2026-05-01", "50.00", "35.00", "12", "80.10"),
+            unifiedAnalyticsInterval("2026-05-02", "120.35", "85.15", "30", "87.38"),
         ),
     ) = ShowCardPayload(
         family = "analytics_stats",
@@ -373,6 +564,38 @@ class AssistantCardPayloadParserTest {
         }
     }
 
+    private fun unifiedAnalyticsInterval(
+        interval: String,
+        totalSales: Any?,
+        netRevenue: Any?,
+        ordersCount: Any?,
+        averageOrderValue: Any?,
+        dateStart: String? = "$interval 00:00:00",
+    ) = buildJsonObject {
+        put("interval", interval)
+        dateStart?.let { put("date_start", it) }
+        putJsonObject("subtotals") {
+            totalSales?.let { putAny("total_sales", it) }
+            netRevenue?.let { putAny("net_revenue", it) }
+            ordersCount?.let { putAny("orders_count", it) }
+            averageOrderValue?.let { putAny("avg_order_value", it) }
+        }
+    }
+
+    private fun revenueOnlyInterval(
+        interval: String,
+        totalSales: Any?,
+        netRevenue: Any?,
+        dateStart: String? = "$interval 00:00:00",
+    ) = buildJsonObject {
+        put("interval", interval)
+        dateStart?.let { put("date_start", it) }
+        putJsonObject("subtotals") {
+            totalSales?.let { putAny("total_sales", it) }
+            netRevenue?.let { putAny("net_revenue", it) }
+        }
+    }
+
     private fun JsonObjectBuilder.putAny(name: String, value: Any) {
         when (value) {
             is Number -> put(name, value)
@@ -384,6 +607,6 @@ class AssistantCardPayloadParserTest {
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

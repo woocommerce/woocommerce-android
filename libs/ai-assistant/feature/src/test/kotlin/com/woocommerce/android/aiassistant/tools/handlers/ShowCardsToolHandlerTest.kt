@@ -17,7 +17,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.add
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -56,9 +56,13 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString())
-            .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+            .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+        assertThat(descriptor.description).doesNotContain("analytics_revenue")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("analytics_revenue")
+        assertThat(descriptor.inputSchema.toString()).contains("card_id")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("\"cards\"")
     }
 
     @Test
@@ -146,6 +150,7 @@ class ShowCardsToolHandlerTest {
             "before",
             "currency",
             "totals",
+            "interval_subtotals",
         )
     }
 
@@ -159,6 +164,24 @@ class ShowCardsToolHandlerTest {
         val summary = firstResolvedSummary(result)
 
         assertThat(summary.keys).containsExactly("id", "name", "email")
+    }
+
+    @Test
+    fun `given analytics stats id, when executed, then ref validates and resolves`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(
+                analyticsStatsCard(id = ANALYTICS_STATS_ID),
+            ),
+            referencesJson = """
+                [
+                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }
+                ]
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(1)
+        assertThat(rejectedReasons(result)).isEmpty()
+        assertThat(resolvedIds(result)).containsExactly(ANALYTICS_STATS_ID)
     }
 
     @Test
@@ -186,7 +209,7 @@ class ShowCardsToolHandlerTest {
 
         val structuredText = assertSuccess(result).structured.toString()
 
-        assertThat(structuredText).doesNotContain("interval_subtotals")
+        assertThat(structuredText).contains("interval_subtotals")
         assertThat(structuredText).doesNotContain("private_total")
         assertThat(structuredText).doesNotContain("debug")
     }
@@ -263,7 +286,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.currency).isEqualTo("USD")
         assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
         assertThat(details.intervalSubtotals).hasSize(1)
-        assertThat(assertSuccess(result).structured.toString()).doesNotContain("interval_subtotals")
+        assertThat(assertSuccess(result).structured.toString()).contains("interval_subtotals")
     }
 
     @Test
@@ -343,15 +366,34 @@ class ShowCardsToolHandlerTest {
             {
               "references": [
                 { "family": "analytics_stats", "id": "analytics_revenue:2026-05-01:2026-05-07" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-07:before:2026-05-01:interval:day:currency:USD" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:bad:currency:USD" }
+                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-07:before:2026-05-01:interval:day" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:bad" }
               ]
             }
             """.trimIndent()
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id")
+    }
+
+    @Test
+    fun `given unknown analytics stats prefixes, when executed, then refs are rejected as invalid id`() = runTest {
+        val result = executeShowCards(
+            handler = handlerWith(FakeResolver.empty()),
+            argumentsJson = """
+            {
+              "references": [
+                { "family": "analytics_stats", "id": "analytics_products:after:2026-05-01:before:2026-05-07:interval:day" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none" }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id")
     }
 
     @Test
@@ -581,7 +623,7 @@ class ShowCardsToolHandlerTest {
                 put("stock_status", "instock")
                 put("description", "Long description")
                 put("html", "<p>Private</p>")
-                put("images", buildJsonArray { add("https://example.com/image.png") })
+                put("images", buildJsonArray { add(JsonPrimitive("https://example.com/image.png")) })
                 putJsonObject("metadata") {
                     put("private", "value")
                 }
@@ -704,6 +746,6 @@ class ShowCardsToolHandlerTest {
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }
