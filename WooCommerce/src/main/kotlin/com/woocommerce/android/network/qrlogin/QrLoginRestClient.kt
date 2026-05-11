@@ -307,9 +307,16 @@ class QrLoginRestClient @Inject constructor(
             "scanned" -> QrLoginSessionStatus.Scanned
             "approved" -> approvedOrFailClosed()
             "rejected" -> QrLoginSessionStatus.Rejected
+            "expired" -> QrLoginSessionStatus.Expired
             // Treat unknown states defensively as Expired so the UI shows a terminal screen
             // rather than spinning indefinitely on a state the app doesn't understand.
-            else -> QrLoginSessionStatus.Expired
+            else -> {
+                WooLog.w(
+                    WooLog.T.LOGIN,
+                    "$QR_LOGIN_UNKNOWN_SESSION_STATE_LOG_ID: ${state ?: "(missing)"}"
+                )
+                QrLoginSessionStatus.Expired
+            }
         }
 
         // Approved without a grant shouldn't be possible against a Task-7 server, but if
@@ -365,6 +372,7 @@ class QrLoginRestClient @Inject constructor(
         const val HTTP_CONFLICT = 409
         const val HTTP_UPGRADE_REQUIRED = 426
         const val QR_LOGIN_APPROVED_NO_GRANT_LOG_ID = "QR_LOGIN_APPROVED_NO_GRANT"
+        const val QR_LOGIN_UNKNOWN_SESSION_STATE_LOG_ID = "QR_LOGIN_UNKNOWN_SESSION_STATE"
         val POLL_CACHE_CONTROL = CacheControl.Builder()
             .noCache()
             .noStore()
