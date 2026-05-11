@@ -17,6 +17,7 @@ object WooPosAnalyticsEventConstant {
     enum class ItemsListItemType(val value: String) {
         PRODUCT("product"),
         COUPON("coupon"),
+        CUSTOM_AMOUNT("custom_amount"),
         LOADING("loading"),
         ERROR("error");
 

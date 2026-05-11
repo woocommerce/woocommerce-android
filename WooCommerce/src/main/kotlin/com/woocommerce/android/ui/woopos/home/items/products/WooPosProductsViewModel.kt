@@ -90,7 +90,8 @@ class WooPosProductsViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.ProductsRemoved,
-                    is ParentToChildrenEvent.SettingsEvent -> Unit
+                    is ParentToChildrenEvent.SettingsEvent,
+                    is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
                 }
             }
         }
@@ -104,6 +105,10 @@ class WooPosProductsViewModel @Inject constructor(
 
             is WooPosProductsUIEvent.ItemClicked -> {
                 handleItemClick(event)
+            }
+
+            WooPosProductsUIEvent.CustomAmountEntryRowClicked -> {
+                sendEventToParent(ChildToParentEvent.CustomAmountDialogRequested())
             }
 
             WooPosProductsUIEvent.PullToRefreshTriggered -> {

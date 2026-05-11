@@ -44,6 +44,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                     mutableCurrentBodyList[index] = updateCouponsWithFormattedDiscount(updatedCoupons, item)
                 }
 
+                is WooPosCartItemViewState.CustomAmount -> Unit
                 is WooPosCartItemViewState.Error -> error("unsupported item $item")
                 is WooPosCartItemViewState.Loading -> error("unsupported item $item")
             }

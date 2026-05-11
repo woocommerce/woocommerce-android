@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountDialog
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 
 @Composable
@@ -33,4 +34,10 @@ fun WooPosHomeDialogs(
             onConnectionSuccess = { onHomeUIEvent(WooPosHomeUIEvent.DismissCardReaderConnectionDialog) }
         )
     }
+
+    WooPosCustomAmountDialog(
+        isVisible = dialogState is WooPosHomeState.DialogState.CustomAmountDialog,
+        editing = (dialogState as? WooPosHomeState.DialogState.CustomAmountDialog)?.editing,
+        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.DismissCustomAmountDialog) },
+    )
 }

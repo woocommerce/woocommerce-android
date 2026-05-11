@@ -98,6 +98,12 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissCustomAmountDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
@@ -281,6 +287,25 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.ShowCardReaderConnectionDialog -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.CardReaderConnectionDialog
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountDialogRequested -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.CustomAmountDialog(editing = event.editing)
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountSubmitted -> {
+                        _state.value = _state.value.copy(dialogState = DialogState.Hidden)
+                        sendEventToChildren(
+                            ParentToChildrenEvent.CustomAmountSubmitted(
+                                customAmountId = event.customAmountId,
+                                name = event.name,
+                                amount = event.amount,
+                                isTaxable = event.isTaxable,
+                                editingItemNumber = event.editingItemNumber,
+                            )
                         )
                     }
 

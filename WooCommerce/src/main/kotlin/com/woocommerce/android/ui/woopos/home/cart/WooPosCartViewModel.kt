@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CustomAmountSubmitted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmptyCartSetUpScannerTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
@@ -53,6 +54,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
@@ -66,6 +68,7 @@ class WooPosCartViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
+    private val customAmountCartHandler: WooPosCustomAmountCartHandler,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val searchByIdentifier: WooPosSearchByIdentifier,
     private val wooPosLogWrapper: WooPosLogWrapper,
@@ -108,6 +111,10 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
                 removeItemsFromCart(setOf(event.item), WooPosAnalyticsEventConstant.CartSource.CART)
+            }
+
+            is WooPosCartUIEvent.EditCustomAmountClicked -> {
+                sendEventToParent(ChildToParentEvent.CustomAmountDialogRequested(editing = event.item))
             }
 
             WooPosCartUIEvent.BackClicked -> {
@@ -184,6 +191,12 @@ class WooPosCartViewModel @Inject constructor(
                 )
 
                 is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
+                is WooPosCartItemViewState.CustomAmount -> WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                    id = it.customAmountId,
+                    name = it.name,
+                    amount = it.amount,
+                    isTaxable = it.isTaxable,
+                )
                 is WooPosCartItemViewState.Loading -> null
                 is WooPosCartItemViewState.Error -> null
             }
@@ -239,7 +252,35 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.ProductsRemoved -> Unit
+
+                    is ParentToChildrenEvent.CustomAmountSubmitted -> handleCustomAmountSubmitted(event)
                 }
+            }
+        }
+    }
+
+    private suspend fun handleCustomAmountSubmitted(event: ParentToChildrenEvent.CustomAmountSubmitted) {
+        val result = customAmountCartHandler.applySubmittedToCart(
+            currentBody = _state.value.body,
+            event = event,
+            nextItemNumber = { getItemNumber() },
+        )
+        when (result) {
+            is WooPosCustomAmountCartHandler.SubmittedResult.Edited -> {
+                val currentBody = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+                _state.value = _state.value.copy(body = currentBody.copy(itemsInCart = result.updatedItems))
+                analyticsTracker.track(
+                    CustomAmountSubmitted(CustomAmountSubmitted.Mode.EDIT, event.isTaxable)
+                )
+            }
+
+            is WooPosCustomAmountCartHandler.SubmittedResult.Added -> {
+                handleNewTransactionIfNeeded()
+                updateCartItem(result.newItem)
+                analyticsTracker.track(
+                    CustomAmountSubmitted(CustomAmountSubmitted.Mode.ADD, event.isTaxable)
+                )
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = result.newItem))
             }
         }
     }
@@ -357,6 +398,8 @@ class WooPosCartViewModel @Inject constructor(
                         handleCouponClicked(event.itemData.id)
 
                     is WooPosItemsViewModel.ItemClickedData.VariableProduct -> null
+
+                    is WooPosItemsViewModel.ItemClickedData.CustomAmount -> null
                 }
             }
 
@@ -521,21 +564,27 @@ class WooPosCartViewModel @Inject constructor(
         currentState: WooPosCartState.Body.WithItems,
         newItem: WooPosCartItemViewState
     ): List<WooPosCartItemViewState> {
-        val (existingCoupons, existingProducts) = currentState.itemsInCart
-            .partition { it is WooPosCartItemViewState.Coupon }
+        val existingCoupons = currentState.itemsInCart.filterIsInstance<WooPosCartItemViewState.Coupon>()
+        val existingCustomAmounts = currentState.itemsInCart.filterIsInstance<WooPosCartItemViewState.CustomAmount>()
+        val existingOther = currentState.itemsInCart.filterNot {
+            it is WooPosCartItemViewState.Coupon || it is WooPosCartItemViewState.CustomAmount
+        }
 
-        return if (newItem is WooPosCartItemViewState.Coupon) {
-            val couponAlreadyInCart = existingCoupons.any {
-                (it as WooPosCartItemViewState.Coupon).id == newItem.id
+        return when (newItem) {
+            is WooPosCartItemViewState.Coupon -> {
+                val couponAlreadyInCart = existingCoupons.any { it.id == newItem.id }
+                if (couponAlreadyInCart) {
+                    currentState.itemsInCart
+                } else {
+                    listOf(newItem) + existingCoupons + existingCustomAmounts + existingOther
+                }
             }
 
-            if (couponAlreadyInCart) {
-                currentState.itemsInCart
-            } else {
-                listOf(newItem) + existingCoupons + existingProducts
+            is WooPosCartItemViewState.CustomAmount -> {
+                existingCoupons + listOf(newItem) + existingCustomAmounts + existingOther
             }
-        } else {
-            existingCoupons + listOf(newItem) + existingProducts
+
+            else -> existingCoupons + existingCustomAmounts + listOf(newItem) + existingOther
         }
     }
 
@@ -621,6 +670,7 @@ class WooPosCartViewModel @Inject constructor(
             when (item) {
                 is WooPosCartItemViewState.Coupon -> item.copy(validationState = CouponValidationState.Unknown)
                 is Product -> item
+                is WooPosCartItemViewState.CustomAmount -> item
                 is WooPosCartItemViewState.Error -> item
                 is WooPosCartItemViewState.Loading -> item
             }
@@ -653,7 +703,7 @@ class WooPosCartViewModel @Inject constructor(
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
 
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
-        body.itemsInCart.filterIsInstance<Product>().isNotEmpty()
+        body.itemsInCart.any { it is Product || it is WooPosCartItemViewState.CustomAmount }
 
     private fun cartContainsLoadingOrErrorItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.any { it is WooPosCartItemViewState.Loading || it is WooPosCartItemViewState.Error }

@@ -303,6 +303,13 @@ private fun CartBodyWithItems(
                     onUIEvent = onUIEvent,
                 )
 
+                is WooPosCartItemViewState.CustomAmount -> CustomAmountItem(
+                    modifier = Modifier.animateItem(),
+                    item = item,
+                    canRemoveItems = areItemsRemovable,
+                    onUIEvent = onUIEvent,
+                )
+
                 is WooPosCartItemViewState.Error -> ErrorItem(
                     modifier = Modifier.animateItem(),
                     item = item,
@@ -722,6 +729,116 @@ private fun CouponItem(
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
+    }
+}
+
+@Composable
+private fun CustomAmountItem(
+    modifier: Modifier = Modifier,
+    item: WooPosCartItemViewState.CustomAmount,
+    canRemoveItems: Boolean,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_custom_amount_content_description,
+        item.name,
+        item.formattedAmount,
+    )
+
+    WooPosCard(
+        modifier = modifier
+            .wrapContentHeight()
+            .semantics { contentDescription = itemContentDescription },
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+    ) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .width(WooPosComponentSize.Medium.value)
+                    .fillMaxHeight()
+                    .heightIn(min = WooPosComponentSize.Medium.value),
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
+                    modifier = Modifier.size(36.dp.toAdaptiveIconSize()),
+                )
+            }
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .padding(vertical = WooPosSpacing.Medium.value),
+            ) {
+                WooPosText(
+                    text = item.name,
+                    maxLines = 1,
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clearAndSetSemantics { },
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosText(
+                    text = item.formattedAmount,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    modifier = Modifier.clearAndSetSemantics { },
+                )
+                if (item.isTaxable) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.onSurfaceVariantLowest,
+                        modifier = Modifier.clearAndSetSemantics { },
+                    )
+                }
+            }
+
+            if (canRemoveItems) {
+                EditCustomAmountButton(item = item, onUIEvent = onUIEvent)
+                RemoveItemFromCartButton(item, onUIEvent)
+            }
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+        }
+    }
+}
+
+@Composable
+private fun EditCustomAmountButton(
+    item: WooPosCartItemViewState.CustomAmount,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    val editButtonContentDescription = stringResource(
+        id = R.string.woopos_cart_custom_amount_edit_content_description,
+        item.name,
+    )
+    IconButton(
+        onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
+        modifier = Modifier
+            .size(WooPosIconSize.XLarge.value)
+            .semantics { contentDescription = editButtonContentDescription },
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
+            tint = WooPosTheme.colors.onSurfaceVariantHighest,
+            contentDescription = null,
+        )
     }
 }
 
