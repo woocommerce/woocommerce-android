@@ -421,49 +421,7 @@ class AgenticLoopAssistantRuntimeTest {
 
             assertThat(events.cardEvents()).containsExactly(
                 AssistantRuntimeEvent.CardsResolved(
-                    listOf(
-                        AssistantCard.Stats(
-                            id = ANALYTICS_STATS_ID,
-                            kind = AssistantCard.Stats.Kind.Revenue,
-                            after = "2026-05-01",
-                            before = "2026-05-03",
-                            currency = "USD",
-                            metrics = listOf(
-                                AssistantCard.Stats.Metric(
-                                    type = AssistantCard.Stats.MetricType.TotalSales,
-                                    value = "170.35",
-                                    chartPoints = listOf(
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
-                                    ),
-                                ),
-                                AssistantCard.Stats.Metric(
-                                    type = AssistantCard.Stats.MetricType.NetSales,
-                                    value = "120.15",
-                                    chartPoints = listOf(
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
-                                    ),
-                                ),
-                                AssistantCard.Stats.Metric(
-                                    type = AssistantCard.Stats.MetricType.TotalOrders,
-                                    value = "42",
-                                    chartPoints = listOf(
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 12.0),
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 30.0),
-                                    ),
-                                ),
-                                AssistantCard.Stats.Metric(
-                                    type = AssistantCard.Stats.MetricType.AverageOrderValue,
-                                    value = "85.30",
-                                    chartPoints = listOf(
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10),
-                                        AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 87.38),
-                                    ),
-                                ),
-                            ),
-                        )
-                    )
+                    listOf(expectedLegacyAnalyticsStatsCard())
                 )
             )
         }
@@ -817,6 +775,48 @@ class AgenticLoopAssistantRuntimeTest {
         currency = "USD",
         customerName = "Jane Doe",
         date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun expectedLegacyAnalyticsStatsCard() = AssistantCard.Stats(
+        id = ANALYTICS_STATS_ID,
+        kind = AssistantCard.Stats.Kind.Revenue,
+        after = "2026-05-01",
+        before = "2026-05-03",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 12.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 30.0),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 87.38),
+                ),
+            ),
+        ),
     )
 
     private fun List<AssistantRuntimeEvent>.cardEvents() =

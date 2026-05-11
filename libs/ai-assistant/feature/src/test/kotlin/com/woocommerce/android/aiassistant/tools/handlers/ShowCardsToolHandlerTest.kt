@@ -17,8 +17,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.add
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -564,11 +563,6 @@ class ShowCardsToolHandlerTest {
             .getValue("resolved_refs").jsonArray
             .map { ref -> ref.jsonObject.getValue("id").jsonPrimitive.content }
 
-    private fun resolvedSummaries(result: ToolResult): List<JsonObject> =
-        assertSuccess(result).structured.jsonObject
-            .getValue("resolved_refs").jsonArray
-            .map { ref -> ref.jsonObject.getValue("summary").jsonObject }
-
     private fun uiCards(result: ToolResult) =
         requireNotNull(assertSuccess(result).uiStructured).jsonObject.getValue("cards").jsonArray
 
@@ -658,7 +652,7 @@ class ShowCardsToolHandlerTest {
                 put("stock_status", "instock")
                 put("description", "Long description")
                 put("html", "<p>Private</p>")
-                put("images", buildJsonArray { add("https://example.com/image.png") })
+                put("images", buildJsonArray { add(JsonPrimitive("https://example.com/image.png")) })
                 putJsonObject("metadata") {
                     put("private", "value")
                 }
