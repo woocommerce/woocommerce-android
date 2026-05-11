@@ -49,6 +49,7 @@ class QrLoginScannerFragment : Fragment() {
         fun onQrLoginCompleted(localSiteId: Int)
         fun onQrLoginFallbackClicked()
         fun onQrLoginSiteUrlPrefill(siteUrl: String)
+        fun onQrLoginSiteCredentials(siteUrl: String, username: String)
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -174,6 +175,8 @@ class QrLoginScannerFragment : Fragment() {
                     openWpComMagicLinkUrl(event.url)
                 is QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry ->
                     routeToSiteAddressEntry(event.siteUrl)
+                is QrLoginScannerViewModel.Dispatch.RouteToSiteCredentialsEntry ->
+                    routeToSiteCredentialsEntry(event.siteUrl, event.username)
             }
         }
     }
@@ -241,5 +244,12 @@ class QrLoginScannerFragment : Fragment() {
         requireNotNull(listener) {
             "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
         }.onQrLoginSiteUrlPrefill(siteUrl)
+    }
+
+    private fun routeToSiteCredentialsEntry(siteUrl: String, username: String) {
+        scannerViewModel.stopCodesRecognition()
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginSiteCredentials(siteUrl, username)
     }
 }

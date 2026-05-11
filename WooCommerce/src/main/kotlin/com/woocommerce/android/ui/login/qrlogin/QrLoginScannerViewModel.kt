@@ -107,6 +107,9 @@ class QrLoginScannerViewModel @Inject constructor(
             is QrLoginPayload.SiteUrl -> handleHandoff(
                 PendingHandoff.SiteUrlPrefill(siteUrl = payload.siteUrl)
             )
+            is QrLoginPayload.AppLogin -> handleHandoff(
+                PendingHandoff.AppLogin(siteUrl = payload.siteUrl, username = payload.username)
+            )
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
@@ -127,10 +130,9 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     /**
-     * Gate every QR hand-off (ticket / wp.com magic link / site-URL prefill) on the user being
-     * signed out. If a session is already active we surface a confirmation screen first; the
-     * user must opt in to replacing it before we run [AccountRepository.logout] and resume the
-     * original action.
+     * Gate every QR hand-off on the user being signed out. If a session is already active we
+     * surface a confirmation screen first; the user must opt in to replacing it before we run
+     * [AccountRepository.logout] and resume the original action.
      */
     private fun handleHandoff(pending: PendingHandoff) {
         if (accountRepository.isUserLoggedIn()) {
@@ -160,6 +162,16 @@ class QrLoginScannerViewModel @Inject constructor(
                 loggedIn = true
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
                 triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = pending.siteUrl))
+            }
+            is PendingHandoff.AppLogin -> {
+                loggedIn = true
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+                triggerEvent(
+                    Dispatch.RouteToSiteCredentialsEntry(
+                        siteUrl = pending.siteUrl,
+                        username = pending.username
+                    )
+                )
             }
         }
     }
@@ -507,6 +519,8 @@ class QrLoginScannerViewModel @Inject constructor(
          * [siteUrl] prefilled and validation auto-started.
          */
         data class RouteToSiteAddressEntry(val siteUrl: String) : Dispatch()
+
+        data class RouteToSiteCredentialsEntry(val siteUrl: String, val username: String) : Dispatch()
     }
 
     sealed interface UiState {
@@ -536,6 +550,7 @@ class QrLoginScannerViewModel @Inject constructor(
         data class Ticket(val ticket: QrLoginPayload.Ticket, val host: String) : PendingHandoff
         data class WpComMagicLink(val url: String) : PendingHandoff
         data class SiteUrlPrefill(val siteUrl: String) : PendingHandoff
+        data class AppLogin(val siteUrl: String, val username: String) : PendingHandoff
     }
 
     enum class AuthPhase {

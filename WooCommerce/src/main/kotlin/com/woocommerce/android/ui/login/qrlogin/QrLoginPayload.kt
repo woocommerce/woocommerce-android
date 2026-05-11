@@ -9,6 +9,12 @@ package com.woocommerce.android.ui.login.qrlogin
  * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
  * ```
  *
+ * The scanner also accepts the legacy wc-admin credentials QR:
+ *
+ * ```
+ * woocommerce://app-login?siteUrl=<URL-encoded site URL>&username=<URL-encoded username>
+ * ```
+ *
  * The [Ticket.token] is a single-use 5-minute bearer ticket — not a credential. The app exchanges
  * it for an Application Password by POSTing to
  * `{siteUrl}/wp-json/wc-admin/mobile-app/qr-login-exchange`.
@@ -42,6 +48,11 @@ sealed interface QrLoginPayload {
      * with no manual typing.
      */
     data class SiteUrl(val siteUrl: String) : QrLoginPayload
+
+    data class AppLogin(
+        val siteUrl: String,
+        val username: String
+    ) : QrLoginPayload
 
     data object Invalid : QrLoginPayload
 }

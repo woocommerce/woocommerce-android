@@ -320,6 +320,16 @@ class LoginActivity :
         loginViaSiteAddress(prefilledSiteUrl = siteUrl)
     }
 
+    override fun onQrLoginSiteCredentials(siteUrl: String, username: String) {
+        disableDynamicEdgeToEdge()
+        showUsernamePasswordScreen(
+            siteAddress = siteUrl,
+            inputUsername = username,
+            endpointAddress = null,
+            inputPassword = null
+        )
+    }
+
     private fun hasJetpackConnectedIntent(): Boolean {
         val action = intent.action
         val uri = intent.data

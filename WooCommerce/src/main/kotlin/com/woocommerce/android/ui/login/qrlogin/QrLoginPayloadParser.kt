@@ -13,12 +13,18 @@ import javax.inject.Inject
  * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
  * ```
  *
+ * Also accepts the legacy wc-admin credentials QR
+ * (`woocommerce://app-login?siteUrl=…&username=…`) and routes it to the existing site
+ * credentials flow instead of treating it as an invalid QR.
+ *
  * The same deeplink shape is also used as a "site-URL only" QR — when `token` is missing or
  * blank, the payload becomes [QrLoginPayload.SiteUrl] and the scanner routes the merchant to
  * the site-address login screen with the URL prefilled instead of attempting an exchange.
  *
- * Anything malformed, missing parameters, with the wrong scheme/host, or with a non-https
- * `siteUrl` returns [QrLoginPayload.Invalid]. The parser does not validate the token format
+ * Anything malformed, missing parameters, or with the wrong scheme/host returns
+ * [QrLoginPayload.Invalid]. New QR-login payloads require an https `siteUrl`; legacy app-login
+ * payloads accept http or https because they hand off to the existing credentials flow instead of
+ * exchanging a bearer ticket. The parser does not validate the token format
  * beyond non-blank — that's the server's job during exchange. `siteUrl` is parsed via OkHttp's
  * [okhttp3.HttpUrl] and rejected if it carries userinfo, query, or fragment components — those
  * have no role in a Woo site root and are classic spoofing surfaces in the confirmation prompt.
@@ -32,6 +38,7 @@ class QrLoginPayloadParser @Inject constructor() {
     fun parse(raw: String?): QrLoginPayload {
         parseWpComMagicLinkUrl(raw)?.let { return it }
         if (looksLikeInstallQr(raw)) return QrLoginPayload.InstallQrCode
+        parseAppLoginDeeplink(raw)?.let { return it }
         return parseQrLoginDeeplink(raw) ?: QrLoginPayload.Invalid
     }
 
@@ -59,7 +66,7 @@ class QrLoginPayloadParser @Inject constructor() {
      * `siteUrl` validation is identical in both branches.
      */
     private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
-        val uri = parseDeepLink(raw) ?: return null
+        val uri = parseDeepLink(raw, QR_LOGIN_HOST) ?: return null
         val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return null
         val token = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
         return if (token != null) {
@@ -67,6 +74,13 @@ class QrLoginPayloadParser @Inject constructor() {
         } else {
             QrLoginPayload.SiteUrl(siteUrl = siteUrl)
         }
+    }
+
+    private fun parseAppLoginDeeplink(raw: String?): QrLoginPayload.AppLogin? {
+        val uri = parseDeepLink(raw, APP_LOGIN_HOST) ?: return null
+        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeLoginSiteUrl) ?: return null
+        val username = uri.queryParam(PARAM_USERNAME)?.takeIf { it.isNotBlank() } ?: return null
+        return QrLoginPayload.AppLogin(siteUrl = siteUrl, username = username)
     }
 
     /**
@@ -84,7 +98,7 @@ class QrLoginPayloadParser @Inject constructor() {
         return pathSegments.firstOrNull()?.equals(INSTALL_QR_PATH_FIRST_SEGMENT, ignoreCase = true) == true
     }
 
-    private fun parseDeepLink(raw: String?): URI? {
+    private fun parseDeepLink(raw: String?, expectedHost: String): URI? {
         val trimmed = raw?.trim().orEmpty().takeIf { it.isNotEmpty() } ?: return null
         val uri = try {
             URI(trimmed)
@@ -92,7 +106,7 @@ class QrLoginPayloadParser @Inject constructor() {
             return null
         }
         val schemeMatches = uri.scheme.equals(SCHEME, ignoreCase = true)
-        val hostMatches = uri.host?.equals(HOST, ignoreCase = true) == true
+        val hostMatches = uri.host?.equals(expectedHost, ignoreCase = true) == true
         val pathAllowed = uri.rawPath.isNullOrEmpty() || uri.rawPath == "/"
         return uri.takeIf { schemeMatches && hostMatches && pathAllowed }
     }
@@ -121,11 +135,22 @@ class QrLoginPayloadParser @Inject constructor() {
         return parsed.newBuilder().build().toString().trimEnd('/')
     }
 
+    private fun normalizeLoginSiteUrl(raw: String): String? {
+        if (raw.isBlank()) return null
+        val parsed = raw.toHttpUrlOrNull()?.takeIf { it.scheme == "https" || it.scheme == "http" } ?: return null
+        val hasUserInfo = parsed.username.isNotEmpty() || parsed.password.isNotEmpty()
+        val hasQueryOrFragment = parsed.querySize > 0 || parsed.fragment != null
+        if (hasUserInfo || hasQueryOrFragment) return null
+        return parsed.newBuilder().build().toString().trimEnd('/')
+    }
+
     private companion object {
         const val SCHEME = "woocommerce"
-        const val HOST = "qr-login"
+        const val QR_LOGIN_HOST = "qr-login"
+        const val APP_LOGIN_HOST = "app-login"
         const val PARAM_TOKEN = "token"
         const val PARAM_SITE_URL = "siteUrl"
+        const val PARAM_USERNAME = "username"
         const val PARAM_ACTION = "action"
         const val PARAM_SCHEME = "scheme"
         const val HTTPS_PREFIX = "https://"

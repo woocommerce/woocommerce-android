@@ -644,6 +644,23 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given legacy app login payload, when scan succeeds, then emits RouteToSiteCredentialsEntry`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.AppLogin(SITE_URL, USERNAME))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RouteToSiteCredentialsEntry(
+                    siteUrl = SITE_URL,
+                    username = USERNAME
+                )
+            )
+            verify(restClient, never()).scan(any(), any())
+        }
+
+    @Test
     fun `given site url payload, when scan succeeds, then does not track LOGIN_QR_SCAN_FAILED or LOGIN_QR_SUCCESS`() =
         testBlocking {
             whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
@@ -701,6 +718,23 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             assertThat(viewModel.uiState.value).isEqualTo(
                 QrLoginScannerViewModel.UiState.WarningSessionReplace(
                     QrLoginScannerViewModel.PendingHandoff.SiteUrlPrefill(siteUrl = SITE_URL)
+                )
+            )
+            assertThat(events).isEmpty()
+        }
+
+    @Test
+    fun `given logged in and legacy app login payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.AppLogin(SITE_URL, USERNAME))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(viewModel.uiState.value).isEqualTo(
+                QrLoginScannerViewModel.UiState.WarningSessionReplace(
+                    QrLoginScannerViewModel.PendingHandoff.AppLogin(siteUrl = SITE_URL, username = USERNAME)
                 )
             )
             assertThat(events).isEmpty()
@@ -785,6 +819,26 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given warning for legacy app login, when confirmed, then logs out and emits RouteToSiteCredentialsEntry`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.AppLogin(SITE_URL, USERNAME))
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+
+            viewModel.onConfirmSessionReplace()
+
+            verify(accountRepository).logout()
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RouteToSiteCredentialsEntry(
+                    siteUrl = SITE_URL,
+                    username = USERNAME
+                )
+            )
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+        }
+
+    @Test
     fun `given warning, when confirmed, then tracks LOGIN_QR_SESSION_REPLACE_CONFIRMED`() = testBlocking {
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         viewModel.onScanResult(successScan())
@@ -857,6 +911,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         const val WP_COM_URL =
             "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
         const val SITE_URL = "https://store.example.com"
+        const val USERNAME = "admin"
         const val POLL_TICK_MS = 2_000L
     }
 }

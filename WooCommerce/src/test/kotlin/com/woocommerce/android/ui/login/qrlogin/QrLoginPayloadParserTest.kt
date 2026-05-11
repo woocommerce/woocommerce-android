@@ -41,6 +41,24 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given legacy app login deep link, when parsed, then returns AppLogin`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example&username=admin"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.AppLogin(siteUrl = "https://store.example", username = "admin")
+        )
+    }
+
+    @Test
+    fun `given legacy app login deep link without username, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
     fun `given prefix but no query, when parsed, then returns Invalid`() {
         assertThat(parser.parse("woocommerce://qr-login")).isEqualTo(QrLoginPayload.Invalid)
         assertThat(parser.parse("woocommerce://qr-login/")).isEqualTo(QrLoginPayload.Invalid)
