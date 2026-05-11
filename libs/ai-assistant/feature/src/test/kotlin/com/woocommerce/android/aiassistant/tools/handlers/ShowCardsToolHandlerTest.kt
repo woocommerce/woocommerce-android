@@ -120,6 +120,15 @@ class ShowCardsToolHandlerTest {
             "line_items_count",
             "line_items",
         )
+        assertThat(summary.getValue("id").jsonPrimitive.content).isEqualTo("123")
+        assertThat(summary.getValue("number").jsonPrimitive.content).isEqualTo("#123")
+        assertThat(summary.getValue("status").jsonPrimitive.content).isEqualTo("processing")
+        assertThat(summary.getValue("total").jsonPrimitive.content).isEqualTo("12.34")
+        assertThat(summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        assertThat(summary.getValue("payment_method_title").jsonPrimitive.content).isEqualTo("Credit Card")
+        assertThat(summary.getValue("customer_id").jsonPrimitive.content).isEqualTo("55")
+        assertThat(summary.getValue("line_items_count").jsonPrimitive.content).isEqualTo("1")
+        assertThat(summary.getValue("line_items").jsonArray).hasSize(1)
     }
 
     @Test
@@ -142,6 +151,15 @@ class ShowCardsToolHandlerTest {
             "on_sale",
             "stock_quantity",
         )
+        assertThat(summary.getValue("id").jsonPrimitive.content).isEqualTo("456")
+        assertThat(summary.getValue("name").jsonPrimitive.content).isEqualTo("Socks")
+        assertThat(summary.getValue("sku").jsonPrimitive.content).isEqualTo("woo-socks")
+        assertThat(summary.getValue("price").jsonPrimitive.content).isEqualTo("9.99")
+        assertThat(summary.getValue("type").jsonPrimitive.content).isEqualTo("simple")
+        assertThat(summary.getValue("stock_status").jsonPrimitive.content).isEqualTo("instock")
+        assertThat(summary.getValue("manage_stock").jsonPrimitive.boolean).isTrue
+        assertThat(summary.getValue("on_sale").jsonPrimitive.boolean).isFalse
+        assertThat(summary.getValue("stock_quantity").jsonPrimitive.double).isEqualTo(12.0)
     }
 
     @Test
