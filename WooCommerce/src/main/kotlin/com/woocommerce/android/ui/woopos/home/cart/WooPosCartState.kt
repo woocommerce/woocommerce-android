@@ -109,7 +109,6 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
     data class CustomAmount(
         override val itemNumber: Int,
         override val name: String,
-        val customAmountId: Long,
         val amount: BigDecimal,
         val formattedAmount: String,
         val isTaxable: Boolean,

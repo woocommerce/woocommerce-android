@@ -52,7 +52,6 @@ class WooPosCustomAmountCartHandler @Inject constructor(
         WooPosCartItemViewState.CustomAmount(
             itemNumber = nextItemNumber(),
             name = event.name,
-            customAmountId = event.customAmountId,
             amount = event.amount,
             formattedAmount = formattedAmount,
             isTaxable = event.isTaxable,

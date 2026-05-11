@@ -61,7 +61,6 @@ sealed class ChildToParentEvent {
     ) : ChildToParentEvent()
 
     data class CustomAmountSubmitted(
-        val customAmountId: Long,
         val name: String,
         val amount: BigDecimal,
         val isTaxable: Boolean,

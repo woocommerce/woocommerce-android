@@ -192,7 +192,7 @@ class WooPosCartViewModel @Inject constructor(
 
                 is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
                 is WooPosCartItemViewState.CustomAmount -> WooPosItemsViewModel.ItemClickedData.CustomAmount(
-                    id = it.customAmountId,
+                    id = it.itemNumber.toLong(),
                     name = it.name,
                     amount = it.amount,
                     isTaxable = it.isTaxable,

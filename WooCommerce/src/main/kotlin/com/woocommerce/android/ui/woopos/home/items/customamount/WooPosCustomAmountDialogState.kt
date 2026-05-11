@@ -11,6 +11,7 @@ data class WooPosCustomAmountDialogState(
     val amount: BigDecimal? = null,
     val name: String = "",
     val isTaxable: Boolean = false,
+    val isSubmitting: Boolean = false,
     val currencySymbol: String = "",
     val currencyPosition: CurrencyPosition = CurrencyPosition.LEFT,
     val decimalSeparator: String = ".",
@@ -18,7 +19,7 @@ data class WooPosCustomAmountDialogState(
 ) : Parcelable {
 
     val isSubmitEnabled: Boolean
-        get() = amount != null && amount > BigDecimal.ZERO
+        get() = amount != null && amount > BigDecimal.ZERO && !isSubmitting
 
     @Parcelize
     sealed class Mode : Parcelable {
@@ -28,7 +29,6 @@ data class WooPosCustomAmountDialogState(
         @Parcelize
         data class Edit(
             val itemNumber: Int,
-            val customAmountId: Long,
         ) : Mode()
     }
 }

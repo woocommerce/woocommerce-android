@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +33,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
+import java.math.BigDecimal
 
 @Composable
 fun WooPosCustomAmountDialog(
@@ -45,19 +45,21 @@ fun WooPosCustomAmountDialog(
     LaunchedEffect(isVisible, editing?.itemNumber) {
         if (isVisible) {
             viewModel.initializeFor(editing)
-        }
-    }
-    DisposableEffect(isVisible) {
-        onDispose {
-            if (!isVisible) viewModel.onDismissed()
+        } else {
+            viewModel.onDismissed()
         }
     }
 
     val state by viewModel.state.collectAsState()
 
+    val dialogTitleRes = when (state.mode) {
+        is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_title_edit
+        WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_title_add
+    }
+
     WooPosDialogWrapper(
         isVisible = isVisible,
-        dialogBackgroundContentDescription = stringResource(R.string.woopos_custom_amount_dialog_title_add),
+        dialogBackgroundContentDescription = stringResource(dialogTitleRes),
         onCloseClick = onDismissRequest,
         onDismissRequest = onDismissRequest,
     ) {
@@ -65,12 +67,8 @@ fun WooPosCustomAmountDialog(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         ) {
-            val titleRes = when (state.mode) {
-                is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_title_edit
-                WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_title_add
-            }
             WooPosText(
-                text = stringResource(titleRes),
+                text = stringResource(dialogTitleRes),
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
             )
@@ -106,7 +104,7 @@ fun WooPosCustomAmountDialog(
 @Composable
 private fun AmountSection(
     state: WooPosCustomAmountDialogState,
-    onAmountChanged: (java.math.BigDecimal?) -> Unit,
+    onAmountChanged: (BigDecimal?) -> Unit,
 ) {
     Column {
         WooPosText(

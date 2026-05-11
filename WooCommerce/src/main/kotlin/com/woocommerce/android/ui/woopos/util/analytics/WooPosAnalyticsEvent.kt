@@ -124,7 +124,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val mode: Mode,
             val isTaxable: Boolean,
         ) : Event() {
-            override val name: String = "pos_custom_amount_submitted"
+            override val name: String = "custom_amount_submitted"
 
             init {
                 addProperties(
