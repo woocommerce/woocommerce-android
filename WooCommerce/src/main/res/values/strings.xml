@@ -3709,6 +3709,7 @@
     <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
     <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
     <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Custom amount</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
