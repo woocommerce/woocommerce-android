@@ -166,7 +166,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         result.onSuccess { savedOrderPreferences = orderPreferences }
             .onFailure {
                 if (!hasNewerOrderPreferences) {
-                    _viewState.update { savedOrderPreferences.toViewState(it) }
+                    _viewState.update { it.copyWith(savedOrderPreferences) }
                     showUpdateError(orderPreferences)
                 }
             }
@@ -178,14 +178,14 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
                 message = resourceProvider.getString(R.string.settings_notifs_error_update),
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
-                _viewState.update { orderPreferences.toViewState(it) }
+                _viewState.update { it.copyWith(orderPreferences) }
                 saveOrderPreferencesTrigger.tryEmit(0L)
             }
         )
     }
 
     private fun applyOrderPreferences(orderPreferences: StoreOrderPreferences) {
-        val updatedViewState = orderPreferences.toViewState(_viewState.value)
+        val updatedViewState = _viewState.value.copyWith(orderPreferences)
         savedOrderPreferences = updatedViewState.toStoreOrderPreferences()
         _viewState.value = updatedViewState
     }
@@ -193,15 +193,15 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     private fun hasUnsavedOrderPreferences(orderPreferences: StoreOrderPreferences) =
         orderPreferences != savedOrderPreferences
 
-    private fun StoreOrderPreferences.toViewState(current: ViewState): ViewState =
-        current.copy(
-            notificationsEnabled = enabled ?: current.notificationsEnabled,
-            notificationPreference = if (minAmount == null) {
+    private fun ViewState.copyWith(orderPreferences: StoreOrderPreferences): ViewState =
+        copy(
+            notificationsEnabled = orderPreferences.enabled ?: notificationsEnabled,
+            notificationPreference = if (orderPreferences.minAmount == null) {
                 NotificationPreference.AllOrders
             } else {
                 NotificationPreference.HighValueOrders
             },
-            thresholdAmount = minAmount ?: current.thresholdAmount
+            thresholdAmount = orderPreferences.minAmount ?: thresholdAmount
         )
 
     private fun ViewState.toStoreOrderPreferences() = StoreOrderPreferences(
