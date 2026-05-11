@@ -105,8 +105,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             the merchant which day or window they meant when their wording already named one.
             For analytics requests, the grouping phrase controls `interval`; the time phrase controls `after`
             and `before`. For example, "revenue by day this month" means interval day with this-month
-            after/before dates, not interval month. Aggregate sales, revenue, and order metric questions should
-            use analytics tools, not row counts from list tools.
+            after/before dates, not interval month. Aggregate sales, revenue, order count, and average order
+            value questions should use analytics_orders, not row counts from list tools.
 
             # Tools
 

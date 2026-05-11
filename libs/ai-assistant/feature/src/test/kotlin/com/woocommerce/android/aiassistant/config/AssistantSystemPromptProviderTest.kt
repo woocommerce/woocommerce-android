@@ -54,9 +54,10 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("\"revenue by day this month\" means interval day")
         assertThat(prompt).contains("with this-month")
         assertThat(prompt).contains("after/before dates")
-        assertThat(prompt).contains("Aggregate sales, revenue, and order metric questions should")
-        assertThat(prompt).contains("use analytics tools")
+        assertThat(prompt).contains("Aggregate sales, revenue, order count, and average order")
+        assertThat(prompt).contains("value questions should use analytics_orders")
         assertThat(prompt).contains("not row counts from list tools")
+        assertThat(prompt).doesNotContain("use analytics tools")
     }
 
     @Test
