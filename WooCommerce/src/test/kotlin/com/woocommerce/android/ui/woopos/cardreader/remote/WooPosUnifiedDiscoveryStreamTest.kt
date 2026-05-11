@@ -112,12 +112,10 @@ class WooPosUnifiedDiscoveryStreamTest {
                     WooPosPhoneDiscoveryEvent.Removed("woopos-remote-a3f4"),
                 )
             )
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
             val sut = WooPosUnifiedDiscoveryStream(
                 cardReaderManager,
                 remoteDiscovery,
                 simulatedRemoteDiscovery,
-                featureFlagRepository,
                 selectedSite,
                 logger,
             )
