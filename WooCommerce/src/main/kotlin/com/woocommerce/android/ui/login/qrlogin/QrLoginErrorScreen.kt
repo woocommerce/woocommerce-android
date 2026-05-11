@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +49,39 @@ fun QrLoginErrorScreen(
             .systemBarsPadding()
             .padding(horizontal = dimensionResource(id = R.dimen.major_150)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    ) {
+        // Content scrolls so the primary / secondary buttons stay visible in landscape on phones,
+        // with large system fonts, or with longer translated copy where the static layout would
+        // otherwise push them off the bottom edge.
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Content(title = title, body = body, bodyArgs = bodyArgs)
+        }
+        Buttons(
+            primaryActionLabel = primaryActionLabel,
+            secondaryActionLabel = secondaryActionLabel,
+            onPrimaryClicked = onPrimaryClicked,
+            onSecondaryClicked = onSecondaryClicked,
+        )
+    }
+}
+
+@Composable
+private fun Content(
+    @StringRes title: Int,
+    @StringRes body: Int,
+    bodyArgs: List<Int>,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             painter = painterResource(id = R.drawable.img_woo_generic_error),
@@ -73,7 +107,22 @@ fun QrLoginErrorScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_200)))
+    }
+}
+
+@Composable
+private fun Buttons(
+    @StringRes primaryActionLabel: Int,
+    @StringRes secondaryActionLabel: Int,
+    onPrimaryClicked: () -> Unit,
+    onSecondaryClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = dimensionResource(id = R.dimen.major_100)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         WCColoredButton(
             onClick = onPrimaryClicked,
             text = stringResource(id = primaryActionLabel),
