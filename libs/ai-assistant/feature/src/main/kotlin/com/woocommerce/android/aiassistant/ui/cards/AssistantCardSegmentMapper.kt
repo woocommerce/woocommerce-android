@@ -4,6 +4,12 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStruc
 import com.woocommerce.android.aiassistant.ui.AssistantUiSegment
 
 internal object AssistantCardSegmentMapper {
-    fun toSegments(payload: ShowCardsUiStructured): List<AssistantUiSegment.Card> =
-        AssistantCardPayloadParser.parse(payload).map(AssistantUiSegment::Card)
+    fun toSegments(payload: ShowCardsUiStructured): List<AssistantUiSegment.CardGroup> {
+        val cards = AssistantCardPayloadParser.parse(payload)
+        return if (cards.isEmpty()) {
+            emptyList()
+        } else {
+            listOf(AssistantUiSegment.CardGroup(cards))
+        }
+    }
 }

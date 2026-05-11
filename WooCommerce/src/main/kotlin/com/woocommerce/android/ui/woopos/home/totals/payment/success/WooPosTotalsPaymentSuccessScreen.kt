@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.woopos.home.totals.payment.success
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -40,7 +41,9 @@ fun WooPosPaymentSuccessScreen(
     state: WooPosTotalsViewState.PaymentSuccess,
     onReceiptClicked: () -> Unit,
     onNewTransactionClicked: () -> Unit,
+    onBackPressed: () -> Unit,
 ) {
+    BackHandler(onBack = onBackPressed)
     val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
 
     Box(
@@ -144,7 +147,8 @@ fun WooPosPaymentSuccessScreenPreview() {
                 orderTotalText = "A payment of 13.18 was successfully made",
             ),
             onReceiptClicked = {},
-            onNewTransactionClicked = {}
+            onNewTransactionClicked = {},
+            onBackPressed = {},
         )
     }
 }

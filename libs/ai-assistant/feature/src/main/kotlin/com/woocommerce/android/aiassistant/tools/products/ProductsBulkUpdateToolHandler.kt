@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -65,6 +66,14 @@ internal class ProductsBulkUpdateToolHandler @Inject constructor(
 
     @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, PRODUCTS_BULK_ALLOWED_ARGS, TOOL_NAME).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
+        (call.arguments["patch"] as? JsonObject)?.let { patch ->
+            validateAllowedArguments(patch, PRODUCTS_BULK_PATCH_KEYS, "$TOOL_NAME.patch").exceptionOrNull()?.let {
+                return ToolResult.ValidationError(call.id, it.message ?: "Invalid patch")
+            }
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -94,7 +103,7 @@ internal class ProductsBulkUpdateToolHandler @Inject constructor(
             onSuccess = { result ->
                 ToolResult.Success(
                     toolCallId = call.id,
-                    structured = result.toJson(),
+                    structured = result.toJson(args),
                 )
             },
             onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
@@ -123,30 +132,39 @@ internal class ProductsBulkUpdateToolHandler @Inject constructor(
                 status != null
     }
 
-    private fun AIProductsDataSource.BulkUpdateResult.toJson(): JsonObject = buildJsonObject {
+    private fun AIProductsDataSource.BulkUpdateResult.toJson(args: Args): JsonObject = buildJsonObject {
         put("tool", TOOL_NAME)
+        put("requested_count", args.ids.size)
         put("updated_count", updatedIds.size)
         put("failed_count", failedProducts.size)
-        if (updatedIds.isNotEmpty()) {
-            putJsonArray("updated_ids") { updatedIds.forEach { add(it) } }
-        }
-        if (failedProducts.isNotEmpty()) {
-            putJsonArray("failed") {
-                failedProducts.forEach { failedProduct ->
-                    addJsonObject {
-                        put("id", failedProduct.id)
-                        put("code", failedProduct.errorCode)
-                        put("message", failedProduct.errorMessage)
-                        put("status", failedProduct.errorStatus)
-                    }
+        put("partial_success", updatedIds.isNotEmpty() && failedProducts.isNotEmpty())
+        putJsonArray("patch_keys") { args.patch.patchKeys().forEach { add(it) } }
+        putJsonArray("updated_ids") { updatedIds.forEach { add(it) } }
+        putJsonArray("failed") {
+            failedProducts.forEach { failedProduct ->
+                addJsonObject {
+                    put("id", failedProduct.id)
+                    put("code", failedProduct.errorCode)
+                    put("message", failedProduct.errorMessage)
+                    put("status", failedProduct.errorStatus)
                 }
             }
         }
     }
 
+    private fun Patch.patchKeys(): List<String> = buildList {
+        if (name != null) add("name")
+        if (regularPrice != null) add("regular_price")
+        if (salePrice != null) add("sale_price")
+        if (stockQuantity != null) add("stock_quantity")
+        if (status != null) add("status")
+    }
+
     private companion object {
         const val TOOL_NAME = "products_bulk_update"
         const val MAX_IDS = 100
+        val PRODUCTS_BULK_ALLOWED_ARGS = setOf("ids", "patch")
+        val PRODUCTS_BULK_PATCH_KEYS = setOf("name", "regular_price", "sale_price", "stock_quantity", "status")
         val ALLOWED_STATUSES = listOf("draft", "pending", "private", "publish")
     }
 }

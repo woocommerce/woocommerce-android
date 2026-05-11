@@ -4,6 +4,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.format.TextStyle
+import java.time.temporal.TemporalAdjusters
+import java.time.temporal.WeekFields
 import java.util.Locale
 import javax.inject.Inject
 
@@ -14,24 +16,65 @@ internal interface AssistantSystemPromptProvider {
 internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : AssistantSystemPromptProvider {
     override fun systemPrompt(todayIsoDate: String?): String {
         val isoDate = todayIsoDate ?: defaultToday()
-        val date = weekdayAnchor(isoDate) ?: isoDate
-        return SYSTEM_PROMPT_TEMPLATE.replace(TODAY_ANCHOR_TOKEN, date)
+        val locale = Locale.getDefault()
+        val anchors = dateAnchors(isoDate, locale)
+        return SYSTEM_PROMPT_TEMPLATE
+            .replace(TODAY_ANCHOR_TOKEN, anchors.today)
+            .replace(DATE_ANCHORS_TOKEN, anchors.calendarAnchors)
     }
 
     private fun defaultToday(): String =
         DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now())
 
-    private fun weekdayAnchor(isoDate: String): String? =
+    private fun dateAnchors(isoDate: String, locale: Locale): DateAnchors {
+        val date = parseIsoLocalDate(isoDate)
+            ?: return DateAnchors(
+                today = isoDate,
+                calendarAnchors = "Calendar anchors unavailable because today's date is not a valid YYYY-MM-DD.",
+            )
+        val firstDayOfWeek = WeekFields.of(locale).firstDayOfWeek
+        val thisWeekStart = date.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+        val lastWeekStart = thisWeekStart.minusWeeks(1)
+        val lastWeekEnd = thisWeekStart.minusDays(1)
+        val thisMonthStart = date.withDayOfMonth(1)
+        val weekStartName = firstDayOfWeek.getDisplayName(TextStyle.FULL, locale)
+
+        return DateAnchors(
+            today = date.withWeekday(locale),
+            calendarAnchors = """
+                Generated date anchors:
+                - today: ${date.iso()}
+                - yesterday: ${date.minusDays(1).iso()}
+                - this week: after ${thisWeekStart.iso()}, before ${date.iso()} (week starts $weekStartName)
+                - last week: after ${lastWeekStart.iso()}, before ${lastWeekEnd.iso()}
+                - this month: after ${thisMonthStart.iso()}, before ${date.iso()}
+            """.trimIndent(),
+        )
+    }
+
+    private fun parseIsoLocalDate(isoDate: String): LocalDate? =
         try {
-            val date = LocalDate.parse(isoDate, DateTimeFormatter.ISO_LOCAL_DATE)
-            val weekday = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US)
-            "$isoDate ($weekday)"
+            LocalDate.parse(isoDate, DateTimeFormatter.ISO_LOCAL_DATE)
         } catch (_: DateTimeParseException) {
             null
         }
 
+    private fun LocalDate.withWeekday(locale: Locale): String {
+        val weekday = dayOfWeek.getDisplayName(TextStyle.FULL, locale)
+        return "${iso()} ($weekday)"
+    }
+
+    private fun LocalDate.iso(): String =
+        DateTimeFormatter.ISO_LOCAL_DATE.format(this)
+
+    private data class DateAnchors(
+        val today: String,
+        val calendarAnchors: String,
+    )
+
     private companion object {
         private const val TODAY_ANCHOR_TOKEN = "__TODAY_ANCHOR__"
+        private const val DATE_ANCHORS_TOKEN = "__DATE_ANCHORS__"
 
         private val SYSTEM_PROMPT_TEMPLATE = """
             You are an assistant inside the WooCommerce Android app, helping a merchant operate their store.
@@ -54,10 +97,16 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             # Today
 
-            Today is __TODAY_ANCHOR__. Pass any analytics date parameters as YYYY-MM-DD. Calendar references
+            Today is __TODAY_ANCHOR__.
+            __DATE_ANCHORS__
+            Pass any analytics date parameters as YYYY-MM-DD. Calendar references
             like "yesterday", "last week", "last Monday", "this month", and "vs yesterday" have specific
             calendar meanings relative to today's date - resolve them yourself and dispatch the call. Don't ask
             the merchant which day or window they meant when their wording already named one.
+            For analytics requests, the grouping phrase controls `interval`; the time phrase controls `after`
+            and `before`. For example, "revenue by day this month" means interval day with this-month
+            after/before dates, not interval month. Aggregate sales, revenue, and order metric questions should
+            use analytics tools, not row counts from list tools.
 
             # Tools
 
@@ -124,7 +173,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             Pattern 6 - Analytics breakdowns.
             Merchant: "revenue by day this week"
             GOOD: One call to the analytics revenue tool with the appropriate window and a daily-grain
-            parameter. Answer directly with the breakdown in prose; no cards for analytics numbers.
+            parameter, then call `show_cards` with an ID-only `analytics_stats` reference using the same after,
+            before, interval, and currency-or-none query values, and answer with concise prose.
             BAD: Ask "did you want by day or by week?" when the merchant already said "by day".
 
             Pattern 7 - Refusing what the catalog can't do.
@@ -156,8 +206,9 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             Prefer bulk write tools when the same patch covers more than one entity. Multiple orders to the same
             status: orders_bulk_update. Multiple products sharing one patch: products_bulk_update. Multiple
-            variations of one parent product: product_variations_bulk_update. One bulk call shows the merchant a
-            single confirmation card; chained per-entity calls force a tap per entity and are noisier.
+            variations of one parent product: use product_variations_update one variation at a time, and only
+            after the Android confirmation flow for each unsafe write. One bulk call shows the merchant a single
+            confirmation card; chained per-entity calls force a tap per entity and are noisier.
 
             # Cross-turn context reuse
 
@@ -190,8 +241,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             1. Prose is short qualitative commentary. The text MUST carry the headline answer on its own - assume
             the merchant skims it. For a card-backed entity answer, give the shortest qualitative sentence and let
-            the card carry the fields. For a direct single-field question, a non-card answer, or analytics, answer
-            plainly in prose.
+            the card carry the fields. For a direct single-field question or a non-card answer, answer plainly in
+            prose.
 
             2. Cards are the entities themselves, rendered with the details the Android UI supports. The catalog
             includes a UI tool for selecting which entities the merchant should see rendered as rich cards in this
@@ -199,10 +250,10 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             the native Android UI and open the native detail screen. The UI never renders cards on its own; if you
             don't call the card-rendering tool, no cards appear.
 
-            The catalog's `show_cards` tool is the only mechanism for surfacing entities. Do not output card JSON,
-            no card JSON, card tokens, no card tokens, rich-output markup, or a render field. There is no terminal
-            `respond` tool. There is no `render` field. You emit tool calls and short prose; the prose is your
-            final merchant-facing text.
+            The catalog's `show_cards` tool is the only mechanism for surfacing entities and analytics stats. Do
+            not output card JSON, no card JSON, card tokens, no card tokens, rich-output markup, or a render
+            field. There is no terminal `respond` tool. There is no `render` field. You emit tool calls and short
+            prose; the prose is your final merchant-facing text.
 
             Use `show_cards` in the same assistant response as prose whenever this turn should show orders or
             products. Render cards whenever you fetched a list of entities the merchant asked about, are answering
@@ -211,8 +262,7 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             "tell me about", or "walk through" specific entities. If you are about to mention an entity id in
             prose, stop and render the card instead.
 
-            Don't render cards for analytics, revenue, aggregate stats, settings, concepts, or refusals where no
-            entity is involved. After a tool returns data, answer the merchant's actual question. For card-backed
+            After a tool returns data, answer the merchant's actual question. For card-backed
             entity results, keep prose concise and avoid repeating row-by-row fields that belong in cards.
 
             # Sorting and answer scoping

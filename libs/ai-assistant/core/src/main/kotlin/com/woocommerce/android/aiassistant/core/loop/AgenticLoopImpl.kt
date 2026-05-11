@@ -9,6 +9,7 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
@@ -47,6 +48,7 @@ class AgenticLoopImpl(
         val newTurnMessages = mutableListOf<AssistantMessage>(initialTurn.currentUserTurn)
         var modelMessages: List<AssistantMessage> = initialTurn.modelMessages
         var visibleOutputStarted = false
+        val replayTracker = ToolReplayTracker(json)
         var iteration = 0
 
         while (iteration < MAX_ITERATIONS) {
@@ -83,7 +85,7 @@ class AgenticLoopImpl(
                 return@flow
             }
 
-            val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors)
+            val toolExecution = executeTools(assembledResults, validCalls, toolDescriptors, replayTracker)
             if (toolExecution is ToolExecutionOutcome.Cancelled) {
                 emitCancelledToolExecution(toolExecution, stream.assistantText, history, newTurnMessages)
                 return@flow
@@ -93,7 +95,7 @@ class AgenticLoopImpl(
             modelMessages = modelMessages + newAssistantMsg
             newTurnMessages.add(newAssistantMsg)
             modelMessages = appendCompletedToolMessages(modelMessages, newTurnMessages, completedTools)
-            completedTools.firstOutcomeUnknownError()?.let { error ->
+            completedTools.firstUnsafeTransportFailureError()?.let { error ->
                 emit(LoopEvent.Failed(error))
                 emit(failedFinish(history + newTurnMessages, retryAvailable = false, error))
                 return@flow
@@ -198,6 +200,7 @@ class AgenticLoopImpl(
         assembledResults: List<ToolCallAssembler.AssemblyResult>,
         validCalls: List<ToolCall>,
         toolDescriptors: List<ToolDescriptor>,
+        replayTracker: ToolReplayTracker,
     ): ToolExecutionOutcome {
         val completedTools = mutableListOf<CompletedToolCall>()
         for (r in assembledResults) {
@@ -209,10 +212,31 @@ class AgenticLoopImpl(
         }
         for (call in validCalls) {
             val descriptor = toolDescriptors.find { it.name == call.name }
-            val result = executeToolIfAllowed(call, descriptor)
-                ?: return ToolExecutionOutcome.Cancelled(completedTools)
-            completedTools += CompletedToolCall(call, result, descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE)
-            emit(LoopEvent.ToolCallFinished(result))
+            when (val replayDecision = replayTracker.prepare(call)) {
+                is ToolReplayDecision.CapExceeded -> {
+                    completedTools += CompletedToolCall(
+                        call,
+                        replayDecision.result,
+                        descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                    )
+                    emit(LoopEvent.ToolCallFinished(replayDecision.result))
+                }
+                is ToolReplayDecision.Replay -> {
+                    completedTools += CompletedToolCall(
+                        call,
+                        replayDecision.result,
+                        descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                    )
+                    emit(LoopEvent.ToolCallFinished(replayDecision.result))
+                }
+                is ToolReplayDecision.Execute -> {
+                    val result = executeToolIfAllowed(call, descriptor)
+                        ?: return ToolExecutionOutcome.Cancelled(completedTools)
+                    replayTracker.record(replayDecision.signature, result)
+                    completedTools += CompletedToolCall(call, result, descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE)
+                    emit(LoopEvent.ToolCallFinished(result))
+                }
+            }
         }
         return ToolExecutionOutcome.Completed(completedTools)
     }
@@ -311,14 +335,21 @@ class AgenticLoopImpl(
         val safetyLevel: ToolSafetyLevel,
     )
 
-    private fun List<CompletedToolCall>.firstOutcomeUnknownError(): AssistantError.OutcomeUnknown? =
+    private fun List<CompletedToolCall>.firstUnsafeTransportFailureError(): AssistantError? =
         firstNotNullOfOrNull { completed ->
-            val isUnknownWriteOutcome = completed.safetyLevel == ToolSafetyLevel.UNSAFE &&
-                completed.result is ToolResult.TransportError
-            if (isUnknownWriteOutcome) {
-                AssistantError.OutcomeUnknown(toolName = completed.historyToolCall.name)
-            } else {
-                null
+            val result = completed.result as? ToolResult.TransportError
+                ?: return@firstNotNullOfOrNull null
+            if (completed.safetyLevel != ToolSafetyLevel.UNSAFE) {
+                return@firstNotNullOfOrNull null
+            }
+
+            when (result.kind) {
+                ToolFailureKind.OUTCOME_UNKNOWN -> AssistantError.OutcomeUnknown(
+                    toolName = completed.historyToolCall.name,
+                )
+                ToolFailureKind.DETERMINISTIC_FAILURE -> AssistantError.ToolFailed(
+                    toolName = completed.historyToolCall.name,
+                )
             }
         }
 

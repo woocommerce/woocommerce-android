@@ -55,7 +55,8 @@ internal class ShowCardsToolHandler internal constructor(
 
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
-        description = "Show entity cards in the UI for orders or products selected by the assistant.",
+        description = "Show rich cards in the Android UI for order/product entity references or an " +
+            "analytics_stats ID produced after a successful analytics_revenue result.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
@@ -72,10 +73,16 @@ internal class ShowCardsToolHandler internal constructor(
                                 putJsonArray("enum") {
                                     add("order")
                                     add("product")
+                                    add("analytics_stats")
                                 }
                             }
                             putJsonObject("id") {
                                 put("type", "string")
+                                put(
+                                    "description",
+                                    "Entity id, or analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
+                                        "interval:<hour|day|week|month|year>:currency:<ISO|none> for analytics_stats.",
+                                )
                             }
                         }
                         putJsonArray("required") {
@@ -156,6 +163,7 @@ internal class ShowCardsToolHandler internal constructor(
         val allowedKeys = when (family) {
             ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
             ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
+            ShowCardFamily.AnalyticsStats -> ANALYTICS_STATS_SUMMARY_KEYS
         }
         return JsonObject(filterKeys { it in allowedKeys })
     }
@@ -169,7 +177,28 @@ internal class ShowCardsToolHandler internal constructor(
             "currency",
             "date_created",
             "customer_name",
+            "payment_method_title",
+            "customer_id",
+            "line_items_count",
+            "line_items",
         )
-        val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
+        val PRODUCT_SUMMARY_KEYS = setOf(
+            "id",
+            "name",
+            "sku",
+            "price",
+            "type",
+            "stock_status",
+            "manage_stock",
+            "on_sale",
+            "stock_quantity",
+        )
+        val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
+            "id",
+            "after",
+            "before",
+            "currency",
+            "totals",
+        )
     }
 }
