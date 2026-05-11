@@ -217,7 +217,6 @@ class AssistantCardPayloadParserTest {
         assertThat(cards).containsExactly(
             AssistantCard.Stats(
                 id = ANALYTICS_STATS_ID,
-                kind = AssistantCard.Stats.Kind.Revenue,
                 after = "2026-05-01",
                 before = "2026-05-07",
                 currency = "USD",
@@ -356,8 +355,7 @@ class AssistantCardPayloadParserTest {
             ShowCardsUiStructured(
                 cards = listOf(
                     analyticsStatsPayload(
-                        id = ANALYTICS_ORDERS_STATS_ID,
-                        kind = "orders",
+                        id = ANALYTICS_STATS_ID,
                         totals = buildJsonObject {
                             put("total_sales", "170.35")
                             put("net_revenue", "120.15")
@@ -374,7 +372,6 @@ class AssistantCardPayloadParserTest {
         )
 
         val statsCard = cards.single() as AssistantCard.Stats
-        assertThat(statsCard.kind).isEqualTo(AssistantCard.Stats.Kind.Orders)
         assertThat(statsCard.metrics).containsExactly(
             AssistantCard.Stats.Metric(
                 type = AssistantCard.Stats.MetricType.TotalSales,
@@ -417,8 +414,7 @@ class AssistantCardPayloadParserTest {
             ShowCardsUiStructured(
                 cards = listOf(
                     analyticsStatsPayload(
-                        id = ANALYTICS_ORDERS_STATS_ID,
-                        kind = "orders",
+                        id = ANALYTICS_STATS_ID,
                         totals = buildJsonObject {},
                         intervalSubtotals = listOf(
                             buildJsonObject {
@@ -457,13 +453,12 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
-    fun `given legacy revenue analytics stats payload with unified totals, when parsed, then four metrics are rendered`() {
+    fun `given analytics stats payload with unified totals, when parsed, then four metrics are rendered`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(
                     analyticsStatsPayload(
                         id = ANALYTICS_STATS_ID,
-                        kind = "revenue",
                         totals = buildJsonObject {
                             put("total_sales", "170.35")
                             put("net_revenue", "120.15")
@@ -480,7 +475,6 @@ class AssistantCardPayloadParserTest {
 
         val statsCard = cards.single() as AssistantCard.Stats
         assertThat(statsCard.id).isEqualTo(ANALYTICS_STATS_ID)
-        assertThat(statsCard.kind).isEqualTo(AssistantCard.Stats.Kind.Revenue)
         assertThat(statsCard.metrics.map { it.type }).containsExactly(
             AssistantCard.Stats.MetricType.TotalSales,
             AssistantCard.Stats.MetricType.NetSales,
@@ -490,19 +484,18 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
-    fun `given legacy revenue payload without order totals, when parsed, then missing unified metrics are blank`() {
+    fun `given analytics stats payload without order totals, when parsed, then missing unified metrics are blank`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(
                     analyticsStatsPayload(
                         id = ANALYTICS_STATS_ID,
-                        kind = "revenue",
                         totals = buildJsonObject {
                             put("total_sales", "170.35")
                             put("net_revenue", "120.15")
                         },
                         intervalSubtotals = listOf(
-                            legacyRevenueInterval("2026-05-01", totalSales = "50.00", netRevenue = "35.00"),
+                            revenueOnlyInterval("2026-05-01", totalSales = "50.00", netRevenue = "35.00"),
                         ),
                     )
                 )
@@ -529,7 +522,6 @@ class AssistantCardPayloadParserTest {
 
     private fun analyticsStatsPayload(
         id: String = ANALYTICS_STATS_ID,
-        kind: String = "revenue",
         after: String = "2026-05-01",
         before: String = "2026-05-07",
         totals: JsonObject = buildJsonObject {
@@ -553,7 +545,6 @@ class AssistantCardPayloadParserTest {
             currency = "USD",
             totals = totals,
             intervalSubtotals = intervalSubtotals,
-            kind = kind,
         ),
     )
 
@@ -591,7 +582,7 @@ class AssistantCardPayloadParserTest {
         }
     }
 
-    private fun legacyRevenueInterval(
+    private fun revenueOnlyInterval(
         interval: String,
         totalSales: Any?,
         netRevenue: Any?,
@@ -616,8 +607,6 @@ class AssistantCardPayloadParserTest {
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-        private const val ANALYTICS_ORDERS_STATS_ID =
-            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

@@ -240,7 +240,6 @@ class AiAssistantStatsCardRendererTest {
         ),
     ) = AssistantCard.Stats(
         id = ANALYTICS_STATS_ID,
-        kind = AssistantCard.Stats.Kind.Revenue,
         after = after,
         before = before,
         currency = currency,
@@ -268,8 +267,7 @@ class AiAssistantStatsCardRendererTest {
             AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
         ),
     ) = AssistantCard.Stats(
-        id = ANALYTICS_ORDERS_STATS_ID,
-        kind = AssistantCard.Stats.Kind.Orders,
+        id = ANALYTICS_STATS_ID,
         after = "2026-05-01",
         before = "2026-05-07",
         currency = "USD",
@@ -288,8 +286,7 @@ class AiAssistantStatsCardRendererTest {
     )
 
     private fun unifiedStatsCard() = AssistantCard.Stats(
-        id = ANALYTICS_ORDERS_STATS_ID,
-        kind = AssistantCard.Stats.Kind.Orders,
+        id = ANALYTICS_STATS_ID,
         after = "2026-05-01",
         before = "2026-05-07",
         currency = "USD",
@@ -323,8 +320,6 @@ class AiAssistantStatsCardRendererTest {
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-        private const val ANALYTICS_ORDERS_STATS_ID =
-            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

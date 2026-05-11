@@ -200,7 +200,6 @@ internal class ShowCardsToolHandler internal constructor(
         val CUSTOMER_SUMMARY_KEYS = setOf("id", "name", "email")
         val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
             "id",
-            "kind",
             "after",
             "before",
             "currency",

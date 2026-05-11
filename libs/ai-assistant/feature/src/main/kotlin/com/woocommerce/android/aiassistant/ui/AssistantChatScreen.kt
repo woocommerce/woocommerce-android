@@ -1085,7 +1085,6 @@ private fun sampleStatsCard(
     averageOrderValueChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_AVERAGE_ORDER_VALUE_CHART_POINTS,
 ) = AssistantCard.Stats(
     id = "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day",
-    kind = AssistantCard.Stats.Kind.Orders,
     after = "2026-05-01",
     before = "2026-05-07",
     currency = "USD",

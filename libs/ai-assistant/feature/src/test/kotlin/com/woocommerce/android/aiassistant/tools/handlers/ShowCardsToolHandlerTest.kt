@@ -151,7 +151,6 @@ class ShowCardsToolHandlerTest {
             "currency",
             "totals",
             "interval_subtotals",
-            "kind",
         )
     }
 
@@ -168,49 +167,22 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given legacy revenue and orders currency none ids, when executed, then refs validate and resolve`() = runTest {
+    fun `given analytics stats id, when executed, then ref validates and resolves`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(
-                analyticsStatsCard(id = ANALYTICS_STATS_ID, kind = "revenue"),
-                analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID, kind = "orders"),
-                analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY, kind = "orders"),
+                analyticsStatsCard(id = ANALYTICS_STATS_ID),
             ),
             referencesJson = """
                 [
-                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" },
-                  { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID" },
-                  { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY" }
+                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }
                 ]
             """.trimIndent()
         )
 
-        assertThat(validated(result)).isEqualTo(3)
+        assertThat(validated(result)).isEqualTo(1)
         assertThat(rejectedReasons(result)).isEmpty()
-        assertThat(resolvedIds(result)).containsExactly(
-            ANALYTICS_STATS_ID,
-            ANALYTICS_ORDERS_STATS_ID,
-            ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY,
-        )
+        assertThat(resolvedIds(result)).containsExactly(ANALYTICS_STATS_ID)
     }
-
-    @Test
-    fun `given orders analytics stats id without currency, when executed, then ref validates and resolves`() =
-        runTest {
-            val result = callShowCards(
-                resolver = FakeResolver.resolving(
-                    analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY, kind = "orders"),
-                ),
-                referencesJson = """
-                    [
-                      { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY" }
-                    ]
-                """.trimIndent()
-            )
-
-            assertThat(validated(result)).isEqualTo(1)
-            assertThat(rejectedReasons(result)).isEmpty()
-            assertThat(resolvedIds(result)).containsExactly(ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY)
-        }
 
     @Test
     fun `given resolver returns summary extras, when executed, then structured excludes private fields`() = runTest {
@@ -312,7 +284,6 @@ class ShowCardsToolHandlerTest {
         assertThat(details.after).isEqualTo("2026-05-01")
         assertThat(details.before).isEqualTo("2026-05-07")
         assertThat(details.currency).isEqualTo("USD")
-        assertThat(details.kind).isEqualTo("revenue")
         assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
         assertThat(details.intervalSubtotals).hasSize(1)
         assertThat(assertSuccess(result).structured.toString()).contains("interval_subtotals")
@@ -395,15 +366,16 @@ class ShowCardsToolHandlerTest {
             {
               "references": [
                 { "family": "analytics_stats", "id": "analytics_revenue:2026-05-01:2026-05-07" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-07:before:2026-05-01:interval:day:currency:USD" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:bad:currency:USD" }
+                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-07:before:2026-05-01:interval:day" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:bad" }
               ]
             }
             """.trimIndent()
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id")
     }
 
     @Test
@@ -413,16 +385,15 @@ class ShowCardsToolHandlerTest {
             argumentsJson = """
             {
               "references": [
-                { "family": "analytics_stats", "id": "analytics_products:after:2026-05-01:before:2026-05-07:interval:day:currency:none" },
-                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-07:before:2026-05-01:interval:day:currency:none" },
-                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:bad:currency:none" }
+                { "family": "analytics_stats", "id": "analytics_products:after:2026-05-01:before:2026-05-07:interval:day" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none" }
               ]
             }
             """.trimIndent()
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id")
     }
 
     @Test
@@ -674,10 +645,7 @@ class ShowCardsToolHandlerTest {
         )
     }
 
-    private fun analyticsStatsCard(
-        id: String,
-        kind: String = "revenue",
-    ): ShowCardsResolution.Resolved {
+    private fun analyticsStatsCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.AnalyticsStats, id = id)
         val totals = buildJsonObject {
             put("total_sales", "170.35")
@@ -703,7 +671,6 @@ class ShowCardsToolHandlerTest {
                 put("currency", "USD")
                 put("totals", totals)
                 put("interval_subtotals", buildJsonArray { intervals.forEach { add(it) } })
-                put("kind", kind)
             },
             card = ShowCardPayload(
                 family = "analytics_stats",
@@ -715,7 +682,6 @@ class ShowCardsToolHandlerTest {
                     currency = "USD",
                     totals = totals,
                     intervalSubtotals = intervals,
-                    kind = kind,
                 ),
             )
         )
@@ -780,10 +746,6 @@ class ShowCardsToolHandlerTest {
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-        private const val ANALYTICS_ORDERS_STATS_ID =
-            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
-        private const val ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY =
             "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

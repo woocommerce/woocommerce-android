@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
-import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -93,8 +92,6 @@ internal data class AnalyticsStatsSummary(
     val currency: String? = null,
     val totals: JsonObject,
     @SerialName("interval_subtotals") val intervalSubtotals: List<JsonObject> = emptyList(),
-    @EncodeDefault
-    val kind: String = AnalyticsStatsKind.Revenue.serializedName,
 )
 
 @Serializable
@@ -185,8 +182,6 @@ internal sealed interface ShowCardDetails {
         val currency: String? = null,
         val totals: JsonObject,
         @SerialName("interval_subtotals") val intervalSubtotals: List<JsonObject> = emptyList(),
-        @EncodeDefault
-        val kind: String = AnalyticsStatsKind.Revenue.serializedName,
     ) : ShowCardDetails
 
     @Serializable

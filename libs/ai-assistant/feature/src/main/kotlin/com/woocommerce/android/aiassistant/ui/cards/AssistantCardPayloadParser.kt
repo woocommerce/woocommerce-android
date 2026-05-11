@@ -82,12 +82,10 @@ internal object AssistantCardPayloadParser {
     private fun ShowCardDetails.AnalyticsStats.toStatsCard(id: String): AssistantCard? {
         val afterDate = after.takeIf { it.isIsoLocalDate() }
         val beforeDate = before.takeIf { it.isIsoLocalDate() }
-        val statsKind = kind.toStatsKind()
 
-        return if (afterDate != null && beforeDate != null && statsKind != null) {
+        return if (afterDate != null && beforeDate != null) {
             AssistantCard.Stats(
                 id = id,
-                kind = statsKind,
                 after = afterDate,
                 before = beforeDate,
                 currency = currency.orEmpty(),
@@ -123,13 +121,6 @@ internal object AssistantCardPayloadParser {
         return AssistantCard.Stats.ChartPoint(date = date, value = value)
     }
 
-    private fun String.toStatsKind(): AssistantCard.Stats.Kind? =
-        when (this) {
-            REVENUE_KIND -> AssistantCard.Stats.Kind.Revenue
-            ORDERS_KIND -> AssistantCard.Stats.Kind.Orders
-            else -> null
-        }
-
     private fun JsonObject.chartDate(): String? {
         val intervalDate = stringValue("interval")?.takeIf { it.isIsoLocalDate() }
         if (intervalDate != null) return intervalDate
@@ -161,8 +152,6 @@ internal object AssistantCardPayloadParser {
     private const val CUSTOMER_FAMILY = "customer"
     private const val ANALYTICS_STATS_FAMILY = "analytics_stats"
     private const val ISO_LOCAL_DATE_LENGTH = 10
-    private const val REVENUE_KIND = "revenue"
-    private const val ORDERS_KIND = "orders"
     private val TOTAL_SALES_KEYS = listOf("total_sales", "gross_sales")
     private val NET_SALES_KEYS = listOf("net_revenue")
     private val ORDERS_COUNT_KEYS = listOf("orders_count")

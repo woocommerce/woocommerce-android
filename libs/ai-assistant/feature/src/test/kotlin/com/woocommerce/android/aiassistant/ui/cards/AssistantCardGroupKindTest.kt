@@ -67,7 +67,6 @@ class AssistantCardGroupKindTest {
 
     private fun statsCard() = AssistantCard.Stats(
         id = "analytics_revenue",
-        kind = AssistantCard.Stats.Kind.Revenue,
         after = "2026-05-01",
         before = "2026-05-07",
         currency = "USD",

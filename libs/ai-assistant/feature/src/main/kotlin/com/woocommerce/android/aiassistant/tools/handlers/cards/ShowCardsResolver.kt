@@ -205,7 +205,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
         query: AnalyticsStatsCardId,
         stats: AnalyticsStats,
     ): ShowCardsResolution.Resolved {
-        val displayCurrency = query.currency ?: analyticsDataSource.getSelectedSiteCurrencyCode()
+        val displayCurrency = analyticsDataSource.getSelectedSiteCurrencyCode()
         val summary = analyticsStatsSummary(
             after = query.after,
             before = query.before,
@@ -229,7 +229,6 @@ internal class DefaultShowCardsResolver @Inject constructor(
                     currency = displayCurrency,
                     totals = totals,
                     intervalSubtotals = intervalSubtotals,
-                    kind = query.kind.serializedName,
                 )
             ),
             card = ShowCardPayload(
@@ -242,7 +241,6 @@ internal class DefaultShowCardsResolver @Inject constructor(
                     currency = displayCurrency,
                     totals = totals,
                     intervalSubtotals = intervalSubtotals,
-                    kind = query.kind.serializedName,
                 ),
             ),
         )

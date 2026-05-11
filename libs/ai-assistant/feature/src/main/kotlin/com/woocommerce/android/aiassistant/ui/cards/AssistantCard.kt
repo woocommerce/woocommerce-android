@@ -29,17 +29,11 @@ sealed interface AssistantCard {
 
     data class Stats(
         val id: String,
-        val kind: Kind,
         val after: String,
         val before: String,
         val currency: String,
         val metrics: List<Metric>,
     ) : AssistantCard {
-        enum class Kind {
-            Revenue,
-            Orders
-        }
-
         enum class MetricType {
             TotalSales,
             NetSales,

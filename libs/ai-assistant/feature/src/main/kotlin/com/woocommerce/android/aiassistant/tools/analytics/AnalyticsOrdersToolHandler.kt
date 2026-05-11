@@ -9,7 +9,6 @@ import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsCardId
-import com.woocommerce.android.aiassistant.tools.handlers.cards.AnalyticsStatsKind
 import com.woocommerce.android.aiassistant.tools.handlers.cards.toSyntheticId
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
@@ -112,11 +111,9 @@ internal class AnalyticsOrdersToolHandler @Inject constructor(
         args: Args,
         interval: AnalyticsInterval,
     ) = AnalyticsStatsCardId(
-        kind = AnalyticsStatsKind.Orders,
         after = args.after,
         before = args.before,
         interval = interval,
-        currency = null,
     ).toSyntheticId()
 
     @Serializable

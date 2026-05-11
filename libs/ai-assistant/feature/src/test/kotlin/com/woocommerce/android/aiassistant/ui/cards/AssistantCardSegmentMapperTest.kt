@@ -85,7 +85,6 @@ class AssistantCardSegmentMapperTest {
                 listOf(
                     AssistantCard.Stats(
                         id = ANALYTICS_STATS_ID,
-                        kind = AssistantCard.Stats.Kind.Revenue,
                         after = "2026-05-01",
                         before = "2026-05-07",
                         currency = "USD",
@@ -173,6 +172,6 @@ class AssistantCardSegmentMapperTest {
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

@@ -19,10 +19,7 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -105,6 +102,7 @@ class ShowCardsResolverTest {
                 interval = AnalyticsInterval.DAY,
             )
         ).thenReturn(Result.success(unifiedAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
@@ -113,14 +111,12 @@ class ShowCardsResolverTest {
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
         )
-        verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
         verifyNoInteractions(ordersDataSource, productsDataSource)
         val resolved = result.single() as ShowCardsResolution.Resolved
         assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo(ANALYTICS_STATS_ID)
         assertThat(resolved.summary.getValue("after").jsonPrimitive.content).isEqualTo("2026-05-01")
         assertThat(resolved.summary.getValue("before").jsonPrimitive.content).isEqualTo("2026-05-07")
         assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
-        assertThat(resolved.summary.getValue("kind").jsonPrimitive.content).isEqualTo("revenue")
         assertThat(resolved.summary.getValue("totals").jsonObject.getValue("total_sales").jsonPrimitive.content)
             .isEqualTo("170.35")
         assertThat(resolved.summary.getValue("interval_subtotals").jsonArray).hasSize(2)
@@ -128,49 +124,13 @@ class ShowCardsResolverTest {
         assertThat(resolved.card.id).isEqualTo(ANALYTICS_STATS_ID)
         assertThat(resolved.card.title).isEqualTo("Analytics")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
-        assertThat(details.kind).isEqualTo("revenue")
         assertThat(details.totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
         assertThat(details.totals.getValue("orders_count").jsonPrimitive.content).isEqualTo("42")
         assertThat(details.intervalSubtotals).hasSize(2)
     }
 
     @Test
-    fun `given revenue and orders analytics stats refs, when resolved, then resolver fetches orders stats for both`() =
-        runTest {
-            whenever(
-                analyticsDataSource.fetchOrdersStats(
-                    after = "2026-05-01T00:00:00",
-                    before = "2026-05-07T23:59:59",
-                    interval = AnalyticsInterval.DAY,
-                )
-            ).thenReturn(Result.success(unifiedAnalyticsStats()))
-            whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
-
-            val result = resolver.resolve(
-                listOf(
-                    ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID),
-                    ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID),
-                )
-            )
-
-            verify(analyticsDataSource, times(2)).fetchOrdersStats(
-                after = "2026-05-01T00:00:00",
-                before = "2026-05-07T23:59:59",
-                interval = AnalyticsInterval.DAY,
-            )
-            verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
-            assertThat(result).allSatisfy { resolution ->
-                assertThat(resolution).isInstanceOf(ShowCardsResolution.Resolved::class.java)
-            }
-            assertThat(result.map { it.ref.id }).containsExactly(ANALYTICS_STATS_ID, ANALYTICS_ORDERS_STATS_ID)
-            assertThat(
-                result.filterIsInstance<ShowCardsResolution.Resolved>()
-                    .map { it.summary.getValue("kind").jsonPrimitive.content }
-            ).containsExactly("revenue", "orders")
-        }
-
-    @Test
-    fun `given analytics stats ref with currency none, when resolved, then site currency is used for display`() = runTest {
+    fun `given analytics stats ref, when resolved, then site currency is used for display`() = runTest {
         whenever(
             analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
@@ -180,14 +140,13 @@ class ShowCardsResolverTest {
         ).thenReturn(Result.success(unifiedAnalyticsStats()))
         whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
-        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID_NO_CURRENCY)))
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
         verify(analyticsDataSource).fetchOrdersStats(
             after = "2026-05-01T00:00:00",
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
         )
-        verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
         val resolved = result.single() as ShowCardsResolution.Resolved
         assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
@@ -205,74 +164,16 @@ class ShowCardsResolverTest {
         ).thenReturn(Result.success(orderAnalyticsStats()))
         whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
-        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID)))
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
         verify(analyticsDataSource).fetchOrdersStats(
             after = "2026-05-01T00:00:00",
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
         )
-        verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
         val resolved = result.single() as ShowCardsResolution.Resolved
-        assertThat(resolved.summary.getValue("kind").jsonPrimitive.content).isEqualTo("orders")
         assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
     }
-
-    @Test
-    fun `given orders analytics stats ref without currency, when resolved, then resolver refetches orders stats`() =
-        runTest {
-            whenever(
-                analyticsDataSource.fetchOrdersStats(
-                    after = "2026-05-01T00:00:00",
-                    before = "2026-05-07T23:59:59",
-                    interval = AnalyticsInterval.DAY,
-                )
-            ).thenReturn(Result.success(orderAnalyticsStats()))
-            whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
-
-            val result = resolver.resolve(
-                listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY))
-            )
-
-            verify(analyticsDataSource).fetchOrdersStats(
-                after = "2026-05-01T00:00:00",
-                before = "2026-05-07T23:59:59",
-                interval = AnalyticsInterval.DAY,
-            )
-            verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
-            val resolved = result.single() as ShowCardsResolution.Resolved
-            assertThat(resolved.summary.getValue("kind").jsonPrimitive.content).isEqualTo("orders")
-            assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
-        }
-
-    @Test
-    fun `given legacy revenue analytics stats ref, when resolved, then ref remains accepted and uses orders stats data`() =
-        runTest {
-            whenever(
-                analyticsDataSource.fetchOrdersStats(
-                    after = "2026-05-01T00:00:00",
-                    before = "2026-05-07T23:59:59",
-                    interval = AnalyticsInterval.DAY,
-                )
-            ).thenReturn(Result.success(unifiedAnalyticsStats()))
-
-            val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
-
-            verify(analyticsDataSource).fetchOrdersStats(
-                after = "2026-05-01T00:00:00",
-                before = "2026-05-07T23:59:59",
-                interval = AnalyticsInterval.DAY,
-            )
-            verify(analyticsDataSource, never()).fetchRevenueStats(any(), any(), any(), any())
-
-            val resolved = result.single() as ShowCardsResolution.Resolved
-            assertThat(resolved.card.id).isEqualTo(ANALYTICS_STATS_ID)
-            assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
-            val details = resolved.card.details as ShowCardDetails.AnalyticsStats
-            assertThat(details.kind).isEqualTo("revenue")
-            assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
-            assertThat(details.totals.getValue("orders_count").jsonPrimitive.content).isEqualTo("42")
-        }
 
     @Test
     fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
@@ -285,22 +186,6 @@ class ShowCardsResolverTest {
         ).thenReturn(Result.failure(IllegalStateException("network")))
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
-
-        val missing = result.single() as ShowCardsResolution.Missing
-        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
-    }
-
-    @Test
-    fun `given orders analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
-        whenever(
-            analyticsDataSource.fetchOrdersStats(
-                after = "2026-05-01T00:00:00",
-                before = "2026-05-07T23:59:59",
-                interval = AnalyticsInterval.DAY,
-            )
-        ).thenReturn(Result.failure(IllegalStateException("network")))
-
-        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_ORDERS_STATS_ID)))
 
         val missing = result.single() as ShowCardsResolution.Missing
         assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
@@ -774,12 +659,6 @@ class ShowCardsResolverTest {
             ]
         """.trimIndent()
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-        private const val ANALYTICS_STATS_ID_NO_CURRENCY =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
-        private const val ANALYTICS_ORDERS_STATS_ID =
-            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
-        private const val ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY =
             "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

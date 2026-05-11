@@ -421,7 +421,7 @@ class AgenticLoopAssistantRuntimeTest {
 
             assertThat(events.cardEvents()).containsExactly(
                 AssistantRuntimeEvent.CardsResolved(
-                    listOf(expectedLegacyAnalyticsStatsCard())
+                    listOf(expectedAnalyticsStatsCard())
                 )
             )
         }
@@ -447,8 +447,7 @@ class AgenticLoopAssistantRuntimeTest {
             val events = runtime.startTurn(givenTurnRequest()).toList()
 
             val statsCard = events.cardEvents().single().cards.single() as AssistantCard.Stats
-            assertThat(statsCard.id).isEqualTo(ANALYTICS_ORDERS_STATS_ID)
-            assertThat(statsCard.kind).isEqualTo(AssistantCard.Stats.Kind.Orders)
+            assertThat(statsCard.id).isEqualTo(ANALYTICS_STATS_ID)
             assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("170.35")
             assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).value).isEqualTo("120.15")
             assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
@@ -740,13 +739,12 @@ class AgenticLoopAssistantRuntimeTest {
 
     private fun ordersAnalyticsStatsPayload() = ShowCardPayload(
         family = "analytics_stats",
-        id = ANALYTICS_ORDERS_STATS_ID,
+        id = ANALYTICS_STATS_ID,
         title = "Analytics",
         details = ShowCardDetails.AnalyticsStats(
             after = "2026-05-01",
             before = "2026-05-03",
             currency = "USD",
-            kind = "orders",
             totals = buildJsonObject {
                 put("total_sales", "170.35")
                 put("net_revenue", "120.15")
@@ -777,9 +775,8 @@ class AgenticLoopAssistantRuntimeTest {
         date = "2026-05-01T10:00:00Z",
     )
 
-    private fun expectedLegacyAnalyticsStatsCard() = AssistantCard.Stats(
+    private fun expectedAnalyticsStatsCard() = AssistantCard.Stats(
         id = ANALYTICS_STATS_ID,
-        kind = AssistantCard.Stats.Kind.Revenue,
         after = "2026-05-01",
         before = "2026-05-03",
         currency = "USD",
@@ -898,8 +895,6 @@ class AgenticLoopAssistantRuntimeTest {
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-03:interval:day:currency:USD"
-        private const val ANALYTICS_ORDERS_STATS_ID =
-            "analytics_orders:after:2026-05-01:before:2026-05-03:interval:day:currency:none"
+            "analytics_orders:after:2026-05-01:before:2026-05-03:interval:day"
     }
 }

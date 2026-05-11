@@ -1369,8 +1369,7 @@ class AssistantViewModelTest {
         before: String,
         totalSales: String,
     ) = AssistantCard.Stats(
-        id = "analytics_revenue:after:$after:before:$before:interval:day:currency:USD",
-        kind = AssistantCard.Stats.Kind.Revenue,
+        id = "analytics_orders:after:$after:before:$before:interval:day",
         after = after,
         before = before,
         currency = "USD",

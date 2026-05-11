@@ -24,8 +24,6 @@ internal fun analyticsDateAfterBound(value: String) = "${value}T00:00:00"
 
 internal fun analyticsDateBeforeBound(value: String) = "${value}T23:59:59"
 
-internal fun normaliseCurrency(value: String?) = value?.trim()?.takeIf { it.isNotEmpty() }
-
 internal fun validateAnalyticsDateRange(
     after: LocalDate,
     before: LocalDate,
