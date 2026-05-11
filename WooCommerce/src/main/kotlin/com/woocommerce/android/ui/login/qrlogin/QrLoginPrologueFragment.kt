@@ -75,7 +75,7 @@ class QrLoginPrologueFragment : Fragment() {
         if (savedInstanceState == null) {
             viewModel.onPrologueShown()
         }
-        observeDispatches()
+        observeEvents()
     }
 
     override fun onResume() {
@@ -93,7 +93,7 @@ class QrLoginPrologueFragment : Fragment() {
         listener = null
     }
 
-    private fun observeDispatches() {
+    private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is QrLoginPrologueViewModel.Dispatch.LaunchCameraPermissionRequest ->
@@ -102,7 +102,7 @@ class QrLoginPrologueFragment : Fragment() {
                     WooPermissionUtils.showAppSettings(requireContext(), openInNewStack = false)
                 is QrLoginPrologueViewModel.Dispatch.NavigateToScanner ->
                     listener?.onQrLoginScanClicked()
-                is QrLoginPrologueViewModel.Dispatch.NavigateToFallback ->
+                is QrLoginPrologueViewModel.Dispatch.NavigateToSiteAddressLogin ->
                     listener?.onQrLoginFallbackClicked()
             }
         }
