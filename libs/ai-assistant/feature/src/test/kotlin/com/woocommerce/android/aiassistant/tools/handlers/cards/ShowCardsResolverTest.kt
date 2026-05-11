@@ -289,22 +289,8 @@ class ShowCardsResolverTest {
             )
         ).filterIsInstance<ShowCardsResolution.Resolved>()
 
-        val orderSummary = (result[0].summary as ShowCardsResolvedSummary.Order).value
-        assertThat(orderSummary.id).isEqualTo("1")
-        assertThat(orderSummary.number).isEqualTo("1")
-        assertThat(orderSummary.status).isEqualTo("processing")
-        assertThat(orderSummary.total).isEqualTo("12.34")
-        assertThat(orderSummary.currency).isEqualTo("USD")
-        assertThat(orderSummary.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
-        assertThat(orderSummary.customerName).isEqualTo("Jane Doe")
-
-        val productSummary = (result[1].summary as ShowCardsResolvedSummary.Product).value
-        assertThat(productSummary.id).isEqualTo("2")
-        assertThat(productSummary.name).isEqualTo("Socks")
-        assertThat(productSummary.sku).isEqualTo("woo-socks")
-        assertThat(productSummary.price).isEqualTo("9.99")
-        assertThat(productSummary.type).isEqualTo("simple")
-        assertThat(productSummary.stockStatus).isEqualTo("instock")
+        assertCompactOrderSummary(result[0])
+        assertCompactProductSummary(result[1])
 
         assertThat(
             result[0].summaryJson().keys
@@ -526,6 +512,27 @@ class ShowCardsResolverTest {
     private fun ref(family: ShowCardFamily, id: String) = ValidatedRef(index = 0, family = family, id = id)
 
     private fun ShowCardsResolution.Resolved.summaryJson() = summary.toJsonObject(json)
+
+    private fun assertCompactOrderSummary(resolved: ShowCardsResolution.Resolved) {
+        val summary = (resolved.summary as ShowCardsResolvedSummary.Order).value
+        assertThat(summary.id).isEqualTo("1")
+        assertThat(summary.number).isEqualTo("1")
+        assertThat(summary.status).isEqualTo("processing")
+        assertThat(summary.total).isEqualTo("12.34")
+        assertThat(summary.currency).isEqualTo("USD")
+        assertThat(summary.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(summary.customerName).isEqualTo("Jane Doe")
+    }
+
+    private fun assertCompactProductSummary(resolved: ShowCardsResolution.Resolved) {
+        val summary = (resolved.summary as ShowCardsResolvedSummary.Product).value
+        assertThat(summary.id).isEqualTo("2")
+        assertThat(summary.name).isEqualTo("Socks")
+        assertThat(summary.sku).isEqualTo("woo-socks")
+        assertThat(summary.price).isEqualTo("9.99")
+        assertThat(summary.type).isEqualTo("simple")
+        assertThat(summary.stockStatus).isEqualTo("instock")
+    }
 
     private fun orderLookup(vararg orders: OrderEntity): CachedLookupResult<OrderEntity> =
         CachedLookupResult(

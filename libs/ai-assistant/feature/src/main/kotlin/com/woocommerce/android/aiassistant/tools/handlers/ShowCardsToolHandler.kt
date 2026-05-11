@@ -165,5 +165,4 @@ internal class ShowCardsToolHandler internal constructor(
             id = ref.id,
             reason = reason,
         )
-
 }
