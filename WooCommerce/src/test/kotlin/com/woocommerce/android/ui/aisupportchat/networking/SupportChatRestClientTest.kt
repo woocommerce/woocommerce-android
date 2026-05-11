@@ -67,6 +67,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
 
             assertThat(urlCaptor.firstValue)
                 .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/")
+            assertThat(bodyCaptor.firstValue).containsOnlyKeys("message", "context")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
             val sentContext = bodyCaptor.firstValue["context"] as JsonObject
             assertThat(sentContext["site_id"].asLong).isEqualTo(1L)
@@ -78,7 +79,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
         testBlocking {
             stubPostResponse()
 
-            restClient.sendFollowUpMessage(
+            val result = restClient.sendFollowUpMessage(
                 botSlug = BOT_SLUG,
                 chatId = CHAT_ID,
                 message = MESSAGE
@@ -88,16 +89,20 @@ class SupportChatRestClientTest : BaseUnitTest() {
                 .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
             assertThat(bodyCaptor.firstValue).containsOnlyKeys("message")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
+            assertThat(result).isInstanceOf(Response.Success::class.java)
+            assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
         }
 
     @Test
     fun `given chat id, when fetchChat, then GETs the slug-and-id URL`() = testBlocking {
         stubGetResponse()
 
-        restClient.fetchChat(botSlug = BOT_SLUG, chatId = CHAT_ID)
+        val result = restClient.fetchChat(botSlug = BOT_SLUG, chatId = CHAT_ID)
 
         assertThat(urlCaptor.firstValue)
             .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
+        assertThat(result).isInstanceOf(Response.Success::class.java)
+        assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
     }
 
     @Test
@@ -119,6 +124,19 @@ class SupportChatRestClientTest : BaseUnitTest() {
         stubPostResponse(error = error)
 
         val result = restClient.sendMessage(BOT_SLUG, MESSAGE, JsonObject())
+
+        assertThat(result).isInstanceOf(Response.Error::class.java)
+        assertThat((result as Response.Error).error.type).isEqualTo(BaseRequest.GenericErrorType.TIMEOUT)
+    }
+
+    @Test
+    fun `given network error, when sendFollowUpMessage, then Error is propagated`() = testBlocking {
+        val error = WPComGsonNetworkError(
+            BaseNetworkError(BaseRequest.GenericErrorType.TIMEOUT, VolleyError())
+        )
+        stubPostResponse(error = error)
+
+        val result = restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, MESSAGE)
 
         assertThat(result).isInstanceOf(Response.Error::class.java)
         assertThat((result as Response.Error).error.type).isEqualTo(BaseRequest.GenericErrorType.TIMEOUT)
@@ -170,15 +188,15 @@ class SupportChatRestClientTest : BaseUnitTest() {
         }
         whenever(
             wpComGsonRequestBuilder.syncGetRequest(
-                eq(restClient),
-                urlCaptor.capture(),
-                eq(emptyMap()),
-                eq(SupportChatResponse::class.java),
-                any(),
-                any(),
-                any(),
-                anyOrNull(),
-                any()
+                restClient = eq(restClient),
+                url = urlCaptor.capture(),
+                params = eq(emptyMap()),
+                clazz = eq(SupportChatResponse::class.java),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                customGsonBuilder = anyOrNull(),
+                authenticatedRequest = any()
             )
         ).thenReturn(response)
     }
