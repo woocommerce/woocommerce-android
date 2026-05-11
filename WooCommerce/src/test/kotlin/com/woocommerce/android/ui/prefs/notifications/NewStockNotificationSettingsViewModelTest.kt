@@ -19,6 +19,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -56,6 +59,7 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewState.outOfStockNotificationsEnabled).isTrue()
         assertThat(viewState.backorderNotificationsEnabled).isTrue()
         assertThat(viewState.defaultLowStockThreshold).isNull()
+        assertThat(viewState.isDefaultLowStockThresholdLoading).isFalse()
     }
 
     @Test
@@ -76,6 +80,7 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
+        assertThat(viewModel.viewState.getOrAwaitValue().isDefaultLowStockThresholdLoading).isFalse()
     }
 
     @Test
@@ -93,7 +98,49 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
         runCurrent()
 
         assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
+        assertThat(viewModel.viewState.getOrAwaitValue().isDefaultLowStockThresholdLoading).isFalse()
     }
+
+    @Test
+    fun `when default low stock threshold fetch fails without cached value, then stop loading and show error`() =
+        testBlocking {
+            setup {
+                whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                )
+            }
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            val event = viewModel.event.runAndCaptureValues { }.last()
+
+            assertThat(viewState.defaultLowStockThreshold).isNull()
+            assertThat(viewState.isDefaultLowStockThresholdLoading).isFalse()
+            assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowSnackbar::class.java)
+            assertThat((event as MultiLiveEvent.Event.ShowSnackbar).message)
+                .isEqualTo(R.string.settings_notifs_stock_low_stock_threshold_error)
+        }
+
+    @Test
+    fun `when default low stock threshold fetch fails with cached value, then keep cached value and show error`() =
+        testBlocking {
+            setup {
+                whenever(wooCommerceStore.getProductSettings(site)).thenReturn(
+                    WCProductSettingsModel(defaultLowStockThreshold = 2)
+                )
+                whenever(wooCommerceStore.fetchSiteProductSettings(site)).thenReturn(
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                )
+            }
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+            val event = viewModel.event.runAndCaptureValues { }.last()
+
+            assertThat(viewState.defaultLowStockThreshold).isEqualTo(2)
+            assertThat(viewState.isDefaultLowStockThresholdLoading).isFalse()
+            assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowSnackbar::class.java)
+            assertThat((event as MultiLiveEvent.Event.ShowSnackbar).message)
+                .isEqualTo(R.string.settings_notifs_stock_low_stock_threshold_error)
+        }
 
     @Test
     fun `when store settings web view is closed, then refresh default low stock threshold`() = testBlocking {
@@ -107,6 +154,7 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
         viewModel.onStoreSettingsWebViewClosed()
 
         assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(3)
+        assertThat(viewModel.viewState.getOrAwaitValue().isDefaultLowStockThresholdLoading).isFalse()
     }
 
     @Test
@@ -122,6 +170,7 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
             viewModel.onStoreSettingsWebViewClosed()
 
             assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
+            assertThat(viewModel.viewState.getOrAwaitValue().isDefaultLowStockThresholdLoading).isFalse()
         }
 
     @Test
