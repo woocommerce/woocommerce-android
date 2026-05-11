@@ -14,7 +14,9 @@ class WooPosGroupRefundItems @Inject constructor() {
         order: Order,
         numberOfDecimals: Int,
     ): List<RefundRequestItem> {
-        return refundableItems
+        val (lumpSumItems, productItems) = refundableItems.partition { it.isLumpSum }
+
+        val productRequests = productItems
             .groupBy { it.orderItemId }
             .map { (orderItemId, items) ->
                 val originalItem = requireNotNull(order.items.find { it.itemId == orderItemId }) {
@@ -29,6 +31,32 @@ class WooPosGroupRefundItems @Inject constructor() {
                     refundTax = calculateRefundTaxes(originalItem, refundQuantity, numberOfDecimals)
                 )
             }
+
+        val feeRequests = lumpSumItems.map { feeRow ->
+            val originalFee = requireNotNull(order.feesLines.find { it.id == feeRow.orderItemId }) {
+                "Fee line with ID ${feeRow.orderItemId} not found in order ${order.id}."
+            }
+            RefundRequestItem(
+                itemId = originalFee.id,
+                quantity = 0,
+                refundTotal = originalFee.total.setScale(numberOfDecimals, RoundingMode.HALF_UP),
+                refundTax = buildFeeRefundTaxes(originalFee, numberOfDecimals),
+            )
+        }
+
+        return productRequests + feeRequests
+    }
+
+    private fun buildFeeRefundTaxes(
+        feeLine: Order.FeeLine,
+        numberOfDecimals: Int,
+    ): List<RefundRequestTax> {
+        return feeLine.taxes.map { tax ->
+            RefundRequestTax(
+                taxRateId = tax.rateId,
+                refundTotal = tax.taxAmount.setScale(numberOfDecimals, RoundingMode.HALF_UP),
+            )
+        }
     }
 
     private fun calculateRefundTotal(

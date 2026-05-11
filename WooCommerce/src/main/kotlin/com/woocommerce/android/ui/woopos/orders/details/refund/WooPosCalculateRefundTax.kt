@@ -17,14 +17,18 @@ class WooPosCalculateRefundTax @Inject constructor() {
             return BigDecimal.ZERO
         }
 
-        val totalTax = refundableItems
+        val (lumpSumItems, productRows) = refundableItems.partition { it.isLumpSum }
+
+        val productTax = productRows
             .groupBy { it.orderItemId }
             .entries
             .sumOf { (orderItemId, items) ->
                 calculateTotalTaxesForItem(orderItemId, items.size, order, numberOfDecimals, roundAtSubtotal)
             }
 
-        return totalTax.setScale(numberOfDecimals, RoundingMode.HALF_UP)
+        val lumpSumTax = lumpSumItems.sumOf { it.unitTax }
+
+        return (productTax + lumpSumTax).setScale(numberOfDecimals, RoundingMode.HALF_UP)
     }
 
     private fun calculateTotalTaxesForItem(

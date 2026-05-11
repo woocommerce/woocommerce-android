@@ -718,6 +718,24 @@ private fun ItemsHeaderRow(
 }
 
 @Composable
+private fun CustomAmountRefundAvatar() {
+    Box(
+        modifier = Modifier
+            .size(WooPosComponentSize.XSmall.value)
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(WooPosIconSize.Small.value),
+        )
+    }
+}
+
+@Composable
 private fun RefundableItemRow(
     item: WooPosRefundableItem,
     isSelected: Boolean,
@@ -758,14 +776,18 @@ private fun RefundableItemRow(
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
 
-        WooPosItemImage(
-            modifier = Modifier
-                .size(WooPosComponentSize.XSmall.value)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-            imageUrl = null,
-            placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-            placeholderIconSize = WooPosIconSize.Small.value
-        )
+        if (item.isLumpSum) {
+            CustomAmountRefundAvatar()
+        } else {
+            WooPosItemImage(
+                modifier = Modifier
+                    .size(WooPosComponentSize.XSmall.value)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
+                imageUrl = null,
+                placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
+                placeholderIconSize = WooPosIconSize.Small.value
+            )
+        }
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
         Column(
