@@ -55,7 +55,7 @@ internal class ShowCardsToolHandler internal constructor(
 
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
-        description = "Show rich cards in the Android UI for order/product entity references or an " +
+        description = "Show rich cards in the Android UI for order/product/customer entity references or an " +
             "analytics_stats ID produced after a successful analytics_revenue result.",
         inputSchema = buildJsonObject {
             put("type", "object")
@@ -74,6 +74,7 @@ internal class ShowCardsToolHandler internal constructor(
                                     add("order")
                                     add("product")
                                     add("analytics_stats")
+                                    add("customer")
                                 }
                             }
                             putJsonObject("id") {
@@ -164,6 +165,7 @@ internal class ShowCardsToolHandler internal constructor(
             ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
             ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
             ShowCardFamily.AnalyticsStats -> ANALYTICS_STATS_SUMMARY_KEYS
+            ShowCardFamily.Customer -> CUSTOMER_SUMMARY_KEYS
         }
         return JsonObject(filterKeys { it in allowedKeys })
     }
@@ -193,6 +195,7 @@ internal class ShowCardsToolHandler internal constructor(
             "on_sale",
             "stock_quantity",
         )
+        val CUSTOMER_SUMMARY_KEYS = setOf("id", "name", "email")
         val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
             "id",
             "after",

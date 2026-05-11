@@ -4,20 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.aiassistant.ui.AssistantRoute
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AiAssistantHostFragment : BaseFragment() {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    internal lateinit var cardActionNavigator: WooAssistantCardActionNavigator
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -31,12 +38,17 @@ class AiAssistantHostFragment : BaseFragment() {
                 conversationId = ASSISTANT_CONVERSATION_ID,
                 onBack = { findNavController().navigateUp() },
                 assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter),
-                onCardAction = { action ->
-                    action.toNavDirections()?.let { direction ->
-                        findNavController().navigateSafely(direction)
-                    }
-                },
+                onCardAction = ::onCardAction,
             )
+        }
+    }
+
+    private fun onCardAction(action: AssistantCardAction) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val direction = cardActionNavigator.directionFor(action) ?: return@launch
+            if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                findNavController().navigateSafely(direction)
+            }
         }
     }
 

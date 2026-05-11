@@ -4,32 +4,47 @@ import androidx.navigation.NavDirections
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.moremenu.customer.GetCustomerWithStats
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-internal fun AssistantCardAction.toNavDirections(
-    locale: Locale = Locale.getDefault(),
-): NavDirections? =
-    when (this) {
-        is AssistantCardAction.OpenOrder -> NavGraphMainDirections.actionGlobalOrderDetailFragment(
-            orderId = remoteOrderId,
-            ignoreTwoPaneLayoutLogic = true,
-        )
-        is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
-            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-        )
-        is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
-            after = after,
-            before = before,
-            locale = locale,
-        )?.let { rangeSelection ->
-            NavGraphMainDirections.actionGlobalAnalytics(rangeSelection)
+internal class WooAssistantCardActionNavigator @Inject constructor(
+    private val getCustomerWithStats: GetCustomerWithStats,
+) {
+    internal suspend fun directionFor(
+        action: AssistantCardAction,
+        locale: Locale = Locale.getDefault(),
+    ): NavDirections? =
+        when (action) {
+            is AssistantCardAction.OpenOrder -> NavGraphMainDirections.actionGlobalOrderDetailFragment(
+                orderId = action.remoteOrderId,
+                ignoreTwoPaneLayoutLogic = true,
+            )
+            is AssistantCardAction.OpenProduct -> NavGraphMainDirections.actionGlobalProductDetailFragment(
+                mode = ProductDetailFragment.Mode.ShowProduct(action.remoteProductId),
+            )
+            is AssistantCardAction.OpenAnalytics -> analyticsDatesToStatsTimeRangeSelection(
+                after = action.after,
+                before = action.before,
+                locale = locale,
+            )?.let { rangeSelection ->
+                NavGraphMainDirections.actionGlobalAnalytics(rangeSelection)
+            }
+            is AssistantCardAction.OpenCustomer -> {
+                val customer = getCustomerWithStats(
+                    remoteCustomerId = action.remoteCustomerId,
+                    analyticsCustomerId = null,
+                ).getOrNull() ?: return null
+
+                NavGraphMainDirections.actionGlobalCustomerDetailsFragment(customer)
+            }
         }
-    }
+}
 
 internal fun analyticsDatesToStatsTimeRangeSelection(
     after: String,

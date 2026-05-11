@@ -48,6 +48,7 @@
     <string name="assistant_chat_card_group_orders">Orders</string>
     <string name="assistant_chat_card_group_products">Products</string>
     <string name="assistant_chat_card_group_stats">Analytics</string>
+    <string name="assistant_chat_card_group_customers">Customers</string>
     <string name="assistant_chat_card_group_generic">Cards</string>
     <string name="assistant_chat_empty_state_title">Ask about your store</string>
     <string name="assistant_chat_empty_state_suggestion_revenue">Revenue this week</string>

@@ -78,6 +78,33 @@ class AssistantCardUiStructuredParserTest {
     }
 
     @Test
+    fun `given customer uiStructured, when parsed, then customer card entry is returned`() {
+        val entries = parser.parse(
+            json.encodeToJsonElement(
+                ShowCardsUiStructured(
+                    cards = listOf(
+                        ShowCardPayload(
+                            family = "customer",
+                            id = "789",
+                            title = "Ada Lovelace",
+                            details = ShowCardDetails.Customer(email = "ada@example.com"),
+                        )
+                    )
+                )
+            )
+        )
+
+        assertThat(entries.single().key).isEqualTo(AssistantCardKey("customer", "789"))
+        assertThat(entries.single().card).isEqualTo(
+            AssistantCard.Customer(
+                remoteCustomerId = 789L,
+                name = "Ada Lovelace",
+                email = "ada@example.com",
+            )
+        )
+    }
+
+    @Test
     fun `given analytics stats uiStructured, when parsed, then stats card entry is returned`() {
         val entries = parser.parse(
             json.encodeToJsonElement(

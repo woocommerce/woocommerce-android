@@ -88,13 +88,17 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is built, then show cards is the only card producer including analytics stats`() {
+    fun `when prompt is built, then show cards is the only card producer including customers and analytics stats`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 
         assertThat(prompt).contains("show_cards")
         assertThat(prompt).contains("The UI never renders cards")
         assertThat(prompt).contains("don't call the card-rendering tool")
         assertThat(prompt).contains("no cards appear")
+        assertThat(prompt).contains("this turn should show orders")
+        assertThat(prompt).contains("products, customers, or analytics stats")
+        assertThat(prompt).contains("Customer lists and cards")
+        assertThat(prompt).contains("customer list call -> `show_cards`")
         assertThat(prompt).contains("then call `show_cards` with an ID-only `analytics_stats` reference")
         assertThat(prompt).contains("analytics_stats")
         assertThat(prompt).contains("currency-or-none query values")

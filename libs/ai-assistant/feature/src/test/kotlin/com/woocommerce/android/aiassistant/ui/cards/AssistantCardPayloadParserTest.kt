@@ -133,12 +133,36 @@ class AssistantCardPayloadParserTest {
     }
 
     @Test
-    fun `given unsupported and invalid payloads, when parsed, then they are ignored`() {
+    fun `given customer payload, when parsed, then customer card contains displayed fields`() {
         val cards = AssistantCardPayloadParser.parse(
             ShowCardsUiStructured(
                 cards = listOf(
                     ShowCardPayload(
                         family = "customer",
+                        id = "789",
+                        title = "Ada Lovelace",
+                        details = ShowCardDetails.Customer(email = "ada@example.com"),
+                    )
+                )
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Customer(
+                remoteCustomerId = 789L,
+                name = "Ada Lovelace",
+                email = "ada@example.com",
+            )
+        )
+    }
+
+    @Test
+    fun `given unsupported and invalid payloads, when parsed, then they are ignored`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    ShowCardPayload(
+                        family = "coupon",
                         id = "456",
                         title = "Customer",
                         details = ShowCardDetails.Product(),
@@ -154,6 +178,12 @@ class AssistantCardPayloadParserTest {
                         id = "0",
                         title = "#0",
                         details = ShowCardDetails.Order(),
+                    ),
+                    ShowCardPayload(
+                        family = "customer",
+                        id = "0",
+                        title = "Bad customer",
+                        details = ShowCardDetails.Customer(),
                     ),
                 )
             )

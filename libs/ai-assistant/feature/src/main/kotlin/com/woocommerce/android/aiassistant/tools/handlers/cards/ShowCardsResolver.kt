@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.tools.analytics.AIAnalyticsDataSource
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateAfterBound
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsDateBeforeBound
 import com.woocommerce.android.aiassistant.tools.analytics.analyticsStatsSummary
+import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
@@ -15,6 +16,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
@@ -42,18 +44,24 @@ internal class DefaultShowCardsResolver @Inject constructor(
     private val ordersDataSource: AIOrdersDataSource,
     private val productsDataSource: AIProductsDataSource,
     private val analyticsDataSource: AIAnalyticsDataSource,
+    private val customersDataSource: AICustomersDataSource,
     @AiAssistantJson private val json: Json,
 ) : ShowCardsResolver {
     override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> {
         val orderResults = resolveOrders(refs.filter { it.family == ShowCardFamily.Order })
         val productResults = resolveProducts(refs.filter { it.family == ShowCardFamily.Product })
         val analyticsResults = resolveAnalyticsStats(refs.filter { it.family == ShowCardFamily.AnalyticsStats })
+        val customerResults = resolveCustomers(refs.filter { it.family == ShowCardFamily.Customer })
 
         return refs.map { ref ->
-            orderResults[ref] ?: productResults[ref] ?: analyticsResults[ref] ?: ShowCardsResolution.Missing(
-                ref = ref,
-                reason = ShowCardsRejectionReason.NotFound,
-            )
+            orderResults[ref]
+                ?: productResults[ref]
+                ?: analyticsResults[ref]
+                ?: customerResults[ref]
+                ?: ShowCardsResolution.Missing(
+                    ref = ref,
+                    reason = ShowCardsRejectionReason.NotFound,
+                )
         }
     }
 
@@ -223,8 +231,65 @@ internal class DefaultShowCardsResolver @Inject constructor(
         )
     }
 
+    private suspend fun resolveCustomers(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
+        if (refs.isEmpty()) return emptyMap()
+
+        val ids = refs.map { it.id.toLong() }
+        return customersDataSource.fetchCustomers(
+            search = null,
+            email = null,
+            include = ids,
+            orderby = "registered_date",
+            order = "desc",
+            page = null,
+            perPage = ids.size,
+        ).fold(
+            onSuccess = { customers ->
+                val customersById = customers.associateBy { it.remoteCustomerId.value }
+                refs.associateWith { ref ->
+                    customersById[ref.id.toLong()]?.toResolved(ref)
+                        ?: ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.NotFound)
+                }
+            },
+            onFailure = {
+                refs.associateWith { ref -> ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed) }
+            },
+        )
+    }
+
     private inline fun <reified T> jsonObject(value: T): JsonObject =
         json.encodeToJsonElement(value).jsonObject
+
+    private fun WCCustomerModel.toResolved(ref: ValidatedRef): ShowCardsResolution.Resolved {
+        val displayName = displayName(ref.id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = jsonObject(
+                CustomerSummary(
+                    id = ref.id,
+                    name = displayName,
+                    email = email.takeIf { it.isNotBlank() },
+                )
+            ),
+            card = ShowCardPayload(
+                family = ShowCardFamily.Customer.serializedName,
+                id = ref.id,
+                title = displayName,
+                details = ShowCardDetails.Customer(
+                    email = email.takeIf { it.isNotBlank() },
+                ),
+            ),
+        )
+    }
+
+    private fun WCCustomerModel.displayName(id: String): String =
+        listOf(firstName, lastName)
+            .filter { it.isNotBlank() }
+            .joinToString(" ")
+            .ifBlank { email }
+            .ifBlank { username }
+            .ifBlank { "Customer $id" }
 }
 
 private fun String.toDisplayOrderNumber(orderId: Long): String {

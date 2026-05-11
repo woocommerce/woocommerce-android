@@ -19,6 +19,13 @@ class AssistantCardActionTest {
     }
 
     @Test
+    fun `given open customer action, when created, then remote customer id is preserved`() {
+        val action: AssistantCardAction = AssistantCardAction.OpenCustomer(remoteCustomerId = 789L)
+
+        assertThat(action).isEqualTo(AssistantCardAction.OpenCustomer(remoteCustomerId = 789L))
+    }
+
+    @Test
     fun `given open analytics action, when created, then date range strings are preserved`() {
         val action: AssistantCardAction = AssistantCardAction.OpenAnalytics(
             after = "2026-05-01",

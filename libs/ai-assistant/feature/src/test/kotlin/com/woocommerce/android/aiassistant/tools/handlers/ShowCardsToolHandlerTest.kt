@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.tools.handlers
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.handlers.cards.CustomerSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.OrderSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ProductSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
@@ -39,19 +40,21 @@ class ShowCardsToolHandlerTest {
     private val handler = handlerWith(FakeResolver.empty())
 
     @Test
-    fun `when descriptor is inspected, then show cards accepts order product and analytics stats references`() {
+    fun `when descriptor is inspected, then show cards accepts order product analytics stats and customer references`() {
         val descriptor = handler.descriptor
 
         assertThat(descriptor.name).isEqualTo("show_cards")
         assertThat(descriptor.description).contains("order")
         assertThat(descriptor.description).contains("product")
         assertThat(descriptor.description).contains("analytics_stats")
+        assertThat(descriptor.description).contains("customer")
         assertThat(descriptor.inputSchema.toString()).contains("references")
         assertThat(descriptor.inputSchema.toString()).contains("family")
         assertThat(descriptor.inputSchema.toString()).contains("id")
         assertThat(descriptor.inputSchema.toString()).contains("order")
         assertThat(descriptor.inputSchema.toString()).contains("product")
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
+        assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString())
             .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
@@ -144,6 +147,18 @@ class ShowCardsToolHandlerTest {
             "currency",
             "totals",
         )
+    }
+
+    @Test
+    fun `given resolved customer, when executed, then summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(customerCard(id = "123")),
+            referencesJson = """[{ "family": "customer", "id": "123" }]"""
+        )
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly("id", "name", "email")
     }
 
     @Test
@@ -260,7 +275,7 @@ class ShowCardsToolHandlerTest {
               "references": [
                 null,
                 { "id": "1" },
-                { "family": "customer", "id": "1" },
+                { "family": "coupon", "id": "1" },
                 { "family": "order" },
                 { "family": "product", "id": "" }
               ]
@@ -307,14 +322,17 @@ class ShowCardsToolHandlerTest {
               "references": [
                 { "family": "order", "id": "abc" },
                 { "family": "product", "id": "12x" },
-                { "family": "order", "id": "0" }
+                { "family": "customer", "id": "12x" },
+                { "family": "order", "id": "0" },
+                { "family": "customer", "id": "0" }
               ]
             }
             """.trimIndent()
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result))
+            .containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id", "invalid_id")
     }
 
     @Test
@@ -623,6 +641,27 @@ class ShowCardsToolHandlerTest {
                     totals = totals,
                     intervalSubtotals = intervals,
                 ),
+            )
+        )
+    }
+
+    private fun customerCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.Customer, id = id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = json.encodeToJsonElement(
+                CustomerSummary(
+                    id = id,
+                    name = "Ada Lovelace",
+                    email = "ada@example.com",
+                )
+            ).jsonObject,
+            card = ShowCardPayload(
+                family = "customer",
+                id = id,
+                title = "Ada Lovelace",
+                details = ShowCardDetails.Customer(email = "ada@example.com"),
             )
         )
     }

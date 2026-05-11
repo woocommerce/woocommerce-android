@@ -67,7 +67,8 @@ internal class ShowCardsReferenceValidator {
     private fun String.isValidShowCardsId(family: ShowCardFamily): Boolean =
         when (family) {
             ShowCardFamily.Order,
-            ShowCardFamily.Product -> toLongOrNull()?.let { it > 0L } == true
+            ShowCardFamily.Product,
+            ShowCardFamily.Customer -> toLongOrNull()?.let { it > 0L } == true
             ShowCardFamily.AnalyticsStats -> AnalyticsStatsCardId.parse(this) != null
         }
 
