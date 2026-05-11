@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun QrLoginPrologueScreen(
     onScanClicked: () -> Unit,
     onFallbackClicked: () -> Unit,
+    onHelpClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
@@ -125,6 +126,12 @@ fun QrLoginPrologueScreen(
             }
             Buttons(onScanClicked = handleScanClicked, onFallbackClicked = onFallbackClicked)
         }
+
+        QrLoginHelpButton(
+            onClick = onHelpClicked,
+            tint = colorResource(id = R.color.prologue_login_on_background),
+            modifier = Modifier.align(Alignment.TopEnd),
+        )
     }
 }
 
@@ -316,6 +323,6 @@ private fun Buttons(
 @Composable
 private fun QrLoginPrologueScreenPreview() {
     WooThemeWithBackground {
-        QrLoginPrologueScreen(onScanClicked = {}, onFallbackClicked = {})
+        QrLoginPrologueScreen(onScanClicked = {}, onFallbackClicked = {}, onHelpClicked = {})
     }
 }

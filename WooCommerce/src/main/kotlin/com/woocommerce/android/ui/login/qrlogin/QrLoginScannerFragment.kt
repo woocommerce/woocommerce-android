@@ -11,6 +11,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -48,6 +50,7 @@ class QrLoginScannerFragment : Fragment() {
         fun onQrLoginCompleted(localSiteId: Int)
         fun onQrLoginFallbackClicked()
         fun onQrLoginSiteUrlPrefill(siteUrl: String)
+        fun onQrLoginHelpClicked()
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -61,6 +64,9 @@ class QrLoginScannerFragment : Fragment() {
 
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
+
+    @Inject
+    lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
     private var listener: Listener? = null
 
@@ -101,6 +107,11 @@ class QrLoginScannerFragment : Fragment() {
             onStartOver = ::handleStartOver,
             onRetryExchange = qrLoginViewModel::onRetryExchange,
             onFallbackClicked = { listener?.onQrLoginFallbackClicked() },
+            onHelpClicked = {
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HELP_TAPPED)
+                unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.SHOW_HELP)
+                listener?.onQrLoginHelpClicked()
+            },
         )
     }
 
