@@ -100,6 +100,16 @@ class AssistantCardSegmentMapperTest {
                                 value = "120.15",
                                 chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 120.15)),
                             ),
+                            AssistantCard.Stats.Metric(
+                                type = AssistantCard.Stats.MetricType.TotalOrders,
+                                value = "42",
+                                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 42.0)),
+                            ),
+                            AssistantCard.Stats.Metric(
+                                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                                value = "85.30",
+                                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 85.30)),
+                            ),
                         ),
                     )
                 )
@@ -144,6 +154,8 @@ class AssistantCardSegmentMapperTest {
             totals = buildJsonObject {
                 put("total_sales", "170.35")
                 put("net_revenue", "120.15")
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
             },
             intervalSubtotals = listOf(
                 buildJsonObject {
@@ -151,6 +163,8 @@ class AssistantCardSegmentMapperTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "170.35")
                         put("net_revenue", "120.15")
+                        put("orders_count", "42")
+                        put("avg_order_value", "85.30")
                     }
                 }
             ),

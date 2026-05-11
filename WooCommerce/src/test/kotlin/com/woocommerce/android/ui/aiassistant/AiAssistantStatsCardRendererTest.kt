@@ -157,6 +157,31 @@ class AiAssistantStatsCardRendererTest {
     }
 
     @Test
+    fun `given unified stats card, when mapped, then money metrics are currency formatted and orders are raw`() {
+        whenever(currencyFormatter.formatCurrency("170.35", "USD")).thenReturn("$170.35")
+        whenever(currencyFormatter.formatCurrency("120.15", "USD")).thenReturn("$120.15")
+        whenever(currencyFormatter.formatCurrency("85.30", "USD")).thenReturn("$85.30")
+
+        val model = unifiedStatsCard().toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.metrics.map { it.type }).containsExactly(
+            AssistantCard.Stats.MetricType.TotalSales,
+            AssistantCard.Stats.MetricType.NetSales,
+            AssistantCard.Stats.MetricType.TotalOrders,
+            AssistantCard.Stats.MetricType.AverageOrderValue,
+        )
+        assertThat(model.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("$170.35")
+        assertThat(model.metric(AssistantCard.Stats.MetricType.NetSales).value).isEqualTo("$120.15")
+        assertThat(model.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
+        assertThat(model.metric(AssistantCard.Stats.MetricType.AverageOrderValue).value).isEqualTo("$85.30")
+        verify(currencyFormatter, never()).formatCurrency("42", "USD")
+    }
+
+    @Test
     fun `given orders stats card with blank metrics, when mapped, then unavailable fallback is used`() {
         val model = ordersStatsCard(
             ordersCount = "",
@@ -258,6 +283,36 @@ class AiAssistantStatsCardRendererTest {
                 type = AssistantCard.Stats.MetricType.AverageOrderValue,
                 value = averageOrderValue,
                 chartPoints = averageOrderValueChartPoints,
+            ),
+        ),
+    )
+
+    private fun unifiedStatsCard() = AssistantCard.Stats(
+        id = ANALYTICS_ORDERS_STATS_ID,
+        kind = AssistantCard.Stats.Kind.Orders,
+        after = "2026-05-01",
+        before = "2026-05-07",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 50.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 35.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 80.10)),
             ),
         ),
     )

@@ -756,7 +756,7 @@ private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
                         AssistantUiSegment.ToolActivity(
                             AssistantToolActivity(
                                 toolCallId = "call-revenue",
-                                toolName = "analytics_revenue",
+                                toolName = "analytics_orders",
                                 status = AssistantToolActivity.Status.COMPLETED,
                             )
                         ),
@@ -808,7 +808,7 @@ private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
                         AssistantUiSegment.ToolActivity(
                             AssistantToolActivity(
                                 toolCallId = "call-revenue",
-                                toolName = "analytics_revenue",
+                                toolName = "analytics_orders",
                                 status = AssistantToolActivity.Status.COMPLETED,
                             )
                         ),
@@ -1081,9 +1081,11 @@ private fun sampleProductCard() = AssistantCard.Product(
 private fun sampleStatsCard(
     totalSalesChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_SALES_CHART_POINTS,
     netSalesChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_NET_SALES_CHART_POINTS,
+    totalOrdersChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_ORDERS_CHART_POINTS,
+    averageOrderValueChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_AVERAGE_ORDER_VALUE_CHART_POINTS,
 ) = AssistantCard.Stats(
-    id = "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD",
-    kind = AssistantCard.Stats.Kind.Revenue,
+    id = "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day",
+    kind = AssistantCard.Stats.Kind.Orders,
     after = "2026-05-01",
     before = "2026-05-07",
     currency = "USD",
@@ -1098,6 +1100,16 @@ private fun sampleStatsCard(
             value = "120.15",
             chartPoints = netSalesChartValues,
         ),
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.TotalOrders,
+            value = "42",
+            chartPoints = totalOrdersChartValues,
+        ),
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.AverageOrderValue,
+            value = "85.30",
+            chartPoints = averageOrderValueChartValues,
+        ),
     ),
 )
 
@@ -1111,6 +1123,18 @@ private val SAMPLE_NET_SALES_CHART_POINTS = listOf(
     AssistantCard.Stats.ChartPoint("2026-05-01", 8.0),
     AssistantCard.Stats.ChartPoint("2026-05-02", 12.0),
     AssistantCard.Stats.ChartPoint("2026-05-03", 6.0),
+)
+
+private val SAMPLE_TOTAL_ORDERS_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 16.0),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 14.0),
+)
+
+private val SAMPLE_AVERAGE_ORDER_VALUE_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 82.25),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 93.55),
 )
 
 private val AssistantCard.Order.unformattedTotal: String
