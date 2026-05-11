@@ -80,6 +80,14 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
+    fun `when prompt is generated, then variation bulk guidance stays on existing update tool`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-07")
+
+        assertThat(prompt).contains("product_variations_update")
+        assertThat(prompt).doesNotContain("product_variations_bulk_update")
+    }
+
+    @Test
     fun `when prompt is built, then show cards is the only card producer including analytics stats`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 

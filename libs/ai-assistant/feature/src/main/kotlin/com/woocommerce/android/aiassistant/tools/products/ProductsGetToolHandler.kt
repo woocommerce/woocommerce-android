@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -31,6 +32,9 @@ internal class ProductsGetToolHandler @Inject constructor(
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, PRODUCTS_GET_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -48,3 +52,5 @@ internal class ProductsGetToolHandler @Inject constructor(
     @Serializable
     private data class Args(val id: Long)
 }
+
+private val PRODUCTS_GET_ALLOWED_ARGS = setOf("id")

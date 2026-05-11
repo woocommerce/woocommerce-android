@@ -67,7 +67,7 @@ class WooCommerceConfirmationPreviewBuilderTest {
     }
 
     @Test
-    fun `given single order update has unsupported fields, when preview is built, then they are ignored`() {
+    fun `given single order update has note and email, when preview is built, then fields are included`() {
         val call = toolCall(
             name = "orders_update",
             arguments = buildJsonObject {
@@ -92,6 +92,68 @@ class WooCommerceConfirmationPreviewBuilderTest {
                 value = raw("pending"),
                 label = label(R.string.ai_assistant_confirmation_field_status),
             ),
+            ConfirmationPreviewField(
+                name = "customer_note",
+                value = raw("Thanks"),
+                label = label(R.string.ai_assistant_confirmation_field_customer_note),
+            ),
+            ConfirmationPreviewField(
+                name = "billing_email",
+                value = raw("buyer@example.com"),
+                label = label(R.string.ai_assistant_confirmation_field_billing_email),
+            ),
+        )
+    }
+
+    @Test
+    fun `given order billing email update and snapshot, when preview is built, then before and after are included`() {
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("billing_email", "new@example.com")
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf("billing_email" to "old@example.com")
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "billing_email",
+                label = label(R.string.ai_assistant_confirmation_field_billing_email),
+                value = raw("new@example.com"),
+                beforeValue = raw("old@example.com"),
+            )
+        )
+    }
+
+    @Test
+    fun `given long order customer note update, when preview is built, then after value is capped without before`() {
+        val longNote = "a".repeat(200)
+
+        val preview = builder.build(
+            toolCall(
+                name = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("customer_note", longNote)
+                },
+            ),
+            snapshot = ConfirmationSnapshot(
+                currentValues = mapOf("customer_note" to "previous private note")
+            ),
+        )
+
+        assertThat(preview.rows).containsExactly(
+            ConfirmationPreviewField(
+                name = "customer_note",
+                label = label(R.string.ai_assistant_confirmation_field_customer_note),
+                value = raw("${"a".repeat(160)}..."),
+                beforeValue = null,
+            )
         )
     }
 

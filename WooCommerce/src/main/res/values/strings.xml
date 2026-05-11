@@ -388,6 +388,8 @@
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
     <string name="my_store_edit_screen_widgets">Customize</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Ask about your store…</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">Open AI Assistant</string>
 
     <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
     <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>
@@ -2315,7 +2317,9 @@
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
     <string name="settings_notifs_stock_low_stock_description">When a product variant reaches its low stock threshold.</string>
-    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store default of&#160;&lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit default threshold&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store-wide threshold of&#160;&lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit store-wide threshold&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Products can use their own threshold or the store-wide threshold. &lt;a href=\'\'&gt;View store-wide threshold&lt;/a&gt; to see the current value.</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Unable to load store-wide threshold</string>
     <string name="settings_notifs_stock_out_of_stock_title">Out of stock</string>
     <string name="settings_notifs_stock_out_of_stock_description">When a product variant hits zero.</string>
     <string name="settings_notifs_stock_backorder_title">On backorder</string>
@@ -2405,6 +2409,11 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+
+    <string name="ai_support_chat_help_row_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
+    <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_placeholder">Coming soon</string>
 
     <string name="support_developer_section_title" translatable="false">DEVELOPER</string>
     <string name="support_override_feature_flags" translatable="false">Override Feature Flags</string>

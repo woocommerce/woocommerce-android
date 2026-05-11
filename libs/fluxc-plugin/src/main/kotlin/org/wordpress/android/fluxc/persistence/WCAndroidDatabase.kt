@@ -68,6 +68,7 @@ import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelCreationEligibilityDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.persistence.dao.TaxClassDao
 import org.wordpress.android.fluxc.persistence.dao.TaxRateDao
@@ -96,6 +97,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
+import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
@@ -141,7 +143,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 84
+const val WC_DATABASE_VERSION = 85
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -203,6 +205,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCShippingLabelModel::class,
         WCShippingLabelCreationEligibility::class,
         WooPushNotificationPreferencesEntity::class,
+        SupportChatBookmarkEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -266,6 +269,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 81, to = 82),
         AutoMigration(from = 82, to = 83),
         AutoMigration(from = 83, to = 84),
+        AutoMigration(from = 84, to = 85),
     ]
 )
 @TypeConverters(
@@ -323,6 +327,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val shippingLabelDao: ShippingLabelDao
     internal abstract val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
     internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
+    abstract val supportChatBookmarkDao: SupportChatBookmarkDao
 
     companion object {
         fun buildDb(

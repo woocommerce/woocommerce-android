@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 84,
-    "identityHash": "892052f9405a7064a0fb74599a2b73be",
+    "identityHash": "7b40f5935f3ac2e13ef3818862b929e0",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -4703,9 +4703,15 @@
         }
       },
       {
-        "tableName": "WooPushNotificationPreferences",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `storeOrderEnabled` INTEGER, `storeOrderMinAmount` TEXT, `storeReviewEnabled` INTEGER, `storeReviewMaxRating` INTEGER, `storeStockEnabled` INTEGER, `storeStockLowStock` INTEGER, `storeStockOutOfStock` INTEGER, `storeStockOnBackorder` INTEGER, PRIMARY KEY(`localSiteId`))",
+        "tableName": "SupportChatBookmarkEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chatId` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteSiteId` INTEGER NOT NULL, `botSlug` TEXT NOT NULL, `title` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`chatId`))",
         "fields": [
+          {
+            "fieldPath": "chatId",
+            "columnName": "chatId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "localSiteId",
             "columnName": "localSiteId",
@@ -4713,57 +4719,46 @@
             "notNull": true
           },
           {
-            "fieldPath": "storeOrderEnabled",
-            "columnName": "storeOrderEnabled",
-            "affinity": "INTEGER"
+            "fieldPath": "remoteSiteId",
+            "columnName": "remoteSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
-            "fieldPath": "storeOrderMinAmount",
-            "columnName": "storeOrderMinAmount",
+            "fieldPath": "botSlug",
+            "columnName": "botSlug",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "storeReviewEnabled",
-            "columnName": "storeReviewEnabled",
-            "affinity": "INTEGER"
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
-            "fieldPath": "storeReviewMaxRating",
-            "columnName": "storeReviewMaxRating",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "storeStockEnabled",
-            "columnName": "storeStockEnabled",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "storeStockLowStock",
-            "columnName": "storeStockLowStock",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "storeStockOutOfStock",
-            "columnName": "storeStockOutOfStock",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "storeStockOnBackorder",
-            "columnName": "storeStockOnBackorder",
-            "affinity": "INTEGER"
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "localSiteId"
+            "chatId"
           ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '892052f9405a7064a0fb74599a2b73be')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b40f5935f3ac2e13ef3818862b929e0')"
     ]
   }
 }

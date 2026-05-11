@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -29,7 +30,7 @@ internal class CustomersListToolHandler @Inject constructor(
     override val descriptor = ToolDescriptor(
         name = "customers_list",
         description = "List customers or look up known customer IDs by passing include as an array of IDs. " +
-            "Returns compact matches with id, first_name, last_name, and email only.",
+            "Returns compact matches with id, first_name, last_name, email, username, and date_created.",
         inputSchema = buildJsonObject {
             put("type", "object")
             putJsonObject("properties") {
@@ -122,10 +123,7 @@ internal class CustomersListToolHandler @Inject constructor(
     }
 
     private fun JsonObject.toCustomerListArgs(): CustomerListArgs {
-        val unknownKeys = keys - ALLOWED_KEYS
-        require(unknownKeys.isEmpty()) {
-            "Unsupported customers_list argument(s): ${unknownKeys.joinToString(", ")}"
-        }
+        validateAllowedArguments(this, ALLOWED_KEYS, "customers_list").getOrThrow()
 
         val orderby = stringArg("orderby") ?: DEFAULT_ORDERBY
         require(orderby in ALLOWED_ORDERBY) {
@@ -205,6 +203,19 @@ internal class CustomersListToolHandler @Inject constructor(
                         putOptionalString("first_name", customer.firstName)
                         putOptionalString("last_name", customer.lastName)
                         putOptionalString("email", customer.email)
+                        putOptionalString("username", customer.username)
+                        putOptionalString("date_created", customer.dateCreated)
+                        putJsonObject("billing") {
+                            putOptionalString("phone", customer.billingPhone)
+                            putOptionalString("city", customer.billingCity)
+                            putOptionalString("country", customer.billingCountry)
+                        }
+                        putJsonObject("shipping") {
+                            putOptionalString("city", customer.shippingCity)
+                            putOptionalString("country", customer.shippingCountry)
+                        }
+                        putOptionalString("role", customer.role)
+                        putOptionalString("avatar_url", customer.avatarUrl)
                     }
                 )
             }
@@ -218,8 +229,8 @@ internal class CustomersListToolHandler @Inject constructor(
         }
     }
 
-    private fun JsonObjectBuilder.putOptionalString(name: String, value: String) {
-        if (value.isNotBlank()) {
+    private fun JsonObjectBuilder.putOptionalString(name: String, value: String?) {
+        if (!value.isNullOrBlank()) {
             put(name, value)
         }
     }
@@ -241,7 +252,15 @@ internal class CustomersListToolHandler @Inject constructor(
         const val MIN_PER_PAGE = 1
         const val MAX_PER_PAGE = 50
 
-        val ALLOWED_KEYS = setOf("search", "email", "include", "orderby", "order", "page", "per_page")
+        val ALLOWED_KEYS = setOf(
+            "search",
+            "email",
+            "include",
+            "orderby",
+            "order",
+            "page",
+            "per_page",
+        )
         val ALLOWED_ORDERBY = setOf("registered_date", "name", "id", "email")
         val ALLOWED_ORDER = setOf("asc", "desc")
         val RETRYABLE_WOO_ERROR_TYPES = setOf(

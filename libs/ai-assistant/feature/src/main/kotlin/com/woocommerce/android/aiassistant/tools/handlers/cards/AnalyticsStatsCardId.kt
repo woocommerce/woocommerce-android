@@ -2,7 +2,7 @@ package com.woocommerce.android.aiassistant.tools.handlers.cards
 
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsInterval
 import com.woocommerce.android.aiassistant.tools.analytics.normaliseCurrency
-import com.woocommerce.android.aiassistant.tools.analytics.validateAnalyticsDate
+import com.woocommerce.android.aiassistant.tools.analytics.parseAnalyticsDate
 import com.woocommerce.android.aiassistant.tools.analytics.validateAnalyticsDateRange
 
 internal data class AnalyticsStatsCardId(
@@ -51,10 +51,11 @@ private fun String.toParsedCurrency(): ParsedCurrency? =
             ?.let(::ParsedCurrency)
     }
 
-private fun AnalyticsStatsCardId.hasValidDateRange(): Boolean =
-    validateAnalyticsDate(after) &&
-        validateAnalyticsDate(before) &&
-        validateAnalyticsDateRange(after, before, interval) == null
+private fun AnalyticsStatsCardId.hasValidDateRange(): Boolean {
+    val afterDate = parseAnalyticsDate(after) ?: return false
+    val beforeDate = parseAnalyticsDate(before) ?: return false
+    return validateAnalyticsDateRange(afterDate, beforeDate, interval) == null
+}
 
 internal fun AnalyticsStatsCardId.toSyntheticId(): String {
     val currencyValue = currency ?: NO_CURRENCY_VALUE
