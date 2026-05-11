@@ -62,6 +62,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             restClient = restClient,
             authenticator = authenticator,
             accountRepository = accountRepository,
+            errorMapper = QrLoginErrorMapper(),
             analyticsTracker = analyticsTracker
         )
     }
