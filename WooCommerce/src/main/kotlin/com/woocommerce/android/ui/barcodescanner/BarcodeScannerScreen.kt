@@ -27,7 +27,7 @@ fun BarcodeScannerScreen(
     permissionState: State<BarcodeScanningViewModel.PermissionState>,
     onResult: (Boolean) -> Unit,
     @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
-    overlayContent: (@Composable () -> Unit)? = null,
+    overlayContent: @Composable () -> Unit = { DefaultScannerOverlay(overlayLabel = overlayLabel) },
 ) = BarcodeScannerScreen(
     onNewFrame = onNewFrame,
     onBindingException = onBindingException,
@@ -44,7 +44,7 @@ fun BarcodeScannerScreen(
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
     @StringRes overlayLabel: Int = R.string.barcode_scanning_scan_product_barcode_label,
-    overlayContent: (@Composable () -> Unit)? = null,
+    overlayContent: @Composable () -> Unit = { DefaultScannerOverlay(overlayLabel = overlayLabel) },
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),

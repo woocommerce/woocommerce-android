@@ -372,14 +372,27 @@ class QrLoginScannerViewModel @Inject constructor(
      * We flip into [Authenticating] for the duration of the logout so the UI gives feedback while
      * [AccountRepository.logout] talks to the server. For the Ticket path this is then overwritten
      * by the scan / number-match flow.
+     *
+     * If logout fails (only the wp.com path can; it returns false without running cleanup, so
+     * the access token and selected site are still in place), we must NOT resume — installing
+     * fresh credentials on top of a live session is exactly what the warning exists to prevent.
+     * Surface a generic error and let the merchant scan again, which re-shows the warning.
      */
     fun onConfirmSessionReplace() {
         val pending = (_uiState.value as? WarningSessionReplace)?.pending ?: return
         analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
         _uiState.value = Authenticating(AuthPhase.SessionReplaceInFlight)
         launch {
-            accountRepository.logout()
-            resumePending(pending)
+            if (accountRepository.logout()) {
+                resumePending(pending)
+            } else {
+                trackScanFailure(
+                    step = Step.EXCHANGE,
+                    errorContext = null,
+                    errorType = SESSION_REPLACE_LOGOUT_FAILED,
+                )
+                _uiState.value = Error(reason = ErrorReason.Network, retryTicket = null)
+            }
         }
     }
 
@@ -501,5 +514,6 @@ class QrLoginScannerViewModel @Inject constructor(
         const val POLL_INTERVAL_MS = 2_000L
         const val MILLIS_PER_SECOND = 1_000L
         const val MAX_CONSECUTIVE_POLL_ERRORS = 4
+        const val SESSION_REPLACE_LOGOUT_FAILED = "session_replace_logout_failed"
     }
 }
