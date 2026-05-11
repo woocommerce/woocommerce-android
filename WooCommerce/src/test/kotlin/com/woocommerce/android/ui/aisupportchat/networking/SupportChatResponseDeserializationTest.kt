@@ -33,9 +33,8 @@ class SupportChatResponseDeserializationTest {
         assertThat(flags.forwardToHumanSupport).isFalse
         assertThat(flags.loggedIn).isTrue
         assertThat(flags.branch).isNull()
-        val sources = requireNotNull(botContext.sources)
-        assertThat(sources).hasSize(1)
-        assertThat(sources[0].url).isEqualTo("https://woocommerce.com/help/orders")
+        assertThat(botContext.sources).hasSize(1)
+        assertThat(botContext.sources[0].url).isEqualTo("https://woocommerce.com/help/orders")
     }
 
     @Test

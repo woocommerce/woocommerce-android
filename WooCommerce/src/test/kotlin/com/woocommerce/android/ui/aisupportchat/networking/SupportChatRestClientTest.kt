@@ -185,9 +185,9 @@ class SupportChatRestClientTest : BaseUnitTest() {
 
     private fun supportChatResponse() = SupportChatResponse(
         chatId = CHAT_ID,
-        sessionId = null,
+        sessionId = "session-abc-123",
         botSlug = BOT_SLUG,
-        botVersion = null
+        botVersion = "v1.0.0"
     )
 
     private companion object {
