@@ -22,10 +22,10 @@ class AssistantCardGroupKindTest {
     }
 
     @Test
-    fun `given only variation cards, when resolving group kind, then products metadata is returned`() {
+    fun `given only variation cards, when resolving group kind, then variations metadata is returned`() {
         val metadata = listOf(variationCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_products)
+        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_variations)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
     }
 
@@ -54,11 +54,11 @@ class AssistantCardGroupKindTest {
     }
 
     @Test
-    fun `given mixed product and variation cards, when resolving group kind, then products metadata is returned`() {
+    fun `given mixed product and variation cards, when resolving group kind, then generic metadata is returned`() {
         val metadata = listOf(productCard(), variationCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_products)
-        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
+        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_generic)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
     }
 
     private fun orderCard() = AssistantCard.Order(

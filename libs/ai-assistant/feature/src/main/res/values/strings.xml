@@ -47,6 +47,7 @@
     <string name="assistant_chat_tool_activity_content_description">Assistant is working: %1$s</string>
     <string name="assistant_chat_card_group_orders">Orders</string>
     <string name="assistant_chat_card_group_products">Products</string>
+    <string name="assistant_chat_card_group_variations">Variations</string>
     <string name="assistant_chat_card_group_stats">Analytics</string>
     <string name="assistant_chat_card_group_customers">Customers</string>
     <string name="assistant_chat_card_group_generic">Cards</string>
