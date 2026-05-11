@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
@@ -54,7 +53,6 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val site = SiteModel().apply { id = 123 }
-    private val appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
     private lateinit var viewModel: NewOrderNotificationSettingsViewModel
 
     private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -88,7 +86,6 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
             analyticsTracker = analyticsTracker,
             selectedSite = selectedSite,
             pushNotificationRepository = pushNotificationRepository,
-            appCoroutineScope = appCoroutineScope,
             coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
     }
