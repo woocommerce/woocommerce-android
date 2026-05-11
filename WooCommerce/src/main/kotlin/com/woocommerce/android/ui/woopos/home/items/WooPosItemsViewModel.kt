@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -161,7 +162,8 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
-                    is ParentToChildrenEvent.ProductsRemoved -> Unit
+                    is ParentToChildrenEvent.ProductsRemoved,
+                    is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
 
                     ParentToChildrenEvent.RefreshProductList,
                     is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested -> refreshBannerState()
@@ -177,6 +179,7 @@ class WooPosItemsViewModel @Inject constructor(
     private fun handleItemClicked(event: ParentToChildrenEvent.ItemClickedInItemsList) {
         when (event.itemData) {
             is ItemClickedData.Coupon,
+            is ItemClickedData.CustomAmount,
             is ItemClickedData.Product.Simple,
             is ItemClickedData.Product.Variation -> Unit
 
@@ -309,5 +312,13 @@ class WooPosItemsViewModel @Inject constructor(
 
         @Parcelize
         data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
+
+        @Parcelize
+        data class CustomAmount(
+            override val id: Long,
+            val name: String,
+            val amount: BigDecimal,
+            val isTaxable: Boolean,
+        ) : ItemClickedData(id), Parcelable
     }
 }

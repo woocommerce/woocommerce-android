@@ -303,6 +303,8 @@ private fun CartBodyWithItems(
                     onUIEvent = onUIEvent,
                 )
 
+                is WooPosCartItemViewState.CustomAmount -> Unit // rendered in a follow-up PR
+
                 is WooPosCartItemViewState.Error -> ErrorItem(
                     modifier = Modifier.animateItem(),
                     item = item,

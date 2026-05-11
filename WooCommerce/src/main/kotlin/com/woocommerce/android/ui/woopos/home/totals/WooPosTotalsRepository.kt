@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
+import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
@@ -54,6 +55,7 @@ class WooPosTotalsRepository @Inject constructor(
     private suspend fun createOrder(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>): Order {
         val products = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
         val coupons = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
+        val customAmounts = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.CustomAmount>()
         return Order.getEmptyOrder(
             dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
             dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
@@ -61,7 +63,26 @@ class WooPosTotalsRepository @Inject constructor(
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
             items = createProductItems(products),
             couponLines = createCouponLines(coupons),
+            feesLines = createFeeLines(customAmounts),
         )
+    }
+
+    private fun createFeeLines(
+        customAmounts: List<WooPosItemsViewModel.ItemClickedData.CustomAmount>
+    ): List<Order.FeeLine> {
+        return customAmounts.map { customAmount ->
+            Order.FeeLine.EMPTY.copy(
+                name = customAmount.name,
+                total = customAmount.amount,
+                totalTax = BigDecimal.ZERO,
+                taxStatus = if (customAmount.isTaxable) {
+                    Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                } else {
+                    Order.FeeLine.FeeLineTaxStatus.NONE
+                },
+                taxes = emptyList(),
+            )
+        }
     }
 
     private suspend fun createProductItems(

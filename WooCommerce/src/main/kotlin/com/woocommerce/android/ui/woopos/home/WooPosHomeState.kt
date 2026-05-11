@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -50,5 +51,10 @@ data class WooPosHomeState(
 
         @Parcelize
         data object CardReaderConnectionDialog : DialogState()
+
+        @Parcelize
+        data class CustomAmountDialog(
+            val editing: WooPosCartItemViewState.CustomAmount? = null,
+        ) : DialogState()
     }
 }

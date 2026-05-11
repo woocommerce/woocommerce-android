@@ -120,6 +120,27 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "clear_cart_tapped"
         }
 
+        data class CustomAmountSubmitted(
+            val mode: Mode,
+            val isTaxable: Boolean,
+        ) : Event() {
+            override val name: String = "custom_amount_submitted"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "mode" to mode.value,
+                        "is_taxable" to isTaxable.toString(),
+                    )
+                )
+            }
+
+            enum class Mode(val value: String) {
+                ADD("add"),
+                EDIT("edit"),
+            }
+        }
+
         data object CreateNewOrderTapped : Event() {
             override val name: String = "create_new_order_tapped"
         }
@@ -401,6 +422,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product -> ItemsListItemType.PRODUCT
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> ItemsListItemType.COUPON
+                    is WooPosItemsViewModel.ItemClickedData.CustomAmount -> ItemsListItemType.CUSTOM_AMOUNT
                     is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
                         error("VariableProduct is not a valid item type")
                     }
@@ -409,6 +431,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> null
+                    is WooPosItemsViewModel.ItemClickedData.CustomAmount -> null
                     is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
                         error("VariableProduct is not a valid item type")
                     }
@@ -421,12 +444,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.CustomAmount -> ItemsListItemType.CUSTOM_AMOUNT
                     is WooPosCartItemViewState.Product.Simple -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Product.Variation -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
                 },
                 productType = when (item) {
                     is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.CustomAmount,
                     is WooPosCartItemViewState.Error,
                     is WooPosCartItemViewState.Loading -> null
 
@@ -469,6 +494,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosCartItemViewState.Product -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.CustomAmount -> ItemsListItemType.CUSTOM_AMOUNT
                     is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
                     is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
                 },
@@ -476,6 +502,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.CustomAmount,
                     is WooPosCartItemViewState.Error,
                     is WooPosCartItemViewState.Loading -> null
                 }
