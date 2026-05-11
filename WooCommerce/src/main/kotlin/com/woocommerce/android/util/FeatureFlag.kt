@@ -35,6 +35,7 @@ enum class FeatureFlag(
     LOGGED_OUT_FF_PANEL("logged_out_ff_panel", localValue = PackageUtils.isDebugBuild()),
     REMOTE_TAP_TO_PAY("remote_tap_to_pay", localValue = PackageUtils.isDebugBuild()),
     AI_ASSISTANT("ai_assistant", localValue = PackageUtils.isDebugBuild()),
+    AI_SUPPORT_CHAT("ai_support_chat", localValue = PackageUtils.isDebugBuild()),
     SMARTER_NOTIFICATIONS("smarter_notifications", localValue = PackageUtils.isDebugBuild()),
     IPP_COUNTRY_EXPANSION("woo_ipp_country_expansion"),
     IPP_COUNTRY_EXPANSION_EU_EXTENDED("woo_ipp_country_expansion_eu_extended"),
