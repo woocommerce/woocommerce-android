@@ -15,6 +15,8 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,8 +36,8 @@ class QrLoginRestClientTest : BaseUnitTest() {
 
     private lateinit var client: QrLoginRestClient
 
-    private val fakeDeviceInfoProvider = object : QrLoginDeviceInfoProvider() {
-        override fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
+    private val fakeDeviceInfoProvider = mock<QrLoginDeviceInfoProvider> {
+        on { get() } doReturn QrLoginDeviceInfo(
             os = "Android",
             osVersion = "14",
             model = "Pixel 8 Pro",

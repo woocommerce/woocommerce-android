@@ -19,8 +19,8 @@ import javax.inject.Singleton
  * server-side, so we don't need to truncate locally.
  */
 @Singleton
-open class QrLoginDeviceInfoProvider @Inject constructor() {
-    open fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
+class QrLoginDeviceInfoProvider @Inject constructor() {
+    fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
         os = OS_NAME,
         osVersion = Build.VERSION.RELEASE.orEmpty(),
         model = Build.MODEL.orEmpty(),
