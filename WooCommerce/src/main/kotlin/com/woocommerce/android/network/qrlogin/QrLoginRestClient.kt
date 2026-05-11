@@ -47,8 +47,8 @@ class QrLoginRestClient @Inject constructor(
                 Result.success(performScan(siteUrl, token))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapScanException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapScanException(e))
             }
         }
 
@@ -58,8 +58,8 @@ class QrLoginRestClient @Inject constructor(
                 Result.success(performSessionStatus(siteUrl, sessionId))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapSessionStatusException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapSessionStatusException(e))
             }
         }
 
@@ -73,8 +73,8 @@ class QrLoginRestClient @Inject constructor(
                 Result.success(performExchange(siteUrl, token, exchangeGrant))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapExchangeException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapExchangeException(e))
             }
         }
 
