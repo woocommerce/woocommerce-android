@@ -3,7 +3,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
-import org.wordpress.android.fluxc.utils.NullJsonAdapter
+import org.wordpress.android.fluxc.utils.NullBigDecimalJsonAdapter
 import java.math.BigDecimal
 
 internal fun WooPushNotificationPreferences.toRequestMap(): Map<String, Any> = buildMap {
@@ -31,7 +31,7 @@ private data class StoreOrderPreferencesRequest(
     @SerializedName("enabled")
     val enabled: Boolean? = null,
     @SerializedName("min_amount")
-    @JsonAdapter(NullJsonAdapter::class, nullSafe = false)
+    @JsonAdapter(NullBigDecimalJsonAdapter::class, nullSafe = false)
     val minAmount: BigDecimal? = null
 ) {
     fun isNotEmpty() = enabled != null || minAmount != null

@@ -7,15 +7,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.math.BigDecimal
 
-class NullJsonAdapterTests {
+class NullableJsonAdapterTests {
     data class StringExample(
-        @JsonAdapter(NullJsonAdapter::class, nullSafe = false)
+        @JsonAdapter(NullStringJsonAdapter::class, nullSafe = false)
         @SerializedName("an_id")
         val id: String?
     )
 
     data class NumberExample(
-        @JsonAdapter(NullJsonAdapter::class, nullSafe = false)
+        @JsonAdapter(NullBigDecimalJsonAdapter::class, nullSafe = false)
         @SerializedName("amount")
         val amount: BigDecimal?
     )
@@ -60,6 +60,28 @@ class NullJsonAdapterTests {
         val json = gson.toJson(example)
 
         assertThat(json).contains(""""an_id":"some_id"""")
+    }
+
+    @Test
+    fun `when passing null number in json, then it should be deserialized to null value`() {
+        val json = """{
+            "amount": null
+            }"""
+
+        val example = gson.fromJson(json, NumberExample::class.java)
+
+        assertThat(example.amount).isNull()
+    }
+
+    @Test
+    fun `when passing non-null number value in json, then it should be deserialized to the correct value`() {
+        val json = """{
+            "amount": 100.50
+            }"""
+
+        val example = gson.fromJson(json, NumberExample::class.java)
+
+        assertThat(example.amount).isEqualByComparingTo(BigDecimal("100.50"))
     }
 
     @Test
