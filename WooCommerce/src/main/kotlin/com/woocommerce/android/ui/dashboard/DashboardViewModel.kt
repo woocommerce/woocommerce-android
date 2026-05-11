@@ -26,6 +26,7 @@ import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificati
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.aiassistant.AIAssistantEligibilityChecker
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
@@ -71,9 +72,11 @@ class DashboardViewModel @Inject constructor(
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
+    private val aiAssistantEligibilityChecker: AIAssistantEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        private const val AI_ASSISTANT_TRACKING_TYPE = "ai_assistant"
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
             SelectionType.TODAY,
             SelectionType.WEEK_TO_DATE,
@@ -108,9 +111,10 @@ class DashboardViewModel @Inject constructor(
     private val dashboardWidgets = combine(
         dashboardRepository.widgets,
         dashboardRepository.hasNewWidgets,
-        feedbackPrefs.userFeedbackIsDueObservable
-    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue ->
-        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue)
+        feedbackPrefs.userFeedbackIsDueObservable,
+        aiAssistantEligibilityChecker.observeEligibility()
+    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue, isAiAssistantEligible ->
+        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue, isAiAssistantEligible)
     }
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
@@ -235,8 +239,16 @@ class DashboardViewModel @Inject constructor(
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
         hasNewWidgets: Boolean,
-        userFeedbackIsDue: Boolean
+        userFeedbackIsDue: Boolean,
+        isAiAssistantEligible: Boolean
     ): List<DashboardWidgetUiModel> = buildList {
+        add(
+            DashboardWidgetUiModel.AIAssistantEntry(
+                isVisible = isAiAssistantEligible,
+                onClick = ::onAiAssistantCardClicked
+            )
+        )
+
         addAll(
             widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
         )
@@ -290,6 +302,11 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
+    private fun onAiAssistantCardClicked() {
+        trackCardInteracted(AI_ASSISTANT_TRACKING_TYPE)
+        triggerEvent(DashboardEvent.OpenAiAssistant)
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -334,6 +351,11 @@ class DashboardViewModel @Inject constructor(
                 get() = widget.isVisible
         }
 
+        data class AIAssistantEntry(
+            override val isVisible: Boolean,
+            val onClick: () -> Unit
+        ) : DashboardWidgetUiModel
+
         data class ShareStoreWidget(
             override val isVisible: Boolean,
             val onShareClicked: () -> Unit
@@ -363,6 +385,8 @@ class DashboardViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : DashboardEvent()
 
         data object OpenEditWidgets : DashboardEvent()
+
+        data object OpenAiAssistant : DashboardEvent()
 
         data class OpenRangePicker(
             val start: Long,
