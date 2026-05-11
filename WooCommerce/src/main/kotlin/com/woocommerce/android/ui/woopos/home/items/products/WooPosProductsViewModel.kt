@@ -107,6 +107,10 @@ class WooPosProductsViewModel @Inject constructor(
                 handleItemClick(event)
             }
 
+            WooPosProductsUIEvent.CustomAmountEntryRowClicked -> {
+                sendEventToParent(ChildToParentEvent.CustomAmountDialogRequested())
+            }
+
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
                 handlePullToRefresh()
                 viewModelScope.launch {

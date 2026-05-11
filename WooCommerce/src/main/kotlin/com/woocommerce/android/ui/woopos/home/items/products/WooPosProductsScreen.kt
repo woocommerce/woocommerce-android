@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountEntryRow
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsUIEvent.EndOfItemsListReached
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsUIEvent.PullToRefreshTriggered
@@ -74,6 +75,9 @@ private fun WooPosProductsScreen(
         onEndOfItemListReached = { onUIEvent(EndOfItemsListReached) },
         onRetryClicked = { onUIEvent(ProductsLoadingErrorRetryButtonClicked) },
         onPullToRefreshTriggered = { onUIEvent(PullToRefreshTriggered) },
+        onCustomAmountEntryRowClicked = {
+            onUIEvent(WooPosProductsUIEvent.CustomAmountEntryRowClicked)
+        },
     )
 }
 
@@ -87,6 +91,7 @@ private fun ProductsList(
     onEndOfItemListReached: () -> Unit,
     onRetryClicked: () -> Unit,
     onPullToRefreshTriggered: () -> Unit,
+    onCustomAmountEntryRowClicked: () -> Unit = {},
 ) {
     val pullToRefreshState = rememberPullRefreshState(
         refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
@@ -106,6 +111,13 @@ private fun ProductsList(
         ) {
             when (val itemsState = state.value) {
                 is WooPosProductsViewState.Content -> {
+                    WooPosCustomAmountEntryRow(
+                        modifier = Modifier.padding(
+                            horizontal = WooPosSpacing.Medium.value,
+                            vertical = WooPosSpacing.XSmall.value,
+                        ),
+                        onClick = onCustomAmountEntryRowClicked,
+                    )
                     Content(itemsState, listState, onItemClicked, onEndOfItemListReached)
                 }
 
