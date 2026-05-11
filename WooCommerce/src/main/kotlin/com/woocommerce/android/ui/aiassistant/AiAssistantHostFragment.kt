@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -52,7 +53,7 @@ class AiAssistantHostFragment : BaseFragment() {
                         findNavController().navigateSafely(target.directions)
                     }
                     is WooAssistantCardNavigationTarget.DeepLink -> {
-                        findNavController().navigate(android.net.Uri.parse(target.uri))
+                        findNavController().navigate(target.uri.toUri())
                     }
                 }
             }
