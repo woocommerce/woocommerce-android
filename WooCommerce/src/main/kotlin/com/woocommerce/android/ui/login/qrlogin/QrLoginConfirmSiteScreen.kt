@@ -48,7 +48,7 @@ fun QrLoginConfirmSiteScreen(
             .padding(horizontal = dimensionResource(id = R.dimen.major_150)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Hero scrolls so the Connect / Cancel buttons stay visible in landscape on phones
+        // Content scrolls so the Connect / Cancel buttons stay visible in landscape on phones
         // where the static layout would otherwise push them off the bottom edge.
         Column(
             modifier = Modifier
@@ -58,14 +58,14 @@ fun QrLoginConfirmSiteScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Hero(host = host)
+            Content(host = host)
         }
         Buttons(onConfirm = onConfirm, onCancel = onCancel)
     }
 }
 
 @Composable
-private fun Hero(host: String) {
+private fun Content(host: String) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
