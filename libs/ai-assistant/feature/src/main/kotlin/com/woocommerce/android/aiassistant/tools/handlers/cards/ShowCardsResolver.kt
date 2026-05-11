@@ -184,19 +184,11 @@ internal class DefaultShowCardsResolver @Inject constructor(
             ?: return ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.InvalidId)
         val after = analyticsDateAfterBound(query.after)
         val before = analyticsDateBeforeBound(query.before)
-        val statsResult = when (query.kind) {
-            AnalyticsStatsKind.Revenue -> analyticsDataSource.fetchRevenueStats(
-                after = after,
-                before = before,
-                interval = query.interval,
-                currency = query.currency,
-            )
-            AnalyticsStatsKind.Orders -> analyticsDataSource.fetchOrdersStats(
-                after = after,
-                before = before,
-                interval = query.interval,
-            )
-        }
+        val statsResult = analyticsDataSource.fetchOrdersStats(
+            after = after,
+            before = before,
+            interval = query.interval,
+        )
 
         return statsResult.fold(
             onSuccess = { stats ->

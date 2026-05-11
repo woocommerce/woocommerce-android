@@ -91,48 +91,29 @@ internal object AssistantCardPayloadParser {
                 after = afterDate,
                 before = beforeDate,
                 currency = currency.orEmpty(),
-                metrics = toMetrics(statsKind),
+                metrics = analyticsMetrics(),
             )
         } else {
             null
         }
     }
 
-    private fun ShowCardDetails.AnalyticsStats.toMetrics(
-        kind: AssistantCard.Stats.Kind,
-    ): List<AssistantCard.Stats.Metric> =
-        when (kind) {
-            AssistantCard.Stats.Kind.Revenue -> revenueMetrics()
-            AssistantCard.Stats.Kind.Orders -> ordersMetrics()
-        }
-
-    private fun ShowCardDetails.AnalyticsStats.revenueMetrics(): List<AssistantCard.Stats.Metric> =
+    private fun ShowCardDetails.AnalyticsStats.analyticsMetrics(): List<AssistantCard.Stats.Metric> =
         listOf(
-            AssistantCard.Stats.Metric(
-                type = AssistantCard.Stats.MetricType.TotalSales,
-                value = totals.stringValue(TOTAL_SALES_KEYS),
-                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(TOTAL_SALES_KEYS) },
-            ),
-            AssistantCard.Stats.Metric(
-                type = AssistantCard.Stats.MetricType.NetSales,
-                value = totals.stringValue(NET_SALES_KEYS),
-                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(NET_SALES_KEYS) },
-            ),
+            metric(AssistantCard.Stats.MetricType.TotalSales, TOTAL_SALES_KEYS),
+            metric(AssistantCard.Stats.MetricType.NetSales, NET_SALES_KEYS),
+            metric(AssistantCard.Stats.MetricType.TotalOrders, ORDERS_COUNT_KEYS),
+            metric(AssistantCard.Stats.MetricType.AverageOrderValue, AVERAGE_ORDER_VALUE_KEYS),
         )
 
-    private fun ShowCardDetails.AnalyticsStats.ordersMetrics(): List<AssistantCard.Stats.Metric> =
-        listOf(
-            AssistantCard.Stats.Metric(
-                type = AssistantCard.Stats.MetricType.TotalOrders,
-                value = totals.stringValue(ORDERS_COUNT_KEYS),
-                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(ORDERS_COUNT_KEYS) },
-            ),
-            AssistantCard.Stats.Metric(
-                type = AssistantCard.Stats.MetricType.AverageOrderValue,
-                value = totals.stringValue(AVERAGE_ORDER_VALUE_KEYS),
-                chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(AVERAGE_ORDER_VALUE_KEYS) },
-            ),
-        )
+    private fun ShowCardDetails.AnalyticsStats.metric(
+        type: AssistantCard.Stats.MetricType,
+        keys: List<String>,
+    ) = AssistantCard.Stats.Metric(
+        type = type,
+        value = totals.stringValue(keys),
+        chartPoints = intervalSubtotals.mapNotNull { it.toChartPoint(keys) },
+    )
 
     private fun JsonObject.toChartPoint(valueKeys: List<String>): AssistantCard.Stats.ChartPoint? {
         val date = chartDate() ?: return null

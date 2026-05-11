@@ -57,9 +57,9 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString())
-            .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
-        assertThat(descriptor.inputSchema.toString())
             .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+        assertThat(descriptor.description).doesNotContain("analytics_revenue")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("analytics_revenue")
         assertThat(descriptor.inputSchema.toString()).contains("card_id")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
@@ -169,25 +169,29 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given revenue and orders analytics stats ids, when executed, then both refs validate and resolve`() = runTest {
+    fun `given legacy revenue and orders currency none ids, when executed, then refs validate and resolve`() = runTest {
         val result = callShowCards(
             resolver = FakeResolver.resolving(
-                analyticsStatsCard(id = ANALYTICS_STATS_ID),
+                analyticsStatsCard(id = ANALYTICS_STATS_ID, kind = "revenue"),
                 analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID, kind = "orders"),
+                analyticsStatsCard(id = ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY, kind = "orders"),
             ),
             referencesJson = """
                 [
                   { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" },
-                  { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID" }
+                  { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID" },
+                  { "family": "analytics_stats", "id": "$ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY" }
                 ]
             """.trimIndent()
         )
 
-        assertThat(validated(result)).isEqualTo(2)
+        assertThat(validated(result)).isEqualTo(3)
         assertThat(rejectedReasons(result)).isEmpty()
-        assertThat(resolvedFamilies(result)).containsExactly("analytics_stats", "analytics_stats")
-        assertThat(resolvedSummaries(result).map { it.getValue("kind").jsonPrimitive.content })
-            .containsExactly("revenue", "orders")
+        assertThat(resolvedIds(result)).containsExactly(
+            ANALYTICS_STATS_ID,
+            ANALYTICS_ORDERS_STATS_ID,
+            ANALYTICS_ORDERS_STATS_ID_NO_CURRENCY,
+        )
     }
 
     @Test

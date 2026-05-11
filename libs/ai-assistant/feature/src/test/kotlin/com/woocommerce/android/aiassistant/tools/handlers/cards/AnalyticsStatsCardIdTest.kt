@@ -55,10 +55,36 @@ class AnalyticsStatsCardIdTest {
     }
 
     @Test
+    fun `given valid orders id with currency none, when parsed, then currency is null`() {
+        val parsed = AnalyticsStatsCardId.parse(
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+        )
+
+        assertThat(parsed).isEqualTo(
+            AnalyticsStatsCardId(
+                kind = AnalyticsStatsKind.Orders,
+                after = "2026-05-01",
+                before = "2026-05-07",
+                interval = AnalyticsInterval.DAY,
+                currency = null,
+            )
+        )
+    }
+
+    @Test
     fun `given revenue id without currency segment, when parsed, then id is rejected`() {
         assertThat(
             AnalyticsStatsCardId.parse(
                 "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day"
+            )
+        ).isNull()
+    }
+
+    @Test
+    fun `given orders id with concrete currency, when parsed, then id is rejected`() {
+        assertThat(
+            AnalyticsStatsCardId.parse(
+                "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
             )
         ).isNull()
     }
