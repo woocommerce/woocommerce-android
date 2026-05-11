@@ -449,7 +449,7 @@ sealed class QrLoginExchangeException(message: String) : Exception(message) {
     data object NotApproved :
         QrLoginExchangeException("Exchange called before merchant approved the number match")
     data object InvalidExchangeGrant :
-        QrLoginExchangeException("Exchange grant nonce did not match the server-side value")
+        QrLoginExchangeException("QR login exchange could not be completed")
     data class HttpError(val code: Int) : QrLoginExchangeException("HTTP $code from exchange endpoint")
     data class Unknown(val original: Throwable) :
         QrLoginExchangeException("Unknown exchange failure: ${original.javaClass.simpleName}")
