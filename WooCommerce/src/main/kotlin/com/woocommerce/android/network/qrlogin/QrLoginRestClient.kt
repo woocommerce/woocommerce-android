@@ -28,7 +28,8 @@ import javax.inject.Named
 class QrLoginRestClient @Inject constructor(
     @Named("custom-ssl") private val okHttpClient: OkHttpClient,
     private val gson: Gson,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val deviceInfoProvider: QrLoginDeviceInfoProvider,
 ) {
 
     suspend fun exchange(siteUrl: String, token: String): Result<QrLoginCredentials> =
@@ -59,7 +60,9 @@ class QrLoginRestClient @Inject constructor(
         val exchangeUrl = baseUrl.newBuilder()
             .addPathSegments(EXCHANGE_PATH_SEGMENTS)
             .build()
-        val payload = gson.toJson(ExchangeRequest(token))
+        val payload = gson.toJson(
+            ExchangeRequest(token = token, device = deviceInfoProvider.get())
+        )
         return Request.Builder()
             .url(exchangeUrl)
             .post(payload.toRequestBody(JSON_MEDIA_TYPE))
@@ -105,7 +108,10 @@ class QrLoginRestClient @Inject constructor(
         }
     }
 
-    private data class ExchangeRequest(val token: String)
+    private data class ExchangeRequest(
+        val token: String,
+        val device: QrLoginDeviceInfo,
+    )
 
     private data class ExchangeResponse(
         @SerializedName("user_login") val userLogin: String?,
