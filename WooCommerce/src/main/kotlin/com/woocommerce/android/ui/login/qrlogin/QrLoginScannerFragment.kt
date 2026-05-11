@@ -104,6 +104,8 @@ class QrLoginScannerFragment : Fragment() {
             },
             onConfirmSite = qrLoginViewModel::onConfirmSite,
             onCancelSite = ::handleCancelSite,
+            onConfirmSessionReplace = qrLoginViewModel::onConfirmSessionReplace,
+            onCancelSessionReplace = ::handleCancelSessionReplace,
             onStartOver = ::handleStartOver,
             onRetryExchange = qrLoginViewModel::onRetryExchange,
             onFallbackClicked = { listener?.onQrLoginFallbackClicked() },
@@ -186,6 +188,17 @@ class QrLoginScannerFragment : Fragment() {
      */
     private fun handleCancelSite() {
         qrLoginViewModel.onCancelSite()
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    /**
+     * In practice the warning is only reachable via deep link (the in-app scanner is gated
+     * behind a logged-out [LoginActivity]), so cancelling closes [LoginActivity] and returns
+     * the merchant to whatever they were doing before tapping the QR link. Existing session
+     * is left intact.
+     */
+    private fun handleCancelSessionReplace() {
+        qrLoginViewModel.onCancelSessionReplace()
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 

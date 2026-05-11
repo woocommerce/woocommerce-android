@@ -126,6 +126,9 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK(siteless = true),
     LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL(siteless = true),
     LOGIN_QR_HELP_TAPPED(siteless = true),
+    LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN(siteless = true),
+    LOGIN_QR_SESSION_REPLACE_CONFIRMED(siteless = true),
+    LOGIN_QR_SESSION_REPLACE_DISMISSED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN,
