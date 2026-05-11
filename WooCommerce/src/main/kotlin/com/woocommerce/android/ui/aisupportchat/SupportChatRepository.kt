@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.aisupportchat
 
+import com.google.gson.JsonObject
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.networking.SupportChatRestClient
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
@@ -24,7 +25,7 @@ class SupportChatRepository @Inject constructor(
     suspend fun sendMessage(
         botSlug: String,
         message: String,
-        context: Map<String, Any>,
+        context: JsonObject,
         chatId: Long? = null
     ): Result<SupportChatResponse> = withContext(dispatchers.io) {
         val response = if (chatId == null) {

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.aisupportchat
 
 import com.android.volley.VolleyError
+import com.google.gson.JsonObject
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.networking.SupportChatRestClient
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
@@ -224,9 +225,9 @@ class SupportChatRepositoryTest : BaseUnitTest() {
 
     private fun createResponse(): SupportChatResponse = SupportChatResponse(
         chatId = CHAT_ID,
-        sessionId = null,
+        sessionId = "session-abc-123",
         botSlug = BOT_SLUG,
-        botVersion = null
+        botVersion = "v1.0.0"
     )
 
     private fun createBookmarkEntity(): SupportChatBookmarkEntity = SupportChatBookmarkEntity(
@@ -255,6 +256,8 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         const val CURRENT_TIME = 1_234_567L
         const val MESSAGE = "I need help with orders"
         const val ERROR_MESSAGE = "Not found"
-        val CONTEXT = mapOf<String, Any>("site_id" to REMOTE_SITE_ID)
+        val CONTEXT = JsonObject().apply {
+            addProperty("site_id", REMOTE_SITE_ID)
+        }
     }
 }
