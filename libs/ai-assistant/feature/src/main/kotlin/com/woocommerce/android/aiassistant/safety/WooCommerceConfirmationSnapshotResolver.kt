@@ -27,6 +27,8 @@ internal open class WooCommerceConfirmationSnapshotResolver @Inject constructor(
                 ConfirmationSnapshot(
                     currentValues = mapOf(
                         "status" to order.status.normalizedOrderStatus(),
+                        "customer_note" to order.customerNote,
+                        "billing_email" to order.billingEmail,
                     )
                 )
             }

@@ -69,6 +69,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
+    testImplementation(testFixtures(project(":libs:ai-assistant:core")))
 }
 
 dependencyAnalysis {

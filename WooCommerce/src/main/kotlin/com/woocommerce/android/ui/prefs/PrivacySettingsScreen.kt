@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
 
 @Composable
 fun PrivacySettingsScreen(
@@ -183,11 +184,9 @@ private fun OptionRowWithHeader(
     Column(
         modifier = modifier
     ) {
-        Text(
+        SettingsSectionHeader(
             text = sectionHeader,
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         OptionRow(
             onRowClicked,

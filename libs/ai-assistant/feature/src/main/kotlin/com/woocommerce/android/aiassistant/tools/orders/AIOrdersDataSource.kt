@@ -152,16 +152,22 @@ internal class AIOrdersDataSource @Inject constructor(
         }
     }
 
+    suspend fun updateOrder(orderId: Long, patch: OrderPatch): Result<Unit> {
+        val site = selectedSite.get()
+        val result = orderStore.batchUpdateOrders(
+            site,
+            mapOf(orderId to patch.toUpdateOrderRequest())
+        )
+        return if (result.isError) {
+            Result.failure(OnChangedException(requireNotNull(result.error)))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
     suspend fun bulkUpdateOrders(orderIds: List<Long>, patch: OrderPatch): Result<BulkUpdateResult> {
         val site = selectedSite.get()
-        val requests = orderIds.associateWith {
-            UpdateOrderRequest(
-                status = patch.status?.let { status -> WCOrderStatusModel(statusKey = status) },
-                customerNote = patch.customerNote,
-                billingEmail = patch.billingEmail,
-                decimalPlaces = null,
-            )
-        }
+        val requests = orderIds.associateWith { patch.toUpdateOrderRequest() }
         val result = orderStore.batchUpdateOrders(site, requests)
         return if (result.isError) {
             Result.failure(OnChangedException(requireNotNull(result.error)))
@@ -181,3 +187,11 @@ internal class AIOrdersDataSource @Inject constructor(
         private const val MAX_PAGE_SIZE = 50
     }
 }
+
+private fun AIOrdersDataSource.OrderPatch.toUpdateOrderRequest(): UpdateOrderRequest =
+    UpdateOrderRequest(
+        status = status?.let { status -> WCOrderStatusModel(statusKey = status) },
+        customerNote = customerNote,
+        billingEmail = billingEmail,
+        decimalPlaces = null,
+    )

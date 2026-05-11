@@ -67,6 +67,37 @@ class ProductsGetToolHandlerTest {
     }
 
     @Test
+    fun `given widened product detail field, when execute is called, then structured JSON includes it`() =
+        runTest {
+            val product = WCProductModel(
+                remoteId = RemoteId(42L),
+                name = "Hoodie",
+                type = "simple",
+                description = "Long description",
+            )
+            whenever(dataSource.getProduct(productId = 42L)).thenReturn(Result.success(product))
+
+            val result = handler.execute(toolCall(buildJsonObject { put("id", 42) }))
+
+            val json = (result as ToolResult.Success).structured.jsonObject
+            assertThat(json.getValue("description").jsonPrimitive.content).isEqualTo("Long description")
+        }
+
+    @Test
+    fun `given unknown argument, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 42)
+                    put("unexpected", true)
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
     fun `given missing id, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(toolCall(buildJsonObject {}))
 
