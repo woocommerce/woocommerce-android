@@ -120,7 +120,10 @@ private fun Buttons(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = dimensionResource(id = R.dimen.major_100)),
+            .padding(
+                top = dimensionResource(id = R.dimen.major_150),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         WCColoredButton(
