@@ -562,10 +562,10 @@ class MigrationTests {
     }
 
     @Test
-    fun testMigration82to83_addsSupportChatBookmarkEntity() {
-        helper.createDatabase(TEST_DB, 82).close()
+    fun testMigration83to84_addsSupportChatBookmarkEntity() {
+        helper.createDatabase(TEST_DB, 83).close()
 
-        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 83, true)
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 84, true)
 
         migratedDb.execSQL(
             """
