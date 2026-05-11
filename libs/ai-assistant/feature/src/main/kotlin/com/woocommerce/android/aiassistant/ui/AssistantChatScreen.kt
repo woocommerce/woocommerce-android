@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -173,7 +174,7 @@ fun AssistantChatScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val density = LocalDensity.current
-    var bottomBarContentHeightPx by remember { mutableStateOf(0) }
+    var bottomBarContentHeightPx by remember { mutableIntStateOf(0) }
     val bottomBarContentHeight = with(density) { bottomBarContentHeightPx.toDp() }
     val bottomContentPadding = bottomBarContentHeight + FLOATING_COMPOSER_CONTENT_SPACING
     val submitMessage = {
