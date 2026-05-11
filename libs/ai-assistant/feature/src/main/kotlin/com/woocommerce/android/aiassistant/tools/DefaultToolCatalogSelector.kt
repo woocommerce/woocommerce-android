@@ -41,15 +41,14 @@ class DefaultToolCatalogSelector : ToolCatalogSelector {
             "products_bulk_update",
             "product_variations_list",
             "product_variations_update",
-            "analytics_revenue",
+            "analytics_orders",
             "show_cards",
         )
 
         val ANALYTICS_TOOL_NAMES = setOf(
-            "analytics_revenue",
-            "analytics_orders",
             "orders_list",
             "products_list",
+            "analytics_orders",
             "show_cards",
         )
     }

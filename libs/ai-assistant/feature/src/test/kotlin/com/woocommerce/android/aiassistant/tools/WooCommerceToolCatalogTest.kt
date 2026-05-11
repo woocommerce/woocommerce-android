@@ -4,7 +4,6 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHandler
-import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsRevenueToolHandler
 import com.woocommerce.android.aiassistant.tools.customers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
@@ -35,14 +34,13 @@ class WooCommerceToolCatalogTest {
         ProductsBulkUpdateToolHandler(mock(), mock()),
         ProductVariationsToolHandler(mock(), mock()),
         ProductVariationsUpdateToolHandler(mock(), mock()),
-        AnalyticsRevenueToolHandler(mock(), mock()),
         AnalyticsOrdersToolHandler(mock(), mock()),
         ShowCardsToolHandler(mock<ShowCardsResolver>()),
         CustomersListToolHandler(mock()),
     )
 
     @Test
-    fun `when all stub handlers are aggregated, then 14 expected tool names are present`() {
+    fun `when all handlers are aggregated, then 13 expected tool names are present`() {
         val names = allHandlers.map { it.descriptor.name }
 
         assertThat(names).containsExactlyInAnyOrder(
@@ -56,7 +54,6 @@ class WooCommerceToolCatalogTest {
             "products_bulk_update",
             "product_variations_list",
             "product_variations_update",
-            "analytics_revenue",
             "analytics_orders",
             "show_cards",
             "customers_list",
@@ -66,6 +63,8 @@ class WooCommerceToolCatalogTest {
     @Test
     fun `when descriptors are inspected, then write tools are UNSAFE and read tools are SAFE`() {
         val byName = allHandlers.associateBy { it.descriptor.name }
+        assertThat(byName.keys).contains("analytics_orders")
+        assertThat(byName.keys).doesNotContain("analytics_revenue")
         val writeToolNames = setOf(
             "orders_update",
             "orders_bulk_update",
@@ -118,6 +117,10 @@ class WooCommerceToolCatalogTest {
         val ordersBulkUpdate = byName.getValue("orders_bulk_update").descriptor.description
         assertThat(ordersBulkUpdate).contains("status")
         assertThat(ordersBulkUpdate).contains("Bulk writes require confirmation")
+
+        val ordersList = byName.getValue("orders_list").descriptor.description
+        assertThat(ordersList).contains("analytics_orders")
+        assertThat(ordersList).doesNotContain("analytics_revenue")
 
         val productsUpdate = byName.getValue("products_update").descriptor.description
         assertThat(productsUpdate).contains("regular_price")

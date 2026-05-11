@@ -28,7 +28,6 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
-import com.woocommerce.android.aiassistant.tools.analytics.ANALYTICS_REVENUE_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
@@ -48,7 +47,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -380,16 +378,16 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success, when adapted, then no stats card is emitted directly`() =
+    fun `given analytics orders success, when adapted, then no stats card is emitted directly`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
-                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-analytics")),
+                        LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-analytics")),
                         LoopEvent.ToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-analytics",
-                                structured = analyticsRevenueStructured(),
+                                structured = analyticsOrdersStructured(),
                             )
                         ),
                     )
@@ -447,6 +445,22 @@ class AgenticLoopAssistantRuntimeTest {
                                         AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
                                     ),
                                 ),
+                                AssistantCard.Stats.Metric(
+                                    type = AssistantCard.Stats.MetricType.TotalOrders,
+                                    value = "42",
+                                    chartPoints = listOf(
+                                        AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 12.0),
+                                        AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 30.0),
+                                    ),
+                                ),
+                                AssistantCard.Stats.Metric(
+                                    type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                                    value = "85.30",
+                                    chartPoints = listOf(
+                                        AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10),
+                                        AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 87.38),
+                                    ),
+                                ),
                             ),
                         )
                     )
@@ -477,17 +491,19 @@ class AgenticLoopAssistantRuntimeTest {
             val statsCard = events.cardEvents().single().cards.single() as AssistantCard.Stats
             assertThat(statsCard.id).isEqualTo(ANALYTICS_ORDERS_STATS_ID)
             assertThat(statsCard.kind).isEqualTo(AssistantCard.Stats.Kind.Orders)
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("170.35")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).value).isEqualTo("120.15")
             assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
             assertThat(statsCard.metric(AssistantCard.Stats.MetricType.AverageOrderValue).chartPoints)
                 .containsExactly(AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10))
         }
 
     @Test
-    fun `given analytics revenue validation error, when adapted, then no stats card is emitted`() = runTest {
+    fun `given analytics orders validation error, when adapted, then no stats card is emitted`() = runTest {
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
-                    LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-validation")),
+                    LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-validation")),
                     LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
                 )
             )
@@ -499,12 +515,12 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
+    fun `given analytics orders success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
-                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-arbitrary")),
+                        LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-arbitrary")),
                         LoopEvent.ToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-arbitrary",
@@ -693,47 +709,21 @@ class AgenticLoopAssistantRuntimeTest {
         arguments = buildJsonObject {},
     )
 
-    private fun analyticsRevenueCall(id: String) = ToolCall(
+    private fun analyticsOrdersCall(id: String) = ToolCall(
         id = id,
-        name = ANALYTICS_REVENUE_TOOL_NAME,
+        name = "analytics_orders",
         arguments = buildJsonObject {},
     )
 
-    private fun analyticsRevenueStructured() = buildJsonObject {
+    private fun analyticsOrdersStructured() = buildJsonObject {
         put("after", "2026-05-01")
         put("before", "2026-05-03")
         put("currency", "USD")
         putJsonObject("totals") {
+            put("total_sales", "170.35")
             put("net_revenue", "123.45")
             put("orders_count", 3)
-        }
-        putJsonArray("revenue_chart") {
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-01")
-                    put("value", 10.0)
-                }
-            )
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-02")
-                    put("value", 20.0)
-                }
-            )
-        }
-        putJsonArray("order_chart") {
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-01")
-                    put("value", 1.0)
-                }
-            )
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-02")
-                    put("value", 2.0)
-                }
-            )
+            put("avg_order_value", "41.15")
         }
     }
 
@@ -764,6 +754,8 @@ class AgenticLoopAssistantRuntimeTest {
             totals = buildJsonObject {
                 put("total_sales", "170.35")
                 put("net_revenue", "120.15")
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
             },
             intervalSubtotals = listOf(
                 buildJsonObject {
@@ -771,6 +763,8 @@ class AgenticLoopAssistantRuntimeTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "100.00")
                         put("net_revenue", "80.00")
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
                     }
                 },
                 buildJsonObject {
@@ -778,6 +772,8 @@ class AgenticLoopAssistantRuntimeTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "70.35")
                         put("net_revenue", "40.15")
+                        put("orders_count", "30")
+                        put("avg_order_value", "87.38")
                     }
                 },
             ),
@@ -794,6 +790,8 @@ class AgenticLoopAssistantRuntimeTest {
             currency = "USD",
             kind = "orders",
             totals = buildJsonObject {
+                put("total_sales", "170.35")
+                put("net_revenue", "120.15")
                 put("orders_count", "42")
                 put("avg_order_value", "85.30")
             },
@@ -801,6 +799,8 @@ class AgenticLoopAssistantRuntimeTest {
                 buildJsonObject {
                     put("interval", "2026-05-01")
                     putJsonObject("subtotals") {
+                        put("total_sales", "50.00")
+                        put("net_revenue", "35.00")
                         put("orders_count", "12")
                         put("avg_order_value", "80.10")
                     }

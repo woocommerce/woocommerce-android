@@ -53,14 +53,20 @@ class AnalyticsOrdersToolHandlerTest {
             .jsonArray
             .map { it.jsonPrimitive.content }
 
+        assertThat(description).contains("sales")
+        assertThat(description).contains("revenue")
+        assertThat(description).contains("order")
+        assertThat(description).contains("average order value")
+        assertThat(description).contains("analytics_orders")
         assertThat(description).contains("show_cards")
         assertThat(description).contains("grouping grain with a date window")
         assertThat(description).contains("interval follows the grouping grain")
-        assertThat(description).contains("Order stats are card-backed")
+        assertThat(description).contains("card_id starts with analytics_orders")
         assertThat(description).contains("do not stop with prose")
         assertThat(description).contains("family analytics_stats")
         assertThat(description).contains("exact card_id")
         assertThat(description).contains("card_id")
+        assertThat(description).doesNotContain("analytics_revenue")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
         assertThat(compareToValues).containsExactly("previous_period")
@@ -98,6 +104,11 @@ class AnalyticsOrdersToolHandlerTest {
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(1)
             assertThat(structured.getValue("totals").jsonObject.getValue("orders_count").jsonPrimitive.int)
                 .isEqualTo(42)
+            val totals = structured.getValue("totals").jsonObject
+            assertThat(totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
+            assertThat(totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
+            assertThat(totals.getValue("orders_count").jsonPrimitive.int).isEqualTo(42)
+            assertThat(totals.getValue("avg_order_value").jsonPrimitive.content).isEqualTo("85.30")
         }
 
     @Test
@@ -350,6 +361,9 @@ class AnalyticsOrdersToolHandlerTest {
 
     private fun sampleStats() = AnalyticsStats(
         totals = buildJsonObject {
+            put("total_sales", "170.35")
+            put("gross_sales", "190.00")
+            put("net_revenue", "120.15")
             put("orders_count", 42)
             put("avg_order_value", "85.30")
         },
@@ -360,7 +374,10 @@ class AnalyticsOrdersToolHandlerTest {
                 put(
                     "subtotals",
                     buildJsonObject {
+                        put("total_sales", "50.00")
+                        put("net_revenue", "35.00")
                         put("orders_count", 12)
+                        put("avg_order_value", "80.10")
                     }
                 )
             },
