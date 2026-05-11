@@ -318,7 +318,13 @@ class QrLoginRestClient @Inject constructor(
             exchangeGrant
                 ?.takeIf { it.isNotBlank() }
                 ?.let { QrLoginSessionStatus.Approved(it) }
-                ?: QrLoginSessionStatus.Expired
+                ?: run {
+                    WooLog.w(
+                        WooLog.T.LOGIN,
+                        "$QR_LOGIN_APPROVED_NO_GRANT_LOG_ID: approved session-status missing exchange_grant"
+                    )
+                    QrLoginSessionStatus.Expired
+                }
     }
 
     private data class ExchangeRequest(
@@ -358,6 +364,7 @@ class QrLoginRestClient @Inject constructor(
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_CONFLICT = 409
         const val HTTP_UPGRADE_REQUIRED = 426
+        const val QR_LOGIN_APPROVED_NO_GRANT_LOG_ID = "QR_LOGIN_APPROVED_NO_GRANT"
         val POLL_CACHE_CONTROL = CacheControl.Builder()
             .noCache()
             .noStore()
