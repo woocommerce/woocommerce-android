@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -125,15 +127,16 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
 
     private fun observeCachedNotificationPreferences() {
         launch {
-            pushNotificationRepository.observeWooNotificationPreferences(site).collect { preferences ->
-                preferences?.storeOrder?.let { orderPreferences ->
+            pushNotificationRepository.observeWooNotificationPreferences(site)
+                .mapNotNull { it?.storeOrder }
+                .distinctUntilChanged()
+                .collect { orderPreferences ->
                     if (hasUnsavedOrderPreferences(_viewState.value.toStoreOrderPreferences())) {
                         savedOrderPreferences = orderPreferences
                     } else {
                         applyOrderPreferences(orderPreferences)
                     }
                 }
-            }
         }
     }
 
