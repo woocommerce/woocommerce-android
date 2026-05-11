@@ -74,7 +74,7 @@ fun QrLoginPrologueScreen(
     onFallbackClicked: () -> Unit,
     onCameraPermissionDialogShown: (CameraDenialState) -> Unit = {},
     onCameraPermissionDialogPrimary: (CameraDenialState) -> Unit = {},
-    onCameraPermissionDialogFallback: (CameraDenialState) -> Unit = {},
+    onCameraPermissionDialogDismissed: (CameraDenialState) -> Unit = {},
 ) {
     val context = LocalContext.current
     var denialState by rememberSaveable { mutableStateOf(CameraDenialState.Hidden) }
@@ -161,6 +161,11 @@ fun QrLoginPrologueScreen(
     }
 
     if (denialState != CameraDenialState.Hidden) {
+        val dismissDialog = {
+            val tappedState = denialState
+            denialState = CameraDenialState.Hidden
+            onCameraPermissionDialogDismissed(tappedState)
+        }
         CameraPermissionDialog(
             state = denialState,
             onPrimary = {
@@ -175,13 +180,7 @@ fun QrLoginPrologueScreen(
                     CameraDenialState.Hidden -> Unit
                 }
             },
-            onFallback = {
-                val tappedState = denialState
-                denialState = CameraDenialState.Hidden
-                onCameraPermissionDialogFallback(tappedState)
-                onFallbackClicked()
-            },
-            onDismiss = { denialState = CameraDenialState.Hidden },
+            onCancel = dismissDialog,
         )
     }
 }
@@ -371,16 +370,17 @@ private fun Buttons(
 }
 
 /**
- * Two-state camera-permission fallback dialog. The copy and button labels diverge between
+ * Two-state camera-permission fallback dialog. The copy and primary button label diverge between
  * [CameraDenialState.FirstDenial] (system will keep prompting on next request) and
- * [CameraDenialState.PermanentlyDenied] (user has to enable the permission in Settings).
+ * [CameraDenialState.PermanentlyDenied] (user has to enable the permission in Settings). The
+ * cancel button just closes the dialog — the prologue's own "Sign in with site address instead"
+ * link is still available underneath.
  */
 @Composable
 private fun CameraPermissionDialog(
     state: CameraDenialState,
     onPrimary: () -> Unit,
-    onFallback: () -> Unit,
-    onDismiss: () -> Unit,
+    onCancel: () -> Unit,
 ) {
     val title = when (state) {
         CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_title
@@ -398,7 +398,7 @@ private fun CameraPermissionDialog(
         CameraDenialState.Hidden -> return
     }
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onCancel,
         title = { Text(text = stringResource(id = title)) },
         text = { Text(text = stringResource(id = body)) },
         confirmButton = {
@@ -407,8 +407,8 @@ private fun CameraPermissionDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onFallback) {
-                Text(text = stringResource(id = R.string.login_qr_prologue_camera_denied_fallback_button))
+            TextButton(onClick = onCancel) {
+                Text(text = stringResource(id = R.string.cancel))
             }
         },
     )
@@ -430,8 +430,7 @@ private fun CameraPermissionFirstDenialPreview() {
         CameraPermissionDialog(
             state = CameraDenialState.FirstDenial,
             onPrimary = {},
-            onFallback = {},
-            onDismiss = {},
+            onCancel = {},
         )
     }
 }
@@ -444,8 +443,7 @@ private fun CameraPermissionPermanentlyDeniedPreview() {
         CameraPermissionDialog(
             state = CameraDenialState.PermanentlyDenied,
             onPrimary = {},
-            onFallback = {},
-            onDismiss = {},
+            onCancel = {},
         )
     }
 }

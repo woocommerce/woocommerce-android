@@ -72,9 +72,9 @@ class QrLoginPrologueFragment : Fragment() {
                     mapOf(KEY_CAMERA_PERMISSION_DIALOG_STATE to state.toAnalyticsValue())
                 )
             },
-            onCameraPermissionDialogFallback = { state ->
+            onCameraPermissionDialogDismissed = { state ->
                 analyticsTracker.track(
-                    AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_FALLBACK_TAPPED,
+                    AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_DISMISSED,
                     mapOf(KEY_CAMERA_PERMISSION_DIALOG_STATE to state.toAnalyticsValue())
                 )
             },
