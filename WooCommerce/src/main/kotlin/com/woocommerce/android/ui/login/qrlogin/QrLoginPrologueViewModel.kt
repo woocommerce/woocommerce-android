@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -9,19 +12,20 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 /**
  * Owns the prologue's user-intent analytics and the camera-permission state machine.
  *
  * The host fragment supplies the OS-level inputs (whether camera permission is currently
  * granted, and whether the system would still re-prompt) via [onScanClicked] and
- * [onCameraPermissionResult]. The view model decides which dialog state to show next and
+ * [onCameraPermissionResult]. The view model decides which dialog content to show next and
  * emits side-effect events ([Dispatch]) for the fragment to act on — launching the permission
- * request, opening app settings, or navigating to the scanner / fallback flow. The screen
- * itself is stateless and just renders [UiState.cameraDenial].
+ * request, opening app settings, or navigating to the scanner / fallback flow. The screen is
+ * stateless and just renders [UiState.cameraPermissionDialog] when present.
  */
 @HiltViewModel
 class QrLoginPrologueViewModel @Inject constructor(
@@ -30,8 +34,11 @@ class QrLoginPrologueViewModel @Inject constructor(
     private val unifiedLoginTracker: UnifiedLoginTracker,
 ) : ScopedViewModel(savedState) {
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val denialState = MutableStateFlow(CameraDenialState.Hidden)
+
+    val uiState: StateFlow<UiState> = denialState
+        .map { UiState(cameraPermissionDialog = it.toDialogState()) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UiState())
 
     fun onPrologueShown() {
         analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
@@ -56,7 +63,7 @@ class QrLoginPrologueViewModel @Inject constructor(
 
     fun onCameraPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         if (granted) {
-            _uiState.update { it.copy(cameraDenial = CameraDenialState.Hidden) }
+            denialState.value = CameraDenialState.Hidden
             triggerEvent(Dispatch.NavigateToScanner)
             return
         }
@@ -64,26 +71,26 @@ class QrLoginPrologueViewModel @Inject constructor(
         // re-prompting (true → first denial) or has stopped (false → permanently denied /
         // "Don't ask again"). Before the very first request it would also be false, but we
         // only reach this branch after a denial.
-        val nextState = if (shouldShowRationale) {
+        val next = if (shouldShowRationale) {
             CameraDenialState.FirstDenial
         } else {
             CameraDenialState.PermanentlyDenied
         }
-        _uiState.update { it.copy(cameraDenial = nextState) }
+        denialState.value = next
         analyticsTracker.track(
             AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_DIALOG_SHOWN,
-            mapOf(KEY_STATE to nextState.analyticsValue())
+            mapOf(KEY_STATE to next.analyticsValue())
         )
     }
 
     fun onCameraDenialPrimaryClicked() {
-        val current = _uiState.value.cameraDenial
+        val current = denialState.value
         if (current == CameraDenialState.Hidden) return
         analyticsTracker.track(
             AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_PRIMARY_TAPPED,
             mapOf(KEY_STATE to current.analyticsValue())
         )
-        _uiState.update { it.copy(cameraDenial = CameraDenialState.Hidden) }
+        denialState.value = CameraDenialState.Hidden
         when (current) {
             CameraDenialState.FirstDenial -> triggerEvent(Dispatch.LaunchCameraPermissionRequest)
             CameraDenialState.PermanentlyDenied -> triggerEvent(Dispatch.OpenAppSettings)
@@ -92,22 +99,29 @@ class QrLoginPrologueViewModel @Inject constructor(
     }
 
     fun onCameraDenialCancelled() {
-        val current = _uiState.value.cameraDenial
+        val current = denialState.value
         if (current == CameraDenialState.Hidden) return
         analyticsTracker.track(
             AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_DISMISSED,
             mapOf(KEY_STATE to current.analyticsValue())
         )
-        _uiState.update { it.copy(cameraDenial = CameraDenialState.Hidden) }
+        denialState.value = CameraDenialState.Hidden
     }
 
-    data class UiState(val cameraDenial: CameraDenialState = CameraDenialState.Hidden)
+    data class UiState(val cameraPermissionDialog: CameraPermissionDialogState? = null)
 
     /**
-     * Dialog state shown after a camera-permission denial. [FirstDenial] is recoverable in-app;
-     * [PermanentlyDenied] requires the user to enable the permission via Settings.
+     * Resource ids for the camera-permission dialog. The view model picks the appropriate set
+     * based on whether the user can still be re-prompted or has to go through Settings; the
+     * screen just renders these without re-deriving anything.
      */
-    enum class CameraDenialState { Hidden, FirstDenial, PermanentlyDenied }
+    data class CameraPermissionDialogState(
+        @StringRes val title: Int,
+        @StringRes val body: Int,
+        @StringRes val primaryLabel: Int,
+    )
+
+    private enum class CameraDenialState { Hidden, FirstDenial, PermanentlyDenied }
 
     sealed class Dispatch : Event() {
         object LaunchCameraPermissionRequest : Dispatch()
@@ -125,6 +139,20 @@ class QrLoginPrologueViewModel @Inject constructor(
             CameraDenialState.FirstDenial -> VALUE_FIRST_DENIAL
             CameraDenialState.PermanentlyDenied -> VALUE_PERMANENTLY_DENIED
             CameraDenialState.Hidden -> error("Hidden state must not be reported to analytics")
+        }
+
+        private fun CameraDenialState.toDialogState(): CameraPermissionDialogState? = when (this) {
+            CameraDenialState.Hidden -> null
+            CameraDenialState.FirstDenial -> CameraPermissionDialogState(
+                title = R.string.login_qr_prologue_camera_denied_title,
+                body = R.string.login_qr_prologue_camera_denied_body,
+                primaryLabel = R.string.login_qr_prologue_camera_denied_allow_button,
+            )
+            CameraDenialState.PermanentlyDenied -> CameraPermissionDialogState(
+                title = R.string.login_qr_prologue_camera_blocked_title,
+                body = R.string.login_qr_prologue_camera_blocked_body,
+                primaryLabel = R.string.login_qr_prologue_camera_blocked_settings_button,
+            )
         }
     }
 }

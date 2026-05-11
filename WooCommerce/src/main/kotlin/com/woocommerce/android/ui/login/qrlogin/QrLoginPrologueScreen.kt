@@ -54,11 +54,11 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueViewModel.CameraDenialState
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueViewModel.CameraPermissionDialogState
 
 @Composable
 fun QrLoginPrologueScreen(
-    cameraDenial: CameraDenialState,
+    cameraPermissionDialog: CameraPermissionDialogState?,
     onScanClicked: () -> Unit,
     onFallbackClicked: () -> Unit,
     onCameraDenialPrimaryClicked: () -> Unit,
@@ -105,9 +105,9 @@ fun QrLoginPrologueScreen(
         }
     }
 
-    if (cameraDenial != CameraDenialState.Hidden) {
+    if (cameraPermissionDialog != null) {
         CameraPermissionDialog(
-            state = cameraDenial,
+            dialog = cameraPermissionDialog,
             onPrimary = onCameraDenialPrimaryClicked,
             onCancel = onCameraDenialCancelled,
         )
@@ -298,46 +298,19 @@ private fun Buttons(
     }
 }
 
-/**
- * Two-state camera-permission fallback dialog. The copy and primary button label diverge
- * between [CameraDenialState.FirstDenial] (system will keep prompting on next request) and
- * [CameraDenialState.PermanentlyDenied] (user has to enable the permission in Settings). The
- * cancel button just closes the dialog — the prologue's own "Sign in with site address
- * instead" link is still available underneath.
- */
 @Composable
 private fun CameraPermissionDialog(
-    state: CameraDenialState,
+    dialog: CameraPermissionDialogState,
     onPrimary: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    // The caller already guards against [CameraDenialState.Hidden]; surfacing an error here
-    // catches future call sites that forget to.
-    require(state != CameraDenialState.Hidden) {
-        "CameraPermissionDialog must not be composed for the Hidden state"
-    }
-    val title = when (state) {
-        CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_title
-        CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_title
-        CameraDenialState.Hidden -> error("unreachable")
-    }
-    val body = when (state) {
-        CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_body
-        CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_body
-        CameraDenialState.Hidden -> error("unreachable")
-    }
-    val primaryLabel = when (state) {
-        CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_allow_button
-        CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_settings_button
-        CameraDenialState.Hidden -> error("unreachable")
-    }
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text(text = stringResource(id = title)) },
-        text = { Text(text = stringResource(id = body)) },
+        title = { Text(text = stringResource(id = dialog.title)) },
+        text = { Text(text = stringResource(id = dialog.body)) },
         confirmButton = {
             TextButton(onClick = onPrimary) {
-                Text(text = stringResource(id = primaryLabel))
+                Text(text = stringResource(id = dialog.primaryLabel))
             }
         },
         dismissButton = {
@@ -353,7 +326,7 @@ private fun CameraPermissionDialog(
 private fun QrLoginPrologueScreenPreview() {
     WooThemeWithBackground {
         QrLoginPrologueScreen(
-            cameraDenial = CameraDenialState.Hidden,
+            cameraPermissionDialog = null,
             onScanClicked = {},
             onFallbackClicked = {},
             onCameraDenialPrimaryClicked = {},
@@ -368,7 +341,11 @@ private fun QrLoginPrologueScreenPreview() {
 private fun CameraPermissionFirstDenialPreview() {
     WooThemeWithBackground {
         CameraPermissionDialog(
-            state = CameraDenialState.FirstDenial,
+            dialog = CameraPermissionDialogState(
+                title = R.string.login_qr_prologue_camera_denied_title,
+                body = R.string.login_qr_prologue_camera_denied_body,
+                primaryLabel = R.string.login_qr_prologue_camera_denied_allow_button,
+            ),
             onPrimary = {},
             onCancel = {},
         )
@@ -381,7 +358,11 @@ private fun CameraPermissionFirstDenialPreview() {
 private fun CameraPermissionPermanentlyDeniedPreview() {
     WooThemeWithBackground {
         CameraPermissionDialog(
-            state = CameraDenialState.PermanentlyDenied,
+            dialog = CameraPermissionDialogState(
+                title = R.string.login_qr_prologue_camera_blocked_title,
+                body = R.string.login_qr_prologue_camera_blocked_body,
+                primaryLabel = R.string.login_qr_prologue_camera_blocked_settings_button,
+            ),
             onPrimary = {},
             onCancel = {},
         )

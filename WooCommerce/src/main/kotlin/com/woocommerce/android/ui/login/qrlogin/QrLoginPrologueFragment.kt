@@ -47,8 +47,6 @@ class QrLoginPrologueFragment : Fragment() {
 
     private var listener: Listener? = null
 
-    // registerForActivityResult must run before STARTED — declare it as a property so it
-    // initializes during fragment construction.
     private val cameraPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             viewModel.onCameraPermissionResult(
@@ -64,7 +62,7 @@ class QrLoginPrologueFragment : Fragment() {
     ): View = composeView {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         QrLoginPrologueScreen(
-            cameraDenial = uiState.cameraDenial,
+            cameraPermissionDialog = uiState.cameraPermissionDialog,
             onScanClicked = { viewModel.onScanClicked(isCameraPermissionGranted()) },
             onFallbackClicked = viewModel::onFallbackClicked,
             onCameraDenialPrimaryClicked = viewModel::onCameraDenialPrimaryClicked,
