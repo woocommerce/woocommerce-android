@@ -11,6 +11,24 @@ import org.junit.Test
 
 class AssistantTelemetryTest {
     @Test
+    fun `given telemetry event, when tracking with no-op telemetry, then it completes without side effects`() {
+        val telemetry = NoOpAssistantTelemetry()
+        val event = AssistantTelemetryEvent(
+            kind = AssistantTelemetryErrorKind.TOOL_FAILED,
+            httpStatus = 409,
+            requestId = "request-1",
+            retryAfterMs = 1_000L,
+            toolName = "orders_update",
+            toolFailureKind = ToolFailureKind.DETERMINISTIC_FAILURE,
+            toolRetryable = false,
+        )
+
+        val result = runCatching { telemetry.trackAssistantError(event) }
+
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
     fun `given transport diagnostics with raw snippet, when building telemetry event, then only allowlisted fields are used`() {
         val error = AssistantError.BadRequest(
             diagnostics = Diagnostics(
