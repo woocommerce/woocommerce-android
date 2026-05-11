@@ -228,6 +228,6 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     companion object {
         private const val DEFAULT_THRESHOLD_AMOUNT = 100
         private val MIN_THRESHOLD_AMOUNT = BigDecimal.ONE
-        private const val ORDER_PREFERENCES_SAVE_DEBOUNCE_MS = 500L
+        private const val ORDER_PREFERENCES_SAVE_DEBOUNCE_MS = 1000L
     }
 }
