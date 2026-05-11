@@ -69,7 +69,6 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     init {
         observeCachedNotificationPreferences()
         observeOrderPreferencesChanges()
-        fetchNotificationPreferences()
     }
 
     fun onNotificationsEnabledChanged(isEnabled: Boolean) {
@@ -144,22 +143,6 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
                 .debounce(ORDER_PREFERENCES_SAVE_DEBOUNCE_MS)
                 .conflate()
                 .collect { saveOrderPreferences(_viewState.value.toStoreOrderPreferences()) }
-        }
-    }
-
-    private fun fetchNotificationPreferences() {
-        launch {
-            pushNotificationRepository.fetchWooNotificationPreferences(site)
-                .onFailure {
-                    triggerEvent(
-                        MultiLiveEvent.Event.ShowActionStringSnackbar(
-                            message = resourceProvider.getString(R.string.settings_notifs_error_fetch),
-                            actionText = resourceProvider.getString(R.string.retry),
-                        ) {
-                            fetchNotificationPreferences()
-                        }
-                    )
-                }
         }
     }
 

@@ -73,8 +73,6 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(site)
         whenever(pushNotificationRepository.observeWooNotificationPreferences(site))
             .thenReturn(flowOf(null))
-        whenever(pushNotificationRepository.fetchWooNotificationPreferences(site))
-            .thenReturn(Result.success(WooPushNotificationPreferences(storeOrder = StoreOrderPreferences())))
         whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
             .doSuspendableAnswer { invocation ->
                 val preferences = invocation.getArgument<WooPushNotificationPreferences>(1)
@@ -101,14 +99,6 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewState.getOrAwaitValue().notificationPreference)
             .isEqualTo(NotificationPreference.AllOrders)
-    }
-
-    @Test
-    fun `when view is loaded, then fetch order preferences`() = testBlocking {
-        setup()
-        advanceUntilIdle()
-
-        verify(pushNotificationRepository).fetchWooNotificationPreferences(site)
     }
 
     @Test
