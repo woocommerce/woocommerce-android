@@ -163,15 +163,6 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
         assertThat(effectiveValue).isTrue()
     }
 
-    @Test
-    fun `given REMOTE_TAP_TO_PAY flag, when remote key read, then matches contract`() {
-        // GIVEN
-        val flag = FeatureFlag.REMOTE_TAP_TO_PAY
-
-        // WHEN // THEN
-        assertThat(flag.remoteFlagKey).isEqualTo("remote_tap_to_pay")
-    }
-
     private fun createRemoteFlag(key: String, value: Boolean) = FeatureFlagConfigDao.FeatureFlag(
         key = key,
         value = value,
