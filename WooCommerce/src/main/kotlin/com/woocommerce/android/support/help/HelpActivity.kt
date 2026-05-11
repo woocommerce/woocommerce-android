@@ -32,6 +32,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatActivity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.prefs.developer.DevFeatureFlagsActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -107,6 +108,11 @@ class HelpActivity : AppCompatActivity() {
         if (userIsLoggedIn() && selectedSite.exists()) {
             binding.ssrContainer.show()
             binding.ssrContainer.setOnClickListener { showSSR() }
+        }
+
+        if (isAiSupportChatAvailable()) {
+            binding.aiSupportChatContainer.show()
+            binding.aiSupportChatContainer.setOnClickListener { showAiSupportChat() }
         }
 
         if (!userIsLoggedIn() && featureFlagRepository.isEnabled(FeatureFlag.LOGGED_OUT_FF_PANEL)) {
@@ -234,6 +240,15 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showSSR() {
         startActivity(Intent(this, SSRActivity::class.java))
+    }
+
+    private fun isAiSupportChatAvailable(): Boolean =
+        userIsLoggedIn() &&
+            featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT) &&
+            selectedSite.getIfExists()?.isJetpackConnected == true
+
+    private fun showAiSupportChat() {
+        startActivity(AiSupportChatActivity.createIntent(this))
     }
 
     private fun showFeatureFlagsOverride() {

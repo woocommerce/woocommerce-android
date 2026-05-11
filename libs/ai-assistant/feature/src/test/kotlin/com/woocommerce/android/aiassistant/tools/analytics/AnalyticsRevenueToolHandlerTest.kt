@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
@@ -46,6 +47,11 @@ class AnalyticsRevenueToolHandlerTest {
             .getValue("enum")
             .jsonArray
             .map { it.jsonPrimitive.content }
+        val compareToValues = requireNotNull(properties["compare_to"])
+            .jsonObject
+            .getValue("enum")
+            .jsonArray
+            .map { it.jsonPrimitive.content }
 
         assertThat(description).contains("show_cards")
         assertThat(description).contains("Revenue/sales stats are card-backed")
@@ -56,6 +62,7 @@ class AnalyticsRevenueToolHandlerTest {
         assertThat(description).contains("currency:none")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
+        assertThat(compareToValues).containsExactly("previous_period")
     }
 
     @Test
@@ -83,6 +90,7 @@ class AnalyticsRevenueToolHandlerTest {
             val structured = (result as ToolResult.Success).structured.jsonObject
             assertThat(structured.getValue("after").jsonPrimitive.content).isEqualTo("2026-04-01")
             assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
+            assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("day")
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(2)
             assertThat(structured.getValue("totals").jsonObject.getValue("net_revenue").jsonPrimitive.content)
                 .isEqualTo("120.15")
@@ -91,6 +99,131 @@ class AnalyticsRevenueToolHandlerTest {
             assertThat(firstInterval.keys).containsExactlyInAnyOrder("interval", "date_start", "subtotals")
             assertThat(firstInterval.getValue("subtotals").jsonObject.getValue("orders_count").jsonPrimitive.int)
                 .isEqualTo(5)
+        }
+
+    @Test
+    fun `given previous period comparison, when execute succeeds, then previous totals are returned`() =
+        runTest {
+            whenever(
+                dataSource.fetchRevenueStats(
+                    after = "2026-05-01T00:00:00",
+                    before = "2026-05-07T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                    currency = "USD",
+                )
+            ).thenReturn(Result.success(sampleStats()))
+            whenever(
+                dataSource.fetchRevenueStats(
+                    after = "2026-04-24T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                    currency = "USD",
+                )
+            ).thenReturn(Result.success(previousStats()))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-05-01")
+                        put("before", "2026-05-07")
+                        put("currency", "USD")
+                        put("compare_to", "previous_period")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            val structured = (result as ToolResult.Success).structured.jsonObject
+
+            assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("day")
+            assertThat(structured.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+            assertThat(
+                structured.getValue("previous_period_totals")
+                    .jsonObject
+                    .getValue("total_sales")
+                    .jsonPrimitive
+                    .content
+            ).isEqualTo("90.00")
+            verify(dataSource).fetchRevenueStats(
+                after = "2026-04-24T00:00:00",
+                before = "2026-04-30T23:59:59",
+                interval = AnalyticsInterval.DAY,
+                currency = "USD",
+            )
+        }
+
+    @Test
+    fun `given previous period fetch fails, when primary succeeds, then partial primary result is returned`() =
+        runTest {
+            whenever(
+                dataSource.fetchRevenueStats(
+                    after = "2026-05-01T00:00:00",
+                    before = "2026-05-07T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                    currency = null,
+                )
+            ).thenReturn(Result.success(sampleStats()))
+            whenever(
+                dataSource.fetchRevenueStats(
+                    after = "2026-04-24T00:00:00",
+                    before = "2026-04-30T23:59:59",
+                    interval = AnalyticsInterval.DAY,
+                    currency = null,
+                )
+            ).thenReturn(Result.failure(RuntimeException("comparison failed")))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-05-01")
+                        put("before", "2026-05-07")
+                        put("compare_to", "previous_period")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            val structured = (result as ToolResult.Success).structured.jsonObject
+            assertThat(structured).doesNotContainKey("previous_period_totals")
+            assertThat(structured.getValue("previous_period_partial").jsonPrimitive.boolean).isTrue()
+            assertThat(structured.getValue("previous_period_warning").jsonPrimitive.content)
+                .contains("could not be fetched")
+        }
+
+    @Test
+    fun `given unsupported compare_to, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                        put("compare_to", "last_year")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason).contains("compare_to")
+            verifyNoInteractions(dataSource)
+        }
+
+    @Test
+    fun `given unknown argument, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-04-01")
+                        put("before", "2026-04-30")
+                        put("orderby", "total_sales")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason).contains("Unsupported analytics_revenue argument")
+            verifyNoInteractions(dataSource)
         }
 
     @Test
@@ -323,6 +456,16 @@ class AnalyticsRevenueToolHandlerTest {
             put("orders_count", 42)
         },
         intervals = intervalSubtotals,
+    )
+
+    private fun previousStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("total_sales", "90.00")
+            put("gross_sales", "95.00")
+            put("net_revenue", "72.00")
+            put("orders_count", 18)
+        },
+        intervals = emptyList(),
     )
 
     private fun intervalSubtotal(

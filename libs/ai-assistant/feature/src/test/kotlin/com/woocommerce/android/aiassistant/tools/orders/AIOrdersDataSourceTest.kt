@@ -358,6 +358,30 @@ class AIOrdersDataSourceTest {
         }
 
     @Test
+    fun `given order patch, when updateOrder is called, then single generic batch update is sent`() = runTest {
+        whenever(orderStore.batchUpdateOrders(eq(site), any())).thenReturn(
+            WooResult(WCOrderStore.UpdateOrdersStatusResult(updatedOrders = listOf(123L)))
+        )
+
+        val result = dataSource.updateOrder(
+            orderId = 123L,
+            patch = AIOrdersDataSource.OrderPatch(
+                status = "processing",
+                customerNote = "Please call first",
+                billingEmail = "customer@example.com",
+            )
+        )
+
+        assertThat(result.isSuccess).isTrue
+        val requestsCaptor = argumentCaptor<Map<Long, UpdateOrderRequest>>()
+        verify(orderStore).batchUpdateOrders(eq(site), requestsCaptor.capture())
+        val request = requestsCaptor.firstValue.getValue(123L)
+        assertThat(request.status?.statusKey).isEqualTo("processing")
+        assertThat(request.customerNote).isEqualTo("Please call first")
+        assertThat(request.billingEmail).isEqualTo("customer@example.com")
+    }
+
+    @Test
     fun `given order patch, when bulkUpdateOrders is called, then one generic batch update is sent`() =
         runTest {
             whenever(orderStore.batchUpdateOrders(eq(site), any())).thenReturn(

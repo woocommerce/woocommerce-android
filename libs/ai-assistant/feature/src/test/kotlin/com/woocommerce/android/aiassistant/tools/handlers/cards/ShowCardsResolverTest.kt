@@ -8,7 +8,9 @@ import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -225,6 +227,7 @@ class ShowCardsResolverTest {
             "currency",
             "date_created",
             "customer_name",
+            "line_items_count",
         )
         assertThat(result[0].summary.getValue("customer_name").jsonPrimitive.content).isEqualTo("Jane Doe")
         assertThat(result[0].card.family).isEqualTo("order")
@@ -236,7 +239,17 @@ class ShowCardsResolverTest {
         assertThat(orderDetails.currency).isEqualTo("USD")
         assertThat(orderDetails.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
         assertThat(orderDetails.customerName).isEqualTo("Jane Doe")
-        assertThat(result[1].summary.keys).containsExactly("id", "name", "sku", "price", "stock_status")
+        assertThat(result[1].summary.keys).containsExactly(
+            "id",
+            "name",
+            "sku",
+            "price",
+            "type",
+            "stock_status",
+            "manage_stock",
+            "on_sale",
+            "stock_quantity",
+        )
         assertThat(result[1].card.family).isEqualTo("product")
         assertThat(result[1].card.id).isEqualTo("2")
         assertThat(result[1].card.title).isEqualTo("Socks")
@@ -246,6 +259,59 @@ class ShowCardsResolverTest {
         assertThat(productDetails.stockStatus).isEqualTo("instock")
         assertThat(productDetails.status).isEqualTo("publish")
         assertThat(productDetails.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
+    }
+
+    @Test
+    fun `given resolved entities, when resolved, then summaries include widened compact fields`() = runTest {
+        whenever(ordersDataSource.getOrders(listOf(1L))).thenReturn(
+            Result.success(
+                orderLookup(
+                    order(
+                        id = 1L,
+                        customerId = 55L,
+                        paymentMethodTitle = "Credit Card",
+                        lineItems = ORDER_LINE_ITEMS_JSON,
+                    )
+                )
+            )
+        )
+        whenever(productsDataSource.getProducts(listOf(2L))).thenReturn(
+            Result.success(
+                productLookup(
+                    product(
+                        id = 2L,
+                        type = "simple",
+                        manageStock = true,
+                        onSale = false,
+                        stockQuantity = 12.0,
+                    )
+                )
+            )
+        )
+
+        val result = resolver.resolve(
+            listOf(
+                ref(ShowCardFamily.Order, "1"),
+                ref(ShowCardFamily.Product, "2"),
+            )
+        ).filterIsInstance<ShowCardsResolution.Resolved>()
+
+        assertThat(result[0].summary.keys).contains(
+            "payment_method_title",
+            "customer_id",
+            "line_items_count",
+            "line_items",
+        )
+        assertThat(result[0].summary.getValue("payment_method_title").jsonPrimitive.content)
+            .isEqualTo("Credit Card")
+        assertThat(result[0].summary.getValue("customer_id").jsonPrimitive.content).isEqualTo("55")
+        assertThat(result[0].summary.getValue("line_items_count").jsonPrimitive.content).isEqualTo("2")
+        assertThat(result[0].summary.getValue("line_items").jsonArray).hasSize(2)
+        assertThat(result[1].summary.keys).contains("manage_stock", "on_sale", "type", "stock_quantity")
+        assertThat(result[1].summary.getValue("type").jsonPrimitive.content).isEqualTo("simple")
+        assertThat(result[1].summary.getValue("manage_stock").jsonPrimitive.boolean).isTrue
+        assertThat(result[1].summary.getValue("on_sale").jsonPrimitive.boolean).isFalse
+        assertThat(result[1].summary.getValue("stock_quantity").jsonPrimitive.double).isEqualTo(12.0)
     }
 
     @Test
@@ -324,6 +390,9 @@ class ShowCardsResolverTest {
     private fun order(
         id: Long,
         number: String = id.toString(),
+        customerId: Long = 0,
+        paymentMethodTitle: String = "",
+        lineItems: String = "",
     ) = OrderEntity(
         localSiteId = LocalId(1),
         orderId = id,
@@ -332,19 +401,30 @@ class ShowCardsResolverTest {
         total = "12.34",
         currency = "USD",
         dateCreated = "2026-05-01T10:00:00Z",
+        customerId = customerId,
+        paymentMethodTitle = paymentMethodTitle,
         billingFirstName = "Jane",
         billingLastName = "Doe",
+        lineItems = lineItems,
     )
 
     private fun product(
         id: Long,
         name: String = "Socks",
+        type: String = "simple",
+        manageStock: Boolean = false,
+        onSale: Boolean = false,
+        stockQuantity: Double = 0.0,
     ) = WCProductModel(
         remoteId = RemoteId(id),
         name = name,
+        type = type,
         sku = "woo-socks",
         price = "9.99",
         stockStatus = "instock",
+        manageStock = manageStock,
+        onSale = onSale,
+        stockQuantity = stockQuantity,
         status = "publish",
         images = """[{"id":7,"src":"$PRODUCT_IMAGE_URL"}]""",
     )
@@ -376,6 +456,12 @@ class ShowCardsResolverTest {
 
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
+        private val ORDER_LINE_ITEMS_JSON = """
+            [
+              {"id":10,"name":"Socks","quantity":1,"total":"9.99"},
+              {"id":11,"name":"Hat","quantity":2,"total":"12.00"}
+            ]
+        """.trimIndent()
         private const val ANALYTICS_STATS_ID =
             "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
         private const val ANALYTICS_STATS_ID_NO_CURRENCY =

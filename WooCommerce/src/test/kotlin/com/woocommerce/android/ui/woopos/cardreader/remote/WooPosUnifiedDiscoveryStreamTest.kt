@@ -9,8 +9,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.S
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.siteIdHash
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -27,7 +25,6 @@ class WooPosUnifiedDiscoveryStreamTest {
     private val cardReaderManager: CardReaderManager = mock()
     private val remoteDiscovery: WooPosRemoteReaderDiscovery = mock()
     private val simulatedRemoteDiscovery: WooPosSimulatedRemoteReaderDiscovery = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val selectedSite: SelectedSite = mock {
         on { getOrNull() }.thenReturn(SiteModel().apply { siteId = TABLET_SITE_ID })
     }
@@ -36,41 +33,7 @@ class WooPosUnifiedDiscoveryStreamTest {
     private val types: CardReaderTypesToDiscover = ExternalReaders(listOf(Chipper2X))
 
     @Test
-    fun `given flag off, when bluetooth and nsd emit, then only bluetooth readers surface`() = runTest {
-        // GIVEN
-        val bluetoothReader: CardReader = mock { on { id }.thenReturn("chipper-1") }
-        whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
-            flowOf(
-                CardReaderDiscoveryEvents.Started,
-                CardReaderDiscoveryEvents.ReadersFound(listOf(bluetoothReader)),
-                CardReaderDiscoveryEvents.Succeeded,
-            )
-        )
-        whenever(remoteDiscovery.discover()).thenReturn(
-            flowOf(WooPosPhoneDiscoveryEvent.Added(phone(name = "Pixel 7")))
-        )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(false)
-        val sut = WooPosUnifiedDiscoveryStream(
-            cardReaderManager,
-            remoteDiscovery,
-            simulatedRemoteDiscovery,
-            featureFlagRepository,
-            selectedSite,
-            logger,
-        )
-
-        // WHEN / THEN
-        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
-            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
-            val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
-            assertThat(found.readers).containsExactly(WooPosDiscoveredReader.Bluetooth(bluetoothReader))
-            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Succeeded)
-            awaitComplete()
-        }
-    }
-
-    @Test
-    fun `given flag on, when bluetooth and nsd emit, then both readers surface in the snapshot`() = runTest {
+    fun `when bluetooth and nsd emit, then both readers surface in the snapshot`() = runTest {
         // GIVEN
         val bluetoothReader: CardReader = mock { on { id }.thenReturn("chipper-1") }
         whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
@@ -81,12 +44,10 @@ class WooPosUnifiedDiscoveryStreamTest {
         )
         val phone = phone(name = "Pixel 7")
         whenever(remoteDiscovery.discover()).thenReturn(flowOf(WooPosPhoneDiscoveryEvent.Added(phone)))
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
         val sut = WooPosUnifiedDiscoveryStream(
             cardReaderManager,
             remoteDiscovery,
             simulatedRemoteDiscovery,
-            featureFlagRepository,
             selectedSite,
             logger,
         )
@@ -106,7 +67,7 @@ class WooPosUnifiedDiscoveryStreamTest {
     }
 
     @Test
-    fun `given flag on, when nsd reports a phone lost, then the phone is removed from the snapshot`() = runTest {
+    fun `when nsd reports a phone lost, then the phone is removed from the snapshot`() = runTest {
         // GIVEN
         whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
             flowOf(CardReaderDiscoveryEvents.Started)
@@ -118,12 +79,10 @@ class WooPosUnifiedDiscoveryStreamTest {
                 WooPosPhoneDiscoveryEvent.Removed(phone.serviceName),
             )
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
         val sut = WooPosUnifiedDiscoveryStream(
             cardReaderManager,
             remoteDiscovery,
             simulatedRemoteDiscovery,
-            featureFlagRepository,
             selectedSite,
             logger,
         )
@@ -153,12 +112,10 @@ class WooPosUnifiedDiscoveryStreamTest {
                     WooPosPhoneDiscoveryEvent.Removed("woopos-remote-a3f4"),
                 )
             )
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
             val sut = WooPosUnifiedDiscoveryStream(
                 cardReaderManager,
                 remoteDiscovery,
                 simulatedRemoteDiscovery,
-                featureFlagRepository,
                 selectedSite,
                 logger,
             )
@@ -184,12 +141,10 @@ class WooPosUnifiedDiscoveryStreamTest {
         whenever(remoteDiscovery.discover()).thenReturn(
             flowOf(WooPosPhoneDiscoveryEvent.Added(mismatchedPhone))
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
         val sut = WooPosUnifiedDiscoveryStream(
             cardReaderManager,
             remoteDiscovery,
             simulatedRemoteDiscovery,
-            featureFlagRepository,
             selectedSite,
             logger,
         )
@@ -211,12 +166,10 @@ class WooPosUnifiedDiscoveryStreamTest {
         whenever(remoteDiscovery.discover()).thenReturn(
             flowOf(WooPosPhoneDiscoveryEvent.Added(matchingPhone))
         )
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
         val sut = WooPosUnifiedDiscoveryStream(
             cardReaderManager,
             remoteDiscovery,
             simulatedRemoteDiscovery,
-            featureFlagRepository,
             selectedSite,
             logger,
         )
