@@ -289,6 +289,23 @@ class ShowCardsResolverTest {
             )
         ).filterIsInstance<ShowCardsResolution.Resolved>()
 
+        val orderSummary = (result[0].summary as ShowCardsResolvedSummary.Order).value
+        assertThat(orderSummary.id).isEqualTo("1")
+        assertThat(orderSummary.number).isEqualTo("1")
+        assertThat(orderSummary.status).isEqualTo("processing")
+        assertThat(orderSummary.total).isEqualTo("12.34")
+        assertThat(orderSummary.currency).isEqualTo("USD")
+        assertThat(orderSummary.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(orderSummary.customerName).isEqualTo("Jane Doe")
+
+        val productSummary = (result[1].summary as ShowCardsResolvedSummary.Product).value
+        assertThat(productSummary.id).isEqualTo("2")
+        assertThat(productSummary.name).isEqualTo("Socks")
+        assertThat(productSummary.sku).isEqualTo("woo-socks")
+        assertThat(productSummary.price).isEqualTo("9.99")
+        assertThat(productSummary.type).isEqualTo("simple")
+        assertThat(productSummary.stockStatus).isEqualTo("instock")
+
         assertThat(
             result[0].summaryJson().keys
         ).containsExactly(
@@ -367,6 +384,18 @@ class ShowCardsResolverTest {
                 ref(ShowCardFamily.Product, "2"),
             )
         ).filterIsInstance<ShowCardsResolution.Resolved>()
+
+        val orderSummary = (result[0].summary as ShowCardsResolvedSummary.Order).value
+        assertThat(orderSummary.paymentMethodTitle).isEqualTo("Credit Card")
+        assertThat(orderSummary.customerId).isEqualTo(55L)
+        assertThat(orderSummary.lineItemsCount).isEqualTo(2)
+        assertThat(orderSummary.lineItems).hasSize(2)
+
+        val productSummary = (result[1].summary as ShowCardsResolvedSummary.Product).value
+        assertThat(productSummary.type).isEqualTo("simple")
+        assertThat(productSummary.manageStock).isTrue
+        assertThat(productSummary.onSale).isFalse
+        assertThat(productSummary.stockQuantity).isEqualTo(12.0)
 
         assertThat(result[0].summaryJson().keys).contains(
             "payment_method_title",
