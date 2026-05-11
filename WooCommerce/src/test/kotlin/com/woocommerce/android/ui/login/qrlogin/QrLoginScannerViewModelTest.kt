@@ -644,20 +644,73 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given legacy app login payload, when scan succeeds, then emits RouteToSiteCredentialsEntry`() =
+    fun `given legacy app login credentials payload, when scan succeeds, then emits RouteToAppLoginCredentials`() =
         testBlocking {
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.AppLogin(SITE_URL, USERNAME))
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
             val events = viewModel.event.captureValues()
 
             viewModel.onScanResult(successScan())
 
             assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToSiteCredentialsEntry(
+                QrLoginScannerViewModel.Dispatch.RouteToAppLoginCredentials(
                     siteUrl = SITE_URL,
                     username = USERNAME
                 )
             )
             verify(restClient, never()).scan(any(), any())
+        }
+
+    @Test
+    fun `given legacy app login wpcom payload, when scan succeeds, then emits RouteToAppLoginWpComEmail`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail(
+                    siteUrl = SITE_URL,
+                    wpComEmail = WP_COM_EMAIL
+                )
+            )
+            verify(restClient, never()).scan(any(), any())
+        }
+
+    @Test
+    fun `given legacy app login credentials payload, when handed off, then tracks app login success with qr source`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
+
+            viewModel.onScanResult(successScan())
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NO_WP_COM,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
+                )
+            )
+        }
+
+    @Test
+    fun `given legacy app login wpcom payload, when handed off, then tracks app login success with qr source`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
+
+            viewModel.onScanResult(successScan())
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WP_COM,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
+                )
+            )
         }
 
     @Test
@@ -724,17 +777,42 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given logged in and legacy app login payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
+    fun `given logged in and legacy app login credentials, when scan succeeds, then ui state exposes WarningSessionReplace`() =
         testBlocking {
             whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.AppLogin(SITE_URL, USERNAME))
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
             val events = viewModel.event.captureValues()
 
             viewModel.onScanResult(successScan())
 
             assertThat(viewModel.uiState.value).isEqualTo(
                 QrLoginScannerViewModel.UiState.WarningSessionReplace(
-                    QrLoginScannerViewModel.PendingHandoff.AppLogin(siteUrl = SITE_URL, username = USERNAME)
+                    QrLoginScannerViewModel.PendingHandoff.AppLoginCredentials(
+                        siteUrl = SITE_URL,
+                        username = USERNAME
+                    )
+                )
+            )
+            assertThat(events).isEmpty()
+        }
+
+    @Test
+    fun `given logged in and legacy app login wpcom, when scan succeeds, then ui state exposes WarningSessionReplace`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan())
+
+            assertThat(viewModel.uiState.value).isEqualTo(
+                QrLoginScannerViewModel.UiState.WarningSessionReplace(
+                    QrLoginScannerViewModel.PendingHandoff.AppLoginWpComEmail(
+                        siteUrl = SITE_URL,
+                        wpComEmail = WP_COM_EMAIL
+                    )
                 )
             )
             assertThat(events).isEmpty()
@@ -819,10 +897,11 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given warning for legacy app login, when confirmed, then logs out and emits RouteToSiteCredentialsEntry`() =
+    fun `given warning for legacy app login credentials, when confirmed, then logs out and emits RouteToAppLoginCredentials`() =
         testBlocking {
             whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.AppLogin(SITE_URL, USERNAME))
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
             val events = viewModel.event.captureValues()
             viewModel.onScanResult(successScan())
 
@@ -830,12 +909,45 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
             verify(accountRepository).logout()
             assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToSiteCredentialsEntry(
+                QrLoginScannerViewModel.Dispatch.RouteToAppLoginCredentials(
                     siteUrl = SITE_URL,
                     username = USERNAME
                 )
             )
-            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+            verify(analyticsTracker).track(
+                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NO_WP_COM,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
+                )
+            )
+        }
+
+    @Test
+    fun `given warning for legacy app login wpcom, when confirmed, then logs out and emits RouteToAppLoginWpComEmail`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+
+            viewModel.onConfirmSessionReplace()
+
+            verify(accountRepository).logout()
+            assertThat(events.last()).isEqualTo(
+                QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail(
+                    siteUrl = SITE_URL,
+                    wpComEmail = WP_COM_EMAIL
+                )
+            )
+            verify(analyticsTracker).track(
+                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WP_COM,
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
+                )
+            )
         }
 
     @Test
@@ -912,6 +1024,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
         const val SITE_URL = "https://store.example.com"
         const val USERNAME = "admin"
+        const val WP_COM_EMAIL = "admin@example.com"
         const val POLL_TICK_MS = 2_000L
     }
 }

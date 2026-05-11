@@ -107,8 +107,11 @@ class QrLoginScannerViewModel @Inject constructor(
             is QrLoginPayload.SiteUrl -> handleHandoff(
                 PendingHandoff.SiteUrlPrefill(siteUrl = payload.siteUrl)
             )
-            is QrLoginPayload.AppLogin -> handleHandoff(
-                PendingHandoff.AppLogin(siteUrl = payload.siteUrl, username = payload.username)
+            is QrLoginPayload.AppLogin.Credentials -> handleHandoff(
+                PendingHandoff.AppLoginCredentials(siteUrl = payload.siteUrl, username = payload.username)
+            )
+            is QrLoginPayload.AppLogin.WpComEmail -> handleHandoff(
+                PendingHandoff.AppLoginWpComEmail(siteUrl = payload.siteUrl, wpComEmail = payload.wpComEmail)
             )
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
@@ -163,17 +166,42 @@ class QrLoginScannerViewModel @Inject constructor(
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
                 triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = pending.siteUrl))
             }
-            is PendingHandoff.AppLogin -> {
+            is PendingHandoff.AppLoginCredentials -> {
                 loggedIn = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
+                trackAppLoginHandoff(flowValue = AnalyticsTracker.VALUE_NO_WP_COM)
                 triggerEvent(
-                    Dispatch.RouteToSiteCredentialsEntry(
+                    Dispatch.RouteToAppLoginCredentials(
                         siteUrl = pending.siteUrl,
                         username = pending.username
                     )
                 )
             }
+            is PendingHandoff.AppLoginWpComEmail -> {
+                loggedIn = true
+                trackAppLoginHandoff(flowValue = AnalyticsTracker.VALUE_WP_COM)
+                triggerEvent(
+                    Dispatch.RouteToAppLoginWpComEmail(
+                        siteUrl = pending.siteUrl,
+                        wpComEmail = pending.wpComEmail
+                    )
+                )
+            }
         }
+    }
+
+    /**
+     * Mirror the analytics shape the OS-deeplink handler (`LoginActivity.handleAppLoginUri`) uses
+     * for the same URI so QR scans and deeplink clicks land in the same funnel. The `source`
+     * property lets dashboards still split the two when they need to.
+     */
+    private fun trackAppLoginHandoff(flowValue: String) {
+        analyticsTracker.track(
+            AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to flowValue,
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR
+            )
+        )
     }
 
     private fun startScan(ticket: QrLoginPayload.Ticket) {
@@ -520,7 +548,19 @@ class QrLoginScannerViewModel @Inject constructor(
          */
         data class RouteToSiteAddressEntry(val siteUrl: String) : Dispatch()
 
-        data class RouteToSiteCredentialsEntry(val siteUrl: String, val username: String) : Dispatch()
+        /**
+         * The merchant scanned a legacy `woocommerce://app-login?siteUrl=…&username=…` QR
+         * (self-hosted variant). The fragment routes them straight to the site-credentials
+         * screen with both fields prefilled — same downstream as the OS-deeplink path.
+         */
+        data class RouteToAppLoginCredentials(val siteUrl: String, val username: String) : Dispatch()
+
+        /**
+         * The merchant scanned a legacy `woocommerce://app-login?siteUrl=…&wpcomEmail=…` QR
+         * (WP.com variant). The fragment routes them to the WP.com email/password screen via
+         * `gotWpcomSiteInfo`, mirroring the OS-deeplink path.
+         */
+        data class RouteToAppLoginWpComEmail(val siteUrl: String, val wpComEmail: String) : Dispatch()
     }
 
     sealed interface UiState {
@@ -550,7 +590,8 @@ class QrLoginScannerViewModel @Inject constructor(
         data class Ticket(val ticket: QrLoginPayload.Ticket, val host: String) : PendingHandoff
         data class WpComMagicLink(val url: String) : PendingHandoff
         data class SiteUrlPrefill(val siteUrl: String) : PendingHandoff
-        data class AppLogin(val siteUrl: String, val username: String) : PendingHandoff
+        data class AppLoginCredentials(val siteUrl: String, val username: String) : PendingHandoff
+        data class AppLoginWpComEmail(val siteUrl: String, val wpComEmail: String) : PendingHandoff
     }
 
     enum class AuthPhase {

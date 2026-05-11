@@ -9,10 +9,13 @@ package com.woocommerce.android.ui.login.qrlogin
  * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
  * ```
  *
- * The scanner also accepts the legacy wc-admin credentials QR:
+ * The scanner also accepts the legacy wc-admin app-login QR in two shapes — self-hosted
+ * credentials and WP.com email — mirroring what the OS-deeplink handler in
+ * `LoginActivity.handleAppLoginUri` already accepts:
  *
  * ```
  * woocommerce://app-login?siteUrl=<URL-encoded site URL>&username=<URL-encoded username>
+ * woocommerce://app-login?siteUrl=<URL-encoded site URL>&wpcomEmail=<URL-encoded email>
  * ```
  *
  * The [Ticket.token] is a single-use 5-minute bearer ticket — not a credential. The app exchanges
@@ -49,10 +52,29 @@ sealed interface QrLoginPayload {
      */
     data class SiteUrl(val siteUrl: String) : QrLoginPayload
 
-    data class AppLogin(
-        val siteUrl: String,
-        val username: String
-    ) : QrLoginPayload
+    /**
+     * Legacy wc-admin `app-login` QR. Two shapes are accepted, mirroring the OS-deeplink path:
+     *  - [Credentials] for self-hosted sites: site URL + `username`, hands off to the existing
+     *    site-credentials screen with both fields prefilled (password still required).
+     *  - [WpComEmail] for WP.com-connected sites: site URL + `wpcomEmail`, hands off to the
+     *    email/password screen via `gotWpcomSiteInfo`, matching the existing deeplink flow.
+     *
+     * Unlike [Ticket]/[SiteUrl], the site URL here may be http or https — these payloads do not
+     * hit the QR-exchange endpoint, so we leave the scheme decision to the downstream login flow.
+     */
+    sealed interface AppLogin : QrLoginPayload {
+        val siteUrl: String
+
+        data class Credentials(
+            override val siteUrl: String,
+            val username: String
+        ) : AppLogin
+
+        data class WpComEmail(
+            override val siteUrl: String,
+            val wpComEmail: String
+        ) : AppLogin
+    }
 
     data object Invalid : QrLoginPayload
 }

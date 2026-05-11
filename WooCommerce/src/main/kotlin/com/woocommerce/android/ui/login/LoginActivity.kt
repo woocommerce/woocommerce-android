@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_APP_LOGIN_SOURCE_DEEPLINK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
@@ -320,14 +321,14 @@ class LoginActivity :
         loginViaSiteAddress(prefilledSiteUrl = siteUrl)
     }
 
-    override fun onQrLoginSiteCredentials(siteUrl: String, username: String) {
+    override fun onQrLoginAppLoginCredentials(siteUrl: String, username: String) {
         disableDynamicEdgeToEdge()
-        showUsernamePasswordScreen(
-            siteAddress = siteUrl,
-            inputUsername = username,
-            endpointAddress = null,
-            inputPassword = null
-        )
+        showAppLoginSiteCredentials(siteUrl = siteUrl, username = username)
+    }
+
+    override fun onQrLoginAppLoginWpComEmail(siteUrl: String, wpComEmail: String) {
+        disableDynamicEdgeToEdge()
+        showAppLoginWpComEmail(siteUrl = siteUrl, wpComEmail = wpComEmail)
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
@@ -1097,25 +1098,19 @@ class LoginActivity :
         val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
         when {
             siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
-                gotWpcomSiteInfo(siteUrl)
-                AnalyticsTracker.track(
-                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                    properties = mapOf(KEY_FLOW to VALUE_WP_COM)
+                trackAppLoginSuccess(
+                    flow = VALUE_WP_COM,
+                    source = VALUE_APP_LOGIN_SOURCE_DEEPLINK,
                 )
-                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false)
+                showAppLoginWpComEmail(siteUrl = siteUrl, wpComEmail = wpComEmail)
             }
 
             siteUrl.isNotEmpty() && username.isNotEmpty() -> {
-                AnalyticsTracker.track(
-                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                    properties = mapOf(KEY_FLOW to VALUE_NO_WP_COM)
+                trackAppLoginSuccess(
+                    flow = VALUE_NO_WP_COM,
+                    source = VALUE_APP_LOGIN_SOURCE_DEEPLINK,
                 )
-                showUsernamePasswordScreen(
-                    siteAddress = siteUrl,
-                    inputUsername = username,
-                    endpointAddress = null,
-                    inputPassword = null
-                )
+                showAppLoginSiteCredentials(siteUrl = siteUrl, username = username)
             }
 
             else -> {
@@ -1127,6 +1122,40 @@ class LoginActivity :
                 showPrologue()
             }
         }
+    }
+
+    private fun trackAppLoginSuccess(flow: String, source: String) {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+            properties = mapOf(
+                KEY_FLOW to flow,
+                KEY_SOURCE to source,
+            )
+        )
+    }
+
+    /**
+     * Shared UI entry point for the self-hosted `app-login` flow — used by both the OS-deeplink
+     * handler ([handleAppLoginUri]) and the in-app QR scanner ([onQrLoginAppLoginCredentials]).
+     * Each caller owns its own analytics event with the correct `source` value, so we keep
+     * tracking out of this helper.
+     */
+    private fun showAppLoginSiteCredentials(siteUrl: String, username: String) {
+        showUsernamePasswordScreen(
+            siteAddress = siteUrl,
+            inputUsername = username,
+            endpointAddress = null,
+            inputPassword = null
+        )
+    }
+
+    /**
+     * Shared UI entry point for the WP.com `app-login` flow — symmetric to
+     * [showAppLoginSiteCredentials]. Each caller owns its own analytics event.
+     */
+    private fun showAppLoginWpComEmail(siteUrl: String, wpComEmail: String) {
+        gotWpcomSiteInfo(siteUrl)
+        showEmailPasswordScreen(email = wpComEmail, verifyEmail = false)
     }
 
     private fun keepTrackOfAgeEligibility() {
