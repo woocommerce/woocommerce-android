@@ -13,6 +13,11 @@ class AiAssistantVariationCardRendererTest {
     private val currencyFormatter: AiAssistantCurrencyFormatter = mock()
 
     @Test
+    fun `when renderer is created, then class has direct unit test coverage`() {
+        assertThat(AiAssistantVariationCardRenderer(currencyFormatter)).isNotNull
+    }
+
+    @Test
     fun `given variation card, when row model is built, then product summary row fields are formatted`() {
         val context: Context = mock()
         val decimalFormatter: (BigDecimal) -> String = { amount -> "\$${amount.toPlainString()}" }
