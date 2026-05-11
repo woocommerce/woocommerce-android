@@ -28,11 +28,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,32 +53,53 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.copyToClipboard
+import com.woocommerce.android.extensions.findActivity
 import com.woocommerce.android.extensions.windowHeightSizeClass
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.WooPermissionUtils
 
 @Composable
 fun QrLoginPrologueScreen(
     onScanClicked: () -> Unit,
     onFallbackClicked: () -> Unit,
+    onCameraPermissionDialogShown: (CameraDenialState) -> Unit = {},
+    onCameraPermissionDialogPrimary: (CameraDenialState) -> Unit = {},
+    onCameraPermissionDialogFallback: (CameraDenialState) -> Unit = {},
 ) {
     val context = LocalContext.current
+    var denialState by rememberSaveable { mutableStateOf(CameraDenialState.Hidden) }
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
-            // The scanner asks for the permission again on first composition; if the user just
-            // granted it here, that follow-up returns immediately with no extra dialog.
-            // If the user denied, we stay on the prologue — they can tap again to retry, or
-            // pick the site-URL fallback. We don't navigate to a black scanner-with-permission-
-            // prompt screen.
-            if (granted) onScanClicked()
+            if (granted) {
+                denialState = CameraDenialState.Hidden
+                onScanClicked()
+            } else {
+                // After a denial, shouldShowRequestPermissionRationale tells us whether Android
+                // will keep prompting (true → first denial) or has stopped prompting (false →
+                // permanently denied or "Don't ask again"). Before the very first request this
+                // returns false too, but we only reach this branch after a denial.
+                val activity = context.findActivity()
+                denialState = if (activity != null && ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity,
+                        Manifest.permission.CAMERA
+                    )
+                ) {
+                    CameraDenialState.FirstDenial
+                } else {
+                    CameraDenialState.PermanentlyDenied
+                }
+            }
         }
     )
     val handleScanClicked: () -> Unit = {
@@ -83,6 +111,11 @@ fun QrLoginPrologueScreen(
             onScanClicked()
         } else {
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+    LaunchedEffect(denialState) {
+        if (denialState != CameraDenialState.Hidden) {
+            onCameraPermissionDialogShown(denialState)
         }
     }
 
@@ -125,6 +158,31 @@ fun QrLoginPrologueScreen(
             }
             Buttons(onScanClicked = handleScanClicked, onFallbackClicked = onFallbackClicked)
         }
+    }
+
+    if (denialState != CameraDenialState.Hidden) {
+        CameraPermissionDialog(
+            state = denialState,
+            onPrimary = {
+                val tappedState = denialState
+                denialState = CameraDenialState.Hidden
+                onCameraPermissionDialogPrimary(tappedState)
+                when (tappedState) {
+                    CameraDenialState.FirstDenial ->
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    CameraDenialState.PermanentlyDenied ->
+                        WooPermissionUtils.showAppSettings(context, openInNewStack = false)
+                    CameraDenialState.Hidden -> Unit
+                }
+            },
+            onFallback = {
+                val tappedState = denialState
+                denialState = CameraDenialState.Hidden
+                onCameraPermissionDialogFallback(tappedState)
+                onFallbackClicked()
+            },
+            onDismiss = { denialState = CameraDenialState.Hidden },
+        )
     }
 }
 
@@ -312,10 +370,82 @@ private fun Buttons(
     }
 }
 
+/**
+ * Two-state camera-permission fallback dialog. The copy and button labels diverge between
+ * [CameraDenialState.FirstDenial] (system will keep prompting on next request) and
+ * [CameraDenialState.PermanentlyDenied] (user has to enable the permission in Settings).
+ */
+@Composable
+private fun CameraPermissionDialog(
+    state: CameraDenialState,
+    onPrimary: () -> Unit,
+    onFallback: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val title = when (state) {
+        CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_title
+        CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_title
+        CameraDenialState.Hidden -> return
+    }
+    val body = when (state) {
+        CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_body
+        CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_body
+        CameraDenialState.Hidden -> return
+    }
+    val primaryLabel = when (state) {
+        CameraDenialState.FirstDenial -> R.string.login_qr_prologue_camera_denied_allow_button
+        CameraDenialState.PermanentlyDenied -> R.string.login_qr_prologue_camera_blocked_settings_button
+        CameraDenialState.Hidden -> return
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(id = title)) },
+        text = { Text(text = stringResource(id = body)) },
+        confirmButton = {
+            TextButton(onClick = onPrimary) {
+                Text(text = stringResource(id = primaryLabel))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onFallback) {
+                Text(text = stringResource(id = R.string.login_qr_prologue_camera_denied_fallback_button))
+            }
+        },
+    )
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginPrologueScreenPreview() {
     WooThemeWithBackground {
         QrLoginPrologueScreen(onScanClicked = {}, onFallbackClicked = {})
+    }
+}
+
+@Preview(name = "First denial — light")
+@Preview(name = "First denial — dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CameraPermissionFirstDenialPreview() {
+    WooThemeWithBackground {
+        CameraPermissionDialog(
+            state = CameraDenialState.FirstDenial,
+            onPrimary = {},
+            onFallback = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@Preview(name = "Permanently denied — light")
+@Preview(name = "Permanently denied — dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CameraPermissionPermanentlyDeniedPreview() {
+    WooThemeWithBackground {
+        CameraPermissionDialog(
+            state = CameraDenialState.PermanentlyDenied,
+            onPrimary = {},
+            onFallback = {},
+            onDismiss = {},
+        )
     }
 }

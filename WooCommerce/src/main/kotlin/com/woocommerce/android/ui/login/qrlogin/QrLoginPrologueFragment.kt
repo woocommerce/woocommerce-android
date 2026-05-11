@@ -25,6 +25,10 @@ import javax.inject.Inject
 class QrLoginPrologueFragment : Fragment() {
     companion object {
         const val TAG = "qr-login-prologue-fragment"
+        private const val KEY_CAMERA_PERMISSION_DIALOG_STATE = "state"
+        private const val VALUE_CAMERA_PERMISSION_STATE_FIRST_DENIAL = "first_denial"
+        private const val VALUE_CAMERA_PERMISSION_STATE_PERMANENTLY_DENIED = "permanently_denied"
+        private const val VALUE_CAMERA_PERMISSION_STATE_HIDDEN = "hidden"
     }
 
     interface Listener {
@@ -55,8 +59,32 @@ class QrLoginPrologueFragment : Fragment() {
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
                 unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
                 listener?.onQrLoginFallbackClicked()
-            }
+            },
+            onCameraPermissionDialogShown = { state ->
+                analyticsTracker.track(
+                    AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_DIALOG_SHOWN,
+                    mapOf(KEY_CAMERA_PERMISSION_DIALOG_STATE to state.toAnalyticsValue())
+                )
+            },
+            onCameraPermissionDialogPrimary = { state ->
+                analyticsTracker.track(
+                    AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_PRIMARY_TAPPED,
+                    mapOf(KEY_CAMERA_PERMISSION_DIALOG_STATE to state.toAnalyticsValue())
+                )
+            },
+            onCameraPermissionDialogFallback = { state ->
+                analyticsTracker.track(
+                    AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_FALLBACK_TAPPED,
+                    mapOf(KEY_CAMERA_PERMISSION_DIALOG_STATE to state.toAnalyticsValue())
+                )
+            },
         )
+    }
+
+    private fun CameraDenialState.toAnalyticsValue(): String = when (this) {
+        CameraDenialState.FirstDenial -> VALUE_CAMERA_PERMISSION_STATE_FIRST_DENIAL
+        CameraDenialState.PermanentlyDenied -> VALUE_CAMERA_PERMISSION_STATE_PERMANENTLY_DENIED
+        CameraDenialState.Hidden -> VALUE_CAMERA_PERMISSION_STATE_HIDDEN
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
