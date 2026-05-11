@@ -451,7 +451,10 @@ class QrLoginScannerViewModel @Inject constructor(
         QrLoginSessionStatusException.MalformedResponse -> ErrorReason.ServerError
         is QrLoginSessionStatusException.HttpError -> ErrorReason.ServerError
         is QrLoginSessionStatusException.Unknown -> ErrorReason.Unknown
-        else -> ErrorReason.Network
+        else -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login poll: unmapped failure type ${this.javaClass.simpleName}")
+            ErrorReason.Unknown
+        }
     }
 
     private fun Throwable.toExchangeReason(): ErrorReason = when (this) {
