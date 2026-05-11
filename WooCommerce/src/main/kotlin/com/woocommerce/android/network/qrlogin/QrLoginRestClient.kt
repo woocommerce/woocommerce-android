@@ -279,6 +279,8 @@ class QrLoginRestClient @Inject constructor(
     private data class ScanRequest(
         val token: String,
         val device: QrLoginDeviceInfo,
+        // Capability flag for the Core number-matching cutover. Servers that require
+        // number matching reject legacy clients missing this value before mutating token state.
         @SerializedName("supports_number_matching") val supportsNumberMatching: Boolean,
     )
 
