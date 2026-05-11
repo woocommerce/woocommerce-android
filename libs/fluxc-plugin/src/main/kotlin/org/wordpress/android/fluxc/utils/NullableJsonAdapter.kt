@@ -57,6 +57,7 @@ class NullBigDecimalJsonAdapter : NullableJsonAdapter<BigDecimal>() {
     }
 
     override fun readValue(input: JsonReader): BigDecimal? {
-        return input.nextString().toBigDecimalOrNull()
+        val value = input.nextString()
+        return value.toBigDecimalOrNull() ?: throw MalformedJsonException("Unexpected value: $value")
     }
 }

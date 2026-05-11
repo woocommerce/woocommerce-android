@@ -3,7 +3,9 @@ package org.wordpress.android.fluxc.utils
 import com.google.gson.Gson
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.google.gson.stream.MalformedJsonException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import java.math.BigDecimal
 
@@ -82,6 +84,27 @@ class NullableJsonAdapterTests {
         val example = gson.fromJson(json, NumberExample::class.java)
 
         assertThat(example.amount).isEqualByComparingTo(BigDecimal("100.50"))
+    }
+
+    @Test
+    fun `when passing non-null number string value in json, then it should be deserialized to the correct value`() {
+        val json = """{
+            "amount": "100.50"
+            }"""
+
+        val example = gson.fromJson(json, NumberExample::class.java)
+
+        assertThat(example.amount).isEqualByComparingTo(BigDecimal("100.50"))
+    }
+
+    @Test
+    fun `when passing invalid number string value in json, then it should throw`() {
+        val json = """{
+            "amount": "invalid"
+            }"""
+
+        assertThatThrownBy { gson.fromJson(json, NumberExample::class.java).amount }
+            .hasCauseInstanceOf(MalformedJsonException::class.java)
     }
 
     @Test
