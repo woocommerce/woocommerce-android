@@ -16,11 +16,22 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
         nowMillis: Long = System.currentTimeMillis(),
     ): TransportDiagnostics? {
         response ?: return null
+
+        val requestId = REQUEST_ID_HEADER_NAMES
+            .firstNotNullOfOrNull { name -> response.header(name)?.takeIf { it.isNotBlank() } }
+        val bodySnippet = runCatching {
+            response.peekBody(MAX_BODY_SNIPPET_BYTES)
+                .string()
+                .takeIf { it.isNotBlank() }
+                ?.redactSensitiveValues()
+                ?.take(MAX_BODY_SNIPPET_CHARS)
+        }.getOrNull()
+
         return TransportDiagnostics(
             httpStatus = response.code,
-            requestId = response.firstAllowlistedRequestId(),
+            requestId = requestId,
             retryAfterMs = response.header(RETRY_AFTER_HEADER)?.parseRetryAfter(nowMillis),
-            bodySnippet = response.safeBodySnippet(),
+            bodySnippet = bodySnippet,
         )
     }
 
@@ -31,11 +42,24 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
         nowMillis: Long = System.currentTimeMillis(),
     ): TransportDiagnostics? {
         val normalizedHeaders = headers.orEmpty()
+
+        val requestId = REQUEST_ID_HEADER_NAMES
+            .firstNotNullOfOrNull { name ->
+                normalizedHeaders.header(name)?.takeIf { it.isNotBlank() }
+            }
+        val bodySnippet = bodyBytes
+            ?.take(MAX_BODY_SNIPPET_BYTES.toInt())
+            ?.toByteArray()
+            ?.decodeToString()
+            ?.takeIf { it.isNotBlank() }
+            ?.redactSensitiveValues()
+            ?.take(MAX_BODY_SNIPPET_CHARS)
+
         val diagnostics = TransportDiagnostics(
             httpStatus = statusCode,
-            requestId = normalizedHeaders.firstAllowlistedRequestId(),
+            requestId = requestId,
             retryAfterMs = normalizedHeaders.header(RETRY_AFTER_HEADER)?.parseRetryAfter(nowMillis),
-            bodySnippet = bodyBytes.safeBodySnippet(),
+            bodySnippet = bodySnippet,
         )
         return diagnostics.takeIf {
             it.httpStatus != null ||
@@ -44,10 +68,6 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
                 it.bodySnippet != null
         }
     }
-
-    private fun Response.firstAllowlistedRequestId(): String? =
-        REQUEST_ID_HEADER_NAMES
-            .firstNotNullOfOrNull { name -> header(name)?.takeIf { it.isNotBlank() } }
 
     companion object {
         internal val REQUEST_ID_HEADER_NAMES = listOf(
@@ -73,30 +93,8 @@ internal class TransportDiagnosticsFactory @Inject constructor() {
     }
 }
 
-private fun Map<String, String>.firstAllowlistedRequestId(): String? =
-    TransportDiagnosticsFactory.REQUEST_ID_HEADER_NAMES
-        .firstNotNullOfOrNull { name -> header(name)?.takeIf { it.isNotBlank() } }
-
 private fun Map<String, String>.header(name: String): String? =
     entries.firstOrNull { (key, _) -> key.equals(name, ignoreCase = true) }?.value
-
-private fun Response.safeBodySnippet(): String? =
-    runCatching {
-        peekBody(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_BYTES)
-            .string()
-            .takeIf { it.isNotBlank() }
-            ?.redactSensitiveValues()
-            ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_CHARS)
-    }.getOrNull()
-
-private fun ByteArray?.safeBodySnippet(): String? =
-    this
-        ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_BYTES.toInt())
-        ?.toByteArray()
-        ?.decodeToString()
-        ?.takeIf { it.isNotBlank() }
-        ?.redactSensitiveValues()
-        ?.take(TransportDiagnosticsFactory.MAX_BODY_SNIPPET_CHARS)
 
 private fun String.redactSensitiveValues(): String =
     replace(TransportDiagnosticsFactory.SENSITIVE_JSON_VALUE_PATTERN) { match ->
@@ -107,25 +105,17 @@ private fun String.redactSensitiveValues(): String =
         "${match.groupValues[1]}=[REDACTED]"
     }.replace(TransportDiagnosticsFactory.BEARER_TOKEN_PATTERN, "Bearer [REDACTED]")
 
-private fun String.parseRetryAfter(nowMillis: Long): Long? =
-    trim()
-        .takeIf { it.isNotEmpty() }
-        ?.let { value ->
-            value.parseRetryAfterSeconds()
-                ?: value.parseRetryAfterDate(nowMillis)
-        }
+private fun String.parseRetryAfter(nowMillis: Long): Long? {
+    val value = trim().takeIf { it.isNotEmpty() } ?: return null
 
-private fun String.parseRetryAfterSeconds(): Long? =
-    toLongOrNull()
+    val asSeconds = value.toLongOrNull()
         ?.takeIf { it >= 0 }
-        ?.let { seconds ->
-            runCatching { Math.multiplyExact(seconds, MILLIS_PER_SECOND) }.getOrNull()
-        }
+        ?.let { seconds -> runCatching { Math.multiplyExact(seconds, MILLIS_PER_SECOND) }.getOrNull() }
         ?.let { min(it, TransportDiagnosticsFactory.MAX_RETRY_AFTER_MS) }
+    if (asSeconds != null) return asSeconds
 
-private fun String.parseRetryAfterDate(nowMillis: Long): Long? =
-    try {
-        ZonedDateTime.parse(this, DateTimeFormatter.RFC_1123_DATE_TIME)
+    return try {
+        ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME)
             .toInstant()
             .toEpochMilli()
             .minus(nowMillis)
@@ -134,3 +124,4 @@ private fun String.parseRetryAfterDate(nowMillis: Long): Long? =
     } catch (_: DateTimeParseException) {
         null
     }
+}

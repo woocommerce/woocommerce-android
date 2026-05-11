@@ -41,7 +41,7 @@ import javax.inject.Singleton
 
 /**
  * [ChatService] implementation that calls the wpcom-hosted `jetpack-ai-query`
- * endpoint over SSE via OkHttp's `EventSource`.
+ * endpoint over SSE via OkHttp with manual SSE line parsing.
  *
  * On HTTP 401 received before any data has been emitted, the JWT cache is
  * invalidated and the request is retried exactly once. After any data has
@@ -63,7 +63,7 @@ internal class JetpackAiChatService @Inject constructor(
         while (true) {
             val outcome = collectOnce(request, ::emit)
 
-            if (shouldRetryAuth(outcome, attempt)) {
+            if (outcome.retryableAuthFailure && attempt == 0 && outcome.eventsEmitted == 0) {
                 tokenProvider.invalidate()
                 attempt++
                 continue
@@ -72,11 +72,6 @@ internal class JetpackAiChatService @Inject constructor(
             return@flow
         }
     }
-
-    private fun shouldRetryAuth(outcome: TurnOutcome, attempt: Int): Boolean =
-        outcome.retryableAuthFailure &&
-            attempt == 0 &&
-            outcome.eventsEmitted == 0
 
     @Suppress("TooGenericExceptionCaught")
     private suspend fun collectOnce(
@@ -131,7 +126,7 @@ internal class JetpackAiChatService @Inject constructor(
             .url(baseUrl.trimEnd('/') + JETPACK_AI_QUERY_PATH)
             .header("Authorization", "Bearer $token")
             .header("Accept", "text/event-stream")
-            .post(buildRequestBody(request).toRequestBody(APPLICATION_JSON))
+            .post(json.encodeToString(request.toOpenAi()).toRequestBody(APPLICATION_JSON))
             .build()
 
         val call = httpClient.newCall(httpRequest)
@@ -151,7 +146,7 @@ internal class JetpackAiChatService @Inject constructor(
                         val contentType = body.contentType()
                         if (!it.isSuccessful || !contentType.isEventStream()) {
                             val bodyBytes = body.bytes()
-                            close(toAssistantException(null, it, bodyBytes, contentType).toException())
+                            close(mapResponseError(it, bodyBytes, contentType).toException())
                             return
                         }
 
@@ -222,114 +217,85 @@ internal class JetpackAiChatService @Inject constructor(
         return rawValue.removePrefix(SSE_VALUE_PREFIX)
     }
 
-    private fun toAssistantException(
-        t: Throwable?,
-        response: Response?,
-        bodyBytes: ByteArray? = null,
-        contentType: MediaType? = null,
-    ): MappedError {
-        val logicalStatus = bodyBytes.logicalErrorStatus()
-        val code = logicalStatus ?: response?.code
-        val kind = code.toStreamError()
-            ?: if (bodyBytes != null && response?.isSuccessful == true && contentType.isJson()) {
-                // A JSON response means the SSE stream was not established, even when the proxy returns HTTP 200.
-                ChatStreamError.BAD_REQUEST
-            } else if (bodyBytes != null && response?.isSuccessful == true) {
-                ChatStreamError.INVALID_STREAM
-            } else {
-                response.toStreamError() ?: t.toStreamError()
-            }
-        val diagnostics = Diagnostics(
-            transport = if (bodyBytes == null) {
-                transportDiagnosticsFactory.from(response)
-            } else {
-                transportDiagnosticsFactory.fromRawHttp(
+    private fun mapResponseError(
+        response: Response,
+        bodyBytes: ByteArray,
+        contentType: MediaType?,
+    ): StreamFailure {
+        val logicalStatus = runCatching {
+            json.parseToJsonElement(bodyBytes.decodeToString())
+                .jsonObject["data"]
+                ?.jsonObject
+                ?.get(ERROR_STATUS_FIELD)
+                ?.jsonPrimitive
+                ?.contentOrNull
+                ?.toIntOrNull()
+        }.getOrNull()
+
+        val code = logicalStatus ?: response.code
+
+        val kind = when (code) {
+            HTTP_UNAUTHORIZED, HTTP_FORBIDDEN -> ChatStreamError.AUTH
+            HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
+            HTTP_TOO_MANY_REQUESTS -> ChatStreamError.RATE_LIMIT
+            HTTP_BAD_REQUEST -> ChatStreamError.BAD_REQUEST
+            in HTTP_CLIENT_ERROR_RANGE -> ChatStreamError.BAD_REQUEST
+            in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
+            else -> null
+        } ?: when {
+            // A JSON response means the SSE stream was not established, even when the proxy returns HTTP 200.
+            response.isSuccessful && contentType.isJson() -> ChatStreamError.BAD_REQUEST
+            response.isSuccessful -> ChatStreamError.INVALID_STREAM
+            else -> ChatStreamError.UNKNOWN
+        }
+
+        return StreamFailure(
+            kind = kind,
+            cause = null,
+            retryableAuthFailure = code == HTTP_UNAUTHORIZED,
+            diagnostics = Diagnostics(
+                transport = transportDiagnosticsFactory.fromRawHttp(
                     statusCode = code,
-                    headers = response?.headersMap(),
+                    headers = response.headers.names()
+                        .associateWith { response.header(it).orEmpty() },
                     bodyBytes = bodyBytes,
                 )
-            }
+            ),
         )
-        return MappedError(kind, t, retryableAuthFailure = code == HTTP_UNAUTHORIZED, diagnostics = diagnostics)
     }
-
-    private fun Response?.toStreamError(): ChatStreamError? = this?.code.toStreamError()
-
-    private fun Int?.toStreamError(): ChatStreamError? = when (this) {
-        HTTP_UNAUTHORIZED,
-        HTTP_FORBIDDEN -> ChatStreamError.AUTH
-        HTTP_REQUEST_TIMEOUT -> ChatStreamError.TIMEOUT
-        HTTP_TOO_MANY_REQUESTS -> ChatStreamError.RATE_LIMIT
-        HTTP_BAD_REQUEST -> ChatStreamError.BAD_REQUEST
-        in HTTP_CLIENT_ERROR_RANGE -> ChatStreamError.BAD_REQUEST
-        in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
-        else -> null
-    }
-
-    private fun ByteArray?.logicalErrorStatus(): Int? =
-        this
-            ?.decodeToString()
-            ?.let { body ->
-                runCatching {
-                    json.parseToJsonElement(body)
-                        .jsonObject["data"]
-                        ?.jsonObject
-                        ?.get(ERROR_STATUS_FIELD)
-                        ?.jsonPrimitive
-                        ?.contentOrNull
-                        ?.toIntOrNull()
-                }.getOrNull()
-            }
-
-    private fun Response.headersMap(): Map<String, String> =
-        headers.names().associateWith { name -> header(name).orEmpty() }
 
     private fun MediaType?.isEventStream(): Boolean =
         this != null &&
             type.equals(SSE_CONTENT_TYPE, ignoreCase = true) &&
             subtype.equals(SSE_CONTENT_SUBTYPE, ignoreCase = true)
 
-    private fun MediaType?.isJson(): Boolean =
-        this != null && subtype.hasJsonSubtype()
-
-    private fun String.hasJsonSubtype(): Boolean =
-        equals(JSON_CONTENT_SUBTYPE, ignoreCase = true) ||
-            endsWith(JSON_CONTENT_SUFFIX, ignoreCase = true)
-
-    private fun Throwable?.toStreamError(): ChatStreamError = when (this) {
-        is UnknownHostException,
-        is ConnectException -> ChatStreamError.NETWORK
-        is SocketTimeoutException -> ChatStreamError.TIMEOUT
-        is IOException -> ChatStreamError.NETWORK
-        else -> ChatStreamError.UNKNOWN
+    private fun MediaType?.isJson(): Boolean {
+        if (this == null) return false
+        return subtype.equals(JSON_CONTENT_SUBTYPE, ignoreCase = true) ||
+            subtype.endsWith(JSON_CONTENT_SUFFIX, ignoreCase = true)
     }
 
-    private fun mapError(t: Throwable): MappedError = when (t) {
-        is MappedException -> MappedError(t.kind, t.cause, t.retryableAuthFailure, t.diagnostics)
-        is AssistantAuthException -> MappedError(ChatStreamError.AUTH, t)
-        is UnknownHostException, is ConnectException -> MappedError(ChatStreamError.NETWORK, t)
-        is SocketTimeoutException -> MappedError(ChatStreamError.TIMEOUT, t)
-        is IOException -> MappedError(ChatStreamError.NETWORK, t)
-        else -> MappedError(ChatStreamError.UNKNOWN, t)
+    private fun mapError(t: Throwable): StreamFailure = when (t) {
+        is StreamFailureException -> t.failure
+        is AssistantAuthException -> StreamFailure(ChatStreamError.AUTH, t)
+        is UnknownHostException, is ConnectException -> StreamFailure(ChatStreamError.NETWORK, t)
+        is SocketTimeoutException -> StreamFailure(ChatStreamError.TIMEOUT, t)
+        is IOException -> StreamFailure(ChatStreamError.NETWORK, t)
+        else -> StreamFailure(ChatStreamError.UNKNOWN, t)
     }
 
-    private fun buildRequestBody(request: ChatRequest): String = json.encodeToString(request.toOpenAi())
-
-    private data class MappedError(
+    private data class StreamFailure(
         val kind: ChatStreamError,
         val cause: Throwable?,
         val retryableAuthFailure: Boolean = false,
         val diagnostics: Diagnostics = Diagnostics(),
     ) {
-        fun toException(): MappedException = MappedException(kind, cause, retryableAuthFailure, diagnostics)
+        fun toException() = StreamFailureException(this)
     }
 
-    private class MappedException(
-        val kind: ChatStreamError,
-        cause: Throwable?,
-        val retryableAuthFailure: Boolean,
-        val diagnostics: Diagnostics,
-    ) : RuntimeException(kind.name, cause)
+    private class StreamFailureException(
+        val failure: StreamFailure,
+    ) : RuntimeException(failure.kind.name, failure.cause)
 
     companion object {
         internal const val DEFAULT_BASE_URL = "https://public-api.wordpress.com"

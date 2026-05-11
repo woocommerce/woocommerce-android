@@ -1,6 +1,5 @@
 package com.woocommerce.android.aiassistant.tools
 
-import com.android.volley.NetworkResponse
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
@@ -29,7 +28,7 @@ internal class ToolFailureDiagnosticsFactory @Inject constructor(
             retryable = retryable,
             kind = kind,
             diagnostics = Diagnostics(
-                transport = error.transportDiagnostics(),
+                transport = extractTransportDiagnostics(error),
                 tool = ToolDiagnostics(
                     toolName = toolName,
                     source = ToolFailureSource.TOOL_RESULT,
@@ -37,35 +36,25 @@ internal class ToolFailureDiagnosticsFactory @Inject constructor(
             ),
         )
 
-    private fun Throwable?.transportDiagnostics(): TransportDiagnostics? =
-        when (this) {
-            is OnChangedException -> error.transportDiagnostics()
+    private fun extractTransportDiagnostics(error: Throwable?): TransportDiagnostics? {
+        val inner = (error as? OnChangedException)?.error ?: return null
+        return when (inner) {
+            is WCOrderStore.OrderError -> {
+                val response = inner.networkError?.volleyError?.networkResponse ?: return null
+                transportDiagnosticsFactory.fromRawHttp(
+                    statusCode = response.statusCode,
+                    headers = response.headers,
+                    bodyBytes = response.data,
+                )
+            }
+            is WooError -> {
+                val status = (inner.errorData as? JSONObject)
+                    ?.takeIf { it.has(STATUS_FIELD) }
+                    ?.opt(STATUS_FIELD) as? Number
+                status?.let { TransportDiagnostics(httpStatus = it.toInt()) }
+            }
             else -> null
         }
-
-    private fun Any.transportDiagnostics(): TransportDiagnostics? =
-        when (this) {
-            is WCOrderStore.OrderError ->
-                networkError
-                    ?.volleyError
-                    ?.networkResponse
-                    ?.transportDiagnostics()
-            is WooError -> errorData.transportDiagnostics()
-            else -> null
-        }
-
-    private fun NetworkResponse.transportDiagnostics(): TransportDiagnostics? =
-        transportDiagnosticsFactory.fromRawHttp(
-            statusCode = statusCode,
-            headers = headers,
-            bodyBytes = data,
-        )
-
-    private fun JSONObject?.transportDiagnostics(): TransportDiagnostics? {
-        val status = this
-            ?.takeIf { it.has(STATUS_FIELD) }
-            ?.opt(STATUS_FIELD) as? Number
-        return status?.let { TransportDiagnostics(httpStatus = it.toInt()) }
     }
 
     private companion object {

@@ -57,7 +57,7 @@ internal fun AssistantError.toAssistantTelemetryEvent(): AssistantTelemetryEvent
         httpStatus = transport?.httpStatus,
         requestId = transport?.requestId,
         retryAfterMs = transport?.retryAfterMs,
-        toolName = tool?.toolName ?: toolNameOrNull(),
+        toolName = tool?.toolName ?: fallbackToolName(),
         toolFailureKind = tool?.failureKind,
         toolRetryable = tool?.retryable,
     )
@@ -77,7 +77,7 @@ private fun AssistantError.toTelemetryKind(): AssistantTelemetryErrorKind = when
     is AssistantError.Unknown -> AssistantTelemetryErrorKind.UNKNOWN
 }
 
-private fun AssistantError.toolNameOrNull(): String? = when (this) {
+private fun AssistantError.fallbackToolName(): String? = when (this) {
     is AssistantError.ToolFailed -> toolName
     is AssistantError.InvalidToolCall -> toolName
     is AssistantError.OutcomeUnknown -> toolName
