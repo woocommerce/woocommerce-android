@@ -1,15 +1,25 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +27,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -29,9 +41,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputF
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosMoneyInputField
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import java.math.BigDecimal
 
@@ -57,6 +72,43 @@ fun WooPosCustomAmountDialog(
         WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_title_add
     }
 
+    when (currentWooPosBreakpoint()) {
+        WooPosBreakpoint.Phone -> PhoneFullScreenLayout(
+            isVisible = isVisible,
+            state = state,
+            dialogTitleRes = dialogTitleRes,
+            onAmountChanged = viewModel::onAmountChanged,
+            onNameChanged = viewModel::onNameChanged,
+            onTaxableToggled = viewModel::onTaxableToggled,
+            onSubmit = viewModel::onSubmit,
+            onDismissRequest = onDismissRequest,
+        )
+
+        WooPosBreakpoint.SmallTablet,
+        WooPosBreakpoint.Tablet -> TabletDialogLayout(
+            isVisible = isVisible,
+            state = state,
+            dialogTitleRes = dialogTitleRes,
+            onAmountChanged = viewModel::onAmountChanged,
+            onNameChanged = viewModel::onNameChanged,
+            onTaxableToggled = viewModel::onTaxableToggled,
+            onSubmit = viewModel::onSubmit,
+            onDismissRequest = onDismissRequest,
+        )
+    }
+}
+
+@Composable
+private fun TabletDialogLayout(
+    isVisible: Boolean,
+    state: WooPosCustomAmountDialogState,
+    dialogTitleRes: Int,
+    onAmountChanged: (BigDecimal?) -> Unit,
+    onNameChanged: (String) -> Unit,
+    onTaxableToggled: (Boolean) -> Unit,
+    onSubmit: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
     WooPosDialogWrapper(
         isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(dialogTitleRes),
@@ -73,29 +125,95 @@ fun WooPosCustomAmountDialog(
                 fontWeight = FontWeight.Bold,
             )
 
-            AmountSection(
-                state = state,
-                onAmountChanged = viewModel::onAmountChanged,
-            )
-
-            NameSection(
-                value = state.name,
-                onNameChanged = viewModel::onNameChanged,
-            )
-
-            TaxesToggle(
-                isTaxable = state.isTaxable,
-                onToggled = viewModel::onTaxableToggled,
-            )
+            AmountSection(state = state, onAmountChanged = onAmountChanged)
+            NameSection(value = state.name, onNameChanged = onNameChanged)
+            TaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-            DialogActions(
-                state = state,
-                onSubmit = {
-                    viewModel.onSubmit()
-                },
-                onCancel = onDismissRequest,
+            DialogActions(state = state, onSubmit = onSubmit, onCancel = onDismissRequest)
+        }
+    }
+}
+
+@Composable
+private fun PhoneFullScreenLayout(
+    isVisible: Boolean,
+    state: WooPosCustomAmountDialogState,
+    dialogTitleRes: Int,
+    onAmountChanged: (BigDecimal?) -> Unit,
+    onNameChanged: (String) -> Unit,
+    onTaxableToggled: (Boolean) -> Unit,
+    onSubmit: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    if (!isVisible) return
+
+    BackHandler(enabled = true) { onDismissRequest() }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            PhoneToolbar(
+                titleRes = dialogTitleRes,
+                onCloseClick = onDismissRequest,
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = WooPosSpacing.Medium.value),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+            ) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                AmountSection(state = state, onAmountChanged = onAmountChanged)
+                NameSection(value = state.name, onNameChanged = onNameChanged)
+                TaxesToggle(isTaxable = state.isTaxable, onToggled = onTaxableToggled)
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(WooPosSpacing.Medium.value),
+            ) {
+                DialogActions(state = state, onSubmit = onSubmit, onCancel = onDismissRequest)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PhoneToolbar(
+    titleRes: Int,
+    onCloseClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(
+                horizontal = WooPosSpacing.Small.value,
+                vertical = WooPosSpacing.Small.value,
+            ),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        IconButton(onClick = onCloseClick) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                contentDescription = stringResource(R.string.close),
+                modifier = Modifier.size(WooPosIconSize.Large.value),
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            WooPosText(
+                text = stringResource(titleRes),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
             )
         }
     }
