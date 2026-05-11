@@ -60,7 +60,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
             newOrderNotificationSoundStatus = notificationChannelsHandler.checkNewOrderNotificationSound()
         )
     )
-    private val saveOrderPreferencesTrigger = MutableSharedFlow<Unit>(
+    private val saveOrderPreferencesTrigger = MutableSharedFlow<Long>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
@@ -86,10 +86,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     }
 
     fun savePendingOrderPreferences() {
-        val orderPreferences = _viewState.value.toStoreOrderPreferences()
-        launch {
-            saveOrderPreferences(orderPreferences)
-        }
+        saveOrderPreferencesTrigger.tryEmit(0L)
     }
 
     fun refreshNotificationSettings() {
@@ -140,20 +137,20 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         }
     }
 
-    private fun observeOrderPreferencesChanges() {
-        launch {
-            saveOrderPreferencesTrigger
-                .debounce(ORDER_PREFERENCES_SAVE_DEBOUNCE_MS)
-                .conflate()
-                .collect { saveOrderPreferences(_viewState.value.toStoreOrderPreferences()) }
-        }
-    }
-
     private fun updateOrderPreferences(updatedViewState: ViewState) {
         if (updatedViewState == _viewState.value) return
 
         _viewState.value = updatedViewState
-        saveOrderPreferencesTrigger.tryEmit(Unit)
+        saveOrderPreferencesTrigger.tryEmit(ORDER_PREFERENCES_SAVE_DEBOUNCE_MS)
+    }
+
+    private fun observeOrderPreferencesChanges() {
+        launch {
+            saveOrderPreferencesTrigger
+                .debounce { it }
+                .conflate()
+                .collect { saveOrderPreferences(_viewState.value.toStoreOrderPreferences()) }
+        }
     }
 
     private suspend fun saveOrderPreferences(orderPreferences: StoreOrderPreferences) {
@@ -183,7 +180,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
                 _viewState.update { orderPreferences.toViewState(it) }
-                saveOrderPreferencesTrigger.tryEmit(Unit)
+                saveOrderPreferencesTrigger.tryEmit(0L)
             }
         )
     }

@@ -249,6 +249,36 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given order preferences save is in progress, when flushing same preferences, then do not save again`() =
+        testBlocking {
+            val updateGate = CompletableDeferred<Result<WooPushNotificationPreferences>>()
+            setup {
+                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+                    flowOf(
+                        WooPushNotificationPreferences(
+                            storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
+                        )
+                    )
+                )
+                whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
+                    .doSuspendableAnswer { invocation ->
+                        val preferences = invocation.getArgument<WooPushNotificationPreferences>(1)
+                        updateGate.await().map { preferences }
+                    }
+            }
+
+            runCurrent()
+            viewModel.onThresholdAmountChanged(BigDecimal(750))
+            advanceUntilIdle()
+            viewModel.savePendingOrderPreferences()
+            runCurrent()
+            updateGate.complete(Result.success(WooPushNotificationPreferences()))
+            advanceUntilIdle()
+
+            verify(pushNotificationRepository, times(1)).updateWooNotificationPreferences(eq(site), any())
+        }
+
+    @Test
     fun `given update in progress, when order preferences change again, then save latest state`() = testBlocking {
         val firstUpdateGate = CompletableDeferred<Result<WooPushNotificationPreferences>>()
 
