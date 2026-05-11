@@ -388,6 +388,8 @@
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
     <string name="my_store_edit_screen_widgets">Customize</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Ask about your store…</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">Open AI Assistant</string>
 
     <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
     <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>

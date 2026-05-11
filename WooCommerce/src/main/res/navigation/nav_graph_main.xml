@@ -93,6 +93,9 @@
         <action
             android:id="@+id/action_dashboard_to_wooPushNotificationsIntroductionDialog"
             app:destination="@id/nav_graph_push_notifications" />
+        <action
+            android:id="@+id/action_dashboard_to_aiAssistantHostFragment"
+            app:destination="@id/aiAssistantHostFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -333,9 +336,6 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
-        <action
-            android:id="@+id/action_moreMenu_to_aiAssistantHostFragment"
-            app:destination="@id/aiAssistantHostFragment" />
     </fragment>
     <fragment
         android:id="@+id/aiAssistantHostFragment"

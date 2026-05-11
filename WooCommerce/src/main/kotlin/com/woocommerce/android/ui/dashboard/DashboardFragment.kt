@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenAiAssistant
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
@@ -169,6 +170,12 @@ class DashboardFragment :
                 is OpenEditWidgets -> {
                     findNavController().navigateSafely(
                         DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
+                    )
+                }
+
+                is OpenAiAssistant -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToAiAssistantHostFragment()
                     )
                 }
 
