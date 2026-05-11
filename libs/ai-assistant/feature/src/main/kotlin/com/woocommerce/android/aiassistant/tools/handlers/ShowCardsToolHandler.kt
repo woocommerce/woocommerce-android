@@ -20,6 +20,7 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolve
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.toJsonObject
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -157,7 +158,7 @@ internal class ShowCardsToolHandler internal constructor(
         ResolvedRef(
             family = ref.family.serializedName,
             id = ref.id,
-            summary = summary.filterAllowedKeysFor(ref.family),
+            summary = summary.toJsonObject(json).filterAllowedKeysFor(ref.family),
         )
 
     private fun ShowCardsResolution.Missing.toMissingRef(): MissingRef =
