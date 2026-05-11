@@ -87,7 +87,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
 
     fun savePendingOrderPreferences() {
         val orderPreferences = _viewState.value.toStoreOrderPreferences()
-        appCoroutineScope.launch(coroutineDispatchers.main) {
+        launch {
             saveOrderPreferences(orderPreferences)
         }
     }
