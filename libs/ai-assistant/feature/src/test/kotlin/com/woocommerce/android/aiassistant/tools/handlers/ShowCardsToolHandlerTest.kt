@@ -51,6 +51,8 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.description).contains("variation")
         assertThat(descriptor.description).contains("analytics_stats")
         assertThat(descriptor.description).contains("customer")
+        assertThat(descriptor.description).contains("explicit variation-level questions")
+        assertThat(descriptor.description).contains("broad product inventory lists")
         assertThat(descriptor.inputSchema.toString()).contains("references")
         assertThat(descriptor.inputSchema.toString()).contains("family")
         assertThat(descriptor.inputSchema.toString()).contains("id")

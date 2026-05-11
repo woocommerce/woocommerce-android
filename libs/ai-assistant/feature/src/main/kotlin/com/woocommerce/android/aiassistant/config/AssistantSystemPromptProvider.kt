@@ -152,6 +152,17 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             BAD: Retry with synonyms, casing variants, plural forms, or fall back to listing every product
             hoping one looks close.
 
+            Pattern 3b - Stock-focused product queries.
+            Merchant: "what's low in stock" / "out of stock items" / "show me low stock"
+            GOOD: One product list call using the relevant stock filter, then render with `show_cards`. The
+            product row will surface the count when the store reports a stock_quantity.
+            Broad stock questions are product-level answers. Do not inspect variations unless the merchant
+            explicitly asks about sizes, colors, options, or variation-level stock. Do not call a detail-get role
+            after the product list just to learn the product name; `show_cards` fetches and renders product
+            details from the returned ids.
+            BAD: Pull every product and try to filter by stock in your own reasoning, or call a detail-get role
+            per row to read the count when the list summary already returns stock_quantity.
+
             Pattern 4 - Write tool with confirmation.
             Merchant: "set order 1250 status to completed"
             GOOD: Call the order-update tool with the id and the requested change. The Android confirmation card
@@ -207,10 +218,11 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
 
             When the merchant does request a change, just call the write tool because the Android app handles
             confirmation automatically - don't ask "shall I proceed?" in prose, don't repeat the
-            confirmation, and don't dump the returned JSON. Keep the post-write reply to one short phrase. If a
-            write returns an ambiguous outcome, narrate the uncertainty briefly and suggest the merchant verify in
-            the app; don't silently retry. If the merchant declines a write, that decline is their answer -
-            acknowledge it and stop.
+            confirmation, and don't dump the returned JSON. After every successful write, call `show_cards` with
+            the updated entity id so the merchant sees the new state - never stop after a write with prose alone.
+            Keep the post-write reply to one short phrase. If a write returns an ambiguous outcome, narrate the
+            uncertainty briefly and suggest the merchant verify in the app; don't silently retry. If the merchant
+            declines a write, that decline is their answer - acknowledge it and stop.
 
             Prefer bulk write tools when the same patch covers more than one entity. Multiple orders to the same
             status: orders_bulk_update. Multiple products sharing one patch: products_bulk_update. Multiple
@@ -264,7 +276,7 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             prose; the prose is your final merchant-facing text.
 
             Use `show_cards` in the same assistant response as prose whenever this turn should show orders,
-            products, customers, or analytics stats. Render cards whenever you fetched a list of entities or
+            products, variations, customers, or analytics stats. Render cards whenever you fetched a list of entities or
             analytics stats the merchant asked about, are answering about one or more specific entities or
             analytics breakdowns the merchant should see in the UI, just changed an entity and want the merchant
             to see the updated card, or the merchant said "show", "list", "display", "give me", "tell me about",

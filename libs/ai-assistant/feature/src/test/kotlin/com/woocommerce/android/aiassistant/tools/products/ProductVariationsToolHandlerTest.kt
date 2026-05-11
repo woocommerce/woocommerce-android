@@ -85,6 +85,15 @@ class ProductVariationsToolHandlerTest {
         ToolCall(id = "call-1", name = "product_variations_list", arguments = arguments)
 
     @Test
+    fun `given descriptor, when inspected, then broad inventory questions are excluded`() {
+        val description = handler.descriptor.description
+
+        assertThat(description).contains("explicitly asks")
+        assertThat(description).contains("variations, sizes, colors, options")
+        assertThat(description).contains("broad product-level inventory questions")
+    }
+
+    @Test
     fun `given list mode, when execute is called, then data source is called with product id and paging`() = runTest {
         whenever(dataSource.fetchVariations(productId = 100L, page = 2, perPage = 25))
             .thenReturn(Result.success(emptyList()))

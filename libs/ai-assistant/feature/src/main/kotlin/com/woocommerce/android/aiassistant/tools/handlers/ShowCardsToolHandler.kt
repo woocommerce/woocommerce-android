@@ -56,7 +56,10 @@ internal class ShowCardsToolHandler internal constructor(
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
         description = "Show rich cards in the Android UI for order/product/variation/customer entity references " +
-            "or an analytics_stats ID produced after a successful analytics_orders result.",
+            "or an analytics_stats ID produced after a successful analytics_orders result. Variation references " +
+            "use strict {parentProductId}/{variationId} ids and should be used only for explicit " +
+            "variation-level questions about sizes, colors, options, or known variation IDs. For broad product " +
+            "inventory lists, render product references.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
