@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.AssistantRoute
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.extensions.navigateSafely
@@ -53,7 +56,7 @@ class AiAssistantHostFragment : BaseFragment() {
                         findNavController().navigateSafely(target.directions)
                     }
                     is WooAssistantCardNavigationTarget.DeepLink -> {
-                        findNavController().navigate(target.uri.toUri())
+                        findNavController().navigate(target.uri.toUri(), assistantCardDeepLinkNavOptions())
                     }
                 }
             }
@@ -62,5 +65,14 @@ class AiAssistantHostFragment : BaseFragment() {
 
     companion object {
         private const val ASSISTANT_CONVERSATION_ID = "dashboard-assistant"
+    }
+}
+
+internal fun assistantCardDeepLinkNavOptions(): NavOptions = navOptions {
+    anim {
+        enter = R.anim.default_enter_anim
+        exit = R.anim.default_exit_anim
+        popEnter = R.anim.default_pop_enter_anim
+        popExit = R.anim.default_pop_exit_anim
     }
 }
