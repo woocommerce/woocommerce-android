@@ -48,7 +48,6 @@ class ShowCardsResolverTest {
         variationsDataSource = variationsDataSource,
         analyticsDataSource = analyticsDataSource,
         customersDataSource = customersDataSource,
-        json = json,
     )
 
     @Test
@@ -122,13 +121,13 @@ class ShowCardsResolverTest {
         )
         verifyNoInteractions(ordersDataSource, productsDataSource, variationsDataSource)
         val resolved = result.single() as ShowCardsResolution.Resolved
-        assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo(ANALYTICS_STATS_ID)
-        assertThat(resolved.summary.getValue("after").jsonPrimitive.content).isEqualTo("2026-05-01")
-        assertThat(resolved.summary.getValue("before").jsonPrimitive.content).isEqualTo("2026-05-07")
-        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
-        assertThat(resolved.summary.getValue("totals").jsonObject.getValue("total_sales").jsonPrimitive.content)
+        assertThat(resolved.summaryJson().getValue("id").jsonPrimitive.content).isEqualTo(ANALYTICS_STATS_ID)
+        assertThat(resolved.summaryJson().getValue("after").jsonPrimitive.content).isEqualTo("2026-05-01")
+        assertThat(resolved.summaryJson().getValue("before").jsonPrimitive.content).isEqualTo("2026-05-07")
+        assertThat(resolved.summaryJson().getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        assertThat(resolved.summaryJson().getValue("totals").jsonObject.getValue("total_sales").jsonPrimitive.content)
             .isEqualTo("170.35")
-        assertThat(resolved.summary.getValue("interval_subtotals").jsonArray).hasSize(2)
+        assertThat(resolved.summaryJson().getValue("interval_subtotals").jsonArray).hasSize(2)
         assertThat(resolved.card.family).isEqualTo("analytics_stats")
         assertThat(resolved.card.id).isEqualTo(ANALYTICS_STATS_ID)
         assertThat(resolved.card.title).isEqualTo("Analytics")
@@ -149,9 +148,9 @@ class ShowCardsResolverTest {
             verify(variationsDataSource).getVariation(productId = 100L, variationId = 10L)
             val resolved = result.single() as ShowCardsResolution.Resolved
             assertThat(resolved.card.id).isEqualTo("100/10")
-            assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo("100/10")
-            assertThat(resolved.summary.getValue("product_id").jsonPrimitive.content).isEqualTo("100")
-            assertThat(resolved.summary.getValue("variation_id").jsonPrimitive.content).isEqualTo("10")
+            assertThat(resolved.summaryJson().getValue("id").jsonPrimitive.content).isEqualTo("100/10")
+            assertThat(resolved.summaryJson().getValue("product_id").jsonPrimitive.content).isEqualTo("100")
+            assertThat(resolved.summaryJson().getValue("variation_id").jsonPrimitive.content).isEqualTo("10")
             val details = resolved.card.details as ShowCardDetails.Variation
             assertThat(details.productId).isEqualTo(100L)
             assertThat(details.variationId).isEqualTo(10L)
@@ -194,7 +193,7 @@ class ShowCardsResolverTest {
             interval = AnalyticsInterval.DAY,
         )
         val resolved = result.single() as ShowCardsResolution.Resolved
-        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        assertThat(resolved.summaryJson().getValue("currency").jsonPrimitive.content).isEqualTo("USD")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
         assertThat(details.currency).isEqualTo("USD")
     }
@@ -218,7 +217,7 @@ class ShowCardsResolverTest {
             interval = AnalyticsInterval.DAY,
         )
         val resolved = result.single() as ShowCardsResolution.Resolved
-        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+        assertThat(resolved.summaryJson().getValue("currency").jsonPrimitive.content).isEqualTo("USD")
     }
 
     @Test
@@ -273,7 +272,7 @@ class ShowCardsResolverTest {
         val orderResult = result[0] as ShowCardsResolution.Missing
         val productResult = result[1] as ShowCardsResolution.Resolved
         assertThat(orderResult.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
-        assertThat(productResult.summary.getValue("id").jsonPrimitive.content).isEqualTo("2")
+        assertThat(productResult.summaryJson().getValue("id").jsonPrimitive.content).isEqualTo("2")
     }
 
     @Test
@@ -290,8 +289,11 @@ class ShowCardsResolverTest {
             )
         ).filterIsInstance<ShowCardsResolution.Resolved>()
 
+        assertCompactOrderSummary(result[0])
+        assertCompactProductSummary(result[1])
+
         assertThat(
-            result[0].summary.keys
+            result[0].summaryJson().keys
         ).containsExactly(
             "id",
             "number",
@@ -302,7 +304,7 @@ class ShowCardsResolverTest {
             "customer_name",
             "line_items_count",
         )
-        assertThat(result[0].summary.getValue("customer_name").jsonPrimitive.content).isEqualTo("Jane Doe")
+        assertThat(result[0].summaryJson().getValue("customer_name").jsonPrimitive.content).isEqualTo("Jane Doe")
         assertThat(result[0].card.family).isEqualTo("order")
         assertThat(result[0].card.id).isEqualTo("1")
         assertThat(result[0].card.title).isEqualTo("#1")
@@ -312,7 +314,7 @@ class ShowCardsResolverTest {
         assertThat(orderDetails.currency).isEqualTo("USD")
         assertThat(orderDetails.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
         assertThat(orderDetails.customerName).isEqualTo("Jane Doe")
-        assertThat(result[1].summary.keys).containsExactly(
+        assertThat(result[1].summaryJson().keys).containsExactly(
             "id",
             "name",
             "sku",
@@ -369,22 +371,34 @@ class ShowCardsResolverTest {
             )
         ).filterIsInstance<ShowCardsResolution.Resolved>()
 
-        assertThat(result[0].summary.keys).contains(
+        val orderSummary = (result[0].summary as ShowCardsResolvedSummary.Order).value
+        assertThat(orderSummary.paymentMethodTitle).isEqualTo("Credit Card")
+        assertThat(orderSummary.customerId).isEqualTo(55L)
+        assertThat(orderSummary.lineItemsCount).isEqualTo(2)
+        assertThat(orderSummary.lineItems).hasSize(2)
+
+        val productSummary = (result[1].summary as ShowCardsResolvedSummary.Product).value
+        assertThat(productSummary.type).isEqualTo("simple")
+        assertThat(productSummary.manageStock).isTrue
+        assertThat(productSummary.onSale).isFalse
+        assertThat(productSummary.stockQuantity).isEqualTo(12.0)
+
+        assertThat(result[0].summaryJson().keys).contains(
             "payment_method_title",
             "customer_id",
             "line_items_count",
             "line_items",
         )
-        assertThat(result[0].summary.getValue("payment_method_title").jsonPrimitive.content)
+        assertThat(result[0].summaryJson().getValue("payment_method_title").jsonPrimitive.content)
             .isEqualTo("Credit Card")
-        assertThat(result[0].summary.getValue("customer_id").jsonPrimitive.content).isEqualTo("55")
-        assertThat(result[0].summary.getValue("line_items_count").jsonPrimitive.content).isEqualTo("2")
-        assertThat(result[0].summary.getValue("line_items").jsonArray).hasSize(2)
-        assertThat(result[1].summary.keys).contains("manage_stock", "on_sale", "type", "stock_quantity")
-        assertThat(result[1].summary.getValue("type").jsonPrimitive.content).isEqualTo("simple")
-        assertThat(result[1].summary.getValue("manage_stock").jsonPrimitive.boolean).isTrue
-        assertThat(result[1].summary.getValue("on_sale").jsonPrimitive.boolean).isFalse
-        assertThat(result[1].summary.getValue("stock_quantity").jsonPrimitive.double).isEqualTo(12.0)
+        assertThat(result[0].summaryJson().getValue("customer_id").jsonPrimitive.content).isEqualTo("55")
+        assertThat(result[0].summaryJson().getValue("line_items_count").jsonPrimitive.content).isEqualTo("2")
+        assertThat(result[0].summaryJson().getValue("line_items").jsonArray).hasSize(2)
+        assertThat(result[1].summaryJson().keys).contains("manage_stock", "on_sale", "type", "stock_quantity")
+        assertThat(result[1].summaryJson().getValue("type").jsonPrimitive.content).isEqualTo("simple")
+        assertThat(result[1].summaryJson().getValue("manage_stock").jsonPrimitive.boolean).isTrue
+        assertThat(result[1].summaryJson().getValue("on_sale").jsonPrimitive.boolean).isFalse
+        assertThat(result[1].summaryJson().getValue("stock_quantity").jsonPrimitive.double).isEqualTo(12.0)
     }
 
     @Test
@@ -457,11 +471,11 @@ class ShowCardsResolverTest {
             verifyCustomersFetch(ids = listOf(123L, 456L))
             val resolved = result.filterIsInstance<ShowCardsResolution.Resolved>()
             assertThat(resolved.map { it.ref.id }).containsExactly("123", "456")
-            assertThat(resolved[0].summary.keys).containsExactly("id", "name", "email")
-            assertThat(resolved[0].summary.getValue("id").jsonPrimitive.content).isEqualTo("123")
-            assertThat(resolved[0].summary.getValue("name").jsonPrimitive.content).isEqualTo("Ada Lovelace")
-            assertThat(resolved[0].summary.getValue("email").jsonPrimitive.content).isEqualTo("ada@example.com")
-            assertThat(resolved[0].summary).doesNotContainKeys("phone", "address")
+            assertThat(resolved[0].summaryJson().keys).containsExactly("id", "name", "email")
+            assertThat(resolved[0].summaryJson().getValue("id").jsonPrimitive.content).isEqualTo("123")
+            assertThat(resolved[0].summaryJson().getValue("name").jsonPrimitive.content).isEqualTo("Ada Lovelace")
+            assertThat(resolved[0].summaryJson().getValue("email").jsonPrimitive.content).isEqualTo("ada@example.com")
+            assertThat(resolved[0].summaryJson()).doesNotContainKeys("phone", "address")
             assertThat(resolved[0].card.family).isEqualTo("customer")
             assertThat(resolved[0].card.id).isEqualTo("123")
             assertThat(resolved[0].card.title).isEqualTo("Ada Lovelace")
@@ -496,6 +510,29 @@ class ShowCardsResolverTest {
     }
 
     private fun ref(family: ShowCardFamily, id: String) = ValidatedRef(index = 0, family = family, id = id)
+
+    private fun ShowCardsResolution.Resolved.summaryJson() = summary.toJsonObject(json)
+
+    private fun assertCompactOrderSummary(resolved: ShowCardsResolution.Resolved) {
+        val summary = (resolved.summary as ShowCardsResolvedSummary.Order).value
+        assertThat(summary.id).isEqualTo("1")
+        assertThat(summary.number).isEqualTo("1")
+        assertThat(summary.status).isEqualTo("processing")
+        assertThat(summary.total).isEqualTo("12.34")
+        assertThat(summary.currency).isEqualTo("USD")
+        assertThat(summary.dateCreated).isEqualTo("2026-05-01T10:00:00Z")
+        assertThat(summary.customerName).isEqualTo("Jane Doe")
+    }
+
+    private fun assertCompactProductSummary(resolved: ShowCardsResolution.Resolved) {
+        val summary = (resolved.summary as ShowCardsResolvedSummary.Product).value
+        assertThat(summary.id).isEqualTo("2")
+        assertThat(summary.name).isEqualTo("Socks")
+        assertThat(summary.sku).isEqualTo("woo-socks")
+        assertThat(summary.price).isEqualTo("9.99")
+        assertThat(summary.type).isEqualTo("simple")
+        assertThat(summary.stockStatus).isEqualTo("instock")
+    }
 
     private fun orderLookup(vararg orders: OrderEntity): CachedLookupResult<OrderEntity> =
         CachedLookupResult(

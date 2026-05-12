@@ -1,6 +1,5 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
-import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.analytics.AIAnalyticsDataSource
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsStats
@@ -15,11 +14,8 @@ import com.woocommerce.android.aiassistant.tools.products.toProductVariationDeta
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -36,7 +32,7 @@ internal sealed interface ShowCardsResolution {
 
     data class Resolved(
         override val ref: ValidatedRef,
-        val summary: JsonObject,
+        val summary: ShowCardsResolvedSummary,
         val card: ShowCardPayload,
     ) : ShowCardsResolution
 
@@ -52,7 +48,6 @@ internal class DefaultShowCardsResolver @Inject constructor(
     private val variationsDataSource: AIProductVariationsDataSource,
     private val analyticsDataSource: AIAnalyticsDataSource,
     private val customersDataSource: AICustomersDataSource,
-    @AiAssistantJson private val json: Json,
 ) : ShowCardsResolver {
     override suspend fun resolve(refs: List<ValidatedRef>): List<ShowCardsResolution> {
         val orderResults = resolveOrders(refs.filter { it.family == ShowCardFamily.Order })
@@ -117,7 +112,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val lineItems = getLineItemList()
         return ShowCardsResolution.Resolved(
             ref = ref,
-            summary = jsonObject(
+            summary = ShowCardsResolvedSummary.Order(
                 OrderSummary(
                     id = ref.id,
                     number = number,
@@ -149,7 +144,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
 
     private fun WCProductModel.toResolved(ref: ValidatedRef) = ShowCardsResolution.Resolved(
         ref = ref,
-        summary = jsonObject(
+        summary = ShowCardsResolvedSummary.Product(
             ProductSummary(
                 id = ref.id,
                 name = name,
@@ -201,7 +196,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
         val detail = toProductVariationDetailResponse()
         return ShowCardsResolution.Resolved(
             ref = ref,
-            summary = jsonObject(
+            summary = ShowCardsResolvedSummary.Variation(
                 VariationSummary(
                     id = ref.id,
                     productId = detail.productId,
@@ -281,7 +276,7 @@ internal class DefaultShowCardsResolver @Inject constructor(
 
         return ShowCardsResolution.Resolved(
             ref = ref,
-            summary = jsonObject(
+            summary = ShowCardsResolvedSummary.AnalyticsStats(
                 AnalyticsStatsSummary(
                     id = ref.id,
                     after = query.after,
@@ -332,15 +327,12 @@ internal class DefaultShowCardsResolver @Inject constructor(
         )
     }
 
-    private inline fun <reified T> jsonObject(value: T): JsonObject =
-        json.encodeToJsonElement(value).jsonObject
-
     private fun WCCustomerModel.toResolved(ref: ValidatedRef): ShowCardsResolution.Resolved {
         val displayName = displayName(ref.id)
 
         return ShowCardsResolution.Resolved(
             ref = ref,
-            summary = jsonObject(
+            summary = ShowCardsResolvedSummary.Customer(
                 CustomerSummary(
                     id = ref.id,
                     name = displayName,
