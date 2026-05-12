@@ -225,7 +225,7 @@
     <string name="login_qr_prologue_camera_denied_body">Without camera access, you can still log in by entering your store address.</string>
     <string name="login_qr_prologue_camera_denied_allow_button">Allow camera access</string>
     <string name="login_qr_prologue_camera_blocked_title">Camera access is turned off</string>
-    <string name="login_qr_prologue_camera_blocked_body">Enable camera access in Settings to scan your QR code, or enter your store address to log in another way.</string>
+    <string name="login_qr_prologue_camera_blocked_body">Enable camera access in Settings or cancel to sign in with your store address instead.</string>
     <string name="login_qr_prologue_camera_blocked_settings_button">Open Permissions Settings</string>
     <string name="login_qr_scanner_hint">Center the QR code in the frame</string>
     <string name="login_qr_scanner_visit_url">Visit %1$s</string>
