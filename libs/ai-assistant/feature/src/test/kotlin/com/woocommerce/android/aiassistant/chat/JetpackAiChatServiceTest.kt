@@ -3,12 +3,14 @@ package com.woocommerce.android.aiassistant.chat
 import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -167,6 +169,120 @@ class JetpackAiChatServiceTest {
     }
 
     @Test
+    fun `given 429 with retry after, when streaming, then RateLimit carries retry delay diagnostics`() = runTest {
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(429)
+                .setHeader("Retry-After", "7")
+        )
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat((error as AssistantError.RateLimit).diagnostics.transport?.retryAfterMs).isEqualTo(7_000L)
+    }
+
+    @Test
+    fun `given 408 response, when streaming, then emits Timeout before generic bad request`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(408))
+        server.enqueue(MockResponse().setResponseCode(408))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        assertThat(failed.kind).isEqualTo(ChatStreamError.TIMEOUT)
+        assertThat(failed.diagnostics.transport?.httpStatus).isEqualTo(408)
+    }
+
+    @Test
+    fun `given 400 response, when streaming, then emits BadRequest`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(400))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        assertThat(failed.kind).isEqualTo(ChatStreamError.BAD_REQUEST)
+        assertThat(failed.kind.toAssistantError(failed.cause, failed.diagnostics))
+            .isNotInstanceOf(AssistantError.Unknown::class.java)
+    }
+
+    @Test
+    fun `given 400 response, when streaming, then failure carries http status diagnostics`() = runTest {
+        server.enqueue(MockResponse().setResponseCode(400))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(400)
+    }
+
+    @Test
+    fun `given 200 json error with logical 400, when streaming, then emits BadRequest diagnostics`() = runTest {
+        server.enqueue(
+            jsonResponse(
+                """
+                {
+                  "code": "invalid_json_schema",
+                  "message": "Invalid schema for function parameters.",
+                  "data": {
+                    "status": 400
+                  }
+                }
+                """.trimIndent()
+            )
+        )
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat(error).isInstanceOf(AssistantError.BadRequest::class.java)
+        assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(400)
+        assertThat(error.diagnostics.transport?.bodySnippet).contains("invalid_json_schema")
+        assertThat(error.diagnostics.transport?.bodySnippet).contains("Invalid schema")
+    }
+
+    @Test
+    fun `given 200 empty json response, when streaming, then emits BadRequest with transport status`() = runTest {
+        server.enqueue(jsonResponse(""))
+
+        val service = newService()
+        val events = service.streamTurn(simpleRequest()).toList()
+
+        val failed = events.single() as AssistantEvent.Failed
+        val error = failed.kind.toAssistantError(diagnostics = failed.diagnostics)
+        assertThat(error).isInstanceOf(AssistantError.BadRequest::class.java)
+        assertThat((error as AssistantError.BadRequest).diagnostics.transport?.httpStatus).isEqualTo(200)
+        assertThat(error.diagnostics.transport?.bodySnippet).isNull()
+    }
+
+    @Test
+    fun `given non special 4xx responses, when streaming, then emits BadRequest`() = runTest {
+        listOf(402, 404, 422).forEach { code ->
+            server.enqueue(MockResponse().setResponseCode(code))
+        }
+
+        val service = newService()
+        val failures = List(3) {
+            service.streamTurn(simpleRequest()).toList().single() as AssistantEvent.Failed
+        }
+
+        assertThat(failures.map { it.kind }).containsExactly(
+            ChatStreamError.BAD_REQUEST,
+            ChatStreamError.BAD_REQUEST,
+            ChatStreamError.BAD_REQUEST,
+        )
+        assertThat(failures.map { it.diagnostics.transport?.httpStatus }).containsExactly(402, 404, 422)
+    }
+
+    @Test
     fun `given 503, when streaming, then a Failed UPSTREAM_FAILURE event is emitted`() = runTest {
         server.enqueue(MockResponse().setResponseCode(503))
 
@@ -197,6 +313,7 @@ class JetpackAiChatServiceTest {
         streamParser = ChatStreamParser(assistantJson),
         json = assistantJson,
         baseUrl = server.url("/").toString().removeSuffix("/"),
+        transportDiagnosticsFactory = TransportDiagnosticsFactory(),
     )
 
     private fun simpleRequest(): ChatRequest = ChatRequest(
@@ -206,6 +323,11 @@ class JetpackAiChatServiceTest {
     private fun sseResponse(body: String): MockResponse = MockResponse()
         .setResponseCode(200)
         .setHeader("Content-Type", "text/event-stream")
+        .setBody(body)
+
+    private fun jsonResponse(body: String): MockResponse = MockResponse()
+        .setResponseCode(200)
+        .setHeader("Content-Type", "application/json; charset=UTF-8")
         .setBody(body)
 
     private class RecordingTokenProvider : JwtTokenProvider {

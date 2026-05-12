@@ -7,6 +7,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,6 +24,7 @@ import javax.inject.Inject
 internal class ProductsBulkUpdateToolHandler @Inject constructor(
     private val dataSource: AIProductsDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
@@ -106,7 +108,14 @@ internal class ProductsBulkUpdateToolHandler @Inject constructor(
                     structured = result.toJson(args),
                 )
             },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
+            },
         )
     }
 

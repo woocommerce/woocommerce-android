@@ -1,7 +1,9 @@
 package com.woocommerce.android.aiassistant.tools.analytics
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -19,6 +21,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCStatsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AnalyticsOrdersToolHandlerTest {
@@ -31,6 +34,7 @@ class AnalyticsOrdersToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun toolCall(arguments: JsonObject): ToolCall =
@@ -336,7 +340,7 @@ class AnalyticsOrdersToolHandlerTest {
         }
 
     @Test
-    fun `given data source fails, when execute is called, then retryable TransportError is returned`() =
+    fun `given data source fails, when execute is called, then lossy diagnostics are returned`() =
         runTest {
             whenever(
                 dataSource.fetchOrdersStats(
@@ -344,7 +348,9 @@ class AnalyticsOrdersToolHandlerTest {
                     before = "2026-04-30T23:59:59",
                     interval = AnalyticsInterval.DAY,
                 )
-            ).thenReturn(Result.failure(IllegalStateException("network error")))
+            ).thenReturn(
+                Result.failure(OnChangedException(WCStatsStore.OrderStatsError(message = "network error")))
+            )
 
             val result = handler.execute(
                 toolCall(
@@ -356,7 +362,10 @@ class AnalyticsOrdersToolHandlerTest {
             )
 
             assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
-            assertThat((result as ToolResult.TransportError).retryable).isTrue
+            result as ToolResult.TransportError
+            assertThat(result.retryable).isTrue
+            assertThat(result.diagnostics.tool?.toolName).isEqualTo("analytics_orders")
+            assertThat(result.diagnostics.transport).isNull()
         }
 
     private fun sampleStats() = AnalyticsStats(

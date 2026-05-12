@@ -17,7 +17,7 @@ sealed interface LoopEvent {
     data class Finished(
         val outcome: LoopOutcome,
         val updatedHistory: List<AssistantMessage>,
-        val retryAvailable: Boolean = false,
+        val retryAffordance: RetryAffordance = RetryAffordance.None,
         val error: AssistantError? = null,
     ) : LoopEvent
 }

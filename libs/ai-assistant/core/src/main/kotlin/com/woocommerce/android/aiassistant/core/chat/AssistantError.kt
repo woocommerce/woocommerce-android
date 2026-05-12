@@ -12,14 +12,28 @@ package com.woocommerce.android.aiassistant.core.chat
  * UX decisions than a clean transport failure.
  */
 sealed class AssistantError {
-    data object Network : AssistantError()
-    data object Auth : AssistantError()
-    data object RateLimit : AssistantError()
-    data object Timeout : AssistantError()
-    data object UpstreamFailure : AssistantError()
-    data class ToolFailed(val toolName: String, val cause: Throwable? = null) : AssistantError()
-    data class InvalidToolCall(val toolName: String) : AssistantError()
-    data class OutcomeUnknown(val toolName: String) : AssistantError()
+    data class Network(val diagnostics: Diagnostics = Diagnostics()) : AssistantError()
+    data class Auth(val diagnostics: Diagnostics = Diagnostics()) : AssistantError()
+    data class RateLimit(val diagnostics: Diagnostics = Diagnostics()) : AssistantError()
+    data class BadRequest(val diagnostics: Diagnostics = Diagnostics()) : AssistantError()
+    data class Timeout(val diagnostics: Diagnostics = Diagnostics()) : AssistantError()
+    data class UpstreamFailure(val diagnostics: Diagnostics = Diagnostics()) : AssistantError()
+    data class ToolFailed(
+        val toolName: String,
+        val diagnostics: Diagnostics = Diagnostics(),
+        val cause: Throwable? = null,
+    ) : AssistantError()
+    data class InvalidToolCall(
+        val toolName: String,
+        val diagnostics: Diagnostics = Diagnostics(),
+    ) : AssistantError()
+    data class OutcomeUnknown(
+        val toolName: String,
+        val diagnostics: Diagnostics = Diagnostics(),
+    ) : AssistantError()
     data object Cancelled : AssistantError()
-    data class Unknown(val cause: Throwable? = null) : AssistantError()
+    data class Unknown(
+        val cause: Throwable? = null,
+        val diagnostics: Diagnostics = Diagnostics(),
+    ) : AssistantError()
 }

@@ -54,6 +54,7 @@ class JetpackAiChatServiceHeadlessHarnessTest {
                     streamParser = ChatStreamParser(assistantJson),
                     json = assistantJson,
                     baseUrl = server.url("/").toString().removeSuffix("/"),
+                    transportDiagnosticsFactory = TransportDiagnosticsFactory(),
                 ),
                 toolRegistry = NoOpToolRegistry(),
                 retryPolicy = ConservativeRetryPolicy,
