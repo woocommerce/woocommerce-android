@@ -1,8 +1,8 @@
-package com.woocommerce.android.aiassistant.ui
+package com.woocommerce.android.aiassistant.telemetry
 
 import java.util.UUID
 import javax.inject.Inject
 
-class AssistantMessageIdGenerator @Inject constructor() {
+class AssistantIdGenerator @Inject constructor() {
     fun nextId(): String = UUID.randomUUID().toString()
 }

@@ -17,9 +17,9 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationD
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
 import com.woocommerce.android.aiassistant.telemetry.AssistantErrorKindMapper
+import com.woocommerce.android.aiassistant.telemetry.AssistantIdGenerator
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEventFactory
-import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryIdGenerator
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryTracker
 import com.woocommerce.android.aiassistant.telemetry.CardTelemetryFamilyMapper
 import com.woocommerce.android.aiassistant.telemetry.SystemClock
@@ -47,9 +47,8 @@ class AssistantViewModel @AssistedInject constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
     private val assistantTelemetryTracker: AssistantTelemetryTracker,
-    private val telemetryIdGenerator: AssistantTelemetryIdGenerator,
     private val systemClock: SystemClock,
-    private val idGenerator: AssistantMessageIdGenerator,
+    private val assistantIdGenerator: AssistantIdGenerator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
     val uiState: StateFlow<AssistantUiState> = _uiState.asStateFlow()
@@ -59,7 +58,7 @@ class AssistantViewModel @AssistedInject constructor(
     private var turnJob: Job? = null
     private var activeAssistantMessageId: String? = null
     private var activeTurn: ActiveTurn? = null
-    private var conversationId: String = telemetryIdGenerator.nextId()
+    private var conversationId: String = assistantIdGenerator.nextId()
     private var conversationStartedTracked = false
     private var history: List<AssistantMessage> = emptyList()
     private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
@@ -158,7 +157,7 @@ class AssistantViewModel @AssistedInject constructor(
         turnJob?.cancel()
         turnJob = null
         activeAssistantMessageId = null
-        conversationId = telemetryIdGenerator.nextId()
+        conversationId = assistantIdGenerator.nextId()
         conversationStartedTracked = false
         history = emptyList()
         lastTurnBaseHistory = emptyList()
@@ -202,12 +201,12 @@ class AssistantViewModel @AssistedInject constructor(
         val userMessage = if (isRetry) {
             null
         } else {
-            AssistantUiMessage(idGenerator.nextId(), AssistantUiMessage.Role.USER, message)
+            AssistantUiMessage(assistantIdGenerator.nextId(), AssistantUiMessage.Role.USER, message)
         }
-        val assistantMessageId = idGenerator.nextId()
+        val assistantMessageId = assistantIdGenerator.nextId()
         val telemetryContext = AssistantTelemetryContext(
             conversationId = conversationId,
-            requestId = telemetryIdGenerator.nextId(),
+            requestId = assistantIdGenerator.nextId(),
             messageId = assistantMessageId,
         )
         messageTurnContext[assistantMessageId] = telemetryContext
@@ -279,7 +278,7 @@ class AssistantViewModel @AssistedInject constructor(
                         messages = it.messages.withConfirmationCard(
                             activeMessageId = activeAssistantMessageId,
                             confirmation = event.confirmation,
-                            nextId = idGenerator::nextId,
+                            nextId = assistantIdGenerator::nextId,
                         ),
                         status = AssistantUiStatus.AWAITING_CONFIRMATION,
                         error = null,
@@ -326,7 +325,7 @@ class AssistantViewModel @AssistedInject constructor(
                                 activeMessageId = activeMessageId,
                                 error = normalizedError,
                                 canRetry = canRetry,
-                                nextId = idGenerator::nextId,
+                                nextId = assistantIdGenerator::nextId,
                             ),
                         status = event.toAssistantUiStatus(),
                         error = event.toAssistantUiError(),

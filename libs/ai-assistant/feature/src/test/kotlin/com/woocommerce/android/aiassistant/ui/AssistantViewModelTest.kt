@@ -26,8 +26,8 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.telemetry.AssistantIdGenerator
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
-import com.woocommerce.android.aiassistant.telemetry.FakeAssistantTelemetryIdGenerator
 import com.woocommerce.android.aiassistant.telemetry.FakeSystemClock
 import com.woocommerce.android.aiassistant.telemetry.RecordingAssistantTelemetryTracker
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
@@ -62,7 +62,7 @@ class AssistantViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var runtime: FakeAssistantRuntime
     private lateinit var selectedSite: SelectedSite
-    private lateinit var testTelemetryIds: FakeAssistantTelemetryIdGenerator
+    private lateinit var assistantIdGenerator: AssistantIdGenerator
     private lateinit var assistantTelemetryTracker: RecordingAssistantTelemetryTracker
     private lateinit var clock: FakeSystemClock
     private lateinit var viewModel: AssistantViewModel
@@ -74,16 +74,15 @@ class AssistantViewModelTest {
         selectedSite = mock {
             on { get() } doReturn SiteModel().apply { siteId = SITE_ID }
         }
-        testTelemetryIds = FakeAssistantTelemetryIdGenerator()
+        assistantIdGenerator = sequentialAssistantIdGenerator()
         assistantTelemetryTracker = RecordingAssistantTelemetryTracker()
         clock = FakeSystemClock()
         viewModel = AssistantViewModel(
             runtime = runtime,
             selectedSite = selectedSite,
             assistantTelemetryTracker = assistantTelemetryTracker,
-            telemetryIdGenerator = testTelemetryIds,
             systemClock = clock,
-            idGenerator = sequentialAssistantMessageIdGenerator(),
+            assistantIdGenerator = assistantIdGenerator,
         )
     }
 
@@ -108,13 +107,13 @@ class AssistantViewModelTest {
         assertThat(state.status).isEqualTo(AssistantUiStatus.STREAMING)
         assertThat(state.isTurnActive).isTrue()
         assertThat(state.messages).containsExactly(
-            AssistantUiMessage(id = "message-1", role = AssistantUiMessage.Role.USER, text = "Show my recent orders"),
-            AssistantUiMessage(id = "message-2", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
+            AssistantUiMessage(id = "assistant-id-2", role = AssistantUiMessage.Role.USER, text = "Show my recent orders"),
+            AssistantUiMessage(id = "assistant-id-3", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
         )
         assertThat(runtime.startRequests).containsExactly(
             expectedTurnRequest(
-                requestId = "request-1",
-                messageId = "message-2",
+                requestId = "assistant-id-4",
+                messageId = "assistant-id-3",
                 userMessage = "Show my recent orders",
             )
         )
@@ -127,9 +126,9 @@ class AssistantViewModelTest {
 
             val context = runtime.startRequests.single().telemetryContext
 
-            assertThat(context.messageId).isEqualTo("message-2")
-            assertThat(context.conversationId).isEqualTo(testTelemetryIds.recorded[0])
-            assertThat(context.requestId).isEqualTo(testTelemetryIds.recorded[1])
+            assertThat(context.messageId).isEqualTo("assistant-id-3")
+            assertThat(context.conversationId).isEqualTo(CONVERSATION_ID)
+            assertThat(context.requestId).isEqualTo("assistant-id-4")
             assertThat(context.conversationId).isNotEqualTo(context.requestId)
             assertThat(context.requestId).isNotEqualTo(context.messageId)
         }
@@ -663,7 +662,7 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests).containsExactly(
-            expectedTurnRequest(requestId = "request-2", messageId = "message-3", userMessage = "Hello")
+            expectedTurnRequest(requestId = "assistant-id-6", messageId = "assistant-id-5", userMessage = "Hello")
         )
     }
 
@@ -701,7 +700,7 @@ class AssistantViewModelTest {
             viewModel.onRetry()
 
             assertThat(runtime.retryRequests).containsExactly(
-                expectedTurnRequest(requestId = "request-2", messageId = "message-3", userMessage = "Hello")
+                expectedTurnRequest(requestId = "assistant-id-6", messageId = "assistant-id-5", userMessage = "Hello")
             )
         }
 
@@ -867,8 +866,8 @@ class AssistantViewModelTest {
 
         assertThat(runtime.retryRequests.last()).isEqualTo(
             expectedTurnRequest(
-                requestId = "request-3",
-                messageId = "message-5",
+                requestId = "assistant-id-8",
+                messageId = "assistant-id-7",
                 userMessage = "Current question",
                 history = priorHistory,
             )
@@ -895,17 +894,17 @@ class AssistantViewModelTest {
             viewModel.onSendMessage("New question")
 
             assertThat(viewModel.uiState.value.messages).containsExactly(
-                AssistantUiMessage(id = "message-3", role = AssistantUiMessage.Role.USER, text = "New question"),
-                AssistantUiMessage(id = "message-4", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
+                AssistantUiMessage(id = "assistant-id-6", role = AssistantUiMessage.Role.USER, text = "New question"),
+                AssistantUiMessage(id = "assistant-id-7", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
             )
             assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
             assertThat(viewModel.uiState.value.error).isNull()
             assertThat(viewModel.uiState.value.canRetry).isFalse()
             assertThat(runtime.startRequests.last()).isEqualTo(
                 expectedTurnRequest(
-                    conversationId = "request-2",
-                    requestId = "request-3",
-                    messageId = "message-4",
+                    conversationId = "assistant-id-5",
+                    requestId = "assistant-id-8",
+                    messageId = "assistant-id-7",
                     userMessage = "New question",
                 )
             )
@@ -1037,8 +1036,8 @@ class AssistantViewModelTest {
 
         assertThat(runtime.retryRequests).containsExactly(
             expectedTurnRequest(
-                requestId = "request-3",
-                messageId = "message-5",
+                requestId = "assistant-id-8",
+                messageId = "assistant-id-7",
                 userMessage = "Second",
                 history = listOf(AssistantMessage.User("First")),
             )
@@ -1473,8 +1472,8 @@ class AssistantViewModelTest {
 
             assertThat(runtime.startRequests.last()).isEqualTo(
                 expectedTurnRequest(
-                    requestId = "request-2",
-                    messageId = "message-4",
+                    requestId = "assistant-id-7",
+                    messageId = "assistant-id-6",
                     userMessage = "What changed?",
                     history = listOf(
                         AssistantMessage.User("Summarize sales"),
@@ -1515,7 +1514,7 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.startRequests).containsExactly(
-            expectedTurnRequest(requestId = "request-1", messageId = "message-2", userMessage = "First")
+            expectedTurnRequest(requestId = "assistant-id-4", messageId = "assistant-id-3", userMessage = "First")
         )
         assertThat(viewModel.uiState.value.messages.map { it.text }).containsExactly("First", "")
     }
@@ -1531,8 +1530,8 @@ class AssistantViewModelTest {
 
         assertThat(runtime.startRequests).containsExactly(
             expectedTurnRequest(
-                requestId = "request-1",
-                messageId = "message-2",
+                requestId = "assistant-id-4",
+                messageId = "assistant-id-3",
                 userMessage = "Cancel order 123",
             )
         )
@@ -1899,12 +1898,12 @@ class AssistantViewModelTest {
         }
     }
 
-    private fun sequentialAssistantMessageIdGenerator(): AssistantMessageIdGenerator {
+    private fun sequentialAssistantIdGenerator(): AssistantIdGenerator {
         var count = 0
         return mock {
             on { nextId() } doAnswer {
                 count += 1
-                "message-$count"
+                "assistant-id-$count"
             }
         }
     }
@@ -1986,7 +1985,7 @@ class AssistantViewModelTest {
     )
 
     private companion object {
-        const val CONVERSATION_ID = "conversation-1"
+        const val CONVERSATION_ID = "assistant-id-1"
         const val SITE_ID = 123L
     }
 }
