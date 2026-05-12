@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +34,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
@@ -306,7 +304,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             bottom.linkTo(parent.bottom)
         }
         if (row.isLumpSum) {
-            CustomAmountAvatar(modifier = imageModifier)
+            CustomAmountAvatar(name = row.name, modifier = imageModifier)
         } else {
             OrderLineItemImage(imageUrl = row.imageUrl, modifier = imageModifier)
         }
@@ -367,21 +365,13 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
 }
 
 @Composable
-private fun CustomAmountAvatar(modifier: Modifier = Modifier) {
-    Box(
+private fun CustomAmountAvatar(name: String, modifier: Modifier = Modifier) {
+    WooPosCustomAmountInitialsAvatar(
+        name = name,
         modifier = modifier
             .size(56.dp.toAdaptiveIconSize())
-            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(WooPosIconSize.Small.value),
-        )
-    }
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
+    )
 }
 
 @Composable
