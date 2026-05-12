@@ -13,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import java.io.IOException
 import java.net.HttpURLConnection.HTTP_BAD_REQUEST
@@ -95,7 +96,7 @@ class WpComQrLoginRestClient @Inject constructor(
     }
 
     private fun buildScanRequest(token: String, encrypted: String): Request {
-        val url = (BASE_URL + SCAN_PATH).toHttpUrl()
+        val url = WPCOMV2.auth.qr_code_app.scan.url.toHttpUrl()
         val payload = gson.toJson(
             ScanRequest(
                 clientId = appSecrets.appId,
@@ -175,7 +176,7 @@ class WpComQrLoginRestClient @Inject constructor(
     }
 
     private fun buildSessionStatusRequest(sessionId: String): Request {
-        val url = (BASE_URL + SESSION_STATUS_PATH).toHttpUrl().newBuilder()
+        val url = WPCOMV2.auth.qr_code_app.session_status.url.toHttpUrl().newBuilder()
             .addQueryParameter("client_id", appSecrets.appId)
             .addQueryParameter("client_secret", appSecrets.appSecret)
             .addQueryParameter("session_id", sessionId)
@@ -220,7 +221,7 @@ class WpComQrLoginRestClient @Inject constructor(
     }
 
     private fun buildExchangeRequest(token: String, encrypted: String, exchangeGrant: String): Request {
-        val url = (BASE_URL + EXCHANGE_PATH).toHttpUrl()
+        val url = WPCOMV2.auth.qr_code_app.exchange.url.toHttpUrl()
         val payload = gson.toJson(
             ExchangeRequest(
                 clientId = appSecrets.appId,
@@ -366,10 +367,6 @@ class WpComQrLoginRestClient @Inject constructor(
     // endregion
 
     private companion object {
-        const val BASE_URL = "https://public-api.wordpress.com"
-        const val SCAN_PATH = "/wpcom/v2/auth/qr-code-app/scan"
-        const val SESSION_STATUS_PATH = "/wpcom/v2/auth/qr-code-app/session-status"
-        const val EXCHANGE_PATH = "/wpcom/v2/auth/qr-code-app/exchange"
         const val HTTP_TOO_MANY_REQUESTS = 429
         const val HTTP_CONFLICT = 409
         val POLL_CACHE_CONTROL = CacheControl.Builder()

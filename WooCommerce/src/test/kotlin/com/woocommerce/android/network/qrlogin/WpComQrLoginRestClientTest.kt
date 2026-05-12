@@ -58,7 +58,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
             val request = requireNotNull(lastRequest)
             assertThat(request.method).isEqualTo("POST")
             assertThat(request.url.toString())
-                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/auth/qr-code-app/scan")
+                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/auth/qr-code-app/scan/")
             val parsed = Gson().fromJson(readBody(request), JsonObject::class.java)
             assertThat(parsed.get("client_id").asString).isEqualTo(CLIENT_ID)
             assertThat(parsed.get("client_secret").asString).isEqualTo(CLIENT_SECRET)
@@ -288,7 +288,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
 
         val request = requireNotNull(lastRequest)
         assertThat(request.url.toString())
-            .isEqualTo("https://public-api.wordpress.com/wpcom/v2/auth/qr-code-app/exchange")
+            .isEqualTo("https://public-api.wordpress.com/wpcom/v2/auth/qr-code-app/exchange/")
         val parsed = Gson().fromJson(readBody(request), JsonObject::class.java)
         assertThat(parsed.get("client_id").asString).isEqualTo(CLIENT_ID)
         assertThat(parsed.get("client_secret").asString).isEqualTo(CLIENT_SECRET)
