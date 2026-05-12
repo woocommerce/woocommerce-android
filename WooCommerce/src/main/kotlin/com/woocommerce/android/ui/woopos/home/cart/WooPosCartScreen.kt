@@ -77,6 +77,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackBu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
@@ -761,21 +762,13 @@ private fun CustomAmountItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
+            WooPosCustomAmountInitialsAvatar(
+                name = item.name,
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
                     .heightIn(min = WooPosComponentSize.Medium.value),
-                contentAlignment = Alignment.Center,
-            ) {
-                Image(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
-                    modifier = Modifier.size(36.dp.toAdaptiveIconSize()),
-                )
-            }
+            )
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
