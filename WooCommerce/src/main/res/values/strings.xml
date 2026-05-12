@@ -2410,6 +2410,11 @@
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
     <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
+    <string name="ai_support_chat_issue_loading_orders">I can\'t see my orders</string>
+    <string name="ai_support_chat_issue_loading_products">I can\'t see my products</string>
+    <string name="ai_support_chat_issue_loading_analytics">My analytics aren\'t loading</string>
+    <string name="ai_support_chat_issue_receiving_notifications">I\'m not receiving notifications</string>
+    <string name="ai_support_chat_issue_other">Something else</string>
 
     <string name="support_developer_section_title" translatable="false">DEVELOPER</string>
     <string name="support_override_feature_flags" translatable="false">Override Feature Flags</string>

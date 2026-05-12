@@ -33,19 +33,18 @@ class SupportDiagnosticsService @Inject constructor(
 ) {
     fun runDiagnostics(issueType: SupportIssueType): Flow<DiagnosticResult> = flow {
         val tests = testsFor(issueType)
-        var statuses: List<Pair<DiagnosticTest, TestStatus>> =
-            tests.map { it to TestStatus.Pending }
+        var statuses = tests.map { DiagnosticStatus(it, TestStatus.Pending) }
         emit(DiagnosticResult(issueType, statuses))
 
         if (tests.isEmpty()) return@flow
 
         for ((index, test) in tests.withIndex()) {
-            statuses = statuses.replaceAt(index, test to TestStatus.Running)
+            statuses = statuses.replaceAt(index, DiagnosticStatus(test, TestStatus.Running))
             emit(DiagnosticResult(issueType, statuses))
 
             val outcome = runCheck(test).last()
             val newStatus = outcome.toTestStatus()
-            statuses = statuses.replaceAt(index, test to newStatus)
+            statuses = statuses.replaceAt(index, DiagnosticStatus(test, newStatus))
 
             if (newStatus is TestStatus.Failed) {
                 emit(
@@ -84,9 +83,13 @@ class SupportDiagnosticsService @Inject constructor(
 
     private fun ConnectivityCheckStatus.toTestStatus(): TestStatus = when (this) {
         is ConnectivityCheckStatus.Success -> TestStatus.Passed
-        is ConnectivityCheckStatus.Failure -> TestStatus.Failed(message = technicalDetails)
+        is ConnectivityCheckStatus.Failure -> TestStatus.Failed(
+            failureType = error,
+            technicalDetails = technicalDetails,
+            durationMs = durationMs
+        )
         ConnectivityCheckStatus.NotStarted, ConnectivityCheckStatus.InProgress ->
-            TestStatus.Failed(message = "Diagnostic did not complete")
+            TestStatus.Failed(technicalDetails = "Diagnostic did not complete")
     }
 
     private fun suggestedActionFor(failedTest: DiagnosticTest): SuggestedFixAction =
