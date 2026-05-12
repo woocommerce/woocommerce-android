@@ -1109,7 +1109,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wp com polling returns Consumed, then state is MatchAlreadyCompleted`() = testBlocking {
+    fun `given wp com session is consumed, when polling fires, then state is MatchAlreadyCompleted`() = testBlocking {
         stubWpComPayloadAndScan()
         whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Consumed))
@@ -1123,7 +1123,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given wp com polling returns Rejected, then state is MatchRejected`() = testBlocking {
+    fun `given wp com session is rejected, when polling fires, then state is MatchRejected`() = testBlocking {
         stubWpComPayloadAndScan()
         whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Rejected))
@@ -1136,7 +1136,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given wp com polling returns Expired, then state is MatchTimedOut`() = testBlocking {
+    fun `given wp com session is expired, when polling fires, then state is MatchTimedOut`() = testBlocking {
         stubWpComPayloadAndScan()
         whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
@@ -1149,7 +1149,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given wp com exchange fails with AlreadyConsumed, then state is MatchAlreadyCompleted`() = testBlocking {
+    fun `given AlreadyConsumed at exchange, when exchange fires, then state is MatchAlreadyCompleted`() =
+        testBlocking {
         stubWpComPayloadAndScan()
         whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
@@ -1164,7 +1165,8 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given wp com exchange fails with InvalidExchangeGrant, then state is MatchInvalidGrant`() = testBlocking {
+    fun `given InvalidExchangeGrant at exchange, when exchange fires, then state is MatchInvalidGrant`() =
+        testBlocking {
         stubWpComPayloadAndScan()
         whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
