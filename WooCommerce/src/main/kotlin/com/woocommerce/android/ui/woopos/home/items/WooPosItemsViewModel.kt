@@ -192,15 +192,10 @@ class WooPosItemsViewModel @Inject constructor(
         if (_viewState.value !is WooPosItemsToolbarViewState.CustomAmountForm) {
             preservedStateBeforeOpeningSubScreen = _viewState.value
         }
-        val titleRes = if (editing != null) {
-            R.string.woopos_custom_amount_dialog_title_edit
-        } else {
-            R.string.woopos_custom_amount_dialog_title_add
-        }
         _viewState.value = WooPosItemsToolbarViewState.CustomAmountForm(
             tabs = listOf(
                 Tab.Variations(
-                    name = resourceProvider.getString(titleRes),
+                    name = resourceProvider.getString(R.string.woopos_custom_amount_form_title),
                     highlightLevel = Tab.HighlightLevel.Full,
                 )
             ),

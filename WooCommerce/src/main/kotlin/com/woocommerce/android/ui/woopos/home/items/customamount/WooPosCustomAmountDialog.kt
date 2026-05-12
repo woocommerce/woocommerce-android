@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -33,13 +34,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosMoneyInputField
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import java.math.BigDecimal
 
@@ -68,8 +66,10 @@ fun WooPosCustomAmountFormScreen(
         ) {
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             AmountSection(state = state, onAmountChanged = viewModel::onAmountChanged)
-            NameSection(value = state.name, onNameChanged = viewModel::onNameChanged)
+            HorizontalDivider(color = WooPosTheme.colors.outlineVariant)
             TaxesToggle(isTaxable = state.isTaxable, onToggled = viewModel::onTaxableToggled)
+            HorizontalDivider(color = WooPosTheme.colors.outlineVariant)
+            NameSection(value = state.name, onNameChanged = viewModel::onNameChanged)
         }
 
         Box(
@@ -77,11 +77,7 @@ fun WooPosCustomAmountFormScreen(
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value),
         ) {
-            FormActions(
-                state = state,
-                onSubmit = viewModel::onSubmit,
-                onCancel = onBackClick,
-            )
+            FormSubmitButton(state = state, onSubmit = viewModel::onSubmit)
         }
     }
 }
@@ -184,10 +180,9 @@ private fun TaxesToggle(
 }
 
 @Composable
-private fun FormActions(
+private fun FormSubmitButton(
     state: WooPosCustomAmountDialogState,
     onSubmit: () -> Unit,
-    onCancel: () -> Unit,
 ) {
     val submitText = when (state.mode) {
         is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
@@ -195,41 +190,10 @@ private fun FormActions(
     }
     val submitButtonState =
         if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
-
-    when (currentWooPosBreakpoint()) {
-        WooPosBreakpoint.Phone -> Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        ) {
-            WooPosButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(submitText),
-                state = submitButtonState,
-                onClick = onSubmit,
-            )
-            WooPosOutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.woopos_custom_amount_dialog_cancel),
-                onClick = onCancel,
-            )
-        }
-
-        WooPosBreakpoint.SmallTablet,
-        WooPosBreakpoint.Tablet -> Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        ) {
-            WooPosOutlinedButton(
-                modifier = Modifier.weight(1f),
-                text = stringResource(R.string.woopos_custom_amount_dialog_cancel),
-                onClick = onCancel,
-            )
-            WooPosButton(
-                modifier = Modifier.weight(1f),
-                text = stringResource(submitText),
-                state = submitButtonState,
-                onClick = onSubmit,
-            )
-        }
-    }
+    WooPosButton(
+        modifier = Modifier.fillMaxWidth(),
+        text = stringResource(submitText),
+        state = submitButtonState,
+        onClick = onSubmit,
+    )
 }
