@@ -3,17 +3,25 @@ package com.woocommerce.android.ui.aisupportchat
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatViewModel.Companion.DEFAULT_BOT_SLUG
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
+import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -21,57 +29,85 @@ import org.mockito.kotlin.whenever
 class AiSupportChatViewModelTest : BaseUnitTest() {
     private val repository: SupportChatRepository = mock()
     private val contextProvider: SupportChatContextProvider = mock()
+    private val diagnosticsService: SupportDiagnosticsService = mock()
 
     private lateinit var viewModel: AiSupportChatViewModel
 
     @Before
     fun setUp() {
-        whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
         viewModel = AiSupportChatViewModel(
             savedStateHandle = SavedStateHandle(),
             repository = repository,
-            contextProvider = contextProvider
+            contextProvider = contextProvider,
+            diagnosticsService = diagnosticsService
         )
     }
 
     @Test
-    fun `given initial message succeeds, when sending, then thread is shown and chat is registered`() =
+    fun `when initialized, then greeting and issue picker are shown`() {
+        val state = viewModel.viewState.value
+
+        assertThat(state.hasStartedChat).isFalse()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Greeting,
+            AiSupportChatMessageContent.IssuePicker
+        )
+    }
+
+    @Test
+    fun `given diagnostics pass, when issue selected, then chat starts with diagnostic context`() =
         testBlocking {
+            val result = createSuccessDiagnosticResult()
             val response = createResponse(
                 messages = listOf(
-                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = MESSAGE),
+                    createMessage(
+                        messageId = 1L,
+                        role = SupportChatRole.USER,
+                        content = SupportIssueType.LOADING_ORDERS.initialMessage
+                    ),
                     createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
                 )
             )
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, MESSAGE, CONTEXT, null))
-                .thenReturn(Result.success(response))
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(SupportIssueType.LOADING_ORDERS, result)).thenReturn(CONTEXT)
+            whenever(
+                repository.sendMessage(
+                    DEFAULT_BOT_SLUG,
+                    SupportIssueType.LOADING_ORDERS.initialMessage,
+                    CONTEXT,
+                    null
+                )
+            ).thenReturn(Result.success(response))
 
-            viewModel.onInputChanged("  $MESSAGE  ")
-            viewModel.onSendClicked()
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
 
             val state = viewModel.viewState.value
             assertThat(state.input).isEmpty()
             assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.hasStartedChat).isTrue()
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isFalse()
-            assertThat(state.messages).containsExactly(
-                AiSupportChatMessage("user-1", AiSupportChatMessageRole.USER, MESSAGE),
-                AiSupportChatMessage("bot-2", AiSupportChatMessageRole.BOT, BOT_RESPONSE)
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.DiagnosticsProgress(result),
+                AiSupportChatMessageContent.Text(SupportIssueType.LOADING_ORDERS.initialMessage),
+                AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, MESSAGE)
+            verify(repository).registerChat(
+                CHAT_ID,
+                DEFAULT_BOT_SLUG,
+                SupportIssueType.LOADING_ORDERS.initialMessage
+            )
             verify(repository, never()).markChatAsUpdated(any())
         }
 
     @Test
     fun `given existing chat, when sending follow up, then message is sent with chat id and bookmark is touched`() =
         testBlocking {
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, MESSAGE, CONTEXT, null))
-                .thenReturn(Result.success(createResponse()))
+            startChat()
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
 
-            viewModel.onInputChanged(MESSAGE)
-            viewModel.onSendClicked()
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
             viewModel.onSendClicked()
 
@@ -84,30 +120,140 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given initial message fails, when sending, then draft is restored and error is shown`() = testBlocking {
-        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, MESSAGE, CONTEXT, null))
-            .thenReturn(Result.failure(Exception()))
+    fun `given diagnostics fail, when issue selected, then failure is shown and chat does not start`() =
+        testBlocking {
+            val result = createFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
 
-        viewModel.onInputChanged(MESSAGE)
-        viewModel.onSendClicked()
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
 
-        val state = viewModel.viewState.value
-        assertThat(state.input).isEqualTo(MESSAGE)
-        assertThat(state.messages).isEmpty()
-        assertThat(state.chatId).isNull()
-        assertThat(state.isSending).isFalse()
-        assertThat(state.showSendError).isTrue()
-        verify(repository, never()).registerChat(any(), any(), any())
+            val state = viewModel.viewState.value
+            assertThat(state.hasStartedChat).isFalse()
+            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.LOADING_ORDERS)
+            assertThat(state.diagnosticResult).isEqualTo(result)
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.DiagnosticsFailure(result)
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given diagnostics fail, when continuing anyway, then chat starts with failure context`() =
+        testBlocking {
+            val result = createFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(SupportIssueType.LOADING_ORDERS, result)).thenReturn(CONTEXT)
+            whenever(
+                repository.sendMessage(
+                    DEFAULT_BOT_SLUG,
+                    SupportIssueType.LOADING_ORDERS.initialMessage,
+                    CONTEXT,
+                    null
+                )
+            ).thenReturn(Result.success(createResponse()))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+            viewModel.onContinueAfterDiagnosticsClicked()
+
+            assertThat(viewModel.viewState.value.hasStartedChat).isTrue()
+            assertThat(viewModel.viewState.value.showSendError).isFalse()
+            verify(repository).sendMessage(
+                DEFAULT_BOT_SLUG,
+                SupportIssueType.LOADING_ORDERS.initialMessage,
+                CONTEXT,
+                null
+            )
+        }
+
+    @Test
+    fun `given diagnostics fail, when retry tapped, then diagnostics run again`() = testBlocking {
+        val result = createFailedDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS))
+            .thenReturn(flowOf(result), flowOf(result))
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+        viewModel.onRetryDiagnosticsClicked()
+
+        verify(diagnosticsService, times(2)).runDiagnostics(SupportIssueType.LOADING_ORDERS)
     }
 
     @Test
-    fun `given blank input, when sending, then repository is not called`() = testBlocking {
+    fun `given initial message fails, when continuing after diagnostics, then draft is restored and error is shown`() =
+        testBlocking {
+            val result = createFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(SupportIssueType.LOADING_ORDERS, result)).thenReturn(CONTEXT)
+            whenever(
+                repository.sendMessage(
+                    DEFAULT_BOT_SLUG,
+                    SupportIssueType.LOADING_ORDERS.initialMessage,
+                    CONTEXT,
+                    null
+                )
+            ).thenReturn(Result.failure(Exception()))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+            viewModel.onContinueAfterDiagnosticsClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.input).isEqualTo(SupportIssueType.LOADING_ORDERS.initialMessage)
+            assertThat(state.chatId).isNull()
+            assertThat(state.hasStartedChat).isTrue()
+            assertThat(state.isSending).isFalse()
+            assertThat(state.showSendError).isTrue()
+            verify(repository, never()).registerChat(any(), any(), any())
+        }
+
+    @Test
+    fun `given blank input, when sending before chat starts, then repository is not called`() = testBlocking {
         viewModel.onInputChanged("   ")
         viewModel.onSendClicked()
 
-        assertThat(viewModel.viewState.value.messages).isEmpty()
+        assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Greeting,
+            AiSupportChatMessageContent.IssuePicker
+        )
         verify(repository, never()).sendMessage(any(), any(), any(), any())
     }
+
+    private suspend fun startChat() {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+        whenever(contextProvider.buildInitialContext(SupportIssueType.LOADING_ORDERS, result)).thenReturn(CONTEXT)
+        whenever(
+            repository.sendMessage(
+                DEFAULT_BOT_SLUG,
+                SupportIssueType.LOADING_ORDERS.initialMessage,
+                CONTEXT,
+                null
+            )
+        ).thenReturn(Result.success(createResponse()))
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+    }
+
+    private fun createSuccessDiagnosticResult(issueType: SupportIssueType = SupportIssueType.LOADING_ORDERS) =
+        DiagnosticResult(
+            issueType = issueType,
+            statuses = listOf(
+                DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.WPCOM_SERVERS, TestStatus.Passed)
+            )
+        )
+
+    private fun createFailedDiagnosticResult(issueType: SupportIssueType = SupportIssueType.LOADING_ORDERS) =
+        DiagnosticResult(
+            issueType = issueType,
+            statuses = listOf(
+                DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Passed),
+                DiagnosticStatus(
+                    DiagnosticTest.WPCOM_SERVERS,
+                    TestStatus.Failed(technicalDetails = "WPCom 503", durationMs = 250L)
+                ),
+                DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Pending)
+            )
+        )
 
     private fun createResponse(
         chatId: Long = CHAT_ID,
@@ -133,7 +279,6 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
     private companion object {
         const val CHAT_ID = 1234L
-        const val MESSAGE = "I need help with orders"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val BOT_RESPONSE = "Let's troubleshoot orders."
 
