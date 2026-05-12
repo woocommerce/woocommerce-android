@@ -92,8 +92,8 @@ fun QrLoginPrologueScreen(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Hero scrolls so the site-address login link below stays visible in landscape on
-            // phones where the static layout would otherwise push it off the bottom edge.
+            // Content scrolls so the site-address login link below stays visible in landscape
+            // on phones where the static layout would otherwise push it off the bottom edge.
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,7 +101,7 @@ fun QrLoginPrologueScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Hero()
+                Content()
             }
             Buttons(onScanClicked = onScanClicked, onSiteAddressLoginClicked = onSiteAddressLoginClicked)
         }
@@ -123,16 +123,16 @@ fun QrLoginPrologueScreen(
 }
 
 @Composable
-private fun Hero() {
+private fun Content() {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     // Tablets have enough vertical room for the portrait stack in landscape too — only the
-    // compact height bucket (phones in landscape) needs the compacted hero.
+    // compact height bucket (phones in landscape) needs the compacted layout.
     val isCompactHeight = LocalContext.current.windowHeightSizeClass == WindowSizeClass.Compact
-    if (isLandscape && isCompactHeight) HeroLandscape() else HeroPortrait()
+    if (isLandscape && isCompactHeight) ContentLandscape() else ContentPortrait()
 }
 
 @Composable
-private fun HeroPortrait() {
+private fun ContentPortrait() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,13 +168,13 @@ private fun HeroPortrait() {
 }
 
 /**
- * Landscape phones only have ~400dp of vertical space, so the portrait hero pushes the bottom
+ * Landscape phones only have ~400dp of vertical space, so the portrait layout pushes the bottom
  * CTAs off-screen. Pair the QR icon with the title on a single row and keep the URL line and
  * step hint horizontally centered below — everything fits without scrolling and reads as a
  * single centered block.
  */
 @Composable
-private fun HeroLandscape() {
+private fun ContentLandscape() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
