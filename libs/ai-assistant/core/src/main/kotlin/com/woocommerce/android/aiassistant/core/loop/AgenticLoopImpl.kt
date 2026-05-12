@@ -234,7 +234,14 @@ class AgenticLoopImpl(
                     safetyLevel = ToolSafetyLevel.SAFE,
                     invalidToolCallError = invalidToolCallError(r.toolName),
                 )
-                emit(LoopEvent.ToolCallFinished(result))
+                emit(
+                    LoopEvent.ToolCallFinished(
+                        result = result,
+                        toolName = r.toolName,
+                        decision = ToolDecision.MALFORMED_ARGUMENTS,
+                        durationMs = null,
+                    )
+                )
             }
         }
         for (call in validCalls) {
@@ -247,7 +254,14 @@ class AgenticLoopImpl(
                         descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
                         invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
                     )
-                    emit(LoopEvent.ToolCallFinished(replayDecision.result))
+                    emit(
+                        LoopEvent.ToolCallFinished(
+                            result = replayDecision.result,
+                            toolName = call.name,
+                            decision = ToolDecision.CAP_EXCEEDED,
+                            durationMs = null,
+                        )
+                    )
                 }
                 is ToolReplayDecision.Replay -> {
                     completedTools += CompletedToolCall(
@@ -256,19 +270,53 @@ class AgenticLoopImpl(
                         descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
                         invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
                     )
-                    emit(LoopEvent.ToolCallFinished(replayDecision.result))
+                    emit(
+                        LoopEvent.ToolCallFinished(
+                            result = replayDecision.result,
+                            toolName = call.name,
+                            decision = ToolDecision.REPLAYED,
+                            durationMs = null,
+                        )
+                    )
                 }
                 is ToolReplayDecision.Execute -> {
+                    if (descriptor == null) {
+                        val result = ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
+                        completedTools += CompletedToolCall(
+                            historyToolCall = call,
+                            result = result,
+                            safetyLevel = ToolSafetyLevel.SAFE,
+                            invalidToolCallError = invalidToolCallError(call.name),
+                        )
+                        emit(
+                            LoopEvent.ToolCallFinished(
+                                result = result,
+                                toolName = call.name,
+                                decision = ToolDecision.VALIDATION_FAILED,
+                                durationMs = null,
+                            )
+                        )
+                        continue
+                    }
+                    val startNs = System.nanoTime()
                     val result = executeToolIfAllowed(call, descriptor)
                         ?: return ToolExecutionOutcome.Cancelled(completedTools)
+                    val durationMs = (System.nanoTime() - startNs) / NANOS_PER_MILLI
                     replayTracker.record(replayDecision.signature, result)
                     completedTools += CompletedToolCall(
                         historyToolCall = call,
                         result = result,
-                        safetyLevel = descriptor?.safetyLevel ?: ToolSafetyLevel.SAFE,
+                        safetyLevel = descriptor.safetyLevel,
                         invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
                     )
-                    emit(LoopEvent.ToolCallFinished(result))
+                    emit(
+                        LoopEvent.ToolCallFinished(
+                            result = result,
+                            toolName = call.name,
+                            decision = result.toToolDecision(descriptor),
+                            durationMs = durationMs,
+                        )
+                    )
                 }
             }
         }
@@ -277,12 +325,8 @@ class AgenticLoopImpl(
 
     private suspend fun FlowCollector<LoopEvent>.executeToolIfAllowed(
         call: ToolCall,
-        descriptor: ToolDescriptor?,
+        descriptor: ToolDescriptor,
     ): ToolResult? {
-        if (descriptor == null) {
-            return ToolResult.ValidationError(call.id, "Unknown tool: ${call.name}")
-        }
-
         return when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
             SafetyDecision.Execute -> executeApprovedTool(call)
             is SafetyDecision.RequireConfirmation -> executeAfterConfirmation(call, decision)
@@ -300,7 +344,17 @@ class AgenticLoopImpl(
             emit(LoopEvent.ConfirmationResolved(confirmationResult))
             when (confirmationResult.decision) {
                 ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
-                ConfirmationDecision.CANCELLED -> null
+                ConfirmationDecision.CANCELLED -> {
+                    emit(
+                        LoopEvent.ToolCallFinished(
+                            result = ToolResult.RejectedBySafety(call.id),
+                            toolName = call.name,
+                            decision = ToolDecision.REJECTED_BY_SAFETY,
+                            durationMs = null,
+                        )
+                    )
+                    null
+                }
             }
         } finally {
             safetyOrchestrator.cancelPending(requestId)
@@ -498,5 +552,13 @@ class AgenticLoopImpl(
 
     companion object {
         internal const val MAX_ITERATIONS = 5
+        private const val NANOS_PER_MILLI = 1_000_000L
     }
+}
+
+private fun ToolResult.toToolDecision(descriptor: ToolDescriptor?): ToolDecision = when {
+    descriptor == null -> ToolDecision.VALIDATION_FAILED
+    this is ToolResult.RejectedBySafety -> ToolDecision.REJECTED_BY_SAFETY
+    this is ToolResult.TransportError -> ToolDecision.HANDLER_FAILED
+    else -> ToolDecision.EXECUTED
 }

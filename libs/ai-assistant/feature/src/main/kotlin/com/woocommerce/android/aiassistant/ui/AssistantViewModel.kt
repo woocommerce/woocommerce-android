@@ -2,6 +2,9 @@ package com.woocommerce.android.aiassistant.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.automattic.eventhorizon.AiAssistantErrorKindValue
+import com.automattic.eventhorizon.AiAssistantTurnOutcomeValue
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
@@ -13,18 +16,27 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEventFactory
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryIdGenerator
+import com.woocommerce.android.aiassistant.telemetry.AssistantErrorKindMapper
+import com.woocommerce.android.aiassistant.telemetry.CardTelemetryFamilyMapper
+import com.woocommerce.android.aiassistant.telemetry.SystemClock
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,19 +45,27 @@ import kotlinx.coroutines.launch
 class AssistantViewModel @AssistedInject constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
+    private val assistantTelemetry: AssistantTelemetry,
     private val telemetryIdGenerator: AssistantTelemetryIdGenerator,
+    private val systemClock: SystemClock,
     private val idGenerator: AssistantMessageIdGenerator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
     val uiState: StateFlow<AssistantUiState> = _uiState.asStateFlow()
+    private val _pendingCardNavigation = MutableSharedFlow<AssistantCardAction>(replay = 0, extraBufferCapacity = 1)
+    val pendingCardNavigation: SharedFlow<AssistantCardAction> = _pendingCardNavigation.asSharedFlow()
 
     private var turnJob: Job? = null
     private var activeAssistantMessageId: String? = null
+    private var activeTurn: ActiveTurn? = null
     private var conversationId: String = telemetryIdGenerator.nextId()
+    private var conversationStartedTracked = false
     private var history: List<AssistantMessage> = emptyList()
     private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
     private var lastUserMessage: String? = null
     private val activeCardKeys = linkedSetOf<AssistantCardKey>()
+    private val messageTurnContext = linkedMapOf<String, AssistantTelemetryContext>()
+    private val suppressedRuntimeTelemetryRequestIds = mutableSetOf<String>()
 
     fun onSendMessage(message: String) {
         if (_uiState.value.isTurnActive) return
@@ -72,6 +92,7 @@ class AssistantViewModel @AssistedInject constructor(
         }
 
         preserveCancelledTurnInHistory()
+        activeTurn?.let { finalizeTurn(it, AiAssistantTurnOutcomeValue.CancelledByUser, errorKind = null) }
         turnJob?.cancel()
         turnJob = null
         activeAssistantMessageId = null
@@ -132,14 +153,18 @@ class AssistantViewModel @AssistedInject constructor(
     fun onRestartConversation() {
         val shouldCancelTurn = _uiState.value.isTurnActive
         val previousConversationId = conversationId
+        activeTurn?.let { finalizeTurn(it, AiAssistantTurnOutcomeValue.CancelledByUser, errorKind = null) }
         turnJob?.cancel()
         turnJob = null
         activeAssistantMessageId = null
         conversationId = telemetryIdGenerator.nextId()
+        conversationStartedTracked = false
         history = emptyList()
         lastTurnBaseHistory = emptyList()
         lastUserMessage = null
         activeCardKeys.clear()
+        messageTurnContext.clear()
+        suppressedRuntimeTelemetryRequestIds.clear()
         _uiState.value = AssistantUiState()
 
         if (shouldCancelTurn) {
@@ -149,7 +174,24 @@ class AssistantViewModel @AssistedInject constructor(
         }
     }
 
+    fun onCardTapped(
+        card: AssistantCard,
+        action: AssistantCardAction,
+        sourceMessageId: String,
+    ) {
+        val context = messageTurnContext[sourceMessageId] ?: return
+        assistantTelemetry.track(
+            AssistantTelemetryEventFactory.cardTapped(
+                context = context,
+                cardFamily = CardTelemetryFamilyMapper.familyOf(card),
+                actionFamily = CardTelemetryFamilyMapper.actionOf(action),
+            )
+        )
+        _pendingCardNavigation.tryEmit(action)
+    }
+
     private fun startTurn(message: String, isRetry: Boolean) {
+        activeTurn?.let { finalizeTurn(it, AiAssistantTurnOutcomeValue.CancelledByUser, errorKind = null) }
         turnJob?.cancel()
         activeCardKeys.clear()
         if (!isRetry) {
@@ -165,6 +207,12 @@ class AssistantViewModel @AssistedInject constructor(
             conversationId = conversationId,
             requestId = telemetryIdGenerator.nextId(),
             messageId = assistantMessageId,
+        )
+        messageTurnContext[assistantMessageId] = telemetryContext
+        activeTurn = ActiveTurn(
+            context = telemetryContext,
+            isRetry = isRetry,
+            startedAtMs = systemClock.nowMs(),
         )
 
         _uiState.update { state ->
@@ -199,13 +247,29 @@ class AssistantViewModel @AssistedInject constructor(
         turnJob = viewModelScope.launch {
             events.collect(::reduceRuntimeEvent)
         }
+        if (!conversationStartedTracked) {
+            conversationStartedTracked = true
+            assistantTelemetry.track(AssistantTelemetryEventFactory.conversationStarted(telemetryContext))
+        }
+        assistantTelemetry.track(
+            AssistantTelemetryEventFactory.turnStarted(
+                context = telemetryContext,
+                isRetry = isRetry,
+                completionStack = AssistantConfig.COMPLETION_STACK,
+                promptVersion = AssistantConfig.PROMPT_VERSION,
+                toolCatalogVersion = AssistantConfig.TOOL_CATALOG_VERSION,
+            )
+        )
     }
 
     private fun reduceRuntimeEvent(event: AssistantRuntimeEvent) {
         when (event) {
             is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
             is AssistantRuntimeEvent.ToolCallStarted -> showToolActivity(event)
-            is AssistantRuntimeEvent.ToolCallFinished -> markToolActivityCompleted(event.toolCallId)
+            is AssistantRuntimeEvent.ToolCallFinished -> {
+                markToolActivityCompleted(event.toolCallId)
+                trackToolCallCompleted(event)
+            }
             is AssistantRuntimeEvent.AwaitingConfirmation -> {
                 _uiState.update {
                     it.copy(
@@ -232,10 +296,18 @@ class AssistantViewModel @AssistedInject constructor(
                 }
             }
             is AssistantRuntimeEvent.CardsResolved -> appendAssistantCards(event.cards)
+            is AssistantRuntimeEvent.ShowCardsProcessed -> trackShowCardsProcessed(event)
             is AssistantRuntimeEvent.Finished -> {
                 val activeMessageId = activeAssistantMessageId
                 val normalizedError = event.normalizedAssistantError()
                 val canRetry = event.canRetry()
+                activeTurn?.let {
+                    finalizeTurn(
+                        turn = it,
+                        outcome = event.toTurnOutcome(),
+                        errorKind = normalizedError?.let(AssistantErrorKindMapper::map),
+                    )
+                }
                 activeAssistantMessageId = null
                 activeCardKeys.clear()
                 history = event.updatedHistory
@@ -289,6 +361,39 @@ class AssistantViewModel @AssistedInject constructor(
             )
         }
     }
+
+    private fun trackToolCallCompleted(event: AssistantRuntimeEvent.ToolCallFinished) {
+        if (!event.emitTelemetry) return
+        val context = event.telemetryContext
+        if (!isTrackableRuntimeContext(context)) return
+        assistantTelemetry.track(
+            AssistantTelemetryEventFactory.toolCallCompleted(
+                context = context,
+                toolName = event.toolName,
+                status = event.status,
+                errorKind = event.errorKind,
+                durationMs = event.durationMs,
+            )
+        )
+    }
+
+    private fun trackShowCardsProcessed(event: AssistantRuntimeEvent.ShowCardsProcessed) {
+        val context = event.telemetryContext
+        if (!isTrackableRuntimeContext(context)) return
+        assistantTelemetry.track(
+            AssistantTelemetryEventFactory.showCardsProcessed(
+                context = context,
+                requestedCount = event.counts.requestedCount,
+                renderedCount = event.counts.renderedCount,
+                missingCount = event.counts.missingCount,
+                rejectedCount = event.counts.rejectedCount,
+            )
+        )
+    }
+
+    private fun isTrackableRuntimeContext(context: AssistantTelemetryContext): Boolean =
+        messageTurnContext[context.messageId] != null &&
+            context.requestId !in suppressedRuntimeTelemetryRequestIds
 
     private fun preserveCancelledTurnInHistory() {
         val userMessage = lastUserMessage ?: return
@@ -413,6 +518,41 @@ class AssistantViewModel @AssistedInject constructor(
         outcome == LoopOutcome.FAILED &&
             retryAffordance == RetryAffordance.Manual &&
             error?.supportsRetryAction() == true
+
+    private fun AssistantRuntimeEvent.Finished.toTurnOutcome(): AiAssistantTurnOutcomeValue = when (outcome) {
+        LoopOutcome.COMPLETED -> AiAssistantTurnOutcomeValue.Success
+        LoopOutcome.FAILED -> AiAssistantTurnOutcomeValue.Failed
+        LoopOutcome.STOPPED -> AiAssistantTurnOutcomeValue.CancelledByUser
+        LoopOutcome.MAX_ITERATIONS -> AiAssistantTurnOutcomeValue.MaxIterations
+    }
+
+    private fun finalizeTurn(
+        turn: ActiveTurn,
+        outcome: AiAssistantTurnOutcomeValue,
+        errorKind: AiAssistantErrorKindValue?,
+        suppressLateRuntimeTelemetry: Boolean = outcome == AiAssistantTurnOutcomeValue.CancelledByUser,
+    ) {
+        if (turn.completedTracked) return
+        turn.completedTracked = true
+        if (suppressLateRuntimeTelemetry) {
+            suppressedRuntimeTelemetryRequestIds += turn.context.requestId
+        }
+        assistantTelemetry.track(
+            AssistantTelemetryEventFactory.turnCompleted(
+                context = turn.context,
+                outcome = outcome,
+                errorKind = errorKind,
+                durationMs = (systemClock.nowMs() - turn.startedAtMs).coerceAtLeast(0L),
+                isRetry = turn.isRetry,
+                completionStack = AssistantConfig.COMPLETION_STACK,
+                promptVersion = AssistantConfig.PROMPT_VERSION,
+                toolCatalogVersion = AssistantConfig.TOOL_CATALOG_VERSION,
+            )
+        )
+        if (activeTurn === turn) {
+            activeTurn = null
+        }
+    }
 
     private fun List<AssistantUiMessage>.withoutRetryActions(): List<AssistantUiMessage> =
         map { message ->
@@ -580,4 +720,11 @@ class AssistantViewModel @AssistedInject constructor(
     interface Factory {
         fun create(): AssistantViewModel
     }
+
+    private data class ActiveTurn(
+        val context: AssistantTelemetryContext,
+        val isRetry: Boolean,
+        val startedAtMs: Long,
+        var completedTracked: Boolean = false,
+    )
 }
