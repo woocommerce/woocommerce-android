@@ -9,7 +9,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import java.math.BigDecimal
 
-class NullableJsonAdapterTests {
+class NullableJsonAdapterTest {
     data class StringExample(
         @JsonAdapter(NullStringJsonAdapter::class, nullSafe = false)
         @SerializedName("an_id")
