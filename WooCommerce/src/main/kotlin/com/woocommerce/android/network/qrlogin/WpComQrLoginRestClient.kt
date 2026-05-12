@@ -124,7 +124,9 @@ class WpComQrLoginRestClient @Inject constructor(
         HTTP_BAD_REQUEST -> mapScanBadRequest(body)
         HTTP_TOO_MANY_REQUESTS -> WpComQrLoginScanException.RateLimited
         else -> {
-            WooLog.w(WooLog.T.LOGIN, "wp.com QR scan unexpected HTTP $code: $body")
+            // Body intentionally not logged — a successful scan response carries `session_id` /
+            // `user_email`, and an unexpected status here could surface those alongside diagnostics.
+            WooLog.w(WooLog.T.LOGIN, "wp.com QR scan unexpected HTTP $code")
             WpComQrLoginScanException.HttpError(code)
         }
     }
