@@ -4,6 +4,9 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.network.qrlogin.QrLoginScanException
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginExchangeException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginSessionStatusException
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.util.WooLog
@@ -81,6 +84,50 @@ class QrLoginErrorMapper @Inject constructor() {
         SiteErrorType.UNAUTHORIZED,
         SiteErrorType.NOT_AUTHENTICATED -> ErrorReason.SiteAuthFailure
         SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR -> ErrorReason.Network
+        else -> ErrorReason.Unknown
+    }
+
+    fun toWpComScanReason(throwable: Throwable): ErrorReason = when (throwable) {
+        WpComQrLoginScanException.RestForbidden -> ErrorReason.TokenRejected
+        WpComQrLoginScanException.SessionNotFound -> ErrorReason.TokenRejected
+        WpComQrLoginScanException.AlreadyScanned -> ErrorReason.MatchAlreadyScanned
+        WpComQrLoginScanException.RateLimited -> ErrorReason.RateLimited
+        WpComQrLoginScanException.Network -> ErrorReason.Network
+        WpComQrLoginScanException.MalformedResponse -> ErrorReason.ServerError
+        is WpComQrLoginScanException.HttpError -> ErrorReason.ServerError
+        is WpComQrLoginScanException.Unknown -> ErrorReason.Unknown
+        // NoNumberMatching is unreachable: the client always sends supports_number_matching=true.
+        // Log so we notice if the contract drifts, but surface as a generic failure.
+        WpComQrLoginScanException.NoNumberMatching -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login wp.com scan: unexpected no_number_matching from server")
+            ErrorReason.Unknown
+        }
+        is IOException -> ErrorReason.Network
+        else -> ErrorReason.Unknown
+    }
+
+    fun toWpComPollReason(throwable: Throwable): ErrorReason = when (throwable) {
+        WpComQrLoginSessionStatusException.RateLimited -> ErrorReason.RateLimited
+        WpComQrLoginSessionStatusException.Network -> ErrorReason.Network
+        WpComQrLoginSessionStatusException.MalformedResponse -> ErrorReason.ServerError
+        is WpComQrLoginSessionStatusException.HttpError -> ErrorReason.ServerError
+        is WpComQrLoginSessionStatusException.Unknown -> ErrorReason.Unknown
+        else -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login wp.com poll: unmapped failure type ${throwable.javaClass.simpleName}")
+            ErrorReason.Unknown
+        }
+    }
+
+    fun toWpComExchangeReason(throwable: Throwable): ErrorReason = when (throwable) {
+        WpComQrLoginExchangeException.NotApproved -> ErrorReason.MatchTimedOut
+        WpComQrLoginExchangeException.InvalidExchangeGrant -> ErrorReason.MatchInvalidGrant
+        WpComQrLoginExchangeException.AlreadyConsumed -> ErrorReason.MatchAlreadyCompleted
+        WpComQrLoginExchangeException.SessionNotFound -> ErrorReason.MatchInvalidGrant
+        WpComQrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
+        WpComQrLoginExchangeException.Network -> ErrorReason.Network
+        WpComQrLoginExchangeException.MalformedResponse -> ErrorReason.ServerError
+        is WpComQrLoginExchangeException.HttpError -> ErrorReason.ServerError
+        is WpComQrLoginExchangeException.Unknown -> ErrorReason.Unknown
         else -> ErrorReason.Unknown
     }
 }
