@@ -39,6 +39,11 @@ class NewOrderNotificationSettingsFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        viewModel.savePendingOrderPreferences()
+    }
+
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
