@@ -80,6 +80,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -811,8 +813,7 @@ private fun CustomAmountItem(
             }
 
             if (canRemoveItems) {
-                EditCustomAmountButton(item = item, onUIEvent = onUIEvent)
-                RemoveItemFromCartButton(item, onUIEvent)
+                CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
@@ -820,26 +821,23 @@ private fun CustomAmountItem(
 }
 
 @Composable
-private fun EditCustomAmountButton(
+private fun CustomAmountOverflowMenu(
     item: WooPosCartItemViewState.CustomAmount,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    val editButtonContentDescription = stringResource(
-        id = R.string.woopos_cart_custom_amount_edit_content_description,
-        item.name,
-    )
-    IconButton(
-        onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
-        modifier = Modifier
-            .size(WooPosIconSize.XLarge.value)
-            .semantics { contentDescription = editButtonContentDescription },
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
-            tint = WooPosTheme.colors.onSurfaceVariantHighest,
-            contentDescription = null,
+    WooPosOverflowMenu(
+        items = listOf(
+            WooPosOverflowMenuItem(
+                label = stringResource(R.string.woopos_cart_custom_amount_menu_edit),
+                onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
+            ),
+            WooPosOverflowMenuItem(
+                label = stringResource(R.string.woopos_cart_custom_amount_menu_remove),
+                color = MaterialTheme.colorScheme.error,
+                onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+            ),
         )
-    }
+    )
 }
 
 @Composable
