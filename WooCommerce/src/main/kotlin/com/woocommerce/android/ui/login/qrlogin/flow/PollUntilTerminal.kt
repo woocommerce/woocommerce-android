@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
  * immediately, if [PollOutcome.TransientError.terminal] is set) the loop returns the error
  * outcome and the caller surfaces it.
  */
+@Suppress("ReturnCount")
 internal suspend fun pollUntilTerminal(
     shouldContinue: () -> Boolean,
     poll: suspend () -> PollOutcome,

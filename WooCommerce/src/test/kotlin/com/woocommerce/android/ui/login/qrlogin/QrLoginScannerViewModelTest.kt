@@ -276,6 +276,20 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given WpComToken payload, when scan succeeds, then factory creates a flow and start is invoked`() =
+        testBlocking {
+            val wpComPayload = QrLoginPayload.WpComToken(token = "wpc-tok", encrypted = "enc")
+            whenever(parser.parse(RAW_SCAN)).thenReturn(wpComPayload)
+            whenever(flowFactory.create(eq(wpComPayload), any())).thenReturn(fakeFlow)
+
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+
+            verify(flowFactory).create(eq(wpComPayload), any())
+            assertThat(fakeFlow.startCount).isEqualTo(1)
+        }
+
+    @Test
     fun `given Invalid payload, when scan succeeds, then state is InvalidPayload error`() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
 

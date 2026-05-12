@@ -103,8 +103,10 @@ data class QrLoginErrorContent(
 /**
  * Exhaustive `when` over the sealed [ErrorReason] hierarchy — adding a new variant becomes a
  * compile error rather than a runtime crash, in contrast with the `Map.getValue()` lookup the
- * earlier enum-based implementation used.
+ * earlier enum-based implementation used. The exhaustive shape is intentionally long; suppressing
+ * the length/complexity rules keeps the mapping in one readable table.
  */
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
     ErrorReason.InstallQrCode -> installQrErrorContent()
     ErrorReason.InvalidPayload -> errorContent(
