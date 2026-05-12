@@ -9,13 +9,13 @@ import org.mockito.kotlin.verify
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooAssistantTracksTelemetryTest : BaseUnitTest() {
+class WooAssistantAnalyticsTrackerTest : BaseUnitTest() {
     @Test
     fun `when trackable is tracked, then wrapper receives the same instance`() {
         val tracker = mock<AnalyticsTrackerWrapper>()
         val trackable = mock<Trackable>()
 
-        WooAssistantTracksTelemetry(tracker).track(trackable)
+        WooAssistantAnalyticsTracker(tracker).track(trackable)
 
         verify(tracker).track(trackable)
     }

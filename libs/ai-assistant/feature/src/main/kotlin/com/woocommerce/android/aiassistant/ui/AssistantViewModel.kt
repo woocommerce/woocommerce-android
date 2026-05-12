@@ -17,10 +17,10 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationD
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
 import com.woocommerce.android.aiassistant.telemetry.AssistantErrorKindMapper
-import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEventFactory
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryIdGenerator
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryTracker
 import com.woocommerce.android.aiassistant.telemetry.CardTelemetryFamilyMapper
 import com.woocommerce.android.aiassistant.telemetry.SystemClock
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 class AssistantViewModel @AssistedInject constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
-    private val assistantTelemetry: AssistantTelemetry,
+    private val assistantTelemetryTracker: AssistantTelemetryTracker,
     private val telemetryIdGenerator: AssistantTelemetryIdGenerator,
     private val systemClock: SystemClock,
     private val idGenerator: AssistantMessageIdGenerator,
@@ -181,7 +181,7 @@ class AssistantViewModel @AssistedInject constructor(
         sourceMessageId: String,
     ) {
         val context = messageTurnContext[sourceMessageId] ?: return
-        assistantTelemetry.track(
+        assistantTelemetryTracker.track(
             AssistantTelemetryEventFactory.cardTapped(
                 context = context,
                 cardFamily = CardTelemetryFamilyMapper.familyOf(card),
@@ -251,9 +251,9 @@ class AssistantViewModel @AssistedInject constructor(
         }
         if (!conversationStartedTracked) {
             conversationStartedTracked = true
-            assistantTelemetry.track(AssistantTelemetryEventFactory.conversationStarted(telemetryContext))
+            assistantTelemetryTracker.track(AssistantTelemetryEventFactory.conversationStarted(telemetryContext))
         }
-        assistantTelemetry.track(
+        assistantTelemetryTracker.track(
             AssistantTelemetryEventFactory.turnStarted(
                 context = telemetryContext,
                 isRetry = isRetry,
@@ -373,7 +373,7 @@ class AssistantViewModel @AssistedInject constructor(
         if (!event.emitTelemetry) return
         val context = event.telemetryContext
         if (!isTrackableRuntimeContext(context)) return
-        assistantTelemetry.track(
+        assistantTelemetryTracker.track(
             AssistantTelemetryEventFactory.toolCallCompleted(
                 context = context,
                 toolName = event.toolName,
@@ -387,7 +387,7 @@ class AssistantViewModel @AssistedInject constructor(
     private fun trackShowCardsProcessed(event: AssistantRuntimeEvent.ShowCardsProcessed) {
         val context = event.telemetryContext
         if (!isTrackableRuntimeContext(context)) return
-        assistantTelemetry.track(
+        assistantTelemetryTracker.track(
             AssistantTelemetryEventFactory.showCardsProcessed(
                 context = context,
                 requestedCount = event.counts.requestedCount,
@@ -544,7 +544,7 @@ class AssistantViewModel @AssistedInject constructor(
         if (suppressLateRuntimeTelemetry) {
             suppressedRuntimeTelemetryRequestIds += turn.context.requestId
         }
-        assistantTelemetry.track(
+        assistantTelemetryTracker.track(
             AssistantTelemetryEventFactory.turnCompleted(
                 context = turn.context,
                 outcome = outcome,
