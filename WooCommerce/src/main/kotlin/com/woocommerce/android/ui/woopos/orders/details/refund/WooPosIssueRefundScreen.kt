@@ -247,10 +247,10 @@ private fun RefundScreenHeader(
 
         WooPosText(
             text = title,
-            style = WooPosTypography.Heading,
+            style = WooPosTypography.BodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -699,14 +699,13 @@ private fun ItemsHeaderRow(
             )
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-        Row {
+        Column {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_select_all_items),
                 style = WooPosTypography.Caption,
                 fontWeight = FontWeight.Bold,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
-            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
             WooPosText(
                 text = stringResource(R.string.woopos_orders_items_selected_count, selectedCount),
                 style = WooPosTypography.Caption,
