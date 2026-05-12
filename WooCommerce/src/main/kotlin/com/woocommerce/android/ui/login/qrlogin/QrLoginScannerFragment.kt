@@ -31,6 +31,7 @@ class QrLoginScannerFragment : Fragment() {
         const val TAG = "qr-login-scanner-fragment"
         const val KEY_CAMERA_PERMISSION = Manifest.permission.CAMERA
         private const val ARG_DEEP_LINK_PAYLOAD = "arg-deep-link-payload"
+        private const val KEY_IS_DEEP_LINK_ENTRY = "key-is-deep-link-entry"
 
         /**
          * Creates an instance that skips the camera preview and feeds [rawPayload] (a
@@ -48,14 +49,17 @@ class QrLoginScannerFragment : Fragment() {
         fun onQrLoginCompleted(localSiteId: Int)
         fun onQrLoginFallbackClicked()
         fun onQrLoginSiteUrlPrefill(siteUrl: String)
+        fun onQrLoginAppLoginCredentials(siteUrl: String, username: String)
+        fun onQrLoginAppLoginWpComEmail(siteUrl: String, wpComEmail: String)
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
     private val qrLoginViewModel: QrLoginScannerViewModel by viewModels()
 
-    // Captured once at fragment creation. Kept in memory only — never persisted to
-    // saved-instance-state — and consumed in onViewCreated. On process-death recovery this
-    // stays null so the user falls back to the scanner instead of replaying a stale token.
+    // The payload is captured once at fragment creation, kept in memory only, and consumed in
+    // onViewCreated. The entry mode itself is safe to restore across rotation, but only while the
+    // retained ViewModel still holds a non-idle overlay state. After process death the ViewModel
+    // is idle again, so we fall back to the scanner instead of replaying a stale token.
     private var pendingDeepLinkPayload: String? = null
     private var isDeepLinkEntry: Boolean = false
 
@@ -69,10 +73,17 @@ class QrLoginScannerFragment : Fragment() {
         val payload = arguments?.getString(ARG_DEEP_LINK_PAYLOAD)
         // Strip the payload from arguments before any save-state cycle can persist it.
         arguments = null
+        isDeepLinkEntry = savedInstanceState?.getBoolean(KEY_IS_DEEP_LINK_ENTRY) == true &&
+            qrLoginViewModel.uiState.value !is QrLoginScannerViewModel.UiState.Idle
         if (savedInstanceState == null && payload != null) {
             pendingDeepLinkPayload = payload
             isDeepLinkEntry = true
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_IS_DEEP_LINK_ENTRY, isDeepLinkEntry)
     }
 
     override fun onCreateView(
@@ -96,8 +107,9 @@ class QrLoginScannerFragment : Fragment() {
                     shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                 )
             },
-            onConfirmSite = qrLoginViewModel::onConfirmSite,
-            onCancelSite = ::handleCancelSite,
+            onCancelNumberMatch = ::handleCancelNumberMatch,
+            onConfirmSessionReplace = qrLoginViewModel::onConfirmSessionReplace,
+            onCancelSessionReplace = ::handleCancelSessionReplace,
             onStartOver = ::handleStartOver,
             onRetryExchange = qrLoginViewModel::onRetryExchange,
             onFallbackClicked = { listener?.onQrLoginFallbackClicked() },
@@ -164,23 +176,38 @@ class QrLoginScannerFragment : Fragment() {
                     openWpComMagicLinkUrl(event.url)
                 is QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry ->
                     routeToSiteAddressEntry(event.siteUrl)
+                is QrLoginScannerViewModel.Dispatch.RouteToAppLoginCredentials ->
+                    routeToAppLoginCredentials(event.siteUrl, event.username)
+                is QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail ->
+                    routeToAppLoginWpComEmail(event.siteUrl, event.wpComEmail)
             }
         }
     }
 
     /**
-     * Cancel always exits to the previous destination (the prologue in camera mode, the launcher
-     * caller in deep-link mode). Resuming the camera underneath would re-scan the same QR if it
-     * is still framed, which loops the user back into the same confirm screen.
+     * In camera mode, cancelling the number-match step clears the overlay and the camera
+     * resumes underneath. In deep-link mode there is no camera, so the same dismissal would
+     * leave the user on a blank surface — exit the fragment instead.
      */
-    private fun handleCancelSite() {
-        qrLoginViewModel.onCancelSite()
+    private fun handleCancelNumberMatch() {
+        qrLoginViewModel.onCancelNumberMatch()
+        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    /**
+     * In practice the warning is only reachable via deep link (the in-app scanner is gated
+     * behind a logged-out [LoginActivity]), so cancelling closes [LoginActivity] and returns
+     * the merchant to whatever they were doing before tapping the QR link. The existing session
+     * is left intact.
+     */
+    private fun handleCancelSessionReplace() {
+        qrLoginViewModel.onCancelSessionReplace()
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     /**
-     * Same reasoning as [handleCancelSite]: error/endpoint-missing screens in deep-link mode
-     * have nothing to fall back to once dismissed, so we exit. In camera mode the scanner
+     * Same reasoning as [handleCancelNumberMatch]: error/endpoint-missing screens in deep-link
+     * mode have nothing to fall back to once dismissed, so we exit. In camera mode the scanner
      * resumes underneath as soon as the overlay is cleared.
      */
     private fun handleStartOver() {
@@ -220,5 +247,19 @@ class QrLoginScannerFragment : Fragment() {
         requireNotNull(listener) {
             "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
         }.onQrLoginSiteUrlPrefill(siteUrl)
+    }
+
+    private fun routeToAppLoginCredentials(siteUrl: String, username: String) {
+        scannerViewModel.stopCodesRecognition()
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginAppLoginCredentials(siteUrl, username)
+    }
+
+    private fun routeToAppLoginWpComEmail(siteUrl: String, wpComEmail: String) {
+        scannerViewModel.stopCodesRecognition()
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginAppLoginWpComEmail(siteUrl, wpComEmail)
     }
 }

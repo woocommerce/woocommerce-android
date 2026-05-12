@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,25 +21,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun QrLoginErrorScreen(
-    @StringRes title: Int,
-    @StringRes body: Int,
-    @StringRes primaryActionLabel: Int,
+    content: QrLoginErrorContent,
     onPrimaryClicked: () -> Unit,
     onSecondaryClicked: () -> Unit,
-    @StringRes secondaryActionLabel: Int = R.string.login_qr_endpoint_missing_enter_url,
-    bodyArgs: List<Int> = emptyList(),
 ) {
     Column(
         modifier = Modifier
@@ -61,11 +59,10 @@ fun QrLoginErrorScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Content(title = title, body = body, bodyArgs = bodyArgs)
+            Content(content = content)
         }
         Buttons(
-            primaryActionLabel = primaryActionLabel,
-            secondaryActionLabel = secondaryActionLabel,
+            content = content,
             onPrimaryClicked = onPrimaryClicked,
             onSecondaryClicked = onSecondaryClicked,
         )
@@ -73,11 +70,7 @@ fun QrLoginErrorScreen(
 }
 
 @Composable
-private fun Content(
-    @StringRes title: Int,
-    @StringRes body: Int,
-    bodyArgs: List<Int>,
-) {
+private fun Content(content: QrLoginErrorContent) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,19 +83,15 @@ private fun Content(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         Text(
-            text = stringResource(id = title),
+            text = stringResource(id = content.title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        @Suppress("SpreadOperator")
         Text(
-            text = annotatedStringRes(
-                body,
-                *bodyArgs.map { stringResource(id = it) }.toTypedArray(),
-            ),
+            text = bodyAnnotatedString(content),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -112,8 +101,7 @@ private fun Content(
 
 @Composable
 private fun Buttons(
-    @StringRes primaryActionLabel: Int,
-    @StringRes secondaryActionLabel: Int,
+    content: QrLoginErrorContent,
     onPrimaryClicked: () -> Unit,
     onSecondaryClicked: () -> Unit,
 ) {
@@ -128,14 +116,13 @@ private fun Buttons(
     ) {
         WCColoredButton(
             onClick = onPrimaryClicked,
-            text = stringResource(id = primaryActionLabel),
+            text = stringResource(id = content.primaryAction),
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        WCTextButton(
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
+        WCOutlinedButton(
             onClick = onSecondaryClicked,
-            text = stringResource(id = secondaryActionLabel),
-            allCaps = false,
+            text = stringResource(id = content.secondaryAction),
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -146,11 +133,39 @@ private fun Buttons(
 private fun QrLoginErrorScreenPreview() {
     WooThemeWithBackground {
         QrLoginErrorScreen(
-            title = R.string.login_qr_scanner_error_token_title,
-            body = R.string.login_qr_scanner_error_token_body,
-            primaryActionLabel = R.string.login_qr_error_primary_scan,
+            content = QrLoginErrorContent(
+                title = R.string.login_qr_scanner_error_token_title,
+                body = R.string.login_qr_scanner_error_token_body,
+                primaryAction = R.string.login_qr_endpoint_missing_retry,
+            ),
             onPrimaryClicked = {},
             onSecondaryClicked = {},
         )
+    }
+}
+
+/**
+ * Resolves the body text for an error. When [QrLoginErrorContent.bodyHighlightedArgs] is empty
+ * we just return the body string as-is. Otherwise we treat the body as a `%1$s, %2$s, …`
+ * template, substitute each arg in order, and apply a SemiBold span to each substituted run.
+ * This pattern keeps `<b>…</b>` markup out of strings.xml so translators can't accidentally
+ * drop or break it.
+ */
+@Composable
+private fun bodyAnnotatedString(content: QrLoginErrorContent): AnnotatedString {
+    val template = stringResource(id = content.body)
+    if (content.bodyHighlightedArgs.isEmpty()) return AnnotatedString(template)
+    val args = content.bodyHighlightedArgs.map { stringResource(id = it) }
+    return buildAnnotatedString {
+        var cursor = 0
+        args.forEachIndexed { index, value ->
+            val placeholder = "%${index + 1}\$s"
+            val placeholderStart = template.indexOf(placeholder, startIndex = cursor)
+            if (placeholderStart < 0) return@forEachIndexed
+            append(template.substring(cursor, placeholderStart))
+            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(value) }
+            cursor = placeholderStart + placeholder.length
+        }
+        append(template.substring(cursor))
     }
 }
