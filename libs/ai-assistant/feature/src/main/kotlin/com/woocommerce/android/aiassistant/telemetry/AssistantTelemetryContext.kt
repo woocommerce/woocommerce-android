@@ -1,6 +1,6 @@
 package com.woocommerce.android.aiassistant.telemetry
 
-data class AssistantTelemetryContext(
+internal data class AssistantTelemetryContext(
     val conversationId: String,
     val requestId: String,
     val messageId: String,

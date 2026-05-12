@@ -12,7 +12,7 @@ import com.automattic.eventhorizon.AiAssistantTurnCompletedEvent
 import com.automattic.eventhorizon.AiAssistantTurnOutcomeValue
 import com.automattic.eventhorizon.AiAssistantTurnStartedEvent
 
-object AssistantTelemetryEventFactory {
+internal object AssistantTelemetryEventFactory {
     fun conversationStarted(context: AssistantTelemetryContext) =
         AiAssistantConversationStartedEvent(
             conversationId = context.conversationId,

@@ -5,7 +5,7 @@ import com.automattic.eventhorizon.AiAssistantCardFamilyValue
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 
-object CardTelemetryFamilyMapper {
+internal object CardTelemetryFamilyMapper {
     fun familyOf(card: AssistantCard): AiAssistantCardFamilyValue = when (card) {
         is AssistantCard.Order -> AiAssistantCardFamilyValue.Order
         is AssistantCard.Product -> AiAssistantCardFamilyValue.Product

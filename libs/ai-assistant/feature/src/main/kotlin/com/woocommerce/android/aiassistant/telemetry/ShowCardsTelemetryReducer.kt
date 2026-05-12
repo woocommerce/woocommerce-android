@@ -2,7 +2,7 @@ package com.woocommerce.android.aiassistant.telemetry
 
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 
-data class ShowCardsCounts(
+internal data class ShowCardsCounts(
     val requestedCount: Int,
     val renderedCount: Int,
     val missingCount: Int,

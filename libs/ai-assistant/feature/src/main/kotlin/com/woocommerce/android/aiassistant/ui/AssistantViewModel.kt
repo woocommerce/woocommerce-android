@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
 @Suppress("LargeClass")
-class AssistantViewModel @AssistedInject constructor(
+class AssistantViewModel @AssistedInject internal constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
     private val assistantTelemetryTracker: AssistantTelemetryTracker,

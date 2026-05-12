@@ -3,7 +3,7 @@ package com.woocommerce.android.aiassistant.telemetry
 import com.automattic.eventhorizon.AiAssistantErrorKindValue
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 
-object AssistantErrorKindMapper {
+internal object AssistantErrorKindMapper {
     fun map(error: AssistantError): AiAssistantErrorKindValue = when (error) {
         is AssistantError.Network -> AiAssistantErrorKindValue.Network
         is AssistantError.Auth -> AiAssistantErrorKindValue.Auth

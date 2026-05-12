@@ -866,8 +866,8 @@ class AssistantViewModelTest {
 
         assertThat(runtime.retryRequests.last()).isEqualTo(
             expectedTurnRequest(
-                requestId = "assistant-id-8",
-                messageId = "assistant-id-7",
+                requestId = "assistant-id-9",
+                messageId = "assistant-id-8",
                 userMessage = "Current question",
                 history = priorHistory,
             )
@@ -1036,8 +1036,8 @@ class AssistantViewModelTest {
 
         assertThat(runtime.retryRequests).containsExactly(
             expectedTurnRequest(
-                requestId = "assistant-id-8",
-                messageId = "assistant-id-7",
+                requestId = "assistant-id-9",
+                messageId = "assistant-id-8",
                 userMessage = "Second",
                 history = listOf(AssistantMessage.User("First")),
             )
