@@ -118,6 +118,7 @@ fun WooPosOutlinedButton(
     text: String,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
     maxLines: Int = Int.MAX_VALUE,
+    textStyle: WooPosTypography = WooPosTypography.BodyLarge,
     onClick: () -> Unit,
 ) {
     val borderColor = if (state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING) {
@@ -129,7 +130,7 @@ fun WooPosOutlinedButton(
         modifier = modifier,
         height = WooPosComponentSize.Small.value,
         loadingIndicatorSize = WooPosIconSize.Medium.value.toAdaptiveIconSize(),
-        textStyle = WooPosTypography.BodyLarge,
+        textStyle = textStyle,
         text = text,
         border = BorderStroke(2.dp, borderColor),
         colors = ButtonDefaults.buttonColors(
