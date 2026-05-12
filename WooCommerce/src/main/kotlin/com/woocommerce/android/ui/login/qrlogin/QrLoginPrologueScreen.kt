@@ -1,11 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,10 +24,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,8 +44,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.copyToClipboard
@@ -57,37 +55,17 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.HelpButton
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueViewModel.CameraPermissionDialogState
 
 @Composable
 fun QrLoginPrologueScreen(
+    cameraPermissionDialog: CameraPermissionDialogState?,
     onScanClicked: () -> Unit,
-    onFallbackClicked: () -> Unit,
+    onSiteAddressLoginClicked: () -> Unit,
     onHelpClicked: () -> Unit,
+    onCameraDenialPrimaryClicked: () -> Unit,
+    onCameraDenialCancelled: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted ->
-            // The scanner asks for the permission again on first composition; if the user just
-            // granted it here, that follow-up returns immediately with no extra dialog.
-            // If the user denied, we stay on the prologue — they can tap again to retry, or
-            // pick the site-URL fallback. We don't navigate to a black scanner-with-permission-
-            // prompt screen.
-            if (granted) onScanClicked()
-        }
-    )
-    val handleScanClicked: () -> Unit = {
-        val alreadyGranted = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-        if (alreadyGranted) {
-            onScanClicked()
-        } else {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
     val navBarsPadding = WindowInsets.navigationBars.asPaddingValues()
     Box(
@@ -114,8 +92,8 @@ fun QrLoginPrologueScreen(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Content scrolls so the fallback link below stays visible in landscape on phones
-            // where the static layout would otherwise push it off the bottom edge.
+            // Content scrolls so the site-address login link below stays visible in landscape
+            // on phones where the static layout would otherwise push it off the bottom edge.
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,13 +103,21 @@ fun QrLoginPrologueScreen(
             ) {
                 Content()
             }
-            Buttons(onScanClicked = handleScanClicked, onFallbackClicked = onFallbackClicked)
+            Buttons(onScanClicked = onScanClicked, onSiteAddressLoginClicked = onSiteAddressLoginClicked)
         }
 
         HelpButton(
             onClick = onHelpClicked,
             tint = colorResource(id = R.color.prologue_login_on_background),
             modifier = Modifier.align(Alignment.TopEnd),
+        )
+    }
+
+    if (cameraPermissionDialog != null) {
+        CameraPermissionDialog(
+            dialog = cameraPermissionDialog,
+            onPrimary = onCameraDenialPrimaryClicked,
+            onCancel = onCameraDenialCancelled,
         )
     }
 }
@@ -286,7 +272,7 @@ private fun UrlBadge() {
 @Composable
 private fun Buttons(
     onScanClicked: () -> Unit,
-    onFallbackClicked: () -> Unit
+    onSiteAddressLoginClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -307,7 +293,7 @@ private fun Buttons(
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         WCTextButton(
-            onClick = onFallbackClicked,
+            onClick = onSiteAddressLoginClicked,
             contentPadding = PaddingValues(vertical = dimensionResource(id = R.dimen.major_75)),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -320,10 +306,74 @@ private fun Buttons(
     }
 }
 
+@Composable
+private fun CameraPermissionDialog(
+    dialog: CameraPermissionDialogState,
+    onPrimary: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text(text = stringResource(id = dialog.title)) },
+        text = { Text(text = stringResource(id = dialog.body)) },
+        confirmButton = {
+            TextButton(onClick = onPrimary) {
+                Text(text = stringResource(id = dialog.primaryLabel))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        },
+    )
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginPrologueScreenPreview() {
     WooThemeWithBackground {
-        QrLoginPrologueScreen(onScanClicked = {}, onFallbackClicked = {}, onHelpClicked = {})
+        QrLoginPrologueScreen(
+            cameraPermissionDialog = null,
+            onScanClicked = {},
+            onSiteAddressLoginClicked = {},
+            onHelpClicked = {},
+            onCameraDenialPrimaryClicked = {},
+            onCameraDenialCancelled = {},
+        )
+    }
+}
+
+@Preview(name = "First denial — light")
+@Preview(name = "First denial — dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CameraPermissionFirstDenialPreview() {
+    WooThemeWithBackground {
+        CameraPermissionDialog(
+            dialog = CameraPermissionDialogState(
+                title = R.string.login_qr_prologue_camera_denied_title,
+                body = R.string.login_qr_prologue_camera_denied_body,
+                primaryLabel = R.string.login_qr_prologue_camera_denied_allow_button,
+            ),
+            onPrimary = {},
+            onCancel = {},
+        )
+    }
+}
+
+@Preview(name = "Permanently denied — light")
+@Preview(name = "Permanently denied — dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CameraPermissionPermanentlyDeniedPreview() {
+    WooThemeWithBackground {
+        CameraPermissionDialog(
+            dialog = CameraPermissionDialogState(
+                title = R.string.login_qr_prologue_camera_blocked_title,
+                body = R.string.login_qr_prologue_camera_blocked_body,
+                primaryLabel = R.string.login_qr_prologue_camera_blocked_settings_button,
+            ),
+            onPrimary = {},
+            onCancel = {},
+        )
     }
 }
