@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,6 +67,7 @@ fun WooPosItemList(
     state: WooPosContentViewState,
     listState: LazyListState,
     animateItems: Boolean = true,
+    headerContent: (@Composable LazyItemScope.() -> Unit)? = null,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     onEndOfProductsListReached: () -> Unit,
     onErrorWhilePaginating: @Composable () -> Unit,
@@ -77,6 +79,12 @@ fun WooPosItemList(
         state = listState,
         withBottomShadow = true,
     ) {
+        if (headerContent != null) {
+            item(key = "woopos_item_list_header") {
+                headerContent()
+            }
+        }
+
         items(
             state.items,
             key = { item -> item.id }

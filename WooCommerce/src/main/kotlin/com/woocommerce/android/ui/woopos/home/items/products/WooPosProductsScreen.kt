@@ -111,14 +111,13 @@ private fun ProductsList(
         ) {
             when (val itemsState = state.value) {
                 is WooPosProductsViewState.Content -> {
-                    WooPosCustomAmountEntryRow(
-                        modifier = Modifier.padding(
-                            horizontal = WooPosSpacing.Medium.value,
-                            vertical = WooPosSpacing.XSmall.value,
-                        ),
-                        onClick = onCustomAmountEntryRowClicked,
+                    Content(
+                        itemsState = itemsState,
+                        listState = listState,
+                        onItemClicked = onItemClicked,
+                        onEndOfItemListReached = onEndOfItemListReached,
+                        onCustomAmountEntryRowClicked = onCustomAmountEntryRowClicked,
                     )
-                    Content(itemsState, listState, onItemClicked, onEndOfItemListReached)
                 }
 
                 is WooPosProductsViewState.Loading -> WooPosItemsLoadingIndicator(
@@ -148,12 +147,18 @@ private fun Content(
     itemsState: WooPosProductsViewState.Content,
     listState: LazyListState,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
-    onEndOfItemListReached: () -> Unit
+    onEndOfItemListReached: () -> Unit,
+    onCustomAmountEntryRowClicked: () -> Unit,
 ) {
     WooPosItemList(
         modifier = Modifier.padding(top = WooPosSpacing.XSmall.value),
         state = itemsState,
         listState = listState,
+        headerContent = {
+            WooPosCustomAmountEntryRow(
+                onClick = onCustomAmountEntryRowClicked,
+            )
+        },
         onItemClicked = onItemClicked,
         onEndOfProductsListReached = onEndOfItemListReached,
     ) {
