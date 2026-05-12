@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -84,6 +85,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             FlowState.WaitingForApproval(
                 sessionId = "sess-1",
                 realNumber = "042",
+                subtitleLabelRes = R.string.login_qr_match_host_label,
                 subtitle = "store.example",
                 expiresAtEpochMs = 123L,
             )
@@ -190,6 +192,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
                 FlowState.WaitingForApproval(
                     sessionId = "sess-1",
                     realNumber = "042",
+                    subtitleLabelRes = R.string.login_qr_match_host_label,
                     subtitle = "store.example",
                     expiresAtEpochMs = 123L,
                 )

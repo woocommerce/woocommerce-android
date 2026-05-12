@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,16 +39,18 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.delay
 
 /**
- * Number-matching approval step. Shows the 3-digit number the merchant must tap on the
- * matching wc-admin screen for the sign-in to complete. The number is rendered prominently
- * (large, monospaced) with the host as context and a 90-second countdown.
+ * Number-matching approval step. Shows the 3-digit number the merchant must tap in the matching
+ * browser session (wc-admin for the site flow, wordpress.com for the wp.com flow) to complete
+ * the sign-in. The number is rendered prominently (large, monospaced) above a 90-second
+ * countdown, with [subtitle] (host or account email) shown for context under [subtitleLabelRes].
  *
- * Cancel returns to the scanner. The server keeps the session in `scanned` until its
- * 90-second window elapses, so wc-admin's polling auto-transitions to the "denied" terminal
- * screen — no explicit cancel call is needed.
+ * Cancel returns to the scanner. The server keeps the session in `scanned` until its 90-second
+ * window elapses, so the matching browser polls itself into a "denied" / "expired" terminal
+ * state — no explicit cancel call is needed.
  */
 @Composable
 fun QrLoginNumberDisplayScreen(
+    @StringRes subtitleLabelRes: Int,
     subtitle: String,
     realNumber: String,
     expiresAtEpochMs: Long,
@@ -69,14 +72,24 @@ fun QrLoginNumberDisplayScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Hero(subtitle = subtitle, realNumber = realNumber, expiresAtEpochMs = expiresAtEpochMs)
+            Hero(
+                subtitleLabelRes = subtitleLabelRes,
+                subtitle = subtitle,
+                realNumber = realNumber,
+                expiresAtEpochMs = expiresAtEpochMs,
+            )
         }
         CancelButton(onCancel = onCancel)
     }
 }
 
 @Composable
-private fun Hero(subtitle: String, realNumber: String, expiresAtEpochMs: Long) {
+private fun Hero(
+    @StringRes subtitleLabelRes: Int,
+    subtitle: String,
+    realNumber: String,
+    expiresAtEpochMs: Long,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,17 +104,16 @@ private fun Hero(subtitle: String, realNumber: String, expiresAtEpochMs: Long) {
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
         Text(
-            text = stringResource(id = R.string.login_qr_match_host_label),
+            text = stringResource(id = subtitleLabelRes),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_75)))
-        // Prominent host display so the merchant can spot a phishing-style mismatch
-        // (e.g. a homograph attack: `my-stōre.example` vs the punycode form
-        // `xn--my-stre-1za.example` that OkHttp's HttpUrl normalisation surfaces).
-        // The ViewModel's `toDisplayHost` already converts IDN names to ASCII, so any
-        // visual sleight-of-hand in the QR's URL surfaces here for the user to read.
+        // Site flow: badge shows the host normalised by `SiteQrLoginFlow.toDisplayHost` so an
+        // IDN homograph (e.g. `my-stōre.example` vs `xn--my-stre-1za.example`) surfaces in
+        // ASCII for the user to spot. wp.com flow: badge shows the user's wordpress.com email
+        // so the merchant can confirm which account is about to be authorised.
         SubtitleBadge(subtitle = subtitle)
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         Text(
@@ -213,6 +225,7 @@ private const val MILLIS_PER_SECOND = 1_000L
 private fun QrLoginNumberDisplayScreenPreview() {
     WooThemeWithBackground {
         QrLoginNumberDisplayScreen(
+            subtitleLabelRes = R.string.login_qr_match_host_label,
             subtitle = "store.example",
             realNumber = "042",
             expiresAtEpochMs = System.currentTimeMillis() + 90_000L,

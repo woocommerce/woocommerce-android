@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -178,6 +179,7 @@ class QrLoginScannerViewModel @Inject constructor(
             is FlowState.WaitingForApproval -> _uiState.value = WaitingForApproval(
                 sessionId = state.sessionId,
                 realNumber = state.realNumber,
+                subtitleLabelRes = state.subtitleLabelRes,
                 subtitle = state.subtitle,
                 expiresAtEpochMs = state.expiresAtEpochMs,
             )
@@ -342,6 +344,7 @@ class QrLoginScannerViewModel @Inject constructor(
         data class WaitingForApproval(
             val sessionId: String,
             val realNumber: String,
+            @StringRes val subtitleLabelRes: Int,
             val subtitle: String,
             val expiresAtEpochMs: Long,
         ) : UiState

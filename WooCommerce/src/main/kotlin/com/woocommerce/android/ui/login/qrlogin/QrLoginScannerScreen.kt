@@ -59,6 +59,7 @@ fun QrLoginScannerScreen(
 
         when (uiState) {
             is UiState.WaitingForApproval -> QrLoginNumberDisplayScreen(
+                subtitleLabelRes = uiState.subtitleLabelRes,
                 subtitle = uiState.subtitle,
                 realNumber = uiState.realNumber,
                 expiresAtEpochMs = uiState.expiresAtEpochMs,

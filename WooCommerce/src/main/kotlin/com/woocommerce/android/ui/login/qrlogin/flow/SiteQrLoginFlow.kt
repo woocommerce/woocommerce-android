@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin.flow
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.R
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.network.qrlogin.QrLoginRestClient
 import com.woocommerce.android.network.qrlogin.QrLoginScanException
@@ -79,6 +80,7 @@ internal class SiteQrLoginFlow(
                     _state.value = FlowState.WaitingForApproval(
                         sessionId = scan.sessionId,
                         realNumber = scan.realNumber,
+                        subtitleLabelRes = R.string.login_qr_match_host_label,
                         subtitle = ticket.siteUrl.toDisplayHost(),
                         expiresAtEpochMs = expiresAt,
                     )

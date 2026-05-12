@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin.flow
 
+import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -40,6 +41,7 @@ sealed interface FlowState {
     data class WaitingForApproval(
         val sessionId: String,
         val realNumber: String,
+        @StringRes val subtitleLabelRes: Int,
         val subtitle: String,
         val expiresAtEpochMs: Long,
     ) : FlowState

@@ -231,6 +231,7 @@
     <!-- Number-matching approval step -->
     <string name="login_qr_match_title">Confirm sign-in</string>
     <string name="login_qr_match_host_label">You\'re signing in to</string>
+    <string name="login_qr_match_account_label">You\'re signing in as</string>
     <string name="login_qr_match_subtitle">Tap this number on your computer to finish.</string>
     <string name="login_qr_match_countdown">Expires in %1$ds</string>
     <string name="login_qr_match_cancel">Cancel</string>
