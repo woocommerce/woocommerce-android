@@ -11,6 +11,7 @@ import com.woocommerce.android.network.qrlogin.QrLoginScanException
 import com.woocommerce.android.network.qrlogin.QrLoginScanResult
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatus
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginRestClient
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
@@ -51,6 +52,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     private val parser: QrLoginPayloadParser = mock()
     private val restClient: QrLoginRestClient = mock()
+    private val wpComRestClient: WpComQrLoginRestClient = mock()
     private val authenticator: QrLoginAuthenticator = mock()
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
@@ -60,6 +62,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             savedState = SavedStateHandle(),
             parser = parser,
             restClient = restClient,
+            wpComRestClient = wpComRestClient,
             authenticator = authenticator,
             accountRepository = accountRepository,
             errorMapper = QrLoginErrorMapper(),

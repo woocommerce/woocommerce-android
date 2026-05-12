@@ -64,6 +64,16 @@ fun QrLoginScannerScreen(
                 expiresAtEpochMs = uiState.expiresAtEpochMs,
                 onCancel = onCancelNumberMatch,
             )
+            is UiState.WaitingForWpComApproval -> QrLoginNumberDisplayScreen(
+                // For wp.com sign-in the badge displays the user's email instead of a host.
+                // The shared screen renders the same way; the "you're signing in to" label may
+                // read slightly oddly above an email, but conveys the right info. Follow-up
+                // commits can refine the label per flow.
+                host = uiState.userEmail,
+                realNumber = uiState.realNumber,
+                expiresAtEpochMs = uiState.expiresAtEpochMs,
+                onCancel = onCancelNumberMatch,
+            )
             is UiState.WarningSessionReplace -> QrLoginSessionReplaceWarningScreen(
                 onConfirm = onConfirmSessionReplace,
                 onCancel = onCancelSessionReplace,
