@@ -38,12 +38,13 @@ class SupportChatRestClient @Inject constructor(
     suspend fun sendFollowUpMessage(
         botSlug: String,
         chatId: Long,
+        sessionId: String?,
         message: String
     ): Response<SupportChatResponse> = wpComGsonRequestBuilder.syncPostRequest(
         restClient = this,
         url = chatUrl(botSlug, chatId),
         params = null,
-        body = mapOf(MESSAGE_KEY to message),
+        body = mapOf(MESSAGE_KEY to message, SESSION_ID_KEY to sessionId.orEmpty()),
         clazz = SupportChatResponse::class.java
     )
 
@@ -64,5 +65,6 @@ class SupportChatRestClient @Inject constructor(
     companion object {
         private const val MESSAGE_KEY = "message"
         private const val CONTEXT_KEY = "context"
+        private const val SESSION_ID_KEY = "session_id"
     }
 }

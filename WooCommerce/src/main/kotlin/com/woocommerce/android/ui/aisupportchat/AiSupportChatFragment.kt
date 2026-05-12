@@ -17,4 +17,9 @@ class AiSupportChatFragment : Fragment() {
         composeView {
             AiSupportChatScreen(viewModel = viewModel)
         }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.onLaunchModeLoaded(AiSupportChatActivity.launchModeFrom(requireActivity().intent))
+    }
 }

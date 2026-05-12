@@ -10,6 +10,8 @@ import androidx.core.view.updatePadding
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityAiSupportChatBinding
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.parcelableArrayList
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,5 +48,24 @@ class AiSupportChatActivity : AppCompatActivity() {
     companion object {
         fun createIntent(context: Context): Intent =
             Intent(context, AiSupportChatActivity::class.java)
+
+        fun createConnectivityToolIntent(
+            context: Context,
+            checks: List<ConnectivityCheckCardData>
+        ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
+            putParcelableArrayListExtra(EXTRA_CONNECTIVITY_CHECKS, ArrayList(checks))
+        }
+
+        fun launchModeFrom(intent: Intent): AiSupportChatLaunchMode {
+            val extras = intent.extras ?: return AiSupportChatLaunchMode.Help
+            val checks = extras.parcelableArrayList<ConnectivityCheckCardData>(EXTRA_CONNECTIVITY_CHECKS)
+            if (!checks.isNullOrEmpty()) {
+                return AiSupportChatLaunchMode.ConnectivityTool(checks)
+            }
+
+            return AiSupportChatLaunchMode.Help
+        }
+
+        private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
     }
 }

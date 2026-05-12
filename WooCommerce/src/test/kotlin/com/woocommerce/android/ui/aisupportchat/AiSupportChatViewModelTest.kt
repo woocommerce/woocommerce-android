@@ -12,13 +12,18 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -30,6 +35,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val repository: SupportChatRepository = mock()
     private val contextProvider: SupportChatContextProvider = mock()
     private val diagnosticsService: SupportDiagnosticsService = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private lateinit var viewModel: AiSupportChatViewModel
 
@@ -39,7 +45,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             repository = repository,
             contextProvider = contextProvider,
-            diagnosticsService = diagnosticsService
+            diagnosticsService = diagnosticsService,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -75,6 +82,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     DEFAULT_BOT_SLUG,
                     ISSUE_LABEL,
                     CONTEXT,
+                    null,
                     null
                 )
             ).thenReturn(Result.success(response))
@@ -105,7 +113,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     fun `given existing chat, when sending follow up, then message is sent with chat id and bookmark is touched`() =
         testBlocking {
             startChat()
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
 
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
@@ -115,9 +123,36 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.chatId).isEqualTo(CHAT_ID)
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isFalse()
-            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID)
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID)
             verify(repository).markChatAsUpdated(CHAT_ID)
         }
+
+    @Test
+    fun `given connectivity launch mode, when loaded, then chat starts with connectivity context`() = testBlocking {
+        whenever(
+            resourceProvider.getString(
+                com.woocommerce.android.R.string.ai_support_chat_connectivity_initial_message
+            )
+        )
+            .thenReturn(CONNECTIVITY_MESSAGE)
+        whenever(contextProvider.buildInitialContext(eq(SupportIssueType.OTHER), any())).thenReturn(CONTEXT)
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null))
+            .thenReturn(Result.success(createResponse()))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.ConnectivityTool(
+                checks = listOf(
+                    ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success()),
+                    ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, ConnectivityCheckStatus.Failure())
+                )
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.hasStartedChat).isTrue()
+        assertThat(state.diagnosticResult?.statuses).hasSize(2)
+        verify(repository).sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null)
+    }
 
     @Test
     fun `given diagnostics fail, when issue selected, then failure is shown and chat does not start`() =
@@ -135,7 +170,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsFailure(result)
             )
-            verify(repository, never()).sendMessage(any(), any(), any(), any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -149,6 +184,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     DEFAULT_BOT_SLUG,
                     ISSUE_LABEL,
                     CONTEXT,
+                    null,
                     null
                 )
             ).thenReturn(Result.success(createResponse()))
@@ -162,6 +198,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DEFAULT_BOT_SLUG,
                 ISSUE_LABEL,
                 CONTEXT,
+                null,
                 null
             )
         }
@@ -200,6 +237,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     DEFAULT_BOT_SLUG,
                     ISSUE_LABEL,
                     CONTEXT,
+                    null,
                     null
                 )
             ).thenReturn(Result.failure(Exception()))
@@ -225,7 +263,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
         )
-        verify(repository, never()).sendMessage(any(), any(), any(), any())
+        verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
     }
 
     private suspend fun startChat() {
@@ -237,6 +275,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DEFAULT_BOT_SLUG,
                 ISSUE_LABEL,
                 CONTEXT,
+                null,
                 null
             )
         ).thenReturn(Result.success(createResponse()))
@@ -272,7 +311,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         messages: List<SupportChatMessage> = emptyList()
     ): SupportChatResponse = SupportChatResponse(
         chatId = chatId,
-        sessionId = "session-id",
+        sessionId = SESSION_ID,
         botSlug = botSlug,
         botVersion = "1.0.0",
         messages = messages
@@ -290,6 +329,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
     private companion object {
         const val CHAT_ID = 1234L
+        const val SESSION_ID = "session-id"
+        const val CONNECTIVITY_MESSAGE = "Help me troubleshoot my store connection."
         const val ISSUE_LABEL = "I can't see my orders"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val BOT_RESPONSE = "Let's troubleshoot orders."

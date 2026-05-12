@@ -53,8 +53,11 @@ fun TroubleshootConnectionScreen(viewModel: TroubleshootConnectionViewModel) {
 
     TroubleshootConnectionScreen(
         shouldEnableContactSupportButton = isCheckFinished ?: false,
+        shouldDisplayAiSupportChatButton = viewState?.shouldDisplayAiSupportChatButton ?: false,
+        shouldEnableAiSupportChatButton = isCheckFinished ?: false,
         shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
         checks = viewState?.checks ?: emptyList(),
+        onAiSupportChatClicked = viewModel::onAiSupportChatClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked,
         onReturnClick = viewModel::onReturnClicked,
         onRetryClick = viewModel::onRetryClicked,
@@ -73,8 +76,11 @@ fun TroubleshootConnectionScreen(viewModel: TroubleshootConnectionViewModel) {
 @Composable
 fun TroubleshootConnectionScreen(
     shouldEnableContactSupportButton: Boolean,
+    shouldDisplayAiSupportChatButton: Boolean,
+    shouldEnableAiSupportChatButton: Boolean,
     shouldDisplaySummarySection: Boolean,
     checks: List<ConnectivityCheckCardData>,
+    onAiSupportChatClicked: () -> Unit,
     onContactSupportClicked: () -> Unit,
     onReturnClick: () -> Unit,
     onRetryClick: (ConnectivityCheckType) -> Unit,
@@ -124,6 +130,21 @@ fun TroubleshootConnectionScreen(
         )
 
         Spacer(modifier = modifier.weight(1f))
+        if (shouldDisplayAiSupportChatButton) {
+            WCOutlinedButton(
+                enabled = shouldEnableAiSupportChatButton,
+                onClick = onAiSupportChatClicked,
+                modifier = modifier
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        top = dimensionResource(id = R.dimen.major_100)
+                    )
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.ai_support_chat_connectivity_action))
+            }
+        }
         WCOutlinedButton(
             enabled = shouldEnableContactSupportButton,
             onClick = { onContactSupportClicked() },
@@ -343,6 +364,8 @@ fun TroubleshootConnectionScreenPreview() {
     WooThemeWithBackground {
         TroubleshootConnectionScreen(
             shouldEnableContactSupportButton = true,
+            shouldDisplayAiSupportChatButton = true,
+            shouldEnableAiSupportChatButton = true,
             shouldDisplaySummarySection = true,
             checks = listOf(
                 ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, NotStarted),
@@ -359,6 +382,7 @@ fun TroubleshootConnectionScreenPreview() {
                 ConnectivityCheckCardData(ConnectivityCheckType.ORDERS, InProgress),
                 ConnectivityCheckCardData(ConnectivityCheckType.PRODUCTS, NotStarted)
             ),
+            onAiSupportChatClicked = {},
             onContactSupportClicked = {},
             onReturnClick = {},
             onRetryClick = {},
