@@ -308,24 +308,47 @@ private fun DialogActions(
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-    ) {
-        WooPosOutlinedButton(
-            modifier = Modifier.weight(1f),
-            text = stringResource(R.string.woopos_custom_amount_dialog_cancel),
-            onClick = onCancel,
-        )
-        val submitText = when (state.mode) {
-            is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
-            WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_submit_add
+    val submitText = when (state.mode) {
+        is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
+        WooPosCustomAmountDialogState.Mode.Add -> R.string.woopos_custom_amount_dialog_submit_add
+    }
+    val submitButtonState =
+        if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
+
+    when (currentWooPosBreakpoint()) {
+        WooPosBreakpoint.Phone -> Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+        ) {
+            WooPosButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(submitText),
+                state = submitButtonState,
+                onClick = onSubmit,
+            )
+            WooPosOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.woopos_custom_amount_dialog_cancel),
+                onClick = onCancel,
+            )
         }
-        WooPosButton(
-            modifier = Modifier.weight(1f),
-            text = stringResource(submitText),
-            state = if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
-            onClick = onSubmit,
-        )
+
+        WooPosBreakpoint.SmallTablet,
+        WooPosBreakpoint.Tablet -> Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        ) {
+            WooPosOutlinedButton(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.woopos_custom_amount_dialog_cancel),
+                onClick = onCancel,
+            )
+            WooPosButton(
+                modifier = Modifier.weight(1f),
+                text = stringResource(submitText),
+                state = submitButtonState,
+                onClick = onSubmit,
+            )
+        }
     }
 }
