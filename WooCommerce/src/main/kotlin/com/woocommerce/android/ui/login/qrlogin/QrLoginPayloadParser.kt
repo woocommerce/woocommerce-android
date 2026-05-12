@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPayloadParser.Companion.TOKEN_REGEX
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPayloadParser.Companion.WPCOM_TOKEN_REGEX
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URI
 import java.net.URISyntaxException
@@ -81,13 +83,15 @@ class QrLoginPayloadParser @Inject constructor() {
         val rawToken = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
         val rawEncrypted = uri.queryParam(PARAM_ENCRYPTED)?.takeIf { it.isNotBlank() }
 
-        // wp.com branch: siteUrl absent, token matches the documented `{64-hex}:{32-hex}` shape,
-        // encrypted is present. The shape gate mirrors the [TOKEN_REGEX] sanity check on the
-        // self-hosted branch — server is the authority on validity, but obviously-malformed QRs
-        // shouldn't advance into the network exchange.
+        // wp.com branch: siteUrl absent, token + encrypted present. The inner shape gate mirrors
+        // the [TOKEN_REGEX] sanity check on the self-hosted branch — server is the authority on
+        // validity, but obviously-malformed QRs shouldn't advance into the network exchange. A
+        // wp.com-shaped payload with a malformed token falls through to the self-hosted block
+        // below and is rejected there for lacking a siteUrl, ending up as [QrLoginPayload.Invalid].
         if (rawSiteUrl == null && rawToken != null && rawEncrypted != null) {
-            if (!WPCOM_TOKEN_REGEX.matches(rawToken)) return null
-            return QrLoginPayload.WpComToken(token = rawToken, encrypted = rawEncrypted)
+            if (WPCOM_TOKEN_REGEX.matches(rawToken)) {
+                return QrLoginPayload.WpComToken(token = rawToken, encrypted = rawEncrypted)
+            }
         }
 
         // Self-hosted branches require a valid siteUrl.
