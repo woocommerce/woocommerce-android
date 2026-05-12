@@ -191,7 +191,9 @@ fun AssistantChatScreen(
     val density = LocalDensity.current
     var bottomBarContentHeightPx by remember { mutableIntStateOf(0) }
     val bottomBarContentHeight = with(density) { bottomBarContentHeightPx.toDp() }
-    val bottomContentPadding = bottomBarContentHeight + FLOATING_COMPOSER_CONTENT_SPACING
+    val estimatedBottomBarHeight = FLOATING_COMPOSER_ESTIMATED_HEIGHT * density.fontScale
+    val bottomContentPadding = bottomBarContentHeight
+        .coerceAtLeast(estimatedBottomBarHeight) + FLOATING_COMPOSER_CONTENT_SPACING
     val submitMessage = {
         focusManager.clearFocus()
         onSendMessage()
@@ -255,12 +257,14 @@ fun AssistantChatScreen(
                         .padding(contentPadding),
                 )
             }
-            AssistantContentBottomFade(
-                bottomBarHeight = bottomBarContentHeight,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-            )
+            if (!state.shouldShowEmptyState) {
+                AssistantContentBottomFade(
+                    bottomBarHeight = bottomBarContentHeight,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
+                )
+            }
         }
     }
 }
@@ -488,6 +492,7 @@ private const val FLOATING_COMPOSER_FADE_MIDPOINT_ALPHA = 0.55f
 private const val FLOATING_COMPOSER_FADE_MIDPOINT_FRACTION = 0.35f
 private val FLOATING_COMPOSER_FADE_EXTRA_HEIGHT = 48.dp
 private val FLOATING_COMPOSER_BOTTOM_PADDING = 16.dp
+private val FLOATING_COMPOSER_ESTIMATED_HEIGHT = 84.dp
 private val FLOATING_COMPOSER_CONTENT_SPACING = 16.dp
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
 private val USER_BUBBLE_MAX_WIDTH = 280.dp
