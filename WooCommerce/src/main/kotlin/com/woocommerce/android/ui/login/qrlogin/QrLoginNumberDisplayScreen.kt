@@ -48,7 +48,7 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun QrLoginNumberDisplayScreen(
-    host: String,
+    subtitle: String,
     realNumber: String,
     expiresAtEpochMs: Long,
     onCancel: () -> Unit,
@@ -69,14 +69,14 @@ fun QrLoginNumberDisplayScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Hero(host = host, realNumber = realNumber, expiresAtEpochMs = expiresAtEpochMs)
+            Hero(subtitle = subtitle, realNumber = realNumber, expiresAtEpochMs = expiresAtEpochMs)
         }
         CancelButton(onCancel = onCancel)
     }
 }
 
 @Composable
-private fun Hero(host: String, realNumber: String, expiresAtEpochMs: Long) {
+private fun Hero(subtitle: String, realNumber: String, expiresAtEpochMs: Long) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -102,7 +102,7 @@ private fun Hero(host: String, realNumber: String, expiresAtEpochMs: Long) {
         // `xn--my-stre-1za.example` that OkHttp's HttpUrl normalisation surfaces).
         // The ViewModel's `toDisplayHost` already converts IDN names to ASCII, so any
         // visual sleight-of-hand in the QR's URL surfaces here for the user to read.
-        HostBadge(host = host)
+        SubtitleBadge(subtitle = subtitle)
         Spacer(Modifier.height(dimensionResource(id = R.dimen.major_150)))
         Text(
             text = stringResource(id = R.string.login_qr_match_subtitle),
@@ -125,7 +125,7 @@ private fun Hero(host: String, realNumber: String, expiresAtEpochMs: Long) {
 }
 
 @Composable
-private fun HostBadge(host: String) {
+private fun SubtitleBadge(subtitle: String) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_100)))
@@ -136,7 +136,7 @@ private fun HostBadge(host: String) {
             )
     ) {
         Text(
-            text = host,
+            text = subtitle,
             style = MaterialTheme.typography.titleMedium,
             color = colorResource(id = R.color.color_primary),
             fontWeight = FontWeight.Bold,
@@ -213,7 +213,7 @@ private const val MILLIS_PER_SECOND = 1_000L
 private fun QrLoginNumberDisplayScreenPreview() {
     WooThemeWithBackground {
         QrLoginNumberDisplayScreen(
-            host = "store.example",
+            subtitle = "store.example",
             realNumber = "042",
             expiresAtEpochMs = System.currentTimeMillis() + 90_000L,
             onCancel = {}

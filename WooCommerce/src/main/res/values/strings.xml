@@ -266,6 +266,8 @@
     <string name="login_qr_scanner_error_match_already_scanned_body">That code has already been scanned. Generate a new one in your store.</string>
     <string name="login_qr_scanner_error_match_invalid_grant_title">Sign-in interrupted</string>
     <string name="login_qr_scanner_error_match_invalid_grant_body">Your sign-in was interrupted. Generate a new code in your store and try again.</string>
+    <string name="login_qr_scanner_error_match_already_completed_title">Already signed in elsewhere</string>
+    <string name="login_qr_scanner_error_match_already_completed_body">This sign-in was already completed on another device. Generate a new code if you need to try again.</string>
     <string name="login_qr_error_primary_retry">Try again</string>
     <string name="login_qr_error_primary_scan">Scan a new code</string>
     <string name="login_qr_session_replace_title">You\'re already signed in</string>

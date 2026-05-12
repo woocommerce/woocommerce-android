@@ -15,8 +15,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.login.HelpButton
-import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
+import com.woocommerce.android.ui.login.qrlogin.flow.ErrorReason
 
 /**
  * Renders the QR-first login screen. Routes between the camera scanner, the
@@ -59,7 +59,7 @@ fun QrLoginScannerScreen(
 
         when (uiState) {
             is UiState.WaitingForApproval -> QrLoginNumberDisplayScreen(
-                host = uiState.host,
+                subtitle = uiState.subtitle,
                 realNumber = uiState.realNumber,
                 expiresAtEpochMs = uiState.expiresAtEpochMs,
                 onCancel = onCancelNumberMatch,
@@ -70,7 +70,7 @@ fun QrLoginScannerScreen(
             )
             is UiState.Error -> QrLoginErrorScreen(
                 content = uiState.reason.toErrorContent(),
-                onPrimaryClicked = if (uiState.retryTicket != null) onRetryExchange else onStartOver,
+                onPrimaryClicked = if (uiState.retryable) onRetryExchange else onStartOver,
                 onSecondaryClicked = onFallbackClicked,
             )
             is UiState.Authenticating -> QrLoginAuthenticatingScreen()
@@ -100,82 +100,86 @@ data class QrLoginErrorContent(
     val bodyHighlightedArgs: List<Int> = emptyList(),
 )
 
-private fun ErrorReason.toErrorContent(): QrLoginErrorContent =
-    // InstallQrCode is the only reason that needs the bodyHighlightedArgs field, so it has a
-    // dedicated builder. Everything else is a simple title/body/primaryAction triple, so
-    // the lookup table keeps this function flat and lets us add new reasons without
-    // expanding the cyclomatic complexity of a giant `when` expression.
-    if (this == ErrorReason.InstallQrCode) installQrErrorContent() else simpleErrorContents.getValue(this)
-
-private val simpleErrorContents: Map<ErrorReason, QrLoginErrorContent> = mapOf(
-    ErrorReason.InvalidPayload to errorContent(
+/**
+ * Exhaustive `when` over the sealed [ErrorReason] hierarchy — adding a new variant becomes a
+ * compile error rather than a runtime crash, in contrast with the `Map.getValue()` lookup the
+ * earlier enum-based implementation used.
+ */
+private fun ErrorReason.toErrorContent(): QrLoginErrorContent = when (this) {
+    ErrorReason.InstallQrCode -> installQrErrorContent()
+    ErrorReason.InvalidPayload -> errorContent(
         R.string.login_qr_scanner_error_payload_title,
         R.string.login_qr_scanner_error_payload_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.TokenRejected to errorContent(
+    )
+    ErrorReason.TokenRejected -> errorContent(
         R.string.login_qr_scanner_error_token_title,
         R.string.login_qr_scanner_error_token_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.EndpointMissing to errorContent(
+    )
+    ErrorReason.EndpointMissing -> errorContent(
         R.string.login_qr_endpoint_missing_title,
         R.string.login_qr_endpoint_missing_body,
         R.string.login_qr_endpoint_missing_retry,
-    ),
-    ErrorReason.RateLimited to errorContent(
+    )
+    ErrorReason.RateLimited -> errorContent(
         R.string.login_qr_scanner_error_rate_limited_title,
         R.string.login_qr_scanner_error_rate_limited_body,
         R.string.login_qr_error_primary_retry,
-    ),
-    ErrorReason.Network to errorContent(
+    )
+    ErrorReason.Network -> errorContent(
         R.string.login_qr_scanner_error_network_title,
         R.string.login_qr_scanner_error_network_body,
         R.string.login_qr_error_primary_retry,
-    ),
-    ErrorReason.ServerError to errorContent(
+    )
+    ErrorReason.ServerError -> errorContent(
         R.string.login_qr_scanner_error_server_title,
         R.string.login_qr_scanner_error_server_body,
         R.string.login_qr_error_primary_retry,
-    ),
-    ErrorReason.SiteAuthFailure to errorContent(
+    )
+    ErrorReason.SiteAuthFailure -> errorContent(
         R.string.login_qr_scanner_error_site_auth_title,
         R.string.login_qr_scanner_error_site_auth_body,
         R.string.login_qr_error_primary_retry,
-    ),
-    ErrorReason.NotAWooSite to errorContent(
+    )
+    ErrorReason.NotAWooSite -> errorContent(
         R.string.login_qr_scanner_error_not_woo_title,
         R.string.login_qr_scanner_error_not_woo_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.UserNotEligible to errorContent(
+    )
+    ErrorReason.UserNotEligible -> errorContent(
         R.string.login_qr_scanner_error_user_role_title,
         R.string.login_qr_scanner_error_user_role_body,
         R.string.login_qr_error_primary_retry,
-    ),
-    ErrorReason.MatchRejected to errorContent(
+    )
+    ErrorReason.MatchRejected -> errorContent(
         R.string.login_qr_scanner_error_match_rejected_title,
         R.string.login_qr_scanner_error_match_rejected_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.MatchTimedOut to errorContent(
+    )
+    ErrorReason.MatchTimedOut -> errorContent(
         R.string.login_qr_scanner_error_match_timed_out_title,
         R.string.login_qr_scanner_error_match_timed_out_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.MatchAlreadyScanned to errorContent(
+    )
+    ErrorReason.MatchAlreadyScanned -> errorContent(
         R.string.login_qr_scanner_error_match_already_scanned_title,
         R.string.login_qr_scanner_error_match_already_scanned_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.MatchInvalidGrant to errorContent(
+    )
+    ErrorReason.MatchInvalidGrant -> errorContent(
         R.string.login_qr_scanner_error_match_invalid_grant_title,
         R.string.login_qr_scanner_error_match_invalid_grant_body,
         R.string.login_qr_error_primary_scan,
-    ),
-    ErrorReason.Scanner to genericErrorContent(),
-    ErrorReason.Unknown to genericErrorContent(),
-)
+    )
+    ErrorReason.MatchAlreadyCompleted -> errorContent(
+        R.string.login_qr_scanner_error_match_already_completed_title,
+        R.string.login_qr_scanner_error_match_already_completed_body,
+        R.string.login_qr_error_primary_scan,
+    )
+    ErrorReason.Scanner,
+    ErrorReason.Unknown -> genericErrorContent()
+}
 
 private fun errorContent(
     @StringRes title: Int,
