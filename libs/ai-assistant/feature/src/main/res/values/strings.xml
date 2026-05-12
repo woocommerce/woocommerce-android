@@ -47,7 +47,9 @@
     <string name="assistant_chat_tool_activity_content_description">Assistant is working: %1$s</string>
     <string name="assistant_chat_card_group_orders">Orders</string>
     <string name="assistant_chat_card_group_products">Products</string>
+    <string name="assistant_chat_card_group_variations">Variations</string>
     <string name="assistant_chat_card_group_stats">Analytics</string>
+    <string name="assistant_chat_card_group_customers">Customers</string>
     <string name="assistant_chat_card_group_generic">Cards</string>
     <string name="assistant_chat_empty_state_title">Ask about your store</string>
     <string name="assistant_chat_empty_state_suggestion_revenue">Revenue this week</string>
@@ -57,6 +59,8 @@
     <string name="assistant_chat_empty_state_suggestion_content_description">Send suggestion: %1$s</string>
     <string name="assistant_stats_card_total_sales_label">Total Sales</string>
     <string name="assistant_stats_card_net_sales_label">Net Sales</string>
+    <string name="assistant_stats_card_total_orders_label">Total Orders</string>
+    <string name="assistant_stats_card_average_order_value_label">Average Order Value</string>
     <string name="assistant_stats_card_metric_unavailable">Unavailable</string>
     <string name="assistant_stats_card_open_content_description">Open analytics for %1$s</string>
     <string name="assistant_chat_placeholder">Ask about your store</string>

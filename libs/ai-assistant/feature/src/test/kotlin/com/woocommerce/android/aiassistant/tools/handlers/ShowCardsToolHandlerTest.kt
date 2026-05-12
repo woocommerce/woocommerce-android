@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.tools.handlers
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.handlers.cards.CustomerSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.OrderSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ProductSummary
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
@@ -13,10 +14,12 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolut
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.VariationSummary
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.add
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -39,23 +42,34 @@ class ShowCardsToolHandlerTest {
     private val handler = handlerWith(FakeResolver.empty())
 
     @Test
-    fun `when descriptor is inspected, then show cards accepts order product and analytics stats references`() {
+    fun `when descriptor is inspected, then show cards accepts order product variation analytics stats and customer references`() {
         val descriptor = handler.descriptor
 
         assertThat(descriptor.name).isEqualTo("show_cards")
         assertThat(descriptor.description).contains("order")
         assertThat(descriptor.description).contains("product")
+        assertThat(descriptor.description).contains("variation")
         assertThat(descriptor.description).contains("analytics_stats")
+        assertThat(descriptor.description).contains("customer")
+        assertThat(descriptor.description).contains("explicit variation-level questions")
+        assertThat(descriptor.description).contains("broad product inventory lists")
         assertThat(descriptor.inputSchema.toString()).contains("references")
         assertThat(descriptor.inputSchema.toString()).contains("family")
         assertThat(descriptor.inputSchema.toString()).contains("id")
         assertThat(descriptor.inputSchema.toString()).contains("order")
         assertThat(descriptor.inputSchema.toString()).contains("product")
+        assertThat(descriptor.inputSchema.toString()).contains("variation")
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
+        assertThat(descriptor.inputSchema.toString()).contains("customer")
+        assertThat(descriptor.inputSchema.toString()).contains("{parentProductId}/{variationId}")
         assertThat(descriptor.inputSchema.toString())
-            .contains("analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+            .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+        assertThat(descriptor.description).doesNotContain("analytics_revenue")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("analytics_revenue")
+        assertThat(descriptor.inputSchema.toString()).contains("card_id")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
+        assertThat(descriptor.inputSchema.toString()).doesNotContain("\"cards\"")
     }
 
     @Test
@@ -143,6 +157,96 @@ class ShowCardsToolHandlerTest {
             "before",
             "currency",
             "totals",
+            "interval_subtotals",
+        )
+    }
+
+    @Test
+    fun `given resolved customer, when executed, then summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(customerCard(id = "123")),
+            referencesJson = """[{ "family": "customer", "id": "123" }]"""
+        )
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly("id", "name", "email")
+    }
+
+    @Test
+    fun `given resolved variation, when executed, then summary contains only allowlisted fields`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(variationCard(id = "100/10")),
+            referencesJson = """[{ "family": "variation", "id": "100/10" }]"""
+        )
+
+        val summary = firstResolvedSummary(result)
+
+        assertThat(summary.keys).containsExactly(
+            "id",
+            "product_id",
+            "variation_id",
+            "name",
+            "sku",
+            "price",
+            "stock_status",
+            "status",
+            "attributes",
+        )
+        assertThat(assertSuccess(result).structured.toString()).doesNotContain("image_url")
+    }
+
+    @Test
+    fun `given analytics stats id, when executed, then ref validates and resolves`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(
+                analyticsStatsCard(id = ANALYTICS_STATS_ID),
+            ),
+            referencesJson = """
+                [
+                  { "family": "analytics_stats", "id": "$ANALYTICS_STATS_ID" }
+                ]
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(1)
+        assertThat(rejectedReasons(result)).isEmpty()
+        assertThat(resolvedIds(result)).containsExactly(ANALYTICS_STATS_ID)
+    }
+
+    @Test
+    fun `given variation composite id, when executed, then ref validates and resolved id is preserved`() = runTest {
+        val result = callShowCards(
+            resolver = FakeResolver.resolving(variationCard(id = "100/10")),
+            referencesJson = """[{ "family": "variation", "id": "100/10" }]"""
+        )
+
+        assertThat(validated(result)).isEqualTo(1)
+        assertThat(rejectedReasons(result)).isEmpty()
+        assertThat(resolvedFamilies(result)).containsExactly("variation")
+        assertThat(resolvedIds(result)).containsExactly("100/10")
+    }
+
+    @Test
+    fun `given invalid variation composite ids, when executed, then refs are rejected as invalid id`() = runTest {
+        val refs = listOf("100", "100/", "/10", "0/10", "100/0", "abc/10", "100/abc", "100:10")
+            .joinToString(separator = ",") { id -> """{ "family": "variation", "id": "$id" }""" }
+
+        val result = callShowCards(
+            resolver = FakeResolver.empty(),
+            referencesJson = "[$refs]"
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly(
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
+            "invalid_id",
         )
     }
 
@@ -171,7 +275,7 @@ class ShowCardsToolHandlerTest {
 
         val structuredText = assertSuccess(result).structured.toString()
 
-        assertThat(structuredText).doesNotContain("interval_subtotals")
+        assertThat(structuredText).contains("interval_subtotals")
         assertThat(structuredText).doesNotContain("private_total")
         assertThat(structuredText).doesNotContain("debug")
     }
@@ -248,7 +352,7 @@ class ShowCardsToolHandlerTest {
         assertThat(details.currency).isEqualTo("USD")
         assertThat(details.totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
         assertThat(details.intervalSubtotals).hasSize(1)
-        assertThat(assertSuccess(result).structured.toString()).doesNotContain("interval_subtotals")
+        assertThat(assertSuccess(result).structured.toString()).contains("interval_subtotals")
     }
 
     @Test
@@ -260,7 +364,7 @@ class ShowCardsToolHandlerTest {
               "references": [
                 null,
                 { "id": "1" },
-                { "family": "customer", "id": "1" },
+                { "family": "coupon", "id": "1" },
                 { "family": "order" },
                 { "family": "product", "id": "" }
               ]
@@ -307,14 +411,17 @@ class ShowCardsToolHandlerTest {
               "references": [
                 { "family": "order", "id": "abc" },
                 { "family": "product", "id": "12x" },
-                { "family": "order", "id": "0" }
+                { "family": "customer", "id": "12x" },
+                { "family": "order", "id": "0" },
+                { "family": "customer", "id": "0" }
               ]
             }
             """.trimIndent()
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result))
+            .containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id", "invalid_id")
     }
 
     @Test
@@ -325,15 +432,34 @@ class ShowCardsToolHandlerTest {
             {
               "references": [
                 { "family": "analytics_stats", "id": "analytics_revenue:2026-05-01:2026-05-07" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-07:before:2026-05-01:interval:day:currency:USD" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:bad:currency:USD" }
+                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-07:before:2026-05-01:interval:day" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:bad" }
               ]
             }
             """.trimIndent()
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id")
+    }
+
+    @Test
+    fun `given unknown analytics stats prefixes, when executed, then refs are rejected as invalid id`() = runTest {
+        val result = executeShowCards(
+            handler = handlerWith(FakeResolver.empty()),
+            argumentsJson = """
+            {
+              "references": [
+                { "family": "analytics_stats", "id": "analytics_products:after:2026-05-01:before:2026-05-07:interval:day" },
+                { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day:currency:none" }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(validated(result)).isEqualTo(0)
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id")
     }
 
     @Test
@@ -550,6 +676,41 @@ class ShowCardsToolHandlerTest {
         )
     }
 
+    private fun variationCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.Variation, id = id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = json.encodeToJsonElement(
+                VariationSummary(
+                    id = id,
+                    productId = 100L,
+                    variationId = 10L,
+                    name = "Blue socks",
+                    sku = "woo-socks-blue",
+                    price = "12.99",
+                    stockStatus = "instock",
+                    status = "publish",
+                    attributes = listOf(CompactVariationAttribute(name = "Size", option = "M")),
+                )
+            ).jsonObject,
+            card = ShowCardPayload(
+                family = "variation",
+                id = id,
+                title = "Variation 10",
+                details = ShowCardDetails.Variation(
+                    productId = 100L,
+                    variationId = 10L,
+                    sku = "woo-socks-blue",
+                    price = "12.99",
+                    stockStatus = "instock",
+                    status = "publish",
+                    attributes = listOf(CompactVariationAttribute(name = "Size", option = "M")),
+                ),
+            )
+        )
+    }
+
     private fun leakyProductCard(id: String): ShowCardsResolution.Resolved {
         val ref = ValidatedRef(index = 0, family = ShowCardFamily.Product, id = id)
 
@@ -563,7 +724,7 @@ class ShowCardsToolHandlerTest {
                 put("stock_status", "instock")
                 put("description", "Long description")
                 put("html", "<p>Private</p>")
-                put("images", buildJsonArray { add("https://example.com/image.png") })
+                put("images", buildJsonArray { add(JsonPrimitive("https://example.com/image.png")) })
                 putJsonObject("metadata") {
                     put("private", "value")
                 }
@@ -627,6 +788,27 @@ class ShowCardsToolHandlerTest {
         )
     }
 
+    private fun customerCard(id: String): ShowCardsResolution.Resolved {
+        val ref = ValidatedRef(index = 0, family = ShowCardFamily.Customer, id = id)
+
+        return ShowCardsResolution.Resolved(
+            ref = ref,
+            summary = json.encodeToJsonElement(
+                CustomerSummary(
+                    id = id,
+                    name = "Ada Lovelace",
+                    email = "ada@example.com",
+                )
+            ).jsonObject,
+            card = ShowCardPayload(
+                family = "customer",
+                id = id,
+                title = "Ada Lovelace",
+                details = ShowCardDetails.Customer(email = "ada@example.com"),
+            )
+        )
+    }
+
     private fun leakyAnalyticsStatsCard(id: String): ShowCardsResolution.Resolved {
         val resolved = analyticsStatsCard(id)
         return resolved.copy(
@@ -665,6 +847,6 @@ class ShowCardsToolHandlerTest {
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

@@ -20,24 +20,6 @@ internal class AIAnalyticsDataSource @Inject constructor(
     private val orderStatsRestClient: OrderStatsRestClient,
     private val wooCommerceStore: WooCommerceStore,
 ) {
-    suspend fun fetchRevenueStats(
-        after: String,
-        before: String,
-        interval: AnalyticsInterval,
-        currency: String?,
-    ): Result<AnalyticsStats> = fetchStats { site ->
-        orderStatsRestClient.fetchRevenueStats(
-            site = site,
-            granularity = interval.statsGranularity,
-            startDate = after,
-            endDate = before,
-            perPage = PER_PAGE,
-            forceRefresh = false,
-            revenueRangeId = REVENUE_RANGE_ID,
-            currency = currency,
-        )
-    }
-
     suspend fun fetchOrdersStats(
         after: String,
         before: String,
@@ -87,7 +69,6 @@ internal class AIAnalyticsDataSource @Inject constructor(
 
     private companion object {
         private const val PER_PAGE = 100
-        private const val REVENUE_RANGE_ID = "ai_revenue"
         private const val ORDERS_RANGE_ID = "ai_orders"
     }
 }

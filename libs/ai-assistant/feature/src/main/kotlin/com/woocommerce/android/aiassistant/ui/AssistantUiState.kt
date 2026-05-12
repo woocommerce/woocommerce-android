@@ -122,6 +122,7 @@ internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
     "products_bulk_update",
     "product_variations_update" -> R.string.assistant_chat_tool_activity_products_write
     "analytics_orders",
+    // Kept for replayed/legacy activity rows created before analytics_orders replaced analytics_revenue.
     "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
     "customers_list" -> R.string.assistant_chat_tool_activity_customers
     else -> R.string.assistant_chat_tool_activity_generic

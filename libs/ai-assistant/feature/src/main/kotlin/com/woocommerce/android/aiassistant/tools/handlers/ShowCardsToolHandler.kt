@@ -55,8 +55,11 @@ internal class ShowCardsToolHandler internal constructor(
 
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
-        description = "Show rich cards in the Android UI for order/product entity references or an " +
-            "analytics_stats ID produced after a successful analytics_revenue result.",
+        description = "Show rich cards in the Android UI for order/product/variation/customer entity references " +
+            "or an analytics_stats ID produced after a successful analytics_orders result. Variation references " +
+            "use strict {parentProductId}/{variationId} ids and should be used only for explicit " +
+            "variation-level questions about sizes, colors, options, or known variation IDs. For broad product " +
+            "inventory lists, render product references.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
@@ -73,15 +76,20 @@ internal class ShowCardsToolHandler internal constructor(
                                 putJsonArray("enum") {
                                     add("order")
                                     add("product")
+                                    add("variation")
                                     add("analytics_stats")
+                                    add("customer")
                                 }
                             }
                             putJsonObject("id") {
                                 put("type", "string")
                                 put(
                                     "description",
-                                    "Entity id, or analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
-                                        "interval:<hour|day|week|month|year>:currency:<ISO|none> for analytics_stats.",
+                                    "Entity id. For variation, use strict {parentProductId}/{variationId}. " +
+                                        "For analytics_stats, pass the exact card_id returned by " +
+                                        "analytics_orders. Manual form: " +
+                                        "analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
+                                        "interval:<hour|day|week|month|year> for analytics_stats.",
                                 )
                             }
                         }
@@ -163,7 +171,9 @@ internal class ShowCardsToolHandler internal constructor(
         val allowedKeys = when (family) {
             ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
             ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
+            ShowCardFamily.Variation -> VARIATION_SUMMARY_KEYS
             ShowCardFamily.AnalyticsStats -> ANALYTICS_STATS_SUMMARY_KEYS
+            ShowCardFamily.Customer -> CUSTOMER_SUMMARY_KEYS
         }
         return JsonObject(filterKeys { it in allowedKeys })
     }
@@ -193,12 +203,25 @@ internal class ShowCardsToolHandler internal constructor(
             "on_sale",
             "stock_quantity",
         )
+        val CUSTOMER_SUMMARY_KEYS = setOf("id", "name", "email")
+        val VARIATION_SUMMARY_KEYS = setOf(
+            "id",
+            "product_id",
+            "variation_id",
+            "name",
+            "sku",
+            "price",
+            "stock_status",
+            "status",
+            "attributes",
+        )
         val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
             "id",
             "after",
             "before",
             "currency",
             "totals",
+            "interval_subtotals",
         )
     }
 }

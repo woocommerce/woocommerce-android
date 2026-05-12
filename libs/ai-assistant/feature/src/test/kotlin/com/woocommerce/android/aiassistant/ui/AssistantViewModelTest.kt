@@ -825,6 +825,44 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given grouped variation cards have distinct parent product ids, when cards arrive, then both remain visible`() =
+        runTest {
+            viewModel.onSendMessage("Show matching variations")
+            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Blue socks")
+            val secondVariation = givenVariationCard(parentProductId = 101L, variationId = 10L, name = "Green socks")
+
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstVariation, secondVariation)))
+            advanceUntilIdle()
+
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).containsExactly(
+                AssistantUiSegment.CardGroup(listOf(firstVariation, secondVariation)),
+            )
+        }
+
+    @Test
+    fun `given grouped variation cards have same composite id, when cards arrive, then duplicate is filtered`() =
+        runTest {
+            viewModel.onSendMessage("Show matching variations")
+            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Blue socks")
+            val duplicateVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Red socks")
+            val secondVariation = givenVariationCard(parentProductId = 100L, variationId = 11L, name = "Green socks")
+
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstVariation)))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateVariation, secondVariation)))
+            advanceUntilIdle()
+
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).containsExactly(
+                AssistantUiSegment.CardGroup(listOf(firstVariation, secondVariation)),
+            )
+        }
+
+    @Test
     fun `given repeated show cards calls, when cards arrive, then batches merge`() = runTest {
         viewModel.onSendMessage("Show matching cards")
         val firstOrder = givenOrderCard(id = "123", number = "#123")
@@ -1364,22 +1402,42 @@ class AssistantViewModelTest {
         imageUrl = "https://example.com/socks.png",
     )
 
+    private fun givenVariationCard(
+        parentProductId: Long,
+        variationId: Long,
+        name: String = "Blue socks",
+    ) = AssistantCard.Variation(
+        parentProductId = parentProductId,
+        variationId = variationId,
+        name = name,
+        sku = "woo-socks-blue",
+        price = "12.99",
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/blue-socks.png",
+        attributes = listOf(AssistantCard.Variation.Attribute(name = "Size", option = "M")),
+    )
+
     private fun givenStatsCard(
         after: String,
         before: String,
         totalSales: String,
     ) = AssistantCard.Stats(
-        id = "analytics_revenue:after:$after:before:$before:interval:day:currency:USD",
+        id = "analytics_orders:after:$after:before:$before:interval:day",
         after = after,
         before = before,
         currency = "USD",
-        totalSales = totalSales,
-        netSales = "100.15",
-        totalSalesChartPoints = listOf(
-            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
-        ),
-        netSalesChartPoints = listOf(
-            AssistantCard.Stats.ChartPoint("2026-05-01", 10.0),
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = totalSales,
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "100.15",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 10.0)),
+            ),
         ),
     )
 

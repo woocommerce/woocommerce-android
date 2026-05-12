@@ -6,14 +6,18 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -37,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,8 +49,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,6 +64,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.aiassistant.R
@@ -161,6 +172,20 @@ fun AssistantChatScreen(
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
+    val focusManager = LocalFocusManager.current
+    val density = LocalDensity.current
+    var bottomBarContentHeightPx by remember { mutableIntStateOf(0) }
+    val bottomBarContentHeight = with(density) { bottomBarContentHeightPx.toDp() }
+    val bottomContentPadding = bottomBarContentHeight + FLOATING_COMPOSER_CONTENT_SPACING
+    val submitMessage = {
+        focusManager.clearFocus()
+        onSendMessage()
+    }
+    val submitSuggestion = { prompt: String ->
+        focusManager.clearFocus()
+        onSendSuggestion(prompt)
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = assistantCanvasColor(),
@@ -170,17 +195,33 @@ fun AssistantChatScreen(
                 onRestartConversation = onRestartConversation,
                 onBack = onBack,
             )
-        }
+        },
+        bottomBar = {
+            AssistantFloatingComposerBar(
+                state = state,
+                inputText = inputText,
+                onInputTextChange = onInputTextChange,
+                onSendMessage = submitMessage,
+                onCancelTurn = onCancelTurn,
+                onContentHeightChanged = { bottomBarContentHeightPx = it },
+            )
+        },
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+        val layoutDirection = LocalLayoutDirection.current
+        val contentPadding = PaddingValues(
+            start = innerPadding.calculateStartPadding(layoutDirection),
+            top = innerPadding.calculateTopPadding(),
+            end = innerPadding.calculateEndPadding(layoutDirection),
+        )
+
+        Box(modifier = Modifier.fillMaxSize()) {
             if (state.shouldShowEmptyState) {
                 AssistantEmptyState(
-                    onSuggestionClick = onSendSuggestion,
-                    modifier = Modifier.weight(1f),
+                    onSuggestionClick = submitSuggestion,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding)
+                        .padding(bottom = bottomContentPadding),
                 )
             } else {
                 AssistantMessageThread(
@@ -190,20 +231,77 @@ fun AssistantChatScreen(
                     onCancelWrite = onCancelWrite,
                     assistantCardRenderer = assistantCardRenderer,
                     onCardAction = onCardAction,
-                    modifier = Modifier.weight(1f),
+                    bottomContentPadding = bottomContentPadding,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
                 )
             }
-            AssistantStatusPanel(state = state)
-            AssistantComposer(
-                inputText = inputText,
-                onInputTextChange = onInputTextChange,
-                isTurnActive = state.isTurnActive,
-                shouldShowStopControl = state.shouldShowStopControl,
-                onSendMessage = onSendMessage,
-                onCancelTurn = onCancelTurn,
+            AssistantContentBottomFade(
+                bottomBarHeight = bottomBarContentHeight,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
             )
         }
     }
+}
+
+@Composable
+private fun AssistantFloatingComposerBar(
+    state: AssistantUiState,
+    inputText: String,
+    onInputTextChange: (String) -> Unit,
+    onSendMessage: () -> Unit,
+    onCancelTurn: () -> Unit,
+    onContentHeightChanged: (Int) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .onSizeChanged { onContentHeightChanged(it.height) }
+            .padding(bottom = FLOATING_COMPOSER_BOTTOM_PADDING),
+    ) {
+        AssistantStatusPanel(
+            state = state,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
+        )
+        AssistantComposer(
+            inputText = inputText,
+            onInputTextChange = onInputTextChange,
+            isTurnActive = state.isTurnActive,
+            shouldShowStopControl = state.shouldShowStopControl,
+            onSendMessage = onSendMessage,
+            onCancelTurn = onCancelTurn,
+        )
+    }
+}
+
+@Composable
+private fun AssistantContentBottomFade(
+    bottomBarHeight: Dp,
+    modifier: Modifier = Modifier,
+) {
+    val canvasColor = assistantCanvasColor()
+    Box(
+        modifier = modifier
+            .height(bottomBarHeight + FLOATING_COMPOSER_FADE_EXTRA_HEIGHT)
+            .drawBehind {
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0f to Color.Transparent,
+                            FLOATING_COMPOSER_FADE_MIDPOINT_FRACTION to canvasColor.copy(
+                                alpha = FLOATING_COMPOSER_FADE_MIDPOINT_ALPHA
+                            ),
+                            1f to canvasColor,
+                        ),
+                    )
+                )
+            },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -278,6 +376,7 @@ private fun AssistantMessageThread(
     onCancelWrite: () -> Unit,
     assistantCardRenderer: AssistantCardRenderer?,
     onCardAction: (AssistantCardAction) -> Unit,
+    bottomContentPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val visibleMessages = state.messages.filter { message ->
@@ -330,7 +429,12 @@ private fun AssistantMessageThread(
         state = listState,
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 18.dp,
+            bottom = bottomContentPadding,
+        ),
     ) {
         items(
             items = visibleMessages,
@@ -362,6 +466,11 @@ private fun AssistantMessageThread(
 private const val TYPING_INDICATOR_ITEM_KEY = "assistant-typing-indicator"
 private const val REVEAL_ANIMATION_DURATION_MS = 180
 private const val REVEAL_SLIDE_OFFSET_DIVISOR = 3
+private const val FLOATING_COMPOSER_FADE_MIDPOINT_ALPHA = 0.55f
+private const val FLOATING_COMPOSER_FADE_MIDPOINT_FRACTION = 0.35f
+private val FLOATING_COMPOSER_FADE_EXTRA_HEIGHT = 48.dp
+private val FLOATING_COMPOSER_BOTTOM_PADDING = 16.dp
+private val FLOATING_COMPOSER_CONTENT_SPACING = 16.dp
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
 private val USER_BUBBLE_MAX_WIDTH = 280.dp
 
@@ -611,12 +720,18 @@ private fun AssistantInlineError(
 }
 
 @Composable
-private fun AssistantStatusPanel(state: AssistantUiState) {
+private fun AssistantStatusPanel(
+    state: AssistantUiState,
+    modifier: Modifier = Modifier,
+) {
     when (state.status) {
         AssistantUiStatus.AWAITING_CONFIRMATION -> Unit
         AssistantUiStatus.ERROR -> {
             if (state.shouldShowFallbackError) {
-                AssistantFallbackErrorPanel(error = state.error)
+                AssistantFallbackErrorPanel(
+                    error = state.error,
+                    modifier = modifier,
+                )
             }
         }
         AssistantUiStatus.IDLE,
@@ -625,20 +740,32 @@ private fun AssistantStatusPanel(state: AssistantUiState) {
 }
 
 @Composable
-private fun AssistantFallbackErrorPanel(error: AssistantUiError?) {
+private fun AssistantFallbackErrorPanel(
+    error: AssistantUiError?,
+    modifier: Modifier = Modifier,
+) {
     if (error == null) return
 
-    Row(
-        modifier = Modifier
+    Surface(
+        modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.errorContainer)
-            .padding(16.dp),
+            .padding(top = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.errorContainer,
+        tonalElevation = 2.dp,
+        shadowElevation = if (isSystemInDarkTheme()) 0.dp else 2.dp,
     ) {
-        Text(
-            text = stringResource(error.toMessageRes()),
-            color = MaterialTheme.colorScheme.onErrorContainer,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            Text(
+                text = stringResource(error.toMessageRes()),
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
     }
 }
 
@@ -709,8 +836,8 @@ private fun AssistantStatsCardGroupNoTrendPreview() {
             AssistantCardGroupSegment(
                 cards = listOf(
                     sampleStatsCard(
-                        totalSalesChartPoints = emptyList(),
-                        netSalesChartPoints = emptyList(),
+                        totalSalesChartValues = emptyList(),
+                        netSalesChartValues = emptyList(),
                     )
                 ),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
@@ -756,7 +883,7 @@ private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
                         AssistantUiSegment.ToolActivity(
                             AssistantToolActivity(
                                 toolCallId = "call-revenue",
-                                toolName = "analytics_revenue",
+                                toolName = "analytics_orders",
                                 status = AssistantToolActivity.Status.COMPLETED,
                             )
                         ),
@@ -808,7 +935,7 @@ private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
                         AssistantUiSegment.ToolActivity(
                             AssistantToolActivity(
                                 toolCallId = "call-revenue",
-                                toolName = "analytics_revenue",
+                                toolName = "analytics_orders",
                                 status = AssistantToolActivity.Status.COMPLETED,
                             )
                         ),
@@ -957,6 +1084,8 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         when (card) {
             is AssistantCard.Order -> PreviewOrderCard(card, modifier)
             is AssistantCard.Product -> PreviewProductCard(card, modifier)
+            is AssistantCard.Variation -> PreviewVariationCard(card, modifier)
+            is AssistantCard.Customer -> PreviewCustomerCard(card, modifier)
             is AssistantCard.Stats -> PreviewStatsCard(card, modifier)
         }
     }
@@ -980,6 +1109,28 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
                 text = listOf(card.customerName, card.status, card.unformattedTotal)
                     .filter { it.isNotBlank() }
                     .joinToString(" - "),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
+
+    @Composable
+    private fun PreviewCustomerCard(
+        card: AssistantCard.Customer,
+        modifier: Modifier,
+    ) {
+        Column(
+            modifier = modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = card.name,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = card.email,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -1012,6 +1163,31 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
     }
 
     @Composable
+    private fun PreviewVariationCard(
+        card: AssistantCard.Variation,
+        modifier: Modifier,
+    ) {
+        Column(
+            modifier = modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = card.name,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = listOf(card.stockStatus, card.price)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" - "),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
+
+    @Composable
     private fun PreviewStatsCard(
         card: AssistantCard.Stats,
         modifier: Modifier,
@@ -1019,14 +1195,15 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
         AiAssistantStatsCard(
             state = AiAssistantStatsCardState(
                 period = "${card.after} - ${card.before}",
-                totalSales = listOf(card.totalSales, card.currency)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" "),
-                netSales = listOf(card.netSales, card.currency)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" "),
-                totalSalesChartValues = card.totalSalesChartPoints.map { it.value },
-                netSalesChartValues = card.netSalesChartPoints.map { it.value },
+                metrics = card.metrics.map { metric ->
+                    AiAssistantStatsCardState.Metric(
+                        type = metric.type,
+                        value = listOf(metric.value, card.currency)
+                            .filter { it.isNotBlank() }
+                            .joinToString(" "),
+                        chartValues = metric.chartPoints.map { it.value },
+                    )
+                },
             ),
             onClick = {},
             modifier = modifier,
@@ -1055,17 +1232,37 @@ private fun sampleProductCard() = AssistantCard.Product(
 )
 
 private fun sampleStatsCard(
-    totalSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_SALES_CHART_POINTS,
-    netSalesChartPoints: List<AssistantCard.Stats.ChartPoint> = SAMPLE_NET_SALES_CHART_POINTS,
+    totalSalesChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_SALES_CHART_POINTS,
+    netSalesChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_NET_SALES_CHART_POINTS,
+    totalOrdersChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_TOTAL_ORDERS_CHART_POINTS,
+    averageOrderValueChartValues: List<AssistantCard.Stats.ChartPoint> = SAMPLE_AVERAGE_ORDER_VALUE_CHART_POINTS,
 ) = AssistantCard.Stats(
-    id = "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD",
+    id = "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day",
     after = "2026-05-01",
     before = "2026-05-07",
     currency = "USD",
-    totalSales = "170.35",
-    netSales = "120.15",
-    totalSalesChartPoints = totalSalesChartPoints,
-    netSalesChartPoints = netSalesChartPoints,
+    metrics = listOf(
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.TotalSales,
+            value = "170.35",
+            chartPoints = totalSalesChartValues,
+        ),
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.NetSales,
+            value = "120.15",
+            chartPoints = netSalesChartValues,
+        ),
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.TotalOrders,
+            value = "42",
+            chartPoints = totalOrdersChartValues,
+        ),
+        AssistantCard.Stats.Metric(
+            type = AssistantCard.Stats.MetricType.AverageOrderValue,
+            value = "85.30",
+            chartPoints = averageOrderValueChartValues,
+        ),
+    ),
 )
 
 private val SAMPLE_TOTAL_SALES_CHART_POINTS = listOf(
@@ -1078,6 +1275,18 @@ private val SAMPLE_NET_SALES_CHART_POINTS = listOf(
     AssistantCard.Stats.ChartPoint("2026-05-01", 8.0),
     AssistantCard.Stats.ChartPoint("2026-05-02", 12.0),
     AssistantCard.Stats.ChartPoint("2026-05-03", 6.0),
+)
+
+private val SAMPLE_TOTAL_ORDERS_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 16.0),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 14.0),
+)
+
+private val SAMPLE_AVERAGE_ORDER_VALUE_CHART_POINTS = listOf(
+    AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
+    AssistantCard.Stats.ChartPoint("2026-05-02", 82.25),
+    AssistantCard.Stats.ChartPoint("2026-05-03", 93.55),
 )
 
 private val AssistantCard.Order.unformattedTotal: String

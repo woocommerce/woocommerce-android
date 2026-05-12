@@ -28,7 +28,10 @@ internal class ProductVariationsToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "product_variations_list",
-        description = "List variations for a variable product, or fetch one variation by variation_id.",
+        description = "List variations for one variable product when the merchant explicitly asks about " +
+            "variations, sizes, colors, options, or a known variation ID. Required: product_id (the parent). " +
+            "Do not use this for broad product-level inventory questions such as out-of-stock products; " +
+            "product stock and variation stock are separate WooCommerce concepts.",
         inputSchema = inputSchema {
             integer("product_id", description = "The parent product ID. Required.", required = true)
             integer("variation_id", description = "Variation ID; omit to list variations or provide to fetch one.")

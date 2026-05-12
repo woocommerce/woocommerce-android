@@ -25,7 +25,9 @@ internal class ProductVariationsUpdateToolHandler @Inject constructor(
         name = "product_variations_update",
         description = "Update one product variation. Requires parent product_id and variation id. " +
             "Accepts only regular_price, sale_price, stock_quantity, stock_status, sku, and status. " +
-            "Setting stock_quantity also enables stock management. At most one write is executed per turn.",
+            "Setting stock_quantity also enables stock management. At most one write is executed per turn. " +
+            "After a successful update, call show_cards with family variation and the strict " +
+            "{parentProductId}/{variationId} id so the merchant sees the new state.",
         inputSchema = inputSchema {
             integer("product_id", description = "The parent product ID. Required.", required = true)
             integer("id", description = "The variation ID. Required.", required = true)

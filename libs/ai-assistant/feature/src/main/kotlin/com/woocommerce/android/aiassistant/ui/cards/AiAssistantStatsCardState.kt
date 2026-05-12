@@ -2,8 +2,11 @@ package com.woocommerce.android.aiassistant.ui.cards
 
 data class AiAssistantStatsCardState(
     val period: String,
-    val totalSales: String,
-    val netSales: String,
-    val totalSalesChartValues: List<Double>,
-    val netSalesChartValues: List<Double>,
-)
+    val metrics: List<Metric>,
+) {
+    data class Metric(
+        val type: AssistantCard.Stats.MetricType,
+        val value: String,
+        val chartValues: List<Double>,
+    )
+}

@@ -4,8 +4,9 @@ import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.analytics.AIAnalyticsDataSource
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsInterval
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsStats
+import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
-import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.boolean
@@ -25,12 +26,16 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 class ShowCardsResolverTest {
     private val ordersDataSource: AIOrdersDataSource = mock()
-    private val productsDataSource: AIProductsDataSource = mock()
+    private val productsDataSource: com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource = mock()
+    private val variationsDataSource: AIProductVariationsDataSource = mock()
     private val analyticsDataSource: AIAnalyticsDataSource = mock()
+    private val customersDataSource: AICustomersDataSource = mock()
     private val json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = false
@@ -40,7 +45,9 @@ class ShowCardsResolverTest {
     private val resolver = DefaultShowCardsResolver(
         ordersDataSource = ordersDataSource,
         productsDataSource = productsDataSource,
+        variationsDataSource = variationsDataSource,
         analyticsDataSource = analyticsDataSource,
+        customersDataSource = customersDataSource,
         json = json,
     )
 
@@ -49,17 +56,21 @@ class ShowCardsResolverTest {
         val orderOne = order(id = 1L, number = "1001")
         val orderTwo = order(id = 2L, number = "1002")
         val product = product(id = 3L, name = "Socks")
+        val variation = variation(productId = 3L, variationId = 10L)
+        val customer = customer(id = 4L, firstName = "Ada", lastName = "Lovelace", email = "ada@example.com")
         val stats = analyticsStats()
         whenever(ordersDataSource.getOrders(listOf(1L, 2L))).thenReturn(
             Result.success(orderLookup(orderTwo, orderOne))
         )
         whenever(productsDataSource.getProducts(listOf(3L))).thenReturn(Result.success(productLookup(product)))
+        whenever(variationsDataSource.getVariation(productId = 3L, variationId = 10L))
+            .thenReturn(Result.success(variation))
+        givenCustomersFetch(ids = listOf(4L), customer)
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = "USD",
             )
         ).thenReturn(Result.success(stats))
 
@@ -68,16 +79,22 @@ class ShowCardsResolverTest {
                 ref(ShowCardFamily.Order, "1"),
                 ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID),
                 ref(ShowCardFamily.Product, "3"),
+                ref(ShowCardFamily.Variation, "3/10"),
+                ref(ShowCardFamily.Customer, "4"),
                 ref(ShowCardFamily.Order, "2"),
             )
         )
 
         verify(ordersDataSource).getOrders(listOf(1L, 2L))
         verify(productsDataSource).getProducts(listOf(3L))
+        verify(variationsDataSource).getVariation(productId = 3L, variationId = 10L)
+        verifyCustomersFetch(ids = listOf(4L))
         assertThat(result.map { it.ref.family.serializedName to it.ref.id }).containsExactly(
             "order" to "1",
             "analytics_stats" to ANALYTICS_STATS_ID,
             "product" to "3",
+            "variation" to "3/10",
+            "customer" to "4",
             "order" to "2",
         )
         assertThat(result).allSatisfy { resolution ->
@@ -86,25 +103,24 @@ class ShowCardsResolverTest {
     }
 
     @Test
-    fun `given analytics stats ref, when resolved, then resolver refetches stats from parsed id`() = runTest {
+    fun `given analytics stats ref, when resolved, then resolver refetches orders stats from parsed id`() = runTest {
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = "USD",
             )
-        ).thenReturn(Result.success(analyticsStats()))
+        ).thenReturn(Result.success(unifiedAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
         val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
-        verify(analyticsDataSource).fetchRevenueStats(
+        verify(analyticsDataSource).fetchOrdersStats(
             after = "2026-05-01T00:00:00",
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
-            currency = "USD",
         )
-        verifyNoInteractions(ordersDataSource, productsDataSource)
+        verifyNoInteractions(ordersDataSource, productsDataSource, variationsDataSource)
         val resolved = result.single() as ShowCardsResolution.Resolved
         assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo(ANALYTICS_STATS_ID)
         assertThat(resolved.summary.getValue("after").jsonPrimitive.content).isEqualTo("2026-05-01")
@@ -118,28 +134,64 @@ class ShowCardsResolverTest {
         assertThat(resolved.card.title).isEqualTo("Analytics")
         val details = resolved.card.details as ShowCardDetails.AnalyticsStats
         assertThat(details.totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
+        assertThat(details.totals.getValue("orders_count").jsonPrimitive.content).isEqualTo("42")
         assertThat(details.intervalSubtotals).hasSize(2)
     }
 
     @Test
-    fun `given analytics stats ref with currency none, when resolved, then site currency is used for display`() = runTest {
+    fun `given variation ref, when resolved, then resolver fetches variation with parent and variation ids`() =
+        runTest {
+            whenever(variationsDataSource.getVariation(productId = 100L, variationId = 10L))
+                .thenReturn(Result.success(variation(productId = 100L, variationId = 10L)))
+
+            val result = resolver.resolve(listOf(ref(ShowCardFamily.Variation, "100/10")))
+
+            verify(variationsDataSource).getVariation(productId = 100L, variationId = 10L)
+            val resolved = result.single() as ShowCardsResolution.Resolved
+            assertThat(resolved.card.id).isEqualTo("100/10")
+            assertThat(resolved.summary.getValue("id").jsonPrimitive.content).isEqualTo("100/10")
+            assertThat(resolved.summary.getValue("product_id").jsonPrimitive.content).isEqualTo("100")
+            assertThat(resolved.summary.getValue("variation_id").jsonPrimitive.content).isEqualTo("10")
+            val details = resolved.card.details as ShowCardDetails.Variation
+            assertThat(details.productId).isEqualTo(100L)
+            assertThat(details.variationId).isEqualTo(10L)
+            assertThat(details.sku).isEqualTo("woo-socks-blue")
+            assertThat(details.price).isEqualTo("12.99")
+            assertThat(details.stockStatus).isEqualTo("instock")
+            assertThat(details.status).isEqualTo("publish")
+            assertThat(details.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
+            assertThat(details.attributes.map { it.name }).containsExactly("Size", "Color")
+            assertThat(details.attributes.map { it.option }).containsExactly("M", "Blue")
+        }
+
+    @Test
+    fun `given variation fetch fails, when resolved, then ref is fetch failed`() = runTest {
+        whenever(variationsDataSource.getVariation(productId = 100L, variationId = 10L))
+            .thenReturn(Result.failure(IllegalStateException("network")))
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.Variation, "100/10")))
+
+        val missing = result.single() as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
+    }
+
+    @Test
+    fun `given analytics stats ref, when resolved, then site currency is used for display`() = runTest {
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = null,
             )
-        ).thenReturn(Result.success(analyticsStats()))
+        ).thenReturn(Result.success(unifiedAnalyticsStats()))
         whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
 
-        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID_NO_CURRENCY)))
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
 
-        verify(analyticsDataSource).fetchRevenueStats(
+        verify(analyticsDataSource).fetchOrdersStats(
             after = "2026-05-01T00:00:00",
             before = "2026-05-07T23:59:59",
             interval = AnalyticsInterval.DAY,
-            currency = null,
         )
         val resolved = result.single() as ShowCardsResolution.Resolved
         assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
@@ -148,13 +200,34 @@ class ShowCardsResolverTest {
     }
 
     @Test
-    fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
+    fun `given orders analytics stats ref, when resolved, then resolver refetches orders stats only`() = runTest {
         whenever(
-            analyticsDataSource.fetchRevenueStats(
+            analyticsDataSource.fetchOrdersStats(
                 after = "2026-05-01T00:00:00",
                 before = "2026-05-07T23:59:59",
                 interval = AnalyticsInterval.DAY,
-                currency = "USD",
+            )
+        ).thenReturn(Result.success(orderAnalyticsStats()))
+        whenever(analyticsDataSource.getSelectedSiteCurrencyCode()).thenReturn("USD")
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.AnalyticsStats, ANALYTICS_STATS_ID)))
+
+        verify(analyticsDataSource).fetchOrdersStats(
+            after = "2026-05-01T00:00:00",
+            before = "2026-05-07T23:59:59",
+            interval = AnalyticsInterval.DAY,
+        )
+        val resolved = result.single() as ShowCardsResolution.Resolved
+        assertThat(resolved.summary.getValue("currency").jsonPrimitive.content).isEqualTo("USD")
+    }
+
+    @Test
+    fun `given analytics stats refetch fails, when resolved, then ref is fetch failed`() = runTest {
+        whenever(
+            analyticsDataSource.fetchOrdersStats(
+                after = "2026-05-01T00:00:00",
+                before = "2026-05-07T23:59:59",
+                interval = AnalyticsInterval.DAY,
             )
         ).thenReturn(Result.failure(IllegalStateException("network")))
 
@@ -367,6 +440,61 @@ class ShowCardsResolverTest {
         assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.NotFound)
     }
 
+    @Test
+    fun `given customer refs, when resolved, then customers are fetched by include and compact cards are returned`() =
+        runTest {
+            val customerOne = customer(id = 123L, firstName = "Ada", lastName = "Lovelace", email = "ada@example.com")
+            val customerTwo = customer(id = 456L, firstName = "Grace", lastName = "Hopper", email = "grace@example.com")
+            givenCustomersFetch(ids = listOf(123L, 456L), customerTwo, customerOne)
+
+            val result = resolver.resolve(
+                listOf(
+                    ref(ShowCardFamily.Customer, "123"),
+                    ref(ShowCardFamily.Customer, "456"),
+                )
+            )
+
+            verifyCustomersFetch(ids = listOf(123L, 456L))
+            val resolved = result.filterIsInstance<ShowCardsResolution.Resolved>()
+            assertThat(resolved.map { it.ref.id }).containsExactly("123", "456")
+            assertThat(resolved[0].summary.keys).containsExactly("id", "name", "email")
+            assertThat(resolved[0].summary.getValue("id").jsonPrimitive.content).isEqualTo("123")
+            assertThat(resolved[0].summary.getValue("name").jsonPrimitive.content).isEqualTo("Ada Lovelace")
+            assertThat(resolved[0].summary.getValue("email").jsonPrimitive.content).isEqualTo("ada@example.com")
+            assertThat(resolved[0].summary).doesNotContainKeys("phone", "address")
+            assertThat(resolved[0].card.family).isEqualTo("customer")
+            assertThat(resolved[0].card.id).isEqualTo("123")
+            assertThat(resolved[0].card.title).isEqualTo("Ada Lovelace")
+            val details = resolved[0].card.details as ShowCardDetails.Customer
+            assertThat(details.email).isEqualTo("ada@example.com")
+        }
+
+    @Test
+    fun `given customer fetch succeeds but id is absent, when resolved, then missing customer is not found`() = runTest {
+        givenCustomersFetch(ids = listOf(123L, 456L), customer(id = 123L))
+
+        val result = resolver.resolve(
+            listOf(
+                ref(ShowCardFamily.Customer, "123"),
+                ref(ShowCardFamily.Customer, "456"),
+            )
+        )
+
+        assertThat(result[0]).isInstanceOf(ShowCardsResolution.Resolved::class.java)
+        val missing = result[1] as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.NotFound)
+    }
+
+    @Test
+    fun `given customer fetch fails, when resolved, then customer refs are fetch failed`() = runTest {
+        givenCustomersFetchFailure(ids = listOf(123L))
+
+        val result = resolver.resolve(listOf(ref(ShowCardFamily.Customer, "123")))
+
+        val missing = result.single() as ShowCardsResolution.Missing
+        assertThat(missing.reason).isEqualTo(ShowCardsRejectionReason.FetchFailed)
+    }
+
     private fun ref(family: ShowCardFamily, id: String) = ValidatedRef(index = 0, family = family, id = id)
 
     private fun orderLookup(vararg orders: OrderEntity): CachedLookupResult<OrderEntity> =
@@ -386,6 +514,49 @@ class ShowCardsResolverTest {
             fetchAttempted = true,
             fetchFailed = false,
         )
+
+    private suspend fun givenCustomersFetch(
+        ids: List<Long>,
+        vararg customers: WCCustomerModel,
+    ) {
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = ids,
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = ids.size,
+            )
+        ).thenReturn(Result.success(customers.toList()))
+    }
+
+    private suspend fun givenCustomersFetchFailure(ids: List<Long>) {
+        whenever(
+            customersDataSource.fetchCustomers(
+                search = null,
+                email = null,
+                include = ids,
+                orderby = "registered_date",
+                order = "desc",
+                page = null,
+                perPage = ids.size,
+            )
+        ).thenReturn(Result.failure(IllegalStateException("network")))
+    }
+
+    private suspend fun verifyCustomersFetch(ids: List<Long>) {
+        verify(customersDataSource).fetchCustomers(
+            search = null,
+            email = null,
+            include = ids,
+            orderby = "registered_date",
+            order = "desc",
+            page = null,
+            perPage = ids.size,
+        )
+    }
 
     private fun order(
         id: Long,
@@ -429,6 +600,36 @@ class ShowCardsResolverTest {
         images = """[{"id":7,"src":"$PRODUCT_IMAGE_URL"}]""",
     )
 
+    private fun variation(
+        productId: Long,
+        variationId: Long,
+    ) = WCProductVariationModel(
+        remoteProductId = RemoteId(productId),
+        remoteVariationId = RemoteId(variationId),
+        sku = "woo-socks-blue",
+        price = "12.99",
+        stockStatus = "instock",
+        status = "publish",
+        image = """{"id":7,"src":"$PRODUCT_IMAGE_URL"}""",
+        attributes = """[{"id":1,"name":"Size","option":"M"},{"id":2,"name":"Color","option":"Blue"}]""",
+    )
+
+    private fun customer(
+        id: Long,
+        firstName: String = "Ada",
+        lastName: String = "Lovelace",
+        email: String = "ada@example.com",
+    ) = WCCustomerModel(
+        localSiteId = LocalId(1),
+        remoteCustomerId = RemoteId(id),
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        billingPhone = "555-1234",
+        billingAddress1 = "123 Main St",
+        shippingAddress1 = "123 Main St",
+    )
+
     private fun analyticsStats() = AnalyticsStats(
         totals = buildJsonObject {
             put("total_sales", "170.35")
@@ -438,6 +639,31 @@ class ShowCardsResolverTest {
         intervals = listOf(
             analyticsInterval("2026-05-01", "50.00", "35.00"),
             analyticsInterval("2026-05-02", "120.35", "85.15"),
+        ),
+    )
+
+    private fun orderAnalyticsStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("orders_count", "42")
+            put("avg_order_value", "85.30")
+        },
+        intervals = listOf(
+            orderAnalyticsInterval("2026-05-01", "12", "80.10"),
+            orderAnalyticsInterval("2026-05-02", "30", "87.38"),
+        ),
+    )
+
+    private fun unifiedAnalyticsStats() = AnalyticsStats(
+        totals = buildJsonObject {
+            put("total_sales", "170.35")
+            put("gross_sales", "190.00")
+            put("net_revenue", "120.15")
+            put("orders_count", "42")
+            put("avg_order_value", "85.30")
+        },
+        intervals = listOf(
+            unifiedAnalyticsInterval("2026-05-01", "50.00", "35.00", "12", "80.10"),
+            unifiedAnalyticsInterval("2026-05-02", "120.35", "85.15", "30", "87.38"),
         ),
     )
 
@@ -454,6 +680,36 @@ class ShowCardsResolverTest {
         }
     }
 
+    private fun orderAnalyticsInterval(
+        interval: String,
+        ordersCount: String,
+        averageOrderValue: String,
+    ) = buildJsonObject {
+        put("interval", interval)
+        put("date_start", "$interval 00:00:00")
+        putJsonObject("subtotals") {
+            put("orders_count", ordersCount)
+            put("avg_order_value", averageOrderValue)
+        }
+    }
+
+    private fun unifiedAnalyticsInterval(
+        interval: String,
+        totalSales: String,
+        netRevenue: String,
+        ordersCount: String,
+        averageOrderValue: String,
+    ) = buildJsonObject {
+        put("interval", interval)
+        put("date_start", "$interval 00:00:00")
+        putJsonObject("subtotals") {
+            put("total_sales", totalSales)
+            put("net_revenue", netRevenue)
+            put("orders_count", ordersCount)
+            put("avg_order_value", averageOrderValue)
+        }
+    }
+
     private companion object {
         private const val PRODUCT_IMAGE_URL = "https://example.com/socks.png"
         private val ORDER_LINE_ITEMS_JSON = """
@@ -463,8 +719,6 @@ class ShowCardsResolverTest {
             ]
         """.trimIndent()
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-        private const val ANALYTICS_STATS_ID_NO_CURRENCY =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:none"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

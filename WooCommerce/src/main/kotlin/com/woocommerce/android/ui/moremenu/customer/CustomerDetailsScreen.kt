@@ -156,7 +156,7 @@ fun CustomerSection(
     } else {
         SectionValue(
             title = stringResource(id = R.string.customers_details_last_active_value_title),
-            value = customer.lastActive
+            value = customer.lastActive ?: MISSING_ANALYTICS_VALUE
         )
     }
 }
@@ -200,17 +200,17 @@ fun OrdersSection(
     } else {
         SectionValue(
             title = stringResource(id = R.string.customers_details_orders_value_title),
-            value = customer.ordersCount.toString()
+            value = customer.ordersCount?.toString() ?: MISSING_ANALYTICS_VALUE
         )
         Divider()
         SectionValue(
             title = stringResource(id = R.string.customers_details_total_spend_value_title),
-            value = customer.totalSpend.toString()
+            value = customer.totalSpend ?: MISSING_ANALYTICS_VALUE
         )
         Divider()
         SectionValue(
             title = stringResource(id = R.string.customers_details_average_order_value_title),
-            value = customer.averageOrderValue.toString()
+            value = customer.averageOrderValue ?: MISSING_ANALYTICS_VALUE
         )
     }
 }
@@ -429,3 +429,5 @@ fun SectionValueNoValuePreview() {
         SectionValue(title = "Name", value = null)
     }
 }
+
+private const val MISSING_ANALYTICS_VALUE = "-"
