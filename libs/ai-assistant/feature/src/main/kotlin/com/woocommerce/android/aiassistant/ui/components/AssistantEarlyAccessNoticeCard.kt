@@ -96,7 +96,7 @@ private fun AssistantEarlyAccessFeedbackButton(onClick: () -> Unit) {
         onClick = onClick,
         shape = RoundedCornerShape(EARLY_ACCESS_BUTTON_CORNER_RADIUS),
         color = earlyAccessButtonColor(),
-        contentColor = earlyAccessAccentColor(),
+        contentColor = earlyAccessActionContentColor(),
         border = BorderStroke(1.dp, earlyAccessBorderColor()),
     ) {
         Row(
@@ -108,13 +108,13 @@ private fun AssistantEarlyAccessFeedbackButton(onClick: () -> Unit) {
                 painter = painterResource(R.drawable.ic_assistant_feedback),
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
-                tint = earlyAccessAccentColor(),
+                tint = earlyAccessActionContentColor(),
             )
             Text(
                 text = stringResource(R.string.assistant_early_access_notice_feedback),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = earlyAccessAccentColor(),
+                color = earlyAccessActionContentColor(),
             )
         }
     }
@@ -153,6 +153,13 @@ private fun earlyAccessBorderColor(): Color = if (isSystemInDarkTheme()) {
 
 @Composable
 private fun earlyAccessAccentColor(): Color = Color(0xFF7F54B3)
+
+@Composable
+private fun earlyAccessActionContentColor(): Color = if (isSystemInDarkTheme()) {
+    Color(0xFFE0C7FF)
+} else {
+    earlyAccessAccentColor()
+}
 
 private val EARLY_ACCESS_CARD_CORNER_RADIUS = 16.dp
 private val EARLY_ACCESS_BADGE_CORNER_RADIUS = 6.dp
