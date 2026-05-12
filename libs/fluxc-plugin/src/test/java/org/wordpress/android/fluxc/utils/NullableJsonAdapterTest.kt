@@ -3,6 +3,8 @@ package org.wordpress.android.fluxc.utils
 import com.google.gson.Gson
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import com.google.gson.stream.MalformedJsonException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -23,6 +25,23 @@ class NullableJsonAdapterTest {
     )
 
     private val gson = Gson()
+
+    @Test
+    fun `when nullable json adapter reads null, then it should not read value`() {
+        val adapter = object : NullableJsonAdapter<String>() {
+            override fun writeValue(out: JsonWriter, value: String) {
+                error("Should not write value")
+            }
+
+            override fun readValue(input: JsonReader): String {
+                error("Should not read value")
+            }
+        }
+
+        val result = adapter.fromJson("null")
+
+        assertThat(result).isNull()
+    }
 
     @Test
     fun `when passing null string in json, then it should be deserialized to null value`() {
