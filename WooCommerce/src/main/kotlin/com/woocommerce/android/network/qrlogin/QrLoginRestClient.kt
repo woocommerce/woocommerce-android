@@ -18,6 +18,7 @@ import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_PRECON_FAILED
 import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
+import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -52,10 +53,25 @@ class QrLoginRestClient @Inject constructor(
             }
         }
 
-    suspend fun checkSessionStatus(siteUrl: String, sessionId: String): Result<QrLoginSessionStatus> =
+    /**
+     * Poll the merchant's site for the next session-status transition.
+     *
+     * [token] is the plaintext QR ticket the app scanned. The REST client hashes it with
+     * SHA-256 and passes the result as the `token_hash` query parameter so the server can
+     * prove the caller scanned the QR before delivering an `exchange_grant`. Without this
+     * binding, anyone who learned the [sessionId] alone (mobile logs, network capture,
+     * leaked debug output, support ticket attachments) could poll for state and walk away
+     * with the grant the moment the merchant approves on wc-admin. See WC Core
+     * `b54daa591e` for the security review finding that introduced this requirement.
+     */
+    suspend fun checkSessionStatus(
+        siteUrl: String,
+        sessionId: String,
+        token: String,
+    ): Result<QrLoginSessionStatus> =
         withContext(dispatchers.io) {
             try {
-                Result.success(performSessionStatus(siteUrl, sessionId))
+                Result.success(performSessionStatus(siteUrl, sessionId, token))
             } catch (ce: CancellationException) {
                 throw ce
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -149,8 +165,8 @@ class QrLoginRestClient @Inject constructor(
 
     // region session status
 
-    private fun performSessionStatus(siteUrl: String, sessionId: String): QrLoginSessionStatus {
-        val request = buildSessionStatusRequest(siteUrl, sessionId)
+    private fun performSessionStatus(siteUrl: String, sessionId: String, token: String): QrLoginSessionStatus {
+        val request = buildSessionStatusRequest(siteUrl, sessionId, token)
         okHttpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw mapSessionStatusHttpStatus(response.code)
             val parsed = gson.fromJson(response.body.string(), SessionStatusResponse::class.java)
@@ -158,12 +174,13 @@ class QrLoginRestClient @Inject constructor(
         }
     }
 
-    private fun buildSessionStatusRequest(siteUrl: String, sessionId: String): Request {
+    private fun buildSessionStatusRequest(siteUrl: String, sessionId: String, token: String): Request {
         val baseUrl = siteUrl.toHttpUrlOrNull()
             ?: throw IllegalArgumentException("siteUrl could not be parsed by HttpUrl")
         val statusUrl = baseUrl.newBuilder()
             .addPathSegments(SESSION_STATUS_PATH_SEGMENTS)
             .addQueryParameter("session_id", sessionId)
+            .addQueryParameter("token_hash", sha256Hex(token))
             .build()
         return Request.Builder()
             .url(statusUrl)
@@ -380,6 +397,17 @@ class QrLoginRestClient @Inject constructor(
             .noStore()
             .build()
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+
+        /**
+         * Lowercase-hex SHA-256 of the input. Matches PHP's `hash('sha256', $token)` so the
+         * client and server hashes line up byte-for-byte under the server's `hash_equals`.
+         */
+        fun sha256Hex(input: String): String {
+            val digest = MessageDigest.getInstance("SHA-256").digest(input.toByteArray(Charsets.UTF_8))
+            return buildString(digest.size * 2) {
+                digest.forEach { append("%02x".format(it)) }
+            }
+        }
     }
 }
 

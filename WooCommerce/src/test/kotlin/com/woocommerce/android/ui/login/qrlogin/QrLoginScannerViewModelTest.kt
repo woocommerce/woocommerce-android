@@ -92,7 +92,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
      * default calls this helper instead.
      */
     private suspend fun stubPollingTerminates() {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
             .thenReturn(Result.success(QrLoginSessionStatus.Expired))
     }
@@ -155,7 +155,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given approved with grant on first poll, when polling fires, then exchange runs and emits LoggedIn`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
             val events = viewModel.event.captureValues()
 
@@ -170,7 +170,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given rejected on poll, when polling fires, then state is MatchRejected with no retry`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Rejected))
 
         viewModel.onScanResult(successScan())
@@ -184,7 +184,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given expired on poll, when polling fires, then state is MatchTimedOut`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Expired))
 
         viewModel.onScanResult(successScan())
@@ -197,7 +197,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given scanned on poll, when polling fires, then state stays WaitingForApproval`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
 
         viewModel.onScanResult(successScan())
@@ -206,7 +206,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         advanceTimeBy(POLL_TICK_MS * 2 + 1)
 
         assertThat(viewModel.uiState.value).isInstanceOf(UiState.WaitingForApproval::class.java)
-        verify(restClient, atLeastOnce()).checkSessionStatus(ticket.siteUrl, scanResult.sessionId)
+        verify(restClient, atLeastOnce()).checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token)
         // Stop the loop so runTest's post-body advanceUntilIdle doesn't chase it forever.
         viewModel.onCancelNumberMatch()
     }
@@ -214,7 +214,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given transient poll errors, when fewer than threshold occur, then polling continues`() = testBlocking {
         // Three transient failures, then a Scanned response: polling must still be active.
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
             .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
             .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
@@ -231,7 +231,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given transient poll errors, when threshold reached, then state transitions to Network error with retry`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
 
             viewModel.onScanResult(successScan())
@@ -244,7 +244,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given rate-limited poll, when first error fires, then transitions immediately`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.failure(QrLoginSessionStatusException.RateLimited))
 
         viewModel.onScanResult(successScan())
@@ -257,7 +257,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given endpoint-missing poll, when first error fires, then transitions without retry`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.failure(QrLoginSessionStatusException.EndpointMissing))
 
         viewModel.onScanResult(successScan())
@@ -275,7 +275,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given WaitingForApproval, when onCancelNumberMatch, then state returns to Idle and polling stops`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
 
             viewModel.onScanResult(successScan())
@@ -285,12 +285,12 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
             // Once cancel fires, no further polls should happen.
-            verify(restClient, atLeastOnce()).checkSessionStatus(any(), any())
+            verify(restClient, atLeastOnce()).checkSessionStatus(any(), any(), any())
         }
 
     @Test
     fun `given waiting for approval, when another scan arrives, then it is ignored`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
 
         viewModel.onScanResult(successScan(RAW_SCAN))
@@ -321,7 +321,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         whenever(restClient.scan(ticket.siteUrl, ticket.token))
             .thenReturn(Result.failure(QrLoginScanException.Network))
             .thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
 
         viewModel.onScanResult(successScan())
@@ -342,7 +342,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given exchange returns InvalidExchangeGrant, when polling triggers exchange, then MatchInvalidGrant`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
             whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
                 .thenReturn(Result.failure(QrLoginExchangeException.InvalidExchangeGrant))
@@ -358,7 +358,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given exchange returns Network, when polling triggers exchange, then Network with retry ticket`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
             whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
                 .thenReturn(Result.failure(QrLoginExchangeException.Network))
@@ -375,7 +375,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     @Test
     fun `given exchange network error, when retried, then exchange is re-run with same grant`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
             whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
                 .thenReturn(Result.failure(QrLoginExchangeException.Network))
@@ -395,7 +395,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given authenticator returns NotAWooSite, when login completes, then NotAWooSite error`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
         whenever(authenticator.completeLogin(ticket, credentials))
             .thenReturn(Result.failure(QrLoginAuthenticationException.NotAWooSite))
@@ -409,7 +409,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given authenticator returns IOException, when login completes, then Network error`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
         whenever(authenticator.completeLogin(ticket, credentials))
             .thenReturn(Result.failure(IOException("offline")))
@@ -469,7 +469,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given successful login, when LoggedIn dispatched, then tracks LOGIN_QR_SUCCESS`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
 
         viewModel.onScanResult(successScan())
@@ -495,7 +495,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given rejected match, when polling fires, then tracks scan failed with approve step`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
             .thenReturn(Result.success(QrLoginSessionStatus.Rejected))
 
         viewModel.onScanResult(successScan())
@@ -1023,7 +1023,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     fun `given logged in and ticket, when warning confirmed and site confirmed, then emits LoggedIn`() =
         testBlocking {
             whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
                 .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
             val events = viewModel.event.captureValues()
 
