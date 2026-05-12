@@ -62,6 +62,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             restClient = restClient,
             authenticator = authenticator,
             accountRepository = accountRepository,
+            errorMapper = QrLoginErrorMapper(),
             analyticsTracker = analyticsTracker
         )
     }
@@ -983,6 +984,40 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         verify(accountRepository, never()).logout()
         verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
     }
+
+    @Test
+    fun `given warning, when confirmed and logout fails, then does not resume and surfaces network error`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(accountRepository.logout()).thenReturn(false)
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+
+            viewModel.onConfirmSessionReplace()
+
+            val state = viewModel.uiState.value as UiState.Error
+            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
+            assertThat(state.retryTicket).isNull()
+            assertThat(events).noneMatch { it is QrLoginScannerViewModel.Dispatch }
+        }
+
+    @Test
+    fun `given warning, when confirmed and logout fails, then tracks scan failed with logout error type`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(accountRepository.logout()).thenReturn(false)
+            viewModel.onScanResult(successScan())
+
+            viewModel.onConfirmSessionReplace()
+
+            verify(analyticsTracker).track(
+                stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
+                properties = mapOf(AnalyticsTracker.KEY_STEP to "exchange"),
+                errorContext = null,
+                errorType = "session_replace_logout_failed",
+                errorDescription = null,
+            )
+        }
 
     @Test
     fun `given logged in and ticket, when warning confirmed and site confirmed, then emits LoggedIn`() =

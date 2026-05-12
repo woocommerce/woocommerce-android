@@ -1,19 +1,16 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.qrlogin.QrLoginCredentials
 import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
 import com.woocommerce.android.network.qrlogin.QrLoginRestClient
-import com.woocommerce.android.network.qrlogin.QrLoginScanException
 import com.woocommerce.android.network.qrlogin.QrLoginScanResult
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatus
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Authenticating
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Error
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Idle
@@ -24,8 +21,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.wordpress.android.fluxc.store.SiteStore.SiteError
-import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import javax.inject.Inject
 
 /**
@@ -59,6 +52,7 @@ class QrLoginScannerViewModel @Inject constructor(
     private val restClient: QrLoginRestClient,
     private val authenticator: QrLoginAuthenticator,
     private val accountRepository: AccountRepository,
+    private val errorMapper: QrLoginErrorMapper,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
@@ -210,14 +204,15 @@ class QrLoginScannerViewModel @Inject constructor(
             restClient.scan(ticket.siteUrl, ticket.token).fold(
                 onSuccess = { scan -> beginWaitingForApproval(ticket, scan) },
                 onFailure = { failure ->
+                    val reason = errorMapper.toScanReason(failure)
                     trackScanFailure(
                         step = Step.SCAN,
                         errorContext = failure.javaClass.simpleName,
-                        errorType = failure.toScanReason().name,
+                        errorType = reason.name,
                     )
                     _uiState.value = Error(
-                        reason = failure.toScanReason(),
-                        retryTicket = ticket.takeIf { failure.toScanReason().isRetryEligible() }
+                        reason = reason,
+                        retryTicket = ticket.takeIf { errorMapper.isRetryEligible(reason) }
                     )
                 }
             )
@@ -266,7 +261,7 @@ class QrLoginScannerViewModel @Inject constructor(
                     },
                     onFailure = { failure ->
                         consecutiveErrors++
-                        val reason = failure.toPollReason()
+                        val reason = errorMapper.toPollReason(failure)
                         WooLog.w(
                             WooLog.T.LOGIN,
                             "QR login poll: failed (consecutive=$consecutiveErrors): $failure"
@@ -282,7 +277,7 @@ class QrLoginScannerViewModel @Inject constructor(
                             )
                             _uiState.value = Error(
                                 reason = reason,
-                                retryTicket = ticket.takeIf { reason.isRetryEligible() }
+                                retryTicket = ticket.takeIf { errorMapper.isRetryEligible(reason) }
                             )
                             return@launch
                         }
@@ -328,7 +323,7 @@ class QrLoginScannerViewModel @Inject constructor(
             credentialsResult.fold(
                 onSuccess = { credentials -> completeLogin(ticket, credentials) },
                 onFailure = { failure ->
-                    val reason = failure.toExchangeReason()
+                    val reason = errorMapper.toExchangeReason(failure)
                     val httpCode = (failure as? QrLoginExchangeException.HttpError)?.code
                     trackScanFailure(
                         step = Step.EXCHANGE,
@@ -338,8 +333,8 @@ class QrLoginScannerViewModel @Inject constructor(
                     )
                     _uiState.value = Error(
                         reason = reason,
-                        retryTicket = ticket.takeIf { reason.isRetryEligible() },
-                        retryExchangeGrant = exchangeGrant.takeIf { reason.isRetryEligible() }
+                        retryTicket = ticket.takeIf { errorMapper.isRetryEligible(reason) },
+                        retryExchangeGrant = exchangeGrant.takeIf { errorMapper.isRetryEligible(reason) }
                     )
                 }
             )
@@ -355,7 +350,7 @@ class QrLoginScannerViewModel @Inject constructor(
                 triggerEvent(Dispatch.LoggedIn(localSiteId))
             },
             onFailure = { failure ->
-                val reason = failure.toAuthReason()
+                val reason = errorMapper.toAuthReason(failure)
                 trackScanFailure(
                     step = Step.AUTH,
                     errorContext = failure.javaClass.simpleName,
@@ -417,14 +412,27 @@ class QrLoginScannerViewModel @Inject constructor(
      * We flip into [Authenticating] for the duration of the logout so the UI gives feedback while
      * [AccountRepository.logout] talks to the server. For the Ticket path this is then overwritten
      * by the scan / number-match flow.
+     *
+     * If logout fails (only the wp.com path can; it returns false without running cleanup, so
+     * the access token and selected site are still in place), we must NOT resume — installing
+     * fresh credentials on top of a live session is exactly what the warning exists to prevent.
+     * Surface a generic error and let the merchant scan again, which re-shows the warning.
      */
     fun onConfirmSessionReplace() {
         val pending = (_uiState.value as? WarningSessionReplace)?.pending ?: return
         analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
         _uiState.value = Authenticating(AuthPhase.SessionReplaceInFlight)
         launch {
-            accountRepository.logout()
-            resumePending(pending)
+            if (accountRepository.logout()) {
+                resumePending(pending)
+            } else {
+                trackScanFailure(
+                    step = Step.EXCHANGE,
+                    errorContext = null,
+                    errorType = SESSION_REPLACE_LOGOUT_FAILED,
+                )
+                _uiState.value = Error(reason = ErrorReason.Network, retryTicket = null)
+            }
         }
     }
 
@@ -460,74 +468,6 @@ class QrLoginScannerViewModel @Inject constructor(
             errorType = errorType,
             errorDescription = null
         )
-    }
-
-    private fun ErrorReason.isRetryEligible(): Boolean = when (this) {
-        ErrorReason.Network,
-        ErrorReason.ServerError,
-        ErrorReason.RateLimited -> true
-        else -> false
-    }
-
-    private fun Throwable.toScanReason(): ErrorReason = when (this) {
-        QrLoginScanException.TokenRejected -> ErrorReason.TokenRejected
-        QrLoginScanException.AlreadyScanned -> ErrorReason.MatchAlreadyScanned
-        QrLoginScanException.EndpointMissing -> ErrorReason.EndpointMissing
-        QrLoginScanException.RateLimited -> ErrorReason.RateLimited
-        QrLoginScanException.UpgradeRequired -> ErrorReason.EndpointMissing
-        QrLoginScanException.Network -> ErrorReason.Network
-        QrLoginScanException.MalformedRequest,
-        QrLoginScanException.MalformedResponse -> ErrorReason.ServerError
-        is QrLoginScanException.HttpError -> ErrorReason.ServerError
-        is QrLoginScanException.Unknown -> ErrorReason.Unknown
-        is IOException -> ErrorReason.Network
-        else -> ErrorReason.Unknown
-    }
-
-    private fun Throwable.toPollReason(): ErrorReason = when (this) {
-        QrLoginSessionStatusException.EndpointMissing -> ErrorReason.EndpointMissing
-        QrLoginSessionStatusException.RateLimited -> ErrorReason.RateLimited
-        QrLoginSessionStatusException.Network -> ErrorReason.Network
-        QrLoginSessionStatusException.MalformedResponse -> ErrorReason.ServerError
-        is QrLoginSessionStatusException.HttpError -> ErrorReason.ServerError
-        is QrLoginSessionStatusException.Unknown -> ErrorReason.Unknown
-        else -> ErrorReason.Network
-    }
-
-    private fun Throwable.toExchangeReason(): ErrorReason = when (this) {
-        QrLoginExchangeException.TokenRejected -> ErrorReason.TokenRejected
-        QrLoginExchangeException.EndpointMissing -> ErrorReason.EndpointMissing
-        QrLoginExchangeException.RateLimited -> ErrorReason.RateLimited
-        QrLoginExchangeException.Network -> ErrorReason.Network
-        QrLoginExchangeException.MalformedResponse -> ErrorReason.ServerError
-        QrLoginExchangeException.NotApproved -> ErrorReason.MatchTimedOut
-        QrLoginExchangeException.InvalidExchangeGrant -> ErrorReason.MatchInvalidGrant
-        is QrLoginExchangeException.HttpError -> ErrorReason.ServerError
-        is QrLoginExchangeException.Unknown -> ErrorReason.Unknown
-        else -> ErrorReason.Unknown
-    }
-
-    private fun Throwable.toAuthReason(): ErrorReason = when (this) {
-        QrLoginAuthenticationException.NotAWooSite -> ErrorReason.NotAWooSite
-        is QrLoginAuthenticationException.UserNotEligible -> ErrorReason.UserNotEligible
-        is CookieNonceAuthenticationException -> ErrorReason.SiteAuthFailure
-        is OnChangedException -> (error as? SiteError)?.type.toErrorReason()
-        // Catches DNS, socket, SSL handshake, and read failures during the post-exchange site
-        // discovery + AP save chain — those layers throw raw IOException without going through
-        // QrLoginExchangeException.
-        is IOException -> ErrorReason.Network
-        is CancellationException -> throw this
-        else -> {
-            WooLog.w(WooLog.T.LOGIN, "QR login: unmapped failure type ${this.javaClass.simpleName}")
-            ErrorReason.Unknown
-        }
-    }
-
-    private fun SiteErrorType?.toErrorReason(): ErrorReason = when (this) {
-        SiteErrorType.UNAUTHORIZED,
-        SiteErrorType.NOT_AUTHENTICATED -> ErrorReason.SiteAuthFailure
-        SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR -> ErrorReason.Network
-        else -> ErrorReason.Unknown
     }
 
     sealed class Dispatch : Event() {
@@ -630,5 +570,6 @@ class QrLoginScannerViewModel @Inject constructor(
         const val POLL_INTERVAL_MS = 2_000L
         const val MILLIS_PER_SECOND = 1_000L
         const val MAX_CONSECUTIVE_POLL_ERRORS = 4
+        const val SESSION_REPLACE_LOGOUT_FAILED = "session_replace_logout_failed"
     }
 }

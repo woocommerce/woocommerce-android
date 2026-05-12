@@ -10,7 +10,7 @@ import javax.inject.Inject
  * Parses the deep link encoded in a login QR code:
  *
  * ```
- * woocommerce://qr-login?token=<64-byte hex>&siteUrl=<URL-encoded site URL>
+ * woocommerce://qr-login?token=<64–512 alphanumeric chars>&siteUrl=<URL-encoded site URL>
  * ```
  *
  * Also accepts the legacy wc-admin `app-login` QR in two shapes
@@ -22,13 +22,17 @@ import javax.inject.Inject
  * blank, the payload becomes [QrLoginPayload.SiteUrl] and the scanner routes the merchant to
  * the site-address login screen with the URL prefilled instead of attempting an exchange.
  *
- * Anything malformed, missing parameters, or with the wrong scheme/host returns
- * [QrLoginPayload.Invalid]. New QR-login payloads require an https `siteUrl`; legacy app-login
- * payloads accept http or https because they hand off to the existing login flows instead of
- * exchanging a bearer ticket. The parser does not validate the token format
- * beyond non-blank — that's the server's job during exchange. `siteUrl` is parsed via OkHttp's
- * [okhttp3.HttpUrl] and rejected if it carries userinfo, query, or fragment components — those
- * have no role in a Woo site root and are classic spoofing surfaces in the confirmation prompt.
+ * Anything malformed, missing parameters, with the wrong scheme/host, with a token that doesn't
+ * match the expected shape, or with a non-https `siteUrl` returns [QrLoginPayload.Invalid].
+ * Legacy app-login payloads accept http or https because they hand off to the existing login
+ * flows instead of exchanging a bearer ticket. The token shape mirrors the backend contract
+ * (currently `wp_generate_password(64, false)` → 64 alphanumerics); the upper bound of 512
+ * leaves headroom if the server lengthens the token without forcing a client release in
+ * lockstep. The server is still the authority on whether a given token is valid — this is just
+ * a sanity gate so obviously-malformed QRs don't advance into the confirmation/exchange flow.
+ * `siteUrl` is parsed via OkHttp's [okhttp3.HttpUrl] and rejected if it carries userinfo, query,
+ * or fragment components — those have no role in a Woo site root and are classic spoofing
+ * surfaces in the confirmation prompt.
  *
  * Also recognises the WordPress.com magic-login QR
  * (`https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=…`) and
@@ -69,11 +73,11 @@ class QrLoginPayloadParser @Inject constructor() {
     private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
         val uri = parseDeepLink(raw, QR_LOGIN_HOST) ?: return null
         val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let { normalizeSiteUrl(it) } ?: return null
-        val token = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
-        return if (token != null) {
-            QrLoginPayload.Ticket(token = token, siteUrl = siteUrl)
-        } else {
-            QrLoginPayload.SiteUrl(siteUrl = siteUrl)
+        val rawToken = uri.queryParam(PARAM_TOKEN)
+        return when {
+            rawToken.isNullOrBlank() -> QrLoginPayload.SiteUrl(siteUrl = siteUrl)
+            TOKEN_REGEX.matches(rawToken) -> QrLoginPayload.Ticket(token = rawToken, siteUrl = siteUrl)
+            else -> null
         }
     }
 
@@ -103,7 +107,6 @@ class QrLoginPayloadParser @Inject constructor() {
      */
     private fun looksLikeInstallQr(raw: String?): Boolean {
         val parsed = raw?.trim()?.takeIf { it.isNotEmpty() }?.toHttpUrlOrNull() ?: return false
-        if (parsed.scheme != "https") return false
         if (!parsed.host.equals(INSTALL_QR_HOST, ignoreCase = true)) return false
         val pathSegments = parsed.encodedPathSegments.filter { it.isNotEmpty() }
         return pathSegments.firstOrNull()?.equals(INSTALL_QR_PATH_FIRST_SEGMENT, ignoreCase = true) == true
@@ -170,5 +173,6 @@ class QrLoginPayloadParser @Inject constructor() {
         const val WP_COM_HOST = "wordpress.com"
         const val WP_COM_MAGIC_LINK_PATH = "/wp-login.php"
         const val ACTION_MAGIC_LOGIN = "magic-login"
+        val TOKEN_REGEX = Regex("^[A-Za-z0-9]{64,512}$")
     }
 }

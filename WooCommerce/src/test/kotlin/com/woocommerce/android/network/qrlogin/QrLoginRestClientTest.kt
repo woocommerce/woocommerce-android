@@ -16,6 +16,8 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,8 +37,8 @@ class QrLoginRestClientTest : BaseUnitTest() {
 
     private lateinit var client: QrLoginRestClient
 
-    private val fakeDeviceInfoProvider = object : QrLoginDeviceInfoProvider() {
-        override fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
+    private val fakeDeviceInfoProvider = mock<QrLoginDeviceInfoProvider> {
+        on { get() } doReturn QrLoginDeviceInfo(
             os = "Android",
             osVersion = "14",
             model = "Pixel 8 Pro",
@@ -189,6 +191,24 @@ class QrLoginRestClientTest : BaseUnitTest() {
     @Test
     fun `given 200 missing user_login, when exchange, then MalformedResponse`() = testBlocking {
         responder = { ok(it, body = """{"site_url":"https://x","application_password":"ap"}""") }
+
+        val result = client.exchange("https://store.example", "tok", "g")
+
+        assertThat(result.exceptionOrNull()).isEqualTo(QrLoginExchangeException.MalformedResponse)
+    }
+
+    @Test
+    fun `given 200 with null JSON literal body, when exchange, then MalformedResponse`() = testBlocking {
+        responder = { ok(it, body = "null") }
+
+        val result = client.exchange("https://store.example", "tok", "g")
+
+        assertThat(result.exceptionOrNull()).isEqualTo(QrLoginExchangeException.MalformedResponse)
+    }
+
+    @Test
+    fun `given 200 with empty body, when exchange, then MalformedResponse`() = testBlocking {
+        responder = { ok(it, body = "") }
 
         val result = client.exchange("https://store.example", "tok", "g")
 

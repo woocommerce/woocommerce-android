@@ -4,7 +4,6 @@ import android.os.Build
 import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.BuildConfig
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Wraps the Android `Build` and `BuildConfig` lookups behind an injectable seam so the
@@ -18,9 +17,8 @@ import javax.inject.Singleton
  * `MobileAppQRLogin::DEVICE_PAYLOAD_KEYS` (WooCommerce Core). Each field is length-capped
  * server-side, so we don't need to truncate locally.
  */
-@Singleton
-open class QrLoginDeviceInfoProvider @Inject constructor() {
-    open fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
+class QrLoginDeviceInfoProvider @Inject constructor() {
+    fun get(): QrLoginDeviceInfo = QrLoginDeviceInfo(
         os = OS_NAME,
         osVersion = Build.VERSION.RELEASE.orEmpty(),
         model = Build.MODEL.orEmpty(),

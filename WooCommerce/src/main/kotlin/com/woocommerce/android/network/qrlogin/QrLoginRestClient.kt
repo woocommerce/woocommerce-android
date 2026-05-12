@@ -47,8 +47,8 @@ class QrLoginRestClient @Inject constructor(
                 Result.success(performScan(siteUrl, token))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapScanException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapScanException(e))
             }
         }
 
@@ -58,8 +58,8 @@ class QrLoginRestClient @Inject constructor(
                 Result.success(performSessionStatus(siteUrl, sessionId))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapSessionStatusException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapSessionStatusException(e))
             }
         }
 
@@ -73,8 +73,8 @@ class QrLoginRestClient @Inject constructor(
                 Result.success(performExchange(siteUrl, token, exchangeGrant))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapExchangeException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapExchangeException(e))
             }
         }
 
@@ -216,8 +216,8 @@ class QrLoginRestClient @Inject constructor(
 
     private fun parseExchangeBody(body: String): QrLoginCredentials? {
         // Let JsonSyntaxException propagate so mapException converts it to MalformedResponse.
-        val response = gson.fromJson(body, ExchangeResponse::class.java)
-        val credentials = response?.toCredentials()
+        val response = gson.fromJson(body, ExchangeResponse::class.java) ?: return null
+        val credentials = response.toCredentials()
         if (credentials == null) {
             WooLog.w(
                 WooLog.T.LOGIN,
@@ -279,6 +279,8 @@ class QrLoginRestClient @Inject constructor(
     private data class ScanRequest(
         val token: String,
         val device: QrLoginDeviceInfo,
+        // Capability flag for the Core number-matching cutover. Servers that require
+        // number matching reject legacy clients missing this value before mutating token state.
         @SerializedName("supports_number_matching") val supportsNumberMatching: Boolean,
     )
 
@@ -307,9 +309,16 @@ class QrLoginRestClient @Inject constructor(
             "scanned" -> QrLoginSessionStatus.Scanned
             "approved" -> approvedOrFailClosed()
             "rejected" -> QrLoginSessionStatus.Rejected
+            "expired" -> QrLoginSessionStatus.Expired
             // Treat unknown states defensively as Expired so the UI shows a terminal screen
             // rather than spinning indefinitely on a state the app doesn't understand.
-            else -> QrLoginSessionStatus.Expired
+            else -> {
+                WooLog.w(
+                    WooLog.T.LOGIN,
+                    "$QR_LOGIN_UNKNOWN_SESSION_STATE_LOG_ID: ${state ?: "(missing)"}"
+                )
+                QrLoginSessionStatus.Expired
+            }
         }
 
         // Approved without a grant shouldn't be possible against a Task-7 server, but if
@@ -318,7 +327,13 @@ class QrLoginRestClient @Inject constructor(
             exchangeGrant
                 ?.takeIf { it.isNotBlank() }
                 ?.let { QrLoginSessionStatus.Approved(it) }
-                ?: QrLoginSessionStatus.Expired
+                ?: run {
+                    WooLog.w(
+                        WooLog.T.LOGIN,
+                        "$QR_LOGIN_APPROVED_NO_GRANT_LOG_ID: approved session-status missing exchange_grant"
+                    )
+                    QrLoginSessionStatus.Expired
+                }
     }
 
     private data class ExchangeRequest(
@@ -358,6 +373,8 @@ class QrLoginRestClient @Inject constructor(
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_CONFLICT = 409
         const val HTTP_UPGRADE_REQUIRED = 426
+        const val QR_LOGIN_APPROVED_NO_GRANT_LOG_ID = "QR_LOGIN_APPROVED_NO_GRANT"
+        const val QR_LOGIN_UNKNOWN_SESSION_STATE_LOG_ID = "QR_LOGIN_UNKNOWN_SESSION_STATE"
         val POLL_CACHE_CONTROL = CacheControl.Builder()
             .noCache()
             .noStore()
@@ -432,7 +449,7 @@ sealed class QrLoginExchangeException(message: String) : Exception(message) {
     data object NotApproved :
         QrLoginExchangeException("Exchange called before merchant approved the number match")
     data object InvalidExchangeGrant :
-        QrLoginExchangeException("Exchange grant nonce did not match the server-side value")
+        QrLoginExchangeException("QR login exchange could not be completed")
     data class HttpError(val code: Int) : QrLoginExchangeException("HTTP $code from exchange endpoint")
     data class Unknown(val original: Throwable) :
         QrLoginExchangeException("Unknown exchange failure: ${original.javaClass.simpleName}")

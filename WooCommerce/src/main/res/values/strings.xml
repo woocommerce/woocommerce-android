@@ -232,7 +232,7 @@
     <string name="login_qr_match_title">Confirm sign-in</string>
     <string name="login_qr_match_host_label">You\'re signing in to</string>
     <string name="login_qr_match_subtitle">Tap this number on your computer to finish.</string>
-    <string name="login_qr_match_countdown" comment="%1$d is seconds remaining before the challenge expires.">Expires in %1$ds</string>
+    <string name="login_qr_match_countdown">Expires in %1$ds</string>
     <string name="login_qr_match_cancel">Cancel</string>
     <string name="login_qr_match_security_note">Both screens must show the same number for sign-in to complete.</string>
 
@@ -242,7 +242,7 @@
     <string name="login_qr_scanner_error_payload_title">Not a WooCommerce code</string>
     <string name="login_qr_scanner_error_payload_body">This QR isn\'t a WooCommerce login code. Generate a new one from your store and try again.</string>
     <string name="login_qr_scanner_error_install_qr_title">That\'s the install QR</string>
-    <string name="login_qr_scanner_error_install_qr_body">The app\'s already installed — this QR installs it. In wp-admin, tap the %1$s button to reveal the sign-in QR. Or visit %2$s on your computer.</string>
+    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[The app\'s already installed — this QR installs it. In wp-admin, tap the <b>%1$s</b> button to reveal the sign-in QR. Or visit <b>%2$s</b> on your computer.]]></string>
     <string name="login_qr_scanner_error_install_qr_body_button">App is installed</string>
     <string name="login_qr_scanner_error_token_title">Code expired</string>
     <string name="login_qr_scanner_error_token_body">That code expired or has already been used. Generate a new one in your store.</string>
@@ -269,7 +269,7 @@
     <string name="login_qr_error_primary_retry">Try again</string>
     <string name="login_qr_error_primary_scan">Scan a new code</string>
     <string name="login_qr_session_replace_title">You\'re already signed in</string>
-    <string name="login_qr_session_replace_body">Continuing will sign you out of your current session and start a new sign-in. Anything you haven\'t saved may be lost.</string>
+    <string name="login_qr_session_replace_body">Continuing will sign you out of your current session and start a new sign-in.</string>
     <string name="login_qr_session_replace_continue">Continue and sign out</string>
     <string name="login_qr_session_replace_cancel">Cancel</string>
 
