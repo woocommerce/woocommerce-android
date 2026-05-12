@@ -13,8 +13,6 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginPayload
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -61,11 +59,10 @@ class SiteQrLoginFlowTest : BaseUnitTest() {
         flow.start()
         advanceUntilIdle()
 
-        // After Expired arrives, state moves on to Failed(MatchTimedOut). Capture intermediate
-        // states by observing the StateFlow during the run.
-        // Simpler: verify the scan call fired with the right args.
         verify(restClient).scan(ticket.siteUrl, ticket.token)
-        assertThat(flow.state.value).isEqualTo(FlowState.Failed(reason = ErrorReason.MatchTimedOut, retryable = false))
+        val state = flow.state.value as FlowState.Failed
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchTimedOut)
+        assertThat(state.retryable).isFalse()
     }
 
     @Test
@@ -300,39 +297,32 @@ class SiteQrLoginFlowTest : BaseUnitTest() {
 
     // endregion
 
-    // region analytics events
+    // region failedAt diagnostic field
 
     @Test
-    fun `given scan fails with Network, when start fires, then a Failure analytics event is emitted`() = testBlocking {
+    fun `given scan fails, when start fires, then Failed carries failedAt=Scan`() = testBlocking {
         whenever(restClient.scan(ticket.siteUrl, ticket.token))
             .thenReturn(Result.failure(QrLoginScanException.Network))
         val flow = newFlow()
-        val collected = mutableListOf<FlowAnalyticsEvent>()
-        val job = launch { flow.analyticsEvents.toList(collected) }
 
         flow.start()
         advanceUntilIdle()
-        job.cancel()
 
-        val failure = collected.filterIsInstance<FlowAnalyticsEvent.Failure>().single()
-        assertThat(failure.step).isEqualTo(FailureStep.Scan)
-        assertThat(failure.reason).isEqualTo(ErrorReason.Network)
+        assertThat((flow.state.value as FlowState.Failed).failedAt).isEqualTo(FailureStep.Scan)
     }
 
     @Test
-    fun `given the flow succeeds, when completeLogin returns, then a Success analytics event is emitted`() =
-        testBlocking {
-            stubHappyPath()
-            val flow = newFlow()
-            val collected = mutableListOf<FlowAnalyticsEvent>()
-            val job = launch { flow.analyticsEvents.toList(collected) }
+    fun `given poll returns Rejected, when start fires, then Failed carries failedAt=Approve`() = testBlocking {
+        whenever(restClient.scan(ticket.siteUrl, ticket.token)).thenReturn(Result.success(scanResult))
+        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
+            .thenReturn(Result.success(QrLoginSessionStatus.Rejected))
+        val flow = newFlow()
 
-            flow.start()
-            advanceUntilIdle()
-            job.cancel()
+        flow.start()
+        advanceUntilIdle()
 
-            assertThat(collected).contains(FlowAnalyticsEvent.Success)
-        }
+        assertThat((flow.state.value as FlowState.Failed).failedAt).isEqualTo(FailureStep.Approve)
+    }
 
     // endregion
 

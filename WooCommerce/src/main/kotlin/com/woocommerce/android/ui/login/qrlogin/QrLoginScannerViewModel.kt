@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.
 import com.woocommerce.android.ui.login.qrlogin.flow.AuthPhase
 import com.woocommerce.android.ui.login.qrlogin.flow.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.flow.FailureStep
-import com.woocommerce.android.ui.login.qrlogin.flow.FlowAnalyticsEvent
 import com.woocommerce.android.ui.login.qrlogin.flow.FlowCompletion
 import com.woocommerce.android.ui.login.qrlogin.flow.FlowState
 import com.woocommerce.android.ui.login.qrlogin.flow.QrLoginFlow
@@ -40,8 +39,8 @@ import javax.inject.Inject
  *   4. Gate every action on the user being signed out — if a session is active we surface a
  *      replace-session warning first and only proceed after logout.
  *
- * The ViewModel is flow-agnostic: it observes [FlowState] / [FlowAnalyticsEvent] from whichever
- * implementation the factory returned and forwards them into the UI and the analytics tracker.
+ * The ViewModel is flow-agnostic: it observes [FlowState] from whichever implementation the
+ * factory returned and forwards it into the UI and the analytics tracker.
  */
 @HiltViewModel
 class QrLoginScannerViewModel @Inject constructor(
@@ -168,8 +167,7 @@ class QrLoginScannerViewModel @Inject constructor(
         flowObserverJob?.cancel()
         currentFlow = flow
         flowObserverJob = launch {
-            launch { flow.state.collect { applyFlowState(it) } }
-            launch { flow.analyticsEvents.collect { trackFlowEvent(it) } }
+            flow.state.collect { applyFlowState(it) }
         }
     }
 
@@ -183,7 +181,15 @@ class QrLoginScannerViewModel @Inject constructor(
                 subtitle = state.subtitle,
                 expiresAtEpochMs = state.expiresAtEpochMs,
             )
-            is FlowState.Failed -> _uiState.value = Error(reason = state.reason, retryable = state.retryable)
+            is FlowState.Failed -> {
+                _uiState.value = Error(reason = state.reason, retryable = state.retryable)
+                trackScanFailure(
+                    step = state.failedAt.toAnalyticsKey(),
+                    errorContext = null,
+                    errorType = state.reason::class.simpleName,
+                    extras = state.extras,
+                )
+            }
             is FlowState.Completed -> handleCompletion(state.completion)
         }
     }
@@ -200,16 +206,6 @@ class QrLoginScannerViewModel @Inject constructor(
                 triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = completion.url))
             }
         }
-    }
-
-    private fun trackFlowEvent(event: FlowAnalyticsEvent) {
-        if (event !is FlowAnalyticsEvent.Failure) return
-        trackScanFailure(
-            step = event.step.toAnalyticsKey(),
-            errorContext = event.errorContext,
-            errorType = event.reason::class.simpleName,
-            extras = event.extras,
-        )
     }
 
     private fun FailureStep.toAnalyticsKey(): String = when (this) {

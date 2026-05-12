@@ -9,11 +9,8 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginPayload
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -42,9 +39,6 @@ internal class WpComQrLoginFlow(
 
     private val _state = MutableStateFlow<FlowState>(FlowState.Initial)
     override val state: StateFlow<FlowState> = _state.asStateFlow()
-
-    private val _analyticsEvents = MutableSharedFlow<FlowAnalyticsEvent>(extraBufferCapacity = 8)
-    override val analyticsEvents: SharedFlow<FlowAnalyticsEvent> = _analyticsEvents.asSharedFlow()
 
     private var activeJob: Job? = null
     private var retainedGrant: String? = null
@@ -83,11 +77,7 @@ internal class WpComQrLoginFlow(
                     pollUntilApprovedOrTerminal(sessionId = scan.sessionId)
                 },
                 onFailure = { failure ->
-                    failWith(
-                        step = FailureStep.Scan,
-                        cause = failure,
-                        reason = failure.toScanReason(),
-                    )
+                    failWith(step = FailureStep.Scan, reason = failure.toScanReason())
                 }
             )
         }
@@ -110,11 +100,7 @@ internal class WpComQrLoginFlow(
             PollOutcome.Rejected -> failApproveTerminal(ErrorReason.MatchRejected)
             PollOutcome.Expired -> failApproveTerminal(ErrorReason.MatchTimedOut)
             PollOutcome.AlreadyCompleted -> failApproveTerminal(ErrorReason.MatchAlreadyCompleted)
-            is PollOutcome.TransientError -> failWith(
-                step = FailureStep.Poll,
-                cause = outcome.cause,
-                reason = outcome.reason,
-            )
+            is PollOutcome.TransientError -> failWith(step = FailureStep.Poll, reason = outcome.reason)
             PollOutcome.Scanned -> Unit
         }
     }
@@ -130,14 +116,12 @@ internal class WpComQrLoginFlow(
             ).fold(
                 onSuccess = { result ->
                     retainedGrant = null
-                    _analyticsEvents.tryEmit(FlowAnalyticsEvent.Success)
                     _state.value = FlowState.Completed(FlowCompletion.OpenMagicLink(url = result.magicLinkUrl))
                 },
                 onFailure = { failure ->
                     val httpCode = (failure as? WpComQrLoginExchangeException.HttpError)?.code
                     failWith(
                         step = FailureStep.Exchange,
-                        cause = failure,
                         reason = failure.toExchangeReason(),
                         extras = httpCode?.let { mapOf(KEY_ERROR_CODE to it) }.orEmpty(),
                     )
@@ -148,33 +132,26 @@ internal class WpComQrLoginFlow(
 
     private fun failApproveTerminal(reason: ErrorReason) {
         retainedGrant = null
-        _analyticsEvents.tryEmit(
-            FlowAnalyticsEvent.Failure(
-                step = FailureStep.Approve,
-                errorContext = null,
-                reason = reason,
-            )
+        _state.value = FlowState.Failed(
+            reason = reason,
+            retryable = false,
+            failedAt = FailureStep.Approve,
         )
-        _state.value = FlowState.Failed(reason = reason, retryable = false)
     }
 
     private fun failWith(
         step: FailureStep,
-        cause: Throwable,
         reason: ErrorReason,
         extras: Map<String, Any> = emptyMap(),
         retryable: Boolean = reason.isRetryable(),
     ) {
         if (!retryable) retainedGrant = null
-        _analyticsEvents.tryEmit(
-            FlowAnalyticsEvent.Failure(
-                step = step,
-                errorContext = cause.javaClass.simpleName,
-                reason = reason,
-                extras = extras,
-            )
+        _state.value = FlowState.Failed(
+            reason = reason,
+            retryable = retryable,
+            failedAt = step,
+            extras = extras,
         )
-        _state.value = FlowState.Failed(reason = reason, retryable = retryable)
     }
 
     private fun WpComQrLoginSessionStatus.toPollOutcome(): PollOutcome = when (this) {

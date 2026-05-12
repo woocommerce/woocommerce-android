@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.Dispatch
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 import com.woocommerce.android.ui.login.qrlogin.flow.AuthPhase
 import com.woocommerce.android.ui.login.qrlogin.flow.ErrorReason
-import com.woocommerce.android.ui.login.qrlogin.flow.FlowAnalyticsEvent
+import com.woocommerce.android.ui.login.qrlogin.flow.FailureStep
 import com.woocommerce.android.ui.login.qrlogin.flow.FlowCompletion
 import com.woocommerce.android.ui.login.qrlogin.flow.FlowState
 import com.woocommerce.android.ui.login.qrlogin.flow.QrLoginFlow
@@ -21,11 +21,8 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -130,7 +127,13 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(successScan())
         advanceUntilIdle()
 
-        fakeFlow.emit(FlowState.Failed(reason = ErrorReason.Network, retryable = true))
+        fakeFlow.emit(
+            FlowState.Failed(
+                reason = ErrorReason.Network,
+                retryable = true,
+                failedAt = FailureStep.Scan,
+            )
+        )
         advanceUntilIdle()
 
         val state = viewModel.uiState.value as UiState.Error
@@ -151,27 +154,28 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given flow emits a Failure analytics event, when observed, then VM tracks it`() = testBlocking {
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
+    fun `given flow emits Failed at scan, when observed, then VM tracks LOGIN_QR_SCAN_FAILED with step and reason`() =
+        testBlocking {
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
 
-        fakeFlow.emitAnalytics(
-            FlowAnalyticsEvent.Failure(
-                step = com.woocommerce.android.ui.login.qrlogin.flow.FailureStep.Scan,
-                errorContext = "QrLoginScanException\$Network",
-                reason = ErrorReason.Network,
+            fakeFlow.emit(
+                FlowState.Failed(
+                    reason = ErrorReason.Network,
+                    retryable = true,
+                    failedAt = FailureStep.Scan,
+                )
             )
-        )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        verify(analyticsTracker).track(
-            eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED),
-            any(),
-            errorContext = eq("QrLoginScanException\$Network"),
-            errorType = eq("Network"),
-            errorDescription = eq(null),
-        )
-    }
+            verify(analyticsTracker).track(
+                eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED),
+                any(),
+                errorContext = eq(null),
+                errorType = eq("Network"),
+                errorDescription = eq(null),
+            )
+        }
 
     // endregion
 
@@ -202,7 +206,13 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     fun `given error state, when user retries exchange, then flow retry is invoked`() = testBlocking {
         viewModel.onScanResult(successScan())
         advanceUntilIdle()
-        fakeFlow.emit(FlowState.Failed(reason = ErrorReason.Network, retryable = true))
+        fakeFlow.emit(
+            FlowState.Failed(
+                reason = ErrorReason.Network,
+                retryable = true,
+                failedAt = FailureStep.Scan,
+            )
+        )
         advanceUntilIdle()
 
         viewModel.onRetryExchange()
@@ -214,7 +224,13 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
     fun `given error state, when user starts over, then flow is cancelled and state returns to Idle`() = testBlocking {
         viewModel.onScanResult(successScan())
         advanceUntilIdle()
-        fakeFlow.emit(FlowState.Failed(reason = ErrorReason.Network, retryable = true))
+        fakeFlow.emit(
+            FlowState.Failed(
+                reason = ErrorReason.Network,
+                retryable = true,
+                failedAt = FailureStep.Scan,
+            )
+        )
         advanceUntilIdle()
 
         viewModel.onStartOver()
@@ -372,16 +388,9 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     private fun successScan() = CodeScannerStatus.Success(code = RAW_SCAN, format = BarcodeFormat.FormatQRCode)
 
-    /**
-     * Test double for [QrLoginFlow] — exposes mutable state and analytics emitters so tests can
-     * drive the VM through any flow transition without standing up the real implementation.
-     */
     private class FakeQrLoginFlow : QrLoginFlow {
         private val _state = MutableStateFlow<FlowState>(FlowState.Initial)
         override val state: StateFlow<FlowState> = _state.asStateFlow()
-
-        private val _analyticsEvents = MutableSharedFlow<FlowAnalyticsEvent>(extraBufferCapacity = 8)
-        override val analyticsEvents: SharedFlow<FlowAnalyticsEvent> = _analyticsEvents.asSharedFlow()
 
         var startCount = 0
             private set
@@ -406,9 +415,6 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             _state.value = state
         }
 
-        fun emitAnalytics(event: FlowAnalyticsEvent) {
-            _analyticsEvents.tryEmit(event)
-        }
     }
 
     private companion object {

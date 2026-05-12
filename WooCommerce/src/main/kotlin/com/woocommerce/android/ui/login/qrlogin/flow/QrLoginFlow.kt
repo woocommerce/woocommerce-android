@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.qrlogin.flow
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -16,12 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * The state machine shape is identical for both: only the transport, the completion shape, and a
  * few flow-specific error codes differ. The ViewModel selects an implementation via
- * [QrLoginFlowFactory], forwards [state] into its `UiState`, and forwards [analyticsEvents] into
- * the analytics tracker.
+ * [QrLoginFlowFactory] and forwards [state] into its `UiState` and into analytics — failure
+ * diagnostics live on [FlowState.Failed] itself, so no parallel event channel is needed.
  */
 interface QrLoginFlow {
     val state: StateFlow<FlowState>
-    val analyticsEvents: Flow<FlowAnalyticsEvent>
 
     /** Kick off the flow. Safe to call once; subsequent calls are ignored. */
     fun start()
@@ -45,7 +43,14 @@ sealed interface FlowState {
         val subtitle: String,
         val expiresAtEpochMs: Long,
     ) : FlowState
-    data class Failed(val reason: ErrorReason, val retryable: Boolean) : FlowState
+
+    data class Failed(
+        val reason: ErrorReason,
+        val retryable: Boolean,
+        val failedAt: FailureStep,
+        val extras: Map<String, Any> = emptyMap(),
+    ) : FlowState
+
     data class Completed(val completion: FlowCompletion) : FlowState
 }
 
@@ -71,15 +76,4 @@ enum class FailureStep {
 sealed interface FlowCompletion {
     data class LoggedIn(val localSiteId: Int) : FlowCompletion
     data class OpenMagicLink(val url: String) : FlowCompletion
-}
-
-sealed interface FlowAnalyticsEvent {
-    data class Failure(
-        val step: FailureStep,
-        val errorContext: String?,
-        val reason: ErrorReason,
-        val extras: Map<String, Any> = emptyMap(),
-    ) : FlowAnalyticsEvent
-
-    data object Success : FlowAnalyticsEvent
 }

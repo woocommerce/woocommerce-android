@@ -53,8 +53,9 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(restClient).scan(payload.token, payload.encrypted)
-            assertThat(flow.state.value)
-                .isEqualTo(FlowState.Failed(reason = ErrorReason.MatchTimedOut, retryable = false))
+            val state = flow.state.value as FlowState.Failed
+            assertThat(state.reason).isEqualTo(ErrorReason.MatchTimedOut)
+            assertThat(state.retryable).isFalse()
         }
 
     @Test
