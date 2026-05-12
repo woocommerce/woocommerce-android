@@ -59,7 +59,7 @@
     <string name="assistant_chat_empty_state_suggestion_content_description">Send suggestion: %1$s</string>
     <string name="assistant_early_access_notice_badge">EARLY ACCESS</string>
     <string name="assistant_early_access_notice_body">Hi! We\'re just getting started, with more on the way. Let us know what\'s missing and what you\'d love help with!</string>
-    <string name="assistant_early_access_notice_feedback">Feedback &amp; requests</string>
+    <string name="assistant_early_access_notice_feedback">Give Feedback</string>
     <string name="assistant_early_access_notice_dismiss_content_description">Dismiss early access notice</string>
     <string name="assistant_stats_card_total_sales_label">Total Sales</string>
     <string name="assistant_stats_card_net_sales_label">Net Sales</string>
