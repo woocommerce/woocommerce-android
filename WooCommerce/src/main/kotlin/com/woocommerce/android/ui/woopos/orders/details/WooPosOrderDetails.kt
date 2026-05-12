@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -297,14 +300,16 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             }
         )
 
-        OrderLineItemImage(
-            imageUrl = row.imageUrl,
-            modifier = Modifier.constrainAs(image) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-        )
+        val imageModifier = Modifier.constrainAs(image) {
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+        }
+        if (row.isLumpSum) {
+            CustomAmountAvatar(modifier = imageModifier)
+        } else {
+            OrderLineItemImage(imageUrl = row.imageUrl, modifier = imageModifier)
+        }
 
         val hasAttributes = !row.attributesDescription.isNullOrEmpty()
         if (hasAttributes) {
@@ -330,10 +335,19 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
         }
 
         val bookingInfo = row.bookingInfo
-        if (bookingInfo != null) {
-            BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
-        } else {
-            WooPosText(
+        when {
+            bookingInfo != null -> BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
+            row.isLumpSum -> {
+                if (row.includesTax) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
+                        style = WooPosTypography.BodyMedium,
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        modifier = subtitleModifier,
+                    )
+                }
+            }
+            else -> WooPosText(
                 text = row.qtyAndUnitPrice,
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
@@ -348,6 +362,24 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
                 top.linkTo(nameText.top)
                 end.linkTo(parent.end)
             }
+        )
+    }
+}
+
+@Composable
+private fun CustomAmountAvatar(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(56.dp.toAdaptiveIconSize())
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(WooPosIconSize.Small.value),
         )
     }
 }
@@ -706,6 +738,16 @@ fun WooPosOrderDetailsPreview() {
                     bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
                         "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
                     )
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 901,
+                    name = "Gift wrap",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "",
+                    lineTotal = "$2.50",
+                    imageUrl = null,
+                    isLumpSum = true,
+                    includesTax = true,
                 )
             )
         ),
