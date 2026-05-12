@@ -18,16 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SURVEY_SCREEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_CONTEXT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ANALYTICS_HUB_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_CANCELED
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GENERAL_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_OPENED
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_STORE_SETUP_CONTEXT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_SHIPPING_LINES_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_POS_CURRENT_USER_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
@@ -60,16 +52,7 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     private var backPressedCallback: OnBackPressedCallback? = null
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
     private val feedbackContext by lazy {
-        when (arguments.surveyType) {
-            SurveyType.MAIN -> VALUE_FEEDBACK_GENERAL_CONTEXT
-            SurveyType.PRODUCT -> VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
-            SurveyType.STORE_ONBOARDING -> VALUE_FEEDBACK_STORE_SETUP_CONTEXT
-            SurveyType.ADDONS -> VALUE_PRODUCT_ADDONS_FEEDBACK
-            SurveyType.ANALYTICS_HUB -> VALUE_ANALYTICS_HUB_FEEDBACK
-            SurveyType.ORDER_SHIPPING_LINES -> VALUE_ORDER_SHIPPING_LINES_FEEDBACK
-            SurveyType.WOO_POS_POTENTIAL_USER -> VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK
-            SurveyType.WOO_POS_CURRENT_USER -> VALUE_WOO_POS_CURRENT_USER_FEEDBACK
-        }
+        arguments.surveyType.feedbackContext
     }
 
     private var _binding: FragmentFeedbackSurveyBinding? = null

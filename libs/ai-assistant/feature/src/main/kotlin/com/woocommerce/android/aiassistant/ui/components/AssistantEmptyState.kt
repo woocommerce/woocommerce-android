@@ -34,6 +34,9 @@ import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
 
 @Composable
 internal fun AssistantEmptyState(
+    showEarlyAccessNotice: Boolean,
+    onFeedbackClick: () -> Unit,
+    onDismissEarlyAccessNotice: () -> Unit,
     onSuggestionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,6 +48,13 @@ internal fun AssistantEmptyState(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        if (showEarlyAccessNotice) {
+            AssistantEarlyAccessNoticeCard(
+                onFeedbackClick = onFeedbackClick,
+                onDismissClick = onDismissEarlyAccessNotice,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         Text(
             text = stringResource(R.string.assistant_chat_empty_state_title),
             color = MaterialTheme.colorScheme.onSurface,
@@ -156,6 +166,11 @@ private val EMPTY_STATE_DIVIDER_INDENT = 56.dp
 @Composable
 private fun AssistantEmptyStatePreview() {
     Surface(color = assistantCanvasColor()) {
-        AssistantEmptyState(onSuggestionClick = {})
+        AssistantEmptyState(
+            showEarlyAccessNotice = true,
+            onFeedbackClick = {},
+            onDismissEarlyAccessNotice = {},
+            onSuggestionClick = {},
+        )
     }
 }

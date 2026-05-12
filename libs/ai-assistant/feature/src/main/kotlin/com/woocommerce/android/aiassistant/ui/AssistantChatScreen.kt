@@ -91,6 +91,9 @@ import kotlinx.serialization.json.put
 fun AssistantRoute(
     conversationId: String,
     onBack: () -> Unit,
+    showEarlyAccessNotice: Boolean,
+    onDismissEarlyAccessNotice: () -> Unit,
+    onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
@@ -102,6 +105,9 @@ fun AssistantRoute(
     AssistantChatScreen(
         viewModel = viewModel,
         onBack = onBack,
+        showEarlyAccessNotice = showEarlyAccessNotice,
+        onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
+        onEarlyAccessFeedbackClick = onEarlyAccessFeedbackClick,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
         onCardAction = onCardAction,
@@ -112,6 +118,9 @@ fun AssistantRoute(
 fun AssistantChatScreen(
     viewModel: AssistantViewModel,
     onBack: () -> Unit,
+    showEarlyAccessNotice: Boolean,
+    onDismissEarlyAccessNotice: () -> Unit,
+    onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
@@ -149,6 +158,9 @@ fun AssistantChatScreen(
             viewModel.onRestartConversation()
         },
         onBack = onBack,
+        showEarlyAccessNotice = showEarlyAccessNotice,
+        onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
+        onEarlyAccessFeedbackClick = onEarlyAccessFeedbackClick,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
         onCardAction = onCardAction,
@@ -168,6 +180,9 @@ fun AssistantChatScreen(
     onCancelWrite: () -> Unit,
     onRestartConversation: () -> Unit,
     onBack: () -> Unit,
+    showEarlyAccessNotice: Boolean,
+    onDismissEarlyAccessNotice: () -> Unit,
+    onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
@@ -217,6 +232,9 @@ fun AssistantChatScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.shouldShowEmptyState) {
                 AssistantEmptyState(
+                    showEarlyAccessNotice = showEarlyAccessNotice,
+                    onFeedbackClick = onEarlyAccessFeedbackClick,
+                    onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
                     onSuggestionClick = submitSuggestion,
                     modifier = Modifier
                         .fillMaxSize()
@@ -864,6 +882,9 @@ private fun AssistantChatScreenEmptyStatePreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = true,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -917,6 +938,9 @@ private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -962,6 +986,9 @@ private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -988,6 +1015,9 @@ private fun AssistantChatScreenTypingPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -1025,6 +1055,9 @@ private fun AssistantChatScreenPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
         assistantCardRenderer = PreviewAssistantCardRenderer,
     )
 }
@@ -1071,6 +1104,9 @@ private fun AssistantChatScreenConfirmationPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 

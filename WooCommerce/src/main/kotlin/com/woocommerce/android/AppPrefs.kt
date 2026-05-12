@@ -230,7 +230,9 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
 
-        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
+
+        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED
     }
 
     fun init(context: Context) {
@@ -342,6 +344,19 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var isAiAssistantEarlyAccessNoticeDismissed: Boolean
+        get() = getBoolean(
+            key = UndeletablePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
+            default = false,
+        )
+        set(value) {
+            val committed = getPreferences()
+                .edit()
+                .putBoolean(UndeletablePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
+                .commit()
+            check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
