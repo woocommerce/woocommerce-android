@@ -13,11 +13,12 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryIdGenerator
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardKey
 import com.woocommerce.android.tools.SelectedSite
-import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,9 +31,9 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
 class AssistantViewModel @AssistedInject constructor(
-    @Assisted private val conversationId: String,
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
+    private val telemetryIdGenerator: AssistantTelemetryIdGenerator,
     private val idGenerator: AssistantMessageIdGenerator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
@@ -40,6 +41,7 @@ class AssistantViewModel @AssistedInject constructor(
 
     private var turnJob: Job? = null
     private var activeAssistantMessageId: String? = null
+    private var conversationId: String = telemetryIdGenerator.nextId()
     private var history: List<AssistantMessage> = emptyList()
     private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
     private var lastUserMessage: String? = null
@@ -129,9 +131,11 @@ class AssistantViewModel @AssistedInject constructor(
 
     fun onRestartConversation() {
         val shouldCancelTurn = _uiState.value.isTurnActive
+        val previousConversationId = conversationId
         turnJob?.cancel()
         turnJob = null
         activeAssistantMessageId = null
+        conversationId = telemetryIdGenerator.nextId()
         history = emptyList()
         lastTurnBaseHistory = emptyList()
         lastUserMessage = null
@@ -140,7 +144,7 @@ class AssistantViewModel @AssistedInject constructor(
 
         if (shouldCancelTurn) {
             viewModelScope.launch {
-                runtime.cancelTurn(conversationId)
+                runtime.cancelTurn(previousConversationId)
             }
         }
     }
@@ -151,14 +155,19 @@ class AssistantViewModel @AssistedInject constructor(
         if (!isRetry) {
             lastTurnBaseHistory = history
         }
+        val userMessage = if (isRetry) {
+            null
+        } else {
+            AssistantUiMessage(idGenerator.nextId(), AssistantUiMessage.Role.USER, message)
+        }
+        val assistantMessageId = idGenerator.nextId()
+        val telemetryContext = AssistantTelemetryContext(
+            conversationId = conversationId,
+            requestId = telemetryIdGenerator.nextId(),
+            messageId = assistantMessageId,
+        )
 
         _uiState.update { state ->
-            val userMessage = if (isRetry) {
-                null
-            } else {
-                AssistantUiMessage(idGenerator.nextId(), AssistantUiMessage.Role.USER, message)
-            }
-            val assistantMessageId = idGenerator.nextId()
             activeAssistantMessageId = assistantMessageId
             val turnMessages = if (isRetry) {
                 listOf(AssistantUiMessage(assistantMessageId, AssistantUiMessage.Role.ASSISTANT, ""))
@@ -180,6 +189,7 @@ class AssistantViewModel @AssistedInject constructor(
 
         val request = AssistantTurnRequest(
             conversationId = conversationId,
+            telemetryContext = telemetryContext,
             siteId = selectedSite.get().siteId,
             toolScope = ToolScope.GLOBAL,
             userMessage = message,
@@ -568,6 +578,6 @@ class AssistantViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(conversationId: String): AssistantViewModel
+        fun create(): AssistantViewModel
     }
 }

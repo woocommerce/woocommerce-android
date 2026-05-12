@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ interface AssistantRuntime {
 
 data class AssistantTurnRequest(
     val conversationId: String,
+    val telemetryContext: AssistantTelemetryContext,
     val siteId: Long,
     val toolScope: ToolScope,
     val userMessage: String,

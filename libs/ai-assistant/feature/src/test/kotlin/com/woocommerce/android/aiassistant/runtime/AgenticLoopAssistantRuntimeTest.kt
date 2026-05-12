@@ -32,6 +32,7 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewFie
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryErrorKind
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEvent
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
@@ -700,8 +701,15 @@ class AgenticLoopAssistantRuntimeTest {
         assistantTelemetry = assistantTelemetry,
     )
 
-    private fun givenTurnRequest() = AssistantTurnRequest(
+    private fun givenTurnRequest(
+        telemetryContext: AssistantTelemetryContext = AssistantTelemetryContext(
+            conversationId = "conversation-1",
+            requestId = "request-1",
+            messageId = "message-1",
+        ),
+    ) = AssistantTurnRequest(
         conversationId = "conversation-1",
+        telemetryContext = telemetryContext,
         siteId = 123L,
         toolScope = ToolScope.GLOBAL,
         userMessage = "Hello",

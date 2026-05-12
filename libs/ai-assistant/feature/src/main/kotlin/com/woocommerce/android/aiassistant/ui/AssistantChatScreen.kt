@@ -89,7 +89,6 @@ import kotlinx.serialization.json.put
 
 @Composable
 fun AssistantRoute(
-    conversationId: String,
     onBack: () -> Unit,
     showEarlyAccessNotice: Boolean,
     onDismissEarlyAccessNotice: () -> Unit,
@@ -99,7 +98,7 @@ fun AssistantRoute(
     onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     val viewModel = hiltViewModel<AssistantViewModel, AssistantViewModel.Factory> { factory ->
-        factory.create(conversationId)
+        factory.create()
     }
 
     AssistantChatScreen(

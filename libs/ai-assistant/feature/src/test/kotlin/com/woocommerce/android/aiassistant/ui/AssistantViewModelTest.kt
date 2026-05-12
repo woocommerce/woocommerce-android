@@ -13,6 +13,8 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.FakeAssistantTelemetryIdGenerator
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.tools.SelectedSite
@@ -40,6 +42,7 @@ class AssistantViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var runtime: FakeAssistantRuntime
     private lateinit var selectedSite: SelectedSite
+    private lateinit var testTelemetryIds: FakeAssistantTelemetryIdGenerator
     private lateinit var viewModel: AssistantViewModel
 
     @Before
@@ -49,10 +52,11 @@ class AssistantViewModelTest {
         selectedSite = mock {
             on { get() } doReturn SiteModel().apply { siteId = SITE_ID }
         }
+        testTelemetryIds = FakeAssistantTelemetryIdGenerator()
         viewModel = AssistantViewModel(
-            conversationId = CONVERSATION_ID,
             runtime = runtime,
             selectedSite = selectedSite,
+            telemetryIdGenerator = testTelemetryIds,
             idGenerator = SequentialAssistantMessageIdGenerator(),
         )
     }
@@ -82,14 +86,52 @@ class AssistantViewModelTest {
             AssistantUiMessage(id = "message-2", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
         )
         assertThat(runtime.startRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "request-1",
+                messageId = "message-2",
                 userMessage = "Show my recent orders",
-                history = emptyList(),
             )
         )
+    }
+
+    @Test
+    fun `given idle view model, when first non-empty message is sent, then context reuses assistant message id and has fresh telemetry ids`() =
+        runTest {
+            viewModel.onSendMessage("Show my recent orders")
+
+            val context = runtime.startRequests.single().telemetryContext
+
+            assertThat(context.messageId).isEqualTo("message-2")
+            assertThat(context.conversationId).isEqualTo(testTelemetryIds.recorded[0])
+            assertThat(context.requestId).isEqualTo(testTelemetryIds.recorded[1])
+            assertThat(context.conversationId).isNotEqualTo(context.requestId)
+            assertThat(context.requestId).isNotEqualTo(context.messageId)
+        }
+
+    @Test
+    fun `given existing conversation, when second message is sent, then conversation id is stable and request id is new`() =
+        runTest {
+            viewModel.onSendMessage("first")
+            runtime.emitTurnFinished()
+            viewModel.onSendMessage("second")
+
+            val starts = runtime.startRequests
+
+            assertThat(starts[0].telemetryContext.conversationId)
+                .isEqualTo(starts[1].telemetryContext.conversationId)
+            assertThat(starts[0].telemetryContext.requestId).isNotEqualTo(starts[1].telemetryContext.requestId)
+        }
+
+    @Test
+    fun `given conversation in progress, when restart and then send, then conversation id rotates`() = runTest {
+        viewModel.onSendMessage("first")
+        val first = runtime.startRequests.single().telemetryContext.conversationId
+
+        viewModel.onRestartConversation()
+        viewModel.onSendMessage("second")
+        val second = runtime.startRequests.last().telemetryContext.conversationId
+
+        assertThat(second).isNotEqualTo(first)
     }
 
     @Test
@@ -311,13 +353,7 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
-                userMessage = "Hello",
-                history = emptyList(),
-            )
+            expectedTurnRequest(requestId = "request-2", messageId = "message-3", userMessage = "Hello")
         )
     }
 
@@ -355,13 +391,7 @@ class AssistantViewModelTest {
             viewModel.onRetry()
 
             assertThat(runtime.retryRequests).containsExactly(
-                AssistantTurnRequest(
-                    conversationId = CONVERSATION_ID,
-                    siteId = SITE_ID,
-                    toolScope = ToolScope.GLOBAL,
-                    userMessage = "Hello",
-                    history = emptyList(),
-                )
+                expectedTurnRequest(requestId = "request-2", messageId = "message-3", userMessage = "Hello")
             )
         }
 
@@ -526,10 +556,9 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests.last()).isEqualTo(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "request-3",
+                messageId = "message-5",
                 userMessage = "Current question",
                 history = priorHistory,
             )
@@ -563,12 +592,11 @@ class AssistantViewModelTest {
             assertThat(viewModel.uiState.value.error).isNull()
             assertThat(viewModel.uiState.value.canRetry).isFalse()
             assertThat(runtime.startRequests.last()).isEqualTo(
-                AssistantTurnRequest(
-                    conversationId = CONVERSATION_ID,
-                    siteId = SITE_ID,
-                    toolScope = ToolScope.GLOBAL,
+                expectedTurnRequest(
+                    conversationId = "request-2",
+                    requestId = "request-3",
+                    messageId = "message-4",
                     userMessage = "New question",
-                    history = emptyList(),
                 )
             )
         }
@@ -698,10 +726,9 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "request-3",
+                messageId = "message-5",
                 userMessage = "Second",
                 history = listOf(AssistantMessage.User("First")),
             )
@@ -1075,10 +1102,9 @@ class AssistantViewModelTest {
             viewModel.onSendMessage("What changed?")
 
             assertThat(runtime.startRequests.last()).isEqualTo(
-                AssistantTurnRequest(
-                    conversationId = CONVERSATION_ID,
-                    siteId = SITE_ID,
-                    toolScope = ToolScope.GLOBAL,
+                expectedTurnRequest(
+                    requestId = "request-2",
+                    messageId = "message-4",
                     userMessage = "What changed?",
                     history = listOf(
                         AssistantMessage.User("Summarize sales"),
@@ -1119,13 +1145,7 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.startRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
-                userMessage = "First",
-                history = emptyList(),
-            )
+            expectedTurnRequest(requestId = "request-1", messageId = "message-2", userMessage = "First")
         )
         assertThat(viewModel.uiState.value.messages.map { it.text }).containsExactly("First", "")
     }
@@ -1140,12 +1160,10 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.startRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "request-1",
+                messageId = "message-2",
                 userMessage = "Cancel order 123",
-                history = emptyList(),
             )
         )
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
@@ -1493,6 +1511,18 @@ class AssistantViewModelTest {
         suspend fun emit(event: AssistantRuntimeEvent) {
             events.emit(event)
         }
+
+        suspend fun emitTurnFinished(
+            outcome: LoopOutcome = LoopOutcome.COMPLETED,
+            updatedHistory: List<AssistantMessage> = emptyList(),
+        ) {
+            emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = outcome,
+                    updatedHistory = updatedHistory,
+                )
+            )
+        }
     }
 
     private class SequentialAssistantMessageIdGenerator : AssistantMessageIdGenerator {
@@ -1503,6 +1533,25 @@ class AssistantViewModelTest {
             return "message-$count"
         }
     }
+
+    private fun expectedTurnRequest(
+        conversationId: String = CONVERSATION_ID,
+        requestId: String,
+        messageId: String,
+        userMessage: String,
+        history: List<AssistantMessage> = emptyList(),
+    ) = AssistantTurnRequest(
+        conversationId = conversationId,
+        telemetryContext = AssistantTelemetryContext(
+            conversationId = conversationId,
+            requestId = requestId,
+            messageId = messageId,
+        ),
+        siteId = SITE_ID,
+        toolScope = ToolScope.GLOBAL,
+        userMessage = userMessage,
+        history = history,
+    )
 
     private fun AssistantUiState.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
         messages.toolActivitySegments()
