@@ -62,6 +62,9 @@ class WooPosItemsViewModelTest {
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
     private val isWooVersionSunsetWarningRequired: WooPosIsWooCommerceVersionSunsetWarningRequired = mock()
+    private val resourceProvider: com.woocommerce.android.viewmodel.ResourceProvider = mock {
+        on { getString(any()) }.thenReturn("Custom amount")
+    }
 
     @Before
     fun setup() = runTest {
@@ -616,6 +619,7 @@ class WooPosItemsViewModelTest {
             syncStatusChecker = syncStatusChecker,
             dateTimeProvider = dateTimeProvider,
             isWooCommerceVersionSunsetWarningRequired = isWooVersionSunsetWarningRequired,
+            resourceProvider = resourceProvider,
         )
     }
 }

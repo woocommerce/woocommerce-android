@@ -86,6 +86,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverfl
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -93,6 +94,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
@@ -812,7 +814,14 @@ private fun CustomAmountItem(
             // Edit lives inside the overflow menu, so this also gates the edit path during checkout
             // — intentional: cart contents are locked once payment starts.
             if (canRemoveItems) {
-                CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
+                when (currentWooPosBreakpoint()) {
+                    WooPosBreakpoint.Phone -> CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
+                    WooPosBreakpoint.SmallTablet,
+                    WooPosBreakpoint.Tablet -> {
+                        EditCustomAmountButton(item = item, onUIEvent = onUIEvent)
+                        RemoveItemFromCartButton(item = item, onUIEvent = onUIEvent)
+                    }
+                }
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
@@ -837,6 +846,26 @@ private fun CustomAmountOverflowMenu(
             ),
         )
     )
+}
+
+@Composable
+private fun EditCustomAmountButton(
+    item: WooPosCartItemViewState.CustomAmount,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    IconButton(
+        onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
+        modifier = Modifier.size(WooPosIconSize.XLarge.value),
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
+            tint = WooPosTheme.colors.onSurfaceVariantHighest,
+            contentDescription = stringResource(
+                id = R.string.woopos_cart_custom_amount_edit_content_description,
+                item.name,
+            ),
+        )
+    }
 }
 
 @Composable
