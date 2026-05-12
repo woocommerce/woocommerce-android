@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.qrlogin
+package com.woocommerce.android.ui.login
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 
 @Composable
-fun QrLoginHelpButton(
+fun HelpButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurface,

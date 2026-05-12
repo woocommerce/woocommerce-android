@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
+import com.woocommerce.android.ui.login.HelpButton
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 
@@ -83,7 +84,7 @@ fun QrLoginScannerScreen(
         } else {
             MaterialTheme.colorScheme.onSurface
         }
-        QrLoginHelpButton(
+        HelpButton(
             onClick = onHelpClicked,
             tint = helpTint,
             modifier = Modifier.align(Alignment.TopEnd),

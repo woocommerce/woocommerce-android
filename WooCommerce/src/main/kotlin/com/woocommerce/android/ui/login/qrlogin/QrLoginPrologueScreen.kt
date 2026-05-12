@@ -26,8 +26,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.HelpButton
 
 @Composable
 fun QrLoginPrologueScreen(
@@ -127,7 +128,7 @@ fun QrLoginPrologueScreen(
             Buttons(onScanClicked = handleScanClicked, onFallbackClicked = onFallbackClicked)
         }
 
-        QrLoginHelpButton(
+        HelpButton(
             onClick = onHelpClicked,
             tint = colorResource(id = R.color.prologue_login_on_background),
             modifier = Modifier.align(Alignment.TopEnd),
