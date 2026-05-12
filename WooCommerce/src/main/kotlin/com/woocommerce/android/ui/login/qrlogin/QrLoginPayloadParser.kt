@@ -7,31 +7,38 @@ import java.net.URLDecoder
 import javax.inject.Inject
 
 /**
- * Parses the deep link encoded in a login QR code:
+ * Parses the deep link encoded in a login QR code. The `woocommerce://qr-login` deeplink is the
+ * shared entry point for three flows, distinguished by the query string:
  *
  * ```
- * woocommerce://qr-login?token=<64–512 alphanumeric chars>&siteUrl=<URL-encoded site URL>
+ * woocommerce://qr-login?token=<64–512 alphanumeric>&siteUrl=<URL-encoded site URL>  // self-hosted (AP) flow
+ * woocommerce://qr-login?siteUrl=<URL-encoded site URL>                              // site-URL prefill
+ * woocommerce://qr-login?token=<compound>&encrypted=<base64-url>                     // wp.com QR app login
  * ```
+ *
+ * `siteUrl` is the load-bearing discriminator: present → self-hosted ([QrLoginPayload.Ticket] /
+ * [QrLoginPayload.SiteUrl]); absent → wp.com ([QrLoginPayload.WpComToken], when `encrypted` is
+ * also there). The wp.com branch is gated on `siteUrl` being absent so a self-hosted `Ticket`
+ * payload is never silently rerouted to wp.com if both query params happen to land on the
+ * same QR.
  *
  * Also accepts the legacy wc-admin `app-login` QR in two shapes
  * (`woocommerce://app-login?siteUrl=…&username=…` and
  * `woocommerce://app-login?siteUrl=…&wpcomEmail=…`) and routes them to the existing login
  * screens — mirroring the OS-deeplink handler in `LoginActivity.handleAppLoginUri`.
  *
- * The same deeplink shape is also used as a "site-URL only" QR — when `token` is missing or
- * blank, the payload becomes [QrLoginPayload.SiteUrl] and the scanner routes the merchant to
- * the site-address login screen with the URL prefilled instead of attempting an exchange.
- *
- * Anything malformed, missing parameters, with the wrong scheme/host, with a token that doesn't
- * match the expected shape, or with a non-https `siteUrl` returns [QrLoginPayload.Invalid].
- * Legacy app-login payloads accept http or https because they hand off to the existing login
- * flows instead of exchanging a bearer ticket. The token shape mirrors the backend contract
- * (currently `wp_generate_password(64, false)` → 64 alphanumerics); the upper bound of 512
- * leaves headroom if the server lengthens the token without forcing a client release in
- * lockstep. The server is still the authority on whether a given token is valid — this is just
- * a sanity gate so obviously-malformed QRs don't advance into the confirmation/exchange flow.
- * `siteUrl` is parsed via OkHttp's [okhttp3.HttpUrl] and rejected if it carries userinfo, query,
- * or fragment components — those have no role in a Woo site root and are classic spoofing
+ * Anything malformed, missing parameters, with the wrong scheme/host, with a self-hosted token
+ * that doesn't match the expected shape, or with a non-https `siteUrl` returns
+ * [QrLoginPayload.Invalid]. Legacy app-login payloads accept http or https because they hand
+ * off to the existing login flows instead of exchanging a bearer ticket. The self-hosted token
+ * shape mirrors the backend contract (currently `wp_generate_password(64, false)` → 64
+ * alphanumerics); the upper bound of 512 leaves headroom if the server lengthens the token
+ * without forcing a client release in lockstep. The wp.com token is a compound
+ * `{64-hex}:{32-hex}` and is only validated for non-blank — the server is the authority on its
+ * exact shape. The server is still the authority on whether any given token is valid — this is
+ * just a sanity gate so obviously-malformed QRs don't advance into the confirmation/exchange
+ * flow. `siteUrl` is parsed via OkHttp's [okhttp3.HttpUrl] and rejected if it carries userinfo,
+ * query, or fragment components — those have no role in a Woo site root and are classic spoofing
  * surfaces in the confirmation prompt.
  *
  * Also recognises the WordPress.com magic-login QR
@@ -65,17 +72,31 @@ class QrLoginPayloadParser @Inject constructor() {
     }
 
     /**
-     * Parses the `woocommerce://qr-login?...` deeplink. Returns [QrLoginPayload.Ticket] when both
-     * `token` and `siteUrl` are present and valid, [QrLoginPayload.SiteUrl] when `siteUrl` is
-     * valid but `token` is missing or blank, and `null` (caller maps to `Invalid`) otherwise.
-     * `siteUrl` validation is identical in both branches.
+     * Parses the `woocommerce://qr-login?...` deeplink. Three valid shapes:
+     *  - `token` (matching [TOKEN_REGEX]) + `siteUrl` → [QrLoginPayload.Ticket] (self-hosted AP)
+     *  - `siteUrl` only (no/blank `token`) → [QrLoginPayload.SiteUrl] (site-URL prefill)
+     *  - `token` (non-blank) + `encrypted` (non-blank), no `siteUrl` → [QrLoginPayload.WpComToken]
+     *    (wp.com QR app login)
+     *
+     * Anything else returns `null` and the caller maps it to [QrLoginPayload.Invalid]. The wp.com
+     * branch is gated on `siteUrl` being absent so a self-hosted `Ticket` payload is never
+     * silently rerouted to wp.com if both query params happen to land on the same QR.
      */
     private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
         val uri = parseDeepLink(raw, QR_LOGIN_HOST) ?: return null
-        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let { normalizeSiteUrl(it) } ?: return null
-        val rawToken = uri.queryParam(PARAM_TOKEN)
+        val rawSiteUrl = uri.queryParam(PARAM_SITE_URL)?.takeIf { it.isNotBlank() }
+        val rawToken = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
+        val rawEncrypted = uri.queryParam(PARAM_ENCRYPTED)?.takeIf { it.isNotBlank() }
+
+        // wp.com branch: siteUrl absent, token + encrypted present.
+        if (rawSiteUrl == null && rawToken != null && rawEncrypted != null) {
+            return QrLoginPayload.WpComToken(token = rawToken, encrypted = rawEncrypted)
+        }
+
+        // Self-hosted branches require a valid siteUrl.
+        val siteUrl = rawSiteUrl?.let { normalizeSiteUrl(it) } ?: return null
         return when {
-            rawToken.isNullOrBlank() -> QrLoginPayload.SiteUrl(siteUrl = siteUrl)
+            rawToken == null -> QrLoginPayload.SiteUrl(siteUrl = siteUrl)
             TOKEN_REGEX.matches(rawToken) -> QrLoginPayload.Ticket(token = rawToken, siteUrl = siteUrl)
             else -> null
         }
@@ -166,6 +187,7 @@ class QrLoginPayloadParser @Inject constructor() {
         const val PARAM_SITE_URL = "siteUrl"
         const val PARAM_USERNAME = "username"
         const val PARAM_WP_COM_EMAIL = "wpcomEmail"
+        const val PARAM_ENCRYPTED = "encrypted"
         const val PARAM_ACTION = "action"
         const val PARAM_SCHEME = "scheme"
         const val INSTALL_QR_HOST = "woocommerce.com"

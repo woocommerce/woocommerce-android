@@ -365,6 +365,75 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
         assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
     }
 
+    @Test
+    fun `given qr-login deep link with token and encrypted but no siteUrl, when parsed, then returns WpComToken`() {
+        val token = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef:" +
+            "fedcba9876543210fedcba9876543210"
+        val encrypted = "AAECAwQFBgcICQoLDA0ODw"
+        val raw = "woocommerce://qr-login?token=$token&encrypted=$encrypted"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.WpComToken(token = token, encrypted = encrypted))
+    }
+
+    @Test
+    fun `given qr-login deep link with token, encrypted, and siteUrl, when parsed, then prefers self-hosted Ticket`() {
+        // siteUrl is the discriminator — if present, the self-hosted branch wins and the wp.com
+        // payload is never silently entered.
+        val raw = "woocommerce://qr-login?token=$VALID_TOKEN&siteUrl=https%3A%2F%2Fexample.com" +
+            "&encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.Ticket(token = VALID_TOKEN, siteUrl = "https://example.com")
+        )
+    }
+
+    @Test
+    fun `given qr-login deep link with token but no encrypted and no siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?token=$VALID_TOKEN"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link with encrypted but no token and no siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link with blank token and encrypted, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?token=&encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link with blank encrypted and token, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?token=$VALID_TOKEN&encrypted="
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link wp com token with reserved characters, when parsed, then preserves verbatim`() {
+        // The wp.com token format `{64-hex}:{32-hex}` contains a colon and the encrypted blob may
+        // contain base64-url characters; the parser must not transform them.
+        val token = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789:" +
+            "fedcba98_7654-321Afedcba9876543210"
+        val encrypted = "AAEC_AwQF-BgcICQ"
+        val raw = "woocommerce://qr-login?token=${java.net.URLEncoder.encode(token, "UTF-8")}" +
+            "&encrypted=$encrypted"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.WpComToken(token = token, encrypted = encrypted))
+    }
+
     private companion object {
         const val VALID_TOKEN = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCD"
     }

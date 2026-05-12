@@ -107,6 +107,16 @@ class QrLoginScannerViewModel @Inject constructor(
             is QrLoginPayload.AppLogin.WpComEmail -> handleHandoff(
                 PendingHandoff.AppLoginWpComEmail(siteUrl = payload.siteUrl, wpComEmail = payload.wpComEmail)
             )
+            is QrLoginPayload.WpComToken -> {
+                // wp.com flow scan/poll/exchange is wired in a follow-up commit; until then,
+                // surface the same invalid-payload error the user would have seen previously.
+                trackScanFailure(
+                    step = Step.PAYLOAD,
+                    errorContext = null,
+                    errorType = ErrorReason.InvalidPayload.name,
+                )
+                _uiState.value = Error(reason = ErrorReason.InvalidPayload, retryTicket = null)
+            }
             QrLoginPayload.InstallQrCode -> {
                 trackScanFailure(
                     step = Step.PAYLOAD,
