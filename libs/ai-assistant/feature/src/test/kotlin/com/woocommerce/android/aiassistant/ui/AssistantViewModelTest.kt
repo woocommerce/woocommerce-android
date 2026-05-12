@@ -14,7 +14,9 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -263,6 +265,27 @@ class AssistantViewModelTest {
 
         assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.Failed)
         assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.Network)
+    }
+
+    @Test
+    fun `given transport diagnostics request id, then turn_completed uses telemetry request id`() = runTest {
+        viewModel.onSendMessage("Boom")
+        val telemetryRequestId = runtime.startRequests.single().telemetryContext.requestId
+        val transportRequestId = "transport-request-id-canary"
+
+        runtime.emitTurnFinished(
+            outcome = LoopOutcome.FAILED,
+            error = AssistantError.BadRequest(
+                diagnostics = Diagnostics(
+                    transport = TransportDiagnostics(requestId = transportRequestId)
+                )
+            ),
+        )
+
+        val completed = telemetry.singleEvent<AiAssistantTurnCompletedEvent>()
+        assertThat(completed.requestId).isEqualTo(telemetryRequestId)
+        assertThat(completed.requestId).isNotEqualTo(transportRequestId)
+        assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.ValidationError)
     }
 
     @Test
