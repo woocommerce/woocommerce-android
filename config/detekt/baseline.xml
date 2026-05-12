@@ -1827,24 +1827,6 @@
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `maps site to page homepage settings`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `maps site to posts homepage settings`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `returns null on unexpected type`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given any site without manage options capability, when site is generated, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site with publicize module, when site is generated over rest, publicize is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site with sharing buttons module, when site is generated, share buttons is supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site without publicize module, when site is generated over rest, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site without sharing buttons module, when site is generated, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site, when site is generated over xmlrpc, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site, when site is generated over xmlrpc, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize + share btns unsupported jetpack site, when site generated over rest, sharing is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize + share buttons unsupported wpcom site, when site is generated, sharing is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize supported jetpack site, when site is generated over rest, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize supported wpcom site, when site is generated, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given self hosted non jp site, when site is generated, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given self hosted non jp site, when site is generated, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given share buttons supported jetpack site, when site is generated over rest, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given share buttons supported wpcom site, when site is generated, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given site with publish posts capability disabled, when site is generated, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given wpcom site with publicize permanently disabled, when site is generated, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given wpcom site with publish posts capability enabled, when site is generated, publicize is enabled`()</ID>
     <ID>UnitTestNamingRule:SiteObserverTest.kt$SiteObserverTest$@Test fun `when observeAndUpdateSelectedSiteData is called, fetchRemoteFeatureFlags is called`()</ID>
     <ID>UnitTestNamingRule:SiteOptionsStoreTest.kt$SiteOptionsStoreTest$@Test fun `call fails when page for posts and homepage are the same`()</ID>
     <ID>UnitTestNamingRule:SiteOptionsStoreTest.kt$SiteOptionsStoreTest$@Test fun `calls rest client and returns error response`()</ID>
@@ -1865,43 +1847,6 @@
     <ID>UnitTestNamingRule:SitePickerViewModelTest.kt$SitePickerViewModelTest$@Test fun `given user is logging in, then when try another account is clicked, logout is initiated`()</ID>
     <ID>UnitTestNamingRule:SitePickerViewModelTest.kt$SitePickerViewModelTest$@Test fun `given user is logging in, when need help finding email is clicked, find email dialog is displayed`()</ID>
     <ID>UnitTestNamingRule:SitePickerViewModelTest.kt$SitePickerViewModelTest$@Test fun `given user is logging in, when view connected sites is clicked, site list is displayed`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site in coming soon state`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site with all params`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site with override site creation flow if specified`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site without a site name and site title`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site without a site name`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site without params with dry run`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `fetchSite returns error when API call fails`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `fetchSites returns error when API call fails`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `fetched sites can filter JP connected package sites`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `returns fetched site`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `returns fetched sites using filter`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `returns fetched sites when not filtering`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `creates a new site`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fails to create a new site`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchAllDomains error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchAllDomains from WPCom endpoint`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite error from XMLRPC endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite from WPCom endpoint and stores it to DB`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite from XMLRPC endpoint and stores it to DB`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSiteDomains error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSiteDomains from WPCom endpoint`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSiteDomains updates stored domains`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSitePlans error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSitePlans from WPCom endpoint`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSites returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSites saves fetched sites to DB and removes absent sites`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `getSiteDomains is backed by DomainsDao`()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun `returns correct timezone`()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetCurrentDateTimeForNonUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetCurrentDateTimeUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetFormattedDateForNonUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetFormattedDateForUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test @Throws(Exception::class) fun testFetchSite()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test @Throws(Exception::class) fun testFetchSiteBadResponseFormat()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test @Throws(Exception::class) fun testFetchSitesResponseNotArray()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test fun testFetchSites()</ID>
     <ID>UnitTestNamingRule:SpecifyPerformanceMonitoringConfigTest.kt$SpecifyPerformanceMonitoringConfigTest$@Test fun `given the app is not debug and user did not disabled tracking, enable performance monitoring`()</ID>
     <ID>UnitTestNamingRule:SpecifyPerformanceMonitoringConfigTest.kt$SpecifyPerformanceMonitoringConfigTest$@Test fun `given the debug app, disable performance monitoring`()</ID>
     <ID>UnitTestNamingRule:SpecifyPerformanceMonitoringConfigTest.kt$SpecifyPerformanceMonitoringConfigTest$@Test fun `given the user disabled tracking, disable performance monitoring`()</ID>

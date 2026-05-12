@@ -36,6 +36,7 @@ import javax.inject.Singleton
 typealias UpdateOrderFlowPredicate = suspend FlowCollector<UpdateOrderResult>.(OrderEntity, SiteModel) -> Unit
 
 @Singleton
+@Suppress("TooManyFunctions")
 class OrderUpdateStore @Inject internal constructor(
     private val coroutineEngine: CoroutineEngine,
     private val wcOrderRestClient: OrderRestClient,
@@ -44,7 +45,7 @@ class OrderUpdateStore @Inject internal constructor(
     private val siteSqlUtils: SiteSqlUtils,
     private val orderSummaryDao: OrderSummaryDao
 ) {
-    suspend fun updateCustomerOrderNote(
+    fun updateCustomerOrderNote(
         orderId: Long,
         site: SiteModel,
         newCustomerNote: String
@@ -77,7 +78,7 @@ class OrderUpdateStore @Inject internal constructor(
         }
     }
 
-    suspend fun updateOrderAddress(
+    fun updateOrderAddress(
         orderId: Long,
         localSiteId: LocalId,
         newAddress: OrderAddress
@@ -101,7 +102,7 @@ class OrderUpdateStore @Inject internal constructor(
         }
     }
 
-    suspend fun updateBothOrderAddresses(
+    fun updateBothOrderAddresses(
         orderId: Long,
         localSiteId: LocalId,
         shippingAddress: Shipping,
@@ -145,7 +146,7 @@ class OrderUpdateStore @Inject internal constructor(
     }
 
     @Suppress("LongParameterList")
-    suspend fun updateSimplePayment(
+    fun updateSimplePayment(
         site: SiteModel,
         orderId: Long,
         amount: String,

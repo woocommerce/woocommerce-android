@@ -13,8 +13,6 @@ import javax.inject.Singleton
 @Singleton
 class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     companion object {
-        const val COUPONS_SETTING_GROUP = "general"
-        const val COUPONS_SETTING_ID = "woocommerce_enable_coupons"
         const val TAX_SETTING_GROUP = "tax"
         const val TAX_SETTING_ID = "woocommerce_tax_based_on"
         const val ROUND_TAX_AT_SUBTOTAL_SETTING_ID = "woocommerce_tax_round_at_subtotal"
@@ -71,20 +69,6 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
             clazz = Array<SiteSettingsResponse>::class.java
         )
         return response.toWooPayload { it.toList() }
-    }
-
-    suspend fun enableCoupons(site: SiteModel): WooPayload<Boolean> {
-        val url = WOOCOMMERCE.settings.group(COUPONS_SETTING_GROUP).id(COUPONS_SETTING_ID).pathV3
-        val param = mapOf("value" to "yes")
-
-        val response = wooNetwork.executePutGsonRequest(
-            site = site,
-            path = url,
-            clazz = SiteSettingOptionResponse::class.java,
-            body = param
-        )
-
-        return response.toWooPayload { it.let { it.value == "yes" } }
     }
 
     suspend fun fetchSiteSettingsTaxBasedOn(site: SiteModel): WooPayload<SiteSettingOptionResponse> {

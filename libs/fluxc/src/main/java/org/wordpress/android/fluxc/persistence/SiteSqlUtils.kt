@@ -39,16 +39,6 @@ class SiteSqlUtils @Inject constructor(
                 .where().equals(SiteModelTable.SITE_ID, id).endWhere().asModel
     }
 
-    fun getWpComSites(): List<SiteModel> {
-        return WellSql.select(SiteModel::class.java)
-                .where().equals(SiteModelTable.IS_WPCOM, true).endWhere().asModel
-    }
-
-    fun getWpComAtomicSites(): List<SiteModel> {
-        return WellSql.select(SiteModel::class.java)
-                .where().equals(SiteModelTable.IS_WPCOM_ATOMIC, true).endWhere().asModel
-    }
-
     fun getSitesWith(field: String?, value: Boolean): SelectQuery<SiteModel> {
         return WellSql.select(SiteModel::class.java)
                 .where().equals(field, value).endWhere()
@@ -72,14 +62,6 @@ class SiteSqlUtils @Inject constructor(
     }
 
     fun getSites(): List<SiteModel> = WellSql.select(SiteModel::class.java).asModel
-
-    fun getVisibleSites(): List<SiteModel> {
-        return WellSql.select(SiteModel::class.java)
-                .where()
-                .equals(SiteModelTable.IS_VISIBLE, true)
-                .endWhere()
-                .asModel
-    }
 
     /**
      * Inserts the given SiteModel into the DB, or updates an existing entry where sites match.
@@ -230,12 +212,6 @@ class SiteSqlUtils @Inject constructor(
                 }).execute()
     }
 
-    val wPComSites: SelectQuery<SiteModel>
-        get() = WellSql.select(SiteModel::class.java)
-                .where().beginGroup()
-                .equals(SiteModelTable.IS_WPCOM, true)
-                .endGroup().endWhere()
-
     /**
      * @return A selectQuery to get all the sites accessed via the XMLRPC, this includes: pure self hosted sites,
      * but also Jetpack sites connected via XMLRPC.
@@ -249,12 +225,6 @@ class SiteSqlUtils @Inject constructor(
         get() = WellSql.select(SiteModel::class.java)
                 .where().beginGroup()
                 .equals(SiteModelTable.ORIGIN, SiteModel.ORIGIN_WPCOM_REST)
-                .endGroup().endWhere()
-    val visibleSitesAccessedViaWPCom: SelectQuery<SiteModel>
-        get() = WellSql.select(SiteModel::class.java)
-                .where().beginGroup()
-                .equals(SiteModelTable.ORIGIN, SiteModel.ORIGIN_WPCOM_REST)
-                .equals(SiteModelTable.IS_VISIBLE, true)
                 .endGroup().endWhere()
 
     /**

@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.site.SiteUtils
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("UnitTestNamingRule")
 class SiteModelTest {
     /* Publicize support */
     @Test
