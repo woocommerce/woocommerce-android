@@ -350,25 +350,49 @@ class QrLoginRestClientTest : BaseUnitTest() {
     // region session status
 
     @Test
-    fun `given session-status call, when executed, then GET request includes session_id`() = testBlocking {
+    fun `given session-status call, when executed, then GET request includes session_id and token_hash`() =
+        testBlocking {
+            responder = { ok(it, """{"state":"scanned"}""") }
+
+            client.checkSessionStatus("https://store.example", "sess-99", "tok-99")
+
+            val request = requireNotNull(lastRequest)
+            assertThat(request.method).isEqualTo("GET")
+            assertThat(request.url.queryParameter("session_id")).isEqualTo("sess-99")
+            // SHA-256("tok-99") — must line up byte-for-byte with PHP's hash('sha256', $token).
+            assertThat(request.url.queryParameter("token_hash"))
+                .isEqualTo("2cbd7d7c8841c55cab932e2e92cb3f788210c3883bfdb3cc8749623175430ca0")
+            assertThat(request.url.encodedPath)
+                .isEqualTo("/wp-json/wc-admin/mobile-app/qr-login-session-status")
+            assertThat(request.header("Cache-Control"))
+                .contains("no-cache")
+                .contains("no-store")
+        }
+
+    @Test
+    fun `given a different plaintext token, when session-status, then the hash differs`() = testBlocking {
+        // Direct sanity check that the hash isn't accidentally a fixed string. The two values
+        // below are the known SHA-256 hex digests for the two inputs.
         responder = { ok(it, """{"state":"scanned"}""") }
 
-        client.checkSessionStatus("https://store.example", "sess-99")
+        client.checkSessionStatus("https://store.example", "sess-1", "tok")
+        val hashForTok = requireNotNull(lastRequest).url.queryParameter("token_hash")
 
-        val request = requireNotNull(lastRequest)
-        assertThat(request.method).isEqualTo("GET")
-        assertThat(request.url.toString())
-            .isEqualTo("https://store.example/wp-json/wc-admin/mobile-app/qr-login-session-status?session_id=sess-99")
-        assertThat(request.header("Cache-Control"))
-            .contains("no-cache")
-            .contains("no-store")
+        client.checkSessionStatus("https://store.example", "sess-1", "plaintext-token-from-qr")
+        val hashForOther = requireNotNull(lastRequest).url.queryParameter("token_hash")
+
+        assertThat(hashForTok)
+            .isEqualTo("1a7674eb4ee78df7e1ac439a93c3fa8e3c945784d4dec9fd8e3011738b2f1d62")
+        assertThat(hashForOther)
+            .isEqualTo("b126ded63b57b4cc3ca5742336b9e2aa522fb4d80be84b364bfe402cdde536ef")
+        assertThat(hashForTok).isNotEqualTo(hashForOther)
     }
 
     @Test
     fun `given state=scanned, when session-status, then Scanned`() = testBlocking {
         responder = { ok(it, """{"state":"scanned"}""") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(QrLoginSessionStatus.Scanned)
     }
@@ -377,7 +401,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given state=approved with grant, when session-status, then Approved with grant`() = testBlocking {
         responder = { ok(it, """{"state":"approved","exchange_grant":"grant-99"}""") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(QrLoginSessionStatus.Approved("grant-99"))
     }
@@ -386,7 +410,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given state=approved without grant, when session-status, then fails closed as Expired`() = testBlocking {
         responder = { ok(it, """{"state":"approved"}""") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(QrLoginSessionStatus.Expired)
     }
@@ -395,7 +419,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given state=rejected, when session-status, then Rejected`() = testBlocking {
         responder = { ok(it, """{"state":"rejected"}""") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(QrLoginSessionStatus.Rejected)
     }
@@ -404,7 +428,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given state=expired, when session-status, then Expired`() = testBlocking {
         responder = { ok(it, """{"state":"expired"}""") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(QrLoginSessionStatus.Expired)
     }
@@ -413,7 +437,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given unknown state, when session-status, then fails closed as Expired`() = testBlocking {
         responder = { ok(it, """{"state":"some_future_state"}""") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(QrLoginSessionStatus.Expired)
     }
@@ -422,7 +446,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given 429, when session-status, then RateLimited`() = testBlocking {
         responder = { respond(it, code = 429) }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.exceptionOrNull()).isEqualTo(QrLoginSessionStatusException.RateLimited)
     }
@@ -431,7 +455,7 @@ class QrLoginRestClientTest : BaseUnitTest() {
     fun `given network IOException, when session-status, then Network`() = testBlocking {
         responder = { throw IOException("disconnect") }
 
-        val result = client.checkSessionStatus("https://store.example", "sess-1")
+        val result = client.checkSessionStatus("https://store.example", "sess-1", "tok")
 
         assertThat(result.exceptionOrNull()).isEqualTo(QrLoginSessionStatusException.Network)
     }

@@ -207,7 +207,7 @@ class QrLoginScannerViewModel @Inject constructor(
                 }
                 if (_uiState.value !is WaitingForApproval) return@launch
 
-                val callResult = restClient.checkSessionStatus(ticket.siteUrl, sessionId)
+                val callResult = restClient.checkSessionStatus(ticket.siteUrl, sessionId, ticket.token)
                 // Guard after the await: cancel/start-over may have flipped state away from
                 // WaitingForApproval while the call was in flight. If so, drop the response
                 // on the floor so the user doesn't get bounced into a "Signing in…" spinner
