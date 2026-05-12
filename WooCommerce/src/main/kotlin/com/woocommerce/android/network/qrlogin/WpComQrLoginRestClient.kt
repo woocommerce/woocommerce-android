@@ -53,8 +53,8 @@ class WpComQrLoginRestClient @Inject constructor(
                 Result.success(performScan(token, encrypted))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapScanException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapScanException(e))
             }
         }
 
@@ -64,8 +64,8 @@ class WpComQrLoginRestClient @Inject constructor(
                 Result.success(performSessionStatus(sessionId))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapSessionStatusException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapSessionStatusException(e))
             }
         }
 
@@ -79,8 +79,8 @@ class WpComQrLoginRestClient @Inject constructor(
                 Result.success(performExchange(token, encrypted, exchangeGrant))
             } catch (ce: CancellationException) {
                 throw ce
-            } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-                Result.failure(mapExchangeException(t))
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Result.failure(mapExchangeException(e))
             }
         }
 
