@@ -45,10 +45,12 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardCardsState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.AIAssistantEntry
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget
+import com.woocommerce.android.ui.dashboard.aiassistant.DashboardAIAssistantCard
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsCard
@@ -227,6 +229,13 @@ private fun DashboardWidgetCard(
         is NewWidgetsCard -> {
             NewWidgetsCard(
                 state = it,
+                modifier = modifier
+            )
+        }
+
+        is AIAssistantEntry -> {
+            DashboardAIAssistantCard(
+                onClick = it.onClick,
                 modifier = modifier
             )
         }

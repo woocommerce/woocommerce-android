@@ -517,7 +517,7 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Payments) {
                 ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
-            }
+            },
         ).merge()
             .map { update ->
                 initialState[update.first] = update.second

@@ -35,7 +35,8 @@ fun WooPosFullScreenInputLayout(
     BackHandler { onBackClicked() }
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
     ) {
         WooPosToolbar(
             titleText = titleText,

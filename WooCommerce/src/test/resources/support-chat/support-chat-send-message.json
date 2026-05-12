@@ -1,0 +1,35 @@
+{
+  "chat_id": 4242,
+  "session_id": "session-abc-123",
+  "bot_slug": "woo-workflow-support_mobile_inapp",
+  "bot_version": "v1.0.0",
+  "messages": [
+    {
+      "message_id": 1,
+      "role": "user",
+      "content": "I can't load my orders",
+      "context": null
+    },
+    {
+      "message_id": 2,
+      "role": "bot",
+      "content": "Let me help you with that. **First**, please check your internet connection.",
+      "context": {
+        "sources": [
+          {
+            "title": "Troubleshooting orders",
+            "url": "https://woocommerce.com/help/orders",
+            "heading": "Why are my orders not loading?",
+            "content": "Common causes include connectivity issues..."
+          }
+        ],
+        "flags": {
+          "forward_to_human_support": false,
+          "canned_response": false,
+          "logged_in": true,
+          "branch": null
+        }
+      }
+    }
+  ]
+}

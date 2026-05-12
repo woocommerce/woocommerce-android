@@ -78,4 +78,6 @@
 /jetpack-ai-query
 /sites/$site/jetpack-ai/ai-assistant-feature
 
+/odie/chat/$bot_slug#String
+/odie/chat/$bot_slug#String/$chat_id
 /sites/$site/jetpack-remote-connect-user

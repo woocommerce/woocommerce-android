@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.eligibilityScreen
 import com.woocommerce.android.ui.woopos.home.homeScreen
+import com.woocommerce.android.ui.woopos.orders.details.refund.issueRefundScreen
 import com.woocommerce.android.ui.woopos.orders.details.refund.refundReasonScreen
 import com.woocommerce.android.ui.woopos.orders.ordersScreen
 import com.woocommerce.android.ui.woopos.paymentsuccess.paymentSuccessScreen
@@ -36,6 +37,7 @@ fun NavGraphBuilder.mainGraph(
         eligibilityScreen(onNavigationEvent = onNavigationEvent)
         settingsScreen(onNavigationEvent = onNavigationEvent)
         ordersScreen(onNavigationEvent = onNavigationEvent)
+        issueRefundScreen(onNavigationEvent = onNavigationEvent)
         refundReasonScreen(onNavigationEvent = onNavigationEvent)
         bookingsScreen(onNavigationEvent = onNavigationEvent)
         bookingNoteScreen(onNavigationEvent = onNavigationEvent)

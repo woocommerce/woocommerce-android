@@ -32,6 +32,14 @@ class NotificationTest {
         noteType = WooNotificationType.LocalReminder
     )
 
+    private val stockNotification = NotificationTestUtils.generateTestNotification(
+        remoteNoteId = 1L,
+        remoteSiteId = remoteSiteId,
+        uniqueId = 0L,
+        channelType = NotificationChannelType.STOCK,
+        noteType = WooNotificationType.Stock
+    )
+
     @Test
     fun `new order notification return correct group_id and group_push_id`() {
         val expectedOrderGroupId = "${NotificationChannelType.NEW_ORDER.name} $remoteSiteId"
@@ -66,6 +74,15 @@ class NotificationTest {
 
         val actualGroupPushId = otherNotification.getGroupPushId()
         assertThat(actualGroupPushId).isEqualTo(expectedGroupPushId)
+    }
+
+    @Test
+    fun `when stock notification is grouped, then return correct group_id and group_push_id`() {
+        val expectedGroupId = "${NotificationChannelType.STOCK.name} $remoteSiteId"
+        val expectedGroupPushId = 30004 + remoteSiteId
+
+        assertThat(stockNotification.getGroup()).isEqualTo(expectedGroupId)
+        assertThat(stockNotification.getGroupPushId()).isEqualTo(expectedGroupPushId)
     }
 
     @Test

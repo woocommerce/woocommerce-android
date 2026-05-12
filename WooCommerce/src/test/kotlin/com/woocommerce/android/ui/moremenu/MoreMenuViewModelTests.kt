@@ -120,7 +120,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             observeBookingsVisibility = observeBookingsVisibility,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            ciabSiteGateKeeper = ciabSiteGateKeeper
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
         )
     }
 
@@ -555,5 +555,21 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         val items = state.menuSections.flatMap { it.items }
         assertThat(items.none { it.title == R.string.more_menu_button_payments }).isTrue()
+    }
+
+    @Test
+    fun `when building state, then ai assistant entry point is not part of more menu`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+
+        // THEN
+        val items = state.menuSections.flatMap { it.items }
+        assertThat(MoreMenuItemButton.Type.entries.map { it.name }).doesNotContain("AiAssistant")
+        assertThat(items.map { it.title }).doesNotContain(R.string.more_menu_button_ai_assistant)
+        assertThat(items.map { it.description }).doesNotContain(R.string.more_menu_button_ai_assistant_description)
+        assertThat(items.map { it.icon }).doesNotContain(R.drawable.ic_more_menu_ai_assistant)
     }
 }

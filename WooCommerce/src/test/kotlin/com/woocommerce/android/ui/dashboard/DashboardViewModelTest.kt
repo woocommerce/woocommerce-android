@@ -11,6 +11,9 @@ import com.woocommerce.android.notifications.push.PushNotificationRegistrationSt
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.aiassistant.AIAssistantEligibilityChecker
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.AIAssistantEntry
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.captureValues
@@ -70,6 +73,9 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock {
         on { invoke() } doReturn flowOf(false)
     }
+    private val aiAssistantEligibilityChecker: AIAssistantEligibilityChecker = mock {
+        on { observeEligibility() } doReturn flowOf(false)
+    }
 
     private lateinit var viewModel: DashboardViewModel
 
@@ -89,6 +95,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
             shouldShowEnablePushNotificationsUi = shouldShowEnablePushNotificationsUi,
             feedbackPrefs = feedbackPrefs,
+            aiAssistantEligibilityChecker = aiAssistantEligibilityChecker,
         )
     }
 
@@ -288,6 +295,139 @@ class DashboardViewModelTest : BaseUnitTest() {
         val feedbackCard = viewState.widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget }
         assertThat(feedbackCard.isVisible).isFalse()
     }
+
+    @Test
+    fun `given ai assistant is eligible, when screen starts, then dashboard state shows assistant entry`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(true))
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val assistantEntry = viewState.widgets.filterIsInstance<AIAssistantEntry>().single()
+            assertThat(assistantEntry.isVisible).isTrue()
+        }
+
+    @Test
+    fun `given ai assistant is not eligible, when screen starts, then dashboard state hides assistant entry`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(false))
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val assistantEntry = viewState.widgets.filterIsInstance<AIAssistantEntry>().single()
+            assertThat(assistantEntry.isVisible).isFalse()
+        }
+
+    @Test
+    fun `given ai assistant and feedback are visible, when screen starts, then assistant is first visible card`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                DashboardWidget(
+                    type = DashboardWidget.Type.ORDERS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.STATS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                )
+            )
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(true))
+                whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val visibleWidgets = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filter { it.isVisible }
+
+            // THEN
+            assertThat(visibleWidgets[0]).isInstanceOf(AIAssistantEntry::class.java)
+            assertThat(visibleWidgets[1])
+                .isInstanceOf(DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java)
+            assertThat(visibleWidgets.filterIsInstance<ConfigurableWidget>().map { it.widget.type })
+                .containsExactly(DashboardWidget.Type.ORDERS, DashboardWidget.Type.STATS)
+        }
+
+    @Test
+    fun `given ai assistant card is visible, when card tapped, then open assistant event is emitted`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(true))
+            }
+            val assistantEntry = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filterIsInstance<AIAssistantEntry>()
+                .single()
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                assistantEntry.onClick()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.OpenAiAssistant)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_INTERACTED,
+                mapOf(AnalyticsTracker.KEY_TYPE to "ai_assistant")
+            )
+        }
+
+    @Test
+    fun `given ai assistant is hidden, when dashboard state is built, then configurable widget order is unchanged`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                DashboardWidget(
+                    type = DashboardWidget.Type.ORDERS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.STATS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.COUPONS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                )
+            )
+            setup {
+                whenever(aiAssistantEligibilityChecker.observeEligibility()).thenReturn(flowOf(false))
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val visibleConfigurableTypes = viewState.widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+            assertThat(visibleConfigurableTypes).containsExactly(
+                DashboardWidget.Type.ORDERS,
+                DashboardWidget.Type.STATS,
+                DashboardWidget.Type.COUPONS
+            )
+        }
 
     @Test
     fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {

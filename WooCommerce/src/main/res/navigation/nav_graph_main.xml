@@ -19,6 +19,10 @@
     <include app:graph="@navigation/nav_graph_order_creations" />
     <include app:graph="@navigation/nav_graph_bookings" />
 
+    <action
+        android:id="@+id/action_global_analytics"
+        app:destination="@id/analytics" />
+
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
@@ -89,6 +93,9 @@
         <action
             android:id="@+id/action_dashboard_to_wooPushNotificationsIntroductionDialog"
             app:destination="@id/nav_graph_push_notifications" />
+        <action
+            android:id="@+id/action_dashboard_to_aiAssistantHostFragment"
+            app:destination="@id/aiAssistantHostFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -330,6 +337,10 @@
                 app:argType="boolean" />
         </action>
     </fragment>
+    <fragment
+        android:id="@+id/aiAssistantHostFragment"
+        android:name="com.woocommerce.android.ui.aiassistant.AiAssistantHostFragment"
+        android:label="fragment_ai_assistant" />
     <fragment
         android:id="@+id/feedbackSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.FeedbackSurveyFragment"

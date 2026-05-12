@@ -32,7 +32,8 @@
                 android:paddingEnd="@dimen/major_100"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_gridicons_arrow_up" />
+                app:srcCompat="@drawable/ic_gridicons_arrow_up"
+                app:tint="@color/color_icon"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upsells_label"

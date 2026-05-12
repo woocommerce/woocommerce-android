@@ -11,6 +11,7 @@ sealed class WooPosHomeUIEvent {
     data object ExitPosClicked : WooPosHomeUIEvent()
     data object PhoneOpenCartClicked : WooPosHomeUIEvent()
     data object PhoneBackFromCartClicked : WooPosHomeUIEvent()
+    data object PhoneBackFromCheckoutClicked : WooPosHomeUIEvent()
     data class OnBarcodeEvent(
         val result: BarcodeInputDetector.BarcodeResult
     ) : WooPosHomeUIEvent()
