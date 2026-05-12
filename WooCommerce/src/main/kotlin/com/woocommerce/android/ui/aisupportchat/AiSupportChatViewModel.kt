@@ -40,9 +40,19 @@ class AiSupportChatViewModel @Inject constructor(
         launch { sendMessage(message) }
     }
 
-    fun onIssueSelected(issueType: SupportIssueType) {
+    fun onIssueSelected(issueType: SupportIssueType, issueLabel: String) {
         val state = _viewState.value
         if (state.hasStartedChat || state.isSending || state.isRunningDiagnostics) return
+
+        _viewState.update {
+            it.copy(
+                input = "",
+                selectedIssueType = issueType,
+                selectedIssueLabel = issueLabel,
+                isRunningDiagnostics = true,
+                showSendError = false
+            )
+        }
 
         launch {
             diagnosticsService.runDiagnostics(issueType).collect { result ->
@@ -51,6 +61,7 @@ class AiSupportChatViewModel @Inject constructor(
                     it.copy(
                         input = "",
                         selectedIssueType = issueType,
+                        selectedIssueLabel = issueLabel,
                         diagnosticResult = result,
                         isRunningDiagnostics = !result.isComplete && !hasFailure,
                         showSendError = false,
@@ -59,21 +70,25 @@ class AiSupportChatViewModel @Inject constructor(
                 }
 
                 if (result.isComplete && !hasFailure) {
-                    sendMessage(issueType.initialMessage)
+                    sendMessage(issueLabel)
                 }
             }
         }
     }
 
     fun onRetryDiagnosticsClicked() {
-        _viewState.value.selectedIssueType?.let { onIssueSelected(it) }
+        val state = _viewState.value
+        val issueType = state.selectedIssueType ?: return
+        val issueLabel = state.selectedIssueLabel ?: return
+        onIssueSelected(issueType, issueLabel)
     }
 
     fun onContinueAfterDiagnosticsClicked() {
-        val issueType = _viewState.value.selectedIssueType ?: return
-        if (_viewState.value.isSending) return
+        val state = _viewState.value
+        val issueLabel = state.selectedIssueLabel ?: return
+        if (state.isSending) return
 
-        launch { sendMessage(issueType.initialMessage) }
+        launch { sendMessage(issueLabel) }
     }
 
     private suspend fun sendMessage(message: String) {
@@ -219,6 +234,7 @@ data class AiSupportChatViewState(
     val chatId: Long? = null,
     val hasStartedChat: Boolean = false,
     val selectedIssueType: SupportIssueType? = null,
+    val selectedIssueLabel: String? = null,
     val diagnosticResult: DiagnosticResult? = null,
     val isRunningDiagnostics: Boolean = false,
     val isSending: Boolean = false,

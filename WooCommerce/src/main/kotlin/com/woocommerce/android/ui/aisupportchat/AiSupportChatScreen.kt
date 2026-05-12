@@ -63,7 +63,7 @@ fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
         viewState = viewState,
         onInputChanged = viewModel::onInputChanged,
         onSendClicked = viewModel::onSendClicked,
-        onIssueSelected = viewModel::onIssueSelected,
+        onIssueSelected = { issueType, issueLabel -> viewModel.onIssueSelected(issueType, issueLabel) },
         onRetryDiagnosticsClicked = viewModel::onRetryDiagnosticsClicked,
         onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked
     )
@@ -74,7 +74,7 @@ fun AiSupportChatScreen(
     viewState: AiSupportChatViewState,
     onInputChanged: (String) -> Unit,
     onSendClicked: () -> Unit,
-    onIssueSelected: (SupportIssueType) -> Unit,
+    onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -116,7 +116,7 @@ fun AiSupportChatScreen(
 private fun MessageList(
     messages: List<AiSupportChatMessage>,
     isSending: Boolean,
-    onIssueSelected: (SupportIssueType) -> Unit,
+    onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -159,7 +159,7 @@ private fun MessageList(
 @Composable
 private fun MessageBubble(
     message: AiSupportChatMessage,
-    onIssueSelected: (SupportIssueType) -> Unit,
+    onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -195,7 +195,7 @@ private fun MessageBubble(
 private fun MessageContent(
     content: AiSupportChatMessageContent,
     isUser: Boolean,
-    onIssueSelected: (SupportIssueType) -> Unit,
+    onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
@@ -244,7 +244,7 @@ private fun TextContent(text: String, color: Color) {
 }
 
 @Composable
-private fun IssuePickerContent(onIssueSelected: (SupportIssueType) -> Unit) {
+private fun IssuePickerContent(onIssueSelected: (SupportIssueType, String) -> Unit) {
     Column(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
@@ -255,11 +255,12 @@ private fun IssuePickerContent(onIssueSelected: (SupportIssueType) -> Unit) {
             style = MaterialTheme.typography.bodyMedium
         )
         SupportIssueType.entries.forEach { issueType ->
+            val issueLabel = stringResource(issueType.displayLabel)
             WCOutlinedButton(
-                onClick = { onIssueSelected(issueType) },
+                onClick = { onIssueSelected(issueType, issueLabel) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = stringResource(issueType.displayLabel))
+                Text(text = issueLabel)
             }
         }
     }
@@ -511,7 +512,7 @@ private fun AiSupportChatScreenPreview() {
             ),
             onInputChanged = {},
             onSendClicked = {},
-            onIssueSelected = {},
+            onIssueSelected = { _, _ -> },
             onRetryDiagnosticsClicked = {},
             onContinueAfterDiagnosticsClicked = {}
         )

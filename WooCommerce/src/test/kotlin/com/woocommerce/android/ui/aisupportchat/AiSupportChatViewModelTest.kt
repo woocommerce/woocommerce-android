@@ -63,7 +63,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     createMessage(
                         messageId = 1L,
                         role = SupportChatRole.USER,
-                        content = SupportIssueType.LOADING_ORDERS.initialMessage
+                        content = ISSUE_LABEL
                     ),
                     createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
                 )
@@ -73,13 +73,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 repository.sendMessage(
                     DEFAULT_BOT_SLUG,
-                    SupportIssueType.LOADING_ORDERS.initialMessage,
+                    ISSUE_LABEL,
                     CONTEXT,
                     null
                 )
             ).thenReturn(Result.success(response))
 
-            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
 
             val state = viewModel.viewState.value
             assertThat(state.input).isEmpty()
@@ -90,13 +90,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
-                AiSupportChatMessageContent.Text(SupportIssueType.LOADING_ORDERS.initialMessage),
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
             verify(repository).registerChat(
                 CHAT_ID,
                 DEFAULT_BOT_SLUG,
-                SupportIssueType.LOADING_ORDERS.initialMessage
+                ISSUE_LABEL
             )
             verify(repository, never()).markChatAsUpdated(any())
         }
@@ -125,7 +125,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val result = createFailedDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
 
-            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
 
             val state = viewModel.viewState.value
             assertThat(state.hasStartedChat).isFalse()
@@ -147,20 +147,20 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 repository.sendMessage(
                     DEFAULT_BOT_SLUG,
-                    SupportIssueType.LOADING_ORDERS.initialMessage,
+                    ISSUE_LABEL,
                     CONTEXT,
                     null
                 )
             ).thenReturn(Result.success(createResponse()))
 
-            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
             viewModel.onContinueAfterDiagnosticsClicked()
 
             assertThat(viewModel.viewState.value.hasStartedChat).isTrue()
             assertThat(viewModel.viewState.value.showSendError).isFalse()
             verify(repository).sendMessage(
                 DEFAULT_BOT_SLUG,
-                SupportIssueType.LOADING_ORDERS.initialMessage,
+                ISSUE_LABEL,
                 CONTEXT,
                 null
             )
@@ -172,10 +172,21 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS))
             .thenReturn(flowOf(result), flowOf(result))
 
-        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
         viewModel.onRetryDiagnosticsClicked()
 
         verify(diagnosticsService, times(2)).runDiagnostics(SupportIssueType.LOADING_ORDERS)
+    }
+
+    @Test
+    fun `given diagnostics are running, when issue tapped again, then diagnostics do not run twice`() = testBlocking {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+        verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ORDERS)
     }
 
     @Test
@@ -187,17 +198,17 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(
                 repository.sendMessage(
                     DEFAULT_BOT_SLUG,
-                    SupportIssueType.LOADING_ORDERS.initialMessage,
+                    ISSUE_LABEL,
                     CONTEXT,
                     null
                 )
             ).thenReturn(Result.failure(Exception()))
 
-            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
             viewModel.onContinueAfterDiagnosticsClicked()
 
             val state = viewModel.viewState.value
-            assertThat(state.input).isEqualTo(SupportIssueType.LOADING_ORDERS.initialMessage)
+            assertThat(state.input).isEqualTo(ISSUE_LABEL)
             assertThat(state.chatId).isNull()
             assertThat(state.hasStartedChat).isTrue()
             assertThat(state.isSending).isFalse()
@@ -224,13 +235,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         whenever(
             repository.sendMessage(
                 DEFAULT_BOT_SLUG,
-                SupportIssueType.LOADING_ORDERS.initialMessage,
+                ISSUE_LABEL,
                 CONTEXT,
                 null
             )
         ).thenReturn(Result.success(createResponse()))
 
-        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS)
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
     }
 
     private fun createSuccessDiagnosticResult(issueType: SupportIssueType = SupportIssueType.LOADING_ORDERS) =
@@ -279,6 +290,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
     private companion object {
         const val CHAT_ID = 1234L
+        const val ISSUE_LABEL = "I can't see my orders"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val BOT_RESPONSE = "Let's troubleshoot orders."
 
