@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin.flow
 
 import com.woocommerce.android.network.qrlogin.QrLoginRestClient
+import com.woocommerce.android.network.qrlogin.WpComQrLoginRestClient
 import com.woocommerce.android.ui.login.qrlogin.QrLoginAuthenticator
 import com.woocommerce.android.ui.login.qrlogin.QrLoginPayload
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class QrLoginFlowFactory @Inject constructor(
     private val restClient: QrLoginRestClient,
+    private val wpComRestClient: WpComQrLoginRestClient,
     private val authenticator: QrLoginAuthenticator,
 ) {
     fun create(payload: QrLoginPayload, scope: CoroutineScope): QrLoginFlow? = when (payload) {
@@ -29,7 +31,11 @@ class QrLoginFlowFactory @Inject constructor(
             restClient = restClient,
             authenticator = authenticator,
         )
-        is QrLoginPayload.WpComToken -> null // wired in a follow-up commit
+        is QrLoginPayload.WpComToken -> WpComQrLoginFlow(
+            payload = payload,
+            scope = scope,
+            restClient = wpComRestClient,
+        )
         is QrLoginPayload.SiteUrl,
         is QrLoginPayload.WpComMagicLinkUrl,
         is QrLoginPayload.AppLogin.Credentials,
