@@ -168,9 +168,14 @@ class WpComQrLoginRestClient @Inject constructor(
             // a hard error so the user sees the timeout copy instead of a generic failure.
             if (response.code == HTTP_NOT_FOUND) return WpComQrLoginSessionStatus.Expired
             if (!response.isSuccessful) throw mapSessionStatusHttpStatus(response.code)
-            val body = response.body.string()
-            WooLog.d(WooLog.T.LOGIN, "wp.com QR session-status body: $body")
-            val parsed = gson.fromJson(body, SessionStatusResponse::class.java)
+            val parsed = gson.fromJson(response.body.string(), SessionStatusResponse::class.java)
+            // Log only the parsed shape — the raw body carries `exchange_grant`, a single-use
+            // nonce that swaps for a magic-link URL. The same risk applies to `session_id` and
+            // any other secrets that may surface in the response. Never log the raw body.
+            WooLog.d(
+                WooLog.T.LOGIN,
+                "wp.com QR session-status: state=${parsed.status}, hasGrant=${!parsed.exchangeGrant.isNullOrBlank()}"
+            )
             return parsed.toStatus()
         }
     }
