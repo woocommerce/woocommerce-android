@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -100,6 +103,7 @@ private fun WooPosPhoneProductsContent(
                 } else {
                     { PhoneMenuButton(onMenuClicked) }
                 },
+                showAddCouponButton = false,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
@@ -133,6 +137,26 @@ private fun WooPosPhoneProductsContent(
                 },
                 modifier = Modifier.weight(1f),
             )
+        }
+
+        if (itemsState is WooPosItemsToolbarViewState.CouponList) {
+            FloatingActionButton(
+                onClick = { onItemsUIEvent(WooPosItemsUIEvent.AddCouponIconClicked) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(WooPosSpacing.Medium.value),
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                    contentDescription = stringResource(
+                        id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                    ),
+                )
+            }
         }
 
         WooPosBackgroundOverlay(
