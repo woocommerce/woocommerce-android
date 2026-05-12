@@ -11,7 +11,12 @@ import com.woocommerce.android.network.qrlogin.QrLoginScanException
 import com.woocommerce.android.network.qrlogin.QrLoginScanResult
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatus
 import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginExchangeException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginExchangeResult
 import com.woocommerce.android.network.qrlogin.WpComQrLoginRestClient
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanException
+import com.woocommerce.android.network.qrlogin.WpComQrLoginScanResult
+import com.woocommerce.android.network.qrlogin.WpComQrLoginSessionStatus
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
@@ -1052,14 +1057,180 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     // endregion
 
+    // region wp.com flow
+
+    @Test
+    fun `given wp com token payload, when scan succeeds, then state transitions to WaitingForWpComApproval`() =
+        testBlocking {
+            stubWpComPayloadAndScan()
+            stubWpComPollingTerminates()
+
+            viewModel.onScanResult(successScan(RAW_WP_COM))
+
+            val state = viewModel.uiState.value as UiState.WaitingForWpComApproval
+            assertThat(state.realNumber).isEqualTo("314")
+            assertThat(state.sessionId).isEqualTo("wpc-sess-1")
+            assertThat(state.userEmail).isEqualTo("merchant@example.com")
+            assertThat(state.token).isEqualTo(WP_COM_TOKEN)
+            assertThat(state.encrypted).isEqualTo(WP_COM_ENCRYPTED)
+            assertThat(state.expiresAtEpochMs).isGreaterThan(System.currentTimeMillis())
+        }
+
+    @Test
+    fun `given wp com scan fails with RestForbidden, when scan, then emits TokenRejected without retry`() =
+        testBlocking {
+            stubWpComPayload()
+            whenever(wpComRestClient.scan(WP_COM_TOKEN, WP_COM_ENCRYPTED))
+                .thenReturn(Result.failure(WpComQrLoginScanException.RestForbidden))
+
+            viewModel.onScanResult(successScan(RAW_WP_COM))
+
+            val state = viewModel.uiState.value as UiState.Error
+            assertThat(state.reason).isEqualTo(ErrorReason.TokenRejected)
+            assertThat(state.retryTicket).isNull()
+        }
+
+    @Test
+    fun `given wp com approved with grant, when polling fires, then exchange runs and emits OpenWpComMagicLinkUrl`() =
+        testBlocking {
+            stubWpComPayloadAndScan()
+            whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
+            whenever(wpComRestClient.exchange(WP_COM_TOKEN, WP_COM_ENCRYPTED, "wpc-grant-1"))
+                .thenReturn(Result.success(WpComQrLoginExchangeResult(magicLinkUrl = "https://wordpress.com/magic")))
+            val events = viewModel.event.captureValues()
+
+            viewModel.onScanResult(successScan(RAW_WP_COM))
+            advanceUntilIdle()
+
+            verify(wpComRestClient).exchange(WP_COM_TOKEN, WP_COM_ENCRYPTED, "wpc-grant-1")
+            assertThat(events.last())
+                .isEqualTo(QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl("https://wordpress.com/magic"))
+        }
+
+    @Test
+    fun `given wp com polling returns Consumed, then state is MatchAlreadyCompleted`() = testBlocking {
+        stubWpComPayloadAndScan()
+        whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Consumed))
+
+        viewModel.onScanResult(successScan(RAW_WP_COM))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchAlreadyCompleted)
+        verify(wpComRestClient, never()).exchange(any(), any(), any())
+    }
+
+    @Test
+    fun `given wp com polling returns Rejected, then state is MatchRejected`() = testBlocking {
+        stubWpComPayloadAndScan()
+        whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Rejected))
+
+        viewModel.onScanResult(successScan(RAW_WP_COM))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchRejected)
+    }
+
+    @Test
+    fun `given wp com polling returns Expired, then state is MatchTimedOut`() = testBlocking {
+        stubWpComPayloadAndScan()
+        whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
+
+        viewModel.onScanResult(successScan(RAW_WP_COM))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchTimedOut)
+    }
+
+    @Test
+    fun `given wp com exchange fails with AlreadyConsumed, then state is MatchAlreadyCompleted`() = testBlocking {
+        stubWpComPayloadAndScan()
+        whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
+        whenever(wpComRestClient.exchange(WP_COM_TOKEN, WP_COM_ENCRYPTED, "wpc-grant-1"))
+            .thenReturn(Result.failure(WpComQrLoginExchangeException.AlreadyConsumed))
+
+        viewModel.onScanResult(successScan(RAW_WP_COM))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchAlreadyCompleted)
+    }
+
+    @Test
+    fun `given wp com exchange fails with InvalidExchangeGrant, then state is MatchInvalidGrant`() = testBlocking {
+        stubWpComPayloadAndScan()
+        whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
+        whenever(wpComRestClient.exchange(WP_COM_TOKEN, WP_COM_ENCRYPTED, "wpc-grant-1"))
+            .thenReturn(Result.failure(WpComQrLoginExchangeException.InvalidExchangeGrant))
+
+        viewModel.onScanResult(successScan(RAW_WP_COM))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.MatchInvalidGrant)
+    }
+
+    @Test
+    fun `given wp com flow, when user cancels number match, then state returns to Idle`() = testBlocking {
+        stubWpComPayloadAndScan()
+        stubWpComPollingTerminates()
+
+        viewModel.onScanResult(successScan(RAW_WP_COM))
+        assertThat(viewModel.uiState.value).isInstanceOf(UiState.WaitingForWpComApproval::class.java)
+
+        viewModel.onCancelNumberMatch()
+
+        assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
+    }
+
+    // endregion
+
+    private suspend fun stubWpComPayload() {
+        whenever(parser.parse(RAW_WP_COM)).thenReturn(
+            QrLoginPayload.WpComToken(token = WP_COM_TOKEN, encrypted = WP_COM_ENCRYPTED)
+        )
+    }
+
+    /** Stubs both the payload mock and a successful wp.com scan call. */
+    private suspend fun stubWpComPayloadAndScan() {
+        stubWpComPayload()
+        whenever(wpComRestClient.scan(WP_COM_TOKEN, WP_COM_ENCRYPTED))
+            .thenReturn(Result.success(wpComScanResult))
+    }
+
+    /** wp.com counterpart of [stubPollingTerminates] — see its docstring for the rationale. */
+    private suspend fun stubWpComPollingTerminates() {
+        whenever(wpComRestClient.checkSessionStatus("wpc-sess-1"))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Scanned))
+            .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
+    }
+
+    private val wpComScanResult = WpComQrLoginScanResult(
+        sessionId = "wpc-sess-1",
+        realNumber = "314",
+        expiresInSeconds = 90,
+        userEmail = "merchant@example.com",
+    )
+
     private fun successScan(raw: String = RAW_SCAN) =
         CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
 
     private companion object {
         const val RAW_SCAN = "raw"
+        const val RAW_WP_COM = "raw-wp-com"
         const val DEFAULT_SITE_ID = 42
         const val WP_COM_URL =
             "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
+        const val WP_COM_TOKEN = "wpc-token-1234"
+        const val WP_COM_ENCRYPTED = "AAECAwQFBgcICQoLDA0ODw"
         const val SITE_URL = "https://store.example.com"
         const val USERNAME = "admin"
         const val WP_COM_EMAIL = "admin@example.com"
