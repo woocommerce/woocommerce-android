@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,13 +20,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -102,27 +100,14 @@ private fun QrLoginErrorScreenPreview() {
 }
 
 /**
- * Resolves the body text for an error. When [QrLoginErrorContent.bodyHighlightedArgs] is empty
- * we just return the body string as-is. Otherwise we treat the body as a `%1$s, %2$s, …`
- * template, substitute each arg in order, and apply a SemiBold span to each substituted run.
- * This pattern keeps `<b>…</b>` markup out of strings.xml so translators can't accidentally
- * drop or break it.
+ * Resolves the body text for an error. Body strings are formatted via `%1$s` / `%2$s`
+ * placeholders filled from [QrLoginErrorContent.bodyHighlightedArgs], then parsed as HTML so
+ * `<b>…</b>` (and any other supported markup) is rendered as styled spans instead of literal
+ * tags.
  */
 @Composable
 private fun bodyAnnotatedString(content: QrLoginErrorContent): AnnotatedString {
-    val template = stringResource(id = content.body)
-    if (content.bodyHighlightedArgs.isEmpty()) return AnnotatedString(template)
-    val args = content.bodyHighlightedArgs.map { stringResource(id = it) }
-    return buildAnnotatedString {
-        var cursor = 0
-        args.forEachIndexed { index, value ->
-            val placeholder = "%${index + 1}\$s"
-            val placeholderStart = template.indexOf(placeholder, startIndex = cursor)
-            if (placeholderStart < 0) return@forEachIndexed
-            append(template.substring(cursor, placeholderStart))
-            withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(value) }
-            cursor = placeholderStart + placeholder.length
-        }
-        append(template.substring(cursor))
-    }
+    val args = content.bodyHighlightedArgs.map { stringResource(id = it) }.toTypedArray()
+    @Suppress("SpreadOperator")
+    return annotatedStringRes(content.body, *args)
 }
