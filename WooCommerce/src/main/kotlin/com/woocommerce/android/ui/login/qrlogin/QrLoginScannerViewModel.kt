@@ -89,6 +89,7 @@ class QrLoginScannerViewModel @Inject constructor(
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
             is QrLoginPayload.Ticket -> handleHandoff(PendingHandoff.RunFlow(payload))
+            is QrLoginPayload.WpComToken -> handleHandoff(PendingHandoff.RunFlow(payload))
             is QrLoginPayload.WpComMagicLinkUrl -> handleHandoff(PendingHandoff.WpComMagicLink(payload.url))
             is QrLoginPayload.SiteUrl -> handleHandoff(PendingHandoff.SiteUrlPrefill(payload.siteUrl))
             is QrLoginPayload.AppLogin.Credentials -> handleHandoff(

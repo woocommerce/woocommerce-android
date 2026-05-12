@@ -29,6 +29,7 @@ class QrLoginFlowFactory @Inject constructor(
             restClient = restClient,
             authenticator = authenticator,
         )
+        is QrLoginPayload.WpComToken -> null // wired in a follow-up commit
         is QrLoginPayload.SiteUrl,
         is QrLoginPayload.WpComMagicLinkUrl,
         is QrLoginPayload.AppLogin.Credentials,

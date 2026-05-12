@@ -65,17 +65,31 @@ class QrLoginPayloadParser @Inject constructor() {
     }
 
     /**
-     * Parses the `woocommerce://qr-login?...` deeplink. Returns [QrLoginPayload.Ticket] when both
-     * `token` and `siteUrl` are present and valid, [QrLoginPayload.SiteUrl] when `siteUrl` is
-     * valid but `token` is missing or blank, and `null` (caller maps to `Invalid`) otherwise.
-     * `siteUrl` validation is identical in both branches.
+     * Parses the `woocommerce://qr-login?...` deeplink. Three valid shapes:
+     *  - `token` (matching [TOKEN_REGEX]) + `siteUrl` → [QrLoginPayload.Ticket] (self-hosted AP)
+     *  - `siteUrl` only (no/blank `token`) → [QrLoginPayload.SiteUrl] (site-URL prefill)
+     *  - `token` (non-blank) + `encrypted` (non-blank), no `siteUrl` → [QrLoginPayload.WpComToken]
+     *    (wp.com QR app login)
+     *
+     * Anything else returns `null` and the caller maps it to [QrLoginPayload.Invalid]. The wp.com
+     * branch is gated on `siteUrl` being absent so a self-hosted `Ticket` payload is never
+     * silently rerouted to wp.com if both query params happen to land on the same QR.
      */
     private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
         val uri = parseDeepLink(raw, QR_LOGIN_HOST) ?: return null
-        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let { normalizeSiteUrl(it) } ?: return null
-        val rawToken = uri.queryParam(PARAM_TOKEN)
+        val rawSiteUrl = uri.queryParam(PARAM_SITE_URL)?.takeIf { it.isNotBlank() }
+        val rawToken = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
+        val rawEncrypted = uri.queryParam(PARAM_ENCRYPTED)?.takeIf { it.isNotBlank() }
+
+        // wp.com branch: siteUrl absent, token + encrypted present.
+        if (rawSiteUrl == null && rawToken != null && rawEncrypted != null) {
+            return QrLoginPayload.WpComToken(token = rawToken, encrypted = rawEncrypted)
+        }
+
+        // Self-hosted branches require a valid siteUrl.
+        val siteUrl = rawSiteUrl?.let { normalizeSiteUrl(it) } ?: return null
         return when {
-            rawToken.isNullOrBlank() -> QrLoginPayload.SiteUrl(siteUrl = siteUrl)
+            rawToken == null -> QrLoginPayload.SiteUrl(siteUrl = siteUrl)
             TOKEN_REGEX.matches(rawToken) -> QrLoginPayload.Ticket(token = rawToken, siteUrl = siteUrl)
             else -> null
         }
@@ -166,6 +180,7 @@ class QrLoginPayloadParser @Inject constructor() {
         const val PARAM_SITE_URL = "siteUrl"
         const val PARAM_USERNAME = "username"
         const val PARAM_WP_COM_EMAIL = "wpcomEmail"
+        const val PARAM_ENCRYPTED = "encrypted"
         const val PARAM_ACTION = "action"
         const val PARAM_SCHEME = "scheme"
         const val INSTALL_QR_HOST = "woocommerce.com"
