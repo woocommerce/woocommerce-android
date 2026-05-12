@@ -35,18 +35,18 @@ class SurveyTypeTest {
     }
 
     @Test
-    fun `AI Assistant SurveyType url should use AI Assistant Crowdsignal URL`() {
+    fun `when AI Assistant SurveyType url is requested, then it uses AI Assistant Crowdsignal URL`() {
         assertThat(SurveyType.AI_ASSISTANT.url).startsWith(AppUrls.CROWDSIGNAL_AI_ASSISTANT_SURVEY)
     }
 
     @Test
-    fun `AI Assistant SurveyType feedback context should use AI Assistant context`() {
+    fun `when AI Assistant SurveyType feedback context is requested, then it uses AI Assistant context`() {
         assertThat(SurveyType.AI_ASSISTANT.feedbackContext)
             .isEqualTo(AnalyticsTracker.VALUE_AI_ASSISTANT_FEEDBACK)
     }
 
     @Test
-    fun `SurveyType feedback context should preserve existing contexts`() {
+    fun `when SurveyType feedback context is requested, then it preserves existing contexts`() {
         assertThat(SurveyType.entries.associateWith { it.feedbackContext })
             .contains(
                 entry(SurveyType.MAIN, AnalyticsTracker.VALUE_FEEDBACK_GENERAL_CONTEXT),
