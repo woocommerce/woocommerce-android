@@ -567,6 +567,13 @@ class QrLoginScannerViewModel @Inject constructor(
         MatchTimedOut,
         MatchAlreadyScanned,
         MatchInvalidGrant,
+        /**
+         * wp.com /exchange returned 500 + `already_consumed` — the exchange grant has already
+         * been used (typically by a previous /exchange call from this or another device). The
+         * site-flow protocol can't distinguish this from [MatchInvalidGrant] (both surface as
+         * 412 + `invalid_exchange_grant`), so only the wp.com flow produces this reason.
+         */
+        MatchAlreadyCompleted,
         Unknown
     }
 

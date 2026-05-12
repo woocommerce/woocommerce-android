@@ -173,6 +173,11 @@ private val simpleErrorContents: Map<ErrorReason, QrLoginErrorContent> = mapOf(
         R.string.login_qr_scanner_error_match_invalid_grant_body,
         R.string.login_qr_error_primary_scan,
     ),
+    ErrorReason.MatchAlreadyCompleted to errorContent(
+        R.string.login_qr_scanner_error_match_already_completed_title,
+        R.string.login_qr_scanner_error_match_already_completed_body,
+        R.string.login_qr_error_primary_scan,
+    ),
     ErrorReason.Scanner to genericErrorContent(),
     ErrorReason.Unknown to genericErrorContent(),
 )
