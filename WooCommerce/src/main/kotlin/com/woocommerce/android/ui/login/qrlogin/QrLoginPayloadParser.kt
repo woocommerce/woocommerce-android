@@ -68,8 +68,8 @@ class QrLoginPayloadParser @Inject constructor() {
      * Parses the `woocommerce://qr-login?...` deeplink. Three valid shapes:
      *  - `token` (matching [TOKEN_REGEX]) + `siteUrl` → [QrLoginPayload.Ticket] (self-hosted AP)
      *  - `siteUrl` only (no/blank `token`) → [QrLoginPayload.SiteUrl] (site-URL prefill)
-     *  - `token` (non-blank) + `encrypted` (non-blank), no `siteUrl` → [QrLoginPayload.WpComToken]
-     *    (wp.com QR app login)
+     *  - `token` (matching [WPCOM_TOKEN_REGEX]) + `encrypted` (non-blank), no `siteUrl` →
+     *    [QrLoginPayload.WpComToken] (wp.com QR app login)
      *
      * Anything else returns `null` and the caller maps it to [QrLoginPayload.Invalid]. The wp.com
      * branch is gated on `siteUrl` being absent so a self-hosted `Ticket` payload is never
@@ -81,8 +81,12 @@ class QrLoginPayloadParser @Inject constructor() {
         val rawToken = uri.queryParam(PARAM_TOKEN)?.takeIf { it.isNotBlank() }
         val rawEncrypted = uri.queryParam(PARAM_ENCRYPTED)?.takeIf { it.isNotBlank() }
 
-        // wp.com branch: siteUrl absent, token + encrypted present.
+        // wp.com branch: siteUrl absent, token matches the documented `{64-hex}:{32-hex}` shape,
+        // encrypted is present. The shape gate mirrors the [TOKEN_REGEX] sanity check on the
+        // self-hosted branch — server is the authority on validity, but obviously-malformed QRs
+        // shouldn't advance into the network exchange.
         if (rawSiteUrl == null && rawToken != null && rawEncrypted != null) {
+            if (!WPCOM_TOKEN_REGEX.matches(rawToken)) return null
             return QrLoginPayload.WpComToken(token = rawToken, encrypted = rawEncrypted)
         }
 
@@ -189,5 +193,6 @@ class QrLoginPayloadParser @Inject constructor() {
         const val WP_COM_MAGIC_LINK_PATH = "/wp-login.php"
         const val ACTION_MAGIC_LOGIN = "magic-login"
         val TOKEN_REGEX = Regex("^[A-Za-z0-9]{64,512}$")
+        val WPCOM_TOKEN_REGEX = Regex("^[A-Fa-f0-9]{64}:[A-Fa-f0-9]{32}$")
     }
 }
