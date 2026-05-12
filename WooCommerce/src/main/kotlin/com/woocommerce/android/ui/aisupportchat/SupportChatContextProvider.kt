@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.aisupportchat
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SuggestedFixAction
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.BuildConfigWrapper
 import dagger.Reusable
 import javax.inject.Inject
