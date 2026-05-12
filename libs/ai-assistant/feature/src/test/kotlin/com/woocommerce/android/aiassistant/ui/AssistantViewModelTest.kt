@@ -107,7 +107,11 @@ class AssistantViewModelTest {
         assertThat(state.status).isEqualTo(AssistantUiStatus.STREAMING)
         assertThat(state.isTurnActive).isTrue()
         assertThat(state.messages).containsExactly(
-            AssistantUiMessage(id = "assistant-id-2", role = AssistantUiMessage.Role.USER, text = "Show my recent orders"),
+            AssistantUiMessage(
+                id = "assistant-id-2",
+                role = AssistantUiMessage.Role.USER,
+                text = "Show my recent orders",
+            ),
             AssistantUiMessage(id = "assistant-id-3", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
         )
         assertThat(runtime.startRequests).containsExactly(
@@ -184,7 +188,8 @@ class AssistantViewModelTest {
         runTest {
             viewModel.onSendMessage("Show orders")
 
-            val conversationStarted = assistantTelemetryTracker.events.filterIsInstance<AiAssistantConversationStartedEvent>()
+            val conversationStarted = assistantTelemetryTracker.events
+                .filterIsInstance<AiAssistantConversationStartedEvent>()
             val turnStarted = assistantTelemetryTracker.events.filterIsInstance<AiAssistantTurnStartedEvent>()
 
             assertThat(conversationStarted).hasSize(1)
@@ -200,7 +205,9 @@ class AssistantViewModelTest {
             runtime.emitTurnFinished()
             viewModel.onSendMessage("Second")
 
-            assertThat(assistantTelemetryTracker.events.filterIsInstance<AiAssistantConversationStartedEvent>()).hasSize(1)
+            assertThat(
+                assistantTelemetryTracker.events.filterIsInstance<AiAssistantConversationStartedEvent>()
+            ).hasSize(1)
         }
 
     @Test
@@ -212,7 +219,8 @@ class AssistantViewModelTest {
 
             viewModel.onSendMessage("Second")
 
-            val conversationStarts = assistantTelemetryTracker.events.filterIsInstance<AiAssistantConversationStartedEvent>()
+            val conversationStarts = assistantTelemetryTracker.events
+                .filterIsInstance<AiAssistantConversationStartedEvent>()
             assertThat(conversationStarts).hasSize(2)
             assertThat(conversationStarts.last().conversationId).isNotEqualTo(firstContext.conversationId)
             assertThat(conversationStarts.last().context()).isEqualTo(runtime.startRequests.last().telemetryContext)
@@ -440,7 +448,9 @@ class AssistantViewModelTest {
             )
             advanceUntilIdle()
 
-            assertThat(assistantTelemetryTracker.events.filterIsInstance<AiAssistantShowCardsProcessedEvent>()).isEmpty()
+            assertThat(
+                assistantTelemetryTracker.events.filterIsInstance<AiAssistantShowCardsProcessedEvent>()
+            ).isEmpty()
         }
 
     @Test
