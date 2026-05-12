@@ -30,6 +30,7 @@ class QrLoginPrologueFragment : Fragment() {
     interface Listener {
         fun onQrLoginScanClicked()
         fun onQrLoginFallbackClicked()
+        fun onQrLoginHelpClicked()
     }
 
     @Inject
@@ -55,7 +56,12 @@ class QrLoginPrologueFragment : Fragment() {
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
                 unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
                 listener?.onQrLoginFallbackClicked()
-            }
+            },
+            onHelpClicked = {
+                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HELP_TAPPED)
+                unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.SHOW_HELP)
+                listener?.onQrLoginHelpClicked()
+            },
         )
     }
 

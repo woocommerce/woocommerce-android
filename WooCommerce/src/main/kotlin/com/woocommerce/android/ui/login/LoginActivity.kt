@@ -331,6 +331,10 @@ class LoginActivity :
         showAppLoginWpComEmail(siteUrl = siteUrl, wpComEmail = wpComEmail)
     }
 
+    override fun onQrLoginHelpClicked() {
+        viewHelpAndSupport(HelpOrigin.LOGIN_WITH_QR_CODE)
+    }
+
     private fun hasJetpackConnectedIntent(): Boolean {
         val action = intent.action
         val uri = intent.data

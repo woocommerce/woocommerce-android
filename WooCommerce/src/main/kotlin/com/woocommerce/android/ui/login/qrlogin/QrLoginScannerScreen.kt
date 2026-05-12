@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
+import com.woocommerce.android.ui.login.HelpButton
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
 
@@ -36,6 +39,7 @@ fun QrLoginScannerScreen(
     onStartOver: () -> Unit,
     onRetryExchange: () -> Unit,
     onFallbackClicked: () -> Unit,
+    onHelpClicked: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -72,6 +76,19 @@ fun QrLoginScannerScreen(
             is UiState.Authenticating -> QrLoginAuthenticatingScreen()
             UiState.Idle -> Unit
         }
+
+        // White tint when the camera preview is showing behind the icon, otherwise default
+        // onSurface so the icon stays readable on the opaque confirm/error/authenticating overlays.
+        val helpTint = if (showCamera && uiState == UiState.Idle) {
+            Color.White
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+        HelpButton(
+            onClick = onHelpClicked,
+            tint = helpTint,
+            modifier = Modifier.align(Alignment.TopEnd),
+        )
     }
 }
 
