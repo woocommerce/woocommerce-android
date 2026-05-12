@@ -352,6 +352,10 @@ class AssistantViewModel @AssistedInject constructor(
         when (this) {
             is AssistantCard.Order -> AssistantCardKey(family = "order", id = remoteOrderId.toString())
             is AssistantCard.Product -> AssistantCardKey(family = "product", id = remoteProductId.toString())
+            is AssistantCard.Variation -> AssistantCardKey(
+                family = "variation",
+                id = "$parentProductId/$variationId",
+            )
             is AssistantCard.Customer -> AssistantCardKey(family = "customer", id = remoteCustomerId.toString())
             is AssistantCard.Stats -> AssistantCardKey(family = "analytics_stats", id = id)
         }

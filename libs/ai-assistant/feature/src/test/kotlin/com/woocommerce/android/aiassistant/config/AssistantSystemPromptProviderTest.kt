@@ -89,6 +89,18 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
+    fun `when prompt is built, then broad stock questions stay product level unless variation level is explicit`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-04")
+
+        assertThat(prompt).contains("Stock-focused product queries")
+        assertThat(prompt).contains("Broad stock questions are product-level answers")
+        assertThat(prompt).contains("Do not inspect variations unless the merchant")
+        assertThat(prompt).contains("explicitly asks about sizes, colors, options")
+        assertThat(prompt).contains("sizes, colors, options, or variation-level stock")
+        assertThat(prompt).contains("`show_cards` fetches and renders product")
+    }
+
+    @Test
     fun `when prompt is built, then show cards is the only card producer including customers and analytics stats`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 
@@ -97,7 +109,7 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("don't call the card-rendering tool")
         assertThat(prompt).contains("no cards appear")
         assertThat(prompt).contains("this turn should show orders")
-        assertThat(prompt).contains("products, customers, or analytics stats")
+        assertThat(prompt).contains("products, variations, customers, or analytics stats")
         assertThat(prompt).contains("Customer lists and cards")
         assertThat(prompt).contains("customer list call -> `show_cards`")
         assertThat(prompt).contains("One analytics read call with the appropriate window and a daily-grain parameter")

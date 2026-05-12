@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -17,6 +18,7 @@ internal data class ShowCardsArguments(
 internal enum class ShowCardFamily(val serializedName: String) {
     Order("order"),
     Product("product"),
+    Variation("variation"),
     AnalyticsStats("analytics_stats"),
     Customer("customer");
 
@@ -75,6 +77,19 @@ internal data class ProductSummary(
     @SerialName("manage_stock") val manageStock: Boolean? = null,
     @SerialName("on_sale") val onSale: Boolean? = null,
     @SerialName("stock_quantity") val stockQuantity: Double? = null,
+)
+
+@Serializable
+internal data class VariationSummary(
+    val id: String,
+    @SerialName("product_id") val productId: Long,
+    @SerialName("variation_id") val variationId: Long,
+    val name: String? = null,
+    val sku: String? = null,
+    val price: String? = null,
+    @SerialName("stock_status") val stockStatus: String? = null,
+    val status: String? = null,
+    val attributes: List<CompactVariationAttribute> = emptyList(),
 )
 
 @Serializable
@@ -172,6 +187,20 @@ internal sealed interface ShowCardDetails {
         @SerialName("stock_status") val stockStatus: String? = null,
         val status: String? = null,
         @SerialName("image_url") val imageUrl: String? = null,
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("variation")
+    data class Variation(
+        @SerialName("product_id") val productId: Long,
+        @SerialName("variation_id") val variationId: Long,
+        val name: String? = null,
+        val sku: String? = null,
+        val price: String? = null,
+        @SerialName("stock_status") val stockStatus: String? = null,
+        val status: String? = null,
+        @SerialName("image_url") val imageUrl: String? = null,
+        val attributes: List<CompactVariationAttribute> = emptyList(),
     ) : ShowCardDetails
 
     @Serializable

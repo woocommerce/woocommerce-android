@@ -12,6 +12,7 @@ class WooAssistantCardRenderer internal constructor(
 ) : AssistantCardRenderer {
     private val orderCardRenderer = AiAssistantOrderCardRenderer(currencyFormatter)
     private val productCardRenderer = AiAssistantProductCardRenderer(currencyFormatter)
+    private val variationCardRenderer = AiAssistantVariationCardRenderer(currencyFormatter)
     private val statsCardRenderer = AiAssistantStatsCardRenderer(currencyFormatter)
     private val customerCardRenderer = AiAssistantCustomerCardRenderer()
 
@@ -26,6 +27,7 @@ class WooAssistantCardRenderer internal constructor(
         when (card) {
             is AssistantCard.Order -> orderCardRenderer.Card(card, onAction, modifier)
             is AssistantCard.Product -> productCardRenderer.Card(card, onAction, modifier)
+            is AssistantCard.Variation -> variationCardRenderer.Card(card, onAction, modifier)
             is AssistantCard.Stats -> statsCardRenderer.Card(card, onAction, modifier)
             is AssistantCard.Customer -> customerCardRenderer.Card(card, onAction, modifier)
         }

@@ -21,6 +21,23 @@ sealed interface AssistantCard {
         val imageUrl: String,
     ) : AssistantCard
 
+    data class Variation(
+        val parentProductId: Long,
+        val variationId: Long,
+        val name: String,
+        val sku: String,
+        val price: String,
+        val stockStatus: String,
+        val status: String,
+        val imageUrl: String,
+        val attributes: List<Attribute>,
+    ) : AssistantCard {
+        data class Attribute(
+            val name: String,
+            val option: String,
+        )
+    }
+
     data class Customer(
         val remoteCustomerId: Long,
         val name: String,

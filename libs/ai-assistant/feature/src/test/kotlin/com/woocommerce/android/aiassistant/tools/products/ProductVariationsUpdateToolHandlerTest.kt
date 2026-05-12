@@ -75,6 +75,9 @@ class ProductVariationsUpdateToolHandlerTest {
         assertThat(handler.descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.UNSAFE)
         assertThat(handler.descriptor.description).contains("product_id")
         assertThat(handler.descriptor.description).contains("stock_quantity")
+        assertThat(handler.descriptor.description).contains("After a successful update")
+        assertThat(handler.descriptor.description).contains("show_cards")
+        assertThat(handler.descriptor.description).contains("strict {parentProductId}/{variationId}")
         assertThat(requireNotNull(schema["additionalProperties"]).jsonPrimitive.boolean).isFalse
         assertThat(properties.keys).containsExactlyInAnyOrder(
             "product_id",

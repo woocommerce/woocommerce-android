@@ -49,6 +49,16 @@ class ProductsGetToolHandlerTest {
     )
 
     @Test
+    fun `given descriptor, when inspected, then variation and card-rendering guidance is aligned`() {
+        val description = handler.descriptor.description
+
+        assertThat(description).contains("use product_variations_list only when")
+        assertThat(description).contains("explicitly asks about variations, sizes, colors, options")
+        assertThat(description).contains("Do NOT call this tool to render a card after products_list")
+        assertThat(description).contains("`show_cards` re-fetches product detail")
+    }
+
+    @Test
     fun `given a valid id, when execute is called, then structured JSON contains expected fields`() = runTest {
         val product = makeProduct()
         whenever(dataSource.getProduct(42L)).thenReturn(Result.success(product))

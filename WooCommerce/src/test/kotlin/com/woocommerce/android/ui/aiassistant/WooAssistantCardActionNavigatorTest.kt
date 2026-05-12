@@ -52,6 +52,19 @@ class WooAssistantCardActionNavigatorTest {
     }
 
     @Test
+    fun `given open product variation action, when mapped, then variation detail deep link is returned`() = runTest {
+        val target = navigator.targetFor(
+            AssistantCardAction.OpenProductVariation(parentProductId = 100L, variationId = 10L)
+        )
+
+        assertThat(target).isEqualTo(
+            WooAssistantCardNavigationTarget.DeepLink(
+                uri = "wcandroid://variationDetail?remoteProductId=100&remoteVariationId=10"
+            )
+        )
+    }
+
+    @Test
     fun `given open analytics action, when mapped, then analytics direction is returned`() = runTest {
         val direction = requireNotNull(
             navigator.directionFor(

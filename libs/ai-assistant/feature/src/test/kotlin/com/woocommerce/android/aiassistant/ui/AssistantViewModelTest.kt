@@ -825,6 +825,44 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given grouped variation cards have distinct parent product ids, when cards arrive, then both remain visible`() =
+        runTest {
+            viewModel.onSendMessage("Show matching variations")
+            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Blue socks")
+            val secondVariation = givenVariationCard(parentProductId = 101L, variationId = 10L, name = "Green socks")
+
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstVariation, secondVariation)))
+            advanceUntilIdle()
+
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).containsExactly(
+                AssistantUiSegment.CardGroup(listOf(firstVariation, secondVariation)),
+            )
+        }
+
+    @Test
+    fun `given grouped variation cards have same composite id, when cards arrive, then duplicate is filtered`() =
+        runTest {
+            viewModel.onSendMessage("Show matching variations")
+            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Blue socks")
+            val duplicateVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Red socks")
+            val secondVariation = givenVariationCard(parentProductId = 100L, variationId = 11L, name = "Green socks")
+
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstVariation)))
+            runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateVariation, secondVariation)))
+            advanceUntilIdle()
+
+            val cardGroups = viewModel.uiState.value.messages.last().segments
+                .filterIsInstance<AssistantUiSegment.CardGroup>()
+
+            assertThat(cardGroups).containsExactly(
+                AssistantUiSegment.CardGroup(listOf(firstVariation, secondVariation)),
+            )
+        }
+
+    @Test
     fun `given repeated show cards calls, when cards arrive, then batches merge`() = runTest {
         viewModel.onSendMessage("Show matching cards")
         val firstOrder = givenOrderCard(id = "123", number = "#123")
@@ -1362,6 +1400,22 @@ class AssistantViewModelTest {
         stockStatus = "instock",
         status = "publish",
         imageUrl = "https://example.com/socks.png",
+    )
+
+    private fun givenVariationCard(
+        parentProductId: Long,
+        variationId: Long,
+        name: String = "Blue socks",
+    ) = AssistantCard.Variation(
+        parentProductId = parentProductId,
+        variationId = variationId,
+        name = name,
+        sku = "woo-socks-blue",
+        price = "12.99",
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/blue-socks.png",
+        attributes = listOf(AssistantCard.Variation.Attribute(name = "Size", option = "M")),
     )
 
     private fun givenStatsCard(

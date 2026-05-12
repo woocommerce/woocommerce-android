@@ -19,6 +19,7 @@ internal fun List<AssistantCard>.toAssistantCardGroupMetadata(): AssistantCardGr
 private enum class AssistantCardGroupKind {
     Order,
     Product,
+    Variation,
     Stats,
     Customer,
 }
@@ -27,6 +28,7 @@ private val AssistantCard.groupKind: AssistantCardGroupKind
     get() = when (this) {
         is AssistantCard.Order -> AssistantCardGroupKind.Order
         is AssistantCard.Product -> AssistantCardGroupKind.Product
+        is AssistantCard.Variation -> AssistantCardGroupKind.Variation
         is AssistantCard.Stats -> AssistantCardGroupKind.Stats
         is AssistantCard.Customer -> AssistantCardGroupKind.Customer
     }
@@ -39,6 +41,10 @@ private val AssistantCardGroupKind.metadata: AssistantCardGroupMetadata
         )
         AssistantCardGroupKind.Product -> AssistantCardGroupMetadata(
             titleRes = R.string.assistant_chat_card_group_products,
+            iconRes = R.drawable.ic_assistant_card_group_products,
+        )
+        AssistantCardGroupKind.Variation -> AssistantCardGroupMetadata(
+            titleRes = R.string.assistant_chat_card_group_variations,
             iconRes = R.drawable.ic_assistant_card_group_products,
         )
         AssistantCardGroupKind.Stats -> AssistantCardGroupMetadata(

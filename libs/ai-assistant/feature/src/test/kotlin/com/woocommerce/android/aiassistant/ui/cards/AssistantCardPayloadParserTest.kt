@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui.cards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -128,6 +129,144 @@ class AssistantCardPayloadParserTest {
                 stockStatus = "instock",
                 status = "publish",
                 imageUrl = "https://example.com/socks.png",
+            )
+        )
+    }
+
+    @Test
+    fun `given variation payload, when parsed, then variation card contains parent product and variation fields`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    ShowCardPayload(
+                        family = "variation",
+                        id = "100/10",
+                        title = "Blue socks",
+                        details = ShowCardDetails.Variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            name = "Blue socks",
+                            sku = "woo-socks-blue",
+                            price = "12.99",
+                            stockStatus = "instock",
+                            status = "publish",
+                            imageUrl = "https://example.com/blue-socks.png",
+                            attributes = listOf(
+                                CompactVariationAttribute(name = "Size", option = "M"),
+                                CompactVariationAttribute(name = "Color", option = "Blue"),
+                            ),
+                        ),
+                    )
+                )
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Variation(
+                parentProductId = 100L,
+                variationId = 10L,
+                name = "Blue socks",
+                sku = "woo-socks-blue",
+                price = "12.99",
+                stockStatus = "instock",
+                status = "publish",
+                imageUrl = "https://example.com/blue-socks.png",
+                attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "Size", option = "M"),
+                    AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `given single variation payload, when parsed, then one variation card is returned`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(variationPayload(id = "100/10", productId = 100L, variationId = 10L))
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Variation(
+                parentProductId = 100L,
+                variationId = 10L,
+                name = "Blue socks",
+                sku = "woo-socks-blue",
+                price = "12.99",
+                stockStatus = "instock",
+                status = "publish",
+                imageUrl = "https://example.com/blue-socks.png",
+                attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "Size", option = "M"),
+                    AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `given invalid variation payloads, when parsed, then variation cards are ignored`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    variationPayload(id = "100", productId = 100L, variationId = 10L),
+                    variationPayload(id = "100/11", productId = 100L, variationId = 10L),
+                    ShowCardPayload(
+                        family = "variation",
+                        id = "100/10",
+                        title = "Wrong details",
+                        details = ShowCardDetails.Product(sku = "woo-socks"),
+                    ),
+                )
+            )
+        )
+
+        assertThat(cards).isEmpty()
+    }
+
+    @Test
+    fun `given variation payload with blank optional fields, when parsed, then blank values are normalized`() {
+        val cards = AssistantCardPayloadParser.parse(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    ShowCardPayload(
+                        family = "variation",
+                        id = "100/10",
+                        title = "Variation 10",
+                        details = ShowCardDetails.Variation(
+                            productId = 100L,
+                            variationId = 10L,
+                            name = null,
+                            sku = null,
+                            price = null,
+                            stockStatus = null,
+                            status = null,
+                            imageUrl = null,
+                            attributes = listOf(
+                                CompactVariationAttribute(name = "Size", option = ""),
+                                CompactVariationAttribute(name = "", option = "Blue"),
+                                CompactVariationAttribute(name = "Color", option = "Blue"),
+                            ),
+                        ),
+                    )
+                )
+            )
+        )
+
+        assertThat(cards).containsExactly(
+            AssistantCard.Variation(
+                parentProductId = 100L,
+                variationId = 10L,
+                name = "",
+                sku = "",
+                price = "",
+                stockStatus = "",
+                status = "",
+                imageUrl = "",
+                attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                ),
             )
         )
     }
@@ -518,6 +657,30 @@ class AssistantCardPayloadParserTest {
         id = id,
         title = title,
         details = ShowCardDetails.Order(status = "processing"),
+    )
+
+    private fun variationPayload(
+        id: String,
+        productId: Long,
+        variationId: Long,
+    ) = ShowCardPayload(
+        family = "variation",
+        id = id,
+        title = "Blue socks",
+        details = ShowCardDetails.Variation(
+            productId = productId,
+            variationId = variationId,
+            name = "Blue socks",
+            sku = "woo-socks-blue",
+            price = "12.99",
+            stockStatus = "instock",
+            status = "publish",
+            imageUrl = "https://example.com/blue-socks.png",
+            attributes = listOf(
+                CompactVariationAttribute(name = "Size", option = "M"),
+                CompactVariationAttribute(name = "Color", option = "Blue"),
+            ),
+        ),
     )
 
     private fun analyticsStatsPayload(

@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.AssistantRoute
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.extensions.navigateSafely
@@ -45,14 +49,30 @@ class AiAssistantHostFragment : BaseFragment() {
 
     private fun onCardAction(action: AssistantCardAction) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val direction = cardActionNavigator.directionFor(action) ?: return@launch
+            val target = cardActionNavigator.targetFor(action) ?: return@launch
             if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                findNavController().navigateSafely(direction)
+                when (target) {
+                    is WooAssistantCardNavigationTarget.Direction -> {
+                        findNavController().navigateSafely(target.directions)
+                    }
+                    is WooAssistantCardNavigationTarget.DeepLink -> {
+                        findNavController().navigate(target.uri.toUri(), assistantCardDeepLinkNavOptions())
+                    }
+                }
             }
         }
     }
 
     companion object {
         private const val ASSISTANT_CONVERSATION_ID = "dashboard-assistant"
+    }
+}
+
+internal fun assistantCardDeepLinkNavOptions(): NavOptions = navOptions {
+    anim {
+        enter = R.anim.default_enter_anim
+        exit = R.anim.default_exit_anim
+        popEnter = R.anim.default_pop_enter_anim
+        popExit = R.anim.default_pop_exit_anim
     }
 }

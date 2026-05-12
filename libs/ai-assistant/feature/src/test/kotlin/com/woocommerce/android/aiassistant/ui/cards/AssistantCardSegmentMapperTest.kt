@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.ui.cards
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import com.woocommerce.android.aiassistant.ui.AssistantUiSegment
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -116,6 +117,55 @@ class AssistantCardSegmentMapperTest {
         )
     }
 
+    @Test
+    fun `given variation payload, when mapped, then grouped segment contains typed variation card`() {
+        val segments = AssistantCardSegmentMapper.toSegments(
+            ShowCardsUiStructured(
+                cards = listOf(variationPayload())
+            )
+        )
+
+        assertThat(segments).containsExactly(
+            AssistantUiSegment.CardGroup(
+                listOf(
+                    AssistantCard.Variation(
+                        parentProductId = 100L,
+                        variationId = 10L,
+                        name = "Blue socks",
+                        sku = "woo-socks-blue",
+                        price = "12.99",
+                        stockStatus = "instock",
+                        status = "publish",
+                        imageUrl = "https://example.com/blue-socks.png",
+                        attributes = listOf(
+                            AssistantCard.Variation.Attribute(name = "Size", option = "M"),
+                            AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
+                        ),
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `given multiple variation payloads, when mapped, then grouped segment preserves variation order`() {
+        val segments = AssistantCardSegmentMapper.toSegments(
+            ShowCardsUiStructured(
+                cards = listOf(
+                    variationPayload(id = "100/10", productId = 100L, variationId = 10L, name = "Blue socks"),
+                    variationPayload(id = "100/11", productId = 100L, variationId = 11L, name = "Red socks"),
+                    variationPayload(id = "101/10", productId = 101L, variationId = 10L, name = "Green socks"),
+                )
+            )
+        )
+
+        val cardGroup = segments.single() as AssistantUiSegment.CardGroup
+        val variations = cardGroup.cards.filterIsInstance<AssistantCard.Variation>()
+        assertThat(variations.map { "${it.parentProductId}/${it.variationId}" })
+            .containsExactly("100/10", "100/11", "101/10")
+        assertThat(variations.map { it.name }).containsExactly("Blue socks", "Red socks", "Green socks")
+    }
+
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
         id = id,
@@ -139,6 +189,31 @@ class AssistantCardSegmentMapperTest {
             stockStatus = "instock",
             status = "publish",
             imageUrl = "https://example.com/socks.png",
+        ),
+    )
+
+    private fun variationPayload(
+        id: String = "100/10",
+        productId: Long = 100L,
+        variationId: Long = 10L,
+        name: String = "Blue socks",
+    ) = ShowCardPayload(
+        family = "variation",
+        id = id,
+        title = name,
+        details = ShowCardDetails.Variation(
+            productId = productId,
+            variationId = variationId,
+            name = name,
+            sku = "woo-socks-blue",
+            price = "12.99",
+            stockStatus = "instock",
+            status = "publish",
+            imageUrl = "https://example.com/blue-socks.png",
+            attributes = listOf(
+                CompactVariationAttribute(name = "Size", option = "M"),
+                CompactVariationAttribute(name = "Color", option = "Blue"),
+            ),
         ),
     )
 

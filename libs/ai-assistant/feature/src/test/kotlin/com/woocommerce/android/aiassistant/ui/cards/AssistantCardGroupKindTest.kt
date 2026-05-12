@@ -22,6 +22,14 @@ class AssistantCardGroupKindTest {
     }
 
     @Test
+    fun `given only variation cards, when resolving group kind, then variations metadata is returned`() {
+        val metadata = listOf(variationCard()).toAssistantCardGroupMetadata()
+
+        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_variations)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
+    }
+
+    @Test
     fun `given only stats cards, when resolving group kind, then stats metadata is returned`() {
         val metadata = listOf(statsCard()).toAssistantCardGroupMetadata()
 
@@ -45,6 +53,14 @@ class AssistantCardGroupKindTest {
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
     }
 
+    @Test
+    fun `given mixed product and variation cards, when resolving group kind, then generic metadata is returned`() {
+        val metadata = listOf(productCard(), variationCard()).toAssistantCardGroupMetadata()
+
+        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_generic)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
+    }
+
     private fun orderCard() = AssistantCard.Order(
         remoteOrderId = 123L,
         number = "#1001",
@@ -63,6 +79,18 @@ class AssistantCardGroupKindTest {
         stockStatus = "instock",
         status = "publish",
         imageUrl = "https://example.com/socks.png",
+    )
+
+    private fun variationCard() = AssistantCard.Variation(
+        parentProductId = 456L,
+        variationId = 10L,
+        name = "Woo socks - Blue",
+        sku = "woo-socks-blue",
+        price = "12.99",
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/blue-socks.png",
+        attributes = listOf(AssistantCard.Variation.Attribute(name = "Color", option = "Blue")),
     )
 
     private fun statsCard() = AssistantCard.Stats(
