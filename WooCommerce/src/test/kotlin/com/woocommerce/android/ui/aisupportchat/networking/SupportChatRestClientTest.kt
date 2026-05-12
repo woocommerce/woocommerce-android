@@ -209,7 +209,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
     )
 
     private companion object {
-        const val BOT_SLUG = "woo-workflow-support_mobile_inapp"
+        const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 4242L
         const val MESSAGE = "I can't load my orders"
     }

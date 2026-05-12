@@ -125,7 +125,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp"
+        const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
     }
 }
 

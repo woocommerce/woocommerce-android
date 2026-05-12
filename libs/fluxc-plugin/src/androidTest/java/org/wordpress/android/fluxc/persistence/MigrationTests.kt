@@ -572,7 +572,7 @@ class MigrationTests {
             INSERT INTO SupportChatBookmarkEntity (
                 chatId, localSiteId, remoteSiteId, botSlug, title, createdAt, updatedAt
             ) VALUES (
-                1234, 10, 20, 'woo-workflow-support_mobile_inapp', 'Order help', 1000, 2000
+                1234, 10, 20, 'woo-workflow-support_mobile_inapp_all_users', 'Order help', 1000, 2000
             )
             """.trimIndent()
         )
@@ -589,7 +589,7 @@ class MigrationTests {
             assertThat(cursor.getLong(0)).isEqualTo(1234)
             assertThat(cursor.getInt(1)).isEqualTo(10)
             assertThat(cursor.getLong(2)).isEqualTo(20)
-            assertThat(cursor.getString(3)).isEqualTo("woo-workflow-support_mobile_inapp")
+            assertThat(cursor.getString(3)).isEqualTo("woo-workflow-support_mobile_inapp_all_users")
             assertThat(cursor.getString(4)).isEqualTo("Order help")
             assertThat(cursor.getLong(5)).isEqualTo(1000)
             assertThat(cursor.getLong(6)).isEqualTo(2000)
