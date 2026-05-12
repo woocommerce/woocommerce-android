@@ -38,6 +38,7 @@ class QrLoginPrologueFragment : Fragment() {
     interface Listener {
         fun onQrLoginScanClicked()
         fun onQrLoginFallbackClicked()
+        fun onQrLoginHelpClicked()
     }
 
     private val viewModel: QrLoginPrologueViewModel by viewModels()
@@ -65,6 +66,7 @@ class QrLoginPrologueFragment : Fragment() {
             cameraPermissionDialog = uiState.cameraPermissionDialog,
             onScanClicked = { viewModel.onScanClicked(isCameraPermissionGranted()) },
             onSiteAddressLoginClicked = viewModel::onSiteAddressLoginClicked,
+            onHelpClicked = viewModel::onHelpClicked,
             onCameraDenialPrimaryClicked = viewModel::onCameraDenialPrimaryClicked,
             onCameraDenialCancelled = viewModel::onCameraDenialCancelled,
         )
@@ -104,6 +106,8 @@ class QrLoginPrologueFragment : Fragment() {
                     listener?.onQrLoginScanClicked()
                 is QrLoginPrologueViewModel.Dispatch.NavigateToSiteAddressLogin ->
                     listener?.onQrLoginFallbackClicked()
+                is QrLoginPrologueViewModel.Dispatch.NavigateToHelp ->
+                    listener?.onQrLoginHelpClicked()
             }
         }
     }

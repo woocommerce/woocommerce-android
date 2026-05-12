@@ -22,8 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.HelpButton
 import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueViewModel.CameraPermissionDialogState
 
 @Composable
@@ -61,6 +62,7 @@ fun QrLoginPrologueScreen(
     cameraPermissionDialog: CameraPermissionDialogState?,
     onScanClicked: () -> Unit,
     onSiteAddressLoginClicked: () -> Unit,
+    onHelpClicked: () -> Unit,
     onCameraDenialPrimaryClicked: () -> Unit,
     onCameraDenialCancelled: () -> Unit,
 ) {
@@ -103,6 +105,12 @@ fun QrLoginPrologueScreen(
             }
             Buttons(onScanClicked = onScanClicked, onSiteAddressLoginClicked = onSiteAddressLoginClicked)
         }
+
+        HelpButton(
+            onClick = onHelpClicked,
+            tint = colorResource(id = R.color.prologue_login_on_background),
+            modifier = Modifier.align(Alignment.TopEnd),
+        )
     }
 
     if (cameraPermissionDialog != null) {
@@ -329,6 +337,7 @@ private fun QrLoginPrologueScreenPreview() {
             cameraPermissionDialog = null,
             onScanClicked = {},
             onSiteAddressLoginClicked = {},
+            onHelpClicked = {},
             onCameraDenialPrimaryClicked = {},
             onCameraDenialCancelled = {},
         )

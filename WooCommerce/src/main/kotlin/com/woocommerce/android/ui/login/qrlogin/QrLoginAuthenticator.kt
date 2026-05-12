@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import com.woocommerce.android.network.qrlogin.QrLoginCredentials
-import com.woocommerce.android.network.qrlogin.QrLoginRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository
@@ -12,37 +11,38 @@ import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 /**
- * Glue layer that turns a scanned QR ticket into a logged-in [SelectedSite].
+ * Glue layer that completes a QR-driven sign-in once the ViewModel has finished the
+ * scan / approve / exchange protocol and obtained valid [QrLoginCredentials].
  *
  * Steps:
- *   1. Exchange the QR ticket for an Application Password (unauthenticated POST to the merchant site).
- *   2. Discover and persist the [SiteModel] using the AP credentials.
- *   3. Save the AP into encrypted shared preferences so subsequent REST calls authenticate.
- *   4. Verify the user is eligible to use the app, then promote the site to the selected site.
+ *   1. Discover and persist the [SiteModel] using the AP credentials.
+ *   2. Save the AP into encrypted shared preferences so subsequent REST calls authenticate.
+ *   3. Verify the user is eligible to use the app, then promote the site to the selected site.
  *
  * Returns the local site id so the caller can drive `loggedInViaUsernamePassword(localSiteId)`.
+ *
+ * The exchange call itself lives in the ViewModel because it's tightly coupled to the
+ * number-matching state machine (must come after `/qr-login-approve` returns a grant), so
+ * the authenticator stays focused on the post-credentials WP login + site setup.
  */
 class QrLoginAuthenticator @Inject constructor(
-    private val exchangeClient: QrLoginRestClient,
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val accountRepository: AccountRepository
 ) {
-    suspend fun authenticate(ticket: QrLoginPayload.Ticket): Result<Int> {
-        val credentials = exchangeClient.exchange(ticket.siteUrl, ticket.token)
-            .getOrElse { return Result.failure(it) }
-
-        return try {
-            Result.success(authenticateWithCredentials(ticket.siteUrl, credentials))
-        } catch (ce: CancellationException) {
-            throw ce
-        } catch (e: QrLoginAuthenticationException) {
-            Result.failure(e)
-        } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
-            WooLog.e(WooLog.T.LOGIN, "QR login authentication failed", t)
-            Result.failure(t)
-        }
+    suspend fun completeLogin(
+        ticket: QrLoginPayload.Ticket,
+        credentials: QrLoginCredentials,
+    ): Result<Int> = try {
+        Result.success(authenticateWithCredentials(ticket.siteUrl, credentials))
+    } catch (ce: CancellationException) {
+        throw ce
+    } catch (e: QrLoginAuthenticationException) {
+        Result.failure(e)
+    } catch (@Suppress("TooGenericExceptionCaught") t: Throwable) {
+        WooLog.e(WooLog.T.LOGIN, "QR login authentication failed", t)
+        Result.failure(t)
     }
 
     private suspend fun authenticateWithCredentials(siteUrl: String, credentials: QrLoginCredentials): Int {

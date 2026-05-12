@@ -51,6 +51,12 @@ class QrLoginPrologueViewModel @Inject constructor(
         triggerEvent(Dispatch.NavigateToSiteAddressLogin)
     }
 
+    fun onHelpClicked() {
+        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HELP_TAPPED)
+        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.SHOW_HELP)
+        triggerEvent(Dispatch.NavigateToHelp)
+    }
+
     fun onCameraPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         if (granted) {
             cameraPermissionDenial.value = CameraDenialState.Hidden
@@ -109,6 +115,7 @@ class QrLoginPrologueViewModel @Inject constructor(
         object OpenAppSettings : Dispatch()
         object NavigateToScanner : Dispatch()
         object NavigateToSiteAddressLogin : Dispatch()
+        object NavigateToHelp : Dispatch()
     }
 
     companion object {
