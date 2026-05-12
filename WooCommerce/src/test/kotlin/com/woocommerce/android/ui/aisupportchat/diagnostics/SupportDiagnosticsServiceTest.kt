@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_PRODUCTS
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM_SERVERS
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
@@ -47,15 +48,15 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
             assertThat(emissions).hasSize(1 + 4 * 2)
 
             val initial = emissions.first()
-            assertThat(initial.statuses.map { it.first })
+            assertThat(initial.statuses.map { it.test })
                 .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS)
-            assertThat(initial.statuses.map { it.second })
+            assertThat(initial.statuses.map { it.status })
                 .allMatch { it is TestStatus.Pending }
 
             val finalResult = emissions.last()
             assertThat(finalResult.suggestedAction).isNull()
             assertThat(finalResult.firstFailure).isNull()
-            assertThat(finalResult.statuses.map { it.second })
+            assertThat(finalResult.statuses.map { it.status })
                 .allMatch { it is TestStatus.Passed }
             assertThat(finalResult.isComplete).isTrue
         }
@@ -67,7 +68,9 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
             whenever(wpComCheck.invoke()).thenReturn(
                 flowOf(
                     ConnectivityCheckStatus.Failure(
-                        technicalDetails = "WPCom 503"
+                        error = FailureType.TIMEOUT,
+                        technicalDetails = "WPCom 503",
+                        durationMs = 250L
                     )
                 )
             )
@@ -78,12 +81,19 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
             val failure = final.firstFailure
             assertThat(failure).isNotNull
-            assertThat(failure!!.first).isEqualTo(WPCOM_SERVERS)
-            assertThat(failure.second.message).isEqualTo("WPCom 503")
+            val failedStatus = requireNotNull(failure)
+            assertThat(failedStatus.test).isEqualTo(WPCOM_SERVERS)
+            assertThat(failedStatus.status).isEqualTo(
+                TestStatus.Failed(
+                    failureType = FailureType.TIMEOUT,
+                    technicalDetails = "WPCom 503",
+                    durationMs = 250L
+                )
+            )
 
             // STORE_CONNECTION + STORE_ORDERS must not have started.
-            val storeConnectionStatus = final.statuses.first { it.first == STORE_CONNECTION }.second
-            val storeOrdersStatus = final.statuses.first { it.first == STORE_ORDERS }.second
+            val storeConnectionStatus = final.statuses.first { it.test == STORE_CONNECTION }.status
+            val storeOrdersStatus = final.statuses.first { it.test == STORE_ORDERS }.status
             assertThat(storeConnectionStatus).isInstanceOf(TestStatus.Pending::class.java)
             assertThat(storeOrdersStatus).isInstanceOf(TestStatus.Pending::class.java)
         }
@@ -104,7 +114,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
         val initial = service.runDiagnostics(SupportIssueType.LOADING_PRODUCTS).toList().first()
 
-        assertThat(initial.statuses.map { it.first })
+        assertThat(initial.statuses.map { it.test })
             .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_PRODUCTS)
     }
 
@@ -114,7 +124,17 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
         val initial = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().first()
 
-        assertThat(initial.statuses.map { it.first })
+        assertThat(initial.statuses.map { it.test })
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
+    }
+
+    @Test
+    fun `given RECEIVING_NOTIFICATIONS, when run, then only the three connectivity checks run`() = testBlocking {
+        stubAll(success = true)
+
+        val initial = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().first()
+
+        assertThat(initial.statuses.map { it.test })
             .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
     }
 

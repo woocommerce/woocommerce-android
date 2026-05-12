@@ -9,14 +9,14 @@ package com.woocommerce.android.ui.aisupportchat.diagnostics
  */
 data class DiagnosticResult(
     val issueType: SupportIssueType,
-    val statuses: List<Pair<DiagnosticTest, TestStatus>>,
+    val statuses: List<DiagnosticStatus>,
     val suggestedAction: SuggestedFixAction? = null
 ) {
     val isComplete: Boolean
-        get() = statuses.none { (_, status) -> status is TestStatus.Pending || status is TestStatus.Running }
+        get() = statuses.none { it.status is TestStatus.Pending || it.status is TestStatus.Running }
 
-    val firstFailure: Pair<DiagnosticTest, TestStatus.Failed>?
-        get() = statuses.firstNotNullOfOrNull { (test, status) ->
-            (status as? TestStatus.Failed)?.let { test to it }
+    val firstFailure: DiagnosticStatus?
+        get() = statuses.firstNotNullOfOrNull { diagnosticStatus ->
+            (diagnosticStatus.status as? TestStatus.Failed)?.let { diagnosticStatus }
         }
 }
