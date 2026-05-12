@@ -1,9 +1,9 @@
 package com.woocommerce.android.aiassistant.runtime
 
-import com.automattic.eventhorizon.AiAssistantErrorKindValue
-import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.automattic.eventhorizon.AiAssistantErrorKindValue
+import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage

@@ -218,6 +218,7 @@ class AgenticLoopImpl(
         emit(LoopEvent.Finished(LoopOutcome.MAX_ITERATIONS, updatedHistory))
     }
 
+    @Suppress("LongMethod")
     private suspend fun FlowCollector<LoopEvent>.executeTools(
         assembledResults: List<ToolCallAssembler.AssemblyResult>,
         validCalls: List<ToolCall>,

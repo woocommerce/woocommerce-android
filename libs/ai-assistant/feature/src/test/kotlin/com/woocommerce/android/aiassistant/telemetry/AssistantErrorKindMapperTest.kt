@@ -7,63 +7,65 @@ import org.junit.Test
 
 class AssistantErrorKindMapperTest {
     @Test
-    fun `Network maps to NETWORK`() {
+    fun `when network error maps, then error kind is network`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.Network())).isEqualTo(AiAssistantErrorKindValue.Network)
     }
 
     @Test
-    fun `Auth maps to AUTH`() {
+    fun `when auth error maps, then error kind is auth`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.Auth())).isEqualTo(AiAssistantErrorKindValue.Auth)
     }
 
     @Test
-    fun `RateLimit maps to RATE_LIMITED`() {
+    fun `when rate limit error maps, then error kind is rate limited`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.RateLimit()))
             .isEqualTo(AiAssistantErrorKindValue.RateLimited)
     }
 
     @Test
-    fun `Timeout maps to TIMEOUT`() {
+    fun `when timeout error maps, then error kind is timeout`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.Timeout())).isEqualTo(AiAssistantErrorKindValue.Timeout)
     }
 
     @Test
-    fun `BadRequest maps to VALIDATION_ERROR`() {
+    fun `when bad request error maps, then error kind is validation error`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.BadRequest()))
             .isEqualTo(AiAssistantErrorKindValue.ValidationError)
     }
 
     @Test
-    fun `UpstreamFailure maps to SERVER_ERROR`() {
+    fun `when upstream failure maps, then error kind is server error`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.UpstreamFailure()))
             .isEqualTo(AiAssistantErrorKindValue.ServerError)
     }
 
     @Test
-    fun `ToolFailed maps to SERVER_ERROR`() {
+    fun `when tool failed error maps, then error kind is server error`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.ToolFailed("orders_update")))
             .isEqualTo(AiAssistantErrorKindValue.ServerError)
     }
 
     @Test
-    fun `InvalidToolCall maps to VALIDATION_ERROR`() {
+    fun `when invalid tool call error maps, then error kind is validation error`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.InvalidToolCall("orders_update")))
             .isEqualTo(AiAssistantErrorKindValue.ValidationError)
     }
 
     @Test
-    fun `OutcomeUnknown maps to UNKNOWN`() {
+    fun `when unknown outcome error maps, then error kind is unknown`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.OutcomeUnknown("orders_update")))
             .isEqualTo(AiAssistantErrorKindValue.Unknown)
     }
 
     @Test
-    fun `Cancelled maps to CANCELLED`() {
-        assertThat(AssistantErrorKindMapper.map(AssistantError.Cancelled)).isEqualTo(AiAssistantErrorKindValue.Cancelled)
+    fun `when cancelled error maps, then error kind is cancelled`() {
+        assertThat(
+            AssistantErrorKindMapper.map(AssistantError.Cancelled)
+        ).isEqualTo(AiAssistantErrorKindValue.Cancelled)
     }
 
     @Test
-    fun `Unknown maps to UNKNOWN`() {
+    fun `when unknown error maps, then error kind is unknown`() {
         assertThat(AssistantErrorKindMapper.map(AssistantError.Unknown())).isEqualTo(AiAssistantErrorKindValue.Unknown)
     }
 }

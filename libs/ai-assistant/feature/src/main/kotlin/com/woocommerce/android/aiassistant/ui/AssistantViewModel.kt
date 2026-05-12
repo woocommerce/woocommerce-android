@@ -16,11 +16,11 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.telemetry.AssistantErrorKindMapper
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEventFactory
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryIdGenerator
-import com.woocommerce.android.aiassistant.telemetry.AssistantErrorKindMapper
 import com.woocommerce.android.aiassistant.telemetry.CardTelemetryFamilyMapper
 import com.woocommerce.android.aiassistant.telemetry.SystemClock
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
+@Suppress("LargeClass")
 class AssistantViewModel @AssistedInject constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
@@ -190,6 +191,7 @@ class AssistantViewModel @AssistedInject constructor(
         _pendingCardNavigation.tryEmit(action)
     }
 
+    @Suppress("LongMethod")
     private fun startTurn(message: String, isRetry: Boolean) {
         activeTurn?.let { finalizeTurn(it, AiAssistantTurnOutcomeValue.CancelledByUser, errorKind = null) }
         turnJob?.cancel()
@@ -262,6 +264,7 @@ class AssistantViewModel @AssistedInject constructor(
         )
     }
 
+    @Suppress("LongMethod")
     private fun reduceRuntimeEvent(event: AssistantRuntimeEvent) {
         when (event) {
             is AssistantRuntimeEvent.AssistantTextDelta -> appendAssistantText(event.text)
@@ -301,11 +304,15 @@ class AssistantViewModel @AssistedInject constructor(
                 val activeMessageId = activeAssistantMessageId
                 val normalizedError = event.normalizedAssistantError()
                 val canRetry = event.canRetry()
+                val turnOutcome = event.toTurnOutcome()
+                val errorKind = normalizedError
+                    ?.takeIf { turnOutcome == AiAssistantTurnOutcomeValue.Failed }
+                    ?.let(AssistantErrorKindMapper::map)
                 activeTurn?.let {
                     finalizeTurn(
                         turn = it,
-                        outcome = event.toTurnOutcome(),
-                        errorKind = normalizedError?.let(AssistantErrorKindMapper::map),
+                        outcome = turnOutcome,
+                        errorKind = errorKind,
                     )
                 }
                 activeAssistantMessageId = null

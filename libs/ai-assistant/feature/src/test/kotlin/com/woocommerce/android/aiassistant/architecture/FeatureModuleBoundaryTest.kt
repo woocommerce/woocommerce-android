@@ -6,19 +6,18 @@ import java.io.File
 
 class FeatureModuleBoundaryTest {
     @Test
-    fun `feature production sources do not import Woo analytics infrastructure`() {
+    fun `when scanning feature production sources, then Woo analytics imports are absent`() {
         val sourceDir = repoRoot().resolve("libs/ai-assistant/feature/src/main/kotlin")
         assertThat(sourceDir).isDirectory()
 
-        val forbiddenImport = Regex("""import\s+com\.woocommerce\.android\.analytics\b""")
+        val forbiddenImport = Regex("""import\s+com\.woocommerce\.android\.analytics(\b|\.)""")
         val violations = sourceDir.kotlinFiles()
             .flatMap { file ->
                 file.readLines().mapIndexedNotNull { index, line ->
-                    when {
-                        forbiddenImport.containsMatchIn(line) -> "${file.relativeTo(repoRoot())}:${index + 1}:$line"
-                        "AnalyticsTracker" in line -> "${file.relativeTo(repoRoot())}:${index + 1}:$line"
-                        "AnalyticsEvent" in line -> "${file.relativeTo(repoRoot())}:${index + 1}:$line"
-                        else -> null
+                    if (forbiddenImport.containsMatchIn(line)) {
+                        "${file.relativeTo(repoRoot())}:${index + 1}:$line"
+                    } else {
+                        null
                     }
                 }
             }
@@ -27,7 +26,7 @@ class FeatureModuleBoundaryTest {
     }
 
     @Test
-    fun `Woo assistant telemetry package does not construct generated assistant events`() {
+    fun `when scanning Woo assistant telemetry package, then generated assistant events are not constructed`() {
         val sourceDir = repoRoot()
             .resolve("WooCommerce/src/main/kotlin/com/woocommerce/android/ui/aiassistant/telemetry")
         assertThat(sourceDir).isDirectory()

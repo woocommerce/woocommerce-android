@@ -5,7 +5,7 @@ import org.junit.Test
 
 class AssistantTelemetryContextTest {
     @Test
-    fun `context exposes only three string ids`() {
+    fun `when context is created, then it exposes only three string ids`() {
         val context = AssistantTelemetryContext("conversation", "request", "message")
 
         assertThat(context.conversationId).isEqualTo("conversation")

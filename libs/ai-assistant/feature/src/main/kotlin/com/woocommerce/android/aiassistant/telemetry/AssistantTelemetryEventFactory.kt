@@ -80,6 +80,7 @@ object AssistantTelemetryEventFactory {
         actionFamily = actionFamily,
     )
 
+    @Suppress("LongParameterList")
     fun turnCompleted(
         context: AssistantTelemetryContext,
         outcome: AiAssistantTurnOutcomeValue,

@@ -8,15 +8,15 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
-import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
-import com.woocommerce.android.aiassistant.core.loop.ToolDecision
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.loop.ToolDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
@@ -24,8 +24,8 @@ import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapsho
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsTelemetryReducer
-import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
@@ -174,7 +174,8 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ValidationError
                 is ToolResult.RejectedBySafety ->
                     AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ValidationError
-                is ToolResult.TransportError -> AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ServerError
+                is ToolResult.TransportError ->
+                    AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ServerError
             }
             ToolDecision.MALFORMED_ARGUMENTS,
             ToolDecision.VALIDATION_FAILED,

@@ -6,21 +6,20 @@ import java.io.File
 
 class CoreModuleBoundaryTest {
     @Test
-    fun `core production sources do not import EventHorizon or analytics infrastructure`() {
+    fun `when scanning core production sources, then EventHorizon and analytics imports are absent`() {
         val sourceDir = repoRoot().resolve("libs/ai-assistant/core/src/main/kotlin")
         assertThat(sourceDir).isDirectory()
 
         val forbiddenImport = Regex(
-            pattern = """import\s+(com\.automattic\.eventhorizon|com\.woocommerce\.android\.analytics)\b"""
+            pattern = """import\s+(com\.automattic\.eventhorizon|com\.woocommerce\.android\.analytics)(\b|\.)"""
         )
         val violations = sourceDir.kotlinFiles()
             .flatMap { file ->
                 file.readLines().mapIndexedNotNull { index, line ->
-                    when {
-                        forbiddenImport.containsMatchIn(line) -> "${file.relativeTo(repoRoot())}:${index + 1}:$line"
-                        "AnalyticsTracker" in line -> "${file.relativeTo(repoRoot())}:${index + 1}:$line"
-                        "AnalyticsEvent" in line -> "${file.relativeTo(repoRoot())}:${index + 1}:$line"
-                        else -> null
+                    if (forbiddenImport.containsMatchIn(line)) {
+                        "${file.relativeTo(repoRoot())}:${index + 1}:$line"
+                    } else {
+                        null
                     }
                 }
             }

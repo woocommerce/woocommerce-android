@@ -242,7 +242,7 @@ class AssistantViewModelTest {
         }
 
     @Test
-    fun `given successful loop completion, then turn_completed is emitted exactly once with success outcome and duration`() =
+    fun `given successful loop completion, when runtime finishes, then turn_completed is emitted once with duration`() =
         runTest {
             viewModel.onSendMessage("Show orders")
             clock.advance(750)
@@ -257,39 +257,41 @@ class AssistantViewModelTest {
         }
 
     @Test
-    fun `given failed loop, then turn_completed has outcome failed and a bounded error_kind`() = runTest {
-        viewModel.onSendMessage("Boom")
-        runtime.emitTurnFinished(LoopOutcome.FAILED, error = AssistantError.Network())
+    fun `given failed loop, when runtime finishes, then turn_completed has outcome failed and bounded error_kind`() =
+        runTest {
+            viewModel.onSendMessage("Boom")
+            runtime.emitTurnFinished(LoopOutcome.FAILED, error = AssistantError.Network())
 
-        val completed = telemetry.singleEvent<AiAssistantTurnCompletedEvent>()
+            val completed = telemetry.singleEvent<AiAssistantTurnCompletedEvent>()
 
-        assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.Failed)
-        assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.Network)
-    }
-
-    @Test
-    fun `given transport diagnostics request id, then turn_completed uses telemetry request id`() = runTest {
-        viewModel.onSendMessage("Boom")
-        val telemetryRequestId = runtime.startRequests.single().telemetryContext.requestId
-        val transportRequestId = "transport-request-id-canary"
-
-        runtime.emitTurnFinished(
-            outcome = LoopOutcome.FAILED,
-            error = AssistantError.BadRequest(
-                diagnostics = Diagnostics(
-                    transport = TransportDiagnostics(requestId = transportRequestId)
-                )
-            ),
-        )
-
-        val completed = telemetry.singleEvent<AiAssistantTurnCompletedEvent>()
-        assertThat(completed.requestId).isEqualTo(telemetryRequestId)
-        assertThat(completed.requestId).isNotEqualTo(transportRequestId)
-        assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.ValidationError)
-    }
+            assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.Failed)
+            assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.Network)
+        }
 
     @Test
-    fun `given user cancels active turn, then turn_completed fires once with cancelled_by_user and no error_kind`() =
+    fun `given transport diagnostics request id, when runtime fails, then turn_completed uses telemetry request id`() =
+        runTest {
+            viewModel.onSendMessage("Boom")
+            val telemetryRequestId = runtime.startRequests.single().telemetryContext.requestId
+            val transportRequestId = "transport-request-id-canary"
+
+            runtime.emitTurnFinished(
+                outcome = LoopOutcome.FAILED,
+                error = AssistantError.BadRequest(
+                    diagnostics = Diagnostics(
+                        transport = TransportDiagnostics(requestId = transportRequestId)
+                    )
+                ),
+            )
+
+            val completed = telemetry.singleEvent<AiAssistantTurnCompletedEvent>()
+            assertThat(completed.requestId).isEqualTo(telemetryRequestId)
+            assertThat(completed.requestId).isNotEqualTo(transportRequestId)
+            assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.ValidationError)
+        }
+
+    @Test
+    fun `given user cancels active turn, when cancellation is requested, then turn_completed has no error_kind`() =
         runTest {
             viewModel.onSendMessage("Show orders")
 
@@ -301,7 +303,22 @@ class AssistantViewModelTest {
         }
 
     @Test
-    fun `given max iterations, then outcome is max_iterations without error_kind`() = runTest {
+    fun `given stopped loop with cancelled error, when runtime finishes, then turn_completed has no error_kind`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+
+            runtime.emitTurnFinished(
+                outcome = LoopOutcome.STOPPED,
+                error = AssistantError.Cancelled,
+            )
+
+            val completed = telemetry.singleEvent<AiAssistantTurnCompletedEvent>()
+            assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.CancelledByUser)
+            assertThat(completed.errorKind).isNull()
+        }
+
+    @Test
+    fun `given max iterations, when runtime finishes, then outcome is max_iterations without error_kind`() = runTest {
         viewModel.onSendMessage("Show orders")
 
         runtime.emitTurnFinished(LoopOutcome.MAX_ITERATIONS)
