@@ -643,4 +643,153 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             // THEN
             assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loaded(refunds = emptyList()))
         }
+
+    @Test
+    fun `given order with fee line, when mapOrderDetails, then custom amount row is appended after products`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val order = createOrder(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+                )
+            ).copy(
+                feesLines = listOf(createFeeLine(id = 99L, name = "Gift wrap", total = BigDecimal("2.50")))
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+            // THEN
+            val lineItems = (result.lineItems as LineItemsState.Loaded).items
+            assertThat(lineItems).hasSize(2)
+            assertThat(lineItems[0].isLumpSum).isFalse()
+            assertThat(lineItems[1].isLumpSum).isTrue()
+            assertThat(lineItems[1].name).isEqualTo("Gift wrap")
+            assertThat(lineItems[1].lineTotal).isEqualTo("$2.50")
+        }
+
+    @Test
+    fun `given taxable fee line, when mapOrderDetails, then row includesTax is true`() = testBlocking {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(
+                    id = 1L,
+                    name = "Service charge",
+                    total = BigDecimal("5.00"),
+                    taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+                )
+            )
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+        // THEN
+        val row = (result.lineItems as LineItemsState.Loaded).items.single()
+        assertThat(row.isLumpSum).isTrue()
+        assertThat(row.includesTax).isTrue()
+    }
+
+    @Test
+    fun `given non-taxable fee line, when mapOrderDetails, then row includesTax is false`() = testBlocking {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(
+                    id = 1L,
+                    name = "Tip",
+                    total = BigDecimal("1.00"),
+                    taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+                )
+            )
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+        // THEN
+        assertThat((result.lineItems as LineItemsState.Loaded).items.single().includesTax).isFalse()
+    }
+
+    @Test
+    fun `given fee line refunded by id, when mapOrderDetails, then fee row is excluded`() = testBlocking {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(id = 1L, name = "Gift wrap", total = BigDecimal("2.50")),
+                createFeeLine(id = 2L, name = "Tip", total = BigDecimal("1.00")),
+            )
+        )
+        val refund = Refund(
+            id = 1L,
+            dateCreated = Date(),
+            amount = BigDecimal("2.50"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = listOf(
+                Refund.FeeLine(id = 1L, name = "Gift wrap", totalTax = BigDecimal.ZERO, total = BigDecimal("-2.50"))
+            ),
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(listOf(refund)))
+
+        // THEN
+        val rows = (result.lineItems as LineItemsState.Loaded).items
+        assertThat(rows).hasSize(1)
+        assertThat(rows.single().name).isEqualTo("Tip")
+    }
+
+    @Test
+    fun `given order with fee line, when mapOrderDetailsWithoutRefunds, then custom amount row is appended`() =
+        testBlocking {
+            // GIVEN
+            setupDefaults()
+            val order = createOrder(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+                )
+            ).copy(
+                feesLines = listOf(
+                    createFeeLine(
+                        id = 99L,
+                        name = "Service charge",
+                        total = BigDecimal("3.00"),
+                        taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+                    )
+                )
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
+
+            // THEN
+            val rows = (result.lineItems as LineItemsState.Loaded).items
+            assertThat(rows).hasSize(2)
+            assertThat(rows.last().isLumpSum).isTrue()
+            assertThat(rows.last().includesTax).isTrue()
+            assertThat(rows.last().name).isEqualTo("Service charge")
+        }
+
+    private fun createFeeLine(
+        id: Long,
+        name: String,
+        total: BigDecimal,
+        totalTax: BigDecimal = BigDecimal.ZERO,
+        taxStatus: Order.FeeLine.FeeLineTaxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+    ) = Order.FeeLine(
+        id = id,
+        name = name,
+        total = total,
+        totalTax = totalTax,
+        taxStatus = taxStatus,
+        taxes = emptyList(),
+    )
 }
