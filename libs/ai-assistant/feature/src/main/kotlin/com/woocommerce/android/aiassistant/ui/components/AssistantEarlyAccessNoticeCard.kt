@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,9 +36,11 @@ internal fun AssistantEarlyAccessNoticeCard(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(EARLY_ACCESS_CARD_CORNER_RADIUS),
-        color = earlyAccessContainerColor(),
-        contentColor = earlyAccessContentColor(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         border = BorderStroke(1.dp, earlyAccessBorderColor()),
+        tonalElevation = 2.dp,
+        shadowElevation = if (isSystemInDarkTheme()) 0.dp else 2.dp,
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -52,7 +53,7 @@ internal fun AssistantEarlyAccessNoticeCard(
                 Text(
                     text = stringResource(R.string.assistant_early_access_notice_body),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = earlyAccessContentColor(),
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 AssistantEarlyAccessFeedbackButton(onClick = onFeedbackClick)
             }
@@ -79,7 +80,7 @@ private fun AssistantEarlyAccessBadge() {
     Surface(
         shape = RoundedCornerShape(EARLY_ACCESS_BADGE_CORNER_RADIUS),
         color = earlyAccessAccentColor(),
-        contentColor = Color.White,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
         Text(
             text = stringResource(R.string.assistant_early_access_notice_badge),
@@ -121,45 +122,19 @@ private fun AssistantEarlyAccessFeedbackButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun earlyAccessContainerColor(): Color = if (isSystemInDarkTheme()) {
-    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
-} else {
-    Color(0xFFF3E9FF)
-}
+private fun earlyAccessButtonColor() = MaterialTheme.colorScheme.surface
 
 @Composable
-private fun earlyAccessButtonColor(): Color = if (isSystemInDarkTheme()) {
-    MaterialTheme.colorScheme.surface
-} else {
-    Color.White
-}
+private fun earlyAccessMutedContentColor() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
 
 @Composable
-private fun earlyAccessContentColor(): Color = if (isSystemInDarkTheme()) {
-    MaterialTheme.colorScheme.onSurface
-} else {
-    Color(0xFF2F213B)
-}
+private fun earlyAccessBorderColor() = assistantOutlineColor()
 
 @Composable
-private fun earlyAccessMutedContentColor(): Color = earlyAccessContentColor().copy(alpha = 0.72f)
+private fun earlyAccessAccentColor() = MaterialTheme.colorScheme.primary
 
 @Composable
-private fun earlyAccessBorderColor(): Color = if (isSystemInDarkTheme()) {
-    assistantOutlineColor()
-} else {
-    Color(0xFFE0C7FF)
-}
-
-@Composable
-private fun earlyAccessAccentColor(): Color = Color(0xFF7F54B3)
-
-@Composable
-private fun earlyAccessActionContentColor(): Color = if (isSystemInDarkTheme()) {
-    Color(0xFFE0C7FF)
-} else {
-    earlyAccessAccentColor()
-}
+private fun earlyAccessActionContentColor() = MaterialTheme.colorScheme.primary
 
 private val EARLY_ACCESS_CARD_CORNER_RADIUS = 16.dp
 private val EARLY_ACCESS_BADGE_CORNER_RADIUS = 6.dp

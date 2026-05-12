@@ -235,13 +235,13 @@ fun AssistantChatScreen(
             if (state.shouldShowEmptyState) {
                 AssistantEmptyState(
                     showEarlyAccessNotice = showEarlyAccessNotice,
+                    bottomContentPadding = bottomContentPadding,
                     onFeedbackClick = onEarlyAccessFeedbackClick,
                     onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
                     onSuggestionClick = submitSuggestion,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(contentPadding)
-                        .padding(bottom = bottomContentPadding),
                 )
             } else {
                 AssistantMessageThread(
@@ -257,14 +257,12 @@ fun AssistantChatScreen(
                         .padding(contentPadding),
                 )
             }
-            if (!state.shouldShowEmptyState) {
-                AssistantContentBottomFade(
-                    bottomBarHeight = bottomBarContentHeight,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth(),
-                )
-            }
+            AssistantContentBottomFade(
+                bottomBarHeight = bottomBarContentHeight,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+            )
         }
     }
 }
