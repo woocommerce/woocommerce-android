@@ -41,6 +41,86 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given legacy app login deep link with username, when parsed, then returns AppLogin Credentials`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example&username=admin"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.AppLogin.Credentials(siteUrl = "https://store.example", username = "admin")
+        )
+    }
+
+    @Test
+    fun `given legacy app login deep link with http siteUrl, when parsed, then returns AppLogin Credentials`() {
+        val raw = "woocommerce://app-login?siteUrl=http%3A%2F%2Fstore.example&username=admin"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.AppLogin.Credentials(siteUrl = "http://store.example", username = "admin")
+        )
+    }
+
+    @Test
+    fun `given legacy app login deep link with wpcomEmail, when parsed, then returns AppLogin WpComEmail`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example&wpcomEmail=admin%40example.com"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.AppLogin.WpComEmail(siteUrl = "https://store.example", wpComEmail = "admin@example.com")
+        )
+    }
+
+    @Test
+    fun `given legacy app login with both wpcomEmail and username, when parsed, then wpcomEmail wins`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example" +
+            "&wpcomEmail=admin%40example.com&username=admin"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.AppLogin.WpComEmail(siteUrl = "https://store.example", wpComEmail = "admin@example.com")
+        )
+    }
+
+    @Test
+    fun `given legacy app login deep link without username or wpcomEmail, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given legacy app login deep link with blank username, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fstore.example&username="
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given legacy app login deep link without siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://app-login?username=admin"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given legacy app login deep link with userinfo in siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://app-login?siteUrl=https%3A%2F%2Fuser%3Apass%40store.example&username=admin"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given legacy app login deep link with uppercase host, when parsed, then returns AppLogin Credentials`() {
+        val raw = "WOOCOMMERCE://APP-LOGIN?siteUrl=https%3A%2F%2Fstore.example&username=admin"
+
+        assertThat(parser.parse(raw)).isInstanceOf(QrLoginPayload.AppLogin.Credentials::class.java)
+    }
+
+    @Test
     fun `given prefix but no query, when parsed, then returns Invalid`() {
         assertThat(parser.parse("woocommerce://qr-login")).isEqualTo(QrLoginPayload.Invalid)
         assertThat(parser.parse("woocommerce://qr-login/")).isEqualTo(QrLoginPayload.Invalid)

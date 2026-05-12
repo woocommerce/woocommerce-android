@@ -49,6 +49,8 @@ class QrLoginScannerFragment : Fragment() {
         fun onQrLoginCompleted(localSiteId: Int)
         fun onQrLoginFallbackClicked()
         fun onQrLoginSiteUrlPrefill(siteUrl: String)
+        fun onQrLoginAppLoginCredentials(siteUrl: String, username: String)
+        fun onQrLoginAppLoginWpComEmail(siteUrl: String, wpComEmail: String)
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -174,6 +176,10 @@ class QrLoginScannerFragment : Fragment() {
                     openWpComMagicLinkUrl(event.url)
                 is QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry ->
                     routeToSiteAddressEntry(event.siteUrl)
+                is QrLoginScannerViewModel.Dispatch.RouteToAppLoginCredentials ->
+                    routeToAppLoginCredentials(event.siteUrl, event.username)
+                is QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail ->
+                    routeToAppLoginWpComEmail(event.siteUrl, event.wpComEmail)
             }
         }
     }
@@ -241,5 +247,19 @@ class QrLoginScannerFragment : Fragment() {
         requireNotNull(listener) {
             "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
         }.onQrLoginSiteUrlPrefill(siteUrl)
+    }
+
+    private fun routeToAppLoginCredentials(siteUrl: String, username: String) {
+        scannerViewModel.stopCodesRecognition()
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginAppLoginCredentials(siteUrl, username)
+    }
+
+    private fun routeToAppLoginWpComEmail(siteUrl: String, wpComEmail: String) {
+        scannerViewModel.stopCodesRecognition()
+        requireNotNull(listener) {
+            "${requireActivity().javaClass.simpleName} must implement QrLoginScannerFragment.Listener"
+        }.onQrLoginAppLoginWpComEmail(siteUrl, wpComEmail)
     }
 }

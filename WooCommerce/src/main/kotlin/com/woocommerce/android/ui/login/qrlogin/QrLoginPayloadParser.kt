@@ -13,19 +13,26 @@ import javax.inject.Inject
  * woocommerce://qr-login?token=<64–512 alphanumeric chars>&siteUrl=<URL-encoded site URL>
  * ```
  *
+ * Also accepts the legacy wc-admin `app-login` QR in two shapes
+ * (`woocommerce://app-login?siteUrl=…&username=…` and
+ * `woocommerce://app-login?siteUrl=…&wpcomEmail=…`) and routes them to the existing login
+ * screens — mirroring the OS-deeplink handler in `LoginActivity.handleAppLoginUri`.
+ *
  * The same deeplink shape is also used as a "site-URL only" QR — when `token` is missing or
  * blank, the payload becomes [QrLoginPayload.SiteUrl] and the scanner routes the merchant to
  * the site-address login screen with the URL prefilled instead of attempting an exchange.
  *
  * Anything malformed, missing parameters, with the wrong scheme/host, with a token that doesn't
  * match the expected shape, or with a non-https `siteUrl` returns [QrLoginPayload.Invalid].
- * The token shape mirrors the backend contract (currently `wp_generate_password(64, false)` →
- * 64 alphanumerics); the upper bound of 512 leaves headroom if the server lengthens the token
- * without forcing a client release in lockstep. The server is still the authority on whether a
- * given token is valid — this is just a sanity gate so obviously-malformed QRs don't advance
- * into the confirmation/exchange flow. `siteUrl` is parsed via OkHttp's [okhttp3.HttpUrl] and
- * rejected if it carries userinfo, query, or fragment components — those have no role in a Woo
- * site root and are classic spoofing surfaces in the confirmation prompt.
+ * Legacy app-login payloads accept http or https because they hand off to the existing login
+ * flows instead of exchanging a bearer ticket. The token shape mirrors the backend contract
+ * (currently `wp_generate_password(64, false)` → 64 alphanumerics); the upper bound of 512
+ * leaves headroom if the server lengthens the token without forcing a client release in
+ * lockstep. The server is still the authority on whether a given token is valid — this is just
+ * a sanity gate so obviously-malformed QRs don't advance into the confirmation/exchange flow.
+ * `siteUrl` is parsed via OkHttp's [okhttp3.HttpUrl] and rejected if it carries userinfo, query,
+ * or fragment components — those have no role in a Woo site root and are classic spoofing
+ * surfaces in the confirmation prompt.
  *
  * Also recognises the WordPress.com magic-login QR
  * (`https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=…`) and
@@ -36,6 +43,7 @@ class QrLoginPayloadParser @Inject constructor() {
     fun parse(raw: String?): QrLoginPayload {
         parseWpComMagicLinkUrl(raw)?.let { return it }
         if (looksLikeInstallQr(raw)) return QrLoginPayload.InstallQrCode
+        parseAppLoginDeeplink(raw)?.let { return it }
         return parseQrLoginDeeplink(raw) ?: QrLoginPayload.Invalid
     }
 
@@ -63,12 +71,29 @@ class QrLoginPayloadParser @Inject constructor() {
      * `siteUrl` validation is identical in both branches.
      */
     private fun parseQrLoginDeeplink(raw: String?): QrLoginPayload? {
-        val uri = parseDeepLink(raw) ?: return null
-        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let(::normalizeSiteUrl) ?: return null
+        val uri = parseDeepLink(raw, QR_LOGIN_HOST) ?: return null
+        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let { normalizeSiteUrl(it) } ?: return null
         val rawToken = uri.queryParam(PARAM_TOKEN)
         return when {
             rawToken.isNullOrBlank() -> QrLoginPayload.SiteUrl(siteUrl = siteUrl)
             TOKEN_REGEX.matches(rawToken) -> QrLoginPayload.Ticket(token = rawToken, siteUrl = siteUrl)
+            else -> null
+        }
+    }
+
+    /**
+     * Mirrors the precedence in [com.woocommerce.android.ui.login.LoginActivity.handleAppLoginUri]:
+     * `wpcomEmail` wins over `username` when both are present, so a QR that encodes both routes
+     * through the WP.com flow just like the OS deeplink would.
+     */
+    private fun parseAppLoginDeeplink(raw: String?): QrLoginPayload.AppLogin? {
+        val uri = parseDeepLink(raw, APP_LOGIN_HOST) ?: return null
+        val siteUrl = uri.queryParam(PARAM_SITE_URL)?.let { normalizeSiteUrl(it, allowHttp = true) } ?: return null
+        val email = uri.queryParam(PARAM_WP_COM_EMAIL)?.takeIf { it.isNotBlank() }
+        val username = uri.queryParam(PARAM_USERNAME)?.takeIf { it.isNotBlank() }
+        return when {
+            email != null -> QrLoginPayload.AppLogin.WpComEmail(siteUrl = siteUrl, wpComEmail = email)
+            username != null -> QrLoginPayload.AppLogin.Credentials(siteUrl = siteUrl, username = username)
             else -> null
         }
     }
@@ -87,7 +112,7 @@ class QrLoginPayloadParser @Inject constructor() {
         return pathSegments.firstOrNull()?.equals(INSTALL_QR_PATH_FIRST_SEGMENT, ignoreCase = true) == true
     }
 
-    private fun parseDeepLink(raw: String?): URI? {
+    private fun parseDeepLink(raw: String?, expectedHost: String): URI? {
         val trimmed = raw?.trim().orEmpty().takeIf { it.isNotEmpty() } ?: return null
         val uri = try {
             URI(trimmed)
@@ -95,7 +120,7 @@ class QrLoginPayloadParser @Inject constructor() {
             return null
         }
         val schemeMatches = uri.scheme.equals(SCHEME, ignoreCase = true)
-        val hostMatches = uri.host?.equals(HOST, ignoreCase = true) == true
+        val hostMatches = uri.host?.equals(expectedHost, ignoreCase = true) == true
         val pathAllowed = uri.rawPath.isNullOrEmpty() || uri.rawPath == "/"
         return uri.takeIf { schemeMatches && hostMatches && pathAllowed }
     }
@@ -113,9 +138,18 @@ class QrLoginPayloadParser @Inject constructor() {
         }
     }
 
-    private fun normalizeSiteUrl(raw: String): String? {
-        if (raw.isBlank() || !raw.lowercase().startsWith(HTTPS_PREFIX)) return null
-        val parsed = raw.toHttpUrlOrNull()?.takeIf { it.scheme == "https" } ?: return null
+    /**
+     * Single normalizer for every site-URL we accept. The userinfo/query/fragment rejection is
+     * security-load-bearing (those are classic spoofing surfaces in the confirmation prompt), so
+     * we keep it in one place. [allowHttp] is opt-in for legacy app-login QRs, which hand off to
+     * the existing login flows and don't hit the QR-exchange endpoint; everything else stays
+     * https-only.
+     */
+    private fun normalizeSiteUrl(raw: String, allowHttp: Boolean = false): String? {
+        if (raw.isBlank()) return null
+        val parsed = raw.toHttpUrlOrNull()
+            ?.takeIf { it.scheme == "https" || (allowHttp && it.scheme == "http") }
+            ?: return null
         val hasUserInfo = parsed.username.isNotEmpty() || parsed.password.isNotEmpty()
         val hasQueryOrFragment = parsed.querySize > 0 || parsed.fragment != null
         if (hasUserInfo || hasQueryOrFragment) return null
@@ -126,12 +160,14 @@ class QrLoginPayloadParser @Inject constructor() {
 
     private companion object {
         const val SCHEME = "woocommerce"
-        const val HOST = "qr-login"
+        const val QR_LOGIN_HOST = "qr-login"
+        const val APP_LOGIN_HOST = "app-login"
         const val PARAM_TOKEN = "token"
         const val PARAM_SITE_URL = "siteUrl"
+        const val PARAM_USERNAME = "username"
+        const val PARAM_WP_COM_EMAIL = "wpcomEmail"
         const val PARAM_ACTION = "action"
         const val PARAM_SCHEME = "scheme"
-        const val HTTPS_PREFIX = "https://"
         const val INSTALL_QR_HOST = "woocommerce.com"
         const val INSTALL_QR_PATH_FIRST_SEGMENT = "mobile"
         const val WP_COM_HOST = "wordpress.com"
