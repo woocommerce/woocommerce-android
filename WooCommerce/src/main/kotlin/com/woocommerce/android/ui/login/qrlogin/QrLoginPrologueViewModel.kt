@@ -4,9 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.stateIn
 @HiltViewModel
 class QrLoginPrologueViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val unifiedLoginTracker: UnifiedLoginTracker,
 ) : ScopedViewModel(savedState) {
 
@@ -31,13 +31,11 @@ class QrLoginPrologueViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, UiState())
 
     fun onPrologueShown() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SHOWN)
-        unifiedLoginTracker.track(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_PROLOGUE)
+        unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_PROLOGUE)
     }
 
     fun onScanClicked(isCameraPermissionGranted: Boolean) {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_SCAN_TAPPED)
-        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_SCAN)
+        unifiedLoginTracker.trackClick(Click.LOGIN_QR_SCAN)
         if (isCameraPermissionGranted) {
             triggerEvent(Dispatch.NavigateToScanner)
         } else {
@@ -46,14 +44,12 @@ class QrLoginPrologueViewModel @Inject constructor(
     }
 
     fun onSiteAddressLoginClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_PROLOGUE_FALLBACK_TAPPED)
-        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.LOGIN_QR_FALLBACK)
+        unifiedLoginTracker.trackClick(Click.LOGIN_QR_FALLBACK)
         triggerEvent(Dispatch.NavigateToSiteAddressLogin)
     }
 
     fun onHelpClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HELP_TAPPED)
-        unifiedLoginTracker.trackClick(UnifiedLoginTracker.Click.SHOW_HELP)
+        unifiedLoginTracker.trackClick(Click.SHOW_HELP)
         triggerEvent(Dispatch.NavigateToHelp)
     }
 
@@ -69,19 +65,13 @@ class QrLoginPrologueViewModel @Inject constructor(
             CameraDenialState.PermanentlyDenied
         }
         cameraPermissionDenial.value = next
-        analyticsTracker.track(
-            AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_DIALOG_SHOWN,
-            mapOf(KEY_STATE to next.analyticsValue())
-        )
+        unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_CAMERA_PERMISSION)
     }
 
     fun onCameraDenialPrimaryClicked() {
         val current = cameraPermissionDenial.value
         if (current == CameraDenialState.Hidden) return
-        analyticsTracker.track(
-            AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_PRIMARY_TAPPED,
-            mapOf(KEY_STATE to current.analyticsValue())
-        )
+        unifiedLoginTracker.trackClick(Click.QR_CAMERA_PERMISSION_PRIMARY)
         cameraPermissionDenial.value = CameraDenialState.Hidden
         when (current) {
             CameraDenialState.FirstDenial -> triggerEvent(Dispatch.LaunchCameraPermissionRequest)
@@ -93,10 +83,7 @@ class QrLoginPrologueViewModel @Inject constructor(
     fun onCameraDenialCancelled() {
         val current = cameraPermissionDenial.value
         if (current == CameraDenialState.Hidden) return
-        analyticsTracker.track(
-            AnalyticsEvent.LOGIN_QR_PROLOGUE_CAMERA_PERMISSION_DISMISSED,
-            mapOf(KEY_STATE to current.analyticsValue())
-        )
+        unifiedLoginTracker.trackClick(Click.DISMISS)
         cameraPermissionDenial.value = CameraDenialState.Hidden
     }
 
@@ -119,16 +106,6 @@ class QrLoginPrologueViewModel @Inject constructor(
     }
 
     companion object {
-        private const val KEY_STATE = "state"
-        private const val VALUE_FIRST_DENIAL = "first_denial"
-        private const val VALUE_PERMANENTLY_DENIED = "permanently_denied"
-
-        private fun CameraDenialState.analyticsValue(): String = when (this) {
-            CameraDenialState.FirstDenial -> VALUE_FIRST_DENIAL
-            CameraDenialState.PermanentlyDenied -> VALUE_PERMANENTLY_DENIED
-            CameraDenialState.Hidden -> error("Hidden state must not be reported to analytics")
-        }
-
         private fun CameraDenialState.toDialogState(): CameraPermissionDialogState? = when (this) {
             CameraDenialState.Hidden -> null
             CameraDenialState.FirstDenial -> CameraPermissionDialogState(
