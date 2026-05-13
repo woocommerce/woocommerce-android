@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
@@ -81,17 +82,18 @@ fun WooPosCustomAmountFormScreen(
             NameSection(value = state.name, onNameChanged = viewModel::onNameChanged)
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = WooPosSpacing.Medium.value,
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value,
-                )
-                .navigationBarsPadding(),
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceBright,
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            FormSubmitButton(state = state, onSubmit = viewModel::onSubmit)
+            FormSubmitButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.Medium.value)
+                    .navigationBarsPadding(),
+                state = state,
+                onSubmit = viewModel::onSubmit,
+            )
         }
     }
 }
@@ -197,6 +199,7 @@ private fun TaxesToggle(
 private fun FormSubmitButton(
     state: WooPosCustomAmountDialogState,
     onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val submitText = when (state.mode) {
         is WooPosCustomAmountDialogState.Mode.Edit -> R.string.woopos_custom_amount_dialog_submit_edit
@@ -205,7 +208,7 @@ private fun FormSubmitButton(
     val submitButtonState =
         if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
     WooPosButton(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         text = stringResource(submitText),
         state = submitButtonState,
         onClick = onSubmit,
