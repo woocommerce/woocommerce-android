@@ -5,15 +5,18 @@ import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -28,7 +31,9 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
-import com.woocommerce.android.aiassistant.tools.analytics.ANALYTICS_REVENUE_TOOL_NAME
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryErrorKind
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEvent
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
@@ -39,6 +44,7 @@ import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
+import com.woocommerce.android.aiassistant.ui.cards.metric
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -47,7 +53,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -133,7 +138,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
                         updatedHistory = updatedHistory,
-                        retryAvailable = false,
+                        retryAffordance = RetryAffordance.None,
                     )
                 )
             ),
@@ -145,10 +150,50 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = updatedHistory,
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = AssistantError.Cancelled,
             )
         )
+    }
+
+    @Test
+    fun `when loop finish carries error, then runtime records sanitized telemetry`() = runTest {
+        val telemetry = RecordingAssistantTelemetry()
+        val error = AssistantError.BadRequest(
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(
+                    httpStatus = 400,
+                    requestId = "request-1",
+                    retryAfterMs = 1_000L,
+                    bodySnippet = "raw backend payload",
+                )
+            )
+        )
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.FAILED,
+                        updatedHistory = emptyList(),
+                        retryAffordance = RetryAffordance.None,
+                        error = error,
+                    )
+                )
+            ),
+            assistantTelemetry = telemetry,
+        )
+
+        runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(telemetry.events).containsExactly(
+            AssistantTelemetryEvent(
+                kind = AssistantTelemetryErrorKind.BAD_REQUEST,
+                httpStatus = 400,
+                requestId = "request-1",
+                retryAfterMs = 1_000L,
+            )
+        )
+        assertThat(telemetry.events.single().toString()).doesNotContain("raw backend payload")
     }
 
     @Test
@@ -268,7 +313,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
                         updatedHistory = updatedHistory,
-                        retryAvailable = false,
+                        retryAffordance = RetryAffordance.None,
                     )
                 )
             ),
@@ -281,7 +326,7 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = updatedHistory,
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = null,
             )
         )
@@ -379,16 +424,16 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success, when adapted, then no stats card is emitted directly`() =
+    fun `given analytics orders success, when adapted, then no stats card is emitted directly`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
-                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-analytics")),
+                        LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-analytics")),
                         LoopEvent.ToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-analytics",
-                                structured = analyticsRevenueStructured(),
+                                structured = analyticsOrdersStructured(),
                             )
                         ),
                     )
@@ -422,34 +467,46 @@ class AgenticLoopAssistantRuntimeTest {
 
             assertThat(events.cardEvents()).containsExactly(
                 AssistantRuntimeEvent.CardsResolved(
-                    listOf(
-                        AssistantCard.Stats(
-                            id = ANALYTICS_STATS_ID,
-                            after = "2026-05-01",
-                            before = "2026-05-03",
-                            currency = "USD",
-                            totalSales = "170.35",
-                            netSales = "120.15",
-                            totalSalesChartPoints = listOf(
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
-                            ),
-                            netSalesChartPoints = listOf(
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
-                            ),
-                        )
-                    )
+                    listOf(expectedAnalyticsStatsCard())
                 )
             )
         }
 
     @Test
-    fun `given analytics revenue validation error, when adapted, then no stats card is emitted`() = runTest {
+    fun `given show cards success with orders analytics stats, when adapted, then order stats card is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
+                        LoopEvent.ToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-stats",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = showCardsUiStructured(ordersAnalyticsStatsPayload()),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            val statsCard = events.cardEvents().single().cards.single() as AssistantCard.Stats
+            assertThat(statsCard.id).isEqualTo(ANALYTICS_STATS_ID)
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("170.35")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).value).isEqualTo("120.15")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.AverageOrderValue).chartPoints)
+                .containsExactly(AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10))
+        }
+
+    @Test
+    fun `given analytics orders validation error, when adapted, then no stats card is emitted`() = runTest {
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
-                    LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-validation")),
+                    LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-validation")),
                     LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
                 )
             )
@@ -461,12 +518,12 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
+    fun `given analytics orders success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
-                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-arbitrary")),
+                        LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-arbitrary")),
                         LoopEvent.ToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-arbitrary",
@@ -629,6 +686,7 @@ class AgenticLoopAssistantRuntimeTest {
         safetyOrchestrator: SafetyOrchestrator = FakeSafetyOrchestrator(),
         snapshotResolver: WooCommerceConfirmationSnapshotResolver = FakeSnapshotResolver(),
         systemPrompt: String = "system prompt v1",
+        assistantTelemetry: AssistantTelemetry = RecordingAssistantTelemetry(),
     ) = AgenticLoopAssistantRuntime(
         agenticLoop = agenticLoop,
         toolRegistry = EmptyToolRegistry,
@@ -639,6 +697,7 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
+        assistantTelemetry = assistantTelemetry,
     )
 
     private fun givenTurnRequest() = AssistantTurnRequest(
@@ -655,47 +714,21 @@ class AgenticLoopAssistantRuntimeTest {
         arguments = buildJsonObject {},
     )
 
-    private fun analyticsRevenueCall(id: String) = ToolCall(
+    private fun analyticsOrdersCall(id: String) = ToolCall(
         id = id,
-        name = ANALYTICS_REVENUE_TOOL_NAME,
+        name = "analytics_orders",
         arguments = buildJsonObject {},
     )
 
-    private fun analyticsRevenueStructured() = buildJsonObject {
+    private fun analyticsOrdersStructured() = buildJsonObject {
         put("after", "2026-05-01")
         put("before", "2026-05-03")
         put("currency", "USD")
         putJsonObject("totals") {
+            put("total_sales", "170.35")
             put("net_revenue", "123.45")
             put("orders_count", 3)
-        }
-        putJsonArray("revenue_chart") {
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-01")
-                    put("value", 10.0)
-                }
-            )
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-02")
-                    put("value", 20.0)
-                }
-            )
-        }
-        putJsonArray("order_chart") {
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-01")
-                    put("value", 1.0)
-                }
-            )
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-02")
-                    put("value", 2.0)
-                }
-            )
+            put("avg_order_value", "41.15")
         }
     }
 
@@ -726,6 +759,8 @@ class AgenticLoopAssistantRuntimeTest {
             totals = buildJsonObject {
                 put("total_sales", "170.35")
                 put("net_revenue", "120.15")
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
             },
             intervalSubtotals = listOf(
                 buildJsonObject {
@@ -733,6 +768,8 @@ class AgenticLoopAssistantRuntimeTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "100.00")
                         put("net_revenue", "80.00")
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
                     }
                 },
                 buildJsonObject {
@@ -740,6 +777,36 @@ class AgenticLoopAssistantRuntimeTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "70.35")
                         put("net_revenue", "40.15")
+                        put("orders_count", "30")
+                        put("avg_order_value", "87.38")
+                    }
+                },
+            ),
+        ),
+    )
+
+    private fun ordersAnalyticsStatsPayload() = ShowCardPayload(
+        family = "analytics_stats",
+        id = ANALYTICS_STATS_ID,
+        title = "Analytics",
+        details = ShowCardDetails.AnalyticsStats(
+            after = "2026-05-01",
+            before = "2026-05-03",
+            currency = "USD",
+            totals = buildJsonObject {
+                put("total_sales", "170.35")
+                put("net_revenue", "120.15")
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
+            },
+            intervalSubtotals = listOf(
+                buildJsonObject {
+                    put("interval", "2026-05-01")
+                    putJsonObject("subtotals") {
+                        put("total_sales", "50.00")
+                        put("net_revenue", "35.00")
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
                     }
                 },
             ),
@@ -754,6 +821,47 @@ class AgenticLoopAssistantRuntimeTest {
         currency = "USD",
         customerName = "Jane Doe",
         date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun expectedAnalyticsStatsCard() = AssistantCard.Stats(
+        id = ANALYTICS_STATS_ID,
+        after = "2026-05-01",
+        before = "2026-05-03",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 12.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 30.0),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 87.38),
+                ),
+            ),
+        ),
     )
 
     private fun List<AssistantRuntimeEvent>.cardEvents() =
@@ -833,8 +941,16 @@ class AgenticLoopAssistantRuntimeTest {
         override suspend fun resolve(request: ConfirmationRequest): ConfirmationSnapshot? = snapshot
     }
 
+    private class RecordingAssistantTelemetry : AssistantTelemetry {
+        val events = mutableListOf<AssistantTelemetryEvent>()
+
+        override fun trackAssistantError(event: AssistantTelemetryEvent) {
+            events += event
+        }
+    }
+
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-03:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-03:interval:day"
     }
 }

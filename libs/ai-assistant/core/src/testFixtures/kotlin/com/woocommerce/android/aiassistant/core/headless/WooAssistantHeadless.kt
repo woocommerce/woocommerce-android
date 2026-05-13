@@ -118,12 +118,13 @@ class WooAssistantHeadless(
     )
 
     private fun AssistantError.toTraceLabel(): String = when (this) {
-        AssistantError.Auth -> "AUTH"
+        is AssistantError.Auth -> "AUTH"
         AssistantError.Cancelled -> "CANCELLED"
-        AssistantError.Network -> "NETWORK"
-        AssistantError.RateLimit -> "RATE_LIMIT"
-        AssistantError.Timeout -> "TIMEOUT"
-        AssistantError.UpstreamFailure -> "UPSTREAM_FAILURE"
+        is AssistantError.Network -> "NETWORK"
+        is AssistantError.RateLimit -> "RATE_LIMIT"
+        is AssistantError.BadRequest -> "BAD_REQUEST"
+        is AssistantError.Timeout -> "TIMEOUT"
+        is AssistantError.UpstreamFailure -> "UPSTREAM_FAILURE"
         is AssistantError.InvalidToolCall -> "INVALID_TOOL_CALL:$toolName"
         is AssistantError.OutcomeUnknown -> "OUTCOME_UNKNOWN:$toolName"
         is AssistantError.ToolFailed -> "TOOL_FAILED:$toolName"

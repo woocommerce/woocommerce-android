@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.runtime
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
@@ -54,7 +55,7 @@ sealed interface AssistantRuntimeEvent {
     data class Finished(
         val outcome: LoopOutcome,
         val updatedHistory: List<AssistantMessage>,
-        val retryAvailable: Boolean = false,
+        val retryAffordance: RetryAffordance = RetryAffordance.None,
         val error: AssistantError? = null,
     ) : AssistantRuntimeEvent
 }

@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -24,11 +25,15 @@ import javax.inject.Inject
 internal class ProductVariationsToolHandler @Inject constructor(
     private val dataSource: AIProductVariationsDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
         name = "product_variations_list",
-        description = "List variations for a variable product, or fetch one variation by variation_id.",
+        description = "List variations for one variable product when the merchant explicitly asks about " +
+            "variations, sizes, colors, options, or a known variation ID. Required: product_id (the parent). " +
+            "Do not use this for broad product-level inventory questions such as out-of-stock products; " +
+            "product stock and variation stock are separate WooCommerce concepts.",
         inputSchema = inputSchema {
             integer("product_id", description = "The parent product ID. Required.", required = true)
             integer("variation_id", description = "Variation ID; omit to list variations or provide to fetch one.")
@@ -57,7 +62,14 @@ internal class ProductVariationsToolHandler @Inject constructor(
 
         return result.fold(
             onSuccess = { ToolResult.Success(toolCallId = call.id, structured = it) },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
+            },
         )
     }
 

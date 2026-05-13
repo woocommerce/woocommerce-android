@@ -1,7 +1,9 @@
 package com.woocommerce.android.aiassistant.tools.analytics
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -19,6 +21,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCStatsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AnalyticsOrdersToolHandlerTest {
@@ -31,6 +34,7 @@ class AnalyticsOrdersToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun toolCall(arguments: JsonObject): ToolCall =
@@ -38,6 +42,7 @@ class AnalyticsOrdersToolHandlerTest {
 
     @Test
     fun `when descriptor is inspected, then after and before are required and interval is constrained`() {
+        val description = handler.descriptor.description
         val schema = handler.descriptor.inputSchema
         val properties = requireNotNull(schema["properties"]).jsonObject
         val required = requireNotNull(schema["required"]).jsonArray.map { it.jsonPrimitive.content }
@@ -52,6 +57,20 @@ class AnalyticsOrdersToolHandlerTest {
             .jsonArray
             .map { it.jsonPrimitive.content }
 
+        assertThat(description).contains("sales")
+        assertThat(description).contains("revenue")
+        assertThat(description).contains("order")
+        assertThat(description).contains("average order value")
+        assertThat(description).contains("analytics_orders")
+        assertThat(description).contains("show_cards")
+        assertThat(description).contains("grouping grain with a date window")
+        assertThat(description).contains("interval follows the grouping grain")
+        assertThat(description).contains("card_id starts with analytics_orders")
+        assertThat(description).contains("do not stop with prose")
+        assertThat(description).contains("family analytics_stats")
+        assertThat(description).contains("exact card_id")
+        assertThat(description).contains("card_id")
+        assertThat(description).doesNotContain("analytics_revenue")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
         assertThat(compareToValues).containsExactly("previous_period")
@@ -83,9 +102,17 @@ class AnalyticsOrdersToolHandlerTest {
             assertThat(structured.getValue("after").jsonPrimitive.content).isEqualTo("2026-04-01")
             assertThat(structured.getValue("before").jsonPrimitive.content).isEqualTo("2026-04-30")
             assertThat(structured.getValue("interval").jsonPrimitive.content).isEqualTo("week")
+            assertThat(structured.getValue("card_id").jsonPrimitive.content).isEqualTo(
+                "analytics_orders:after:2026-04-01:before:2026-04-30:interval:week"
+            )
             assertThat(structured.getValue("interval_count").jsonPrimitive.int).isEqualTo(1)
             assertThat(structured.getValue("totals").jsonObject.getValue("orders_count").jsonPrimitive.int)
                 .isEqualTo(42)
+            val totals = structured.getValue("totals").jsonObject
+            assertThat(totals.getValue("total_sales").jsonPrimitive.content).isEqualTo("170.35")
+            assertThat(totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("120.15")
+            assertThat(totals.getValue("orders_count").jsonPrimitive.int).isEqualTo(42)
+            assertThat(totals.getValue("avg_order_value").jsonPrimitive.content).isEqualTo("85.30")
         }
 
     @Test
@@ -313,7 +340,7 @@ class AnalyticsOrdersToolHandlerTest {
         }
 
     @Test
-    fun `given data source fails, when execute is called, then retryable TransportError is returned`() =
+    fun `given data source fails, when execute is called, then lossy diagnostics are returned`() =
         runTest {
             whenever(
                 dataSource.fetchOrdersStats(
@@ -321,7 +348,9 @@ class AnalyticsOrdersToolHandlerTest {
                     before = "2026-04-30T23:59:59",
                     interval = AnalyticsInterval.DAY,
                 )
-            ).thenReturn(Result.failure(IllegalStateException("network error")))
+            ).thenReturn(
+                Result.failure(OnChangedException(WCStatsStore.OrderStatsError(message = "network error")))
+            )
 
             val result = handler.execute(
                 toolCall(
@@ -333,11 +362,17 @@ class AnalyticsOrdersToolHandlerTest {
             )
 
             assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
-            assertThat((result as ToolResult.TransportError).retryable).isTrue
+            result as ToolResult.TransportError
+            assertThat(result.retryable).isTrue
+            assertThat(result.diagnostics.tool?.toolName).isEqualTo("analytics_orders")
+            assertThat(result.diagnostics.transport).isNull()
         }
 
     private fun sampleStats() = AnalyticsStats(
         totals = buildJsonObject {
+            put("total_sales", "170.35")
+            put("gross_sales", "190.00")
+            put("net_revenue", "120.15")
             put("orders_count", 42)
             put("avg_order_value", "85.30")
         },
@@ -348,7 +383,10 @@ class AnalyticsOrdersToolHandlerTest {
                 put(
                     "subtotals",
                     buildJsonObject {
+                        put("total_sales", "50.00")
+                        put("net_revenue", "35.00")
                         put("orders_count", 12)
+                        put("avg_order_value", "80.10")
                     }
                 )
             },

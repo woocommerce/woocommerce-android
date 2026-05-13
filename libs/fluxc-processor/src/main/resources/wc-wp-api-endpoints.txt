@@ -144,3 +144,4 @@
 
 /push-tokens
 /push-tokens/<id>
+/preferences

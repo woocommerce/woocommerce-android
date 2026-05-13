@@ -62,18 +62,38 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
 
             wooCommerceStore.getProductSettings(site)?.defaultLowStockThreshold?.let { threshold ->
                 updateDefaultLowStockThreshold(threshold)
+            } ?: run {
+                _viewState.update { it.copy(isDefaultLowStockThresholdLoading = true) }
             }
 
-            val productSettings = wooCommerceStore.fetchSiteProductSettings(site).model
+            val result = wooCommerceStore.fetchSiteProductSettings(site)
+            if (result.isError) {
+                finishDefaultLowStockThresholdRefresh()
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowSnackbar(R.string.settings_notifs_stock_low_stock_threshold_error)
+                )
+                return@launch
+            }
 
-            productSettings?.defaultLowStockThreshold?.let { threshold ->
+            result.model?.defaultLowStockThreshold?.let { threshold ->
                 updateDefaultLowStockThreshold(threshold)
-            }
+            } ?: finishDefaultLowStockThresholdRefresh()
+        }
+    }
+
+    private fun finishDefaultLowStockThresholdRefresh() {
+        _viewState.update {
+            it.copy(isDefaultLowStockThresholdLoading = false)
         }
     }
 
     private fun updateDefaultLowStockThreshold(threshold: Int) {
-        _viewState.update { it.copy(defaultLowStockThreshold = threshold) }
+        _viewState.update {
+            it.copy(
+                defaultLowStockThreshold = threshold,
+                isDefaultLowStockThresholdLoading = false
+            )
+        }
     }
 
     data class ViewState(
@@ -81,7 +101,8 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         val lowStockNotificationsEnabled: Boolean = true,
         val outOfStockNotificationsEnabled: Boolean = true,
         val backorderNotificationsEnabled: Boolean = true,
-        val defaultLowStockThreshold: Int? = null
+        val defaultLowStockThreshold: Int? = null,
+        val isDefaultLowStockThresholdLoading: Boolean = true
     )
 
     enum class StockNotificationType {

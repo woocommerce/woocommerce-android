@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.tools.products
 
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -35,6 +36,7 @@ class ProductVariationsToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun variation(
@@ -83,6 +85,15 @@ class ProductVariationsToolHandlerTest {
 
     private fun toolCall(arguments: JsonObject): ToolCall =
         ToolCall(id = "call-1", name = "product_variations_list", arguments = arguments)
+
+    @Test
+    fun `given descriptor, when inspected, then broad inventory questions are excluded`() {
+        val description = handler.descriptor.description
+
+        assertThat(description).contains("explicitly asks")
+        assertThat(description).contains("variations, sizes, colors, options")
+        assertThat(description).contains("broad product-level inventory questions")
+    }
 
     @Test
     fun `given list mode, when execute is called, then data source is called with product id and paging`() = runTest {

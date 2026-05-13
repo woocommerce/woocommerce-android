@@ -16,6 +16,7 @@ enum class ChatStreamError {
     TIMEOUT,
     AUTH,
     RATE_LIMIT,
+    BAD_REQUEST,
     UPSTREAM_FAILURE,
     INVALID_STREAM,
     CANCELLED,
