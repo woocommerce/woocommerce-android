@@ -20,7 +20,6 @@ import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
-import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -28,14 +27,17 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlin.time.TimeSource
 
+@Suppress("LongParameterList")
 class AgenticLoopImpl(
     private val chatService: ChatService,
     private val toolRegistry: ToolRegistry,
     private val retryPolicy: RetryPolicy,
     private val historyBudgeter: HistoryBudgeter,
-    private val safetyOrchestrator: SafetyOrchestrator = SafetyOrchestratorImpl(),
+    private val safetyOrchestrator: SafetyOrchestrator,
     private val json: Json,
+    private val timeSource: TimeSource,
 ) : AgenticLoop {
 
     @Suppress("LongMethod")
@@ -299,10 +301,10 @@ class AgenticLoopImpl(
                         )
                         continue
                     }
-                    val startNs = System.nanoTime()
+                    val startedAt = timeSource.markNow()
                     val result = executeToolIfAllowed(call, descriptor)
                         ?: return ToolExecutionOutcome.Cancelled(completedTools)
-                    val durationMs = (System.nanoTime() - startNs) / NANOS_PER_MILLI
+                    val durationMs = startedAt.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
                     replayTracker.record(replayDecision.signature, result)
                     completedTools += CompletedToolCall(
                         historyToolCall = call,
@@ -553,7 +555,6 @@ class AgenticLoopImpl(
 
     companion object {
         internal const val MAX_ITERATIONS = 5
-        private const val NANOS_PER_MILLI = 1_000_000L
     }
 }
 
