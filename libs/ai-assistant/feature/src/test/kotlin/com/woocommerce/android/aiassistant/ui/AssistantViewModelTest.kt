@@ -103,6 +103,13 @@ class AssistantViewModelTest {
     }
 
     @Test
+    fun `given empty conversation, when message is sent, then empty state is hidden`() = runTest {
+        viewModel.onSendMessage("Show revenue this week")
+
+        assertThat(viewModel.uiState.value.shouldShowEmptyState).isFalse()
+    }
+
+    @Test
     fun `given active assistant bubble, when text delta arrives, then typing indicator is hidden`() = runTest {
         viewModel.onSendMessage("Summarize sales")
         runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today."))
@@ -565,6 +572,16 @@ class AssistantViewModelTest {
                 )
             )
         }
+
+    @Test
+    fun `given active conversation, when conversation restarts, then empty state is visible`() = runTest {
+        viewModel.onSendMessage("Previous question")
+
+        viewModel.onRestartConversation()
+
+        assertThat(viewModel.uiState.value.messages).isEmpty()
+        assertThat(viewModel.uiState.value.shouldShowEmptyState).isTrue()
+    }
 
     @Test
     fun `given active turn, when restarted, then state is cleared and runtime turn is cancelled`() = runTest {

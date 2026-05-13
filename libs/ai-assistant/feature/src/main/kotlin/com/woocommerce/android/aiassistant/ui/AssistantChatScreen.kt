@@ -91,6 +91,9 @@ import kotlinx.serialization.json.put
 fun AssistantRoute(
     conversationId: String,
     onBack: () -> Unit,
+    showEarlyAccessNotice: Boolean,
+    onDismissEarlyAccessNotice: () -> Unit,
+    onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
@@ -102,6 +105,9 @@ fun AssistantRoute(
     AssistantChatScreen(
         viewModel = viewModel,
         onBack = onBack,
+        showEarlyAccessNotice = showEarlyAccessNotice,
+        onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
+        onEarlyAccessFeedbackClick = onEarlyAccessFeedbackClick,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
         onCardAction = onCardAction,
@@ -112,6 +118,9 @@ fun AssistantRoute(
 fun AssistantChatScreen(
     viewModel: AssistantViewModel,
     onBack: () -> Unit,
+    showEarlyAccessNotice: Boolean,
+    onDismissEarlyAccessNotice: () -> Unit,
+    onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
@@ -149,6 +158,9 @@ fun AssistantChatScreen(
             viewModel.onRestartConversation()
         },
         onBack = onBack,
+        showEarlyAccessNotice = showEarlyAccessNotice,
+        onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
+        onEarlyAccessFeedbackClick = onEarlyAccessFeedbackClick,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
         onCardAction = onCardAction,
@@ -168,6 +180,9 @@ fun AssistantChatScreen(
     onCancelWrite: () -> Unit,
     onRestartConversation: () -> Unit,
     onBack: () -> Unit,
+    showEarlyAccessNotice: Boolean,
+    onDismissEarlyAccessNotice: () -> Unit,
+    onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
     onCardAction: (AssistantCardAction) -> Unit = {},
@@ -176,7 +191,9 @@ fun AssistantChatScreen(
     val density = LocalDensity.current
     var bottomBarContentHeightPx by remember { mutableIntStateOf(0) }
     val bottomBarContentHeight = with(density) { bottomBarContentHeightPx.toDp() }
-    val bottomContentPadding = bottomBarContentHeight + FLOATING_COMPOSER_CONTENT_SPACING
+    val estimatedBottomBarHeight = FLOATING_COMPOSER_ESTIMATED_HEIGHT * density.fontScale
+    val bottomContentPadding = bottomBarContentHeight
+        .coerceAtLeast(estimatedBottomBarHeight) + FLOATING_COMPOSER_CONTENT_SPACING
     val submitMessage = {
         focusManager.clearFocus()
         onSendMessage()
@@ -217,11 +234,14 @@ fun AssistantChatScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.shouldShowEmptyState) {
                 AssistantEmptyState(
+                    showEarlyAccessNotice = showEarlyAccessNotice,
+                    bottomContentPadding = bottomContentPadding,
+                    onFeedbackClick = onEarlyAccessFeedbackClick,
+                    onDismissEarlyAccessNotice = onDismissEarlyAccessNotice,
                     onSuggestionClick = submitSuggestion,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(contentPadding)
-                        .padding(bottom = bottomContentPadding),
                 )
             } else {
                 AssistantMessageThread(
@@ -470,6 +490,7 @@ private const val FLOATING_COMPOSER_FADE_MIDPOINT_ALPHA = 0.55f
 private const val FLOATING_COMPOSER_FADE_MIDPOINT_FRACTION = 0.35f
 private val FLOATING_COMPOSER_FADE_EXTRA_HEIGHT = 48.dp
 private val FLOATING_COMPOSER_BOTTOM_PADDING = 16.dp
+private val FLOATING_COMPOSER_ESTIMATED_HEIGHT = 84.dp
 private val FLOATING_COMPOSER_CONTENT_SPACING = 16.dp
 private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
 private val USER_BUBBLE_MAX_WIDTH = 280.dp
@@ -864,6 +885,9 @@ private fun AssistantChatScreenEmptyStatePreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = true,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -917,6 +941,9 @@ private fun AssistantChatScreenStreamingMultipleToolActivityPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -962,6 +989,9 @@ private fun AssistantChatScreenFinishedMultipleToolActivityPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -988,6 +1018,9 @@ private fun AssistantChatScreenTypingPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
@@ -1025,6 +1058,9 @@ private fun AssistantChatScreenPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
         assistantCardRenderer = PreviewAssistantCardRenderer,
     )
 }
@@ -1071,6 +1107,9 @@ private fun AssistantChatScreenConfirmationPreview() {
         onCancelWrite = {},
         onRestartConversation = {},
         onBack = {},
+        showEarlyAccessNotice = false,
+        onDismissEarlyAccessNotice = {},
+        onEarlyAccessFeedbackClick = {},
     )
 }
 
