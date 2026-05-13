@@ -218,7 +218,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         whenever(internetCheck.invoke()).thenReturn(
             flow {
                 emit(ConnectivityCheckStatus.InProgress)
-                throw IllegalStateException("No selected site")
+                error("No selected site")
             }
         )
     }
