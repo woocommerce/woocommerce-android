@@ -217,6 +217,7 @@ class UnifiedLoginTracker
         LOGIN_QR_SCAN("login_qr_scan"),
         LOGIN_QR_FALLBACK("login_qr_fallback"),
         QR_CAMERA_PERMISSION_PRIMARY("qr_camera_permission_primary"),
+        QR_CAMERA_PERMISSION_DENIED("qr_camera_permission_denied"),
         QR_RETRY("qr_retry"),
         QR_START_OVER("qr_start_over"),
         QR_CANCEL_NUMBER_MATCH("qr_cancel_number_match")

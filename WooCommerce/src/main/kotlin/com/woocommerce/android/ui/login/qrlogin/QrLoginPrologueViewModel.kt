@@ -59,6 +59,7 @@ class QrLoginPrologueViewModel @Inject constructor(
             triggerEvent(Dispatch.NavigateToScanner)
             return
         }
+        unifiedLoginTracker.trackClick(Click.QR_CAMERA_PERMISSION_DENIED)
         val next = if (shouldShowRationale) {
             CameraDenialState.FirstDenial
         } else {
