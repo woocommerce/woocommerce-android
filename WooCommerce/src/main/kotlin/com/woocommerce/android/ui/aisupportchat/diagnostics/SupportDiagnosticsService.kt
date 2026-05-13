@@ -53,7 +53,7 @@ class SupportDiagnosticsService @Inject constructor(
                     DiagnosticResult(
                         issueType = issueType,
                         statuses = statuses,
-                        suggestedAction = suggestedActionFor(test)
+                        suggestedAction = SuggestedFixAction.RetryDiagnostics
                     )
                 )
                 return@flow
@@ -105,15 +105,6 @@ class SupportDiagnosticsService @Inject constructor(
         ConnectivityCheckStatus.NotStarted, ConnectivityCheckStatus.InProgress ->
             TestStatus.Failed(technicalDetails = "Diagnostic did not complete")
     }
-
-    private fun suggestedActionFor(failedTest: DiagnosticTest): SuggestedFixAction =
-        when (failedTest) {
-            INTERNET_CONNECTION,
-            WPCOM_SERVERS,
-            STORE_CONNECTION,
-            STORE_ORDERS,
-            STORE_PRODUCTS -> SuggestedFixAction.RetryDiagnostics
-        }
 
     private fun <T> List<T>.replaceAt(index: Int, value: T): List<T> =
         toMutableList().apply { this[index] = value }
