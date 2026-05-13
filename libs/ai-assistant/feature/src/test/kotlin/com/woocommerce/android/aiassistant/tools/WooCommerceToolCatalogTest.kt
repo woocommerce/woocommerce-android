@@ -45,6 +45,14 @@ class WooCommerceToolCatalogTest {
     private val productsDataSource: AIProductsDataSource = mock()
     private val variationsDataSource: AIProductVariationsDataSource = mock()
 
+    private val importantUnsafeToolNames = setOf(
+        "orders_update",
+        "orders_bulk_update",
+        "products_update",
+        "products_bulk_update",
+        "product_variations_update",
+    )
+
     private val allHandlers: Set<AssistantToolHandler> = setOf(
         OrdersListToolHandler(mock(), mock(), diagnosticsFactory),
         OrdersGetToolHandler(mock(), mock(), diagnosticsFactory),
@@ -171,6 +179,43 @@ class WooCommerceToolCatalogTest {
                 assertThat(preview.message).isNotNull()
             }
         }
+
+    @Test
+    fun `when important unsafe descriptors are inspected, then they use dedicated preview providers`() =
+        runTest {
+            val registry = previewRegistry()
+            val descriptorsByName = allHandlers.map { it.descriptor }.associateBy { it.name }
+
+            importantUnsafeToolNames.forEach { toolName ->
+                val descriptor = requireNotNull(descriptorsByName[toolName]) {
+                    "Missing important unsafe descriptor: $toolName"
+                }
+                val provider = registry.providerFor(previewContextFor(descriptor))
+
+                assertThat(provider.key)
+                    .`as`("$toolName should not use the generic provider")
+                    .isIn(
+                        "woocommerce_orders",
+                        "woocommerce_products",
+                        "woocommerce_product_variations",
+                    )
+                assertThat(provider.key).isNotEqualTo("generic_schema")
+            }
+        }
+
+    // This assertion documents the current unsafe descriptor subset. If a future straightforward unsafe tool is
+    // intentionally allowed to use the generic provider, update this policy set and keep the dedicated-provider
+    // assertion scoped to workflows that are important, common, risky, or semantically complex.
+    @Test
+    fun `when current catalog unsafe descriptors are inspected, then important unsafe policy is explicit`() {
+        val currentUnsafeToolNames = allHandlers
+            .map { it.descriptor }
+            .filter { it.safetyLevel == ToolSafetyLevel.UNSAFE }
+            .map { it.name }
+            .toSet()
+
+        assertThat(currentUnsafeToolNames).isEqualTo(importantUnsafeToolNames)
+    }
 
     private fun previewRegistry() = DefaultConfirmationPreviewProviderRegistry(
         setOf(
