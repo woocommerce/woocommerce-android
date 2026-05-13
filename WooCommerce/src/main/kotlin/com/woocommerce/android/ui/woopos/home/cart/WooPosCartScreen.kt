@@ -809,6 +809,8 @@ private fun CustomAmountItem(
                 }
             }
 
+            // Edit lives inside the overflow menu, so this also gates the edit path during checkout
+            // — intentional: cart contents are locked once payment starts.
             if (canRemoveItems) {
                 CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
             }

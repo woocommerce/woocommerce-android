@@ -2,17 +2,23 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 /**
  * Renders the first character of [name] as an initials avatar on the surface container colour.
- * Used for custom amount rows in cart, order details, and refund flows — matches the iOS
- * `CustomAmountAvatar`.
+ * Used for custom amount rows — matches the iOS `CustomAmountAvatar`.
  */
 @Composable
 fun WooPosCustomAmountInitialsAvatar(
@@ -31,5 +37,33 @@ fun WooPosCustomAmountInitialsAvatar(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun WooPosCustomAmountInitialsAvatarPreview() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier
+                .size(96.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value)),
+        ) {
+            WooPosCustomAmountInitialsAvatar(name = "Service fee")
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun WooPosCustomAmountInitialsAvatarBlankNamePreview() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier
+                .size(96.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value)),
+        ) {
+            WooPosCustomAmountInitialsAvatar(name = "")
+        }
     }
 }
