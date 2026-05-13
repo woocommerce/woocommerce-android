@@ -14,7 +14,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         context.descriptor.name in SUPPORTED_TOOL_NAMES
 
     override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview =
-        when (context.request.toolName) {
+        when (context.descriptor.name) {
             ORDERS_UPDATE -> WooCommerceConfirmationPreviewFormatters.orderUpdatePreview(
                 arguments = context.request.arguments,
                 currentValues = currentOrderValues(context.request.arguments),
@@ -22,11 +22,11 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
             ORDERS_BULK_UPDATE -> WooCommerceConfirmationPreviewFormatters.ordersBulkUpdatePreview(
                 context.request.arguments
             )
-            else -> error("Unsupported order confirmation preview: ${context.request.toolName}")
+            else -> error("Unsupported order confirmation preview: ${context.descriptor.name}")
         }
 
     private suspend fun currentOrderValues(arguments: JsonObject): Map<String, String>? =
-        WooCommerceConfirmationPreviewFormatters.run { arguments.longValue("id") }
+        arguments.longValue("id")
             ?.let { orderId -> ordersDataSource.getOrder(orderId).getOrNull() }
             ?.let { order ->
                 mapOf(

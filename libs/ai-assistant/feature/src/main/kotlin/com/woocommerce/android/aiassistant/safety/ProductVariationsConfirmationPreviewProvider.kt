@@ -14,35 +14,25 @@ internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
         context.descriptor.name == PRODUCT_VARIATIONS_UPDATE
 
     override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview =
-        when (context.request.toolName) {
-            PRODUCT_VARIATIONS_UPDATE -> WooCommerceConfirmationPreviewFormatters.productVariationUpdatePreview(
-                arguments = context.request.arguments,
-                currentValues = currentVariationValues(context.request.arguments),
-            )
-            else -> error("Unsupported variation confirmation preview: ${context.request.toolName}")
-        }
+        WooCommerceConfirmationPreviewFormatters.productVariationUpdatePreview(
+            arguments = context.request.arguments,
+            currentValues = currentVariationValues(context.request.arguments),
+        )
 
     private suspend fun currentVariationValues(arguments: JsonObject): Map<String, String>? {
-        val productId = WooCommerceConfirmationPreviewFormatters.run { arguments.longValue("product_id") }
-        val variationId = WooCommerceConfirmationPreviewFormatters.run { arguments.longValue("id") }
-        return if (productId == null || variationId == null) {
-            null
-        } else {
-            variationsDataSource.getVariation(productId, variationId).getOrNull()?.let { variation ->
-                buildMap {
-                    put("regular_price", variation.regularPrice)
-                    put("sale_price", variation.salePrice)
-                    put("stock_quantity", variation.stockQuantity.formatStockQuantity())
-                    put("stock_status", variation.stockStatus)
-                    put("sku", variation.sku)
-                    put("status", variation.status)
-                }
+        val productId = arguments.longValue("product_id") ?: return null
+        val variationId = arguments.longValue("id") ?: return null
+        return variationsDataSource.getVariation(productId, variationId).getOrNull()?.let { variation ->
+            buildMap {
+                put("regular_price", variation.regularPrice)
+                put("sale_price", variation.salePrice)
+                put("stock_quantity", variation.stockQuantity.formatStockQuantity())
+                put("stock_status", variation.stockStatus)
+                put("sku", variation.sku)
+                put("status", variation.status)
             }
         }
     }
-
-    private fun Double.formatStockQuantity(): String =
-        if (rem(1.0) == 0.0) toLong().toString() else toString()
 
     private companion object {
         const val PRODUCT_VARIATIONS_UPDATE = "product_variations_update"

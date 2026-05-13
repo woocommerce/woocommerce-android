@@ -14,7 +14,7 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
         context.descriptor.name in SUPPORTED_TOOL_NAMES
 
     override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview =
-        when (context.request.toolName) {
+        when (context.descriptor.name) {
             PRODUCTS_UPDATE -> WooCommerceConfirmationPreviewFormatters.productUpdatePreview(
                 arguments = context.request.arguments,
                 currentValues = currentProductValues(context.request.arguments),
@@ -22,11 +22,11 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
             PRODUCTS_BULK_UPDATE -> WooCommerceConfirmationPreviewFormatters.productsBulkUpdatePreview(
                 context.request.arguments
             )
-            else -> error("Unsupported product confirmation preview: ${context.request.toolName}")
+            else -> error("Unsupported product confirmation preview: ${context.descriptor.name}")
         }
 
     private suspend fun currentProductValues(arguments: JsonObject): Map<String, String>? =
-        WooCommerceConfirmationPreviewFormatters.run { arguments.longValue("id") }
+        arguments.longValue("id")
             ?.let { productId -> productsDataSource.getProduct(productId).getOrNull() }
             ?.let { product ->
                 buildMap {
@@ -37,9 +37,6 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
                     put("status", product.status)
                 }
             }
-
-    private fun Double.formatStockQuantity(): String =
-        if (rem(1.0) == 0.0) toLong().toString() else toString()
 
     private companion object {
         const val PRODUCTS_UPDATE = "products_update"

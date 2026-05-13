@@ -13,6 +13,12 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
+internal fun JsonObject.longValue(name: String): Long? =
+    runCatching { this[name]?.jsonPrimitive }.getOrNull()?.longOrNull
+
+internal fun Double.formatStockQuantity(): String =
+    if (rem(1.0) == 0.0) toLong().toString() else toString()
+
 internal object WooCommerceConfirmationPreviewFormatters {
     fun orderUpdatePreview(
         arguments: JsonObject,
@@ -366,9 +372,6 @@ internal object WooCommerceConfirmationPreviewFormatters {
 
     private fun JsonObject.intValue(name: String): Int? =
         this[name]?.asJsonPrimitiveOrNull()?.intOrNull
-
-    internal fun JsonObject.longValue(name: String): Long? =
-        this[name]?.asJsonPrimitiveOrNull()?.longOrNull
 
     private fun JsonObject.arrayValue(name: String): JsonArray? =
         this[name]?.asJsonArrayOrNull()
