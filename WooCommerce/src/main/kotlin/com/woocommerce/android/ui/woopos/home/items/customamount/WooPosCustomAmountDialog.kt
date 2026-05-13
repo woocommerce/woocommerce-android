@@ -84,8 +84,12 @@ fun WooPosCustomAmountFormScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(WooPosSpacing.Medium.value),
+                .padding(
+                    top = WooPosSpacing.Medium.value,
+                    start = WooPosSpacing.Medium.value,
+                    end = WooPosSpacing.Medium.value,
+                )
+                .navigationBarsPadding(),
         ) {
             FormSubmitButton(state = state, onSubmit = viewModel::onSubmit)
         }
