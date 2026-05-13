@@ -27,10 +27,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
@@ -118,6 +120,7 @@ fun WooPosPaymentSuccessScreen(
                 text = stringResource(R.string.woopos_new_order_button)
             )
 
+            val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
             WooPosOutlinedButton(
                 modifier = Modifier
                     .constrainAs(buttonEmailReceipts) {
@@ -129,7 +132,7 @@ fun WooPosPaymentSuccessScreen(
                     .padding(horizontal = WooPosSpacing.XLarge.value),
                 onClick = onReceiptClicked,
                 text = stringResource(R.string.woopos_receipt_button),
-                textStyle = WooPosTypography.BodyMedium,
+                textStyle = if (isPhone) WooPosTypography.BodyMedium else WooPosTypography.BodyLarge,
             )
         }
     }
