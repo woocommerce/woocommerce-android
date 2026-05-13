@@ -26,20 +26,20 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreview
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewField
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProvider
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
-import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewText
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
-import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
-import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
-import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
@@ -59,7 +59,6 @@ import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -170,18 +169,17 @@ class AgenticLoopAssistantRuntimeTest {
             },
             safetyLevel = ToolSafetyLevel.UNSAFE,
         )
-        val snapshot = ConfirmationSnapshot(
-            currentValues = mapOf(
-                "status" to "pending",
-            )
-        )
+        val previewRegistry = FakePreviewRegistry()
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
-            snapshotResolver = FakeSnapshotResolver(snapshot),
+            toolRegistry = FixedToolRegistry(listOf(orderUpdateDescriptor())),
+            confirmationPreviewProviderRegistry = previewRegistry,
         )
 
         val events = runtime.startTurn(givenTurnRequest()).toList()
 
+        assertThat(previewRegistry.receivedContext.request).isEqualTo(request)
+        assertThat(previewRegistry.receivedContext.descriptor).isEqualTo(orderUpdateDescriptor())
         assertThat(events).containsExactly(
             AssistantRuntimeEvent.AwaitingConfirmation(
                 AssistantConfirmationCard(
@@ -196,7 +194,7 @@ class AgenticLoopAssistantRuntimeTest {
                     ),
                     state = AssistantConfirmationCardState.PENDING,
                     preview = RenderedConfirmationPreview(
-                        message = "Update order #123: emails the customer",
+                        message = "Preview message",
                         fields = listOf(
                             RenderedConfirmationPreviewField(
                                 name = "status",
@@ -211,6 +209,35 @@ class AgenticLoopAssistantRuntimeTest {
             )
         )
     }
+
+    @Test
+    fun `given confirmation descriptor is missing, when runtime builds card, then fallback descriptor is used`() =
+        runTest {
+            val request = ConfirmationRequest(
+                id = "confirmation-1",
+                toolCallId = "call-1",
+                toolName = "mystery_write",
+                arguments = buildJsonObject { put("reason", "Preview") },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val previewRegistry = FakePreviewRegistry()
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
+                toolRegistry = FixedToolRegistry(emptyList()),
+                confirmationPreviewProviderRegistry = previewRegistry,
+            )
+
+            runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(previewRegistry.receivedContext.descriptor).isEqualTo(
+                ToolDescriptor(
+                    name = "mystery_write",
+                    description = "",
+                    inputSchema = buildJsonObject {},
+                    safetyLevel = ToolSafetyLevel.UNSAFE,
+                )
+            )
+        }
 
     @Test
     fun `when loop resolves confirmation, then runtime forwards the resolution event`() = runTest {
@@ -745,17 +772,17 @@ class AgenticLoopAssistantRuntimeTest {
 
     private fun runtime(
         agenticLoop: AgenticLoop = FakeAgenticLoop(events = emptyList()),
+        toolRegistry: ToolRegistry = EmptyToolRegistry,
         safetyOrchestrator: SafetyOrchestrator = FakeSafetyOrchestrator(),
-        snapshotResolver: WooCommerceConfirmationSnapshotResolver = FakeSnapshotResolver(),
+        confirmationPreviewProviderRegistry: ConfirmationPreviewProviderRegistry = FakePreviewRegistry(),
         systemPrompt: String = "system prompt v1",
     ) = AgenticLoopAssistantRuntime(
         agenticLoop = agenticLoop,
-        toolRegistry = EmptyToolRegistry,
+        toolRegistry = toolRegistry,
         toolCatalogSelector = PassThroughToolCatalogSelector,
         safetyOrchestrator = safetyOrchestrator,
-        confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder(),
+        confirmationPreviewProviderRegistry = confirmationPreviewProviderRegistry,
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
-        confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
         json = json,
@@ -1020,6 +1047,15 @@ class AgenticLoopAssistantRuntimeTest {
             error("Unexpected tool execution in runtime adapter test")
     }
 
+    private class FixedToolRegistry(
+        private val descriptors: List<ToolDescriptor>,
+    ) : ToolRegistry {
+        override fun descriptors(): List<ToolDescriptor> = descriptors
+
+        override suspend fun execute(call: ToolCall): ToolResult =
+            error("Unexpected tool execution in runtime adapter test")
+    }
+
     private object PassThroughToolCatalogSelector : ToolCatalogSelector {
         override fun select(scope: ToolScope, fullRegistry: List<ToolDescriptor>): CatalogSnapshot =
             CatalogSnapshot(scope = scope, tools = fullRegistry)
@@ -1044,15 +1080,42 @@ class AgenticLoopAssistantRuntimeTest {
         override fun cancelPending(requestId: String): Boolean = false
     }
 
-    private class FakeSnapshotResolver(
-        private val snapshot: ConfirmationSnapshot? = null,
-    ) : WooCommerceConfirmationSnapshotResolver(
-        ordersDataSource = mock<AIOrdersDataSource>(),
-        productsDataSource = mock<AIProductsDataSource>(),
-        variationsDataSource = mock<AIProductVariationsDataSource>(),
-    ) {
-        override suspend fun resolve(request: ConfirmationRequest): ConfirmationSnapshot? = snapshot
+    private class FakePreviewRegistry(
+        private val preview: ConfirmationPreview = ConfirmationPreview(
+            message = ConfirmationPreviewText.Raw("Preview message"),
+            fields = listOf(
+                ConfirmationPreviewField(
+                    name = "status",
+                    label = ConfirmationPreviewText.Raw("Status"),
+                    value = ConfirmationPreviewText.Raw("processing"),
+                    beforeValue = ConfirmationPreviewText.Raw("pending"),
+                )
+            ),
+        ),
+    ) : ConfirmationPreviewProviderRegistry {
+        lateinit var receivedContext: ConfirmationPreviewContext
+
+        override fun providerFor(context: ConfirmationPreviewContext): ConfirmationPreviewProvider =
+            error("providerFor is not used by AgenticLoopAssistantRuntime")
+
+        override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview {
+            receivedContext = context
+            return preview
+        }
     }
+
+    private fun orderUpdateDescriptor() = ToolDescriptor(
+        name = "orders_update",
+        description = "Update order",
+        inputSchema = buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+                putJsonObject("id") { put("type", "integer") }
+                putJsonObject("status") { put("type", "string") }
+            }
+        },
+        safetyLevel = ToolSafetyLevel.UNSAFE,
+    )
 
     private companion object {
         private const val ANALYTICS_STATS_ID =

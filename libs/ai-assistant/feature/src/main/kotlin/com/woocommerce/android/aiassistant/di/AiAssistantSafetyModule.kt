@@ -1,0 +1,28 @@
+package com.woocommerce.android.aiassistant.di
+
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProvider
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
+import com.woocommerce.android.aiassistant.safety.DefaultConfirmationPreviewProviderRegistry
+import com.woocommerce.android.aiassistant.safety.GenericSchemaConfirmationPreviewProvider
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class AiAssistantSafetyModule {
+    @Binds
+    @Singleton
+    internal abstract fun bindConfirmationPreviewProviderRegistry(
+        impl: DefaultConfirmationPreviewProviderRegistry,
+    ): ConfirmationPreviewProviderRegistry
+
+    @Binds
+    @IntoSet
+    internal abstract fun bindGenericSchemaConfirmationPreviewProvider(
+        impl: GenericSchemaConfirmationPreviewProvider,
+    ): ConfirmationPreviewProvider
+}
