@@ -123,13 +123,13 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given OTHER issue type, when run, then a single empty pending result is emitted`() = testBlocking {
-        val emissions = service.runDiagnostics(SupportIssueType.OTHER).toList()
+    fun `given OTHER issue type, when run, then all tests are included`() = testBlocking {
+        stubAll(success = true)
 
-        assertThat(emissions).hasSize(1)
-        assertThat(emissions.single().statuses).isEmpty()
-        assertThat(emissions.single().suggestedAction).isNull()
-        assertThat(emissions.single().isComplete).isTrue
+        val initial = service.runDiagnostics(SupportIssueType.OTHER).toList().first()
+
+        assertThat(initial.statuses.map { it.test })
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS, STORE_PRODUCTS)
     }
 
     @Test

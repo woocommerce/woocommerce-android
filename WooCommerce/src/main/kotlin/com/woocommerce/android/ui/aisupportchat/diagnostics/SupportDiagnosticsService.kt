@@ -72,7 +72,8 @@ class SupportDiagnosticsService @Inject constructor(
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
         SupportIssueType.RECEIVING_NOTIFICATIONS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
-        SupportIssueType.OTHER -> emptyList()
+        SupportIssueType.OTHER ->
+            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS, STORE_PRODUCTS)
     }
 
     private fun runCheck(test: DiagnosticTest): Flow<ConnectivityCheckStatus> = when (test) {
