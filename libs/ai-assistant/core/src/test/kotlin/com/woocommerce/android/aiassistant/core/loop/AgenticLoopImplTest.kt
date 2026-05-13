@@ -162,6 +162,9 @@ class AgenticLoopImplTest {
         val malformedError = events.filterIsInstance<LoopEvent.ToolCallFinished>()
             .firstOrNull { it.result is ToolResult.ValidationError }
         assertThat(malformedError).isNotNull
+        assertThat(requireNotNull(malformedError).toolName).isEqualTo("echo")
+        assertThat(malformedError.decision).isEqualTo(ToolDecision.MALFORMED_ARGUMENTS)
+        assertThat(malformedError.durationMs).isNull()
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
         assertThat(finished.error).isNull()
@@ -311,6 +314,10 @@ class AgenticLoopImplTest {
             .map { it.result }
             .filterIsInstance<ToolResult.ValidationError>()
         assertThat(validationErrors).isNotEmpty
+        val finished = events.filterIsInstance<LoopEvent.ToolCallFinished>().single()
+        assertThat(finished.toolName).isEqualTo("nonexistent_tool")
+        assertThat(finished.decision).isEqualTo(ToolDecision.VALIDATION_FAILED)
+        assertThat(finished.durationMs).isNull()
     }
 
     @Test
@@ -1126,7 +1133,11 @@ class AgenticLoopImplTest {
                 .isEqualTo(ConfirmationDecision.CANCELLED)
             assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
             assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>()).isEmpty()
-            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>()).isEmpty()
+            val rejected = events.filterIsInstance<LoopEvent.ToolCallFinished>().single()
+            assertThat(rejected.result).isEqualTo(ToolResult.RejectedBySafety("call_1"))
+            assertThat(rejected.toolName).isEqualTo("orders_update")
+            assertThat(rejected.decision).isEqualTo(ToolDecision.REJECTED_BY_SAFETY)
+            assertThat(rejected.durationMs).isNull()
             assertThat(registryExecuted).isFalse
             assertThat(secondModelTurnRequested).isFalse()
 
@@ -1216,7 +1227,9 @@ class AgenticLoopImplTest {
             assertThat(events.filterIsInstance<LoopEvent.ToolCallStarted>().map { it.call.id })
                 .containsExactly("safe_1")
             assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().map { it.result.toolCallId })
-                .containsExactly("safe_1")
+                .containsExactly("safe_1", "unsafe_1")
+            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().last().decision)
+                .isEqualTo(ToolDecision.REJECTED_BY_SAFETY)
             assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)

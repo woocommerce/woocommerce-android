@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoopImpl
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
@@ -67,13 +68,18 @@ class WooAssistantHeadless(
 
     private fun List<LoopEvent>.toToolCallTraces(descriptors: List<ToolDescriptor>): List<HeadlessToolCallTrace> {
         val startedCalls = mutableMapOf<String, ToolCall>()
+        val confirmationRequests = mutableMapOf<String, ConfirmationRequest>()
         val traces = mutableListOf<HeadlessToolCallTrace>()
         forEach { event ->
             when (event) {
                 is LoopEvent.ToolCallStarted -> startedCalls[event.call.id] = event.call
-                is LoopEvent.ToolCallFinished -> traces += event.result.toTrace(startedCalls, descriptors)
+                is LoopEvent.ConfirmationRequested -> confirmationRequests[event.request.toolCallId] = event.request
+                is LoopEvent.ToolCallFinished -> traces += event.toTrace(
+                    startedCalls = startedCalls,
+                    confirmationRequests = confirmationRequests,
+                    descriptors = descriptors,
+                )
                 is LoopEvent.AssistantTextDelta,
-                is LoopEvent.ConfirmationRequested,
                 is LoopEvent.ConfirmationResolved,
                 is LoopEvent.Failed,
                 is LoopEvent.Finished -> Unit
@@ -82,18 +88,21 @@ class WooAssistantHeadless(
         return traces
     }
 
-    private fun ToolResult.toTrace(
+    private fun LoopEvent.ToolCallFinished.toTrace(
         startedCalls: Map<String, ToolCall>,
+        confirmationRequests: Map<String, ConfirmationRequest>,
         descriptors: List<ToolDescriptor>,
     ): HeadlessToolCallTrace {
-        val call = startedCalls[toolCallId]
-        val descriptor = call?.let { c -> descriptors.firstOrNull { it.name == c.name } }
+        val call = startedCalls[result.toolCallId]
+        val confirmationRequest = confirmationRequests[result.toolCallId]
+        val safeToolName = call?.name ?: confirmationRequest?.toolName ?: toolName
+        val descriptor = descriptors.firstOrNull { it.name == safeToolName }
         return HeadlessToolCallTrace(
-            id = toolCallId,
-            name = call?.name.orEmpty(),
-            arguments = call?.arguments ?: JsonObject(emptyMap()),
-            safetyLevel = requireNotNull(descriptor) { "Missing descriptor for tool result: $toolCallId" }.safetyLevel,
-            resultKind = toResultKind(),
+            id = result.toolCallId,
+            name = safeToolName,
+            arguments = call?.arguments ?: confirmationRequest?.arguments ?: JsonObject(emptyMap()),
+            safetyLevel = descriptor?.safetyLevel ?: confirmationRequest?.safetyLevel ?: ToolSafetyLevel.SAFE,
+            resultKind = result.toResultKind(),
         )
     }
 

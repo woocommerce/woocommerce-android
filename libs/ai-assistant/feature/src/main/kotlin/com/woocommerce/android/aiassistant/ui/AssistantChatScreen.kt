@@ -89,7 +89,6 @@ import kotlinx.serialization.json.put
 
 @Composable
 fun AssistantRoute(
-    conversationId: String,
     onBack: () -> Unit,
     showEarlyAccessNotice: Boolean,
     onDismissEarlyAccessNotice: () -> Unit,
@@ -99,7 +98,7 @@ fun AssistantRoute(
     onCardAction: (AssistantCardAction) -> Unit = {},
 ) {
     val viewModel = hiltViewModel<AssistantViewModel, AssistantViewModel.Factory> { factory ->
-        factory.create(conversationId)
+        factory.create()
     }
 
     AssistantChatScreen(
@@ -129,6 +128,10 @@ fun AssistantChatScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var inputText by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(viewModel, onCardAction) {
+        viewModel.pendingCardNavigation.collect(onCardAction)
+    }
 
     AssistantChatScreen(
         state = state,
@@ -163,7 +166,7 @@ fun AssistantChatScreen(
         onEarlyAccessFeedbackClick = onEarlyAccessFeedbackClick,
         modifier = modifier,
         assistantCardRenderer = assistantCardRenderer,
-        onCardAction = onCardAction,
+        onCardTapped = viewModel::onCardTapped,
     )
 }
 
@@ -185,7 +188,7 @@ fun AssistantChatScreen(
     onEarlyAccessFeedbackClick: () -> Unit,
     modifier: Modifier = Modifier,
     assistantCardRenderer: AssistantCardRenderer? = null,
-    onCardAction: (AssistantCardAction) -> Unit = {},
+    onCardTapped: (AssistantCard, AssistantCardAction, String) -> Unit = { _, _, _ -> },
 ) {
     val focusManager = LocalFocusManager.current
     val density = LocalDensity.current
@@ -250,7 +253,7 @@ fun AssistantChatScreen(
                     onConfirmWrite = onConfirmWrite,
                     onCancelWrite = onCancelWrite,
                     assistantCardRenderer = assistantCardRenderer,
-                    onCardAction = onCardAction,
+                    onCardTapped = onCardTapped,
                     bottomContentPadding = bottomContentPadding,
                     modifier = Modifier
                         .fillMaxSize()
@@ -395,7 +398,7 @@ private fun AssistantMessageThread(
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
     assistantCardRenderer: AssistantCardRenderer?,
-    onCardAction: (AssistantCardAction) -> Unit,
+    onCardTapped: (AssistantCard, AssistantCardAction, String) -> Unit,
     bottomContentPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -467,7 +470,7 @@ private fun AssistantMessageThread(
                 onConfirmWrite = onConfirmWrite,
                 onCancelWrite = onCancelWrite,
                 assistantCardRenderer = assistantCardRenderer,
-                onCardAction = onCardAction,
+                onCardTapped = onCardTapped,
                 modifier = Modifier.animateItem(),
             )
         }
@@ -552,7 +555,7 @@ private fun AssistantMessageBubble(
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
     assistantCardRenderer: AssistantCardRenderer?,
-    onCardAction: (AssistantCardAction) -> Unit,
+    onCardTapped: (AssistantCard, AssistantCardAction, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isUser = message.role == AssistantUiMessage.Role.USER
@@ -576,7 +579,8 @@ private fun AssistantMessageBubble(
                     onConfirmWrite = onConfirmWrite,
                     onCancelWrite = onCancelWrite,
                     assistantCardRenderer = assistantCardRenderer,
-                    onCardAction = onCardAction,
+                    onCardTapped = onCardTapped,
+                    sourceMessageId = message.id,
                 )
             }
         }
@@ -598,7 +602,8 @@ private fun AssistantMessageSegment(
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
     assistantCardRenderer: AssistantCardRenderer?,
-    onCardAction: (AssistantCardAction) -> Unit,
+    onCardTapped: (AssistantCard, AssistantCardAction, String) -> Unit,
+    sourceMessageId: String,
 ) {
     when (segment) {
         is AssistantUiSegment.Text -> {
@@ -609,7 +614,8 @@ private fun AssistantMessageSegment(
         is AssistantUiSegment.CardGroup -> AssistantCardGroupSegment(
             cards = segment.cards,
             assistantCardRenderer = assistantCardRenderer,
-            onCardAction = onCardAction,
+            onCardTapped = onCardTapped,
+            sourceMessageId = sourceMessageId,
         )
         is AssistantUiSegment.ToolActivity -> AssistantRevealOnFirstComposition {
             AssistantToolActivityPill(activity = segment.activity)
@@ -648,7 +654,8 @@ private fun AssistantRevealOnFirstComposition(
 private fun AssistantCardGroupSegment(
     cards: List<AssistantCard>,
     assistantCardRenderer: AssistantCardRenderer?,
-    onCardAction: (AssistantCardAction) -> Unit,
+    onCardTapped: (AssistantCard, AssistantCardAction, String) -> Unit,
+    sourceMessageId: String,
 ) {
     if (assistantCardRenderer == null || cards.isEmpty()) return
     val metadata = cards.toAssistantCardGroupMetadata()
@@ -661,7 +668,7 @@ private fun AssistantCardGroupSegment(
         cards.forEachIndexed { index, card ->
             assistantCardRenderer.Card(
                 card = card,
-                onAction = onCardAction,
+                onAction = { action -> onCardTapped(card, action, sourceMessageId) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (index < cards.lastIndex) {
@@ -827,7 +834,8 @@ private fun AssistantCardGroupSegmentPreview() {
             AssistantCardGroupSegment(
                 cards = listOf(sampleOrderCard(), sampleProductCard(), sampleStatsCard()),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
-                onCardAction = {},
+                onCardTapped = { _, _, _ -> },
+                sourceMessageId = "preview-message",
             )
         }
     }
@@ -842,7 +850,8 @@ private fun AssistantStatsCardGroupSegmentPreview() {
             AssistantCardGroupSegment(
                 cards = listOf(sampleStatsCard()),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
-                onCardAction = {},
+                onCardTapped = { _, _, _ -> },
+                sourceMessageId = "preview-message",
             )
         }
     }
@@ -862,7 +871,8 @@ private fun AssistantStatsCardGroupNoTrendPreview() {
                     )
                 ),
                 assistantCardRenderer = PreviewAssistantCardRenderer,
-                onCardAction = {},
+                onCardTapped = { _, _, _ -> },
+                sourceMessageId = "preview-message",
             )
         }
     }

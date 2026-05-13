@@ -1,9 +1,22 @@
 package com.woocommerce.android.aiassistant.ui
 
+import com.automattic.eventhorizon.AiAssistantCardTappedEvent
+import com.automattic.eventhorizon.AiAssistantConversationStartedEvent
+import com.automattic.eventhorizon.AiAssistantErrorKindValue
+import com.automattic.eventhorizon.AiAssistantShowCardsProcessedEvent
+import com.automattic.eventhorizon.AiAssistantToolCallCompletedEvent
+import com.automattic.eventhorizon.AiAssistantToolStatusValue
+import com.automattic.eventhorizon.AiAssistantTurnCompletedEvent
+import com.automattic.eventhorizon.AiAssistantTurnOutcomeValue
+import com.automattic.eventhorizon.AiAssistantTurnStartedEvent
+import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.aiassistant.R
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -13,13 +26,21 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntime
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeConfirmationDispatchResult
 import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
+import com.woocommerce.android.aiassistant.telemetry.AssistantIdGenerator
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.FakeSystemClock
+import com.woocommerce.android.aiassistant.telemetry.RecordingAssistantTelemetryTracker
+import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
+import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -31,6 +52,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
@@ -40,6 +62,9 @@ class AssistantViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var runtime: FakeAssistantRuntime
     private lateinit var selectedSite: SelectedSite
+    private lateinit var assistantIdGenerator: AssistantIdGenerator
+    private lateinit var assistantTelemetryTracker: RecordingAssistantTelemetryTracker
+    private lateinit var clock: FakeSystemClock
     private lateinit var viewModel: AssistantViewModel
 
     @Before
@@ -49,11 +74,15 @@ class AssistantViewModelTest {
         selectedSite = mock {
             on { get() } doReturn SiteModel().apply { siteId = SITE_ID }
         }
+        assistantIdGenerator = sequentialAssistantIdGenerator()
+        assistantTelemetryTracker = RecordingAssistantTelemetryTracker()
+        clock = FakeSystemClock()
         viewModel = AssistantViewModel(
-            conversationId = CONVERSATION_ID,
             runtime = runtime,
             selectedSite = selectedSite,
-            idGenerator = SequentialAssistantMessageIdGenerator(),
+            assistantTelemetryTracker = assistantTelemetryTracker,
+            systemClock = clock,
+            assistantIdGenerator = assistantIdGenerator,
         )
     }
 
@@ -78,19 +107,351 @@ class AssistantViewModelTest {
         assertThat(state.status).isEqualTo(AssistantUiStatus.STREAMING)
         assertThat(state.isTurnActive).isTrue()
         assertThat(state.messages).containsExactly(
-            AssistantUiMessage(id = "message-1", role = AssistantUiMessage.Role.USER, text = "Show my recent orders"),
-            AssistantUiMessage(id = "message-2", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
+            AssistantUiMessage(
+                id = "assistant-id-2",
+                role = AssistantUiMessage.Role.USER,
+                text = "Show my recent orders",
+            ),
+            AssistantUiMessage(id = "assistant-id-3", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
         )
         assertThat(runtime.startRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "assistant-id-4",
+                messageId = "assistant-id-3",
                 userMessage = "Show my recent orders",
-                history = emptyList(),
             )
         )
     }
+
+    @Test
+    fun `given idle view model, when first non-empty message is sent, then context reuses assistant message id and has fresh telemetry ids`() =
+        runTest {
+            viewModel.onSendMessage("Show my recent orders")
+
+            val context = runtime.startRequests.single().telemetryContext
+
+            assertThat(context.messageId).isEqualTo("assistant-id-3")
+            assertThat(context.conversationId).isEqualTo(CONVERSATION_ID)
+            assertThat(context.requestId).isEqualTo("assistant-id-4")
+            assertThat(context.conversationId).isNotEqualTo(context.requestId)
+            assertThat(context.requestId).isNotEqualTo(context.messageId)
+        }
+
+    @Test
+    fun `given existing conversation, when second message is sent, then conversation id is stable and request id is new`() =
+        runTest {
+            viewModel.onSendMessage("first")
+            runtime.emitTurnFinished()
+            viewModel.onSendMessage("second")
+
+            val starts = runtime.startRequests
+
+            assertThat(starts[0].telemetryContext.conversationId)
+                .isEqualTo(starts[1].telemetryContext.conversationId)
+            assertThat(starts[0].telemetryContext.requestId).isNotEqualTo(starts[1].telemetryContext.requestId)
+        }
+
+    @Test
+    fun `given conversation in progress, when restart and then send, then conversation id rotates`() = runTest {
+        viewModel.onSendMessage("first")
+        val first = runtime.startRequests.single().telemetryContext.conversationId
+
+        viewModel.onRestartConversation()
+        viewModel.onSendMessage("second")
+        val second = runtime.startRequests.last().telemetryContext.conversationId
+
+        assertThat(second).isNotEqualTo(first)
+    }
+
+    @Test
+    fun `given blank input, when sent, then no turn_started is emitted`() = runTest {
+        viewModel.onSendMessage("   ")
+
+        assertThat(assistantTelemetryTracker.events.filterIsInstance<AiAssistantTurnStartedEvent>()).isEmpty()
+    }
+
+    @Test
+    fun `when message is accepted, then turn_started is emitted with is_retry false and explicit version metadata`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+
+            val started = assistantTelemetryTracker.singleEvent<AiAssistantTurnStartedEvent>()
+
+            assertThat(started.isRetry).isFalse()
+            assertThat(started.completionStack).isEqualTo("jetpack_ai_query")
+            assertThat(started.promptVersion).isEqualTo(AssistantConfig.PROMPT_VERSION)
+            assertThat(started.toolCatalogVersion).isEqualTo(AssistantConfig.TOOL_CATALOG_VERSION)
+        }
+
+    @Test
+    fun `when first message is accepted, then conversation_started is emitted once before turn_started`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+
+            val conversationStarted = assistantTelemetryTracker.events
+                .filterIsInstance<AiAssistantConversationStartedEvent>()
+            val turnStarted = assistantTelemetryTracker.events.filterIsInstance<AiAssistantTurnStartedEvent>()
+
+            assertThat(conversationStarted).hasSize(1)
+            assertThat(conversationStarted.single().context()).isEqualTo(turnStarted.single().context())
+            assertThat(assistantTelemetryTracker.events.indexOf(conversationStarted.single()))
+                .isLessThan(assistantTelemetryTracker.events.indexOf(turnStarted.single()))
+        }
+
+    @Test
+    fun `given existing conversation, when second message is accepted, then conversation_started is not emitted again`() =
+        runTest {
+            viewModel.onSendMessage("First")
+            runtime.emitTurnFinished()
+            viewModel.onSendMessage("Second")
+
+            assertThat(
+                assistantTelemetryTracker.events.filterIsInstance<AiAssistantConversationStartedEvent>()
+            ).hasSize(1)
+        }
+
+    @Test
+    fun `given restarted conversation, when next message is accepted, then conversation_started is emitted for new context`() =
+        runTest {
+            viewModel.onSendMessage("First")
+            val firstContext = runtime.startRequests.single().telemetryContext
+            viewModel.onRestartConversation()
+
+            viewModel.onSendMessage("Second")
+
+            val conversationStarts = assistantTelemetryTracker.events
+                .filterIsInstance<AiAssistantConversationStartedEvent>()
+            assertThat(conversationStarts).hasSize(2)
+            assertThat(conversationStarts.last().conversationId).isNotEqualTo(firstContext.conversationId)
+            assertThat(conversationStarts.last().context()).isEqualTo(runtime.startRequests.last().telemetryContext)
+        }
+
+    @Test
+    fun `given failed turn, when retry is accepted, then a new turn_started has a fresh request id and is_retry true`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+            val firstRequestId = assistantTelemetryTracker.events
+                .filterIsInstance<AiAssistantTurnStartedEvent>()
+                .single()
+                .requestId
+            runtime.emitTurnFinished(
+                outcome = LoopOutcome.FAILED,
+                updatedHistory = listOf(AssistantMessage.User("Show orders")),
+                retryAffordance = RetryAffordance.Manual,
+                error = AssistantError.Network(),
+            )
+
+            viewModel.onRetry()
+
+            val starts = assistantTelemetryTracker.events.filterIsInstance<AiAssistantTurnStartedEvent>()
+            assertThat(starts).hasSize(2)
+            assertThat(starts[1].isRetry).isTrue()
+            assertThat(starts[1].requestId).isNotEqualTo(firstRequestId)
+        }
+
+    @Test
+    fun `given successful loop completion, when runtime finishes, then turn_completed is emitted once with duration`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+            clock.advance(750)
+            runtime.emitTurnFinished(LoopOutcome.COMPLETED)
+
+            val completed = assistantTelemetryTracker.events.filterIsInstance<AiAssistantTurnCompletedEvent>()
+
+            assertThat(completed).hasSize(1)
+            assertThat(completed.single().outcome).isEqualTo(AiAssistantTurnOutcomeValue.Success)
+            assertThat(completed.single().errorKind).isNull()
+            assertThat(completed.single().durationMs).isEqualTo(750L)
+        }
+
+    @Test
+    fun `given failed loop, when runtime finishes, then turn_completed has outcome failed and bounded error_kind`() =
+        runTest {
+            viewModel.onSendMessage("Boom")
+            runtime.emitTurnFinished(LoopOutcome.FAILED, error = AssistantError.Network())
+
+            val completed = assistantTelemetryTracker.singleEvent<AiAssistantTurnCompletedEvent>()
+
+            assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.Failed)
+            assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.Network)
+        }
+
+    @Test
+    fun `given transport diagnostics request id, when runtime fails, then turn_completed uses telemetry request id`() =
+        runTest {
+            viewModel.onSendMessage("Boom")
+            val telemetryRequestId = runtime.startRequests.single().telemetryContext.requestId
+            val transportRequestId = "transport-request-id-canary"
+
+            runtime.emitTurnFinished(
+                outcome = LoopOutcome.FAILED,
+                error = AssistantError.BadRequest(
+                    diagnostics = Diagnostics(
+                        transport = TransportDiagnostics(requestId = transportRequestId)
+                    )
+                ),
+            )
+
+            val completed = assistantTelemetryTracker.singleEvent<AiAssistantTurnCompletedEvent>()
+            assertThat(completed.requestId).isEqualTo(telemetryRequestId)
+            assertThat(completed.requestId).isNotEqualTo(transportRequestId)
+            assertThat(completed.errorKind).isEqualTo(AiAssistantErrorKindValue.ValidationError)
+        }
+
+    @Test
+    fun `given user cancels active turn, when cancellation is requested, then turn_completed has no error_kind`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+
+            viewModel.onCancelTurn()
+
+            val completed = assistantTelemetryTracker.singleEvent<AiAssistantTurnCompletedEvent>()
+            assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.CancelledByUser)
+            assertThat(completed.errorKind).isNull()
+        }
+
+    @Test
+    fun `given stopped loop with cancelled error, when runtime finishes, then turn_completed has no error_kind`() =
+        runTest {
+            viewModel.onSendMessage("Show orders")
+
+            runtime.emitTurnFinished(
+                outcome = LoopOutcome.STOPPED,
+                error = AssistantError.Cancelled,
+            )
+
+            val completed = assistantTelemetryTracker.singleEvent<AiAssistantTurnCompletedEvent>()
+            assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.CancelledByUser)
+            assertThat(completed.errorKind).isNull()
+        }
+
+    @Test
+    fun `given max iterations, when runtime finishes, then outcome is max_iterations without error_kind`() = runTest {
+        viewModel.onSendMessage("Show orders")
+
+        runtime.emitTurnFinished(LoopOutcome.MAX_ITERATIONS)
+
+        val completed = assistantTelemetryTracker.singleEvent<AiAssistantTurnCompletedEvent>()
+        assertThat(completed.outcome).isEqualTo(AiAssistantTurnOutcomeValue.MaxIterations)
+        assertThat(completed.errorKind).isNull()
+    }
+
+    @Test
+    fun `given eligible runtime tool decision, when tool finishes, then tool_call_completed is tracked from event context`() =
+        runTest {
+            viewModel.onSendMessage("Show order 123")
+            val context = runtime.startRequests.single().telemetryContext
+
+            runtime.emit(
+                givenToolCallFinished(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    status = AiAssistantToolStatusValue.Success,
+                    durationMs = 25L,
+                    emitTelemetry = true,
+                    context = context,
+                )
+            )
+            advanceUntilIdle()
+
+            val completed = assistantTelemetryTracker.singleEvent<AiAssistantToolCallCompletedEvent>()
+            assertThat(completed.context()).isEqualTo(context)
+            assertThat(completed.toolName).isEqualTo("orders_get")
+            assertThat(completed.status).isEqualTo(AiAssistantToolStatusValue.Success)
+            assertThat(completed.errorKind).isNull()
+            assertThat(completed.durationMs).isEqualTo(25L)
+        }
+
+    @Test
+    fun `given replayed runtime tool decision, when tool finishes, then tool_call_completed is not tracked`() =
+        runTest {
+            viewModel.onSendMessage("Show order 123")
+
+            runtime.emit(
+                givenToolCallFinished(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    emitTelemetry = false,
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(assistantTelemetryTracker.events.filterIsInstance<AiAssistantToolCallCompletedEvent>()).isEmpty()
+        }
+
+    @Test
+    fun `given stale runtime tool decision after restart, when a new turn is active, then old context is not tracked`() =
+        runTest {
+            viewModel.onSendMessage("First")
+            val firstContext = runtime.startRequests.single().telemetryContext
+            viewModel.onRestartConversation()
+            viewModel.onSendMessage("Second")
+
+            runtime.emit(
+                givenToolCallFinished(
+                    toolCallId = "call-1",
+                    toolName = "orders_get",
+                    emitTelemetry = true,
+                    context = firstContext,
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(assistantTelemetryTracker.events.filterIsInstance<AiAssistantToolCallCompletedEvent>()).isEmpty()
+        }
+
+    @Test
+    fun `given runtime show cards counts, when processed, then show_cards_processed is tracked from event context`() =
+        runTest {
+            viewModel.onSendMessage("Show matching orders")
+            val context = runtime.startRequests.single().telemetryContext
+
+            runtime.emit(
+                AssistantRuntimeEvent.ShowCardsProcessed(
+                    counts = ShowCardsCounts(
+                        requestedCount = 3,
+                        renderedCount = 1,
+                        missingCount = 1,
+                        rejectedCount = 1,
+                    ),
+                    telemetryContext = context,
+                )
+            )
+            advanceUntilIdle()
+
+            val processed = assistantTelemetryTracker.singleEvent<AiAssistantShowCardsProcessedEvent>()
+            assertThat(processed.context()).isEqualTo(context)
+            assertThat(processed.requestedCount).isEqualTo(3L)
+            assertThat(processed.renderedCount).isEqualTo(1L)
+            assertThat(processed.missingCount).isEqualTo(1L)
+            assertThat(processed.rejectedCount).isEqualTo(1L)
+        }
+
+    @Test
+    fun `given stale runtime show cards counts after restart, when a new turn is active, then old context is not tracked`() =
+        runTest {
+            viewModel.onSendMessage("First")
+            val firstContext = runtime.startRequests.single().telemetryContext
+            viewModel.onRestartConversation()
+            viewModel.onSendMessage("Second")
+
+            runtime.emit(
+                AssistantRuntimeEvent.ShowCardsProcessed(
+                    counts = ShowCardsCounts(
+                        requestedCount = 1,
+                        renderedCount = 0,
+                        missingCount = 1,
+                        rejectedCount = 0,
+                    ),
+                    telemetryContext = firstContext,
+                )
+            )
+            advanceUntilIdle()
+
+            assertThat(
+                assistantTelemetryTracker.events.filterIsInstance<AiAssistantShowCardsProcessedEvent>()
+            ).isEmpty()
+        }
 
     @Test
     fun `when message is sent, then empty active assistant message shows typing indicator`() = runTest {
@@ -164,7 +525,7 @@ class AssistantViewModelTest {
     fun `given active tool activity, when matching tool finishes, then activity is preserved as completed`() = runTest {
         viewModel.onSendMessage("Find order 123")
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
-        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(givenToolCallFinished(toolCallId = "call-1", toolName = "orders_get"))
         advanceUntilIdle()
 
         assertThat(viewModel.uiState.value.messages.last().segments).containsExactly(
@@ -246,7 +607,7 @@ class AssistantViewModelTest {
     fun `given completed tool activity, when turn completes, then completed activity is preserved`() = runTest {
         viewModel.onSendMessage("Find order 123")
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
-        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(givenToolCallFinished(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.COMPLETED,
@@ -311,13 +672,7 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
-                userMessage = "Hello",
-                history = emptyList(),
-            )
+            expectedTurnRequest(requestId = "assistant-id-6", messageId = "assistant-id-5", userMessage = "Hello")
         )
     }
 
@@ -355,13 +710,7 @@ class AssistantViewModelTest {
             viewModel.onRetry()
 
             assertThat(runtime.retryRequests).containsExactly(
-                AssistantTurnRequest(
-                    conversationId = CONVERSATION_ID,
-                    siteId = SITE_ID,
-                    toolScope = ToolScope.GLOBAL,
-                    userMessage = "Hello",
-                    history = emptyList(),
-                )
+                expectedTurnRequest(requestId = "assistant-id-6", messageId = "assistant-id-5", userMessage = "Hello")
             )
         }
 
@@ -526,10 +875,9 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests.last()).isEqualTo(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "assistant-id-9",
+                messageId = "assistant-id-8",
                 userMessage = "Current question",
                 history = priorHistory,
             )
@@ -556,19 +904,18 @@ class AssistantViewModelTest {
             viewModel.onSendMessage("New question")
 
             assertThat(viewModel.uiState.value.messages).containsExactly(
-                AssistantUiMessage(id = "message-3", role = AssistantUiMessage.Role.USER, text = "New question"),
-                AssistantUiMessage(id = "message-4", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
+                AssistantUiMessage(id = "assistant-id-6", role = AssistantUiMessage.Role.USER, text = "New question"),
+                AssistantUiMessage(id = "assistant-id-7", role = AssistantUiMessage.Role.ASSISTANT, text = ""),
             )
             assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.STREAMING)
             assertThat(viewModel.uiState.value.error).isNull()
             assertThat(viewModel.uiState.value.canRetry).isFalse()
             assertThat(runtime.startRequests.last()).isEqualTo(
-                AssistantTurnRequest(
-                    conversationId = CONVERSATION_ID,
-                    siteId = SITE_ID,
-                    toolScope = ToolScope.GLOBAL,
+                expectedTurnRequest(
+                    conversationId = "assistant-id-5",
+                    requestId = "assistant-id-8",
+                    messageId = "assistant-id-7",
                     userMessage = "New question",
-                    history = emptyList(),
                 )
             )
         }
@@ -698,10 +1045,9 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "assistant-id-9",
+                messageId = "assistant-id-8",
                 userMessage = "Second",
                 history = listOf(AssistantMessage.User("First")),
             )
@@ -887,10 +1233,10 @@ class AssistantViewModelTest {
         val secondOrder = givenOrderCard(id = "456", number = "#456")
 
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = SHOW_CARDS_TOOL_NAME))
-        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"))
+        runtime.emit(givenToolCallFinished(toolCallId = "call-1", toolName = SHOW_CARDS_TOOL_NAME))
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstOrder)))
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-2", toolName = SHOW_CARDS_TOOL_NAME))
-        runtime.emit(AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-2"))
+        runtime.emit(givenToolCallFinished(toolCallId = "call-2", toolName = SHOW_CARDS_TOOL_NAME))
         runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(secondOrder)))
         advanceUntilIdle()
 
@@ -961,6 +1307,66 @@ class AssistantViewModelTest {
                 .filterIsInstance<AssistantUiSegment.CardGroup>()
 
             assertThat(cardGroups).isEmpty()
+        }
+
+    @Test
+    fun `given rendered card, when card is tapped, then card_tapped is tracked before navigation is emitted`() =
+        runTest {
+            val navigations = mutableListOf<AssistantCardAction>()
+            val navigationJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.pendingCardNavigation.toList(navigations)
+            }
+            viewModel.onSendMessage("Show order 123")
+            val sourceContext = runtime.startRequests.single().telemetryContext
+            val orderCard = givenOrderCard(id = "123", number = "#123")
+            val action = AssistantCardAction.OpenOrder(123L)
+
+            viewModel.onCardTapped(orderCard, action, sourceContext.messageId)
+            advanceUntilIdle()
+
+            val tapped = assistantTelemetryTracker.singleEvent<AiAssistantCardTappedEvent>()
+            assertThat(tapped.context()).isEqualTo(sourceContext)
+            assertThat(navigations).containsExactly(action)
+            navigationJob.cancel()
+        }
+
+    @Test
+    fun `given first turn card and second active turn, when first card is tapped, then source context is tracked`() =
+        runTest {
+            viewModel.onSendMessage("Show order 123")
+            val firstContext = runtime.startRequests.single().telemetryContext
+            val orderCard = givenOrderCard(id = "123", number = "#123")
+            runtime.emitTurnFinished()
+            viewModel.onSendMessage("Second turn")
+
+            viewModel.onCardTapped(orderCard, AssistantCardAction.OpenOrder(123L), firstContext.messageId)
+            advanceUntilIdle()
+
+            val tapped = assistantTelemetryTracker.singleEvent<AiAssistantCardTappedEvent>()
+            assertThat(tapped.context()).isEqualTo(firstContext)
+        }
+
+    @Test
+    fun `given card from cleared conversation, when card is tapped after restart, then telemetry and navigation are suppressed`() =
+        runTest {
+            val navigations = mutableListOf<AssistantCardAction>()
+            val navigationJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.pendingCardNavigation.toList(navigations)
+            }
+            viewModel.onSendMessage("Show order 123")
+            val firstContext = runtime.startRequests.single().telemetryContext
+            viewModel.onRestartConversation()
+
+            viewModel.onCardTapped(
+                card = givenOrderCard(id = "123", number = "#123"),
+                action = AssistantCardAction.OpenOrder(123L),
+                sourceMessageId = firstContext.messageId,
+            )
+            advanceUntilIdle()
+
+            assertThat(assistantTelemetryTracker.events.filterIsInstance<AiAssistantCardTappedEvent>()).isEmpty()
+            assertThat(navigations).isEmpty()
+            navigationJob.cancel()
         }
 
     @Test
@@ -1075,10 +1481,9 @@ class AssistantViewModelTest {
             viewModel.onSendMessage("What changed?")
 
             assertThat(runtime.startRequests.last()).isEqualTo(
-                AssistantTurnRequest(
-                    conversationId = CONVERSATION_ID,
-                    siteId = SITE_ID,
-                    toolScope = ToolScope.GLOBAL,
+                expectedTurnRequest(
+                    requestId = "assistant-id-7",
+                    messageId = "assistant-id-6",
                     userMessage = "What changed?",
                     history = listOf(
                         AssistantMessage.User("Summarize sales"),
@@ -1119,13 +1524,7 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.startRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
-                userMessage = "First",
-                history = emptyList(),
-            )
+            expectedTurnRequest(requestId = "assistant-id-4", messageId = "assistant-id-3", userMessage = "First")
         )
         assertThat(viewModel.uiState.value.messages.map { it.text }).containsExactly("First", "")
     }
@@ -1140,12 +1539,10 @@ class AssistantViewModelTest {
         advanceUntilIdle()
 
         assertThat(runtime.startRequests).containsExactly(
-            AssistantTurnRequest(
-                conversationId = CONVERSATION_ID,
-                siteId = SITE_ID,
-                toolScope = ToolScope.GLOBAL,
+            expectedTurnRequest(
+                requestId = "assistant-id-4",
+                messageId = "assistant-id-3",
                 userMessage = "Cancel order 123",
-                history = emptyList(),
             )
         )
         assertThat(viewModel.uiState.value.status).isEqualTo(AssistantUiStatus.AWAITING_CONFIRMATION)
@@ -1493,16 +1890,70 @@ class AssistantViewModelTest {
         suspend fun emit(event: AssistantRuntimeEvent) {
             events.emit(event)
         }
-    }
 
-    private class SequentialAssistantMessageIdGenerator : AssistantMessageIdGenerator {
-        private var count = 0
-
-        override fun nextId(): String {
-            count += 1
-            return "message-$count"
+        suspend fun emitTurnFinished(
+            outcome: LoopOutcome = LoopOutcome.COMPLETED,
+            updatedHistory: List<AssistantMessage> = emptyList(),
+            retryAffordance: RetryAffordance = RetryAffordance.None,
+            error: AssistantError? = null,
+        ) {
+            emit(
+                AssistantRuntimeEvent.Finished(
+                    outcome = outcome,
+                    updatedHistory = updatedHistory,
+                    retryAffordance = retryAffordance,
+                    error = error,
+                )
+            )
         }
     }
+
+    private fun sequentialAssistantIdGenerator(): AssistantIdGenerator {
+        var count = 0
+        return mock {
+            on { nextId() } doAnswer {
+                count += 1
+                "assistant-id-$count"
+            }
+        }
+    }
+
+    private fun expectedTurnRequest(
+        conversationId: String = CONVERSATION_ID,
+        requestId: String,
+        messageId: String,
+        userMessage: String,
+        history: List<AssistantMessage> = emptyList(),
+    ) = AssistantTurnRequest(
+        conversationId = conversationId,
+        telemetryContext = AssistantTelemetryContext(
+            conversationId = conversationId,
+            requestId = requestId,
+            messageId = messageId,
+        ),
+        siteId = SITE_ID,
+        toolScope = ToolScope.GLOBAL,
+        userMessage = userMessage,
+        history = history,
+    )
+
+    private fun givenToolCallFinished(
+        toolCallId: String,
+        toolName: String,
+        status: AiAssistantToolStatusValue = AiAssistantToolStatusValue.Success,
+        errorKind: AiAssistantErrorKindValue? = null,
+        durationMs: Long? = 1L,
+        emitTelemetry: Boolean = false,
+        context: AssistantTelemetryContext = runtime.startRequests.last().telemetryContext,
+    ) = AssistantRuntimeEvent.ToolCallFinished(
+        toolCallId = toolCallId,
+        toolName = toolName,
+        status = status,
+        errorKind = errorKind,
+        durationMs = durationMs,
+        emitTelemetry = emitTelemetry,
+        telemetryContext = context,
+    )
 
     private fun AssistantUiState.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
         messages.toolActivitySegments()
@@ -1510,8 +1961,41 @@ class AssistantViewModelTest {
     private fun List<AssistantUiMessage>.toolActivitySegments(): List<AssistantUiSegment.ToolActivity> =
         flatMap { it.segments }.filterIsInstance<AssistantUiSegment.ToolActivity>()
 
+    private inline fun <reified T : Trackable> RecordingAssistantTelemetryTracker.singleEvent(): T =
+        events.filterIsInstance<T>().single()
+
+    private fun AiAssistantConversationStartedEvent.context() = AssistantTelemetryContext(
+        conversationId = conversationId,
+        requestId = requestId,
+        messageId = messageId,
+    )
+
+    private fun AiAssistantTurnStartedEvent.context() = AssistantTelemetryContext(
+        conversationId = conversationId,
+        requestId = requestId,
+        messageId = messageId,
+    )
+
+    private fun AiAssistantToolCallCompletedEvent.context() = AssistantTelemetryContext(
+        conversationId = conversationId,
+        requestId = requestId,
+        messageId = messageId,
+    )
+
+    private fun AiAssistantShowCardsProcessedEvent.context() = AssistantTelemetryContext(
+        conversationId = conversationId,
+        requestId = requestId,
+        messageId = messageId,
+    )
+
+    private fun AiAssistantCardTappedEvent.context() = AssistantTelemetryContext(
+        conversationId = conversationId,
+        requestId = requestId,
+        messageId = messageId,
+    )
+
     private companion object {
-        const val CONVERSATION_ID = "conversation-1"
+        const val CONVERSATION_ID = "assistant-id-1"
         const val SITE_ID = 123L
     }
 }

@@ -147,7 +147,18 @@ class WooAssistantHeadlessTest {
             assertThat(turn.outcome).isEqualTo(LoopOutcome.STOPPED)
             assertThat(turn.confirmationResults.single().decision).isEqualTo("CANCELLED")
             assertThat(turn.errors).isEmpty()
-            assertThat(turn.toolCalls).isEmpty()
+            assertThat(turn.toolCalls).containsExactly(
+                HeadlessToolCallTrace(
+                    id = "call_1",
+                    name = "orders_update",
+                    arguments = buildJsonObject {
+                        put("id", 42)
+                        put("status", "completed")
+                    },
+                    safetyLevel = ToolSafetyLevel.UNSAFE,
+                    resultKind = HeadlessToolResultKind.REJECTED_BY_SAFETY,
+                )
+            )
             assertThat(registry.calls).isEmpty()
         }
 
