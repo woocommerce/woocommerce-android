@@ -81,7 +81,9 @@ fun WooPosItemList(
     ) {
         if (headerContent != null) {
             item(key = "woopos_item_list_header") {
-                headerContent()
+                Box(modifier = if (animateItems) Modifier.animateItem() else Modifier) {
+                    headerContent()
+                }
             }
         }
 

@@ -108,6 +108,9 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             WooPosProductsUIEvent.CustomAmountEntryRowClicked -> {
+                viewModelScope.launch {
+                    analyticsTracker.track(WooPosAnalyticsEvent.Event.CustomAmountEntryRowTapped)
+                }
                 sendEventToParent(ChildToParentEvent.CustomAmountDialogRequested())
             }
 
