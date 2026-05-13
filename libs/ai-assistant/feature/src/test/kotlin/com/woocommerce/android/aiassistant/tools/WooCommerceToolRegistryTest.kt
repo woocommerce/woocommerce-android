@@ -3,8 +3,11 @@ package com.woocommerce.android.aiassistant.tools
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
@@ -68,6 +71,38 @@ class WooCommerceToolRegistryTest {
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
         }
+
+    @Test
+    fun `given handler throws, when executing, then returns transport error`() = runTest {
+        val handler = FakeToolHandler(fakeDescriptor("orders_update")) {
+            throw IllegalStateException("raw backend payload")
+        }
+        val registry = WooCommerceToolRegistry(setOf(handler))
+
+        val result = registry.execute(
+            ToolCall(id = "call_1", name = "orders_update", arguments = buildJsonObject { })
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
+        val error = result as ToolResult.TransportError
+        assertThat(error.toolCallId).isEqualTo("call_1")
+        assertThat(error.retryable).isFalse()
+        assertThat(error.kind).isEqualTo(ToolFailureKind.OUTCOME_UNKNOWN)
+        assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
+        assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.OUTCOME_UNKNOWN)
+        assertThat(error.diagnostics.tool?.retryable).isFalse()
+        assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.HANDLER_EXCEPTION)
+    }
+
+    @Test(expected = CancellationException::class)
+    fun `given handler is cancelled, when executing, then propagates cancellation`() = runTest {
+        val handler = FakeToolHandler(fakeDescriptor("orders_update")) {
+            throw CancellationException("cancelled")
+        }
+        val registry = WooCommerceToolRegistry(setOf(handler))
+
+        registry.execute(ToolCall(id = "call_1", name = "orders_update", arguments = buildJsonObject { }))
+    }
 
     private class FakeToolHandler(
         override val descriptor: ToolDescriptor,

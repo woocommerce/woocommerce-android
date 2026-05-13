@@ -34,8 +34,6 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.CoroutineScope
@@ -68,11 +66,9 @@ class WooPosCardReaderConnectionController(
     private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream,
     private val remoteReaderSession: WooPosRemoteReaderSession,
     private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
-    featureFlagRepository: FeatureFlagRepository,
 ) {
-    private val isRemoteTapToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
     private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(
-        WooPosCardReaderConnectionState.Scanning(isRemoteTapToPaySupported = isRemoteTapToPayEnabled)
+        WooPosCardReaderConnectionState.Scanning
     )
     val state: StateFlow<WooPosCardReaderConnectionState> = _state.asStateFlow()
 
@@ -104,17 +100,13 @@ class WooPosCardReaderConnectionController(
 
     fun hideRemoteTapToPayExplainer() {
         if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = WooPosCardReaderConnectionState.Scanning(
-            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
-        )
+        _state.value = WooPosCardReaderConnectionState.Scanning
         startDiscovery()
     }
 
     private fun enterScanningState() {
         if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = WooPosCardReaderConnectionState.Scanning(
-            isRemoteTapToPaySupported = isRemoteTapToPayEnabled,
-        )
+        _state.value = WooPosCardReaderConnectionState.Scanning
     }
 
     fun startConnectionFlow() {

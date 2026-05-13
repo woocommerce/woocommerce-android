@@ -5,13 +5,14 @@ import org.junit.Test
 
 class AssistantErrorTest {
     @Test
-    fun `given each variant, when listed, then all ten kinds are present and distinct`() {
+    fun `given each variant, when listed, then all eleven kinds are present and distinct`() {
         val variants: List<AssistantError> = listOf(
-            AssistantError.Network,
-            AssistantError.Auth,
-            AssistantError.RateLimit,
-            AssistantError.Timeout,
-            AssistantError.UpstreamFailure,
+            AssistantError.Network(),
+            AssistantError.Auth(),
+            AssistantError.RateLimit(),
+            AssistantError.BadRequest(),
+            AssistantError.Timeout(),
+            AssistantError.UpstreamFailure(),
             AssistantError.ToolFailed(toolName = "create_order"),
             AssistantError.InvalidToolCall(toolName = "create_order"),
             AssistantError.OutcomeUnknown(toolName = "create_order"),
@@ -19,18 +20,18 @@ class AssistantErrorTest {
             AssistantError.Unknown(),
         )
 
-        assertThat(variants).hasSize(10)
-        assertThat(variants.map { it::class }.toSet()).hasSize(10)
+        assertThat(variants).hasSize(11)
+        assertThat(variants.map { it::class }.toSet()).hasSize(11)
     }
 
     @Test
     fun `given OutcomeUnknown, when compared to Network and Timeout, then it is a distinct type`() {
         val outcomeUnknown: AssistantError = AssistantError.OutcomeUnknown(toolName = "create_order")
 
-        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Network)
-        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Timeout)
-        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Network::class)
-        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Timeout::class)
+        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Network())
+        assertThat(outcomeUnknown).isNotEqualTo(AssistantError.Timeout())
+        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Network()::class)
+        assertThat(outcomeUnknown::class).isNotEqualTo(AssistantError.Timeout()::class)
     }
 
     @Test

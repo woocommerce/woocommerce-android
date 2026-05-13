@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.composeView
@@ -22,6 +23,9 @@ class NewStockNotificationSettingsFragment : BaseFragment() {
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun getFragmentTitle() = getString(R.string.settings_notifs_stock)
 
@@ -47,6 +51,8 @@ class NewStockNotificationSettingsFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
+
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.tools.products
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -36,6 +37,7 @@ class ProductVariationsUpdateToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun variation(
@@ -75,6 +77,9 @@ class ProductVariationsUpdateToolHandlerTest {
         assertThat(handler.descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.UNSAFE)
         assertThat(handler.descriptor.description).contains("product_id")
         assertThat(handler.descriptor.description).contains("stock_quantity")
+        assertThat(handler.descriptor.description).contains("After a successful update")
+        assertThat(handler.descriptor.description).contains("show_cards")
+        assertThat(handler.descriptor.description).contains("strict {parentProductId}/{variationId}")
         assertThat(requireNotNull(schema["additionalProperties"]).jsonPrimitive.boolean).isFalse
         assertThat(properties.keys).containsExactlyInAnyOrder(
             "product_id",

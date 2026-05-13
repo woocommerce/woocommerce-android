@@ -6,13 +6,17 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolDiagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolFailureKind
+import com.woocommerce.android.aiassistant.core.chat.ToolFailureSource
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
@@ -158,7 +162,46 @@ class AgenticLoopImplTest {
         val malformedError = events.filterIsInstance<LoopEvent.ToolCallFinished>()
             .firstOrNull { it.result is ToolResult.ValidationError }
         assertThat(malformedError).isNotNull
+        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+        assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
+        assertThat(finished.error).isNull()
     }
+
+    @Test
+    fun `given terminal malformed tool call arguments, when running turn, then InvalidToolCall is emitted`() =
+        runTest {
+            val malformedTurn = flow {
+                emit(
+                    AssistantEvent.ToolCallDelta(
+                        index = 0,
+                        id = "call_bad",
+                        name = "echo",
+                        argumentsDelta = "{bad json",
+                    )
+                )
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            }
+            val loop = loopWith(
+                malformedTurn,
+                malformedTurn,
+                malformedTurn,
+                malformedTurn,
+                malformedTurn,
+            )
+
+            val events = loop.runTurn("conv", "go", history, context).toList()
+
+            val failed = events.filterIsInstance<LoopEvent.Failed>().single()
+            assertThat(failed.error).isInstanceOf(AssistantError.InvalidToolCall::class.java)
+            val error = failed.error as AssistantError.InvalidToolCall
+            assertThat(error.toolName).isEqualTo("echo")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("echo")
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.INVALID_TOOL_CALL)
+            assertThat(error.diagnostics.tool?.retryable).isFalse()
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.error).isSameAs(failed.error)
+        }
 
     @Test
     fun `given malformed tool call arguments, when running another turn, then tool message references prior assistant tool call id`() = runTest {
@@ -271,6 +314,43 @@ class AgenticLoopImplTest {
     }
 
     @Test
+    fun `given terminal unknown tool name, when running turn, then InvalidToolCall is emitted`() =
+        runTest {
+            val unknownToolTurn = flow {
+                emit(
+                    AssistantEvent.ToolCallDelta(
+                        index = 0,
+                        id = "call_unknown",
+                        name = "nonexistent_tool",
+                        argumentsDelta = "{}",
+                    )
+                )
+                emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+            }
+            val loop = loopWith(
+                unknownToolTurn,
+                unknownToolTurn,
+                unknownToolTurn,
+                unknownToolTurn,
+                unknownToolTurn,
+                registry = NoOpToolRegistry(),
+            )
+
+            val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+            val failed = events.filterIsInstance<LoopEvent.Failed>().single()
+            assertThat(failed.error).isInstanceOf(AssistantError.InvalidToolCall::class.java)
+            val error = failed.error as AssistantError.InvalidToolCall
+            assertThat(error.toolName).isEqualTo("nonexistent_tool")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("nonexistent_tool")
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.INVALID_TOOL_CALL)
+            assertThat(error.diagnostics.tool?.retryable).isFalse()
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.error).isSameAs(failed.error)
+        }
+
+    @Test
     fun `given validation error reason containing quotes, when result is re-submitted, then tool message content is valid json`() = runTest {
         val quotedToolName = """ev"il"""
         var secondCallMessages: List<AssistantMessage>? = null
@@ -363,7 +443,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isFalse
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
         assertThat(callCount).isEqualTo(1)
     }
 
@@ -389,7 +469,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.Manual)
         assertThat(callCount).isEqualTo(ConservativeRetryPolicy.MAX_AUTO_RETRIES + 1)
     }
 
@@ -414,7 +494,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isTrue
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.Manual)
     }
 
     @Test
@@ -455,7 +535,7 @@ class AgenticLoopImplTest {
                 .isEqualTo(AssistantError.Cancelled)
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
             assertThat(finished.updatedHistory).containsExactly(
                 AssistantMessage.System("You are a helpful assistant."),
@@ -481,7 +561,7 @@ class AgenticLoopImplTest {
                 .isEqualTo(AssistantError.Cancelled)
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
             assertThat(finished.updatedHistory).containsExactly(
                 AssistantMessage.System("You are a helpful assistant."),
@@ -777,66 +857,7 @@ class AgenticLoopImplTest {
     }
 
     @Test
-    fun `given confirmed unsafe tool returns transport error, when running turn, then outcome unknown fails without retry`() =
-        runTest {
-            val unsafeDescriptor = ToolDescriptor(
-                name = "orders_update",
-                description = "Updates an order",
-                inputSchema = buildJsonObject { },
-                safetyLevel = ToolSafetyLevel.UNSAFE,
-            )
-            val registry = object : ToolRegistry {
-                override fun descriptors() = listOf(unsafeDescriptor)
-
-                override suspend fun execute(call: ToolCall): ToolResult =
-                    ToolResult.TransportError(toolCallId = call.id, retryable = true)
-            }
-            val safetyOrchestrator = SafetyOrchestratorImpl()
-            val loop = loopWith(
-                flow {
-                    emit(
-                        AssistantEvent.ToolCallDelta(
-                            index = 0,
-                            id = "call_1",
-                            name = "orders_update",
-                            argumentsDelta = """{"id":42,"status":"processing"}""",
-                        )
-                    )
-                    emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
-                },
-                registry = registry,
-                safetyOrchestrator = safetyOrchestrator,
-            )
-            val events = mutableListOf<LoopEvent>()
-
-            val job = launch {
-                loop.runTurn("conv", "update order", history, contextWithTools(unsafeDescriptor)).toList(events)
-            }
-
-            runCurrent()
-            val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
-            safetyOrchestrator.confirm(request.id)
-            advanceUntilIdle()
-
-            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
-            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-            assertThat(finished.retryAvailable).isFalse()
-            assertThat(finished.error).isEqualTo(AssistantError.OutcomeUnknown(toolName = "orders_update"))
-            assertThat(events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result)
-                .isEqualTo(
-                    ToolResult.TransportError(
-                        toolCallId = "call_1",
-                        retryable = true,
-                        kind = ToolFailureKind.OUTCOME_UNKNOWN,
-                    )
-                )
-            assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single().toolCallId)
-                .isEqualTo("call_1")
-            job.cancel()
-        }
-
-    @Test
-    fun `given confirmed unsafe tool returns deterministic transport error, when running turn, then tool failed fails without retry`() =
+    fun `given unsafe unknown transport error with diagnostics, when turn finishes, then OutcomeUnknown preserves transport and fills tool diagnostics`() =
         runTest {
             val unsafeDescriptor = ToolDescriptor(
                 name = "orders_update",
@@ -851,7 +872,18 @@ class AgenticLoopImplTest {
                     ToolResult.TransportError(
                         toolCallId = call.id,
                         retryable = true,
-                        kind = ToolFailureKind.DETERMINISTIC_FAILURE,
+                        diagnostics = Diagnostics(
+                            transport = TransportDiagnostics(
+                                httpStatus = 409,
+                                bodySnippet = "raw backend payload",
+                            ),
+                            tool = ToolDiagnostics(
+                                toolName = "orders_update",
+                                failureKind = ToolFailureKind.OUTCOME_UNKNOWN,
+                                retryable = true,
+                                source = ToolFailureSource.HANDLER_EXCEPTION,
+                            )
+                        )
                     )
             }
             val safetyOrchestrator = SafetyOrchestratorImpl()
@@ -883,9 +915,144 @@ class AgenticLoopImplTest {
 
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-            assertThat(finished.retryAvailable).isFalse()
-            assertThat(finished.error).isEqualTo(AssistantError.ToolFailed(toolName = "orders_update"))
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
+            assertThat(finished.error).isInstanceOf(AssistantError.OutcomeUnknown::class.java)
+            val error = finished.error as AssistantError.OutcomeUnknown
+            assertThat(error.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.OUTCOME_UNKNOWN)
+            assertThat(error.diagnostics.tool?.retryable).isTrue()
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.HANDLER_EXCEPTION)
+            assertThat(error.diagnostics.transport?.httpStatus).isEqualTo(409)
+            assertThat(error.diagnostics.transport?.bodySnippet).isEqualTo("raw backend payload")
+            val toolResult = events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result
+            assertThat(toolResult).isInstanceOf(ToolResult.TransportError::class.java)
+            val toolMessage = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single()
+            assertThat(toolMessage.toolCallId).isEqualTo("call_1")
+            assertThat(toolMessage.content).isEqualTo("""{"error":"Tool execution failed"}""")
+            assertThat(toolMessage.content).doesNotContain("raw backend payload")
+            assertThat(toolMessage.content).doesNotContain("orders_update")
             job.cancel()
+        }
+
+    @Test
+    fun `given unsafe deterministic transport error with diagnostics, when turn finishes, then ToolFailed preserves transport and fills tool diagnostics`() =
+        runTest {
+            val unsafeDescriptor = ToolDescriptor(
+                name = "orders_update",
+                description = "Updates an order",
+                inputSchema = buildJsonObject { },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val registry = object : ToolRegistry {
+                override fun descriptors() = listOf(unsafeDescriptor)
+
+                override suspend fun execute(call: ToolCall): ToolResult =
+                    ToolResult.TransportError(
+                        toolCallId = call.id,
+                        retryable = false,
+                        kind = ToolFailureKind.DETERMINISTIC_FAILURE,
+                        diagnostics = Diagnostics(
+                            transport = TransportDiagnostics(
+                                httpStatus = 400,
+                                bodySnippet = "deterministic backend payload",
+                            )
+                        )
+                    )
+            }
+            val safetyOrchestrator = SafetyOrchestratorImpl()
+            val loop = loopWith(
+                flow {
+                    emit(
+                        AssistantEvent.ToolCallDelta(
+                            index = 0,
+                            id = "call_1",
+                            name = "orders_update",
+                            argumentsDelta = """{"id":42,"status":"processing"}""",
+                        )
+                    )
+                    emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                },
+                registry = registry,
+                safetyOrchestrator = safetyOrchestrator,
+            )
+            val events = mutableListOf<LoopEvent>()
+
+            val job = launch {
+                loop.runTurn("conv", "update order", history, contextWithTools(unsafeDescriptor)).toList(events)
+            }
+
+            runCurrent()
+            val request = events.filterIsInstance<LoopEvent.ConfirmationRequested>().single().request
+            safetyOrchestrator.confirm(request.id)
+            advanceUntilIdle()
+
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
+            assertThat(finished.error).isInstanceOf(AssistantError.ToolFailed::class.java)
+            val error = finished.error as AssistantError.ToolFailed
+            assertThat(error.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.toolName).isEqualTo("orders_update")
+            assertThat(error.diagnostics.tool?.failureKind).isEqualTo(ToolFailureKind.DETERMINISTIC_FAILURE)
+            assertThat(error.diagnostics.tool?.retryable).isFalse()
+            assertThat(error.diagnostics.tool?.source).isEqualTo(ToolFailureSource.TOOL_RESULT)
+            assertThat(error.diagnostics.transport?.httpStatus).isEqualTo(400)
+            assertThat(error.diagnostics.transport?.bodySnippet).isEqualTo("deterministic backend payload")
+            job.cancel()
+        }
+
+    @Test
+    fun `given transport error has raw body snippet, when tool result is sent to model, then model content stays generic`() =
+        runTest {
+            var secondCallMessages: List<AssistantMessage>? = null
+            val service = object : ChatService {
+                private var count = 0
+
+                override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
+                    count++
+                    return if (count == 1) {
+                        flow {
+                            emit(
+                                AssistantEvent.ToolCallDelta(
+                                    index = 0,
+                                    id = "call_1",
+                                    name = "echo",
+                                    argumentsDelta = """{"msg":"hi"}""",
+                                )
+                            )
+                            emit(AssistantEvent.Finish(FinishReason.TOOL_CALLS))
+                        }
+                    } else {
+                        secondCallMessages = request.messages
+                        flowOf(AssistantEvent.Finish(FinishReason.STOP))
+                    }
+                }
+            }
+            val registry = stubRegistry(
+                result = ToolResult.TransportError(
+                    toolCallId = "call_1",
+                    retryable = true,
+                    diagnostics = Diagnostics(
+                        transport = TransportDiagnostics(httpStatus = 503, bodySnippet = "raw backend secret"),
+                    ),
+                )
+            )
+            val loop = AgenticLoopImpl(
+                service,
+                registry,
+                ConservativeRetryPolicy,
+                passThroughBudgeter(),
+                SafetyOrchestratorImpl(),
+                json,
+            )
+
+            loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+            val toolMessage = requireNotNull(secondCallMessages).filterIsInstance<AssistantMessage.Tool>().single()
+            assertThat(toolMessage.content).isEqualTo("""{"error":"Tool execution failed"}""")
+            assertThat(toolMessage.content).doesNotContain("raw backend secret")
+            assertThat(toolMessage.content).doesNotContain("503")
         }
 
     @Test
@@ -965,7 +1132,7 @@ class AgenticLoopImplTest {
 
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse()
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isNull()
             assertThat(finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
             val assistantMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
@@ -1053,7 +1220,7 @@ class AgenticLoopImplTest {
             assertThat(events.filterIsInstance<LoopEvent.Failed>()).isEmpty()
             val finished = events.filterIsInstance<LoopEvent.Finished>().last()
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
-            assertThat(finished.retryAvailable).isFalse
+            assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isNull()
             assertThat(secondModelTurnRequested).isFalse
 
@@ -1172,7 +1339,7 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.error).isEqualTo(AssistantError.Auth)
+        assertThat(finished.error).isEqualTo(AssistantError.Auth())
     }
 
     @Test
@@ -1196,8 +1363,8 @@ class AgenticLoopImplTest {
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.FAILED)
-        assertThat(finished.retryAvailable).isFalse()
-        assertThat(finished.error).isEqualTo(AssistantError.UpstreamFailure)
+        assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
+        assertThat(finished.error).isEqualTo(AssistantError.UpstreamFailure())
     }
 
     @Test

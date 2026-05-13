@@ -89,6 +89,7 @@ private fun NewStockNotificationSettingsScreen(
             ) {
                 LowStockDetails(
                     defaultLowStockThreshold = viewState.defaultLowStockThreshold,
+                    isDefaultLowStockThresholdLoading = viewState.isDefaultLowStockThresholdLoading,
                     enabled = viewState.notificationsEnabled,
                     onEditStoreSettingsClicked = onEditStoreSettingsClicked
                 )
@@ -166,20 +167,33 @@ private fun StockNotificationOption(
 @Composable
 private fun LowStockDetails(
     defaultLowStockThreshold: Int?,
+    isDefaultLowStockThresholdLoading: Boolean,
     enabled: Boolean,
     onEditStoreSettingsClicked: () -> Unit
 ) {
     val thresholdPlaceholderId = "thresholdPlaceholder"
-    val thresholdText = defaultLowStockThreshold ?: LOW_STOCK_THRESHOLD_PLACEHOLDER
-    val text = clickableAnnotatedStringRes(
-        stringResId = R.string.settings_notifs_stock_low_stock_threshold,
-        onUrlClick = {
-            if (enabled) {
-                onEditStoreSettingsClicked()
+    val shouldShowLoadingThreshold = defaultLowStockThreshold == null && isDefaultLowStockThresholdLoading
+    val text = if (defaultLowStockThreshold == null && !isDefaultLowStockThresholdLoading) {
+        clickableAnnotatedStringRes(
+            stringResId = R.string.settings_notifs_stock_low_stock_threshold_unavailable,
+            onUrlClick = {
+                if (enabled) {
+                    onEditStoreSettingsClicked()
+                }
             }
-        },
-        thresholdText
-    )
+        )
+    } else {
+        val thresholdText = defaultLowStockThreshold ?: LOW_STOCK_THRESHOLD_PLACEHOLDER
+        clickableAnnotatedStringRes(
+            stringResId = R.string.settings_notifs_stock_low_stock_threshold,
+            onUrlClick = {
+                if (enabled) {
+                    onEditStoreSettingsClicked()
+                }
+            },
+            thresholdText
+        )
+    }
     val openInNewIconId = "openInNewIcon"
     val textWithIcon = remember(text) {
         val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
@@ -205,7 +219,7 @@ private fun LowStockDetails(
     }
     val iconColor = MaterialTheme.colorScheme.primary
     val inlineContent = buildMap {
-        if (defaultLowStockThreshold == null) {
+        if (shouldShowLoadingThreshold) {
             put(
                 thresholdPlaceholderId,
                 InlineTextContent(

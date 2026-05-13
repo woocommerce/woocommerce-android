@@ -24,8 +24,6 @@ internal fun analyticsDateAfterBound(value: String) = "${value}T00:00:00"
 
 internal fun analyticsDateBeforeBound(value: String) = "${value}T23:59:59"
 
-internal fun normaliseCurrency(value: String?) = value?.trim()?.takeIf { it.isNotEmpty() }
-
 internal fun validateAnalyticsDateRange(
     after: LocalDate,
     before: LocalDate,
@@ -51,6 +49,7 @@ internal fun analyticsStatsSummary(
     before: String,
     interval: AnalyticsInterval,
     stats: AnalyticsStats,
+    cardId: String,
     currency: String? = null,
     previousPeriodTotals: JsonObject? = null,
     previousPeriodPartial: Boolean = false,
@@ -59,6 +58,7 @@ internal fun analyticsStatsSummary(
     put("after", after)
     put("before", before)
     put("interval", interval.value)
+    put("card_id", cardId)
     currency?.let { put("currency", it) }
     stats.totals?.let { put("totals", it) }
     previousPeriodTotals?.let { put("previous_period_totals", it) }

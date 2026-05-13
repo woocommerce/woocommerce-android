@@ -17,8 +17,6 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsResponsePayload
-import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
-import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,68 +37,6 @@ class AIAnalyticsDataSourceTest {
             wooCommerceStore = wooCommerceStore,
         )
     }
-
-    @Test
-    fun `given revenue stats response, when fetched, then REST client params and parsed stats are returned`() =
-        runTest {
-            // GIVEN
-            whenever(
-                orderStatsRestClient.fetchRevenueStats(
-                    site = site,
-                    granularity = AnalyticsInterval.DAY.statsGranularity,
-                    startDate = AFTER,
-                    endDate = BEFORE,
-                    perPage = PER_PAGE,
-                    forceRefresh = false,
-                    revenueRangeId = REVENUE_RANGE_ID,
-                    currency = CURRENCY,
-                )
-            ).thenReturn(
-                successResponse(
-                    interval = AnalyticsInterval.DAY,
-                    total = REVENUE_TOTAL,
-                    data = REVENUE_INTERVALS,
-                )
-            )
-
-            // WHEN
-            val result = dataSource.fetchRevenueStats(
-                after = AFTER,
-                before = BEFORE,
-                interval = AnalyticsInterval.DAY,
-                currency = CURRENCY,
-            )
-
-            // THEN
-            verify(orderStatsRestClient).fetchRevenueStats(
-                site = site,
-                granularity = AnalyticsInterval.DAY.statsGranularity,
-                startDate = AFTER,
-                endDate = BEFORE,
-                perPage = PER_PAGE,
-                forceRefresh = false,
-                revenueRangeId = REVENUE_RANGE_ID,
-                currency = CURRENCY,
-            )
-            assertThat(result.isSuccess).isTrue
-
-            val stats = result.getOrThrow()
-            val totals = requireNotNull(stats.totals).jsonObject
-            assertThat(totals.getValue("net_revenue").jsonPrimitive.content).isEqualTo("123.45")
-            assertThat(totals.getValue("orders_count").jsonPrimitive.content).isEqualTo("3")
-
-            val intervals = requireNotNull(stats.intervals)
-            assertThat(intervals).hasSize(2)
-            assertThat(intervals.first().getValue("interval").jsonPrimitive.content).isEqualTo("2026-04-01")
-            assertThat(
-                intervals.first()
-                    .getValue("subtotals")
-                    .jsonObject
-                    .getValue("orders_count")
-                    .jsonPrimitive
-                    .content
-            ).isEqualTo("1")
-        }
 
     @Test
     fun `given orders stats response, when fetched, then REST client params and parsed stats are returned`() =
@@ -151,41 +87,6 @@ class AIAnalyticsDataSourceTest {
             val intervals = requireNotNull(stats.intervals)
             assertThat(intervals).hasSize(1)
             assertThat(intervals.first().getValue("interval").jsonPrimitive.content).isEqualTo("week-2026-15")
-        }
-
-    @Test
-    fun `given error response, when revenue stats are fetched, then failure is returned`() =
-        runTest {
-            // GIVEN
-            whenever(
-                orderStatsRestClient.fetchRevenueStats(
-                    site = site,
-                    granularity = AnalyticsInterval.DAY.statsGranularity,
-                    startDate = AFTER,
-                    endDate = BEFORE,
-                    perPage = PER_PAGE,
-                    forceRefresh = false,
-                    revenueRangeId = REVENUE_RANGE_ID,
-                    currency = null,
-                )
-            ).thenReturn(
-                FetchRevenueStatsResponsePayload(
-                    error = OrderStatsError(type = OrderStatsErrorType.GENERIC_ERROR, message = "network error"),
-                    site = site,
-                    granularity = AnalyticsInterval.DAY.statsGranularity,
-                )
-            )
-
-            // WHEN
-            val result = dataSource.fetchRevenueStats(
-                after = AFTER,
-                before = BEFORE,
-                interval = AnalyticsInterval.DAY,
-                currency = null,
-            )
-
-            // THEN
-            assertThat(result.isFailure).isTrue
         }
 
     @Test
@@ -269,24 +170,8 @@ class AIAnalyticsDataSourceTest {
         private const val BEFORE = "2026-04-30T23:59:59"
         private const val CURRENCY = "USD"
         private const val PER_PAGE = 100
-        private const val REVENUE_RANGE_ID = "ai_revenue"
         private const val ORDERS_RANGE_ID = "ai_orders"
 
-        private const val REVENUE_TOTAL = """
-            {"net_revenue":"123.45","orders_count":3}
-        """
-        private const val REVENUE_INTERVALS = """
-            [
-                {
-                    "interval":"2026-04-01",
-                    "subtotals":{"orders_count":1,"net_revenue":"50.00"}
-                },
-                {
-                    "interval":"2026-04-02",
-                    "subtotals":{"orders_count":2,"net_revenue":"73.45"}
-                }
-            ]
-        """
         private const val ORDERS_TOTAL = """
             {"orders_count":7,"avg_order_value":"42.00"}
         """

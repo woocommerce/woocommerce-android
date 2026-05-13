@@ -122,10 +122,10 @@ class GetCustomerWithStats @Inject constructor(
             username = customer.username,
             email = customer.email,
             phone = customer.billingPhone,
-            lastActive = "",
-            ordersCount = 0,
-            totalSpend = currencyFormatter.formatAmountWithCurrency(0.0),
-            averageOrderValue = currencyFormatter.formatAmountWithCurrency(0.0),
+            lastActive = null,
+            ordersCount = null,
+            totalSpend = null,
+            averageOrderValue = null,
             registeredDate = dateUtils
                 .getShortMonthDayAndYearStringFromFullIsoDate(customer.dateCreated).orEmpty(),
             billingAddress = Address(

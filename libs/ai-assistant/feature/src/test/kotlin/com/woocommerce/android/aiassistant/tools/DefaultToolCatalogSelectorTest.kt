@@ -13,7 +13,7 @@ class DefaultToolCatalogSelectorTest {
     private val catalog = listOf(
         "orders_list", "orders_get", "orders_update", "orders_bulk_update",
         "products_list", "products_get", "products_update", "products_bulk_update",
-        "product_variations_list", "product_variations_update", "analytics_revenue", "analytics_orders",
+        "product_variations_list", "product_variations_update", "analytics_orders",
         "show_cards", "customers_list",
     ).map { name ->
         ToolDescriptor(
@@ -25,7 +25,7 @@ class DefaultToolCatalogSelectorTest {
     }
 
     @Test
-    fun `when GLOBAL scope is selected, then all 14 tools are returned in catalog order`() {
+    fun `when GLOBAL scope is selected, then all 13 tools are returned in catalog order`() {
         val snapshot = selector.select(ToolScope.GLOBAL, catalog)
 
         assertThat(snapshot.scope).isEqualTo(ToolScope.GLOBAL)
@@ -40,7 +40,6 @@ class DefaultToolCatalogSelectorTest {
             "products_bulk_update",
             "product_variations_list",
             "product_variations_update",
-            "analytics_revenue",
             "analytics_orders",
             "show_cards",
             "customers_list",
@@ -67,9 +66,9 @@ class DefaultToolCatalogSelectorTest {
             "products_bulk_update",
             "product_variations_list",
             "product_variations_update",
-            "analytics_revenue",
             "customers_list",
         )
+        assertThat(snapshot.tools.map { it.name }).doesNotContain("analytics_revenue")
     }
 
     @Test
@@ -84,9 +83,10 @@ class DefaultToolCatalogSelectorTest {
             "products_bulk_update",
             "product_variations_list",
             "product_variations_update",
-            "analytics_revenue",
+            "analytics_orders",
             "show_cards",
         )
+        assertThat(snapshot.tools.map { it.name }).doesNotContain("analytics_revenue")
     }
 
     @Test
@@ -97,10 +97,10 @@ class DefaultToolCatalogSelectorTest {
         assertThat(snapshot.tools.map { it.name }).containsExactly(
             "orders_list",
             "products_list",
-            "analytics_revenue",
             "analytics_orders",
             "show_cards",
         )
+        assertThat(snapshot.tools.map { it.name }).doesNotContain("analytics_revenue")
     }
 
     @Test
