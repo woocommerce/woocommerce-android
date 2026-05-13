@@ -37,10 +37,15 @@ interface CardReaderManager {
     fun initialize(
         updateFrequency: SimulatorUpdateFrequency,
         useInterac: Boolean,
+        useEftpos: Boolean,
         isDebug: Boolean,
     )
 
-    fun reinitializeSimulatedTerminal(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean)
+    fun reinitializeSimulatedTerminal(
+        updateFrequency: SimulatorUpdateFrequency,
+        useInterac: Boolean,
+        useEftpos: Boolean,
+    )
 
     fun discoverReaders(
         isSimulated: Boolean,
