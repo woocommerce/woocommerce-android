@@ -15,7 +15,6 @@ data class AssistantUiState(
     val canRetry: Boolean = false,
     val activeConfirmationId: String? = null,
     val activeAssistantMessageId: String? = null,
-    val pendingNavigation: AssistantPendingNavigation? = null,
 ) {
     val isStreaming: Boolean
         get() = status == AssistantUiStatus.STREAMING
@@ -175,8 +174,6 @@ enum class AssistantUiError {
     MAX_ITERATIONS,
     UNKNOWN,
 }
-
-sealed interface AssistantPendingNavigation
 
 fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
     is AssistantError.Network -> AssistantUiError.NETWORK
