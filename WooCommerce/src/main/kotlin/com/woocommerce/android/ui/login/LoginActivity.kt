@@ -418,11 +418,12 @@ class LoginActivity :
     }
 
     override fun onPrimaryButtonClicked() {
-        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         disableDynamicEdgeToEdge()
         if (qrLoginAvailability.isAvailable()) {
+            unifiedLoginTracker.trackClick(Click.LOGIN_WITH_QR)
             showQrLoginPrologueFragment()
         } else {
+            unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
             loginViaSiteAddress()
         }
     }

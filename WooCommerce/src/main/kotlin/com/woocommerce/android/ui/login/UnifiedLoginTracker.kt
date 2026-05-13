@@ -190,6 +190,7 @@ class UnifiedLoginTracker
         DISMISS("dismiss"),
         CONTINUE_WITH_WORDPRESS_COM("continue_with_wordpress_com"),
         LOGIN_WITH_SITE_ADDRESS("login_with_site_address"),
+        LOGIN_WITH_QR("login_with_qr"),
         LOGIN_WITH_GOOGLE("login_with_google"),
         FORGOTTEN_PASSWORD("forgotten_password"),
         OPEN_EMAIL_CLIENT("open_email_client"),
