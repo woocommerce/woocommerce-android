@@ -43,7 +43,7 @@ class ConfirmationPreviewProviderRegistryTest {
                 priority = 0,
                 supportedNames = setOf("orders_update"),
             )
-            val registry = DefaultConfirmationPreviewProviderRegistry(setOf(genericProvider, dedicatedProvider))
+            val registry = ConfirmationPreviewProviderRegistryImpl(setOf(genericProvider, dedicatedProvider))
 
             val provider = registry.providerFor(context(descriptor("orders_update")))
 
@@ -63,7 +63,7 @@ class ConfirmationPreviewProviderRegistryTest {
                 priority = 10,
                 supportedNames = setOf("orders_update"),
             )
-            val registry = DefaultConfirmationPreviewProviderRegistry(setOf(zProvider, aProvider))
+            val registry = ConfirmationPreviewProviderRegistryImpl(setOf(zProvider, aProvider))
 
             val provider = registry.providerFor(context(descriptor("orders_update")))
 
@@ -79,7 +79,7 @@ class ConfirmationPreviewProviderRegistryTest {
                 supportedNames = setOf("products_update"),
                 previewMessage = "selected preview",
             )
-            val registry = DefaultConfirmationPreviewProviderRegistry(setOf(genericProvider, selectedProvider))
+            val registry = ConfirmationPreviewProviderRegistryImpl(setOf(genericProvider, selectedProvider))
             val descriptor = descriptor("products_update")
             val context = context(descriptor, buildJsonObject { put("reason", "Preview") })
 
@@ -92,7 +92,7 @@ class ConfirmationPreviewProviderRegistryTest {
     @Test
     fun `given important unsafe tools and simple unsafe tool, when providers resolve, then only important tools require dedicated providers`() =
         runTest {
-            val registry = DefaultConfirmationPreviewProviderRegistry(
+            val registry = ConfirmationPreviewProviderRegistryImpl(
                 setOf(
                     RecordingProvider(
                         key = "woocommerce_orders",
@@ -129,7 +129,7 @@ class ConfirmationPreviewProviderRegistryTest {
     @Test
     fun `given unknown external unsafe descriptor, when provider resolves, then generic provider is selected`() =
         runTest {
-            val registry = DefaultConfirmationPreviewProviderRegistry(
+            val registry = ConfirmationPreviewProviderRegistryImpl(
                 setOf(
                     RecordingProvider(
                         key = "woocommerce_orders",
@@ -151,7 +151,7 @@ class ConfirmationPreviewProviderRegistryTest {
             val ordersDataSource: AIOrdersDataSource = mock()
             val productsDataSource: AIProductsDataSource = mock()
             val variationsDataSource: AIProductVariationsDataSource = mock()
-            val registry = DefaultConfirmationPreviewProviderRegistry(
+            val registry = ConfirmationPreviewProviderRegistryImpl(
                 setOf(
                     OrdersConfirmationPreviewProvider(ordersDataSource),
                     ProductsConfirmationPreviewProvider(productsDataSource),
@@ -195,7 +195,7 @@ class ConfirmationPreviewProviderRegistryTest {
                     put("new_value", "enabled")
                 },
             )
-            val registry = DefaultConfirmationPreviewProviderRegistry(
+            val registry = ConfirmationPreviewProviderRegistryImpl(
                 setOf(
                     RecordingProvider(
                         key = "woocommerce_orders",

@@ -7,7 +7,7 @@ internal interface ConfirmationPreviewProviderRegistry {
     suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview
 }
 
-internal class DefaultConfirmationPreviewProviderRegistry @Inject constructor(
+internal class ConfirmationPreviewProviderRegistryImpl @Inject constructor(
     providers: Set<@JvmSuppressWildcards ConfirmationPreviewProvider>,
 ) : ConfirmationPreviewProviderRegistry {
     private val sortedProviders = providers.sortedWith(

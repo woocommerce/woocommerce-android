@@ -5,7 +5,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
-import com.woocommerce.android.aiassistant.safety.DefaultConfirmationPreviewProviderRegistry
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistryImpl
 import com.woocommerce.android.aiassistant.safety.GenericSchemaConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.OrdersConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.ProductVariationsConfirmationPreviewProvider
@@ -217,7 +217,7 @@ class WooCommerceToolCatalogTest {
         assertThat(currentUnsafeToolNames).isEqualTo(importantUnsafeToolNames)
     }
 
-    private fun previewRegistry() = DefaultConfirmationPreviewProviderRegistry(
+    private fun previewRegistry() = ConfirmationPreviewProviderRegistryImpl(
         setOf(
             OrdersConfirmationPreviewProvider(ordersDataSource),
             ProductsConfirmationPreviewProvider(productsDataSource),

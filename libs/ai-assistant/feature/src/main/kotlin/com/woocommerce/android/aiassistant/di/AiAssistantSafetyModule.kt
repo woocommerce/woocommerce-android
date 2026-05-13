@@ -2,7 +2,7 @@ package com.woocommerce.android.aiassistant.di
 
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
-import com.woocommerce.android.aiassistant.safety.DefaultConfirmationPreviewProviderRegistry
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistryImpl
 import com.woocommerce.android.aiassistant.safety.GenericSchemaConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.OrdersConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.ProductVariationsConfirmationPreviewProvider
@@ -20,7 +20,7 @@ internal abstract class AiAssistantSafetyModule {
     @Binds
     @Singleton
     internal abstract fun bindConfirmationPreviewProviderRegistry(
-        impl: DefaultConfirmationPreviewProviderRegistry,
+        impl: ConfirmationPreviewProviderRegistryImpl,
     ): ConfirmationPreviewProviderRegistry
 
     @Binds
