@@ -792,6 +792,8 @@ private fun CustomAmountItem(
                     text = item.formattedAmount,
                     style = WooPosTypography.BodySmall,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { },
                 )
                 if (item.isTaxable) {
@@ -800,6 +802,8 @@ private fun CustomAmountItem(
                         text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
                         style = WooPosTypography.BodySmall,
                         color = WooPosTheme.colors.onSurfaceVariantLowest,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clearAndSetSemantics { },
                     )
                 }
