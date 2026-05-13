@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +52,13 @@ fun WooPosCustomAmountFormScreen(
 ) {
     LaunchedEffect(editing?.itemNumber) {
         viewModel.initializeFor(editing)
+    }
+
+    // Reset the VM init sentinel whenever the form leaves composition — covers back gestures, submit
+    // success, and any external navigation. Without this, opening the form again for the same item
+    // (or a fresh "add" after a cancel) would short-circuit `initializeFor` and reuse stale state.
+    DisposableEffect(Unit) {
+        onDispose { viewModel.onDismissed() }
     }
 
     BackHandler(enabled = true) { onBackClick() }

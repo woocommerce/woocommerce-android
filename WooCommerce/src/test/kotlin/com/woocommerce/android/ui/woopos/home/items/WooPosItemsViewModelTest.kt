@@ -375,6 +375,63 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
+    fun `when ShowCustomAmountForm received, then state changes to CustomAmountForm`() = runTest {
+        // GIVEN
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ShowCustomAmountForm())
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.CustomAmountForm::class.java)
+            assertThat((state as WooPosItemsToolbarViewState.CustomAmountForm).editing).isNull()
+        }
+    }
+
+    @Test
+    fun `when CustomAmountSubmitted received during form, then state restores preserved state`() = runTest {
+        // GIVEN
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(
+                ParentToChildrenEvent.ShowCustomAmountForm(),
+                ParentToChildrenEvent.CustomAmountSubmitted(
+                    name = "Tip",
+                    amount = java.math.BigDecimal("1.00"),
+                    isTaxable = false,
+                ),
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.ProductList::class.java)
+        }
+    }
+
+    @Test
+    fun `given on product list, when navigateBackFromSubScreen path triggers unexpectedly, then state is unchanged`() = runTest {
+        // GIVEN — no sub-screen open
+        val viewModel = createViewModel()
+
+        // WHEN — back-from-variations event fires while already on the product list
+        viewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+
+        // THEN — state remains the product list (no crash, no transition)
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.ProductList::class.java)
+        }
+    }
+
+    @Test
     fun `when products tab clicked, then analytics event is tracked`() = runTest {
         // GIVEN
         val productsTab = WooPosItemsToolbarViewState.Tab.Products(

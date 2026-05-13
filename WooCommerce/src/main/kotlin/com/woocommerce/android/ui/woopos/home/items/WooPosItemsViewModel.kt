@@ -244,6 +244,8 @@ class WooPosItemsViewModel @Inject constructor(
     }
 
     private fun navigateBackFromSubScreen() {
+        // No-op if we're not actually on a sub-screen — guards against races where a back-event arrives
+        // after the items list has already been restored (e.g. submit + back fired in quick succession).
         when (_viewState.value) {
             is WooPosItemsToolbarViewState.VariationList,
             is WooPosItemsToolbarViewState.CustomAmountForm -> {
@@ -251,7 +253,7 @@ class WooPosItemsViewModel @Inject constructor(
                 preservedStateBeforeOpeningSubScreen = null
             }
 
-            else -> error("Unexpected state: ${_viewState.value}")
+            else -> Unit
         }
     }
 
