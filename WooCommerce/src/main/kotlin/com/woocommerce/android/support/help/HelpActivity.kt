@@ -40,6 +40,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -48,6 +49,8 @@ class HelpActivity : AppCompatActivity() {
     private val viewModel: HelpViewModel by viewModels()
 
     @Inject lateinit var accountRepository: AccountRepository
+
+    @Inject lateinit var wpComAccessToken: AccessToken
 
     @Inject lateinit var siteStore: SiteStore
 
@@ -243,13 +246,23 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun isAiSupportChatAvailable(): Boolean =
-        userIsLoggedIn() &&
-            featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT) &&
-            selectedSite.getIfExists()?.isJetpackConnected == true
+        HelpAiSupportChatEntryPoint.isAvailable(
+            featureFlagEnabled = featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)
+        )
 
     private fun showAiSupportChat() {
-        startActivity(AiSupportChatActivity.createIntent(this))
+        val intent = if (shouldUsePreLoginAiSupportChat()) {
+            AiSupportChatActivity.createPreLoginIntent(this)
+        } else {
+            AiSupportChatActivity.createIntent(this)
+        }
+        startActivity(intent)
     }
+
+    private fun shouldUsePreLoginAiSupportChat(): Boolean =
+        HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
+            isWpComAuthenticated = wpComAccessToken.exists()
+        )
 
     private fun showFeatureFlagsOverride() {
         startActivity(DevFeatureFlagsActivity.createIntent(this, skipRemoteLoad = true))

@@ -62,6 +62,61 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given pre-login launch mode, when loaded, then chat starts without issue picker`() =
+        testBlocking {
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasStartedChat).isTrue()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given pre-login launch mode, when message sent, then chat starts with generic context`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.isSending).isFalse()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.selectedIssueType).isNull()
+            assertThat(state.diagnosticResult).isNull()
+            verify(contextProvider).buildInitialContext()
+            verify(repository, never()).registerChat(any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any())
+        }
+
+    @Test
+    fun `given pre-login chat exists, when follow up message sent, then bookmark is not touched`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(BOT_RESPONSE)
+            viewModel.onSendClicked()
+
+            verify(repository, never()).registerChat(any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any())
+        }
+
+    @Test
     fun `given diagnostics pass, when issue selected, then chat starts with diagnostic context`() =
         testBlocking {
             val result = createSuccessDiagnosticResult()

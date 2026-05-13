@@ -49,6 +49,11 @@ class AiSupportChatActivity : AppCompatActivity() {
         fun createIntent(context: Context): Intent =
             Intent(context, AiSupportChatActivity::class.java)
 
+        fun createPreLoginIntent(context: Context): Intent =
+            Intent(context, AiSupportChatActivity::class.java).apply {
+                putExtra(EXTRA_PRE_LOGIN, true)
+            }
+
         fun createConnectivityToolIntent(
             context: Context,
             checks: List<ConnectivityCheckCardData>
@@ -62,10 +67,14 @@ class AiSupportChatActivity : AppCompatActivity() {
             if (!checks.isNullOrEmpty()) {
                 return AiSupportChatLaunchMode.ConnectivityTool(checks)
             }
+            if (extras.getBoolean(EXTRA_PRE_LOGIN, false)) {
+                return AiSupportChatLaunchMode.PreLogin
+            }
 
             return AiSupportChatLaunchMode.Help
         }
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
+        private const val EXTRA_PRE_LOGIN = "extra_pre_login"
     }
 }

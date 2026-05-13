@@ -21,13 +21,15 @@ class SupportChatContextProvider @Inject constructor(
         issueType: SupportIssueType? = null,
         diagnosticResult: DiagnosticResult? = null
     ): JsonObject {
-        val site = selectedSite.get()
+        val site = selectedSite.getIfExists()
         return JsonObject().apply {
             addProperty("platform", "android")
             addProperty("app_version", buildConfigWrapper.versionName)
-            addProperty("site_id", site.siteId)
-            addProperty("local_site_id", site.id)
-            addProperty("site_url", site.url)
+            site?.let {
+                addProperty("site_id", it.siteId)
+                addProperty("local_site_id", it.id)
+                addProperty("site_url", it.url)
+            }
             issueType?.let { addProperty("support_issue_type", it.name.lowercase()) }
             diagnosticResult?.let { add("diagnostics", it.toJson()) }
         }

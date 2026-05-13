@@ -44,6 +44,7 @@ class AiSupportChatViewModel @Inject constructor(
 
         when (launchMode) {
             AiSupportChatLaunchMode.Help -> Unit
+            AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
         }
     }
@@ -109,6 +110,17 @@ class AiSupportChatViewModel @Inject constructor(
         if (state.isSending) return
 
         launch { sendMessage(issueLabel) }
+    }
+
+    private fun startFromPreLogin() {
+        _viewState.update {
+            it.copy(
+                messages = listOf(greetingMessage()),
+                hasStartedChat = true,
+                canPersistChatHistory = false,
+                showSendError = false
+            )
+        }
     }
 
     private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
@@ -178,14 +190,16 @@ class AiSupportChatViewModel @Inject constructor(
         sentMessage: String,
         wasInitialMessage: Boolean
     ) {
-        if (wasInitialMessage) {
-            repository.registerChat(
-                chatId = response.chatId,
-                botSlug = response.botSlug,
-                firstUserMessage = sentMessage
-            )
-        } else {
-            repository.markChatAsUpdated(response.chatId)
+        if (_viewState.value.canPersistChatHistory) {
+            if (wasInitialMessage) {
+                repository.registerChat(
+                    chatId = response.chatId,
+                    botSlug = response.botSlug,
+                    firstUserMessage = sentMessage
+                )
+            } else {
+                repository.markChatAsUpdated(response.chatId)
+            }
         }
 
         _viewState.update {
@@ -282,6 +296,7 @@ data class AiSupportChatViewState(
     val diagnosticResult: DiagnosticResult? = null,
     val isRunningDiagnostics: Boolean = false,
     val isSending: Boolean = false,
+    val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false
 )
 
