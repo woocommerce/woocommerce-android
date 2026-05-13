@@ -36,6 +36,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -135,7 +136,12 @@ private fun TabletDialogLayout(
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-            DialogActions(state = state, onSubmit = onSubmit, onCancel = onDismissRequest)
+            DialogActions(
+                state = state,
+                breakpoint = WooPosBreakpoint.Tablet,
+                onSubmit = onSubmit,
+                onCancel = onDismissRequest,
+            )
         }
     }
 }
@@ -184,7 +190,12 @@ private fun PhoneFullScreenLayout(
                     .navigationBarsPadding()
                     .padding(WooPosSpacing.Medium.value),
             ) {
-                DialogActions(state = state, onSubmit = onSubmit, onCancel = onDismissRequest)
+                DialogActions(
+                    state = state,
+                    breakpoint = WooPosBreakpoint.Phone,
+                    onSubmit = onSubmit,
+                    onCancel = onDismissRequest,
+                )
             }
         }
     }
@@ -195,7 +206,7 @@ private fun PhoneToolbar(
     titleRes: Int,
     onCloseClick: () -> Unit,
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
@@ -203,7 +214,7 @@ private fun PhoneToolbar(
                 horizontal = WooPosSpacing.Small.value,
                 vertical = WooPosSpacing.Small.value,
             ),
-        contentAlignment = Alignment.CenterStart,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onCloseClick) {
             Icon(
@@ -213,13 +224,16 @@ private fun PhoneToolbar(
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         }
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            WooPosText(
-                text = stringResource(titleRes),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-            )
-        }
+        WooPosText(
+            text = stringResource(titleRes),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = WooPosIconSize.Large.value + WooPosSpacing.Small.value),
+        )
     }
 }
 
@@ -323,6 +337,7 @@ private fun TaxesToggle(
 @Composable
 private fun DialogActions(
     state: WooPosCustomAmountDialogState,
+    breakpoint: WooPosBreakpoint,
     onSubmit: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -333,7 +348,7 @@ private fun DialogActions(
     val submitButtonState =
         if (state.isSubmitEnabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED
 
-    when (currentWooPosBreakpoint()) {
+    when (breakpoint) {
         WooPosBreakpoint.Phone -> Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
