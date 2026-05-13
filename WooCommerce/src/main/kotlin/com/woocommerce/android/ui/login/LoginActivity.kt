@@ -1097,17 +1097,12 @@ class LoginActivity :
     }
 
     private fun handleAppLoginUri(uri: Uri) {
-        // This is the OS-level browser deeplink path for the legacy `woocommerce://app-login`
-        // scheme — it predates QR login and must not be attributed to the QR funnel. Set the
-        // destination flow per variant so the next unified-login event (e.g. ENTER_EMAIL_ADDRESS,
-        // which inherits the current flow) lands in the right bucket. QR-scanned app-login is
-        // handled separately by QrLoginScannerViewModel, where flow=login_qr is correct.
+        unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
         val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER) ?: ""
         val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER) ?: ""
         val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
         when {
             siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
-                unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
                 trackAppLoginSuccess(
                     flow = VALUE_WP_COM,
                     source = VALUE_APP_LOGIN_SOURCE_DEEPLINK,
@@ -1116,7 +1111,6 @@ class LoginActivity :
             }
 
             siteUrl.isNotEmpty() && username.isNotEmpty() -> {
-                unifiedLoginTracker.setFlow(Flow.LOGIN_STORE_CREDS.value)
                 trackAppLoginSuccess(
                     flow = VALUE_NO_WP_COM,
                     source = VALUE_APP_LOGIN_SOURCE_DEEPLINK,
