@@ -82,7 +82,16 @@ class QrLoginPrologueFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        unifiedLoginTracker.setFlowAndStep(UnifiedLoginTracker.Flow.LOGIN_QR, UnifiedLoginTracker.Step.QR_PROLOGUE)
+        // The OS permission dialog dispatches its result before the fragment resumes, so the VM
+        // has already transitioned the step to QR_CAMERA_PERMISSION by the time we get here.
+        // Unconditionally resetting to QR_PROLOGUE would clobber that, causing the rationale's
+        // click to be attributed to the prologue step instead of the camera-permission step.
+        val step = if (viewModel.uiState.value.cameraPermissionDialog != null) {
+            UnifiedLoginTracker.Step.QR_CAMERA_PERMISSION
+        } else {
+            UnifiedLoginTracker.Step.QR_PROLOGUE
+        }
+        unifiedLoginTracker.setFlowAndStep(UnifiedLoginTracker.Flow.LOGIN_QR, step)
     }
 
     override fun onAttach(context: Context) {
