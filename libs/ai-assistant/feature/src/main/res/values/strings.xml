@@ -34,6 +34,7 @@
     <string name="ai_assistant_chat_title">Assistant</string>
     <string name="ai_assistant_chat_back_content_description">Back</string>
     <string name="ai_assistant_chat_restart_content_description">Start new conversation</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description">Jump to latest</string>
     <string name="ai_assistant_chat_message_user_content_description">You: %1$s</string>
     <string name="ai_assistant_chat_message_assistant_content_description">Assistant: %1$s</string>
     <string name="ai_assistant_chat_typing_content_description">Assistant is thinking</string>
