@@ -194,7 +194,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
                     lineTotal = formatPrice(feeLine.total, order.currency),
                     imageUrl = null,
                     isLumpSum = true,
-                    includesTax = feeLine.taxStatus == Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+                    includesTax = when (feeLine.taxStatus) {
+                        Order.FeeLine.FeeLineTaxStatus.TAXABLE -> true
+                        Order.FeeLine.FeeLineTaxStatus.NONE,
+                        Order.FeeLine.FeeLineTaxStatus.UNKNOWN -> false
+                    },
                 )
             }
     }
