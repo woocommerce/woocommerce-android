@@ -1,6 +1,5 @@
 package com.woocommerce.android.aiassistant.safety
 
-import androidx.annotation.StringRes
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import kotlinx.serialization.json.JsonArray
@@ -37,9 +36,6 @@ internal class GenericSchemaConfirmationPreviewProvider @Inject constructor() : 
         )
     }
 
-    private fun JsonObject.objectValue(name: String): JsonObject? =
-        this[name] as? JsonObject
-
     private fun JsonElement.toPreviewValue(): String = when (this) {
         JsonNull -> "null"
         is JsonPrimitive -> contentOrNull ?: toString()
@@ -61,13 +57,6 @@ internal class GenericSchemaConfirmationPreviewProvider @Inject constructor() : 
                 word.lowercase().replaceFirstChar { first -> first.uppercaseChar() }
             }
             .ifBlank { this }
-
-    private fun raw(value: String) = ConfirmationPreviewText.Raw(value)
-
-    private fun string(
-        @StringRes id: Int,
-        vararg args: ConfirmationPreviewText,
-    ) = ConfirmationPreviewText.Resource(id, args.toList())
 
     private companion object {
         const val ARRAY_INLINE_LIMIT = 5

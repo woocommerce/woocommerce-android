@@ -103,12 +103,10 @@ private fun MutableList<ConfirmationPreviewField>.addOptionalSalePriceField(
     currentValues: Map<String, String>?,
 ) {
     arguments.stringValue("sale_price")?.let { salePrice ->
-        val value = salePrice.takeIf { it.isNotEmpty() }?.let(::raw)
-            ?: string(R.string.ai_assistant_confirmation_field_value_off)
         add(
             messageField(
                 name = "sale_price",
-                value = value,
+                value = salePriceValue(salePrice),
                 label = R.string.ai_assistant_confirmation_field_sale_price,
                 beforeValue = currentValues?.get("sale_price")?.let(::salePriceValue),
             )

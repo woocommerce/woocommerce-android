@@ -217,6 +217,33 @@ class OrdersConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given bulk order update has no status, when preview is built, then non-notifying title is used`() =
+        runTest {
+            val preview = preview(
+                toolName = "orders_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray((1..2).map { JsonPrimitive(it) }))
+                    put("patch", buildJsonObject { put("customer_note", "Packed") })
+                },
+            )
+
+            assertThat(preview.message).isEqualTo(
+                quantity(
+                    quantity = 2,
+                    singular = R.string.ai_assistant_confirmation_orders_bulk_update_title_single,
+                    multiple = R.string.ai_assistant_confirmation_orders_bulk_update_title_multiple,
+                )
+            )
+            assertThat(preview.fields).containsExactly(
+                ConfirmationPreviewField(
+                    name = "customer_note",
+                    value = string(R.string.ai_assistant_confirmation_field_value_updated),
+                    label = label(R.string.ai_assistant_confirmation_field_customer_note),
+                ),
+            )
+        }
+
+    @Test
     fun `given order update and current order, when preview is built, then before and after values are included`() =
         runTest {
             val dataSource: AIOrdersDataSource = mock()

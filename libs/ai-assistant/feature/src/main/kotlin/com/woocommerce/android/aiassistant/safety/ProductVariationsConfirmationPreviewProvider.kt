@@ -12,7 +12,7 @@ internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
     override val priority: Int = 100
 
     override fun canPreview(context: ConfirmationPreviewContext): Boolean =
-        context.descriptor.name == PRODUCT_VARIATIONS_UPDATE
+        context.descriptor.name in SUPPORTED_TOOL_NAMES
 
     override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview =
         productVariationUpdatePreview(
@@ -56,5 +56,6 @@ internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
 
     private companion object {
         const val PRODUCT_VARIATIONS_UPDATE = "product_variations_update"
+        val SUPPORTED_TOOL_NAMES = setOf(PRODUCT_VARIATIONS_UPDATE)
     }
 }
