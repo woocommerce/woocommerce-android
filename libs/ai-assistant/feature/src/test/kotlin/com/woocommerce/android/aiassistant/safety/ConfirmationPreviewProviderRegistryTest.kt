@@ -81,6 +81,43 @@ class ConfirmationPreviewProviderRegistryTest {
             assertThat(selectedProvider.receivedContext).isEqualTo(context)
         }
 
+    @Test
+    fun `given important unsafe tools and simple unsafe tool, when providers resolve, then only important tools require dedicated providers`() =
+        runTest {
+            val registry = DefaultConfirmationPreviewProviderRegistry(
+                setOf(
+                    RecordingProvider(
+                        key = "woocommerce_orders",
+                        priority = 100,
+                        supportedNames = setOf("orders_update", "orders_bulk_update"),
+                    ),
+                    RecordingProvider(
+                        key = "woocommerce_products",
+                        priority = 100,
+                        supportedNames = setOf("products_update", "products_bulk_update"),
+                    ),
+                    RecordingProvider(
+                        key = "woocommerce_product_variations",
+                        priority = 100,
+                        supportedNames = setOf("product_variations_update"),
+                    ),
+                    genericProvider,
+                )
+            )
+
+            importantUnsafeToolNames.forEach { toolName ->
+                val provider = registry.providerFor(context(descriptor(toolName)))
+
+                assertThat(provider.key)
+                    .`as`("$toolName should use a dedicated provider")
+                    .isNotEqualTo("generic_schema")
+            }
+
+            val simpleProvider = registry.providerFor(context(simpleUnsafeDescriptor()))
+
+            assertThat(simpleProvider.key).isEqualTo("generic_schema")
+        }
+
     private fun descriptor(
         name: String,
         inputSchema: JsonObject = inputSchema {
@@ -120,6 +157,16 @@ class ConfirmationPreviewProviderRegistryTest {
             string("warehouse_code", description = "Warehouse code.")
             integer("quantity_delta", description = "Quantity delta.")
             boolean("notify", description = "Whether to notify subscribers.")
+        },
+        safetyLevel = ToolSafetyLevel.UNSAFE,
+    )
+
+    private fun simpleUnsafeDescriptor(name: String = "first_party_simple_write") = ToolDescriptor(
+        name = name,
+        description = "Simple first-party unsafe write used for preview policy tests.",
+        inputSchema = inputSchema {
+            string("reason", description = "Reason for the change.")
+            boolean("enabled", description = "Whether the setting is enabled.")
         },
         safetyLevel = ToolSafetyLevel.UNSAFE,
     )
