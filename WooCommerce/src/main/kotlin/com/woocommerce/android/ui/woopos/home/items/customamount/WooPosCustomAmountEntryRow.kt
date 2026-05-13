@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.customamount
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,10 +13,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,18 +72,13 @@ fun WooPosCustomAmountEntryRow(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
                     .width(WooPosComponentSize.Large.value)
                     .fillMaxHeight()
                     .heightIn(min = WooPosComponentSize.Large.value),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(44.dp.toAdaptiveIconSize()),
-                )
+                TagWithPlusBadge()
             }
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
@@ -108,6 +106,41 @@ fun WooPosCustomAmountEntryRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun TagWithPlusBadge() {
+    Box {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_tag),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(44.dp.toAdaptiveIconSize()),
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = 6.dp, y = 6.dp)
+                .size(18.dp)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    shape = CircleShape,
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.onSurface,
+                    shape = CircleShape,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.size(12.dp),
+            )
         }
     }
 }
