@@ -283,11 +283,15 @@ class ProductsConfirmationPreviewProviderTest {
         arguments: JsonObject,
         dataSource: AIProductsDataSource? = null,
     ): ConfirmationPreview =
-        ProductsConfirmationPreviewProvider(dataSource ?: failingDataSource()).buildPreview(context(toolName, arguments))
+        ProductsConfirmationPreviewProvider(
+            dataSource ?: failingDataSource()
+        ).buildPreview(context(toolName, arguments))
 
     private suspend fun failingDataSource(): AIProductsDataSource {
         val dataSource: AIProductsDataSource = mock()
-        whenever(dataSource.getProduct(any())).thenReturn(Result.failure(IllegalStateException("No current product")))
+        whenever(dataSource.getProduct(any())).thenReturn(
+            Result.failure(IllegalStateException("No current product"))
+        )
         return dataSource
     }
 
