@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
@@ -306,6 +308,13 @@ private fun TaxesToggle(
         Switch(
             checked = isTaxable,
             onCheckedChange = null,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = colorResource(R.color.color_on_primary),
+                checkedTrackColor = colorResource(R.color.color_primary),
+                uncheckedThumbColor = colorResource(R.color.divider_color),
+                uncheckedTrackColor = colorResource(R.color.color_surface_elevated),
+                uncheckedBorderColor = colorResource(R.color.divider_color),
+            ),
         )
     }
 }
