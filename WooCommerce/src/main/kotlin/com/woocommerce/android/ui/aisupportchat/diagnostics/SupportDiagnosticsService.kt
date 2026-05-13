@@ -6,11 +6,13 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_PRODUCTS
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM_SERVERS
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
@@ -42,7 +44,7 @@ class SupportDiagnosticsService @Inject constructor(
             statuses = statuses.replaceAt(index, DiagnosticStatus(test, TestStatus.Running))
             emit(DiagnosticResult(issueType, statuses))
 
-            val outcome = runCheck(test).last()
+            val outcome = runCheckSafely(test)
             val newStatus = outcome.toTestStatus()
             statuses = statuses.replaceAt(index, DiagnosticStatus(test, newStatus))
 
@@ -80,6 +82,17 @@ class SupportDiagnosticsService @Inject constructor(
         STORE_ORDERS -> storeOrdersCheck()
         STORE_PRODUCTS -> storeProductsCheck()
     }
+
+    private suspend fun runCheckSafely(test: DiagnosticTest): ConnectivityCheckStatus =
+        runCatching { runCheck(test).last() }
+            .getOrElse { error ->
+                if (error is CancellationException) throw error
+
+                ConnectivityCheckStatus.Failure(
+                    error = FailureType.GENERIC,
+                    technicalDetails = error.message ?: error::class.java.simpleName
+                )
+            }
 
     private fun ConnectivityCheckStatus.toTestStatus(): TestStatus = when (this) {
         is ConnectivityCheckStatus.Success -> TestStatus.Passed

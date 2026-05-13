@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUse
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
@@ -97,6 +98,29 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
             assertThat(storeConnectionStatus).isInstanceOf(TestStatus.Pending::class.java)
             assertThat(storeOrdersStatus).isInstanceOf(TestStatus.Pending::class.java)
         }
+
+    @Test
+    fun `given check throws, when run, then failed status is emitted and retry is suggested`() = testBlocking {
+        whenever(internetCheck.invoke()).thenReturn(
+            flow {
+                emit(ConnectivityCheckStatus.InProgress)
+                throw IllegalStateException("No selected site")
+            }
+        )
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+        assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RetryDiagnostics)
+        assertThat(final.firstFailure).isEqualTo(
+            DiagnosticStatus(
+                test = INTERNET_CONNECTION,
+                status = TestStatus.Failed(
+                    failureType = FailureType.GENERIC,
+                    technicalDetails = "No selected site"
+                )
+            )
+        )
+    }
 
     @Test
     fun `given OTHER issue type, when run, then a single empty pending result is emitted`() = testBlocking {
