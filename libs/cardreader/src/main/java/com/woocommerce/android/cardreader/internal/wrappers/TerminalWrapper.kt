@@ -24,6 +24,8 @@ import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
+import com.stripe.stripeterminal.ktx.collectPaymentMethod
+import com.stripe.stripeterminal.ktx.confirmPaymentIntent
 import com.stripe.stripeterminal.ktx.connectReader
 import com.stripe.stripeterminal.ktx.createPaymentIntent
 import com.stripe.stripeterminal.ktx.disconnectReader
@@ -100,6 +102,20 @@ internal class TerminalWrapper {
         Terminal.getInstance().processPaymentIntent(
             paymentIntent,
             CollectPaymentIntentConfiguration.Builder().build(),
+            ConfirmPaymentIntentConfiguration.Builder().build()
+        )
+
+    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().collectPaymentMethod(
+            paymentIntent,
+            CollectPaymentIntentConfiguration.Builder()
+                .updatePaymentIntent(true)
+                .build()
+        )
+
+    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().confirmPaymentIntent(
+            paymentIntent,
             ConfirmPaymentIntentConfiguration.Builder().build()
         )
 

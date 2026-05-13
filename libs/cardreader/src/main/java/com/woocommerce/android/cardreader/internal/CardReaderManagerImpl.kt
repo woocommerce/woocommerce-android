@@ -131,10 +131,13 @@ internal class CardReaderManagerImpl(
         return paymentManager.createPaymentIntentOnly(paymentInfo)
     }
 
-    override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult {
+    override suspend fun retrieveAndCollectPayment(
+        clientSecret: String,
+        paymentInfo: PaymentInfo
+    ): RetrieveAndCollectResult {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         resetBluetoothDisplayMessage()
-        return paymentManager.retrieveAndCollectPayment(clientSecret)
+        return paymentManager.retrieveAndCollectPayment(clientSecret, paymentInfo)
     }
 
     override suspend fun refundInteracPayment(
