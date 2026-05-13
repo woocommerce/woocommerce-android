@@ -19,18 +19,18 @@ class HelpAiSupportChatEntryPointTest {
     }
 
     @Test
-    fun `given user is not wpcom authenticated, when selecting launch mode, then pre-login is used`() {
+    fun `given user is logged out, when selecting launch mode, then pre-login is used`() {
         val shouldUsePreLoginLaunchMode = HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
-            isWpComAuthenticated = false
+            isUserLoggedIn = false
         )
 
         assertThat(shouldUsePreLoginLaunchMode).isTrue()
     }
 
     @Test
-    fun `given user is wpcom authenticated, when selecting launch mode, then normal help mode is used`() {
+    fun `given user is logged in, when selecting launch mode, then normal help mode is used`() {
         val shouldUsePreLoginLaunchMode = HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
-            isWpComAuthenticated = true
+            isUserLoggedIn = true
         )
 
         assertThat(shouldUsePreLoginLaunchMode).isFalse()
