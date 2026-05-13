@@ -297,7 +297,8 @@ private fun TaxesToggle(
                 value = isTaxable,
                 role = Role.Switch,
                 onValueChange = onToggled,
-            ),
+            )
+            .padding(vertical = WooPosSpacing.Small.value),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
