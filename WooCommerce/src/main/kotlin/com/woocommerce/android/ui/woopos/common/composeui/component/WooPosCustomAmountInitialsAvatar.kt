@@ -10,7 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 /**
- * Renders the first character of [name] as an initials avatar on the primary container colour.
+ * Renders the first character of [name] as an initials avatar on the surface container colour.
  * Used for custom amount rows in cart, order details, and refund flows — matches the iOS
  * `CustomAmountAvatar`.
  */
@@ -22,14 +22,14 @@ fun WooPosCustomAmountInitialsAvatar(
 ) {
     val initial = name.trim().firstOrNull()?.uppercase().orEmpty()
     Box(
-        modifier = modifier.background(MaterialTheme.colorScheme.primaryContainer),
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerLow),
         contentAlignment = Alignment.Center,
     ) {
         WooPosText(
             text = initial,
             style = textStyle,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
