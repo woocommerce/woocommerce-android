@@ -70,16 +70,16 @@ fun WooPosCustomAmountEntryRow(
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .width(WooPosComponentSize.Medium.value)
+                    .width(WooPosComponentSize.Large.value)
                     .fillMaxHeight()
-                    .heightIn(min = WooPosComponentSize.Medium.value),
+                    .heightIn(min = WooPosComponentSize.Large.value),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_money_on_surface),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(36.dp.toAdaptiveIconSize()),
+                    modifier = Modifier.size(44.dp.toAdaptiveIconSize()),
                 )
             }
 
@@ -94,7 +94,7 @@ fun WooPosCustomAmountEntryRow(
                 WooPosText(
                     text = title,
                     maxLines = 1,
-                    style = WooPosTypography.BodySmall,
+                    style = WooPosTypography.BodyLarge,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -102,7 +102,7 @@ fun WooPosCustomAmountEntryRow(
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                 WooPosText(
                     text = subtitle,
-                    style = WooPosTypography.BodySmall,
+                    style = WooPosTypography.BodyLarge,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
