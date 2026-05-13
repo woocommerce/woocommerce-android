@@ -2,7 +2,6 @@ package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHandler
 import com.woocommerce.android.aiassistant.tools.customers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
@@ -132,14 +131,4 @@ class WooCommerceToolCatalogTest {
         assertThat(productsBulkUpdate).contains("Bulk writes require confirmation")
     }
 
-    @Test
-    fun `when descriptors are inspected, then every UNSAFE tool has a dedicated confirmation preview`() {
-        val confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder()
-        val unsafeToolNames = allHandlers
-            .map { it.descriptor }
-            .filter { it.safetyLevel == ToolSafetyLevel.UNSAFE }
-            .map { it.name }
-
-        assertThat(unsafeToolNames).allMatch(confirmationPreviewBuilder::supportsDedicatedPreview)
-    }
 }

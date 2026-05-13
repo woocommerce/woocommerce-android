@@ -3,12 +3,6 @@ package com.woocommerce.android.aiassistant.safety
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.aiassistant.R
-import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,19 +11,22 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class WooCommerceConfirmationPreviewRendererTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val builder = WooCommerceConfirmationPreviewBuilder()
     private val renderer = ConfirmationPreviewRenderer(context)
 
     @Test
     fun `given order status update that emails customer, when preview is rendered, then message uses summary`() {
-        val preview = builder.build(
-            toolCall(
-                name = "orders_update",
-                arguments = buildJsonObject {
-                    put("id", 42)
-                    put("status", "processing")
-                },
-            )
+        val preview = ConfirmationPreview(
+            message = string(
+                R.string.ai_assistant_confirmation_order_update_summary,
+                raw("42"),
+            ),
+            fields = listOf(
+                field(
+                    name = "status",
+                    label = R.string.ai_assistant_confirmation_field_status,
+                    value = raw("processing"),
+                )
+            ),
         )
 
         val rendered = renderer.render(preview)
@@ -57,17 +54,17 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given order status update, when preview is rendered, then summary and rows are exposed for inline cards`() {
-        val preview = builder.build(
-            toolCall(
-                name = "orders_update",
-                arguments = buildJsonObject {
-                    put("id", 42)
-                    put("status", "processing")
-                },
+        val preview = ConfirmationPreview(
+            message = string(
+                R.string.ai_assistant_confirmation_order_update_summary,
+                raw("42"),
             ),
-            snapshot = ConfirmationSnapshot(
-                currentValues = mapOf(
-                    "status" to "pending",
+            fields = listOf(
+                field(
+                    name = "status",
+                    label = R.string.ai_assistant_confirmation_field_status,
+                    value = raw("processing"),
+                    beforeValue = raw("pending"),
                 )
             ),
         )
@@ -88,19 +85,20 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given bulk update, when preview is rendered, then before values stay absent`() {
-        val preview = builder.build(
-            toolCall(
-                name = "products_bulk_update",
-                arguments = buildJsonObject {
-                    put("ids", JsonArray(listOf(JsonPrimitive(7))))
-                    put(
-                        "patch",
-                        buildJsonObject {
-                            put("status", "draft")
-                        },
-                    )
-                },
-            )
+        val preview = ConfirmationPreview(
+            message = quantity(
+                quantity = 1,
+                singular = R.string.ai_assistant_confirmation_products_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_products_bulk_update_title_multiple,
+            ),
+            fields = listOf(
+                field(
+                    name = "status",
+                    label = R.string.ai_assistant_confirmation_field_status,
+                    value = raw("draft"),
+                )
+            ),
+            isBulk = true,
         )
 
         val rendered = renderer.render(preview)
@@ -112,14 +110,20 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given one order in bulk update, when preview is rendered, then singular string is used`() {
-        val preview = builder.build(
-            toolCall(
-                name = "orders_bulk_update",
-                arguments = buildJsonObject {
-                    put("ids", JsonArray(listOf(JsonPrimitive(42))))
-                    put("patch", buildJsonObject { put("status", "completed") })
-                },
-            )
+        val preview = ConfirmationPreview(
+            message = quantity(
+                quantity = 1,
+                singular = R.string.ai_assistant_confirmation_orders_bulk_update_summary_single,
+                multiple = R.string.ai_assistant_confirmation_orders_bulk_update_summary_multiple,
+            ),
+            fields = listOf(
+                field(
+                    name = "status",
+                    label = R.string.ai_assistant_confirmation_field_status,
+                    value = raw("completed"),
+                )
+            ),
+            isBulk = true,
         )
 
         val rendered = renderer.render(preview)
@@ -136,19 +140,11 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given many products in bulk update, when preview is rendered, then multiple string is used`() {
-        val preview = builder.build(
-            toolCall(
-                name = "products_bulk_update",
-                arguments = buildJsonObject {
-                    put("ids", JsonArray(listOf(JsonPrimitive(7), JsonPrimitive(8))))
-                    put(
-                        "patch",
-                        buildJsonObject {
-                            put("regular_price", "19.99")
-                            put("status", "draft")
-                        },
-                    )
-                },
+        val preview = ConfirmationPreview(
+            message = quantity(
+                quantity = 2,
+                singular = R.string.ai_assistant_confirmation_products_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_products_bulk_update_title_multiple,
             )
         )
 
@@ -159,18 +155,18 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given product snapshot has name, when preview is rendered, then message includes product name`() {
-        val preview = builder.build(
-            toolCall(
-                name = "products_update",
-                arguments = buildJsonObject {
-                    put("id", 7)
-                    put("regular_price", "24.99")
-                },
+        val preview = ConfirmationPreview(
+            message = string(
+                R.string.ai_assistant_confirmation_product_update_title_with_name,
+                raw("Classic T-Shirt"),
+                raw("7"),
             ),
-            snapshot = ConfirmationSnapshot(
-                currentValues = mapOf(
-                    "name" to "Classic T-Shirt",
-                    "regular_price" to "19.99",
+            fields = listOf(
+                field(
+                    name = "regular_price",
+                    label = R.string.ai_assistant_confirmation_field_regular_price,
+                    value = raw("24.99"),
+                    beforeValue = raw("19.99"),
                 )
             ),
         )
@@ -190,20 +186,19 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given variation update, when preview is rendered, then nested messages are localized`() {
-        val preview = builder.build(
-            toolCall(
-                name = "product_variations_update",
-                arguments = buildJsonObject {
-                    put("product_id", 7)
-                    put("id", 8)
-                    put("regular_price", "19.99")
-                    put("sale_price", "")
-                    put("stock_quantity", 3)
-                    put("stock_status", "instock")
-                    put("sku", "VAR-8")
-                    put("status", "publish")
-                },
-            )
+        val preview = ConfirmationPreview(
+            message = string(
+                R.string.ai_assistant_confirmation_product_variation_update_title,
+                raw("8"),
+                raw("7"),
+            ),
+            fields = listOf(
+                field(
+                    name = "sale_price",
+                    label = R.string.ai_assistant_confirmation_field_sale_price,
+                    value = string(R.string.ai_assistant_confirmation_field_value_off),
+                )
+            ),
         )
 
         val rendered = renderer.render(preview)
@@ -220,11 +215,8 @@ class WooCommerceConfirmationPreviewRendererTest {
 
     @Test
     fun `given unknown tool, when preview is rendered, then generic resource omits raw arguments`() {
-        val preview = builder.build(
-            toolCall(
-                name = "custom_tool",
-                arguments = buildJsonObject { put("id", 1) },
-            )
+        val preview = ConfirmationPreview(
+            message = string(R.string.ai_assistant_confirmation_generic_tool_call, raw("custom_tool"))
         )
 
         val rendered = renderer.render(preview)
@@ -234,12 +226,29 @@ class WooCommerceConfirmationPreviewRendererTest {
         assertThat(rendered.fields).isEmpty()
     }
 
-    private fun toolCall(
+    private fun field(
         name: String,
-        arguments: JsonObject,
-    ) = ToolCall(
-        id = "call_1",
+        label: Int,
+        value: ConfirmationPreviewText,
+        beforeValue: ConfirmationPreviewText? = null,
+    ) = ConfirmationPreviewField(
         name = name,
-        arguments = arguments,
+        label = string(label),
+        value = value,
+        beforeValue = beforeValue,
     )
+
+    private fun raw(value: String) = ConfirmationPreviewText.Raw(value)
+
+    private fun string(
+        id: Int,
+        vararg args: ConfirmationPreviewText,
+    ) = ConfirmationPreviewText.Resource(id, args.toList())
+
+    private fun quantity(
+        quantity: Int,
+        singular: Int,
+        multiple: Int,
+        vararg args: ConfirmationPreviewText,
+    ) = ConfirmationPreviewText.Quantity(quantity, singular, multiple, args.toList())
 }
