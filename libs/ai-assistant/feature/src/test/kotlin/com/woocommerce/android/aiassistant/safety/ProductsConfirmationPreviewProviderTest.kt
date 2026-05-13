@@ -15,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -150,6 +151,23 @@ class ProductsConfirmationPreviewProviderTest {
                 )
             )
         }
+
+    @Test
+    fun `given product update, when preview is built, then only product data source is fetched`() = runTest {
+        val dataSource: AIProductsDataSource = mock()
+        whenever(dataSource.getProduct(7L)).thenReturn(Result.success(product()))
+
+        preview(
+            toolName = "products_update",
+            arguments = buildJsonObject {
+                put("id", 7)
+                put("regular_price", "24.99")
+            },
+            dataSource = dataSource,
+        )
+
+        verify(dataSource).getProduct(7L)
+    }
 
     @Test
     fun `given product update has wrong-shaped primitive fields, when preview is built, then fields are omitted`() =

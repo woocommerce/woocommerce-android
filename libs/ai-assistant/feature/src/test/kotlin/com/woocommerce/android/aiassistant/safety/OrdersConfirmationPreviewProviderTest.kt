@@ -15,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -240,6 +241,23 @@ class OrdersConfirmationPreviewProviderTest {
             )
             assertThat(preview.isBulk).isFalse()
         }
+
+    @Test
+    fun `given order update, when preview is built, then only order data source is fetched`() = runTest {
+        val dataSource: AIOrdersDataSource = mock()
+        whenever(dataSource.getOrder(42L)).thenReturn(Result.success(order(status = "wc-pending")))
+
+        preview(
+            toolName = "orders_update",
+            arguments = buildJsonObject {
+                put("id", 42)
+                put("status", "processing")
+            },
+            dataSource = dataSource,
+        )
+
+        verify(dataSource).getOrder(42L)
+    }
 
     @Test
     fun `given order update has wrong-shaped primitive fields, when preview is built, then fields are omitted`() =

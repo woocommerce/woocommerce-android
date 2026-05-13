@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -69,6 +70,23 @@ class ProductVariationsConfirmationPreviewProviderTest {
                 )
             )
         }
+
+    @Test
+    fun `given variation update, when preview is built, then only variation data source is fetched`() = runTest {
+        val dataSource: AIProductVariationsDataSource = mock()
+        whenever(dataSource.getVariation(7L, 8L)).thenReturn(Result.success(variation()))
+
+        preview(
+            arguments = buildJsonObject {
+                put("product_id", 7)
+                put("id", 8)
+                put("sku", "VAR-8")
+            },
+            dataSource = dataSource,
+        )
+
+        verify(dataSource).getVariation(7L, 8L)
+    }
 
     @Test
     fun `given variation update has wrong-shaped product id, when preview is built, then fallback is used`() =

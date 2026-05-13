@@ -4,12 +4,19 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
+import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 
 class ConfirmationPreviewProviderRegistryTest {
     private val genericProvider = GenericSchemaConfirmationPreviewProvider()
@@ -135,6 +142,37 @@ class ConfirmationPreviewProviderRegistryTest {
             val provider = registry.providerFor(context(externalUnsafeDescriptor()))
 
             assertThat(provider.key).isEqualTo("generic_schema")
+        }
+
+    @Test
+    fun `given generic fallback descriptor, when preview is built, then no WooCommerce data source is touched`() =
+        runTest {
+            val ordersDataSource: AIOrdersDataSource = mock()
+            val productsDataSource: AIProductsDataSource = mock()
+            val variationsDataSource: AIProductVariationsDataSource = mock()
+            val registry = DefaultConfirmationPreviewProviderRegistry(
+                setOf(
+                    OrdersConfirmationPreviewProvider(ordersDataSource),
+                    ProductsConfirmationPreviewProvider(productsDataSource),
+                    ProductVariationsConfirmationPreviewProvider(variationsDataSource),
+                    GenericSchemaConfirmationPreviewProvider(),
+                )
+            )
+            val descriptor = externalUnsafeDescriptor()
+            val context = context(
+                descriptor = descriptor,
+                arguments = buildJsonObject {
+                    put("warehouse_code", "A1")
+                    put("quantity_delta", -3)
+                    put("notify", false)
+                },
+            )
+
+            registry.buildPreview(context)
+
+            verify(ordersDataSource, never()).getOrder(any())
+            verify(productsDataSource, never()).getProduct(any())
+            verify(variationsDataSource, never()).getVariation(any(), any())
         }
 
     private fun descriptor(
