@@ -36,6 +36,8 @@ class WooPosGroupRefundItems @Inject constructor() {
             val originalFee = requireNotNull(order.feesLines.find { it.id == feeRow.orderItemId }) {
                 "Fee line with ID ${feeRow.orderItemId} not found in order ${order.id}."
             }
+            // WooCommerce REST refunds API uses `quantity` only for line items; fee refunds are
+            // identified by `id` + `refundTotal`, so quantity is always 0 for a fee row.
             RefundRequestItem(
                 itemId = originalFee.id,
                 quantity = 0,

@@ -26,7 +26,7 @@ class WooPosCalculateRefundTax @Inject constructor() {
                 calculateTotalTaxesForItem(orderItemId, items.size, order, numberOfDecimals, roundAtSubtotal)
             }
 
-        val lumpSumTax = lumpSumItems.sumOf { it.unitTax }
+        val lumpSumTax = lumpSumItems.sumOf { it.unitTax.setScale(numberOfDecimals, RoundingMode.HALF_UP) }
 
         return (productTax + lumpSumTax).setScale(numberOfDecimals, RoundingMode.HALF_UP)
     }

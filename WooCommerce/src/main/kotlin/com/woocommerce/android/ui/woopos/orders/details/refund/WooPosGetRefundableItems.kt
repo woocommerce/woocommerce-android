@@ -66,6 +66,9 @@ class WooPosGetRefundableItems @Inject constructor(
 
     private fun buildFeeRows(order: Order, refunds: List<Refund>): List<WooPosRefundableItem> {
         if (order.feesLines.isEmpty()) return emptyList()
+        // Fees are always refunded whole — POS does not split a single fee across refunds. Any past refund
+        // touching a fee removes it from the refundable list. If the back-end ever introduces partial-fee
+        // refunds, this needs to subtract the refunded amount instead.
         val refundedFeeIds = refunds.flatMap { it.feeLines }.map { it.id }.toSet()
         return order.feesLines
             .filter { it.id !in refundedFeeIds }
