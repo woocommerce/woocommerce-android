@@ -83,7 +83,7 @@ fun WooPosCustomAmountFormScreen(
         }
 
         Surface(
-            color = MaterialTheme.colorScheme.surfaceBright,
+            color = MaterialTheme.colorScheme.surface,
             modifier = Modifier.fillMaxWidth(),
         ) {
             FormSubmitButton(
