@@ -29,7 +29,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_APP_LOGIN_SOURCE_DEEPLINK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
@@ -1103,18 +1102,12 @@ class LoginActivity :
         val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
         when {
             siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
-                trackAppLoginSuccess(
-                    flow = VALUE_WP_COM,
-                    source = VALUE_APP_LOGIN_SOURCE_DEEPLINK,
-                )
+                trackAppLoginSuccess(flow = VALUE_WP_COM)
                 showAppLoginWpComEmail(siteUrl = siteUrl, wpComEmail = wpComEmail)
             }
 
             siteUrl.isNotEmpty() && username.isNotEmpty() -> {
-                trackAppLoginSuccess(
-                    flow = VALUE_NO_WP_COM,
-                    source = VALUE_APP_LOGIN_SOURCE_DEEPLINK,
-                )
+                trackAppLoginSuccess(flow = VALUE_NO_WP_COM)
                 showAppLoginSiteCredentials(siteUrl = siteUrl, username = username)
             }
 
@@ -1129,13 +1122,10 @@ class LoginActivity :
         }
     }
 
-    private fun trackAppLoginSuccess(flow: String, source: String) {
+    private fun trackAppLoginSuccess(flow: String) {
         AnalyticsTracker.track(
             stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-            properties = mapOf(
-                KEY_FLOW to flow,
-                KEY_SOURCE to source,
-            )
+            properties = mapOf(KEY_FLOW to flow)
         )
     }
 

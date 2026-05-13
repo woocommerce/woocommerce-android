@@ -301,7 +301,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_WP_COM = "wp_com"
         const val VALUE_NO_WP_COM = "no_wp_com"
         const val VALUE_PREVIOUS_PERIOD = "previous_period"
-        const val VALUE_APP_LOGIN_SOURCE_DEEPLINK = "deeplink"
         const val VALUE_APP_LOGIN_SOURCE_QR = "qr"
 
         const val KEY_FLOW = "flow"
