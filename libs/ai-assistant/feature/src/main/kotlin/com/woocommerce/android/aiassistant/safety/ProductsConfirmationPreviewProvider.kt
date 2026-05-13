@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.safety
 
+import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
@@ -15,15 +16,43 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
 
     override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview =
         when (context.descriptor.name) {
-            PRODUCTS_UPDATE -> WooCommerceConfirmationPreviewFormatters.productUpdatePreview(
+            PRODUCTS_UPDATE -> productUpdatePreview(
                 arguments = context.request.arguments,
                 currentValues = currentProductValues(context.request.arguments),
             )
-            PRODUCTS_BULK_UPDATE -> WooCommerceConfirmationPreviewFormatters.productsBulkUpdatePreview(
-                context.request.arguments
-            )
+            PRODUCTS_BULK_UPDATE -> productsBulkUpdatePreview(context.request.arguments)
             else -> error("Unsupported product confirmation preview: ${context.descriptor.name}")
         }
+
+    private fun productUpdatePreview(
+        arguments: JsonObject,
+        currentValues: Map<String, String>?,
+    ): ConfirmationPreview {
+        val id = arguments.longValue("id")
+            ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_product_update_generic))
+        val fields = productFields(arguments, currentValues)
+        return ConfirmationPreview(
+            message = productUpdateTitle(id, currentValues),
+            fields = fields,
+        )
+    }
+
+    private fun productsBulkUpdatePreview(arguments: JsonObject): ConfirmationPreview {
+        val ids = arguments.longArrayValue("ids")
+            ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_products_bulk_update_generic))
+        val patch = arguments.objectValue("patch")
+            ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_products_bulk_update_generic))
+        val fields = productFields(patch, currentValues = null)
+        return ConfirmationPreview(
+            message = quantity(
+                quantity = ids.size,
+                singular = R.string.ai_assistant_confirmation_products_bulk_update_title_single,
+                multiple = R.string.ai_assistant_confirmation_products_bulk_update_title_multiple,
+            ),
+            fields = fields,
+            isBulk = true,
+        )
+    }
 
     private suspend fun currentProductValues(arguments: JsonObject): Map<String, String>? =
         arguments.longValue("id")
