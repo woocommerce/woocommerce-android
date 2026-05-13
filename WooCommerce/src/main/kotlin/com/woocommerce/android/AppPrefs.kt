@@ -150,6 +150,7 @@ object AppPrefs {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
     }
 
@@ -342,6 +343,19 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var isAiAssistantEarlyAccessNoticeDismissed: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
+            default = false,
+        )
+        set(value) {
+            val committed = getPreferences()
+                .edit()
+                .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
+                .commit()
+            check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
