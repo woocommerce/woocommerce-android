@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.safety
 
+import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
 import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
@@ -14,10 +15,29 @@ internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
         context.descriptor.name == PRODUCT_VARIATIONS_UPDATE
 
     override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview =
-        WooCommerceConfirmationPreviewFormatters.productVariationUpdatePreview(
+        productVariationUpdatePreview(
             arguments = context.request.arguments,
             currentValues = currentVariationValues(context.request.arguments),
         )
+
+    private fun productVariationUpdatePreview(
+        arguments: JsonObject,
+        currentValues: Map<String, String>?,
+    ): ConfirmationPreview {
+        val productId = arguments.longValue("product_id")
+            ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_product_variation_update_generic))
+        val variationId = arguments.longValue("id")
+            ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_product_variation_update_generic))
+        val fields = variationFields(arguments, currentValues)
+        return ConfirmationPreview(
+            message = string(
+                R.string.ai_assistant_confirmation_product_variation_update_title,
+                raw(variationId.toString()),
+                raw(productId.toString()),
+            ),
+            fields = fields,
+        )
+    }
 
     private suspend fun currentVariationValues(arguments: JsonObject): Map<String, String>? {
         val productId = arguments.longValue("product_id") ?: return null
