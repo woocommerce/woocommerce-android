@@ -2408,10 +2408,7 @@
 
     <string name="ai_support_chat_help_row_title">AI Troubleshooting</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
-    <string name="ai_support_chat_history_help_row_title">Chat History</string>
-    <string name="ai_support_chat_history_help_row_subtitle">Resume previous AI troubleshooting chats</string>
     <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
-    <string name="ai_support_chat_history_title">Chat History</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
     <string name="ai_support_chat_greeting">Hi! Tell me what\'s happening with your store, and I\'ll help troubleshoot it.</string>
     <string name="ai_support_chat_input_hint">Message AI Troubleshooting</string>
@@ -2434,11 +2431,6 @@
     <string name="ai_support_chat_diagnostics_status_running">Running</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passed</string>
     <string name="ai_support_chat_diagnostics_status_failed">Failed</string>
-    <string name="ai_support_chat_load_error">Unable to load this chat. Check your connection and try again.</string>
-    <string name="ai_support_chat_history_empty">No AI troubleshooting chats yet.</string>
-    <string name="ai_support_chat_history_load_error">Unable to load chat history. Check your connection and try again.</string>
-    <string name="ai_support_chat_history_delete_error">Unable to delete chat. Try again.</string>
-    <string name="ai_support_chat_history_fallback_title">AI troubleshooting chat</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
     <string name="ai_support_chat_connectivity_action">Ask AI</string>
 
