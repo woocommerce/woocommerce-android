@@ -149,6 +149,44 @@ class GenericSchemaConfirmationPreviewProviderTest {
             )
         }
 
+    @Test
+    fun `given unknown external unsafe descriptor, when preview is built repeatedly, then output is deterministic`() =
+        runTest {
+            val descriptor = externalUnsafeDescriptor()
+            val arguments = buildJsonObject {
+                put("warehouse_code", "A1")
+                put("quantity_delta", -3)
+                put("notify", false)
+                putJsonObject("ignored_payload") { put("raw", true) }
+            }
+            val context = context(descriptor, arguments)
+
+            val first = genericProvider.buildPreview(context)
+            val second = genericProvider.buildPreview(context)
+
+            assertThat(first).isEqualTo(second)
+            assertThat(first.fields.map { it.name }).containsExactly(
+                "notify",
+                "quantity_delta",
+                "warehouse_code",
+            )
+            assertThat(first.fields.map { it.label }).containsExactly(
+                ConfirmationPreviewText.Raw("Notify"),
+                ConfirmationPreviewText.Raw("Quantity Delta"),
+                ConfirmationPreviewText.Raw("Warehouse Code"),
+            )
+            assertThat(first.fields.map { it.value }).containsExactly(
+                ConfirmationPreviewText.Raw("false"),
+                ConfirmationPreviewText.Raw("-3"),
+                ConfirmationPreviewText.Raw("A1"),
+            )
+            assertThat(first.fields.map { (it.value as ConfirmationPreviewText.Raw).value })
+                .allSatisfy { renderedValue ->
+                    assertThat(renderedValue).doesNotContain("{")
+                    assertThat(renderedValue).doesNotContain("}")
+                }
+        }
+
     private fun request(
         toolName: String,
         arguments: JsonObject,

@@ -118,6 +118,25 @@ class ConfirmationPreviewProviderRegistryTest {
             assertThat(simpleProvider.key).isEqualTo("generic_schema")
         }
 
+    @Test
+    fun `given unknown external unsafe descriptor, when provider resolves, then generic provider is selected`() =
+        runTest {
+            val registry = DefaultConfirmationPreviewProviderRegistry(
+                setOf(
+                    RecordingProvider(
+                        key = "woocommerce_orders",
+                        priority = 100,
+                        supportedNames = setOf("orders_update", "orders_bulk_update"),
+                    ),
+                    genericProvider,
+                )
+            )
+
+            val provider = registry.providerFor(context(externalUnsafeDescriptor()))
+
+            assertThat(provider.key).isEqualTo("generic_schema")
+        }
+
     private fun descriptor(
         name: String,
         inputSchema: JsonObject = inputSchema {
