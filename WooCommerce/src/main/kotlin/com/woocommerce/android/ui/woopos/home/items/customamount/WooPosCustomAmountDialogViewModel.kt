@@ -25,6 +25,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     private val _state = MutableStateFlow(WooPosCustomAmountDialogState())
     val state: StateFlow<WooPosCustomAmountDialogState> = _state.asStateFlow()
 
+    @Volatile
     private var hasInitializedFor: Any? = null
 
     init {
@@ -74,15 +75,19 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
         _state.value = current.copy(isSubmitting = true)
         viewModelScope.launch {
-            childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.CustomAmountSubmitted(
-                    name = current.name.trim().ifBlank { defaultName() },
-                    amount = amount,
-                    isTaxable = current.isTaxable,
-                    editingItemNumber = editingItemNumber,
+            try {
+                childrenToParentEventSender.sendToParent(
+                    ChildToParentEvent.CustomAmountSubmitted(
+                        name = current.name.trim().ifBlank { defaultName() },
+                        amount = amount,
+                        isTaxable = current.isTaxable,
+                        editingItemNumber = editingItemNumber,
+                    )
                 )
-            )
-            hasInitializedFor = null
+                hasInitializedFor = null
+            } finally {
+                _state.value = _state.value.copy(isSubmitting = false)
+            }
         }
     }
 

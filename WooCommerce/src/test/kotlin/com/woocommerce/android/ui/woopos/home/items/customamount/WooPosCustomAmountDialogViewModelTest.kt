@@ -26,7 +26,7 @@ class WooPosCustomAmountDialogViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val getCurrencyFormattingParameters: WooPosGetCurrencyFormattingParameters = mock {
-        on { invoke() }.thenReturn(
+        onBlocking { invoke() }.thenReturn(
             WooPosCurrencyFormattingParameters(
                 currencySymbol = "$",
                 currencyPosition = CurrencyPosition.LEFT,
