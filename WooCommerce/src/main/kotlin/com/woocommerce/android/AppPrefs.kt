@@ -150,6 +150,7 @@ object AppPrefs {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
     }
 
@@ -230,9 +231,7 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
 
-        IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
-
-        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
     }
 
     fun init(context: Context) {
@@ -347,13 +346,13 @@ object AppPrefs {
 
     var isAiAssistantEarlyAccessNoticeDismissed: Boolean
         get() = getBoolean(
-            key = UndeletablePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
+            key = DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
             default = false,
         )
         set(value) {
             val committed = getPreferences()
                 .edit()
-                .putBoolean(UndeletablePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
+                .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
                 .commit()
             check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
         }
