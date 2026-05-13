@@ -87,6 +87,11 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
+        if (notificationModel.type == NotificationModel.Kind.UNKNOWN) {
+            wooLog.d(NOTIFICATIONS, "Discarding push notification with unknown type")
+            return
+        }
+
         val notification = notificationModel.toAppModel(resourceProvider)
         val notificationSource = messageData.detectNotificationSource(notification.remoteNoteId)
         val pushUserId = messageData[PUSH_ARG_USER]
