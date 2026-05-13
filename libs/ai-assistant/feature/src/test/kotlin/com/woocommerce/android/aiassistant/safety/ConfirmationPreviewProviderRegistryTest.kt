@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.safety
 
+import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
@@ -173,6 +174,65 @@ class ConfirmationPreviewProviderRegistryTest {
             verify(ordersDataSource, never()).getOrder(any())
             verify(productsDataSource, never()).getProduct(any())
             verify(variationsDataSource, never()).getVariation(any(), any())
+        }
+
+    @Test
+    fun `given schema based unsafe tool not named by dedicated providers, when preview is built, then generic fallback handles it`() =
+        runTest {
+            val futureDescriptor = ToolDescriptor(
+                name = "mcp.future_schema_tool",
+                description = "Future schema-based unsafe tool.",
+                inputSchema = inputSchema {
+                    string("target_id", description = "Target ID.")
+                    string("new_value", description = "New value.")
+                },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val context = context(
+                descriptor = futureDescriptor,
+                arguments = buildJsonObject {
+                    put("target_id", "abc-123")
+                    put("new_value", "enabled")
+                },
+            )
+            val registry = DefaultConfirmationPreviewProviderRegistry(
+                setOf(
+                    RecordingProvider(
+                        key = "woocommerce_orders",
+                        priority = 100,
+                        supportedNames = setOf("orders_update", "orders_bulk_update"),
+                    ),
+                    RecordingProvider(
+                        key = "woocommerce_products",
+                        priority = 100,
+                        supportedNames = setOf("products_update", "products_bulk_update"),
+                    ),
+                    genericProvider,
+                )
+            )
+
+            val provider = registry.providerFor(context)
+            val preview = registry.buildPreview(context)
+
+            assertThat(provider.key).isEqualTo("generic_schema")
+            assertThat(preview.message).isEqualTo(
+                ConfirmationPreviewText.Resource(
+                    R.string.ai_assistant_confirmation_generic_tool_call,
+                    listOf(ConfirmationPreviewText.Raw("mcp.future_schema_tool")),
+                )
+            )
+            assertThat(preview.fields).containsExactly(
+                ConfirmationPreviewField(
+                    name = "new_value",
+                    label = ConfirmationPreviewText.Raw("New Value"),
+                    value = ConfirmationPreviewText.Raw("enabled"),
+                ),
+                ConfirmationPreviewField(
+                    name = "target_id",
+                    label = ConfirmationPreviewText.Raw("Target Id"),
+                    value = ConfirmationPreviewText.Raw("abc-123"),
+                ),
+            )
         }
 
     private fun descriptor(
