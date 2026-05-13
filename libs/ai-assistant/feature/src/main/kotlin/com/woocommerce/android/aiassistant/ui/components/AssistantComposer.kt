@@ -64,7 +64,7 @@ internal fun AssistantComposer(
         ) {
             if (showPendingHint) {
                 Text(
-                    text = stringResource(R.string.assistant_chat_pending_confirmation_hint),
+                    text = stringResource(R.string.ai_assistant_chat_pending_confirmation_hint),
                     modifier = Modifier.padding(horizontal = 14.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodySmall,
@@ -136,7 +136,7 @@ private fun AssistantComposerInput(
             Box(contentAlignment = Alignment.CenterStart) {
                 if (inputText.isEmpty()) {
                     Text(
-                        text = stringResource(R.string.assistant_chat_placeholder),
+                        text = stringResource(R.string.ai_assistant_chat_placeholder),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -167,9 +167,9 @@ private fun AssistantComposerActionButton(
         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
     }
     val contentDescription = if (shouldShowStopControl) {
-        stringResource(R.string.assistant_chat_stop_content_description)
+        stringResource(R.string.ai_assistant_chat_stop_content_description)
     } else {
-        stringResource(R.string.assistant_chat_send_content_description)
+        stringResource(R.string.ai_assistant_chat_send_content_description)
     }
     val iconRes = if (shouldShowStopControl) {
         R.drawable.ic_assistant_composer_stop
