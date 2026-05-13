@@ -68,9 +68,7 @@
     <string name="ai_assistant_stats_card_metric_unavailable">Unavailable</string>
     <string name="ai_assistant_stats_card_open_content_description">Open analytics for %1$s</string>
     <string name="ai_assistant_chat_placeholder">Ask about your store</string>
-    <string name="ai_assistant_chat_send">Send</string>
     <string name="ai_assistant_chat_send_content_description">Send message</string>
-    <string name="ai_assistant_chat_stop">Stop</string>
     <string name="ai_assistant_chat_stop_content_description">Stop response</string>
     <string name="ai_assistant_chat_pending_confirmation_hint">Resolve the pending change above.</string>
     <string name="ai_assistant_chat_retry">Retry</string>
