@@ -1,27 +1,49 @@
 package com.woocommerce.android.aiassistant.tools
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
+import com.woocommerce.android.aiassistant.safety.DefaultConfirmationPreviewProviderRegistry
+import com.woocommerce.android.aiassistant.safety.GenericSchemaConfirmationPreviewProvider
+import com.woocommerce.android.aiassistant.safety.OrdersConfirmationPreviewProvider
+import com.woocommerce.android.aiassistant.safety.ProductVariationsConfirmationPreviewProvider
+import com.woocommerce.android.aiassistant.safety.ProductsConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.tools.analytics.AnalyticsOrdersToolHandler
 import com.woocommerce.android.aiassistant.tools.customers.CustomersListToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.ShowCardsToolHandler
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolver
+import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.OrdersBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersGetToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersListToolHandler
 import com.woocommerce.android.aiassistant.tools.orders.OrdersUpdateToolHandler
+import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
+import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.tools.products.ProductVariationsToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductVariationsUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsBulkUpdateToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsGetToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsListToolHandler
 import com.woocommerce.android.aiassistant.tools.products.ProductsUpdateToolHandler
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class WooCommerceToolCatalogTest {
     private val diagnosticsFactory = testToolFailureDiagnosticsFactory()
+    private val ordersDataSource: AIOrdersDataSource = mock()
+    private val productsDataSource: AIProductsDataSource = mock()
+    private val variationsDataSource: AIProductVariationsDataSource = mock()
 
     private val allHandlers: Set<AssistantToolHandler> = setOf(
         OrdersListToolHandler(mock(), mock(), diagnosticsFactory),
@@ -131,4 +153,84 @@ class WooCommerceToolCatalogTest {
         assertThat(productsBulkUpdate).contains("Bulk writes require confirmation")
     }
 
+    @Test
+    fun `when descriptors are inspected, then every UNSAFE tool has a confirmation preview path`() =
+        runTest {
+            stubSingleEntityLookupsToFail()
+            val registry = previewRegistry()
+            val unsafeDescriptors = allHandlers
+                .map { it.descriptor }
+                .filter { it.safetyLevel == ToolSafetyLevel.UNSAFE }
+
+            val previews = unsafeDescriptors.map { descriptor ->
+                registry.buildPreview(previewContextFor(descriptor))
+            }
+
+            assertThat(previews).hasSameSizeAs(unsafeDescriptors)
+            previews.forEach { preview ->
+                assertThat(preview.message).isNotNull()
+            }
+        }
+
+    private fun previewRegistry() = DefaultConfirmationPreviewProviderRegistry(
+        setOf(
+            OrdersConfirmationPreviewProvider(ordersDataSource),
+            ProductsConfirmationPreviewProvider(productsDataSource),
+            ProductVariationsConfirmationPreviewProvider(variationsDataSource),
+            GenericSchemaConfirmationPreviewProvider(),
+        )
+    )
+
+    private suspend fun stubSingleEntityLookupsToFail() {
+        whenever(ordersDataSource.getOrder(42L))
+            .thenReturn(Result.failure(IllegalStateException("not needed for path test")))
+        whenever(productsDataSource.getProduct(7L))
+            .thenReturn(Result.failure(IllegalStateException("not needed for path test")))
+        whenever(variationsDataSource.getVariation(7L, 8L))
+            .thenReturn(Result.failure(IllegalStateException("not needed for path test")))
+    }
+
+    private fun confirmationRequestFor(descriptor: ToolDescriptor) = ConfirmationRequest(
+        id = "confirmation-${descriptor.name}",
+        toolCallId = "call-${descriptor.name}",
+        toolName = descriptor.name,
+        arguments = argumentsForUnsafeTool(descriptor.name),
+        safetyLevel = descriptor.safetyLevel,
+    )
+
+    private fun previewContextFor(descriptor: ToolDescriptor) = ConfirmationPreviewContext(
+        request = confirmationRequestFor(descriptor),
+        descriptor = descriptor,
+    )
+
+    private fun argumentsForUnsafeTool(toolName: String): JsonObject = when (toolName) {
+        "orders_update" -> buildJsonObject {
+            put("id", 42)
+            put("status", "processing")
+        }
+        "orders_bulk_update" -> buildJsonObject {
+            putJsonArray("ids") {
+                add(1)
+                add(2)
+            }
+            putJsonObject("patch") { put("status", "completed") }
+        }
+        "products_update" -> buildJsonObject {
+            put("id", 7)
+            put("regular_price", "24.99")
+        }
+        "products_bulk_update" -> buildJsonObject {
+            putJsonArray("ids") {
+                add(7)
+                add(8)
+            }
+            putJsonObject("patch") { put("status", "draft") }
+        }
+        "product_variations_update" -> buildJsonObject {
+            put("product_id", 7)
+            put("id", 8)
+            put("sku", "VAR-8")
+        }
+        else -> buildJsonObject { put("reason", "Preview") }
+    }
 }
