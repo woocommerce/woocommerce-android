@@ -223,4 +223,6 @@ private fun PaymentInfo.toCollectPaymentRequest(requestId: String): CollectPayme
         orderKey = orderKey,
         feeAmount = feeAmount,
         countryCode = countryCode,
+        cardPresentCaptureMethod = cardPresentCaptureMethod,
+        terminalPaymentPreparation = terminalPaymentPreparation,
     )

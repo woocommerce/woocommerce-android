@@ -48,6 +48,16 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         return response.toWooPayload()
     }
 
+    suspend fun fetchSiteRootAPIRoutes(site: SiteModel): WooPayload<RootWPAPIRestResponse> {
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = "/",
+            params = mapOf("_fields" to "routes"),
+            clazz = RootWPAPIRestResponse::class.java
+        )
+        return response.toWooPayload()
+    }
+
     /**
      * Makes a GET call to `/wc/v3/settings/general` via the Jetpack tunnel (see [JetpackTunnelGsonRequest]),
      * retrieving site settings for the given WooCommerce [SiteModel].

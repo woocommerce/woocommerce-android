@@ -19,6 +19,9 @@ class WooPosSupportedCountries @Inject constructor(
             if (featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)) {
                 addAll(EU_EXTENDED_PAIRS)
             }
+            if (featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)) {
+                add(AUSTRALIA_PAIR)
+            }
         }
     }
 
@@ -43,5 +46,6 @@ class WooPosSupportedCountries @Inject constructor(
             "pt" to "eur",
             "es" to "eur",
         )
+        val AUSTRALIA_PAIR = "au" to "aud"
     }
 }
