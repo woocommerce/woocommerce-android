@@ -48,7 +48,8 @@ object WooPosAnalyticsEventConstant {
         SEARCH_RESULT("search"),
         SEARCH_RESULT_LOCAL("search_result_local"),
         POPULAR_PRODUCTS("pre_search"),
-        BARCODE_SCANNER("scanner");
+        BARCODE_SCANNER("scanner"),
+        CUSTOM_AMOUNT_FORM("custom_amount_form");
 
         override fun toString(): String {
             return value

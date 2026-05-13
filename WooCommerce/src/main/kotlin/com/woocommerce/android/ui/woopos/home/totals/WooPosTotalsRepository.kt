@@ -44,11 +44,12 @@ class WooPosTotalsRepository @Inject constructor(
 
         return withContext(IO) {
             check(itemClickedDataList.all { it.id >= 0 }) { "Invalid item ID" }
-            orderCreationJob = async {
+            val job = async {
                 val order = createOrder(itemClickedDataList)
                 orderCreateEditRepository.createOrUpdateOrder(order, source = OrderCreationSource.POINT_OF_SALE)
             }
-            orderCreationJob!!.await()
+            orderCreationJob = job
+            job.await()
         }
     }
 
@@ -92,7 +93,9 @@ class WooPosTotalsRepository @Inject constructor(
             .groupingBy { it.id }
             .eachCount()
             .mapNotNull { (id, quantity) ->
-                val itemData = itemClickedDataList.find { it.id == id }!!
+                val itemData = requireNotNull(itemClickedDataList.find { it.id == id }) {
+                    "Item with id $id missing from itemClickedDataList after grouping"
+                }
                 when (itemData) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> createSimpleProductOrderItem(
                         quantity,

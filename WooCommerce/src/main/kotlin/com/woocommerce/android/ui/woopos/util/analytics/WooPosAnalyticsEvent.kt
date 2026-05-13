@@ -440,7 +440,11 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
             constructor(item: WooPosCartItemViewState) : this(
                 source = null,
-                sourceType = ItemsListSourceType.BARCODE_SCANNER,
+                sourceType = if (item is WooPosCartItemViewState.CustomAmount) {
+                    ItemsListSourceType.CUSTOM_AMOUNT_FORM
+                } else {
+                    ItemsListSourceType.BARCODE_SCANNER
+                },
                 itemType = when (item) {
                     is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
