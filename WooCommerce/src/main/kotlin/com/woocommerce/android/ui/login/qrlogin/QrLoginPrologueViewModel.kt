@@ -39,7 +39,7 @@ class QrLoginPrologueViewModel @Inject constructor(
         if (isCameraPermissionGranted) {
             triggerEvent(Dispatch.NavigateToScanner)
         } else {
-            triggerEvent(Dispatch.LaunchCameraPermissionRequest)
+            requestCameraPermission()
         }
     }
 
@@ -55,37 +55,38 @@ class QrLoginPrologueViewModel @Inject constructor(
 
     fun onCameraPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         if (granted) {
+            unifiedLoginTracker.trackClick(Click.QR_CAMERA_PERMISSION_GRANTED)
             cameraPermissionDenial.value = CameraDenialState.Hidden
             triggerEvent(Dispatch.NavigateToScanner)
             return
         }
         unifiedLoginTracker.trackClick(Click.QR_CAMERA_PERMISSION_DENIED)
-        val next = if (shouldShowRationale) {
+        cameraPermissionDenial.value = if (shouldShowRationale) {
             CameraDenialState.FirstDenial
         } else {
             CameraDenialState.PermanentlyDenied
         }
-        cameraPermissionDenial.value = next
-        unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_CAMERA_PERMISSION)
     }
 
     fun onCameraDenialPrimaryClicked() {
         val current = cameraPermissionDenial.value
         if (current == CameraDenialState.Hidden) return
-        unifiedLoginTracker.trackClick(Click.QR_CAMERA_PERMISSION_PRIMARY)
         cameraPermissionDenial.value = CameraDenialState.Hidden
         when (current) {
-            CameraDenialState.FirstDenial -> triggerEvent(Dispatch.LaunchCameraPermissionRequest)
+            CameraDenialState.FirstDenial -> requestCameraPermission()
             CameraDenialState.PermanentlyDenied -> triggerEvent(Dispatch.OpenAppSettings)
             CameraDenialState.Hidden -> Unit
         }
     }
 
     fun onCameraDenialCancelled() {
-        val current = cameraPermissionDenial.value
-        if (current == CameraDenialState.Hidden) return
-        unifiedLoginTracker.trackClick(Click.DISMISS)
+        if (cameraPermissionDenial.value == CameraDenialState.Hidden) return
         cameraPermissionDenial.value = CameraDenialState.Hidden
+    }
+
+    private fun requestCameraPermission() {
+        unifiedLoginTracker.trackClick(Click.QR_CAMERA_PERMISSION_DIALOG_SHOWN)
+        triggerEvent(Dispatch.LaunchCameraPermissionRequest)
     }
 
     data class UiState(val cameraPermissionDialog: CameraPermissionDialogState? = null)
