@@ -3,17 +3,18 @@ package com.woocommerce.android.aiassistant.ui.components
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationDiffRow
@@ -73,12 +75,16 @@ internal fun AssistantConfirmationCardSegment(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
             )
-            confirmation.preview?.rows?.forEach { row ->
-                ConfirmationDiffRow(
-                    row = row,
-                    isBulk = confirmation.preview.isBulk,
-                    colors = colors,
-                )
+            confirmation.preview?.let { preview ->
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    preview.rows.forEach { row ->
+                        ConfirmationDiffRow(
+                            row = row,
+                            isBulk = preview.isBulk,
+                            colors = colors,
+                        )
+                    }
+                }
             }
             if (confirmation.state == AssistantConfirmationCardState.PENDING) {
                 ConfirmationActions(
@@ -100,16 +106,23 @@ private fun ConfirmationCardEyebrow(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            painter = painterResource(state.iconRes()),
-            contentDescription = null,
-            modifier = Modifier.size(18.dp),
-            tint = colors.accent,
-        )
+        Box(
+            modifier = Modifier
+                .size(18.dp)
+                .background(colors.accent, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(state.iconRes()),
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+                tint = Color.White,
+            )
+        }
         Text(
-            text = stringResource(state.eyebrowRes()),
+            text = stringResource(state.eyebrowRes()).uppercase(),
             color = colors.accent,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.5.sp),
             fontWeight = FontWeight.SemiBold,
         )
     }
@@ -128,11 +141,10 @@ private fun ConfirmationActions(
         OutlinedButton(
             onClick = onCancelWrite,
             modifier = Modifier
-                .weight(1f)
-                .heightIn(min = 48.dp),
+                .weight(1f),
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.dp, colors.border),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.title),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
             contentPadding = PaddingValues(horizontal = 8.dp),
         ) {
             Text(
@@ -145,8 +157,7 @@ private fun ConfirmationActions(
         Button(
             onClick = onConfirmWrite,
             modifier = Modifier
-                .weight(1f)
-                .heightIn(min = 48.dp),
+                .weight(1f),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -174,11 +185,7 @@ private fun ConfirmationDiffRow(
     val beforeValue = row.beforeValue.takeUnless { isBulk }
 
     FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.55f), RoundedCornerShape(8.dp))
-            .border(1.dp, colors.border.copy(alpha = 0.45f), RoundedCornerShape(8.dp))
-            .padding(10.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
@@ -221,28 +228,29 @@ private fun ConfirmationDiffText(
 @Composable
 private fun AssistantConfirmationCardState.confirmationCardColors(): AssistantConfirmationCardColors {
     val colorScheme = MaterialTheme.colorScheme
+    val isDarkTheme = isSystemInDarkTheme()
 
     return when (this) {
         AssistantConfirmationCardState.PENDING -> AssistantConfirmationCardColors(
-            container = colorScheme.surfaceContainerHigh,
-            border = colorScheme.primary.copy(alpha = 0.28f),
-            accent = colorScheme.primary,
+            container = colorScheme.surface,
+            border = colorScheme.outlineVariant,
+            accent = if (isDarkTheme) Color(0xFFFFBF86) else Color(0xFFE68B28),
             title = colorScheme.onSurface,
             label = colorScheme.onSurfaceVariant,
             value = colorScheme.onSurface,
         )
         AssistantConfirmationCardState.CONFIRMED -> AssistantConfirmationCardColors(
-            container = colorScheme.surfaceContainerHigh,
+            container = colorScheme.surface,
             border = colorScheme.outlineVariant,
-            accent = colorScheme.primary,
+            accent = if (isDarkTheme) Color(0xFF1ED15A) else Color(0xFF008A20),
             title = colorScheme.onSurface,
             label = colorScheme.onSurfaceVariant,
             value = colorScheme.onSurface,
         )
         AssistantConfirmationCardState.CANCELLED -> AssistantConfirmationCardColors(
-            container = colorScheme.surfaceContainerLow,
+            container = colorScheme.surface,
             border = colorScheme.outlineVariant,
-            accent = colorScheme.onSurfaceVariant,
+            accent = if (isDarkTheme) Color(0xFFA7AAAD) else Color(0xFF787C82),
             title = colorScheme.onSurfaceVariant,
             label = colorScheme.onSurfaceVariant,
             value = colorScheme.onSurfaceVariant,
