@@ -225,6 +225,7 @@ private fun TotalsLoaded(
                 )
             }
         }
+        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -232,7 +233,7 @@ private fun TotalsLoaded(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(if (isPhone) 2f else 1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
