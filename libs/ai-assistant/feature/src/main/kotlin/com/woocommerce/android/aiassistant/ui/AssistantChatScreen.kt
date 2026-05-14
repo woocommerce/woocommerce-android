@@ -498,9 +498,7 @@ private fun AssistantMessageThread(
         }
         if (showTypingIndicator) {
             item(key = TYPING_INDICATOR_ITEM_KEY) {
-                AssistantRevealOnFirstComposition(
-                    modifier = Modifier.animateItem(),
-                ) {
+                AssistantRevealOnFirstComposition {
                     AssistantTypingIndicator()
                 }
             }
