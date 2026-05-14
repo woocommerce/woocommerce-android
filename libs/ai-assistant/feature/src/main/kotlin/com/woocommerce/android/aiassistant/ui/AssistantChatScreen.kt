@@ -348,7 +348,7 @@ private fun AssistantTopAppBar(
                         tint = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        text = stringResource(R.string.assistant_chat_title),
+                        text = stringResource(R.string.ai_assistant_chat_title),
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -361,7 +361,7 @@ private fun AssistantTopAppBar(
                 IconButton(onClick = onBack) {
                     Icon(
                         painter = painterResource(R.drawable.ic_assistant_back),
-                        contentDescription = stringResource(R.string.assistant_chat_back_content_description),
+                        contentDescription = stringResource(R.string.ai_assistant_chat_back_content_description),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
@@ -372,7 +372,7 @@ private fun AssistantTopAppBar(
                         Icon(
                             painter = painterResource(R.drawable.ic_assistant_new_chat),
                             contentDescription = stringResource(
-                                R.string.assistant_chat_restart_content_description
+                                R.string.ai_assistant_chat_restart_content_description
                             ),
                             tint = MaterialTheme.colorScheme.primary,
                         )
@@ -717,12 +717,12 @@ private fun AssistantUiMessage.contentDescription(isUser: Boolean): String {
         ?.let { stringResource(it.labelRes()) }
 
     return when {
-        isUser -> stringResource(R.string.assistant_chat_message_user_content_description, messageText)
+        isUser -> stringResource(R.string.ai_assistant_chat_message_user_content_description, messageText)
         toolActivityLabel != null && text.isEmpty() -> stringResource(
-            R.string.assistant_chat_tool_activity_content_description,
+            R.string.ai_assistant_chat_tool_activity_content_description,
             toolActivityLabel,
         )
-        else -> stringResource(R.string.assistant_chat_message_assistant_content_description, messageText)
+        else -> stringResource(R.string.ai_assistant_chat_message_assistant_content_description, messageText)
     }
 }
 
@@ -741,7 +741,7 @@ private fun AssistantInlineError(
         )
         if (error.canRetry) {
             TextButton(onClick = onRetry) {
-                Text(stringResource(R.string.assistant_chat_retry))
+                Text(stringResource(R.string.ai_assistant_chat_retry))
             }
         }
     }

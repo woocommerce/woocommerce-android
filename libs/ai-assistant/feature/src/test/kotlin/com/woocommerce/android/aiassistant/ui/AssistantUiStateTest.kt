@@ -45,20 +45,20 @@ class AssistantUiStateTest {
 
     @Test
     fun `given assistant errors, when mapping to message resources, then product copy resources are returned`() {
-        assertThat(AssistantError.Network().toMessageRes()).isEqualTo(R.string.assistant_chat_error_network)
-        assertThat(AssistantError.Timeout().toMessageRes()).isEqualTo(R.string.assistant_chat_error_timeout)
-        assertThat(AssistantError.RateLimit().toMessageRes()).isEqualTo(R.string.assistant_chat_error_rate_limit)
-        assertThat(AssistantError.Auth().toMessageRes()).isEqualTo(R.string.assistant_chat_error_auth)
+        assertThat(AssistantError.Network().toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_network)
+        assertThat(AssistantError.Timeout().toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_timeout)
+        assertThat(AssistantError.RateLimit().toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_rate_limit)
+        assertThat(AssistantError.Auth().toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_auth)
         assertThat(AssistantError.UpstreamFailure().toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_upstream_failure)
+            .isEqualTo(R.string.ai_assistant_chat_error_upstream_failure)
         assertThat(AssistantError.ToolFailed(toolName = "orders_update").toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_tool_failed)
+            .isEqualTo(R.string.ai_assistant_chat_error_tool_failed)
         assertThat(AssistantError.InvalidToolCall(toolName = "orders_update").toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_invalid_tool_call)
+            .isEqualTo(R.string.ai_assistant_chat_error_invalid_tool_call)
         assertThat(AssistantError.OutcomeUnknown(toolName = "orders_update").toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_outcome_unknown)
-        assertThat(AssistantError.Cancelled.toMessageRes()).isEqualTo(R.string.assistant_chat_error_cancelled)
-        assertThat(AssistantError.Unknown().toMessageRes()).isEqualTo(R.string.assistant_chat_error_unknown)
+            .isEqualTo(R.string.ai_assistant_chat_error_outcome_unknown)
+        assertThat(AssistantError.Cancelled.toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_cancelled)
+        assertThat(AssistantError.Unknown().toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_unknown)
     }
 
     @Test
@@ -66,9 +66,9 @@ class AssistantUiStateTest {
         val rawCause = IllegalStateException("raw upstream token abc123")
 
         assertThat(AssistantError.Unknown(cause = rawCause).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_unknown)
+            .isEqualTo(R.string.ai_assistant_chat_error_unknown)
         assertThat(AssistantError.ToolFailed(toolName = "orders_update", cause = rawCause).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_tool_failed)
+            .isEqualTo(R.string.ai_assistant_chat_error_tool_failed)
     }
 
     @Test
@@ -80,7 +80,7 @@ class AssistantUiStateTest {
         )
 
         assertThat(error.toAssistantUiError()).isEqualTo(AssistantUiError.BAD_REQUEST)
-        assertThat(error.toMessageRes()).isEqualTo(R.string.assistant_chat_error_upstream_failure)
+        assertThat(error.toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_upstream_failure)
     }
 
     @Test
@@ -93,7 +93,7 @@ class AssistantUiStateTest {
         )
 
         assertThat(error.toAssistantUiError()).isEqualTo(AssistantUiError.TOOL_FAILED)
-        assertThat(error.toMessageRes()).isEqualTo(R.string.assistant_chat_error_tool_failed)
+        assertThat(error.toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_tool_failed)
     }
 
     @Test
@@ -147,7 +147,7 @@ class AssistantUiStateTest {
 
         assertThat(state.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(state.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+            .isEqualTo(R.string.ai_assistant_chat_error_max_iterations)
     }
 
     @Test
@@ -287,19 +287,19 @@ class AssistantUiStateTest {
     @Test
     fun `given known tool names, when resolving activity label, then humanized labels are returned`() {
         val expectedLabels = mapOf(
-            "orders_list" to R.string.assistant_chat_tool_activity_orders_read,
-            "orders_get" to R.string.assistant_chat_tool_activity_orders_read,
-            "orders_update" to R.string.assistant_chat_tool_activity_orders_write,
-            "orders_bulk_update" to R.string.assistant_chat_tool_activity_orders_write,
-            "products_list" to R.string.assistant_chat_tool_activity_products_read,
-            "products_get" to R.string.assistant_chat_tool_activity_products_read,
-            "product_variations_list" to R.string.assistant_chat_tool_activity_products_read,
-            "products_update" to R.string.assistant_chat_tool_activity_products_write,
-            "products_bulk_update" to R.string.assistant_chat_tool_activity_products_write,
-            "product_variations_update" to R.string.assistant_chat_tool_activity_products_write,
-            "analytics_orders" to R.string.assistant_chat_tool_activity_analytics,
-            "analytics_revenue" to R.string.assistant_chat_tool_activity_analytics,
-            "customers_list" to R.string.assistant_chat_tool_activity_customers,
+            "orders_list" to R.string.ai_assistant_chat_tool_activity_orders_read,
+            "orders_get" to R.string.ai_assistant_chat_tool_activity_orders_read,
+            "orders_update" to R.string.ai_assistant_chat_tool_activity_orders_write,
+            "orders_bulk_update" to R.string.ai_assistant_chat_tool_activity_orders_write,
+            "products_list" to R.string.ai_assistant_chat_tool_activity_products_read,
+            "products_get" to R.string.ai_assistant_chat_tool_activity_products_read,
+            "product_variations_list" to R.string.ai_assistant_chat_tool_activity_products_read,
+            "products_update" to R.string.ai_assistant_chat_tool_activity_products_write,
+            "products_bulk_update" to R.string.ai_assistant_chat_tool_activity_products_write,
+            "product_variations_update" to R.string.ai_assistant_chat_tool_activity_products_write,
+            "analytics_orders" to R.string.ai_assistant_chat_tool_activity_analytics,
+            "analytics_revenue" to R.string.ai_assistant_chat_tool_activity_analytics,
+            "customers_list" to R.string.ai_assistant_chat_tool_activity_customers,
         )
 
         expectedLabels.forEach { (toolName, labelRes) ->
@@ -312,17 +312,17 @@ class AssistantUiStateTest {
     @Test
     fun `given unknown tool name, when resolving activity label, then generic label is returned`() {
         assertThat(AssistantToolActivity("call-1", "private_internal_tool").labelRes())
-            .isEqualTo(R.string.assistant_chat_tool_activity_generic)
+            .isEqualTo(R.string.ai_assistant_chat_tool_activity_generic)
     }
 
     @Test
     fun `given ui errors, when mapping to message resources, then fallback copy resources are returned`() {
         assertThat(AssistantUiError.CONFIRMATION_DEFERRED.toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
+            .isEqualTo(R.string.ai_assistant_chat_error_confirmation_deferred)
         assertThat(AssistantUiError.MAX_ITERATIONS.toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+            .isEqualTo(R.string.ai_assistant_chat_error_max_iterations)
         assertThat(AssistantUiError.CANCELLED.toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_cancelled)
+            .isEqualTo(R.string.ai_assistant_chat_error_cancelled)
     }
 
     @Test
@@ -370,15 +370,15 @@ class AssistantUiStateTest {
     @Test
     fun `given confirmation card state, when resolving chrome resources, then eyebrow and icon are mapped`() {
         assertThat(AssistantConfirmationCardState.PENDING.eyebrowRes())
-            .isEqualTo(R.string.assistant_confirmation_eyebrow_pending)
+            .isEqualTo(R.string.ai_assistant_confirmation_eyebrow_pending)
         assertThat(AssistantConfirmationCardState.PENDING.iconRes())
             .isEqualTo(R.drawable.ic_assistant_confirmation_pending)
         assertThat(AssistantConfirmationCardState.CONFIRMED.eyebrowRes())
-            .isEqualTo(R.string.assistant_confirmation_eyebrow_confirmed)
+            .isEqualTo(R.string.ai_assistant_confirmation_eyebrow_confirmed)
         assertThat(AssistantConfirmationCardState.CONFIRMED.iconRes())
             .isEqualTo(R.drawable.ic_assistant_confirmation_confirmed)
         assertThat(AssistantConfirmationCardState.CANCELLED.eyebrowRes())
-            .isEqualTo(R.string.assistant_confirmation_eyebrow_cancelled)
+            .isEqualTo(R.string.ai_assistant_confirmation_eyebrow_cancelled)
         assertThat(AssistantConfirmationCardState.CANCELLED.iconRes())
             .isEqualTo(R.drawable.ic_assistant_confirmation_cancelled)
     }
