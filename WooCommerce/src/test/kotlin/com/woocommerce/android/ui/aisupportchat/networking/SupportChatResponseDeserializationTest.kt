@@ -18,7 +18,7 @@ class SupportChatResponseDeserializationTest {
 
         assertThat(response.chatId).isEqualTo(4242L)
         assertThat(response.sessionId).isEqualTo("session-abc-123")
-        assertThat(response.botSlug).isEqualTo("woo-workflow-support_mobile_inapp")
+        assertThat(response.botSlug).isEqualTo("woo-workflow-support_mobile_inapp_all_users")
         assertThat(response.messages).hasSize(2)
 
         val userMessage = response.messages[0]
