@@ -167,6 +167,7 @@ class SiteHomepageRestClientTest {
                         eq(kclass),
                         isNull(),
                         anyOrNull(),
+                        eq(true),
                 )
         ).thenReturn(response)
         whenever(site.siteId).thenReturn(siteId)
