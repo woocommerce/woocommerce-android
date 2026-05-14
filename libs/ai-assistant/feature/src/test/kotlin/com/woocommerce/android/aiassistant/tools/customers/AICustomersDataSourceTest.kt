@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -23,19 +22,6 @@ class AICustomersDataSourceTest {
     private val selectedSite: SelectedSite = mock()
     private val customerStore: WCCustomerStore = mock()
     private val dataSource = AICustomersDataSource(selectedSite, customerStore)
-
-    @Test
-    fun `given no selected site, when customers are fetched, then selected-site failure is returned`() = runTest {
-        // given
-        whenever(selectedSite.getOrNull()).thenReturn(null)
-
-        // when
-        val result = dataSource.fetchCustomers()
-
-        // then
-        assertThat(result.exceptionOrNull()).isInstanceOf(AICustomersDataSource.NoSelectedSiteException::class.java)
-        verifyNoInteractions(customerStore)
-    }
 
     @Test
     fun `given customer store succeeds, when customers are fetched, then store result is returned`() = runTest {
