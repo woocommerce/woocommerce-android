@@ -187,6 +187,13 @@ class OrdersConfirmationPreviewProviderTest {
                     label = label(R.string.ai_assistant_confirmation_field_status),
                 ),
             )
+            assertThat(preview.bulkEntries).containsExactly(
+                ConfirmationBulkEntry(1),
+                ConfirmationBulkEntry(2),
+                ConfirmationBulkEntry(3),
+                ConfirmationBulkEntry(4),
+                ConfirmationBulkEntry(5),
+            )
         }
 
     @Test

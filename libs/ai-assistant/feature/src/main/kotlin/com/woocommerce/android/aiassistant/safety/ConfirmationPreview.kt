@@ -6,6 +6,7 @@ internal data class ConfirmationPreview(
     val message: ConfirmationPreviewText,
     val fields: List<ConfirmationPreviewField> = emptyList(),
     val isBulk: Boolean = false,
+    val bulkEntries: List<ConfirmationBulkEntry> = emptyList(),
 ) {
     val summary: ConfirmationPreviewText
         get() = message
@@ -13,6 +14,10 @@ internal data class ConfirmationPreview(
     val rows: List<ConfirmationPreviewField>
         get() = fields
 }
+
+data class ConfirmationBulkEntry(
+    val id: Long,
+)
 
 internal data class ConfirmationPreviewField(
     val name: String,
