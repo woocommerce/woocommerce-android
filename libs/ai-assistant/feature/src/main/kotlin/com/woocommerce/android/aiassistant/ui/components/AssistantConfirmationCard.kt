@@ -74,7 +74,7 @@ internal fun AssistantConfirmationCardSegment(
             ConfirmationCardEyebrow(state = confirmation.state, colors = colors)
             Text(
                 text = confirmation.preview?.summary
-                    ?: stringResource(R.string.assistant_chat_confirm_tool, confirmation.toolCall.name),
+                    ?: stringResource(R.string.ai_assistant_chat_confirm_tool, confirmation.toolCall.name),
                 color = colors.title,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
@@ -160,7 +160,7 @@ private fun ConfirmationActions(
             contentPadding = PaddingValues(horizontal = 8.dp),
         ) {
             Text(
-                text = stringResource(R.string.assistant_chat_cancel),
+                text = stringResource(R.string.ai_assistant_chat_cancel),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.SemiBold,
@@ -178,7 +178,7 @@ private fun ConfirmationActions(
             contentPadding = PaddingValues(horizontal = 8.dp),
         ) {
             Text(
-                text = stringResource(R.string.assistant_chat_confirm),
+                text = stringResource(R.string.ai_assistant_chat_confirm),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.SemiBold,

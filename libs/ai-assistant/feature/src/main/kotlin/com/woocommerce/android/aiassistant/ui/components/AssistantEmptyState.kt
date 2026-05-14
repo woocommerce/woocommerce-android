@@ -63,7 +63,7 @@ internal fun AssistantEmptyState(
             )
         }
         Text(
-            text = stringResource(R.string.assistant_chat_empty_state_title),
+            text = stringResource(R.string.ai_assistant_chat_empty_state_title),
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
@@ -102,7 +102,7 @@ private fun AssistantEmptyStateSuggestionRow(
 ) {
     val prompt = stringResource(promptRes)
     val rowContentDescription = stringResource(
-        R.string.assistant_chat_empty_state_suggestion_content_description,
+        R.string.ai_assistant_chat_empty_state_suggestion_content_description,
         prompt,
     )
 
@@ -145,19 +145,19 @@ private data class AssistantEmptyStateSuggestionModel(
 private fun assistantEmptyStateSuggestions() = listOf(
     AssistantEmptyStateSuggestionModel(
         iconRes = R.drawable.ic_assistant_empty_state_revenue,
-        promptRes = R.string.assistant_chat_empty_state_suggestion_revenue,
+        promptRes = R.string.ai_assistant_chat_empty_state_suggestion_revenue,
     ),
     AssistantEmptyStateSuggestionModel(
         iconRes = R.drawable.ic_assistant_empty_state_inventory,
-        promptRes = R.string.assistant_chat_empty_state_suggestion_stock,
+        promptRes = R.string.ai_assistant_chat_empty_state_suggestion_stock,
     ),
     AssistantEmptyStateSuggestionModel(
         iconRes = R.drawable.ic_assistant_empty_state_orders,
-        promptRes = R.string.assistant_chat_empty_state_suggestion_orders,
+        promptRes = R.string.ai_assistant_chat_empty_state_suggestion_orders,
     ),
     AssistantEmptyStateSuggestionModel(
         iconRes = R.drawable.ic_assistant_empty_state_customers,
-        promptRes = R.string.assistant_chat_empty_state_suggestion_customers,
+        promptRes = R.string.ai_assistant_chat_empty_state_suggestion_customers,
     ),
 )
 

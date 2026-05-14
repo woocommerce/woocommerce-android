@@ -820,7 +820,7 @@ class AssistantViewModelTest {
                     ),
                 )
             )
-            assertThat(normalizedError.toMessageRes()).isEqualTo(R.string.assistant_chat_error_unknown)
+            assertThat(normalizedError.toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_unknown)
         }
 
     @Test
@@ -839,7 +839,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+            .isEqualTo(R.string.ai_assistant_chat_error_max_iterations)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
@@ -1383,7 +1383,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_cancelled)
+            .isEqualTo(R.string.ai_assistant_chat_error_cancelled)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
@@ -1689,7 +1689,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CONFIRMATION_DEFERRED)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
+            .isEqualTo(R.string.ai_assistant_chat_error_confirmation_deferred)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
     }

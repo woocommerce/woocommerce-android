@@ -9,7 +9,7 @@ class AssistantCardGroupKindTest {
     fun `given only order cards, when resolving group kind, then orders metadata is returned`() {
         val metadata = listOf(orderCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_orders)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_orders)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_orders)
     }
 
@@ -17,7 +17,7 @@ class AssistantCardGroupKindTest {
     fun `given only product cards, when resolving group kind, then products metadata is returned`() {
         val metadata = listOf(productCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_products)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_products)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
     }
 
@@ -25,7 +25,7 @@ class AssistantCardGroupKindTest {
     fun `given only variation cards, when resolving group kind, then variations metadata is returned`() {
         val metadata = listOf(variationCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_variations)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_variations)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
     }
 
@@ -33,7 +33,7 @@ class AssistantCardGroupKindTest {
     fun `given only stats cards, when resolving group kind, then stats metadata is returned`() {
         val metadata = listOf(statsCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_stats)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_stats)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_stats)
     }
 
@@ -41,7 +41,7 @@ class AssistantCardGroupKindTest {
     fun `given only customer cards, when resolving group kind, then customers metadata is returned`() {
         val metadata = listOf(customerCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_customers)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_customers)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_customers)
     }
 
@@ -49,7 +49,7 @@ class AssistantCardGroupKindTest {
     fun `given mixed cards, when resolving group kind, then generic metadata is returned`() {
         val metadata = listOf(orderCard(), productCard(), statsCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_generic)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_generic)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
     }
 
@@ -57,7 +57,7 @@ class AssistantCardGroupKindTest {
     fun `given mixed product and variation cards, when resolving group kind, then generic metadata is returned`() {
         val metadata = listOf(productCard(), variationCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_generic)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_generic)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
     }
 

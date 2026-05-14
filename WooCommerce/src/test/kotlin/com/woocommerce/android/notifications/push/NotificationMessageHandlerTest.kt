@@ -197,6 +197,28 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
+    fun `given notification type is unknown, when message received, then silently discard`() = runTest {
+        val unknownNotificationModel = NotificationModel(
+            remoteNoteId = 0L,
+            remoteSiteId = orderNotification.remoteSiteId,
+            type = NotificationModel.Kind.UNKNOWN
+        )
+        val mockParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn unknownNotificationModel
+        }
+        createNotificationMessageHandler(mockParser)
+
+        notificationMessageHandler.onNewMessageReceived(mapOf("type" to "unknown_future_type"))
+
+        verify(wooLog).d(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Discarding push notification with unknown type")
+        )
+        verifyNoInteractions(dispatcher)
+        verifyNoInteractions(notificationBuilder)
+    }
+
+    @Test
     fun `when the user id does not match, then do not process the notification`() = runTest {
         val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(userId = 67890)
 
