@@ -2415,7 +2415,7 @@
     <string name="ai_support_chat_screen_title">Chat with support</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
     <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
-    <string name="ai_support_chat_input_hint">Type a message...</string>
+    <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
