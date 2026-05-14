@@ -28,6 +28,7 @@ sealed interface AssistantEvent {
     data class Failed(
         val kind: ChatStreamError,
         val cause: Throwable? = null,
+        val diagnostics: Diagnostics = Diagnostics(),
     ) : AssistantEvent
 }
 

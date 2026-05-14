@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Locale
@@ -30,10 +31,18 @@ class AiAssistantStatsCardRendererTest {
         )
 
         assertThat(model.period).isEqualTo("May 1 - May 7, 2026")
-        assertThat(model.totalSales).isEqualTo("$123.45")
-        assertThat(model.netSales).isEqualTo("$100.15")
-        assertThat(model.totalSalesChartValues).containsExactly(12.0, 18.0, 9.0)
-        assertThat(model.netSalesChartValues).containsExactly(10.0, 15.0, 8.0)
+        assertThat(model.metrics).containsExactly(
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "$123.45",
+                chartValues = listOf(12.0, 18.0, 9.0),
+            ),
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "$100.15",
+                chartValues = listOf(10.0, 15.0, 8.0),
+            ),
+        )
         verify(currencyFormatter).formatCurrency("123.45", "USD")
         verify(currencyFormatter).formatCurrency("100.15", "USD")
     }
@@ -60,10 +69,18 @@ class AiAssistantStatsCardRendererTest {
         assertThat(model).isEqualTo(
             AiAssistantStatsCardState(
                 period = "May 1 - May 7, 2026",
-                totalSales = "Not available",
-                netSales = "Not available",
-                totalSalesChartValues = emptyList(),
-                netSalesChartValues = emptyList(),
+                metrics = listOf(
+                    AiAssistantStatsCardState.Metric(
+                        type = AssistantCard.Stats.MetricType.TotalSales,
+                        value = "Not available",
+                        chartValues = emptyList(),
+                    ),
+                    AiAssistantStatsCardState.Metric(
+                        type = AssistantCard.Stats.MetricType.NetSales,
+                        value = "Not available",
+                        chartValues = emptyList(),
+                    ),
+                ),
             )
         )
     }
@@ -76,8 +93,9 @@ class AiAssistantStatsCardRendererTest {
             locale = Locale.US,
         )
 
-        assertThat(model.totalSalesChartValues).containsExactly(12.0, 18.0, 9.0)
-        assertThat(model.netSalesChartValues).isEmpty()
+        assertThat(model.metric(AssistantCard.Stats.MetricType.TotalSales).chartValues)
+            .containsExactly(12.0, 18.0, 9.0)
+        assertThat(model.metric(AssistantCard.Stats.MetricType.NetSales).chartValues).isEmpty()
     }
 
     @Test
@@ -88,8 +106,9 @@ class AiAssistantStatsCardRendererTest {
             locale = Locale.US,
         )
 
-        assertThat(model.totalSalesChartValues).isEmpty()
-        assertThat(model.netSalesChartValues).containsExactly(10.0, 15.0, 8.0)
+        assertThat(model.metric(AssistantCard.Stats.MetricType.TotalSales).chartValues).isEmpty()
+        assertThat(model.metric(AssistantCard.Stats.MetricType.NetSales).chartValues)
+            .containsExactly(10.0, 15.0, 8.0)
     }
 
     @Test
@@ -105,9 +124,89 @@ class AiAssistantStatsCardRendererTest {
     fun `given assistant stats card without currency, when mapped, then raw total sales is used`() {
         val totalSales = statsCard(currency = "")
             .toStatsCardState(currencyFormatter, unavailableValue = "Unavailable", locale = Locale.US)
-            .totalSales
+            .metric(AssistantCard.Stats.MetricType.TotalSales)
+            .value
 
         assertThat(totalSales).isEqualTo("123.45")
+    }
+
+    @Test
+    fun `given orders stats card, when mapped, then count is raw and average order value is money`() {
+        whenever(currencyFormatter.formatCurrency("85.30", "USD")).thenReturn("$85.30")
+
+        val model = ordersStatsCard().toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.metrics).containsExactly(
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartValues = listOf(12.0),
+            ),
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "$85.30",
+                chartValues = listOf(80.10),
+            ),
+        )
+        verify(currencyFormatter, never()).formatCurrency("42", "USD")
+        verify(currencyFormatter).formatCurrency("85.30", "USD")
+    }
+
+    @Test
+    fun `given unified stats card, when mapped, then money metrics are currency formatted and orders are raw`() {
+        whenever(currencyFormatter.formatCurrency("170.35", "USD")).thenReturn("$170.35")
+        whenever(currencyFormatter.formatCurrency("120.15", "USD")).thenReturn("$120.15")
+        whenever(currencyFormatter.formatCurrency("85.30", "USD")).thenReturn("$85.30")
+
+        val model = unifiedStatsCard().toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.metrics.map { it.type }).containsExactly(
+            AssistantCard.Stats.MetricType.TotalSales,
+            AssistantCard.Stats.MetricType.NetSales,
+            AssistantCard.Stats.MetricType.TotalOrders,
+            AssistantCard.Stats.MetricType.AverageOrderValue,
+        )
+        assertThat(model.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("$170.35")
+        assertThat(model.metric(AssistantCard.Stats.MetricType.NetSales).value).isEqualTo("$120.15")
+        assertThat(model.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
+        assertThat(model.metric(AssistantCard.Stats.MetricType.AverageOrderValue).value).isEqualTo("$85.30")
+        verify(currencyFormatter, never()).formatCurrency("42", "USD")
+    }
+
+    @Test
+    fun `given orders stats card with blank metrics, when mapped, then unavailable fallback is used`() {
+        val model = ordersStatsCard(
+            ordersCount = "",
+            averageOrderValue = "",
+            ordersCountChartPoints = emptyList(),
+            averageOrderValueChartPoints = emptyList(),
+        ).toStatsCardState(
+            currencyFormatter = currencyFormatter,
+            unavailableValue = "Unavailable",
+            locale = Locale.US,
+        )
+
+        assertThat(model.metrics).containsExactly(
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "Unavailable",
+                chartValues = emptyList(),
+            ),
+            AiAssistantStatsCardState.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "Unavailable",
+                chartValues = emptyList(),
+            ),
+        )
+        verify(currencyFormatter, never()).formatCurrency("", "USD")
     }
 
     @Test
@@ -144,14 +243,83 @@ class AiAssistantStatsCardRendererTest {
         after = after,
         before = before,
         currency = currency,
-        totalSales = totalSales,
-        netSales = netSales,
-        totalSalesChartPoints = totalSalesChartPoints,
-        netSalesChartPoints = netSalesChartPoints,
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = totalSales,
+                chartPoints = totalSalesChartPoints,
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = netSales,
+                chartPoints = netSalesChartPoints,
+            ),
+        ),
     )
+
+    private fun ordersStatsCard(
+        ordersCount: String = "42",
+        averageOrderValue: String = "85.30",
+        ordersCountChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 12.0),
+        ),
+        averageOrderValueChartPoints: List<AssistantCard.Stats.ChartPoint> = listOf(
+            AssistantCard.Stats.ChartPoint("2026-05-01", 80.10),
+        ),
+    ) = AssistantCard.Stats(
+        id = ANALYTICS_STATS_ID,
+        after = "2026-05-01",
+        before = "2026-05-07",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = ordersCount,
+                chartPoints = ordersCountChartPoints,
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = averageOrderValue,
+                chartPoints = averageOrderValueChartPoints,
+            ),
+        ),
+    )
+
+    private fun unifiedStatsCard() = AssistantCard.Stats(
+        id = ANALYTICS_STATS_ID,
+        after = "2026-05-01",
+        before = "2026-05-07",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 50.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 35.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 12.0)),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(AssistantCard.Stats.ChartPoint("2026-05-01", 80.10)),
+            ),
+        ),
+    )
+
+    private fun AiAssistantStatsCardState.metric(
+        type: AssistantCard.Stats.MetricType,
+    ): AiAssistantStatsCardState.Metric = metrics.single { it.type == type }
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

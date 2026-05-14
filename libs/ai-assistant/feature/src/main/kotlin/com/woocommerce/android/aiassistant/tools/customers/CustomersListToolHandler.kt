@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -26,6 +27,7 @@ import javax.inject.Inject
 
 internal class CustomersListToolHandler @Inject constructor(
     private val dataSource: AICustomersDataSource,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
     override val descriptor = ToolDescriptor(
         name = "customers_list",
@@ -109,7 +111,12 @@ internal class CustomersListToolHandler @Inject constructor(
                     AICustomersDataSource.NoSelectedSiteException -> {
                         ToolResult.ValidationError(call.id, "No selected site")
                     }
-                    else -> ToolResult.TransportError(call.id, retryable = error.isRetryableStoreError())
+                    else -> diagnosticsFactory.transportError(
+                        toolCallId = call.id,
+                        toolName = descriptor.name,
+                        error = error,
+                        retryable = error.isRetryableStoreError(),
+                    )
                 }
             }
         )

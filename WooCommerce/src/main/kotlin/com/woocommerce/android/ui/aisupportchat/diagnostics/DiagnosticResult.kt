@@ -13,7 +13,7 @@ data class DiagnosticResult(
     val suggestedAction: SuggestedFixAction? = null
 ) {
     val isComplete: Boolean
-        get() = statuses.none { it.status is TestStatus.Pending || it.status is TestStatus.Running }
+        get() = statuses.all { it.status.isComplete }
 
     val firstFailure: DiagnosticStatus?
         get() = statuses.firstNotNullOfOrNull { diagnosticStatus ->

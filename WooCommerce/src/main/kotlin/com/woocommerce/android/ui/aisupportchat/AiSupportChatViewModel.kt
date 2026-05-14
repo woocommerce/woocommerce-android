@@ -129,6 +129,7 @@ class AiSupportChatViewModel @Inject constructor(
             handleSendSuccess(
                 response = response,
                 sentMessage = message,
+                optimisticMessage = optimisticMessage,
                 wasInitialMessage = chatId == null
             )
         }.onFailure {
@@ -139,33 +140,62 @@ class AiSupportChatViewModel @Inject constructor(
     private suspend fun handleSendSuccess(
         response: SupportChatResponse,
         sentMessage: String,
+        optimisticMessage: AiSupportChatMessage,
         wasInitialMessage: Boolean
     ) {
-        if (wasInitialMessage) {
-            repository.registerChat(
-                chatId = response.chatId,
-                botSlug = response.botSlug,
-                firstUserMessage = sentMessage
-            )
-        } else {
-            repository.markChatAsUpdated(response.chatId)
-        }
-
         _viewState.update {
-            val supportMessages = it.messages.supportMessages()
-            val responseMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages()
             it.copy(
                 chatId = response.chatId,
-                messages = if (responseMessages.isEmpty()) {
+                messages = if (remoteMessages.isEmpty()) {
                     it.messages
                 } else {
-                    supportMessages + responseMessages
+                    it.messages.supportMessages() + it.messages.threadMessages().mergeWithRemoteMessages(
+                        remoteMessages = remoteMessages,
+                        optimisticMessage = optimisticMessage
+                    )
                 },
                 isSending = false,
                 showSendError = false
             )
         }
+
+        runCatching {
+            if (wasInitialMessage) {
+                repository.registerChat(
+                    chatId = response.chatId,
+                    botSlug = response.botSlug,
+                    firstUserMessage = sentMessage
+                )
+            } else {
+                repository.markChatAsUpdated(response.chatId)
+            }
+        }
     }
+
+    private fun List<AiSupportChatMessage>.mergeWithRemoteMessages(
+        remoteMessages: List<AiSupportChatMessage>,
+        optimisticMessage: AiSupportChatMessage
+    ): List<AiSupportChatMessage> {
+        if (remoteMessages.isEmpty()) return this
+
+        val optimisticText = optimisticMessage.content as? AiSupportChatMessageContent.Text
+        val messagesWithoutRemoteOptimisticDuplicate = if (
+            optimisticText != null && remoteMessages.containsUserMessage(optimisticText.text)
+        ) {
+            filterNot { it.id == optimisticMessage.id }
+        } else {
+            this
+        }
+        val existingMessageIds = messagesWithoutRemoteOptimisticDuplicate.map { it.id }.toSet()
+        return messagesWithoutRemoteOptimisticDuplicate + remoteMessages.filterNot { it.id in existingMessageIds }
+    }
+
+    private fun List<AiSupportChatMessage>.containsUserMessage(text: String): Boolean =
+        any { message ->
+            message.role == AiSupportChatMessageRole.USER &&
+                (message.content as? AiSupportChatMessageContent.Text)?.text == text
+        }
 
     private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage) {
         _viewState.update {
@@ -197,6 +227,9 @@ class AiSupportChatViewModel @Inject constructor(
                 is AiSupportChatMessageContent.Text -> false
             }
         }
+
+    private fun List<AiSupportChatMessage>.threadMessages(): List<AiSupportChatMessage> =
+        filter { it.content is AiSupportChatMessageContent.Text }
 
     private fun diagnosticsMessages(result: DiagnosticResult): List<AiSupportChatMessage> =
         listOf(

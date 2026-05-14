@@ -7,12 +7,16 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +31,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.ui.assistantCanvasColor
@@ -34,6 +39,10 @@ import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
 
 @Composable
 internal fun AssistantEmptyState(
+    showEarlyAccessNotice: Boolean,
+    bottomContentPadding: Dp,
+    onFeedbackClick: () -> Unit,
+    onDismissEarlyAccessNotice: () -> Unit,
     onSuggestionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -42,9 +51,17 @@ internal fun AssistantEmptyState(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        if (showEarlyAccessNotice) {
+            AssistantEarlyAccessNoticeCard(
+                onFeedbackClick = onFeedbackClick,
+                onDismissClick = onDismissEarlyAccessNotice,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         Text(
             text = stringResource(R.string.assistant_chat_empty_state_title),
             color = MaterialTheme.colorScheme.onSurface,
@@ -73,6 +90,7 @@ internal fun AssistantEmptyState(
                 }
             }
         }
+        Spacer(modifier = Modifier.height(bottomContentPadding))
     }
 }
 
@@ -156,6 +174,12 @@ private val EMPTY_STATE_DIVIDER_INDENT = 56.dp
 @Composable
 private fun AssistantEmptyStatePreview() {
     Surface(color = assistantCanvasColor()) {
-        AssistantEmptyState(onSuggestionClick = {})
+        AssistantEmptyState(
+            showEarlyAccessNotice = true,
+            bottomContentPadding = 16.dp,
+            onFeedbackClick = {},
+            onDismissEarlyAccessNotice = {},
+            onSuggestionClick = {},
+        )
     }
 }

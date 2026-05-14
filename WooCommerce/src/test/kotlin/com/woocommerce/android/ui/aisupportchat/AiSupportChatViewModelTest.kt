@@ -102,11 +102,55 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given bookmark registration fails, when diagnostics pass, then thread is shown without error`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_LABEL),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(SupportIssueType.LOADING_ORDERS, result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_LABEL, CONTEXT, null))
+                .thenReturn(Result.success(response))
+            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_LABEL))
+                .thenThrow(RuntimeException("Bookmark write failed"))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+            val state = viewModel.viewState.value
+            assertThat(state.input).isEmpty()
+            assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.isSending).isFalse()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.DiagnosticsProgress(result),
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
+                AiSupportChatMessageContent.Text(BOT_RESPONSE)
+            )
+        }
+
+    @Test
     fun `given existing chat, when sending follow up, then message is sent with chat id and bookmark is touched`() =
         testBlocking {
             startChat()
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID))
-                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(
+                                    messageId = 3L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
 
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
             viewModel.onSendClicked()
@@ -115,6 +159,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.chatId).isEqualTo(CHAT_ID)
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isFalse()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.DiagnosticsProgress(createSuccessDiagnosticResult()),
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
+                AiSupportChatMessageContent.Text(FOLLOW_UP_MESSAGE),
+                AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE)
+            )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID)
             verify(repository).markChatAsUpdated(CHAT_ID)
         }
@@ -293,6 +344,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val ISSUE_LABEL = "I can't see my orders"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val BOT_RESPONSE = "Let's troubleshoot orders."
+        const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
 
         val CONTEXT = JsonObject().apply {
             addProperty("site_id", 20L)

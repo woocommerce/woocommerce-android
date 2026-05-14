@@ -6,11 +6,13 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_PRODUCTS
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM_SERVERS
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
@@ -42,7 +44,7 @@ class SupportDiagnosticsService @Inject constructor(
             statuses = statuses.replaceAt(index, DiagnosticStatus(test, TestStatus.Running))
             emit(DiagnosticResult(issueType, statuses))
 
-            val outcome = runCheck(test).last()
+            val outcome = runCheckSafely(test)
             val newStatus = outcome.toTestStatus()
             statuses = statuses.replaceAt(index, DiagnosticStatus(test, newStatus))
 
@@ -51,7 +53,7 @@ class SupportDiagnosticsService @Inject constructor(
                     DiagnosticResult(
                         issueType = issueType,
                         statuses = statuses,
-                        suggestedAction = suggestedActionFor(test)
+                        suggestedAction = SuggestedFixAction.RetryDiagnostics
                     )
                 )
                 return@flow
@@ -70,7 +72,8 @@ class SupportDiagnosticsService @Inject constructor(
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
         SupportIssueType.RECEIVING_NOTIFICATIONS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
-        SupportIssueType.OTHER -> emptyList()
+        SupportIssueType.OTHER ->
+            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS, STORE_PRODUCTS)
     }
 
     private fun runCheck(test: DiagnosticTest): Flow<ConnectivityCheckStatus> = when (test) {
@@ -80,6 +83,17 @@ class SupportDiagnosticsService @Inject constructor(
         STORE_ORDERS -> storeOrdersCheck()
         STORE_PRODUCTS -> storeProductsCheck()
     }
+
+    private suspend fun runCheckSafely(test: DiagnosticTest): ConnectivityCheckStatus =
+        runCatching { runCheck(test).last() }
+            .getOrElse { error ->
+                if (error is CancellationException) throw error
+
+                ConnectivityCheckStatus.Failure(
+                    error = FailureType.GENERIC,
+                    technicalDetails = error.message ?: error::class.java.simpleName
+                )
+            }
 
     private fun ConnectivityCheckStatus.toTestStatus(): TestStatus = when (this) {
         is ConnectivityCheckStatus.Success -> TestStatus.Passed
@@ -91,15 +105,6 @@ class SupportDiagnosticsService @Inject constructor(
         ConnectivityCheckStatus.NotStarted, ConnectivityCheckStatus.InProgress ->
             TestStatus.Failed(technicalDetails = "Diagnostic did not complete")
     }
-
-    private fun suggestedActionFor(failedTest: DiagnosticTest): SuggestedFixAction =
-        when (failedTest) {
-            INTERNET_CONNECTION,
-            WPCOM_SERVERS,
-            STORE_CONNECTION,
-            STORE_ORDERS,
-            STORE_PRODUCTS -> SuggestedFixAction.RetryDiagnostics
-        }
 
     private fun <T> List<T>.replaceAt(index: Int, value: T): List<T> =
         toMutableList().apply { this[index] = value }
