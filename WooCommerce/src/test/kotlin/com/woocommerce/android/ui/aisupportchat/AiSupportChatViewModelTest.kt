@@ -63,6 +63,34 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given bookmark registration fails, when sending succeeds, then thread is shown without error`() =
+        testBlocking {
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = MESSAGE),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, MESSAGE, CONTEXT, null))
+                .thenReturn(Result.success(response))
+            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, MESSAGE))
+                .thenThrow(RuntimeException("Bookmark write failed"))
+
+            viewModel.onInputChanged(MESSAGE)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.input).isEmpty()
+            assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.isSending).isFalse()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.messages).containsExactly(
+                AiSupportChatMessage("user-1", AiSupportChatMessageRole.USER, MESSAGE),
+                AiSupportChatMessage("bot-2", AiSupportChatMessageRole.BOT, BOT_RESPONSE)
+            )
+        }
+
+    @Test
     fun `given existing chat, when sending follow up, then message is sent with chat id and bookmark is touched`() =
         testBlocking {
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, MESSAGE, CONTEXT, null))

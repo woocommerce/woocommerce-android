@@ -73,16 +73,6 @@ class AiSupportChatViewModel @Inject constructor(
         sentMessage: String,
         wasInitialMessage: Boolean
     ) {
-        if (wasInitialMessage) {
-            repository.registerChat(
-                chatId = response.chatId,
-                botSlug = response.botSlug,
-                firstUserMessage = sentMessage
-            )
-        } else {
-            repository.markChatAsUpdated(response.chatId)
-        }
-
         _viewState.update {
             it.copy(
                 chatId = response.chatId,
@@ -90,6 +80,18 @@ class AiSupportChatViewModel @Inject constructor(
                 isSending = false,
                 showSendError = false
             )
+        }
+
+        runCatching {
+            if (wasInitialMessage) {
+                repository.registerChat(
+                    chatId = response.chatId,
+                    botSlug = response.botSlug,
+                    firstUserMessage = sentMessage
+                )
+            } else {
+                repository.markChatAsUpdated(response.chatId)
+            }
         }
     }
 
