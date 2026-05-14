@@ -63,8 +63,10 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString()).contains("{parentProductId}/{variationId}")
+        assertThat(descriptor.inputSchema.toString()).contains("pass the exact card_id")
+        assertThat(descriptor.inputSchema.toString()).contains("do not construct it")
         assertThat(descriptor.inputSchema.toString())
-            .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
+            .doesNotContain("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
         assertThat(descriptor.description).doesNotContain("analytics_revenue")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("analytics_revenue")
         assertThat(descriptor.inputSchema.toString()).contains("card_id")
@@ -468,7 +470,7 @@ class ShowCardsToolHandlerTest {
     }
 
     @Test
-    fun `given unknown analytics stats prefixes, when executed, then refs are rejected as invalid id`() = runTest {
+    fun `given unknown analytics stats prefix or currency segment, when executed, then refs are rejected`() = runTest {
         val result = executeShowCards(
             handler = handlerWith(FakeResolver.empty()),
             argumentsJson = """
