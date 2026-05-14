@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -22,9 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -44,9 +44,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -57,6 +57,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -83,7 +84,9 @@ import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCa
 import com.woocommerce.android.aiassistant.ui.components.AssistantEmptyState
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
-import kotlinx.coroutines.flow.distinctUntilChanged
+import com.woocommerce.android.aiassistant.ui.scroll.AssistantScrollController
+import com.woocommerce.android.aiassistant.ui.scroll.rememberAssistantScrollController
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -197,14 +200,27 @@ fun AssistantChatScreen(
     val estimatedBottomBarHeight = FLOATING_COMPOSER_ESTIMATED_HEIGHT * density.fontScale
     val bottomContentPadding = bottomBarContentHeight
         .coerceAtLeast(estimatedBottomBarHeight) + FLOATING_COMPOSER_CONTENT_SPACING
+    val visibleMessages = state.messages.filter { message ->
+        message.hasVisibleContent(state)
+    }
+    val showTypingIndicator = state.shouldShowTypingIndicator
+    val scrollController = rememberAssistantScrollController(
+        state = state,
+        visibleMessages = visibleMessages,
+        showTypingIndicator = showTypingIndicator,
+        bottomContentPadding = bottomContentPadding,
+    )
     val submitMessage = {
+        scrollController.onUserMessageSubmitted()
         focusManager.clearFocus()
         onSendMessage()
     }
     val submitSuggestion = { prompt: String ->
+        scrollController.onUserMessageSubmitted()
         focusManager.clearFocus()
         onSendSuggestion(prompt)
     }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -249,6 +265,9 @@ fun AssistantChatScreen(
             } else {
                 AssistantMessageThread(
                     state = state,
+                    visibleMessages = visibleMessages,
+                    showTypingIndicator = showTypingIndicator,
+                    scrollController = scrollController,
                     onRetry = onRetry,
                     onConfirmWrite = onConfirmWrite,
                     onCancelWrite = onCancelWrite,
@@ -266,6 +285,52 @@ fun AssistantChatScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
             )
+            AssistantJumpToLatestButton(
+                visible = scrollController.hasNewerContentBelow.value,
+                bottomBarHeight = bottomBarContentHeight,
+                onClick = {
+                    coroutineScope.launch {
+                        scrollController.onJumpToLatestClicked()
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AssistantJumpToLatestButton(
+    visible: Boolean,
+    bottomBarHeight: Dp,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = modifier.padding(bottom = bottomBarHeight + 24.dp),
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 4.dp,
+        ) {
+            IconButton(
+                onClick = onClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .testTag(ASSISTANT_JUMP_TO_LATEST_TEST_TAG),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_assistant_jump_to_latest),
+                    contentDescription = stringResource(
+                        R.string.ai_assistant_chat_jump_to_latest_content_description
+                    ),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }
@@ -394,6 +459,9 @@ private fun AssistantTopAppBar(
 @Composable
 private fun AssistantMessageThread(
     state: AssistantUiState,
+    visibleMessages: List<AssistantUiMessage>,
+    showTypingIndicator: Boolean,
+    scrollController: AssistantScrollController,
     onRetry: () -> Unit,
     onConfirmWrite: () -> Unit,
     onCancelWrite: () -> Unit,
@@ -402,54 +470,8 @@ private fun AssistantMessageThread(
     bottomContentPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val visibleMessages = state.messages.filter { message ->
-        message.hasVisibleContent(state)
-    }
-    val showTypingIndicator = state.shouldShowTypingIndicator
-    val listState = rememberLazyListState()
-    val bottomPinThresholdPx = with(LocalDensity.current) { BOTTOM_PIN_THRESHOLD_DP.roundToPx() }
-    val scrollSignal = visibleMessages.toScrollSignal(showTypingIndicator)
-    var previousScrollSignal by remember { mutableStateOf<AssistantThreadScrollSignal?>(null) }
-    var wasPinnedBeforeLatestChange by rememberSaveable { mutableStateOf(true) }
-
-    LaunchedEffect(listState, bottomPinThresholdPx, scrollSignal.renderedItemCount) {
-        snapshotFlow {
-            listState.isPinnedToRenderedEnd(
-                renderedItemCount = scrollSignal.renderedItemCount,
-                bottomPinThresholdPx = bottomPinThresholdPx,
-            )
-        }
-            .distinctUntilChanged()
-            .collect { wasPinnedBeforeLatestChange = it }
-    }
-
-    LaunchedEffect(scrollSignal) {
-        val renderedItemCount = scrollSignal.renderedItemCount
-        if (renderedItemCount == 0) {
-            previousScrollSignal = scrollSignal
-            return@LaunchedEffect
-        }
-
-        val previous = previousScrollSignal
-        val forceScrollForUserSend = previous != null &&
-            previous.lastUserMessageId != scrollSignal.lastUserMessageId
-        val isNewAssistantMessage = previous != null &&
-            previous.lastMessageId != scrollSignal.lastMessageId &&
-            scrollSignal.lastMessageRole == AssistantUiMessage.Role.ASSISTANT
-
-        if (forceScrollForUserSend || wasPinnedBeforeLatestChange) {
-            val targetIndex = renderedItemCount - 1
-            if (forceScrollForUserSend || isNewAssistantMessage) {
-                listState.animateScrollToItem(targetIndex)
-            } else {
-                listState.scrollToItem(targetIndex)
-            }
-        }
-        previousScrollSignal = scrollSignal
-    }
-
     LazyColumn(
-        state = listState,
+        state = scrollController.listState,
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         contentPadding = PaddingValues(
@@ -495,57 +517,8 @@ private val FLOATING_COMPOSER_FADE_EXTRA_HEIGHT = 48.dp
 private val FLOATING_COMPOSER_BOTTOM_PADDING = 16.dp
 private val FLOATING_COMPOSER_ESTIMATED_HEIGHT = 84.dp
 private val FLOATING_COMPOSER_CONTENT_SPACING = 16.dp
-private val BOTTOM_PIN_THRESHOLD_DP = 48.dp
 private val USER_BUBBLE_MAX_WIDTH = 280.dp
-
-private data class AssistantThreadScrollSignal(
-    val renderedItemCount: Int,
-    val messageCount: Int,
-    val lastMessageId: String?,
-    val lastMessageRole: AssistantUiMessage.Role?,
-    val lastUserMessageId: String?,
-    val lastMessageSegmentCount: Int,
-    val lastMessageTextLength: Int,
-    val showTypingIndicator: Boolean,
-)
-
-private fun List<AssistantUiMessage>.toScrollSignal(
-    showTypingIndicator: Boolean,
-): AssistantThreadScrollSignal {
-    val lastMessage = lastOrNull()
-    return AssistantThreadScrollSignal(
-        renderedItemCount = size + if (showTypingIndicator) 1 else 0,
-        messageCount = size,
-        lastMessageId = lastMessage?.id,
-        lastMessageRole = lastMessage?.role,
-        lastUserMessageId = lastOrNull { it.role == AssistantUiMessage.Role.USER }?.id,
-        lastMessageSegmentCount = lastMessage?.segments?.size ?: 0,
-        lastMessageTextLength = lastMessage?.text?.length ?: 0,
-        showTypingIndicator = showTypingIndicator,
-    )
-}
-
-private fun LazyListState.isPinnedToRenderedEnd(
-    renderedItemCount: Int,
-    bottomPinThresholdPx: Int,
-): Boolean {
-    if (renderedItemCount == 0) return true
-
-    val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull() ?: return true
-    val targetIndex = renderedItemCount - 1
-    if (lastVisibleItem.index != targetIndex) return false
-
-    val distanceFromViewportEnd = layoutInfo.viewportEndOffset - (lastVisibleItem.offset + lastVisibleItem.size)
-    return isRenderedTargetPinnedToViewportEnd(
-        distanceFromViewportEnd = distanceFromViewportEnd,
-        bottomPinThresholdPx = bottomPinThresholdPx,
-    )
-}
-
-internal fun isRenderedTargetPinnedToViewportEnd(
-    distanceFromViewportEnd: Int,
-    bottomPinThresholdPx: Int,
-): Boolean = distanceFromViewportEnd in 0..bottomPinThresholdPx
+private const val ASSISTANT_JUMP_TO_LATEST_TEST_TAG = "assistant_jump_to_latest"
 
 @Composable
 private fun AssistantMessageBubble(

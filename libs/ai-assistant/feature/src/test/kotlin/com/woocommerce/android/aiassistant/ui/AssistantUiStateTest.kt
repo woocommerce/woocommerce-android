@@ -97,36 +97,6 @@ class AssistantUiStateTest {
     }
 
     @Test
-    fun `given target bottom extends below viewport, when checking pin state, then target is not pinned`() {
-        assertThat(
-            isRenderedTargetPinnedToViewportEnd(
-                distanceFromViewportEnd = -1,
-                bottomPinThresholdPx = 48,
-            )
-        ).isFalse()
-    }
-
-    @Test
-    fun `given target bottom is near viewport end, when checking pin state, then target is pinned`() {
-        assertThat(
-            isRenderedTargetPinnedToViewportEnd(
-                distanceFromViewportEnd = 48,
-                bottomPinThresholdPx = 48,
-            )
-        ).isTrue()
-    }
-
-    @Test
-    fun `given target bottom is far above viewport end, when checking pin state, then target is not pinned`() {
-        assertThat(
-            isRenderedTargetPinnedToViewportEnd(
-                distanceFromViewportEnd = 49,
-                bottomPinThresholdPx = 48,
-            )
-        ).isFalse()
-    }
-
-    @Test
     fun `given error state with no inline message error, when checking fallback, then fallback is visible`() {
         val state = AssistantUiState(
             status = AssistantUiStatus.ERROR,
