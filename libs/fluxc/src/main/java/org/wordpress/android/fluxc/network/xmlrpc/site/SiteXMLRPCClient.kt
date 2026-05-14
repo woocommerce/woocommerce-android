@@ -82,9 +82,6 @@ class SiteXMLRPCClient @Inject constructor(
         val params = listOf(
                 site.selfHostedSiteId, site.username, site.password,
                 arrayOf(
-                        "software_version",
-                        "post_thumbnail",
-                        "default_comment_status",
                         "jetpack_client_id",
                         "blog_public",
                         "home_url",

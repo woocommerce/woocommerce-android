@@ -565,10 +565,9 @@ class SiteRestClient @Inject constructor(
 
     companion object {
         @VisibleForTesting
-        const val SITE_FIELDS = "ID,URL,name,description,jetpack,jetpack_connection,visible,is_private," +
-            "options,plan,capabilities,quota,icon,meta,zendesk_site_meta,organization_id," +
-            "was_ecommerce_trial,single_user_site,jetpack_modules,is_garden,garden_name,garden_partner"
-        private const val ROOT_ENDPOINT_FIELDS = "name,description,gmt_offset,namespaces,authentication"
+        const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
+            "options,plan,capabilities,meta,jetpack_modules,is_garden,garden_name,garden_partner"
+        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"
