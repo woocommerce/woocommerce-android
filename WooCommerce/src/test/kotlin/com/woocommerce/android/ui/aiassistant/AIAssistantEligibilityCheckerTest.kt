@@ -15,8 +15,8 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)

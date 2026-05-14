@@ -56,7 +56,7 @@ internal fun AssistantMarkdownText(
 @Composable
 private fun AssistantMarkdownTextPreview() {
     AssistantMarkdownText(
-        text = "Read the [WooCommerce mobile documentation](https://woocommerce.com/documentation/woocommerce/mobile/) " +
-            "for **setup** and *support*.",
+        text = "Read the [WooCommerce mobile documentation]" +
+            "(https://woocommerce.com/documentation/woocommerce/mobile/) for **setup** and *support*.",
     )
 }

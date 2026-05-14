@@ -28,7 +28,8 @@ class AssistantEmptyStateSuggestionsTest {
         )
         assertThat(prompts).containsExactly(
             "How's my revenue this week? Show me total sales for this week and how it compares to last week.",
-            "What's running low? List the products that are out of stock or low on inventory so I know what to restock.",
+            "What's running low? List the products that are out of stock or low on inventory so I know what to " +
+                "restock.",
             "Any orders that need my attention? Show me recent orders that are pending, on hold, or processing.",
             "Who's new this week? List the customers who registered or placed their first order recently.",
         )
