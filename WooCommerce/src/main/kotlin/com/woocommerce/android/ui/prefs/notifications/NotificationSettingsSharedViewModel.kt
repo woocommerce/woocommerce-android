@@ -79,6 +79,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         preferences?.toNewOrderNotificationSettingsViewState(thresholdAmount)
             ?: NewOrderNotificationSettingsViewState(thresholdAmount = thresholdAmount)
     }.asLiveData()
+    private val _newReviewNotificationSettingsViewState = MutableStateFlow(NewReviewNotificationSettingsViewState())
+    val newReviewNotificationSettingsViewState = _newReviewNotificationSettingsViewState.asLiveData()
 
     init {
         observeWooPushNotificationPreferences()
@@ -132,6 +134,28 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         displayedOrderThresholdAmount.value = thresholdAmount
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeOrder = updatedViewState.toStoreOrderPreferences())
+        )
+    }
+
+    fun onNewReviewNotificationsEnabledChanged(isEnabled: Boolean) {
+        onNotificationTypeEnabledChanged(NotificationType.NEW_REVIEWS, isEnabled)
+    }
+
+    fun onNewReviewNotificationPreferenceChanged(preference: NewReviewNotificationPreference) {
+        val preferences = wooPushNotificationPreferences.value ?: return
+        val updatedViewState = _newReviewNotificationSettingsViewState.value.copy(notificationPreference = preference)
+        updateDisplayedWooPushNotificationPreferences(
+            preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
+        )
+    }
+
+    fun onNewReviewSelectedRatingChanged(rating: Int) {
+        val preferences = wooPushNotificationPreferences.value ?: return
+        val updatedViewState = _newReviewNotificationSettingsViewState.value.copy(
+            selectedRating = rating.coerceIn(MIN_REVIEW_RATING, MAX_REVIEW_RATING)
+        )
+        updateDisplayedWooPushNotificationPreferences(
+            preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
         )
     }
 
@@ -250,6 +274,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         wooPushNotificationPreferences.value = preferences
         _isNotificationTypeSelectionEnabled.value = true
         preferences.storeOrder?.minAmount?.let { displayedOrderThresholdAmount.value = it }
+        preferences.storeReview?.let { reviewPreferences ->
+            _newReviewNotificationSettingsViewState.update { it.copyWith(reviewPreferences) }
+        }
         _notificationTypeItems.update { items ->
             items.map { item ->
                 item.copy(isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled)
@@ -300,6 +327,26 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     )
 
+    private fun NewReviewNotificationSettingsViewState.copyWith(
+        reviewPreferences: StoreReviewPreferences
+    ): NewReviewNotificationSettingsViewState = copy(
+        notificationsEnabled = reviewPreferences.enabled ?: notificationsEnabled,
+        notificationPreference = if (reviewPreferences.maxRating == null) {
+            NewReviewNotificationPreference.AllReviews
+        } else {
+            NewReviewNotificationPreference.RatingFilteredReviews
+        },
+        selectedRating = reviewPreferences.maxRating ?: selectedRating
+    )
+
+    private fun NewReviewNotificationSettingsViewState.toStoreReviewPreferences() = StoreReviewPreferences(
+        enabled = notificationsEnabled,
+        maxRating = when (notificationPreference) {
+            NewReviewNotificationPreference.AllReviews -> null
+            NewReviewNotificationPreference.RatingFilteredReviews -> selectedRating
+        }
+    )
+
     private fun WooPushNotificationPreferences.isEnabled(type: NotificationType): Boolean? =
         when (type) {
             NotificationType.NEW_ORDERS -> storeOrder?.enabled
@@ -329,6 +376,17 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         HighValueOrders
     }
 
+    data class NewReviewNotificationSettingsViewState(
+        val notificationsEnabled: Boolean = true,
+        val notificationPreference: NewReviewNotificationPreference = NewReviewNotificationPreference.AllReviews,
+        val selectedRating: Int = DEFAULT_SELECTED_REVIEW_RATING
+    )
+
+    enum class NewReviewNotificationPreference {
+        AllReviews,
+        RatingFilteredReviews
+    }
+
     enum class NotificationType {
         NEW_ORDERS,
         STOCK,
@@ -336,6 +394,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     companion object {
+        const val MIN_REVIEW_RATING = 1
+        const val MAX_REVIEW_RATING = 5
+        private const val DEFAULT_SELECTED_REVIEW_RATING = 2
         private const val DEFAULT_ORDER_THRESHOLD_AMOUNT = 100
         private val MIN_ORDER_THRESHOLD_AMOUNT = BigDecimal.ONE
         private const val NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS = 1000L

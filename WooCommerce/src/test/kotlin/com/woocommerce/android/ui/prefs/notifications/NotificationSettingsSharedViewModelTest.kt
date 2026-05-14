@@ -186,7 +186,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         testBlocking {
             val fetchedPreferences = WooPushNotificationPreferences(
                 storeOrder = StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)),
-                storeReview = StoreReviewPreferences(enabled = true),
+                storeReview = StoreReviewPreferences(enabled = false, maxRating = 3),
                 storeStock = StoreStockPreferences(enabled = false)
             )
             setup {
@@ -198,13 +198,19 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
 
             assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_ORDERS }.isEnabled).isFalse()
-            assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_REVIEWS }.isEnabled).isTrue()
+            assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_REVIEWS }.isEnabled).isFalse()
             assertThat(notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled).isFalse()
 
             val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
             assertThat(orderViewState.notificationsEnabled).isFalse()
             assertThat(orderViewState.notificationPreference).isEqualTo(NewOrderNotificationPreference.HighValueOrders)
             assertThat(orderViewState.thresholdAmount).isEqualTo(BigDecimal(50))
+
+            val reviewViewState = viewModel.newReviewNotificationSettingsViewState.captureValues().last()
+            assertThat(reviewViewState.notificationsEnabled).isFalse()
+            assertThat(reviewViewState.notificationPreference)
+                .isEqualTo(NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews)
+            assertThat(reviewViewState.selectedRating).isEqualTo(3)
         }
 
     @Test
@@ -295,6 +301,46 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeOrder)
                 .isEqualTo(StoreOrderPreferences(enabled = true, minAmount = BigDecimal.ONE))
+        }
+
+    @Test
+    fun `when new review detail settings change, then save review preferences`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onNewReviewNotificationsEnabledChanged(false)
+            viewModel.onNewReviewNotificationPreferenceChanged(
+                NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews
+            )
+            viewModel.onNewReviewSelectedRatingChanged(4)
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeReview)
+                .isEqualTo(StoreReviewPreferences(enabled = false, maxRating = 4))
+        }
+
+    @Test
+    fun `given rating filter, when all reviews is selected, then save preferences without rating`() =
+        testBlocking {
+            val reviewPreferences = WooPushNotificationPreferences(
+                storeReview = StoreReviewPreferences(enabled = true, maxRating = 3)
+            )
+            setup {
+                notificationPreferencesFlow.value = reviewPreferences
+                mockSuccessfulFetch(reviewPreferences)
+            }
+            advanceUntilIdle()
+
+            viewModel.onNewReviewNotificationPreferenceChanged(
+                NotificationSettingsSharedViewModel.NewReviewNotificationPreference.AllReviews
+            )
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeReview)
+                .isEqualTo(StoreReviewPreferences(enabled = true, maxRating = null))
         }
 
     @Test
