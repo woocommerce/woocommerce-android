@@ -336,7 +336,14 @@ class DashboardViewModelTest : BaseUnitTest() {
             // GIVEN
             val aiAssistant = dashboardWidget(DashboardWidget.Type.AI_ASSISTANT)
             setup {
-                whenever(dashboardRepository.widgets).thenReturn(flowOf(listOf(aiAssistant, dashboardWidget(DashboardWidget.Type.STATS))))
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            aiAssistant,
+                            dashboardWidget(DashboardWidget.Type.STATS)
+                        )
+                    )
+                )
             }
 
             // WHEN
@@ -358,7 +365,14 @@ class DashboardViewModelTest : BaseUnitTest() {
                 status = DashboardWidget.Status.Hidden
             )
             setup {
-                whenever(dashboardRepository.widgets).thenReturn(flowOf(listOf(aiAssistant, dashboardWidget(DashboardWidget.Type.STATS))))
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            aiAssistant,
+                            dashboardWidget(DashboardWidget.Type.STATS)
+                        )
+                    )
+                )
             }
 
             // WHEN

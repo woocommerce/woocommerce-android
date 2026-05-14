@@ -231,7 +231,6 @@ private fun DashboardWidgetCard(
                 modifier = modifier
             )
         }
-
     }
 }
 
