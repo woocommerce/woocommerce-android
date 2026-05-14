@@ -14,8 +14,6 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.LocationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -26,7 +24,6 @@ import org.junit.Test
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class WooPosCardReaderConnectionControllerTest {
@@ -49,9 +46,6 @@ class WooPosCardReaderConnectionControllerTest {
     private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream = mock()
     private val remoteReaderSession: WooPosRemoteReaderSession = mock()
     private val wooPosAnalyticsTracker: WooPosAnalyticsTracker = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY) }.thenReturn(true)
-    }
 
     private fun createController(scope: TestScope) = WooPosCardReaderConnectionController(
         cardReaderManager = cardReaderManager,
@@ -70,13 +64,11 @@ class WooPosCardReaderConnectionControllerTest {
         unifiedDiscoveryStream = unifiedDiscoveryStream,
         remoteReaderSession = remoteReaderSession,
         wooPosAnalyticsTracker = wooPosAnalyticsTracker,
-        featureFlagRepository = featureFlagRepository,
     )
 
     @Test
     fun `given scanning state, when explainer is shown, then explainer shown event tracked`() = runTest {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
         val controller = createController(this)
 
         // WHEN

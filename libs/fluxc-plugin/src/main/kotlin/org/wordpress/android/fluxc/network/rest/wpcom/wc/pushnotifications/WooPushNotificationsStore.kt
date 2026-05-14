@@ -1,8 +1,15 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.BuildConfig
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.dao.WooPushNotificationPreferencesDao
+import org.wordpress.android.fluxc.persistence.entity.toEntity
+import org.wordpress.android.fluxc.persistence.entity.toModel
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
@@ -12,7 +19,31 @@ import javax.inject.Singleton
 class WooPushNotificationsStore @Inject internal constructor(
     private val pushNotificationsRestClient: PushNotificationsRestClient,
     private val coroutineEngine: CoroutineEngine,
+    private val preferencesDao: WooPushNotificationPreferencesDao,
 ) {
+    fun observeNotificationPreferences(site: SiteModel): Flow<WooPushNotificationPreferences?> =
+        preferencesDao.observePreferences(site.localId())
+            .map { it?.toModel() }
+            .distinctUntilChanged()
+
+    suspend fun fetchNotificationPreferences(site: SiteModel): WooResult<WooPushNotificationPreferences> =
+        coroutineEngine.withDefaultContext(T.API, this, "fetchWooPushNotificationPreferences") {
+            pushNotificationsRestClient.fetchNotificationPreferences(site).asWooResult()
+                .also { result ->
+                    result.model?.let { preferencesDao.upsertPreferences(it.toEntity(site.localId())) }
+                }
+        }
+
+    suspend fun updateNotificationPreferences(
+        site: SiteModel,
+        preferences: WooPushNotificationPreferences
+    ): WooResult<WooPushNotificationPreferences> =
+        coroutineEngine.withDefaultContext(T.API, this, "updateWooPushNotificationPreferences") {
+            pushNotificationsRestClient.updateNotificationPreferences(site, preferences).asWooResult()
+                .also { result ->
+                    result.model?.let { preferencesDao.upsertPreferences(it.toEntity(site.localId())) }
+                }
+        }
 
     suspend fun registerPushToken(
         site: SiteModel,

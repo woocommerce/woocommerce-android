@@ -4,7 +4,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
+import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
@@ -26,9 +28,9 @@ class AssistantUiStateTest {
     @Test
     fun `given transient assistant errors, when checking retry action support, then retry is supported`() {
         val retryableErrors = listOf(
-            AssistantError.Network,
-            AssistantError.Timeout,
-            AssistantError.RateLimit,
+            AssistantError.Network(),
+            AssistantError.Timeout(),
+            AssistantError.RateLimit(),
         )
 
         retryableErrors.forEach { error ->
@@ -37,12 +39,17 @@ class AssistantUiStateTest {
     }
 
     @Test
+    fun `given BadRequest, when checking retry action support, then retry is not supported`() {
+        assertThat(AssistantError.BadRequest().supportsRetryAction()).isFalse()
+    }
+
+    @Test
     fun `given assistant errors, when mapping to message resources, then product copy resources are returned`() {
-        assertThat(AssistantError.Network.toMessageRes()).isEqualTo(R.string.assistant_chat_error_network)
-        assertThat(AssistantError.Timeout.toMessageRes()).isEqualTo(R.string.assistant_chat_error_timeout)
-        assertThat(AssistantError.RateLimit.toMessageRes()).isEqualTo(R.string.assistant_chat_error_rate_limit)
-        assertThat(AssistantError.Auth.toMessageRes()).isEqualTo(R.string.assistant_chat_error_auth)
-        assertThat(AssistantError.UpstreamFailure.toMessageRes())
+        assertThat(AssistantError.Network().toMessageRes()).isEqualTo(R.string.assistant_chat_error_network)
+        assertThat(AssistantError.Timeout().toMessageRes()).isEqualTo(R.string.assistant_chat_error_timeout)
+        assertThat(AssistantError.RateLimit().toMessageRes()).isEqualTo(R.string.assistant_chat_error_rate_limit)
+        assertThat(AssistantError.Auth().toMessageRes()).isEqualTo(R.string.assistant_chat_error_auth)
+        assertThat(AssistantError.UpstreamFailure().toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_upstream_failure)
         assertThat(AssistantError.ToolFailed(toolName = "orders_update").toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_tool_failed)
@@ -62,6 +69,31 @@ class AssistantUiStateTest {
             .isEqualTo(R.string.assistant_chat_error_unknown)
         assertThat(AssistantError.ToolFailed(toolName = "orders_update", cause = rawCause).toMessageRes())
             .isEqualTo(R.string.assistant_chat_error_tool_failed)
+    }
+
+    @Test
+    fun `given transport body snippet, when mapping ui error and copy, then snippet is not exposed`() {
+        val error = AssistantError.BadRequest(
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(bodySnippet = "raw upstream token abc123"),
+            )
+        )
+
+        assertThat(error.toAssistantUiError()).isEqualTo(AssistantUiError.BAD_REQUEST)
+        assertThat(error.toMessageRes()).isEqualTo(R.string.assistant_chat_error_upstream_failure)
+    }
+
+    @Test
+    fun `given tool transport body snippet, when mapping ui error and copy, then snippet is not exposed`() {
+        val error = AssistantError.ToolFailed(
+            toolName = "orders_update",
+            diagnostics = Diagnostics(
+                transport = TransportDiagnostics(bodySnippet = "raw backend secret"),
+            )
+        )
+
+        assertThat(error.toAssistantUiError()).isEqualTo(AssistantUiError.TOOL_FAILED)
+        assertThat(error.toMessageRes()).isEqualTo(R.string.assistant_chat_error_tool_failed)
     }
 
     @Test
@@ -129,7 +161,7 @@ class AssistantUiStateTest {
                     role = AssistantUiMessage.Role.ASSISTANT,
                     text = "",
                     error = AssistantMessageError(
-                        error = AssistantError.Network,
+                        error = AssistantError.Network(),
                         canRetry = true,
                     ),
                 ),

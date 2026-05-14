@@ -158,7 +158,11 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
 
         // Assert customer is formed from customer info
         assertThat(customerWithAnalytics.remoteCustomerId).isEqualTo(defaultCustomer.remoteCustomerId.value)
-        assertThat(customerWithAnalytics.analyticsCustomerId).isEqualTo(null)
+        assertThat(customerWithAnalytics.analyticsCustomerId).isNull()
+        assertThat(customerWithAnalytics.lastActive).isNull()
+        assertThat(customerWithAnalytics.ordersCount).isNull()
+        assertThat(customerWithAnalytics.totalSpend).isNull()
+        assertThat(customerWithAnalytics.averageOrderValue).isNull()
     }
 
     @Test

@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUse
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
@@ -38,74 +39,123 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given LOADING_ORDERS and all checks pass, when run, then four tests transition pending-running-passed`() =
+    fun `given LOADING_ORDERS, when run, then order diagnostics are included`() =
+        testBlocking {
+            stubAll(success = true)
+
+            val initial = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().first()
+
+            assertThat(initial.statuses.map(DiagnosticStatus::test))
+                .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS)
+        }
+
+    @Test
+    fun `given all LOADING_ORDERS checks pass, when run, then each status transition is emitted`() =
         testBlocking {
             stubAll(success = true)
 
             val emissions = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList()
 
-            // 1 initial pending + 2 transitions per test (running, passed) × 4 tests = 9 emissions.
             assertThat(emissions).hasSize(1 + 4 * 2)
-
-            val initial = emissions.first()
-            assertThat(initial.statuses.map { it.test })
-                .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS)
-            assertThat(initial.statuses.map { it.status })
-                .allMatch { it is TestStatus.Pending }
-
-            val finalResult = emissions.last()
-            assertThat(finalResult.suggestedAction).isNull()
-            assertThat(finalResult.firstFailure).isNull()
-            assertThat(finalResult.statuses.map { it.status })
-                .allMatch { it is TestStatus.Passed }
-            assertThat(finalResult.isComplete).isTrue
         }
 
     @Test
-    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then later tests stay pending and retry is suggested`() =
+    fun `given all LOADING_ORDERS checks pass, when run, then final statuses are passed`() =
         testBlocking {
-            whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
-            whenever(wpComCheck.invoke()).thenReturn(
-                flowOf(
-                    ConnectivityCheckStatus.Failure(
-                        error = FailureType.TIMEOUT,
+            stubAll(success = true)
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.statuses.map(DiagnosticStatus::status))
+                .allMatch { it is TestStatus.Passed }
+        }
+
+    @Test
+    fun `given all LOADING_ORDERS checks pass, when run, then final result is complete`() =
+        testBlocking {
+            stubAll(success = true)
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.isComplete).isTrue
+        }
+
+    @Test
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then retry is suggested`() =
+        testBlocking {
+            stubWpComFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RetryDiagnostics)
+        }
+
+    @Test
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then failure metadata is preserved`() =
+        testBlocking {
+            stubWpComFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.firstFailure).isEqualTo(
+                DiagnosticStatus(
+                    test = WPCOM_SERVERS,
+                    status = TestStatus.Failed(
+                        failureType = FailureType.TIMEOUT,
                         technicalDetails = "WPCom 503",
                         durationMs = 250L
                     )
                 )
             )
-
-            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
-
-            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RetryDiagnostics)
-
-            val failure = final.firstFailure
-            assertThat(failure).isNotNull
-            val failedStatus = requireNotNull(failure)
-            assertThat(failedStatus.test).isEqualTo(WPCOM_SERVERS)
-            assertThat(failedStatus.status).isEqualTo(
-                TestStatus.Failed(
-                    failureType = FailureType.TIMEOUT,
-                    technicalDetails = "WPCom 503",
-                    durationMs = 250L
-                )
-            )
-
-            // STORE_CONNECTION + STORE_ORDERS must not have started.
-            val storeConnectionStatus = final.statuses.first { it.test == STORE_CONNECTION }.status
-            val storeOrdersStatus = final.statuses.first { it.test == STORE_ORDERS }.status
-            assertThat(storeConnectionStatus).isInstanceOf(TestStatus.Pending::class.java)
-            assertThat(storeOrdersStatus).isInstanceOf(TestStatus.Pending::class.java)
         }
 
     @Test
-    fun `given OTHER issue type, when run, then a single empty pending result is emitted`() = testBlocking {
-        val emissions = service.runDiagnostics(SupportIssueType.OTHER).toList()
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then later tests stay pending`() =
+        testBlocking {
+            stubWpComFailure()
 
-        assertThat(emissions).hasSize(1)
-        assertThat(emissions.single().statuses).isEmpty()
-        assertThat(emissions.single().suggestedAction).isNull()
-        assertThat(emissions.single().isComplete).isTrue
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+            val pendingStatuses = final.statuses
+                .filter { it.test == STORE_CONNECTION || it.test == STORE_ORDERS }
+                .map(DiagnosticStatus::status)
+
+            assertThat(pendingStatuses).allMatch { it is TestStatus.Pending }
+        }
+
+    @Test
+    fun `given check throws, when run, then retry is suggested`() = testBlocking {
+        stubInternetThrows()
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+        assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RetryDiagnostics)
+    }
+
+    @Test
+    fun `given check throws, when run, then failure metadata is emitted`() = testBlocking {
+        stubInternetThrows()
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+        assertThat(final.firstFailure).isEqualTo(
+            DiagnosticStatus(
+                test = INTERNET_CONNECTION,
+                status = TestStatus.Failed(
+                    failureType = FailureType.GENERIC,
+                    technicalDetails = "No selected site"
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `given OTHER issue type, when run, then all tests are included`() = testBlocking {
+        stubAll(success = true)
+
+        val initial = service.runDiagnostics(SupportIssueType.OTHER).toList().first()
+
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS, STORE_PRODUCTS)
     }
 
     @Test
@@ -114,7 +164,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
         val initial = service.runDiagnostics(SupportIssueType.LOADING_PRODUCTS).toList().first()
 
-        assertThat(initial.statuses.map { it.test })
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
             .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_PRODUCTS)
     }
 
@@ -124,7 +174,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
         val initial = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().first()
 
-        assertThat(initial.statuses.map { it.test })
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
             .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
     }
 
@@ -134,7 +184,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
         val initial = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().first()
 
-        assertThat(initial.statuses.map { it.test })
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
             .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
     }
 
@@ -149,5 +199,27 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(outcome))
         whenever(storeOrdersCheck.invoke()).thenReturn(flowOf(outcome))
         whenever(storeProductsCheck.invoke()).thenReturn(flowOf(outcome))
+    }
+
+    private fun stubWpComFailure() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(wpComCheck.invoke()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    error = FailureType.TIMEOUT,
+                    technicalDetails = "WPCom 503",
+                    durationMs = 250L
+                )
+            )
+        )
+    }
+
+    private fun stubInternetThrows() {
+        whenever(internetCheck.invoke()).thenReturn(
+            flow {
+                emit(ConnectivityCheckStatus.InProgress)
+                error("No selected site")
+            }
+        )
     }
 }

@@ -2,6 +2,8 @@ package com.woocommerce.android.aiassistant.runtime
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.automattic.eventhorizon.AiAssistantErrorKindValue
+import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
@@ -14,8 +16,10 @@ import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.loop.ToolDecision
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
@@ -28,7 +32,8 @@ import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
 import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
-import com.woocommerce.android.aiassistant.tools.analytics.ANALYTICS_REVENUE_TOOL_NAME
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
@@ -39,11 +44,13 @@ import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
+import com.woocommerce.android.aiassistant.ui.cards.metric
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
@@ -133,7 +140,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
                         updatedHistory = updatedHistory,
-                        retryAvailable = false,
+                        retryAffordance = RetryAffordance.None,
                     )
                 )
             ),
@@ -145,7 +152,7 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = updatedHistory,
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = AssistantError.Cancelled,
             )
         )
@@ -238,7 +245,7 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(call),
-                    LoopEvent.ToolCallFinished(result),
+                    loopToolCallFinished(result),
                 )
             ),
         )
@@ -250,7 +257,15 @@ class AgenticLoopAssistantRuntimeTest {
                 toolCallId = "call-1",
                 toolName = "orders_get",
             ),
-            AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"),
+            AssistantRuntimeEvent.ToolCallFinished(
+                toolCallId = "call-1",
+                toolName = "orders_get",
+                status = AiAssistantToolStatusValue.Success,
+                errorKind = null,
+                durationMs = null,
+                emitTelemetry = true,
+                telemetryContext = givenTurnRequest().telemetryContext,
+            ),
         )
     }
 
@@ -268,7 +283,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
                         updatedHistory = updatedHistory,
-                        retryAvailable = false,
+                        retryAffordance = RetryAffordance.None,
                     )
                 )
             ),
@@ -281,8 +296,38 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = updatedHistory,
-                retryAvailable = false,
+                retryAffordance = RetryAffordance.None,
                 error = null,
+            )
+        )
+    }
+
+    @Test
+    fun `when loop emits rejected safety decision, then runtime emits failed tool telemetry event`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    loopToolCallFinished(
+                        result = ToolResult.RejectedBySafety("call-1"),
+                        toolName = "orders_update",
+                        decision = ToolDecision.REJECTED_BY_SAFETY,
+                        durationMs = null,
+                    )
+                )
+            ),
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.ToolCallFinished(
+                toolCallId = "call-1",
+                toolName = "orders_update",
+                status = AiAssistantToolStatusValue.Failure,
+                errorKind = AiAssistantErrorKindValue.ValidationError,
+                durationMs = null,
+                emitTelemetry = true,
+                telemetryContext = givenTurnRequest().telemetryContext,
             )
         )
     }
@@ -316,9 +361,9 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-validation")),
-                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                    loopToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-success")),
-                    LoopEvent.ToolCallFinished(
+                    loopToolCallFinished(
                         ToolResult.Success(
                             toolCallId = "call-success",
                             structured = buildJsonObject { put("rendered", 1) },
@@ -326,7 +371,7 @@ class AgenticLoopAssistantRuntimeTest {
                         )
                     ),
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-transport")),
-                    LoopEvent.ToolCallFinished(ToolResult.TransportError("call-transport", retryable = true)),
+                    loopToolCallFinished(ToolResult.TransportError("call-transport", retryable = true)),
                 )
             )
         )
@@ -362,7 +407,7 @@ class AgenticLoopAssistantRuntimeTest {
                             arguments = buildJsonObject {},
                         )
                     ),
-                    LoopEvent.ToolCallFinished(
+                    loopToolCallFinished(
                         ToolResult.Success(
                             toolCallId = "call-orders",
                             structured = buildJsonObject { put("ok", true) },
@@ -379,16 +424,16 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success, when adapted, then no stats card is emitted directly`() =
+    fun `given analytics orders success, when adapted, then no stats card is emitted directly`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
-                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-analytics")),
-                        LoopEvent.ToolCallFinished(
+                        LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-analytics")),
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-analytics",
-                                structured = analyticsRevenueStructured(),
+                                structured = analyticsOrdersStructured(),
                             )
                         ),
                     )
@@ -407,7 +452,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-stats",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -422,35 +467,47 @@ class AgenticLoopAssistantRuntimeTest {
 
             assertThat(events.cardEvents()).containsExactly(
                 AssistantRuntimeEvent.CardsResolved(
-                    listOf(
-                        AssistantCard.Stats(
-                            id = ANALYTICS_STATS_ID,
-                            after = "2026-05-01",
-                            before = "2026-05-03",
-                            currency = "USD",
-                            totalSales = "170.35",
-                            netSales = "120.15",
-                            totalSalesChartPoints = listOf(
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
-                            ),
-                            netSalesChartPoints = listOf(
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
-                                AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
-                            ),
-                        )
-                    )
+                    listOf(expectedAnalyticsStatsCard())
                 )
             )
         }
 
     @Test
-    fun `given analytics revenue validation error, when adapted, then no stats card is emitted`() = runTest {
+    fun `given show cards success with orders analytics stats, when adapted, then order stats card is emitted`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
+                        loopToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-stats",
+                                structured = buildJsonObject { put("rendered", 1) },
+                                uiStructured = showCardsUiStructured(ordersAnalyticsStatsPayload()),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            val statsCard = events.cardEvents().single().cards.single() as AssistantCard.Stats
+            assertThat(statsCard.id).isEqualTo(ANALYTICS_STATS_ID)
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("170.35")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.NetSales).value).isEqualTo("120.15")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
+            assertThat(statsCard.metric(AssistantCard.Stats.MetricType.AverageOrderValue).chartPoints)
+                .containsExactly(AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10))
+        }
+
+    @Test
+    fun `given analytics orders validation error, when adapted, then no stats card is emitted`() = runTest {
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
-                    LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-validation")),
-                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                    LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-validation")),
+                    loopToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
                 )
             )
         )
@@ -461,13 +518,13 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given analytics revenue success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
+    fun `given analytics orders success with cards key but no stats fields, when adapted, then no fallback cards are emitted`() =
         runTest {
             val runtime = runtime(
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
-                        LoopEvent.ToolCallStarted(analyticsRevenueCall(id = "call-arbitrary")),
-                        LoopEvent.ToolCallFinished(
+                        LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-arbitrary")),
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-arbitrary",
                                 structured = buildJsonObject {
@@ -494,7 +551,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-malformed")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-malformed",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -527,7 +584,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-partial")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-partial",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -559,7 +616,7 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-empty")),
-                    LoopEvent.ToolCallFinished(
+                    loopToolCallFinished(
                         ToolResult.Success(
                             toolCallId = "call-empty",
                             structured = buildJsonObject { put("rendered", 0) },
@@ -580,6 +637,68 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given show cards structured success, when adapted, then aggregate show cards telemetry is emitted`() =
+        runTest {
+            val request = givenTurnRequest()
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-show-cards")),
+                        loopToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-show-cards",
+                                structured = showCardsStructured(
+                                    requested = 3,
+                                    rendered = 1,
+                                    missing = 1,
+                                    rejected = 1,
+                                ),
+                                uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(request).toList()
+
+            assertThat(events.filterIsInstance<AssistantRuntimeEvent.ShowCardsProcessed>()).containsExactly(
+                AssistantRuntimeEvent.ShowCardsProcessed(
+                    counts = ShowCardsCounts(
+                        requestedCount = 3,
+                        renderedCount = 1,
+                        missingCount = 1,
+                        rejectedCount = 1,
+                    ),
+                    telemetryContext = request.telemetryContext,
+                )
+            )
+        }
+
+    @Test
+    fun `given show cards success with malformed structured payload, when adapted, then aggregate telemetry is skipped`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-malformed")),
+                        loopToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-malformed",
+                                structured = buildJsonObject { put("requested", "not a number") },
+                                uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.filterIsInstance<AssistantRuntimeEvent.ShowCardsProcessed>()).isEmpty()
+        }
+
+    @Test
     fun `given orders list success with json cards key, when adapted, then no fallback cards are emitted`() =
         runTest {
             val runtime = runtime(
@@ -592,7 +711,7 @@ class AgenticLoopAssistantRuntimeTest {
                                 arguments = buildJsonObject {},
                             )
                         ),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-arbitrary",
                                 structured = buildJsonObject {
@@ -639,10 +758,18 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
+        json = json,
     )
 
-    private fun givenTurnRequest() = AssistantTurnRequest(
+    private fun givenTurnRequest(
+        telemetryContext: AssistantTelemetryContext = AssistantTelemetryContext(
+            conversationId = "conversation-1",
+            requestId = "request-1",
+            messageId = "message-1",
+        ),
+    ) = AssistantTurnRequest(
         conversationId = "conversation-1",
+        telemetryContext = telemetryContext,
         siteId = 123L,
         toolScope = ToolScope.GLOBAL,
         userMessage = "Hello",
@@ -655,52 +782,71 @@ class AgenticLoopAssistantRuntimeTest {
         arguments = buildJsonObject {},
     )
 
-    private fun analyticsRevenueCall(id: String) = ToolCall(
+    private fun loopToolCallFinished(
+        result: ToolResult,
+        toolName: String = "",
+        decision: ToolDecision = ToolDecision.EXECUTED,
+        durationMs: Long? = null,
+    ) = LoopEvent.ToolCallFinished(
+        result = result,
+        toolName = toolName,
+        decision = decision,
+        durationMs = durationMs,
+    )
+
+    private fun analyticsOrdersCall(id: String) = ToolCall(
         id = id,
-        name = ANALYTICS_REVENUE_TOOL_NAME,
+        name = "analytics_orders",
         arguments = buildJsonObject {},
     )
 
-    private fun analyticsRevenueStructured() = buildJsonObject {
+    private fun analyticsOrdersStructured() = buildJsonObject {
         put("after", "2026-05-01")
         put("before", "2026-05-03")
         put("currency", "USD")
         putJsonObject("totals") {
+            put("total_sales", "170.35")
             put("net_revenue", "123.45")
             put("orders_count", 3)
-        }
-        putJsonArray("revenue_chart") {
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-01")
-                    put("value", 10.0)
-                }
-            )
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-02")
-                    put("value", 20.0)
-                }
-            )
-        }
-        putJsonArray("order_chart") {
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-01")
-                    put("value", 1.0)
-                }
-            )
-            add(
-                buildJsonObject {
-                    put("date", "2026-05-02")
-                    put("value", 2.0)
-                }
-            )
+            put("avg_order_value", "41.15")
         }
     }
 
     private fun showCardsUiStructured(vararg cards: ShowCardPayload) =
         json.encodeToJsonElement(ShowCardsUiStructured(cards = cards.toList()))
+
+    private fun showCardsStructured(
+        requested: Int,
+        rendered: Int,
+        missing: Int,
+        rejected: Int,
+    ) = buildJsonObject {
+        put("requested", requested)
+        put("validated", requested - rejected)
+        put("rendered", rendered)
+        putJsonArray("resolved_refs") {}
+        putJsonArray("missing_refs") {
+            repeat(missing) { index ->
+                add(
+                    buildJsonObject {
+                        put("family", "order")
+                        put("id", "missing-$index")
+                        put("reason", "not_found")
+                    }
+                )
+            }
+        }
+        putJsonArray("rejected_refs") {
+            repeat(rejected) { index ->
+                add(
+                    buildJsonObject {
+                        put("index", index)
+                        put("reason", "duplicate_ref")
+                    }
+                )
+            }
+        }
+    }
 
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
@@ -726,6 +872,8 @@ class AgenticLoopAssistantRuntimeTest {
             totals = buildJsonObject {
                 put("total_sales", "170.35")
                 put("net_revenue", "120.15")
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
             },
             intervalSubtotals = listOf(
                 buildJsonObject {
@@ -733,6 +881,8 @@ class AgenticLoopAssistantRuntimeTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "100.00")
                         put("net_revenue", "80.00")
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
                     }
                 },
                 buildJsonObject {
@@ -740,6 +890,36 @@ class AgenticLoopAssistantRuntimeTest {
                     putJsonObject("subtotals") {
                         put("total_sales", "70.35")
                         put("net_revenue", "40.15")
+                        put("orders_count", "30")
+                        put("avg_order_value", "87.38")
+                    }
+                },
+            ),
+        ),
+    )
+
+    private fun ordersAnalyticsStatsPayload() = ShowCardPayload(
+        family = "analytics_stats",
+        id = ANALYTICS_STATS_ID,
+        title = "Analytics",
+        details = ShowCardDetails.AnalyticsStats(
+            after = "2026-05-01",
+            before = "2026-05-03",
+            currency = "USD",
+            totals = buildJsonObject {
+                put("total_sales", "170.35")
+                put("net_revenue", "120.15")
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
+            },
+            intervalSubtotals = listOf(
+                buildJsonObject {
+                    put("interval", "2026-05-01")
+                    putJsonObject("subtotals") {
+                        put("total_sales", "50.00")
+                        put("net_revenue", "35.00")
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
                     }
                 },
             ),
@@ -754,6 +934,47 @@ class AgenticLoopAssistantRuntimeTest {
         currency = "USD",
         customerName = "Jane Doe",
         date = "2026-05-01T10:00:00Z",
+    )
+
+    private fun expectedAnalyticsStatsCard() = AssistantCard.Stats(
+        id = ANALYTICS_STATS_ID,
+        after = "2026-05-01",
+        before = "2026-05-03",
+        currency = "USD",
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 100.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 70.35),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 40.15),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalOrders,
+                value = "42",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 12.0),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 30.0),
+                ),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.AverageOrderValue,
+                value = "85.30",
+                chartPoints = listOf(
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-01", value = 80.10),
+                    AssistantCard.Stats.ChartPoint(date = "2026-05-02", value = 87.38),
+                ),
+            ),
+        ),
     )
 
     private fun List<AssistantRuntimeEvent>.cardEvents() =
@@ -835,6 +1056,6 @@ class AgenticLoopAssistantRuntimeTest {
 
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-03:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-03:interval:day"
     }
 }

@@ -40,8 +40,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -106,8 +104,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         cardReaderOnboardingChecker
     )
 
-    private val featureFlagRepository: FeatureFlagRepository = mock()
-
     @Before
     fun setUp() {
         initViewModel()
@@ -146,25 +142,11 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given phone is eligible and feature flag enabled, when screen shown, then card reader mode row present`() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
-
+    fun `given phone is eligible, when screen shown, then card reader mode row present`() {
         initViewModel()
 
         assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
             .anyMatch {
-                it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
-            }
-    }
-
-    @Test
-    fun `given feature flag disabled, when screen shown, then card reader mode row is absent`() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(false)
-
-        initViewModel()
-
-        assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
-            .noneMatch {
                 it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
             }
     }
@@ -236,8 +218,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given card reader mode row shown, when user clicks it, then navigate to card reader mode event triggered`() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)).thenReturn(true)
-
         initViewModel()
 
         viewModel.viewStateData.getOrAwaitValue().rows.find {
@@ -1463,7 +1443,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
         }
 
     @Test
@@ -1825,7 +1805,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
             cardReaderManager,
-            featureFlagRepository,
         )
         viewModel.onViewVisible()
     }

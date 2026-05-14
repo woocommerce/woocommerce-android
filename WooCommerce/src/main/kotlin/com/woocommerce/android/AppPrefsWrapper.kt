@@ -44,6 +44,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
 
+    var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 

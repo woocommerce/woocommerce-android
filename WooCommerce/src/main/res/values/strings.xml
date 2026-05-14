@@ -2297,6 +2297,8 @@
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Turn on notifications&lt;/a&gt; in your device settings to receive store notifications.</string>
     <string name="settings_notifs_enable_title">Enable notifications</string>
+    <string name="settings_notifs_error_fetch">There was an error fetching your notification settings.</string>
+    <string name="settings_notifs_error_update">There was an error updating your notification settings.</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
     <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
@@ -2315,7 +2317,9 @@
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
     <string name="settings_notifs_stock_low_stock_description">When a product variant reaches its low stock threshold.</string>
-    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store default of&#160;&lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit default threshold&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store-wide threshold of&#160;&lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit store-wide threshold&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Products can use their own threshold or the store-wide threshold. &lt;a href=\'\'&gt;View store-wide threshold&lt;/a&gt; to see the current value.</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Unable to load store-wide threshold</string>
     <string name="settings_notifs_stock_out_of_stock_title">Out of stock</string>
     <string name="settings_notifs_stock_out_of_stock_description">When a product variant hits zero.</string>
     <string name="settings_notifs_stock_backorder_title">On backorder</string>
@@ -2415,7 +2419,7 @@
     <string name="ai_support_chat_send">Send</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
-
+    <string name="ai_support_chat_post_diagnostics_greeting">Please describe your issue in more detail so I can help.</string>
     <string name="ai_support_chat_issue_picker_title">What would you like to troubleshoot?</string>
     <string name="ai_support_chat_issue_loading_orders">I can\'t see my orders</string>
     <string name="ai_support_chat_issue_loading_products">I can\'t see my products</string>
@@ -2426,7 +2430,7 @@
     <string name="ai_support_chat_diagnostics_success">Diagnostics completed</string>
     <string name="ai_support_chat_diagnostics_failure">Some checks failed. You can try again or continue to chat with these results.</string>
     <string name="ai_support_chat_diagnostics_retry">Retry</string>
-    <string name="ai_support_chat_diagnostics_continue">Continue</string>
+    <string name="ai_support_chat_diagnostics_continue">Continue to Chat</string>
     <string name="ai_support_chat_diagnostics_status_pending">Pending</string>
     <string name="ai_support_chat_diagnostics_status_running">Running</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passed</string>
@@ -3234,6 +3238,7 @@
 
     <string name="more_menu_button_ai_assistant">AI Assistant</string>
     <string name="more_menu_button_ai_assistant_description">Ask about your store</string>
+    <string name="ai_assistant_variation_card_id_title">Variation %1$d</string>
 
     <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 

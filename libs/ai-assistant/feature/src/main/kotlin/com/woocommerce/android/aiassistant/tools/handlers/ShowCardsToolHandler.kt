@@ -11,7 +11,6 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_R
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
-import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
@@ -20,10 +19,10 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolve
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.toJsonObject
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -55,8 +54,11 @@ internal class ShowCardsToolHandler internal constructor(
 
     override val descriptor = ToolDescriptor(
         name = SHOW_CARDS_TOOL_NAME,
-        description = "Show rich cards in the Android UI for order/product entity references or an " +
-            "analytics_stats ID produced after a successful analytics_revenue result.",
+        description = "Show rich cards in the Android UI for order/product/variation/customer entity references " +
+            "or an analytics_stats ID produced after a successful analytics_orders result. Variation references " +
+            "use strict {parentProductId}/{variationId} ids and should be used only for explicit " +
+            "variation-level questions about sizes, colors, options, or known variation IDs. For broad product " +
+            "inventory lists, render product references.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
@@ -73,15 +75,20 @@ internal class ShowCardsToolHandler internal constructor(
                                 putJsonArray("enum") {
                                     add("order")
                                     add("product")
+                                    add("variation")
                                     add("analytics_stats")
+                                    add("customer")
                                 }
                             }
                             putJsonObject("id") {
                                 put("type", "string")
                                 put(
                                     "description",
-                                    "Entity id, or analytics_revenue:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
-                                        "interval:<hour|day|week|month|year>:currency:<ISO|none> for analytics_stats.",
+                                    "Entity id. For variation, use strict {parentProductId}/{variationId}. " +
+                                        "For analytics_stats, pass the exact card_id returned by " +
+                                        "analytics_orders. Manual form: " +
+                                        "analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
+                                        "interval:<hour|day|week|month|year> for analytics_stats.",
                                 )
                             }
                         }
@@ -149,7 +156,7 @@ internal class ShowCardsToolHandler internal constructor(
         ResolvedRef(
             family = ref.family.serializedName,
             id = ref.id,
-            summary = summary.filterAllowedKeysFor(ref.family),
+            summary = summary.toJsonObject(json),
         )
 
     private fun ShowCardsResolution.Missing.toMissingRef(): MissingRef =
@@ -158,47 +165,4 @@ internal class ShowCardsToolHandler internal constructor(
             id = ref.id,
             reason = reason,
         )
-
-    private fun JsonObject.filterAllowedKeysFor(family: ShowCardFamily): JsonObject {
-        val allowedKeys = when (family) {
-            ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
-            ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
-            ShowCardFamily.AnalyticsStats -> ANALYTICS_STATS_SUMMARY_KEYS
-        }
-        return JsonObject(filterKeys { it in allowedKeys })
-    }
-
-    private companion object {
-        val ORDER_SUMMARY_KEYS = setOf(
-            "id",
-            "number",
-            "status",
-            "total",
-            "currency",
-            "date_created",
-            "customer_name",
-            "payment_method_title",
-            "customer_id",
-            "line_items_count",
-            "line_items",
-        )
-        val PRODUCT_SUMMARY_KEYS = setOf(
-            "id",
-            "name",
-            "sku",
-            "price",
-            "type",
-            "stock_status",
-            "manage_stock",
-            "on_sale",
-            "stock_quantity",
-        )
-        val ANALYTICS_STATS_SUMMARY_KEYS = setOf(
-            "id",
-            "after",
-            "before",
-            "currency",
-            "totals",
-        )
-    }
 }
