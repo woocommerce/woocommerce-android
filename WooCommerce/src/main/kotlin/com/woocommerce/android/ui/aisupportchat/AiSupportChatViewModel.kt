@@ -68,7 +68,6 @@ class AiSupportChatViewModel @Inject constructor(
                         messages = diagnosticsMessages(result)
                     )
                 }
-
             }
         }
     }
