@@ -91,6 +91,7 @@ fun AiSupportChatScreen(
         MessageList(
             messages = viewState.messages,
             isSending = viewState.isSending,
+            canUseDiagnosticActions = !viewState.hasProceededToChat && !viewState.isSending,
             onIssueSelected = onIssueSelected,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -108,7 +109,7 @@ fun AiSupportChatScreen(
         InputBar(
             input = viewState.input,
             isSending = viewState.isSending,
-            enabled = viewState.hasStartedChat,
+            enabled = viewState.hasProceededToChat,
             onInputChanged = onInputChanged,
             onSendClicked = onSendClicked,
             modifier = Modifier.fillMaxWidth()
@@ -120,6 +121,7 @@ fun AiSupportChatScreen(
 private fun MessageList(
     messages: List<AiSupportChatMessage>,
     isSending: Boolean,
+    canUseDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -146,6 +148,7 @@ private fun MessageList(
         items(messages, key = { it.id }) { message ->
             MessageBubble(
                 message = message,
+                canUseDiagnosticActions = canUseDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -163,6 +166,7 @@ private fun MessageList(
 @Composable
 private fun MessageBubble(
     message: AiSupportChatMessage,
+    canUseDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -190,6 +194,7 @@ private fun MessageBubble(
             MessageContent(
                 content = message.content,
                 textColor = textColor,
+                canUseDiagnosticActions = canUseDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -202,6 +207,7 @@ private fun MessageBubble(
 private fun MessageContent(
     content: AiSupportChatMessageContent,
     textColor: Color,
+    canUseDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
@@ -215,6 +221,10 @@ private fun MessageContent(
             textColor = textColor,
             onIssueSelected = onIssueSelected
         )
+        AiSupportChatMessageContent.PostDiagnosticsGreeting -> TextContent(
+            text = stringResource(R.string.ai_support_chat_post_diagnostics_greeting),
+            color = textColor
+        )
         is AiSupportChatMessageContent.Text -> TextContent(
             text = content.text,
             color = textColor
@@ -222,14 +232,14 @@ private fun MessageContent(
         is AiSupportChatMessageContent.DiagnosticsProgress -> DiagnosticsContent(
             result = content.result,
             textColor = textColor,
-            showActions = false,
+            canUseDiagnosticActions = canUseDiagnosticActions,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
         is AiSupportChatMessageContent.DiagnosticsFailure -> DiagnosticsContent(
             result = content.result,
             textColor = textColor,
-            showActions = true,
+            canUseDiagnosticActions = canUseDiagnosticActions,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
@@ -279,10 +289,13 @@ private fun IssuePickerContent(
 private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
-    showActions: Boolean,
+    canUseDiagnosticActions: Boolean,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
+    val hasFailure = result.firstFailure != null
+    val showActions = canUseDiagnosticActions && (hasFailure || result.isComplete)
+
     Column(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
@@ -302,17 +315,21 @@ private fun DiagnosticsContent(
         }
 
         if (showActions) {
-            Text(
-                text = stringResource(R.string.ai_support_chat_diagnostics_failure),
-                color = textColor,
-                style = MaterialTheme.typography.bodySmall
-            )
+            if (hasFailure) {
+                Text(
+                    text = stringResource(R.string.ai_support_chat_diagnostics_failure),
+                    color = textColor,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))) {
-                WCOutlinedButton(
-                    onClick = onRetryDiagnosticsClicked,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = stringResource(R.string.ai_support_chat_diagnostics_retry))
+                if (hasFailure) {
+                    WCOutlinedButton(
+                        onClick = onRetryDiagnosticsClicked,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.ai_support_chat_diagnostics_retry))
+                    }
                 }
                 WCColoredButton(
                     onClick = onContinueAfterDiagnosticsClicked,
@@ -521,6 +538,7 @@ private fun AiSupportChatScreenPreview() {
                         )
                     )
                 ),
+                hasProceededToChat = true,
                 hasStartedChat = true
             ),
             onInputChanged = {},

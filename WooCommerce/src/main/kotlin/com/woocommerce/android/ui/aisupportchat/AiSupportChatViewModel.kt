@@ -35,14 +35,14 @@ class AiSupportChatViewModel @Inject constructor(
     fun onSendClicked() {
         val state = _viewState.value
         val message = state.input.trim()
-        if (message.isBlank() || state.isSending || !state.hasStartedChat) return
+        if (message.isBlank() || state.isSending || !state.hasProceededToChat) return
 
         launch { sendMessage(message) }
     }
 
     fun onIssueSelected(issueType: SupportIssueType, issueLabel: String) {
         val state = _viewState.value
-        if (state.hasStartedChat || state.isSending || state.isRunningDiagnostics) return
+        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
 
         _viewState.update {
             it.copy(
@@ -69,9 +69,6 @@ class AiSupportChatViewModel @Inject constructor(
                     )
                 }
 
-                if (result.isComplete && !hasFailure) {
-                    sendMessage(issueLabel)
-                }
             }
         }
     }
@@ -85,10 +82,17 @@ class AiSupportChatViewModel @Inject constructor(
 
     fun onContinueAfterDiagnosticsClicked() {
         val state = _viewState.value
-        val issueLabel = state.selectedIssueLabel ?: return
-        if (state.isSending) return
+        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
 
-        launch { sendMessage(issueLabel) }
+        _viewState.update {
+            it.copy(
+                input = "",
+                hasProceededToChat = true,
+                isRunningDiagnostics = false,
+                showSendError = false,
+                messages = it.messages.appendPostDiagnosticsGreeting()
+            )
+        }
     }
 
     private suspend fun sendMessage(message: String) {
@@ -104,7 +108,6 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = it.messages + optimisticMessage,
-                hasStartedChat = true,
                 isSending = true,
                 showSendError = false
             )
@@ -112,10 +115,7 @@ class AiSupportChatViewModel @Inject constructor(
 
         val chatId = state.chatId
         val context = if (chatId == null) {
-            contextProvider.buildInitialContext(
-                issueType = state.selectedIssueType,
-                diagnosticResult = state.diagnosticResult
-            )
+            contextProvider.buildInitialContext(diagnosticResult = state.diagnosticResult)
         } else {
             JsonObject()
         }
@@ -147,6 +147,7 @@ class AiSupportChatViewModel @Inject constructor(
             val remoteMessages = response.messages.toUiMessages()
             it.copy(
                 chatId = response.chatId,
+                hasStartedChat = true,
                 messages = if (remoteMessages.isEmpty()) {
                     it.messages
                 } else {
@@ -221,6 +222,7 @@ class AiSupportChatViewModel @Inject constructor(
         filter { message ->
             when (message.content) {
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.PostDiagnosticsGreeting,
                 is AiSupportChatMessageContent.DiagnosticsFailure,
                 is AiSupportChatMessageContent.DiagnosticsProgress -> true
                 AiSupportChatMessageContent.IssuePicker,
@@ -230,6 +232,17 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun List<AiSupportChatMessage>.threadMessages(): List<AiSupportChatMessage> =
         filter { it.content is AiSupportChatMessageContent.Text }
+
+    private fun List<AiSupportChatMessage>.appendPostDiagnosticsGreeting(): List<AiSupportChatMessage> =
+        if (any { it.id == POST_DIAGNOSTICS_GREETING_MESSAGE_ID }) {
+            this
+        } else {
+            this + AiSupportChatMessage(
+                id = POST_DIAGNOSTICS_GREETING_MESSAGE_ID,
+                role = AiSupportChatMessageRole.BOT,
+                content = AiSupportChatMessageContent.PostDiagnosticsGreeting
+            )
+        }
 
     private fun diagnosticsMessages(result: DiagnosticResult): List<AiSupportChatMessage> =
         listOf(
@@ -258,6 +271,8 @@ class AiSupportChatViewModel @Inject constructor(
 
     companion object {
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
+
+        private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
     }
 }
 
@@ -265,6 +280,7 @@ data class AiSupportChatViewState(
     val input: String = "",
     val messages: List<AiSupportChatMessage> = emptyList(),
     val chatId: Long? = null,
+    val hasProceededToChat: Boolean = false,
     val hasStartedChat: Boolean = false,
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
@@ -288,6 +304,7 @@ enum class AiSupportChatMessageRole {
 sealed interface AiSupportChatMessageContent {
     data object Greeting : AiSupportChatMessageContent
     data object IssuePicker : AiSupportChatMessageContent
+    data object PostDiagnosticsGreeting : AiSupportChatMessageContent
     data class Text(val text: String) : AiSupportChatMessageContent
     data class DiagnosticsProgress(val result: DiagnosticResult) : AiSupportChatMessageContent
     data class DiagnosticsFailure(val result: DiagnosticResult) : AiSupportChatMessageContent

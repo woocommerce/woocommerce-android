@@ -2419,6 +2419,7 @@
     <string name="ai_support_chat_send">Send</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">Please describe your issue in more detail so I can help.</string>
     <string name="ai_support_chat_issue_picker_title">What would you like to troubleshoot?</string>
     <string name="ai_support_chat_issue_loading_orders">I can\'t see my orders</string>
     <string name="ai_support_chat_issue_loading_products">I can\'t see my products</string>
@@ -2429,7 +2430,7 @@
     <string name="ai_support_chat_diagnostics_success">Diagnostics completed</string>
     <string name="ai_support_chat_diagnostics_failure">Some checks failed. You can try again or continue to chat with these results.</string>
     <string name="ai_support_chat_diagnostics_retry">Retry</string>
-    <string name="ai_support_chat_diagnostics_continue">Continue</string>
+    <string name="ai_support_chat_diagnostics_continue">Continue to Chat</string>
     <string name="ai_support_chat_diagnostics_status_pending">Pending</string>
     <string name="ai_support_chat_diagnostics_status_running">Running</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passed</string>
