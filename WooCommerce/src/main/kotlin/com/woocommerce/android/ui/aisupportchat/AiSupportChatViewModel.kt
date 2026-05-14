@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
@@ -16,7 +15,6 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -32,8 +30,7 @@ class AiSupportChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: SupportChatRepository,
     private val contextProvider: SupportChatContextProvider,
-    private val diagnosticsService: SupportDiagnosticsService,
-    private val resourceProvider: ResourceProvider
+    private val diagnosticsService: SupportDiagnosticsService
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(AiSupportChatViewState(messages = initialMessages()))
     val viewState = _viewState.asStateFlow()
@@ -124,20 +121,16 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
         val result = checks.toDiagnosticResult()
-        val initialMessage = resourceProvider.getString(R.string.ai_support_chat_connectivity_initial_message)
         _viewState.update {
             it.copy(
                 input = "",
-                messages = diagnosticsMessages(result, showFailureActions = false),
+                messages = listOf(greetingMessage()).appendPostDiagnosticsGreeting(),
                 selectedIssueType = SupportIssueType.OTHER,
-                selectedIssueLabel = initialMessage,
                 diagnosticResult = result,
                 hasProceededToChat = true,
                 showSendError = false
             )
         }
-
-        launch { sendMessage(initialMessage) }
     }
 
     private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {

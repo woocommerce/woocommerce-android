@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatViewModel.Companion.DEFAULT_BOT_SLUG
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
@@ -17,7 +16,6 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
@@ -38,7 +36,6 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val repository: SupportChatRepository = mock()
     private val contextProvider: SupportChatContextProvider = mock()
     private val diagnosticsService: SupportDiagnosticsService = mock()
-    private val resourceProvider: ResourceProvider = mock()
 
     private lateinit var viewModel: AiSupportChatViewModel
 
@@ -48,8 +45,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             repository = repository,
             contextProvider = contextProvider,
-            diagnosticsService = diagnosticsService,
-            resourceProvider = resourceProvider
+            diagnosticsService = diagnosticsService
         )
     }
 
@@ -227,7 +223,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given connectivity launch mode, when loaded, then chat starts with connectivity context`() =
+    fun `given connectivity launch mode, when loaded, then chat waits for user input with connectivity context`() =
         testBlocking {
             val checks = listOf(
                 ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success()),
@@ -235,35 +231,41 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 ConnectivityCheckCardData(ConnectivityCheckType.STORE, ConnectivityCheckStatus.NotStarted),
                 ConnectivityCheckCardData(ConnectivityCheckType.ORDERS, ConnectivityCheckStatus.InProgress)
             )
-            whenever(resourceProvider.getString(R.string.ai_support_chat_connectivity_initial_message))
-                .thenReturn(CONNECTIVITY_MESSAGE)
             whenever(contextProvider.buildInitialContext(any())).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse()))
 
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
 
             val state = viewModel.viewState.value
             assertThat(state.hasProceededToChat).isTrue()
-            assertThat(state.hasStartedChat).isTrue()
-            assertThat(state.sessionId).isEqualTo(SESSION_ID)
+            assertThat(state.hasStartedChat).isFalse()
+            assertThat(state.sessionId).isNull()
             assertThat(state.diagnosticResult?.statuses).hasSize(2)
             assertThat(state.diagnosticResult?.statuses?.map { it.test }).containsExactly(
                 DiagnosticTest.INTERNET_CONNECTION,
                 DiagnosticTest.WPCOM_SERVERS
             )
-            assertThat(state.messages.map { it.content::class }).containsExactly(
-                AiSupportChatMessageContent.Greeting::class,
-                AiSupportChatMessageContent.DiagnosticsProgress::class,
-                AiSupportChatMessageContent.Text::class
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.PostDiagnosticsGreeting
             )
+            verify(contextProvider, never()).buildInitialContext(any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val updatedState = viewModel.viewState.value
+            assertThat(updatedState.hasStartedChat).isTrue()
+            assertThat(updatedState.sessionId).isEqualTo(SESSION_ID)
             val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
             verify(contextProvider).buildInitialContext(diagnosticResultCaptor.capture())
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Passed,
                 TestStatus.Failed()
             )
-            verify(repository).sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null)
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
         }
 
     @Test
@@ -272,16 +274,15 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val checks = listOf(
                 ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success())
             )
-            whenever(resourceProvider.getString(R.string.ai_support_chat_connectivity_initial_message))
-                .thenReturn(CONNECTIVITY_MESSAGE)
-            whenever(contextProvider.buildInitialContext(any())).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null))
-                .thenReturn(Result.success(createResponse()))
 
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
 
-            verify(repository).sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null)
+            assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.PostDiagnosticsGreeting
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -481,7 +482,6 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private companion object {
         const val CHAT_ID = 1234L
         const val SESSION_ID = "session-id"
-        const val CONNECTIVITY_MESSAGE = "Help me troubleshoot my store connection."
         const val ISSUE_LABEL = "I can't see my orders"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
