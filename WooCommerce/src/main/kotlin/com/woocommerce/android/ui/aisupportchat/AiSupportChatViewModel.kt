@@ -137,7 +137,7 @@ class AiSupportChatViewModel @Inject constructor(
         _viewState.update {
             it.copy(
                 input = "",
-                messages = listOf(greetingMessage()).appendPostDiagnosticsGreeting(),
+                messages = listOf(greetingMessage()),
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 hasProceededToChat = true,

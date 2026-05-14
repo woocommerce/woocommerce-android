@@ -302,8 +302,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DiagnosticTest.WPCOM_SERVERS
             )
             assertThat(state.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting,
-                AiSupportChatMessageContent.PostDiagnosticsGreeting
+                AiSupportChatMessageContent.Greeting
             )
             verify(contextProvider, never()).buildInitialContext(any())
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
@@ -334,8 +333,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
 
             assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting,
-                AiSupportChatMessageContent.PostDiagnosticsGreeting
+                AiSupportChatMessageContent.Greeting
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
