@@ -24,14 +24,14 @@ class AssistantEmptyStateSuggestionsTest {
             "How's revenue this week?",
             "What's running low?",
             "Any orders need my attention?",
-            "Who's new this week?",
+            "Who are my newest customers?",
         )
         assertThat(prompts).containsExactly(
             "How's my revenue this week? Show me total sales for this week and how it compares to last week.",
             "What's running low? List the products that are out of stock or low on inventory so I know what to " +
                 "restock.",
             "Any orders that need my attention? Show me recent orders that are pending, on hold, or processing.",
-            "Who's new this week? List the customers who registered or placed their first order recently.",
+            "Show my newest customers. List up to 10 customers sorted by registration date, newest first.",
         )
         labels.zip(prompts).forEach { (label, prompt) ->
             assertThat(prompt).isNotEqualTo(label)
