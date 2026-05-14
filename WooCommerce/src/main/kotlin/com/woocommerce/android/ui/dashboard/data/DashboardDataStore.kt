@@ -72,7 +72,8 @@ class DashboardDataStore @Inject constructor(
     @VisibleForTesting
     internal fun getDefaultWidgets(): List<DashboardWidgetDataModel> {
         fun DashboardWidget.Type.shouldBeEnabledByDefault() =
-            this == DashboardWidget.Type.STATS ||
+            this == DashboardWidget.Type.AI_ASSISTANT ||
+                this == DashboardWidget.Type.STATS ||
                 this == DashboardWidget.Type.POPULAR_PRODUCTS ||
                 this == DashboardWidget.Type.ONBOARDING ||
                 this == DashboardWidget.Type.BLAZE ||
