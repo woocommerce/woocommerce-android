@@ -52,6 +52,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasProceededToChat).isFalse()
         assertThat(state.hasStartedChat).isFalse()
         assertThat(state.canUseDiagnosticActions).isTrue()
+        assertThat(state.showDiagnosticActions).isFalse()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
@@ -73,6 +74,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isRunningDiagnostics).isFalse()
             assertThat(state.canUseDiagnosticActions).isTrue()
+            assertThat(state.showDiagnosticActions).isTrue()
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
@@ -94,6 +96,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasProceededToChat).isTrue()
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.canUseDiagnosticActions).isFalse()
+            assertThat(state.showDiagnosticActions).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
@@ -226,6 +229,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.LOADING_ORDERS)
             assertThat(state.diagnosticResult).isEqualTo(result)
+            assertThat(state.showDiagnosticActions).isTrue()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsFailure(result)
@@ -272,6 +276,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
         viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
 
+        assertThat(viewModel.viewState.value.showDiagnosticActions).isFalse()
         verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ORDERS)
     }
 
@@ -298,6 +303,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.isRunningDiagnostics).isFalse()
         assertThat(state.hasStartedChat).isFalse()
         assertThat(state.showSendError).isFalse()
+        assertThat(state.showDiagnosticActions).isTrue()
         assertThat(diagnosticResult.firstFailure?.status).isEqualTo(
             TestStatus.Failed(technicalDetails = "Diagnostics unavailable")
         )

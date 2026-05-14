@@ -328,6 +328,12 @@ data class AiSupportChatViewState(
 ) {
     val canUseDiagnosticActions: Boolean
         get() = !hasProceededToChat && !isSending
+
+    val showDiagnosticActions: Boolean
+        get() {
+            val result = diagnosticResult ?: return false
+            return canUseDiagnosticActions && (result.firstFailure != null || result.isComplete)
+        }
 }
 
 data class AiSupportChatMessage(
