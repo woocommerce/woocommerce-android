@@ -240,15 +240,17 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
 
-        if (_viewState.value.canPersistChatHistory) runCatching {
-            if (wasInitialMessage) {
-                repository.registerChat(
-                    chatId = response.chatId,
-                    botSlug = response.botSlug,
-                    firstUserMessage = sentMessage
-                )
-            } else {
-                repository.markChatAsUpdated(response.chatId)
+        if (_viewState.value.canPersistChatHistory) {
+            runCatching {
+                if (wasInitialMessage) {
+                    repository.registerChat(
+                        chatId = response.chatId,
+                        botSlug = response.botSlug,
+                        firstUserMessage = sentMessage
+                    )
+                } else {
+                    repository.markChatAsUpdated(response.chatId)
+                }
             }
         }
     }
