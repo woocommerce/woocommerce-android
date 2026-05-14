@@ -16,6 +16,8 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import java.io.IOException
 
@@ -36,6 +38,16 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
 
     private val appSecrets = AppSecrets(CLIENT_ID, CLIENT_SECRET)
 
+    private val fakeDeviceInfoProvider = mock<QrLoginDeviceInfoProvider> {
+        on { get() } doReturn QrLoginDeviceInfo(
+            os = "Android",
+            osVersion = "14",
+            model = "Pixel 8 Pro",
+            brand = "google",
+            appVersion = "24.7.0",
+        )
+    }
+
     private lateinit var client: WpComQrLoginRestClient
 
     @Before
@@ -45,13 +57,14 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
             gson = Gson(),
             dispatchers = coroutinesTestRule.testDispatchers,
             appSecrets = appSecrets,
+            deviceInfoProvider = fakeDeviceInfoProvider,
         )
     }
 
     // region scan
 
     @Test
-    fun `given scan call, when executed, then POST hits public-api with creds, token, encrypted, capability`() =
+    fun `given scan call, when executed, then POST hits public-api with creds, token, encrypted, capability, device`() =
         testBlocking {
             client.scan(token = "tok-42", encrypted = "enc-99")
 
@@ -65,8 +78,12 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
             assertThat(parsed.get("token").asString).isEqualTo("tok-42")
             assertThat(parsed.get("encrypted").asString).isEqualTo("enc-99")
             assertThat(parsed.get("supports_number_matching").asBoolean).isTrue()
-            // Device payload is the wc-admin flow's contract; wp.com does not consume it.
-            assertThat(parsed.has("device")).isFalse()
+            val device = parsed.getAsJsonObject("device")
+            assertThat(device.get("os").asString).isEqualTo("Android")
+            assertThat(device.get("os_version").asString).isEqualTo("14")
+            assertThat(device.get("model").asString).isEqualTo("Pixel 8 Pro")
+            assertThat(device.get("brand").asString).isEqualTo("google")
+            assertThat(device.get("app_version").asString).isEqualTo("24.7.0")
         }
 
     @Test

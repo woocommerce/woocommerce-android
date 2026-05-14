@@ -45,6 +45,7 @@ class WpComQrLoginRestClient @Inject constructor(
     private val gson: Gson,
     private val dispatchers: CoroutineDispatchers,
     private val appSecrets: AppSecrets,
+    private val deviceInfoProvider: QrLoginDeviceInfoProvider,
 ) {
 
     suspend fun scan(token: String, encrypted: String): Result<WpComQrLoginScanResult> =
@@ -104,6 +105,7 @@ class WpComQrLoginRestClient @Inject constructor(
                 token = token,
                 encrypted = encrypted,
                 supportsNumberMatching = true,
+                device = deviceInfoProvider.get(),
             )
         )
         return Request.Builder()
@@ -313,6 +315,7 @@ class WpComQrLoginRestClient @Inject constructor(
         val token: String,
         val encrypted: String,
         @SerializedName("supports_number_matching") val supportsNumberMatching: Boolean,
+        val device: QrLoginDeviceInfo,
     )
 
     private data class ScanResponse(
