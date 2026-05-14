@@ -40,6 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -179,13 +183,18 @@ private fun MessageBubble(message: AiSupportChatMessage, modifier: Modifier = Mo
 
 @Composable
 private fun TypingIndicator(modifier: Modifier = Modifier) {
+    val typingDescription = stringResource(R.string.ai_support_chat_typing)
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
     ) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                liveRegion = LiveRegionMode.Polite
+                contentDescription = typingDescription
+            }
         ) {
             Row(
                 modifier = Modifier.padding(
