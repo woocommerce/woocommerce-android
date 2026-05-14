@@ -11,6 +11,9 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +36,17 @@ class AiSupportChatViewModel @Inject constructor(
     val viewState = _viewState.asStateFlow()
 
     private var localMessageId = 0L
+    private var launchModeLoaded = false
+
+    fun onLaunchModeLoaded(launchMode: AiSupportChatLaunchMode) {
+        if (launchModeLoaded) return
+        launchModeLoaded = true
+
+        when (launchMode) {
+            AiSupportChatLaunchMode.Help -> Unit
+            is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
+        }
+    }
 
     fun onInputChanged(input: String) {
         _viewState.update { it.copy(input = input) }
@@ -105,6 +119,20 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
+    private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
+        val result = checks.toDiagnosticResult()
+        _viewState.update {
+            it.copy(
+                input = "",
+                messages = listOf(greetingMessage()).appendPostDiagnosticsGreeting(),
+                selectedIssueType = SupportIssueType.OTHER,
+                diagnosticResult = result,
+                hasProceededToChat = true,
+                showSendError = false
+            )
+        }
+    }
+
     private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
         val result = DiagnosticResult(
             issueType = issueType,
@@ -156,10 +184,11 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         repository.sendMessage(
-            botSlug = DEFAULT_BOT_SLUG,
+            botSlug = state.botSlug,
             message = message,
             context = context,
-            chatId = chatId
+            chatId = chatId,
+            sessionId = state.sessionId
         ).onSuccess { response ->
             handleSendSuccess(
                 response = response,
@@ -182,6 +211,8 @@ class AiSupportChatViewModel @Inject constructor(
             val remoteMessages = response.messages.toUiMessages()
             it.copy(
                 chatId = response.chatId,
+                sessionId = response.sessionId,
+                botSlug = response.botSlug,
                 hasStartedChat = true,
                 messages = if (remoteMessages.isEmpty()) {
                     it.messages
@@ -281,13 +312,16 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
 
-    private fun diagnosticsMessages(result: DiagnosticResult): List<AiSupportChatMessage> =
+    private fun diagnosticsMessages(
+        result: DiagnosticResult,
+        showFailureActions: Boolean = true
+    ): List<AiSupportChatMessage> =
         listOf(
             greetingMessage(),
             AiSupportChatMessage(
                 id = "diagnostics-${result.issueType.name}",
                 role = AiSupportChatMessageRole.BOT,
-                content = if (result.firstFailure == null) {
+                content = if (result.firstFailure == null || !showFailureActions) {
                     AiSupportChatMessageContent.DiagnosticsProgress(result)
                 } else {
                     AiSupportChatMessageContent.DiagnosticsFailure(result)
@@ -317,6 +351,8 @@ data class AiSupportChatViewState(
     val input: String = "",
     val messages: List<AiSupportChatMessage> = emptyList(),
     val chatId: Long? = null,
+    val sessionId: String? = null,
+    val botSlug: String = AiSupportChatViewModel.DEFAULT_BOT_SLUG,
     val hasProceededToChat: Boolean = false,
     val hasStartedChat: Boolean = false,
     val selectedIssueType: SupportIssueType? = null,
@@ -372,3 +408,39 @@ private fun greetingMessage(): AiSupportChatMessage =
         role = AiSupportChatMessageRole.BOT,
         content = AiSupportChatMessageContent.Greeting
     )
+
+private fun List<ConnectivityCheckCardData>.toDiagnosticResult(): DiagnosticResult =
+    DiagnosticResult(
+        issueType = SupportIssueType.OTHER,
+        statuses = filter { it.status.isComplete }
+            .map { check ->
+                DiagnosticStatus(
+                    test = check.type.toDiagnosticTest(),
+                    status = check.status.toTestStatus()
+                )
+            }
+    )
+
+private val ConnectivityCheckStatus.isComplete: Boolean
+    get() = this is ConnectivityCheckStatus.Success || this is ConnectivityCheckStatus.Failure
+
+private fun ConnectivityCheckType.toDiagnosticTest(): DiagnosticTest =
+    when (this) {
+        ConnectivityCheckType.INTERNET -> DiagnosticTest.INTERNET_CONNECTION
+        ConnectivityCheckType.WP_COM -> DiagnosticTest.WPCOM_SERVERS
+        ConnectivityCheckType.STORE -> DiagnosticTest.STORE_CONNECTION
+        ConnectivityCheckType.ORDERS -> DiagnosticTest.STORE_ORDERS
+        ConnectivityCheckType.PRODUCTS -> DiagnosticTest.STORE_PRODUCTS
+    }
+
+private fun ConnectivityCheckStatus.toTestStatus(): TestStatus =
+    when (this) {
+        ConnectivityCheckStatus.NotStarted -> TestStatus.Pending
+        ConnectivityCheckStatus.InProgress -> TestStatus.Running
+        is ConnectivityCheckStatus.Success -> TestStatus.Passed
+        is ConnectivityCheckStatus.Failure -> TestStatus.Failed(
+            failureType = error,
+            technicalDetails = technicalDetails,
+            durationMs = durationMs
+        )
+    }

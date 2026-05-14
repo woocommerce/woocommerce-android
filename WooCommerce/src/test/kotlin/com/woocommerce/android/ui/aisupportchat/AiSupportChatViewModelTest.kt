@@ -12,6 +12,9 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
@@ -21,6 +24,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -80,7 +84,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsProgress(result)
             )
-            verify(repository, never()).sendMessage(any(), any(), any(), any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -102,7 +106,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting
             )
-            verify(repository, never()).sendMessage(any(), any(), any(), any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -117,7 +121,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
 
             continueToChatAfterSuccessfulDiagnostics(result)
@@ -127,6 +131,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.input).isEmpty()
             assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.sessionId).isEqualTo(SESSION_ID)
             assertThat(state.hasProceededToChat).isTrue()
             assertThat(state.hasStartedChat).isTrue()
             assertThat(state.isSending).isFalse()
@@ -154,7 +159,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
             whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS))
                 .thenThrow(RuntimeException("Bookmark write failed"))
@@ -178,11 +183,11 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given existing chat, when sending follow up, then message is sent with chat id and bookmark is touched`() =
+    fun `given existing chat, when sending follow up, then session id is sent and bookmark is touched`() =
         testBlocking {
             val result = createSuccessDiagnosticResult()
             startChat(result)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
                 .thenReturn(
                     Result.success(
                         createResponse(
@@ -202,6 +207,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
             val state = viewModel.viewState.value
             assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.sessionId).isEqualTo(SESSION_ID)
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
@@ -212,8 +218,71 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(FOLLOW_UP_MESSAGE),
                 AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE)
             )
-            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID)
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID)
             verify(repository).markChatAsUpdated(CHAT_ID)
+        }
+
+    @Test
+    fun `given connectivity launch mode, when loaded, then chat waits for user input with connectivity context`() =
+        testBlocking {
+            val checks = listOf(
+                ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success()),
+                ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, ConnectivityCheckStatus.Failure()),
+                ConnectivityCheckCardData(ConnectivityCheckType.STORE, ConnectivityCheckStatus.NotStarted),
+                ConnectivityCheckCardData(ConnectivityCheckType.ORDERS, ConnectivityCheckStatus.InProgress)
+            )
+            whenever(contextProvider.buildInitialContext(any())).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.hasStartedChat).isFalse()
+            assertThat(state.sessionId).isNull()
+            assertThat(state.diagnosticResult?.statuses).hasSize(2)
+            assertThat(state.diagnosticResult?.statuses?.map { it.test }).containsExactly(
+                DiagnosticTest.INTERNET_CONNECTION,
+                DiagnosticTest.WPCOM_SERVERS
+            )
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.PostDiagnosticsGreeting
+            )
+            verify(contextProvider, never()).buildInitialContext(any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val updatedState = viewModel.viewState.value
+            assertThat(updatedState.hasStartedChat).isTrue()
+            assertThat(updatedState.sessionId).isEqualTo(SESSION_ID)
+            val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
+            verify(contextProvider).buildInitialContext(diagnosticResultCaptor.capture())
+            assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
+                TestStatus.Passed,
+                TestStatus.Failed()
+            )
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given launch mode was already loaded, when loaded again, then chat is not started twice`() =
+        testBlocking {
+            val checks = listOf(
+                ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success())
+            )
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
+
+            assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.PostDiagnosticsGreeting
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -234,7 +303,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsFailure(result)
             )
-            verify(repository, never()).sendMessage(any(), any(), any(), any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -254,7 +323,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.DiagnosticsFailure(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting
             )
-            verify(repository, never()).sendMessage(any(), any(), any(), any())
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -311,7 +380,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.DiagnosticsFailure(diagnosticResult)
         )
-        verify(repository, never()).sendMessage(any(), any(), any(), any())
+        verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -320,7 +389,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val result = createFailedDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.failure(Exception()))
 
             viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
@@ -347,7 +416,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
         )
-        verify(repository, never()).sendMessage(any(), any(), any(), any())
+        verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
     }
 
     private suspend fun continueToChatAfterSuccessfulDiagnostics(result: DiagnosticResult) {
@@ -358,7 +427,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private suspend fun startChat(result: DiagnosticResult) {
         whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
         whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
-        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null))
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
             .thenReturn(Result.success(createResponse()))
 
         continueToChatAfterSuccessfulDiagnostics(result)
@@ -394,7 +463,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         messages: List<SupportChatMessage> = emptyList()
     ): SupportChatResponse = SupportChatResponse(
         chatId = chatId,
-        sessionId = "session-id",
+        sessionId = SESSION_ID,
         botSlug = botSlug,
         botVersion = "1.0.0",
         messages = messages
@@ -412,6 +481,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
     private companion object {
         const val CHAT_ID = 1234L
+        const val SESSION_ID = "session-id"
         const val ISSUE_LABEL = "I can't see my orders"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"

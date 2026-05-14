@@ -406,11 +406,15 @@ private fun TypingIndicator(modifier: Modifier = Modifier) {
     ) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.semantics(mergeDescendants = true) {
-                liveRegion = LiveRegionMode.Polite
-                contentDescription = typingDescription
-            }
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            shadowElevation = 1.dp,
+            modifier = Modifier
+                .fillMaxWidth(0.88f)
+                .semantics(mergeDescendants = true) {
+                    liveRegion = LiveRegionMode.Polite
+                    contentDescription = typingDescription
+                }
         ) {
             Row(
                 modifier = Modifier.padding(
@@ -421,6 +425,7 @@ private fun TypingIndicator(modifier: Modifier = Modifier) {
             ) {
                 CircularProgressIndicator(
                     strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.minor_100)))
@@ -445,7 +450,7 @@ private fun AnimatedTypingText() {
     Text(
         text = stringResource(R.string.ai_support_chat_typing),
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.alpha(alpha)
     )
 }
