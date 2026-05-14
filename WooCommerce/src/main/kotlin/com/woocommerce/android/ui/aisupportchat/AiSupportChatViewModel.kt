@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -166,8 +167,8 @@ class AiSupportChatViewModel @Inject constructor(
                 optimisticMessage = optimisticMessage,
                 wasInitialMessage = chatId == null
             )
-        }.onFailure {
-            handleSendFailure(message = message, optimisticMessage = optimisticMessage)
+        }.onFailure { error ->
+            handleSendFailure(message = message, optimisticMessage = optimisticMessage, error = error)
         }
     }
 
@@ -232,7 +233,9 @@ class AiSupportChatViewModel @Inject constructor(
                 (message.content as? AiSupportChatMessageContent.Text)?.text == text
         }
 
-    private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage) {
+    private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage, error: Throwable) {
+        WooLog.e(WooLog.T.AI, "Sending AI support chat message failed", error)
+
         _viewState.update {
             it.copy(
                 input = message,
