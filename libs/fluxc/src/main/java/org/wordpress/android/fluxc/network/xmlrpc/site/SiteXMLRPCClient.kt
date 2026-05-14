@@ -127,7 +127,6 @@ class SiteXMLRPCClient @Inject constructor(
             site.name = StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(siteMap, "blogName"))
             site.url = MapUtils.getMapStr(siteMap, "url")
             site.xmlRpcUrl = MapUtils.getMapStr(siteMap, "xmlrpc")
-            site.setIsSelfHostedAdmin(MapUtils.getMapBool(siteMap, "isAdmin"))
             // From what we know about the host
             site.setIsWPCom(false)
             site.username = username
@@ -207,16 +206,6 @@ class SiteXMLRPCClient @Inject constructor(
         if (!homeUrl.isEmpty()) {
             oldModel.url = homeUrl
         }
-        oldModel.softwareVersion = XMLRPCUtils.safeGetNestedMapValue(
-                response,
-                "software_version",
-                ""
-        )
-        oldModel.setIsFeaturedImageSupported(XMLRPCUtils.safeGetNestedMapValue(response, "post_thumbnail", false))
-        oldModel.defaultCommentStatus = XMLRPCUtils.safeGetNestedMapValue(
-                response, "default_comment_status",
-                "open"
-        )
         oldModel.timezone = XMLRPCUtils.safeGetNestedMapValue(
                 response,
                 "time_zone",
