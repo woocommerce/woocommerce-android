@@ -68,6 +68,8 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("native Android UI")
         assertThat(prompt).doesNotContain("iOS app")
         assertThat(prompt).doesNotContain("native iOS UI")
+        assertThat(prompt).contains("Never use the word")
+        assertThat(prompt).contains("\"dashboard\"")
     }
 
     @Test
@@ -115,12 +117,17 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("One analytics read call with the appropriate window and a daily-grain parameter")
         assertThat(prompt).contains("then call")
         assertThat(prompt).contains("`show_cards` to render the matching analytics card")
+        assertThat(prompt).contains("The analytics tool's result carries the card id to render")
+        assertThat(prompt).contains("pass that id straight to `show_cards`")
         assertThat(prompt).contains("the grouping phrase controls interval")
         assertThat(prompt).contains("the time phrase controls after/before")
         assertThat(prompt).contains("Do not turn a monthly window into interval=month")
+        assertThat(prompt).contains("When the merchant explicitly asks for a list of entities")
+        assertThat(prompt).contains("render up to the visible-row cap")
+        assertThat(prompt).contains("point to the tab for the rest")
         assertThat(prompt).doesNotContain("analytics_orders:after:")
         assertThat(prompt).doesNotContain("analytics_revenue:after:")
-        assertThat(prompt).doesNotContain("currency:none")
+        assertThat(prompt).doesNotContain("currency:")
         assertThat(prompt).doesNotContain("currency-or-none query values")
         assertThat(prompt).doesNotContain("Do not call `show_cards` for analytics")
         assertThat(prompt).contains("no card JSON")
@@ -157,9 +164,15 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt)
             .`as`(OFF_TOPIC_REGRESSION_CASE)
             .contains("outside WooCommerce functionality")
+        assertThat(prompt).contains("orders, products, customers, analytics, and store settings")
+        assertThat(prompt).contains("non-WooCommerce questions")
+        assertThat(prompt).contains("WooCommerce how-to and concept questions stay in scope")
+        assertThat(prompt).contains("order-status explanations")
+        assertThat(prompt).contains("settings-location questions")
         assertThat(prompt).contains("apologize")
         assertThat(prompt).contains("decline")
         assertThat(prompt).contains("do not attempt to fulfill")
+        assertThat(prompt).contains("call no tools")
         assertThat(prompt).contains("no card rendering")
     }
 
