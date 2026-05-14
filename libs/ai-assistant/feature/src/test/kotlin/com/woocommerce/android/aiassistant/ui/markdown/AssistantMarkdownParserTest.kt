@@ -27,10 +27,18 @@ class AssistantMarkdownParserTest {
     @Test
     fun `given bold and italic markdown, when parsed, then markers are removed and styles are applied`() {
         // WHEN
-        val parsed = AssistantMarkdownParser.parse("This is **bold** and *italic*.")
+        val parsed = AssistantMarkdownParser.parse("This is ***bold italic***, **bold**, and *italic*.")
 
         // THEN
-        assertThat(parsed.text).isEqualTo("This is bold and italic.")
+        assertThat(parsed.text).isEqualTo("This is bold italic, bold, and italic.")
+        assertThat(
+            parsed.spanStyles.any {
+                it.start == 8 &&
+                    it.end == 19 &&
+                    it.item.fontWeight == FontWeight.Bold &&
+                    it.item.fontStyle == FontStyle.Italic
+            }
+        ).isTrue()
         assertThat(parsed.spanStyles.any { it.item.fontWeight == FontWeight.Bold }).isTrue()
         assertThat(parsed.spanStyles.any { it.item.fontStyle == FontStyle.Italic }).isTrue()
     }
@@ -62,5 +70,23 @@ class AssistantMarkdownParserTest {
         // THEN
         val link = parsed.getLinkAnnotations(0, parsed.length).single().item as LinkAnnotation.Url
         assertThat(link.styles).isEqualTo(linkStyles)
+    }
+
+    @Test
+    fun `given bold and italic markdown in link label, when parsed, then label markers are removed`() {
+        // WHEN
+        val parsed = AssistantMarkdownParser.parse("[***docs***](https://example.com)")
+
+        // THEN
+        assertThat(parsed.text).isEqualTo("docs")
+        assertThat(parsed.getLinkAnnotations(0, parsed.length)).hasSize(1)
+        assertThat(
+            parsed.spanStyles.any {
+                it.start == 0 &&
+                    it.end == 4 &&
+                    it.item.fontWeight == FontWeight.Bold &&
+                    it.item.fontStyle == FontStyle.Italic
+            }
+        ).isTrue()
     }
 }
