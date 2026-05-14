@@ -42,11 +42,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
@@ -63,7 +68,7 @@ fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
         viewState = viewState,
         onInputChanged = viewModel::onInputChanged,
         onSendClicked = viewModel::onSendClicked,
-        onIssueSelected = { issueType, issueLabel -> viewModel.onIssueSelected(issueType, issueLabel) },
+        onIssueSelected = viewModel::onIssueSelected,
         onRetryDiagnosticsClicked = viewModel::onRetryDiagnosticsClicked,
         onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked
     )
@@ -87,6 +92,7 @@ fun AiSupportChatScreen(
         MessageList(
             messages = viewState.messages,
             isSending = viewState.isSending,
+            showDiagnosticActions = viewState.showDiagnosticActions,
             onIssueSelected = onIssueSelected,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -104,7 +110,7 @@ fun AiSupportChatScreen(
         InputBar(
             input = viewState.input,
             isSending = viewState.isSending,
-            enabled = viewState.hasStartedChat,
+            enabled = viewState.hasProceededToChat,
             onInputChanged = onInputChanged,
             onSendClicked = onSendClicked,
             modifier = Modifier.fillMaxWidth()
@@ -116,6 +122,7 @@ fun AiSupportChatScreen(
 private fun MessageList(
     messages: List<AiSupportChatMessage>,
     isSending: Boolean,
+    showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -142,6 +149,7 @@ private fun MessageList(
         items(messages, key = { it.id }) { message ->
             MessageBubble(
                 message = message,
+                showDiagnosticActions = showDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -159,12 +167,18 @@ private fun MessageList(
 @Composable
 private fun MessageBubble(
     message: AiSupportChatMessage,
+    showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isUser = message.role == AiSupportChatMessageRole.USER
+    val textColor = if (isUser) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
@@ -182,7 +196,8 @@ private fun MessageBubble(
         ) {
             MessageContent(
                 content = message.content,
-                isUser = isUser,
+                textColor = textColor,
+                showDiagnosticActions = showDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -194,36 +209,40 @@ private fun MessageBubble(
 @Composable
 private fun MessageContent(
     content: AiSupportChatMessageContent,
-    isUser: Boolean,
+    textColor: Color,
+    showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
-    val textColor = if (isUser) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-
     when (content) {
         AiSupportChatMessageContent.Greeting -> TextContent(
             text = stringResource(R.string.ai_support_chat_greeting),
             color = textColor
         )
-        AiSupportChatMessageContent.IssuePicker -> IssuePickerContent(onIssueSelected)
+        AiSupportChatMessageContent.IssuePicker -> IssuePickerContent(
+            textColor = textColor,
+            onIssueSelected = onIssueSelected
+        )
+        AiSupportChatMessageContent.PostDiagnosticsGreeting -> TextContent(
+            text = stringResource(R.string.ai_support_chat_post_diagnostics_greeting),
+            color = textColor
+        )
         is AiSupportChatMessageContent.Text -> TextContent(
             text = content.text,
             color = textColor
         )
         is AiSupportChatMessageContent.DiagnosticsProgress -> DiagnosticsContent(
             result = content.result,
-            showActions = false,
+            textColor = textColor,
+            showDiagnosticActions = showDiagnosticActions,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
         is AiSupportChatMessageContent.DiagnosticsFailure -> DiagnosticsContent(
             result = content.result,
-            showActions = true,
+            textColor = textColor,
+            showDiagnosticActions = showDiagnosticActions,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
@@ -244,17 +263,20 @@ private fun TextContent(text: String, color: Color) {
 }
 
 @Composable
-private fun IssuePickerContent(onIssueSelected: (SupportIssueType, String) -> Unit) {
+private fun IssuePickerContent(
+    textColor: Color,
+    onIssueSelected: (SupportIssueType, String) -> Unit
+) {
     Column(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
     ) {
         Text(
             text = stringResource(R.string.ai_support_chat_issue_picker_title),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = textColor,
             style = MaterialTheme.typography.bodyMedium
         )
-        SupportIssueType.entries.forEach { issueType ->
+        SupportIssueType.selectableEntries.forEach { issueType ->
             val issueLabel = stringResource(issueType.displayLabel)
             WCOutlinedButton(
                 onClick = { onIssueSelected(issueType, issueLabel) },
@@ -268,11 +290,14 @@ private fun IssuePickerContent(onIssueSelected: (SupportIssueType, String) -> Un
 
 @Composable
 private fun DiagnosticsContent(
-    result: com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult,
-    showActions: Boolean,
+    result: DiagnosticResult,
+    textColor: Color,
+    showDiagnosticActions: Boolean,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
+    val hasFailure = result.firstFailure != null
+
     Column(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
@@ -283,26 +308,30 @@ private fun DiagnosticsContent(
             } else {
                 stringResource(R.string.ai_support_chat_diagnostics_title)
             },
-            color = MaterialTheme.colorScheme.onSurface,
+            color = textColor,
             style = MaterialTheme.typography.titleSmall
         )
 
         result.statuses.forEach { status ->
-            DiagnosticStatusRow(status)
+            DiagnosticStatusRow(status = status, textColor = textColor)
         }
 
-        if (showActions) {
-            Text(
-                text = stringResource(R.string.ai_support_chat_diagnostics_failure),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodySmall
-            )
+        if (showDiagnosticActions) {
+            if (hasFailure) {
+                Text(
+                    text = stringResource(R.string.ai_support_chat_diagnostics_failure),
+                    color = textColor,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))) {
-                WCOutlinedButton(
-                    onClick = onRetryDiagnosticsClicked,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = stringResource(R.string.ai_support_chat_diagnostics_retry))
+                if (hasFailure) {
+                    WCOutlinedButton(
+                        onClick = onRetryDiagnosticsClicked,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.ai_support_chat_diagnostics_retry))
+                    }
                 }
                 WCColoredButton(
                     onClick = onContinueAfterDiagnosticsClicked,
@@ -315,7 +344,7 @@ private fun DiagnosticsContent(
 }
 
 @Composable
-private fun DiagnosticStatusRow(status: DiagnosticStatus) {
+private fun DiagnosticStatusRow(status: DiagnosticStatus, textColor: Color) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -323,7 +352,7 @@ private fun DiagnosticStatusRow(status: DiagnosticStatus) {
     ) {
         Text(
             text = status.test.title(),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = textColor,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.weight(1f)
         )
@@ -338,7 +367,7 @@ private fun DiagnosticStatusRow(status: DiagnosticStatus) {
             }
             Text(
                 text = status.status.title(),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = textColor,
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -370,6 +399,7 @@ private fun TestStatus.title(): String =
 
 @Composable
 private fun TypingIndicator(modifier: Modifier = Modifier) {
+    val typingDescription = stringResource(R.string.ai_support_chat_typing)
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start
@@ -378,7 +408,13 @@ private fun TypingIndicator(modifier: Modifier = Modifier) {
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            shadowElevation = 1.dp
+            shadowElevation = 1.dp,
+            modifier = Modifier
+                .fillMaxWidth(0.88f)
+                .semantics(mergeDescendants = true) {
+                    liveRegion = LiveRegionMode.Polite
+                    contentDescription = typingDescription
+                }
         ) {
             Row(
                 modifier = Modifier.padding(
@@ -389,6 +425,7 @@ private fun TypingIndicator(modifier: Modifier = Modifier) {
             ) {
                 CircularProgressIndicator(
                     strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.minor_100)))
@@ -508,6 +545,7 @@ private fun AiSupportChatScreenPreview() {
                         )
                     )
                 ),
+                hasProceededToChat = true,
                 hasStartedChat = true
             ),
             onInputChanged = {},

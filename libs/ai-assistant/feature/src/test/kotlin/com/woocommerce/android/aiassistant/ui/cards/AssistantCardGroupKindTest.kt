@@ -9,7 +9,7 @@ class AssistantCardGroupKindTest {
     fun `given only order cards, when resolving group kind, then orders metadata is returned`() {
         val metadata = listOf(orderCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_orders)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_orders)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_orders)
     }
 
@@ -17,7 +17,15 @@ class AssistantCardGroupKindTest {
     fun `given only product cards, when resolving group kind, then products metadata is returned`() {
         val metadata = listOf(productCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_products)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_products)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
+    }
+
+    @Test
+    fun `given only variation cards, when resolving group kind, then variations metadata is returned`() {
+        val metadata = listOf(variationCard()).toAssistantCardGroupMetadata()
+
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_variations)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_products)
     }
 
@@ -25,15 +33,31 @@ class AssistantCardGroupKindTest {
     fun `given only stats cards, when resolving group kind, then stats metadata is returned`() {
         val metadata = listOf(statsCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_stats)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_stats)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_stats)
+    }
+
+    @Test
+    fun `given only customer cards, when resolving group kind, then customers metadata is returned`() {
+        val metadata = listOf(customerCard()).toAssistantCardGroupMetadata()
+
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_customers)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_customers)
     }
 
     @Test
     fun `given mixed cards, when resolving group kind, then generic metadata is returned`() {
         val metadata = listOf(orderCard(), productCard(), statsCard()).toAssistantCardGroupMetadata()
 
-        assertThat(metadata.titleRes).isEqualTo(R.string.assistant_chat_card_group_generic)
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_generic)
+        assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
+    }
+
+    @Test
+    fun `given mixed product and variation cards, when resolving group kind, then generic metadata is returned`() {
+        val metadata = listOf(productCard(), variationCard()).toAssistantCardGroupMetadata()
+
+        assertThat(metadata.titleRes).isEqualTo(R.string.ai_assistant_chat_card_group_generic)
         assertThat(metadata.iconRes).isEqualTo(R.drawable.ic_assistant_card_group_generic)
     }
 
@@ -57,14 +81,40 @@ class AssistantCardGroupKindTest {
         imageUrl = "https://example.com/socks.png",
     )
 
+    private fun variationCard() = AssistantCard.Variation(
+        parentProductId = 456L,
+        variationId = 10L,
+        name = "Woo socks - Blue",
+        sku = "woo-socks-blue",
+        price = "12.99",
+        stockStatus = "instock",
+        status = "publish",
+        imageUrl = "https://example.com/blue-socks.png",
+        attributes = listOf(AssistantCard.Variation.Attribute(name = "Color", option = "Blue")),
+    )
+
     private fun statsCard() = AssistantCard.Stats(
         id = "analytics_revenue",
         after = "2026-05-01",
         before = "2026-05-07",
         currency = "USD",
-        totalSales = "170.35",
-        netSales = "120.15",
-        totalSalesChartPoints = emptyList(),
-        netSalesChartPoints = emptyList(),
+        metrics = listOf(
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.TotalSales,
+                value = "170.35",
+                chartPoints = emptyList(),
+            ),
+            AssistantCard.Stats.Metric(
+                type = AssistantCard.Stats.MetricType.NetSales,
+                value = "120.15",
+                chartPoints = emptyList(),
+            ),
+        ),
+    )
+
+    private fun customerCard() = AssistantCard.Customer(
+        remoteCustomerId = 789L,
+        name = "Ada Lovelace",
+        email = "ada@example.com",
     )
 }

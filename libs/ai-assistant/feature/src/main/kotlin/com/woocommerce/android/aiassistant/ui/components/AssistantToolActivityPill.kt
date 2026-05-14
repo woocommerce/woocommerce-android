@@ -44,7 +44,7 @@ internal fun AssistantToolActivityPill(
     modifier: Modifier = Modifier,
 ) {
     val label = stringResource(activity.labelRes())
-    val description = stringResource(R.string.assistant_chat_tool_activity_content_description, label)
+    val description = stringResource(R.string.ai_assistant_chat_tool_activity_content_description, label)
     Surface(
         modifier = modifier
             .animateContentSize(animationSpec = tween(durationMillis = 220))

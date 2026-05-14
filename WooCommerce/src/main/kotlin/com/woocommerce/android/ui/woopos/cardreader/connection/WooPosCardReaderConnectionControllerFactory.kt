@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscover
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.LocationUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +35,6 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
     private val unifiedDiscoveryStream: WooPosUnifiedDiscoveryStream,
     private val remoteReaderSession: WooPosRemoteReaderSession,
     private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
-    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     fun create(scope: CoroutineScope): WooPosCardReaderConnectionController {
         return WooPosCardReaderConnectionController(
@@ -56,7 +54,6 @@ class WooPosCardReaderConnectionControllerFactory @Inject constructor(
             unifiedDiscoveryStream = unifiedDiscoveryStream,
             remoteReaderSession = remoteReaderSession,
             wooPosAnalyticsTracker = wooPosAnalyticsTracker,
-            featureFlagRepository = featureFlagRepository,
         )
     }
 }

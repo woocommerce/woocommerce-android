@@ -54,9 +54,10 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("\"revenue by day this month\" means interval day")
         assertThat(prompt).contains("with this-month")
         assertThat(prompt).contains("after/before dates")
-        assertThat(prompt).contains("Aggregate sales, revenue, and order metric questions should")
-        assertThat(prompt).contains("use analytics tools")
+        assertThat(prompt).contains("Aggregate sales, revenue, order count, and average order")
+        assertThat(prompt).contains("value questions should use analytics_orders")
         assertThat(prompt).contains("not row counts from list tools")
+        assertThat(prompt).doesNotContain("use analytics tools")
     }
 
     @Test
@@ -88,16 +89,39 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is built, then show cards is the only card producer including analytics stats`() {
+    fun `when prompt is built, then broad stock questions stay product level unless variation level is explicit`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-04")
+
+        assertThat(prompt).contains("Stock-focused product queries")
+        assertThat(prompt).contains("Broad stock questions are product-level answers")
+        assertThat(prompt).contains("Do not inspect variations unless the merchant")
+        assertThat(prompt).contains("explicitly asks about sizes, colors, options")
+        assertThat(prompt).contains("sizes, colors, options, or variation-level stock")
+        assertThat(prompt).contains("`show_cards` fetches and renders product")
+    }
+
+    @Test
+    fun `when prompt is built, then show cards is the only card producer including customers and analytics stats`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 
         assertThat(prompt).contains("show_cards")
         assertThat(prompt).contains("The UI never renders cards")
         assertThat(prompt).contains("don't call the card-rendering tool")
         assertThat(prompt).contains("no cards appear")
-        assertThat(prompt).contains("then call `show_cards` with an ID-only `analytics_stats` reference")
-        assertThat(prompt).contains("analytics_stats")
-        assertThat(prompt).contains("currency-or-none query values")
+        assertThat(prompt).contains("this turn should show orders")
+        assertThat(prompt).contains("products, variations, customers, or analytics stats")
+        assertThat(prompt).contains("Customer lists and cards")
+        assertThat(prompt).contains("customer list call -> `show_cards`")
+        assertThat(prompt).contains("One analytics read call with the appropriate window and a daily-grain parameter")
+        assertThat(prompt).contains("then call")
+        assertThat(prompt).contains("`show_cards` to render the matching analytics card")
+        assertThat(prompt).contains("the grouping phrase controls interval")
+        assertThat(prompt).contains("the time phrase controls after/before")
+        assertThat(prompt).contains("Do not turn a monthly window into interval=month")
+        assertThat(prompt).doesNotContain("analytics_orders:after:")
+        assertThat(prompt).doesNotContain("analytics_revenue:after:")
+        assertThat(prompt).doesNotContain("currency:none")
+        assertThat(prompt).doesNotContain("currency-or-none query values")
         assertThat(prompt).doesNotContain("Do not call `show_cards` for analytics")
         assertThat(prompt).contains("no card JSON")
         assertThat(prompt).contains("no card tokens")

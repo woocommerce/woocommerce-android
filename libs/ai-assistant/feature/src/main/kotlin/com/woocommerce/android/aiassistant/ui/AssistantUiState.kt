@@ -15,7 +15,6 @@ data class AssistantUiState(
     val canRetry: Boolean = false,
     val activeConfirmationId: String? = null,
     val activeAssistantMessageId: String? = null,
-    val pendingNavigation: AssistantPendingNavigation? = null,
 ) {
     val isStreaming: Boolean
         get() = status == AssistantUiStatus.STREAMING
@@ -112,19 +111,20 @@ sealed interface AssistantUiSegment {
 @StringRes
 internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
     "orders_list",
-    "orders_get" -> R.string.assistant_chat_tool_activity_orders_read
+    "orders_get" -> R.string.ai_assistant_chat_tool_activity_orders_read
     "orders_update",
-    "orders_bulk_update" -> R.string.assistant_chat_tool_activity_orders_write
+    "orders_bulk_update" -> R.string.ai_assistant_chat_tool_activity_orders_write
     "products_list",
     "products_get",
-    "product_variations_list" -> R.string.assistant_chat_tool_activity_products_read
+    "product_variations_list" -> R.string.ai_assistant_chat_tool_activity_products_read
     "products_update",
     "products_bulk_update",
-    "product_variations_update" -> R.string.assistant_chat_tool_activity_products_write
+    "product_variations_update" -> R.string.ai_assistant_chat_tool_activity_products_write
     "analytics_orders",
-    "analytics_revenue" -> R.string.assistant_chat_tool_activity_analytics
-    "customers_list" -> R.string.assistant_chat_tool_activity_customers
-    else -> R.string.assistant_chat_tool_activity_generic
+    // Kept for replayed/legacy activity rows created before analytics_orders replaced analytics_revenue.
+    "analytics_revenue" -> R.string.ai_assistant_chat_tool_activity_analytics
+    "customers_list" -> R.string.ai_assistant_chat_tool_activity_customers
+    else -> R.string.ai_assistant_chat_tool_activity_generic
 }
 
 data class AssistantConfirmationCard(
@@ -142,9 +142,9 @@ enum class AssistantConfirmationCardState {
 
 @StringRes
 internal fun AssistantConfirmationCardState.eyebrowRes(): Int = when (this) {
-    AssistantConfirmationCardState.PENDING -> R.string.assistant_confirmation_eyebrow_pending
-    AssistantConfirmationCardState.CONFIRMED -> R.string.assistant_confirmation_eyebrow_confirmed
-    AssistantConfirmationCardState.CANCELLED -> R.string.assistant_confirmation_eyebrow_cancelled
+    AssistantConfirmationCardState.PENDING -> R.string.ai_assistant_confirmation_eyebrow_pending
+    AssistantConfirmationCardState.CONFIRMED -> R.string.ai_assistant_confirmation_eyebrow_confirmed
+    AssistantConfirmationCardState.CANCELLED -> R.string.ai_assistant_confirmation_eyebrow_cancelled
 }
 
 @DrawableRes
@@ -163,6 +163,7 @@ enum class AssistantUiError {
     NETWORK,
     AUTH,
     RATE_LIMIT,
+    BAD_REQUEST,
     TIMEOUT,
     UPSTREAM_FAILURE,
     TOOL_FAILED,
@@ -174,14 +175,13 @@ enum class AssistantUiError {
     UNKNOWN,
 }
 
-sealed interface AssistantPendingNavigation
-
 fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
-    AssistantError.Network -> AssistantUiError.NETWORK
-    AssistantError.Auth -> AssistantUiError.AUTH
-    AssistantError.RateLimit -> AssistantUiError.RATE_LIMIT
-    AssistantError.Timeout -> AssistantUiError.TIMEOUT
-    AssistantError.UpstreamFailure -> AssistantUiError.UPSTREAM_FAILURE
+    is AssistantError.Network -> AssistantUiError.NETWORK
+    is AssistantError.Auth -> AssistantUiError.AUTH
+    is AssistantError.RateLimit -> AssistantUiError.RATE_LIMIT
+    is AssistantError.BadRequest -> AssistantUiError.BAD_REQUEST
+    is AssistantError.Timeout -> AssistantUiError.TIMEOUT
+    is AssistantError.UpstreamFailure -> AssistantUiError.UPSTREAM_FAILURE
     is AssistantError.ToolFailed -> AssistantUiError.TOOL_FAILED
     is AssistantError.InvalidToolCall -> AssistantUiError.INVALID_TOOL_CALL
     is AssistantError.OutcomeUnknown -> AssistantUiError.OUTCOME_UNKNOWN
@@ -190,38 +190,47 @@ fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
 }
 
 internal fun AssistantError.supportsRetryAction(): Boolean = when (this) {
-    AssistantError.Network,
-    AssistantError.Timeout,
-    AssistantError.RateLimit -> true
-    else -> false
+    is AssistantError.Network,
+    is AssistantError.Timeout,
+    is AssistantError.RateLimit -> true
+    is AssistantError.Auth,
+    is AssistantError.BadRequest,
+    is AssistantError.UpstreamFailure,
+    is AssistantError.ToolFailed,
+    is AssistantError.InvalidToolCall,
+    is AssistantError.OutcomeUnknown,
+    AssistantError.Cancelled,
+    is AssistantError.Unknown -> false
 }
 
 @StringRes
 internal fun AssistantError.toMessageRes(): Int = when (this) {
-    AssistantError.Network -> R.string.assistant_chat_error_network
-    AssistantError.Auth -> R.string.assistant_chat_error_auth
-    AssistantError.RateLimit -> R.string.assistant_chat_error_rate_limit
-    AssistantError.Timeout -> R.string.assistant_chat_error_timeout
-    AssistantError.UpstreamFailure -> R.string.assistant_chat_error_upstream_failure
-    is AssistantError.ToolFailed -> R.string.assistant_chat_error_tool_failed
-    is AssistantError.InvalidToolCall -> R.string.assistant_chat_error_invalid_tool_call
-    is AssistantError.OutcomeUnknown -> R.string.assistant_chat_error_outcome_unknown
-    AssistantError.Cancelled -> R.string.assistant_chat_error_cancelled
-    is AssistantError.Unknown -> R.string.assistant_chat_error_unknown
+    is AssistantError.Network -> R.string.ai_assistant_chat_error_network
+    is AssistantError.Auth -> R.string.ai_assistant_chat_error_auth
+    is AssistantError.RateLimit -> R.string.ai_assistant_chat_error_rate_limit
+    is AssistantError.BadRequest -> R.string.ai_assistant_chat_error_upstream_failure
+    is AssistantError.Timeout -> R.string.ai_assistant_chat_error_timeout
+    is AssistantError.UpstreamFailure -> R.string.ai_assistant_chat_error_upstream_failure
+    is AssistantError.ToolFailed -> R.string.ai_assistant_chat_error_tool_failed
+    is AssistantError.InvalidToolCall -> R.string.ai_assistant_chat_error_invalid_tool_call
+    is AssistantError.OutcomeUnknown -> R.string.ai_assistant_chat_error_outcome_unknown
+    AssistantError.Cancelled -> R.string.ai_assistant_chat_error_cancelled
+    is AssistantError.Unknown -> R.string.ai_assistant_chat_error_unknown
 }
 
 @StringRes
 internal fun AssistantUiError.toMessageRes(): Int = when (this) {
-    AssistantUiError.NETWORK -> R.string.assistant_chat_error_network
-    AssistantUiError.AUTH -> R.string.assistant_chat_error_auth
-    AssistantUiError.RATE_LIMIT -> R.string.assistant_chat_error_rate_limit
-    AssistantUiError.TIMEOUT -> R.string.assistant_chat_error_timeout
-    AssistantUiError.UPSTREAM_FAILURE -> R.string.assistant_chat_error_upstream_failure
-    AssistantUiError.TOOL_FAILED -> R.string.assistant_chat_error_tool_failed
-    AssistantUiError.INVALID_TOOL_CALL -> R.string.assistant_chat_error_invalid_tool_call
-    AssistantUiError.OUTCOME_UNKNOWN -> R.string.assistant_chat_error_outcome_unknown
-    AssistantUiError.CANCELLED -> R.string.assistant_chat_error_cancelled
-    AssistantUiError.CONFIRMATION_DEFERRED -> R.string.assistant_chat_error_confirmation_deferred
-    AssistantUiError.MAX_ITERATIONS -> R.string.assistant_chat_error_max_iterations
-    AssistantUiError.UNKNOWN -> R.string.assistant_chat_error_unknown
+    AssistantUiError.NETWORK -> R.string.ai_assistant_chat_error_network
+    AssistantUiError.AUTH -> R.string.ai_assistant_chat_error_auth
+    AssistantUiError.RATE_LIMIT -> R.string.ai_assistant_chat_error_rate_limit
+    AssistantUiError.BAD_REQUEST -> R.string.ai_assistant_chat_error_upstream_failure
+    AssistantUiError.TIMEOUT -> R.string.ai_assistant_chat_error_timeout
+    AssistantUiError.UPSTREAM_FAILURE -> R.string.ai_assistant_chat_error_upstream_failure
+    AssistantUiError.TOOL_FAILED -> R.string.ai_assistant_chat_error_tool_failed
+    AssistantUiError.INVALID_TOOL_CALL -> R.string.ai_assistant_chat_error_invalid_tool_call
+    AssistantUiError.OUTCOME_UNKNOWN -> R.string.ai_assistant_chat_error_outcome_unknown
+    AssistantUiError.CANCELLED -> R.string.ai_assistant_chat_error_cancelled
+    AssistantUiError.CONFIRMATION_DEFERRED -> R.string.ai_assistant_chat_error_confirmation_deferred
+    AssistantUiError.MAX_ITERATIONS -> R.string.ai_assistant_chat_error_max_iterations
+    AssistantUiError.UNKNOWN -> R.string.ai_assistant_chat_error_unknown
 }

@@ -270,7 +270,7 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given AI support chat is available, when state loads, then AI support chat button is visible`() =
+    fun `given AI support chat is available, when state loads, then support CTAs are hidden`() =
         testBlocking {
             // GIVEN
             stubAiSupportChatAvailable()
@@ -278,7 +278,65 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
             sut.viewState.observeForever {}
 
             // THEN
+            assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isFalse()
+            assertThat(sut.viewState.value?.shouldDisplayContactSupportButton).isFalse()
+        }
+
+    @Test
+    fun `given AI support chat is available, when checks finish, then AI support chat button is visible`() =
+        testBlocking {
+            // GIVEN
+            stubAiSupportChatAvailable()
+            createViewModel()
+            sut.viewState.observeForever {}
+
+            // WHEN
+            sut.startConnectionChecks()
+
+            // THEN
             assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isTrue()
+            assertThat(sut.viewState.value?.shouldDisplayContactSupportButton).isFalse()
+        }
+
+    @Test
+    fun `given AI support chat is not available, when checks finish, then contact support button is visible`() =
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            sut.viewState.observeForever {}
+
+            // WHEN
+            sut.startConnectionChecks()
+
+            // THEN
+            assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isFalse()
+            assertThat(sut.viewState.value?.shouldDisplayContactSupportButton).isTrue()
+        }
+
+    @Test
+    fun `given AI support chat flag is enabled and site is not Jetpack-connected, when state loads, then button is hidden`() =
+        testBlocking {
+            // GIVEN
+            stubAiSupportChatAvailability(isFeatureEnabled = true, isJetpackConnected = false)
+            createViewModel()
+            sut.viewState.observeForever {}
+
+            // THEN
+            assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isFalse()
+            assertThat(sut.viewState.value?.shouldDisplayContactSupportButton).isFalse()
+        }
+
+    @Test
+    fun `given AI support chat flag is disabled and site is Jetpack-connected, when state loads, then button is hidden`() =
+        testBlocking {
+            // GIVEN
+            stubAiSupportChatAvailability(isFeatureEnabled = false, isJetpackConnected = true)
+            createViewModel()
+            sut.viewState.observeForever {}
+
+            // THEN
+            assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isFalse()
+            assertThat(sut.viewState.value?.shouldDisplayContactSupportButton).isFalse()
         }
 
     @Test
@@ -302,6 +360,22 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given checks are not finished, when AI support chat clicked, then no event is emitted`() =
+        testBlocking {
+            // GIVEN
+            stubAiSupportChatAvailable()
+            createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever { events.add(it) }
+
+            // WHEN
+            sut.onAiSupportChatClicked()
+
+            // THEN
+            assertThat(events).isEmpty()
+        }
+
+    @Test
     fun `given app password site, when all checks succeed, then isCheckFinished is true`() = testBlocking {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
@@ -316,10 +390,14 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
     }
 
     private fun stubAiSupportChatAvailable() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)).thenReturn(true)
+        stubAiSupportChatAvailability(isFeatureEnabled = true, isJetpackConnected = true)
+    }
+
+    private fun stubAiSupportChatAvailability(isFeatureEnabled: Boolean, isJetpackConnected: Boolean) {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)).thenReturn(isFeatureEnabled)
         whenever(selectedSite.getIfExists()).thenReturn(
             SiteModel().apply {
-                setIsJetpackConnected(true)
+                setIsJetpackConnected(isJetpackConnected)
             }
         )
     }

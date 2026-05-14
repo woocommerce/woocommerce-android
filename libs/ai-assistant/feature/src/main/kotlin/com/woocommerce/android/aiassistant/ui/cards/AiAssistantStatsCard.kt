@@ -1,10 +1,12 @@
 package com.woocommerce.android.aiassistant.ui.cards
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -27,9 +29,7 @@ fun AiAssistantStatsCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentDescription = stringResource(R.string.assistant_stats_card_open_content_description, state.period)
-    val showTotalSalesTrend = shouldShowStatsTrendChart(state.totalSalesChartValues)
-    val showNetSalesTrend = shouldShowStatsTrendChart(state.netSalesChartValues)
+    val contentDescription = stringResource(R.string.ai_assistant_stats_card_open_content_description, state.period)
     Column(
         modifier = modifier
             .clickable(role = Role.Button, onClick = onClick)
@@ -44,39 +44,26 @@ fun AiAssistantStatsCard(
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelMedium,
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            StatsMetric(
-                label = stringResource(R.string.assistant_stats_card_total_sales_label),
-                value = state.totalSales,
-                modifier = Modifier.weight(1f),
-            )
-            StatsMetric(
-                label = stringResource(R.string.assistant_stats_card_net_sales_label),
-                value = state.netSales,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        if (showTotalSalesTrend || showNetSalesTrend) {
+        StatsMetricGrid(metrics = state.metrics)
+    }
+}
+
+@Composable
+private fun StatsMetricGrid(metrics: List<AiAssistantStatsCardState.Metric>) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        metrics.chunked(STATS_CARD_GRID_COLUMNS).forEach { rowMetrics ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(32.dp),
             ) {
-                if (showTotalSalesTrend) {
-                    StatsTrendColumn(
-                        label = stringResource(R.string.assistant_stats_card_total_sales_label),
-                        values = state.totalSalesChartValues,
+                rowMetrics.forEach { metric ->
+                    StatsMetric(
+                        metric = metric,
                         modifier = Modifier.weight(1f),
                     )
                 }
-                if (showNetSalesTrend) {
-                    StatsTrendColumn(
-                        label = stringResource(R.string.assistant_stats_card_net_sales_label),
-                        values = state.netSalesChartValues,
-                        modifier = Modifier.weight(1f),
-                    )
+                repeat(STATS_CARD_GRID_COLUMNS - rowMetrics.size) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -85,8 +72,7 @@ fun AiAssistantStatsCard(
 
 @Composable
 private fun StatsMetric(
-    label: String,
-    value: String,
+    metric: AiAssistantStatsCardState.Metric,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -94,138 +80,196 @@ private fun StatsMetric(
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(
-            text = label,
+            text = stringResource(metric.type.labelRes()),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelSmall,
         )
         Text(
-            text = value,
+            text = metric.value,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
         )
+        if (shouldShowStatsTrendChart(metric.chartValues)) {
+            AssistantStatsTrendChart(
+                points = metric.chartValues,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
-@Composable
-private fun StatsTrendColumn(
-    label: String,
-    values: List<Double>,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelSmall,
-        )
-        AssistantStatsTrendChart(
-            points = values,
-            modifier = Modifier.fillMaxWidth(),
-        )
+private fun AssistantCard.Stats.MetricType.labelRes(): Int =
+    when (this) {
+        AssistantCard.Stats.MetricType.TotalSales -> R.string.ai_assistant_stats_card_total_sales_label
+        AssistantCard.Stats.MetricType.NetSales -> R.string.ai_assistant_stats_card_net_sales_label
+        AssistantCard.Stats.MetricType.TotalOrders -> R.string.ai_assistant_stats_card_total_orders_label
+        AssistantCard.Stats.MetricType.AverageOrderValue -> R.string.ai_assistant_stats_card_average_order_value_label
     }
-}
 
+@VisibleForTesting
 internal fun shouldShowStatsTrendChart(values: List<Double>): Boolean = values.size > 1
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
-@Preview(name = "Dark", showBackground = true, widthDp = 360, heightDp = 240, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, widthDp = 360, heightDp = 360)
+@Preview(name = "Dark", showBackground = true, widthDp = 360, heightDp = 360, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun AiAssistantStatsCardPreviewMultiPoint() {
-    AiAssistantStatsCard(state = sampleStatsCardState(), onClick = {})
+private fun AiAssistantStatsCardPreviewUnifiedMultiPoint() {
+    AiAssistantStatsCard(state = sampleUnifiedStatsCardState(), onClick = {})
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
+@Preview(name = "Large Font", showBackground = true, widthDp = 360, heightDp = 420, fontScale = 1.5f)
 @Composable
-private fun AiAssistantStatsCardPreviewChangedShape() {
+private fun AiAssistantStatsCardPreviewUnifiedLargeFont() {
+    AiAssistantStatsCard(state = sampleUnifiedStatsCardState(), onClick = {})
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 320)
+@Composable
+private fun AiAssistantStatsCardPreviewUnifiedPartialData() {
     AiAssistantStatsCard(
-        state = sampleStatsCardState(
-            totalSalesChartValues = listOf(26.0, 9.0, 22.0, 7.0, 18.0),
-            netSalesChartValues = listOf(15.0, 4.0, 18.0, 3.0, 12.0),
+        state = sampleUnifiedStatsCardState(
+            netSalesChartValues = emptyList(),
+            averageOrderValueChartValues = listOf(80.10),
         ),
         onClick = {},
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
+@Preview(showBackground = true, widthDp = 360, heightDp = 300)
 @Composable
-private fun AiAssistantStatsCardPreviewSinglePoint() {
+private fun AiAssistantStatsCardPreviewUnifiedLaterTrendOnly() {
     AiAssistantStatsCard(
-        state = sampleStatsCardState(
-            totalSalesChartValues = listOf(12.0),
-            netSalesChartValues = listOf(9.0),
-        ),
-        onClick = {},
-    )
-}
-
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
-@Composable
-private fun AiAssistantStatsCardPreviewAllZero() {
-    AiAssistantStatsCard(
-        state = sampleStatsCardState(
-            totalSalesChartValues = listOf(0.0, 0.0, 0.0),
-            netSalesChartValues = listOf(0.0, 0.0, 0.0),
-        ),
-        onClick = {},
-    )
-}
-
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
-@Composable
-private fun AiAssistantStatsCardPreviewNegativeRefunds() {
-    AiAssistantStatsCard(
-        state = sampleStatsCardState(
-            totalSalesChartValues = listOf(10.0, -5.0, 3.0),
-            netSalesChartValues = listOf(8.0, -7.0, 1.0),
-        ),
-        onClick = {},
-    )
-}
-
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
-@Composable
-private fun AiAssistantStatsCardPreviewNoTrend() {
-    AiAssistantStatsCard(
-        state = sampleStatsCardState(
+        state = sampleUnifiedStatsCardState(
             totalSalesChartValues = emptyList(),
             netSalesChartValues = emptyList(),
+            totalOrdersChartValues = emptyList(),
+            averageOrderValueChartValues = listOf(80.10, 82.25, 91.20),
         ),
         onClick = {},
     )
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 240)
+@Preview(showBackground = true, widthDp = 360, heightDp = 260)
 @Composable
-private fun AiAssistantStatsCardPreviewPartialData() {
+private fun AiAssistantStatsCardPreviewUnifiedNoTrend() {
     AiAssistantStatsCard(
-        state = sampleStatsCardState(
-            totalSalesChartValues = listOf(12.0, 18.0, 9.0, 26.0, 21.0),
-            netSalesChartValues = emptyList(),
+        state = sampleUnifiedStatsCardState(
+            totalSalesChartValues = listOf(12.0),
+            netSalesChartValues = listOf(9.0),
+            totalOrdersChartValues = emptyList(),
+            averageOrderValueChartValues = emptyList(),
         ),
         onClick = {},
     )
 }
 
-private fun sampleStatsCardState(
+@Preview(showBackground = true, widthDp = 360, heightDp = 360)
+@Composable
+private fun AiAssistantStatsCardPreviewUnifiedLongCurrencyValues() {
+    AiAssistantStatsCard(
+        state = sampleUnifiedStatsCardState(
+            totalSalesValue = "$123,456,789.01",
+            netSalesValue = "$98,765,432.10",
+            averageOrderValue = "$12,345.67",
+        ),
+        onClick = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 300)
+@Composable
+private fun AiAssistantStatsCardPreviewLegacyTwoMetricReplay() {
+    AiAssistantStatsCard(state = sampleLegacyTwoMetricStatsCardState(), onClick = {})
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 360)
+@Composable
+private fun AiAssistantStatsCardPreviewUnifiedChangedShape() {
+    AiAssistantStatsCard(
+        state = sampleUnifiedStatsCardState(
+            totalSalesChartValues = listOf(26.0, 9.0, 22.0, 7.0, 18.0),
+            netSalesChartValues = listOf(15.0, 4.0, 18.0, 3.0, 12.0),
+            totalOrdersChartValues = listOf(3.0, 8.0, 6.0, 12.0, 10.0),
+            averageOrderValueChartValues = listOf(90.0, 75.0, 110.0, 68.0, 92.0),
+        ),
+        onClick = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 360)
+@Composable
+private fun AiAssistantStatsCardPreviewUnifiedAllZero() {
+    AiAssistantStatsCard(
+        state = sampleUnifiedStatsCardState(
+            totalSalesChartValues = listOf(0.0, 0.0, 0.0),
+            netSalesChartValues = listOf(0.0, 0.0, 0.0),
+            totalOrdersChartValues = listOf(0.0, 0.0, 0.0),
+            averageOrderValueChartValues = listOf(0.0, 0.0, 0.0),
+        ),
+        onClick = {},
+    )
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 360)
+@Composable
+private fun AiAssistantStatsCardPreviewUnifiedNegativeRefunds() {
+    AiAssistantStatsCard(
+        state = sampleUnifiedStatsCardState(
+            totalSalesChartValues = listOf(10.0, -5.0, 3.0),
+            netSalesChartValues = listOf(8.0, -7.0, 1.0),
+            totalOrdersChartValues = listOf(4.0, 1.0, 5.0),
+            averageOrderValueChartValues = listOf(80.0, -20.0, 70.0),
+        ),
+        onClick = {},
+    )
+}
+
+private fun sampleUnifiedStatsCardState(
+    totalSalesValue: String = "$170.35",
+    netSalesValue: String = "$120.15",
+    totalOrdersValue: String = "42",
+    averageOrderValue: String = "$85.30",
     totalSalesChartValues: List<Double> = SAMPLE_TOTAL_SALES_CHART_VALUES,
     netSalesChartValues: List<Double> = SAMPLE_NET_SALES_CHART_VALUES,
+    totalOrdersChartValues: List<Double> = SAMPLE_TOTAL_ORDERS_CHART_VALUES,
+    averageOrderValueChartValues: List<Double> = SAMPLE_AVERAGE_ORDER_VALUE_CHART_VALUES,
 ) = AiAssistantStatsCardState(
     period = "May 1 - May 7, 2026",
-    totalSales = "$170.35",
-    netSales = "$120.15",
-    totalSalesChartValues = totalSalesChartValues,
-    netSalesChartValues = netSalesChartValues,
+    metrics = listOf(
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.TotalSales,
+            value = totalSalesValue,
+            chartValues = totalSalesChartValues,
+        ),
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.NetSales,
+            value = netSalesValue,
+            chartValues = netSalesChartValues,
+        ),
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.TotalOrders,
+            value = totalOrdersValue,
+            chartValues = totalOrdersChartValues,
+        ),
+        AiAssistantStatsCardState.Metric(
+            type = AssistantCard.Stats.MetricType.AverageOrderValue,
+            value = averageOrderValue,
+            chartValues = averageOrderValueChartValues,
+        ),
+    ),
+)
+
+private fun sampleLegacyTwoMetricStatsCardState() = AiAssistantStatsCardState(
+    period = "May 1 - May 7, 2026",
+    metrics = sampleUnifiedStatsCardState().metrics.take(2),
 )
 
 private val SAMPLE_TOTAL_SALES_CHART_VALUES = listOf(12.0, 18.0, 9.0, 26.0, 21.0)
 private val SAMPLE_NET_SALES_CHART_VALUES = listOf(8.0, 12.0, 6.0, 20.0, 14.0)
+private val SAMPLE_TOTAL_ORDERS_CHART_VALUES = listOf(12.0, 16.0, 14.0, 18.0, 20.0)
+private val SAMPLE_AVERAGE_ORDER_VALUE_CHART_VALUES = listOf(80.10, 82.25, 93.55, 89.75, 91.20)
+private const val STATS_CARD_GRID_COLUMNS = 2

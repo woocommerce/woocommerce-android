@@ -22,6 +22,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.TimeUnit
+import kotlin.time.TimeSource
 
 class JetpackAiChatServiceHeadlessHarnessTest {
     private lateinit var server: MockWebServer
@@ -54,6 +55,7 @@ class JetpackAiChatServiceHeadlessHarnessTest {
                     streamParser = ChatStreamParser(assistantJson),
                     json = assistantJson,
                     baseUrl = server.url("/").toString().removeSuffix("/"),
+                    transportDiagnosticsFactory = TransportDiagnosticsFactory(),
                 ),
                 toolRegistry = NoOpToolRegistry(),
                 retryPolicy = ConservativeRetryPolicy,
@@ -61,6 +63,7 @@ class JetpackAiChatServiceHeadlessHarnessTest {
                     BudgetedHistory(listOf(system) + transcript + user)
                 },
                 json = assistantJson,
+                timeSource = TimeSource.Monotonic,
             )
 
             val result = harness.runScenario(

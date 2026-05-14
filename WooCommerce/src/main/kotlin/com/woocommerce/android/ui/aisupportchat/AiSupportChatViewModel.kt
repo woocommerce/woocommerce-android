@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
@@ -15,11 +14,13 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
-import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,8 +30,7 @@ class AiSupportChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: SupportChatRepository,
     private val contextProvider: SupportChatContextProvider,
-    private val diagnosticsService: SupportDiagnosticsService,
-    private val resourceProvider: ResourceProvider
+    private val diagnosticsService: SupportDiagnosticsService
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(AiSupportChatViewState(messages = initialMessages()))
     val viewState = _viewState.asStateFlow()
@@ -56,14 +56,14 @@ class AiSupportChatViewModel @Inject constructor(
     fun onSendClicked() {
         val state = _viewState.value
         val message = state.input.trim()
-        if (message.isBlank() || state.isSending || !state.hasStartedChat) return
+        if (message.isBlank() || state.isSending || !state.hasProceededToChat) return
 
         launch { sendMessage(message) }
     }
 
     fun onIssueSelected(issueType: SupportIssueType, issueLabel: String) {
         val state = _viewState.value
-        if (state.hasStartedChat || state.isSending || state.isRunningDiagnostics) return
+        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
 
         _viewState.update {
             it.copy(
@@ -76,24 +76,25 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         launch {
-            diagnosticsService.runDiagnostics(issueType).collect { result ->
-                val hasFailure = result.firstFailure != null
-                _viewState.update {
-                    it.copy(
-                        input = "",
-                        selectedIssueType = issueType,
-                        selectedIssueLabel = issueLabel,
-                        diagnosticResult = result,
-                        isRunningDiagnostics = !result.isComplete && !hasFailure,
-                        showSendError = false,
-                        messages = diagnosticsMessages(result)
-                    )
+            diagnosticsService.runDiagnostics(issueType)
+                .catch { error ->
+                    if (error is CancellationException) throw error
+                    handleDiagnosticsFailure(issueType, issueLabel, error)
                 }
-
-                if (result.isComplete && !hasFailure) {
-                    sendMessage(issueLabel)
+                .collect { result ->
+                    val hasFailure = result.firstFailure != null
+                    _viewState.update {
+                        it.copy(
+                            input = "",
+                            selectedIssueType = issueType,
+                            selectedIssueLabel = issueLabel,
+                            diagnosticResult = result,
+                            isRunningDiagnostics = !result.isComplete && !hasFailure,
+                            showSendError = false,
+                            messages = diagnosticsMessages(result)
+                        )
+                    }
                 }
-            }
         }
     }
 
@@ -106,10 +107,17 @@ class AiSupportChatViewModel @Inject constructor(
 
     fun onContinueAfterDiagnosticsClicked() {
         val state = _viewState.value
-        val issueLabel = state.selectedIssueLabel ?: return
-        if (state.isSending) return
+        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
 
-        launch { sendMessage(issueLabel) }
+        _viewState.update {
+            it.copy(
+                input = "",
+                hasProceededToChat = true,
+                isRunningDiagnostics = false,
+                showSendError = false,
+                messages = it.messages.appendPostDiagnosticsGreeting()
+            )
+        }
     }
 
     private fun startFromPreLogin() {
@@ -117,6 +125,7 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 messages = listOf(greetingMessage()),
                 hasStartedChat = true,
+                hasProceededToChat = true,
                 canPersistChatHistory = false,
                 showSendError = false
             )
@@ -125,18 +134,41 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
         val result = checks.toDiagnosticResult()
-        val initialMessage = resourceProvider.getString(R.string.ai_support_chat_connectivity_initial_message)
         _viewState.update {
             it.copy(
-                messages = diagnosticsMessages(result, showFailureActions = false),
+                input = "",
+                messages = listOf(greetingMessage()).appendPostDiagnosticsGreeting(),
                 selectedIssueType = SupportIssueType.OTHER,
-                selectedIssueLabel = initialMessage,
                 diagnosticResult = result,
+                hasProceededToChat = true,
                 showSendError = false
             )
         }
+    }
 
-        launch { sendMessage(initialMessage) }
+    private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
+        val result = DiagnosticResult(
+            issueType = issueType,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.INTERNET_CONNECTION,
+                    status = TestStatus.Failed(
+                        technicalDetails = error.message ?: error::class.java.simpleName
+                    )
+                )
+            )
+        )
+        _viewState.update {
+            it.copy(
+                input = "",
+                selectedIssueType = issueType,
+                selectedIssueLabel = issueLabel,
+                diagnosticResult = result,
+                isRunningDiagnostics = false,
+                showSendError = false,
+                messages = diagnosticsMessages(result)
+            )
+        }
     }
 
     private suspend fun sendMessage(message: String) {
@@ -152,7 +184,6 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = it.messages + optimisticMessage,
-                hasStartedChat = true,
                 isSending = true,
                 showSendError = false
             )
@@ -160,10 +191,7 @@ class AiSupportChatViewModel @Inject constructor(
 
         val chatId = state.chatId
         val context = if (chatId == null) {
-            contextProvider.buildInitialContext(
-                issueType = state.selectedIssueType,
-                diagnosticResult = state.diagnosticResult
-            )
+            contextProvider.buildInitialContext(diagnosticResult = state.diagnosticResult)
         } else {
             JsonObject()
         }
@@ -178,19 +206,41 @@ class AiSupportChatViewModel @Inject constructor(
             handleSendSuccess(
                 response = response,
                 sentMessage = message,
+                optimisticMessage = optimisticMessage,
                 wasInitialMessage = chatId == null
             )
-        }.onFailure {
-            handleSendFailure(message = message, optimisticMessage = optimisticMessage)
+        }.onFailure { error ->
+            handleSendFailure(message = message, optimisticMessage = optimisticMessage, error = error)
         }
     }
 
     private suspend fun handleSendSuccess(
         response: SupportChatResponse,
         sentMessage: String,
+        optimisticMessage: AiSupportChatMessage,
         wasInitialMessage: Boolean
     ) {
-        if (_viewState.value.canPersistChatHistory) {
+        _viewState.update {
+            val remoteMessages = response.messages.toUiMessages()
+            it.copy(
+                chatId = response.chatId,
+                sessionId = response.sessionId,
+                botSlug = response.botSlug,
+                hasStartedChat = true,
+                messages = if (remoteMessages.isEmpty()) {
+                    it.messages
+                } else {
+                    it.messages.supportMessages() + it.messages.threadMessages().mergeWithRemoteMessages(
+                        remoteMessages = remoteMessages,
+                        optimisticMessage = optimisticMessage
+                    )
+                },
+                isSending = false,
+                showSendError = false
+            )
+        }
+
+        if (_viewState.value.canPersistChatHistory) runCatching {
             if (wasInitialMessage) {
                 repository.registerChat(
                     chatId = response.chatId,
@@ -201,26 +251,35 @@ class AiSupportChatViewModel @Inject constructor(
                 repository.markChatAsUpdated(response.chatId)
             }
         }
-
-        _viewState.update {
-            val supportMessages = it.messages.supportMessages()
-            val responseMessages = response.messages.toUiMessages()
-            it.copy(
-                chatId = response.chatId,
-                sessionId = response.sessionId,
-                botSlug = response.botSlug,
-                messages = if (responseMessages.isEmpty()) {
-                    it.messages
-                } else {
-                    supportMessages + responseMessages
-                },
-                isSending = false,
-                showSendError = false
-            )
-        }
     }
 
-    private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage) {
+    private fun List<AiSupportChatMessage>.mergeWithRemoteMessages(
+        remoteMessages: List<AiSupportChatMessage>,
+        optimisticMessage: AiSupportChatMessage
+    ): List<AiSupportChatMessage> {
+        if (remoteMessages.isEmpty()) return this
+
+        val optimisticText = optimisticMessage.content as? AiSupportChatMessageContent.Text
+        val messagesWithoutRemoteOptimisticDuplicate = if (
+            optimisticText != null && remoteMessages.containsUserMessage(optimisticText.text)
+        ) {
+            filterNot { it.id == optimisticMessage.id }
+        } else {
+            this
+        }
+        val existingMessageIds = messagesWithoutRemoteOptimisticDuplicate.map { it.id }.toSet()
+        return messagesWithoutRemoteOptimisticDuplicate + remoteMessages.filterNot { it.id in existingMessageIds }
+    }
+
+    private fun List<AiSupportChatMessage>.containsUserMessage(text: String): Boolean =
+        any { message ->
+            message.role == AiSupportChatMessageRole.USER &&
+                (message.content as? AiSupportChatMessageContent.Text)?.text == text
+        }
+
+    private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage, error: Throwable) {
+        WooLog.e(WooLog.T.AI, "Sending AI support chat message failed", error)
+
         _viewState.update {
             it.copy(
                 input = message,
@@ -244,11 +303,26 @@ class AiSupportChatViewModel @Inject constructor(
         filter { message ->
             when (message.content) {
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.PostDiagnosticsGreeting,
                 is AiSupportChatMessageContent.DiagnosticsFailure,
                 is AiSupportChatMessageContent.DiagnosticsProgress -> true
                 AiSupportChatMessageContent.IssuePicker,
                 is AiSupportChatMessageContent.Text -> false
             }
+        }
+
+    private fun List<AiSupportChatMessage>.threadMessages(): List<AiSupportChatMessage> =
+        filter { it.content is AiSupportChatMessageContent.Text }
+
+    private fun List<AiSupportChatMessage>.appendPostDiagnosticsGreeting(): List<AiSupportChatMessage> =
+        if (any { it.id == POST_DIAGNOSTICS_GREETING_MESSAGE_ID }) {
+            this
+        } else {
+            this + AiSupportChatMessage(
+                id = POST_DIAGNOSTICS_GREETING_MESSAGE_ID,
+                role = AiSupportChatMessageRole.BOT,
+                content = AiSupportChatMessageContent.PostDiagnosticsGreeting
+            )
         }
 
     private fun diagnosticsMessages(
@@ -281,6 +355,8 @@ class AiSupportChatViewModel @Inject constructor(
 
     companion object {
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
+
+        private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
     }
 }
 
@@ -290,6 +366,7 @@ data class AiSupportChatViewState(
     val chatId: Long? = null,
     val sessionId: String? = null,
     val botSlug: String = AiSupportChatViewModel.DEFAULT_BOT_SLUG,
+    val hasProceededToChat: Boolean = false,
     val hasStartedChat: Boolean = false,
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
@@ -298,7 +375,16 @@ data class AiSupportChatViewState(
     val isSending: Boolean = false,
     val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false
-)
+) {
+    val canUseDiagnosticActions: Boolean
+        get() = !hasProceededToChat && !isSending
+
+    val showDiagnosticActions: Boolean
+        get() {
+            val result = diagnosticResult ?: return false
+            return canUseDiagnosticActions && (result.firstFailure != null || result.isComplete)
+        }
+}
 
 data class AiSupportChatMessage(
     val id: String,
@@ -314,6 +400,7 @@ enum class AiSupportChatMessageRole {
 sealed interface AiSupportChatMessageContent {
     data object Greeting : AiSupportChatMessageContent
     data object IssuePicker : AiSupportChatMessageContent
+    data object PostDiagnosticsGreeting : AiSupportChatMessageContent
     data class Text(val text: String) : AiSupportChatMessageContent
     data class DiagnosticsProgress(val result: DiagnosticResult) : AiSupportChatMessageContent
     data class DiagnosticsFailure(val result: DiagnosticResult) : AiSupportChatMessageContent
@@ -339,13 +426,17 @@ private fun greetingMessage(): AiSupportChatMessage =
 private fun List<ConnectivityCheckCardData>.toDiagnosticResult(): DiagnosticResult =
     DiagnosticResult(
         issueType = SupportIssueType.OTHER,
-        statuses = map { check ->
-            DiagnosticStatus(
-                test = check.type.toDiagnosticTest(),
-                status = check.status.toTestStatus()
-            )
-        }
+        statuses = filter { it.status.isComplete }
+            .map { check ->
+                DiagnosticStatus(
+                    test = check.type.toDiagnosticTest(),
+                    status = check.status.toTestStatus()
+                )
+            }
     )
+
+private val ConnectivityCheckStatus.isComplete: Boolean
+    get() = this is ConnectivityCheckStatus.Success || this is ConnectivityCheckStatus.Failure
 
 private fun ConnectivityCheckType.toDiagnosticTest(): DiagnosticTest =
     when (this) {

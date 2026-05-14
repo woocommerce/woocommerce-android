@@ -78,6 +78,33 @@ class AssistantCardUiStructuredParserTest {
     }
 
     @Test
+    fun `given customer uiStructured, when parsed, then customer card entry is returned`() {
+        val entries = parser.parse(
+            json.encodeToJsonElement(
+                ShowCardsUiStructured(
+                    cards = listOf(
+                        ShowCardPayload(
+                            family = "customer",
+                            id = "789",
+                            title = "Ada Lovelace",
+                            details = ShowCardDetails.Customer(email = "ada@example.com"),
+                        )
+                    )
+                )
+            )
+        )
+
+        assertThat(entries.single().key).isEqualTo(AssistantCardKey("customer", "789"))
+        assertThat(entries.single().card).isEqualTo(
+            AssistantCard.Customer(
+                remoteCustomerId = 789L,
+                name = "Ada Lovelace",
+                email = "ada@example.com",
+            )
+        )
+    }
+
+    @Test
     fun `given analytics stats uiStructured, when parsed, then stats card entry is returned`() {
         val entries = parser.parse(
             json.encodeToJsonElement(
@@ -89,8 +116,26 @@ class AssistantCardUiStructuredParserTest {
 
         assertThat(entries.single().key).isEqualTo(AssistantCardKey("analytics_stats", ANALYTICS_STATS_ID))
         val card = entries.single().card as AssistantCard.Stats
-        assertThat(card.totalSales).isEqualTo("170.35")
-        assertThat(card.netSalesChartPoints).containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 120.15))
+        assertThat(card.metric(AssistantCard.Stats.MetricType.TotalSales).value).isEqualTo("170.35")
+        assertThat(card.metric(AssistantCard.Stats.MetricType.NetSales).chartPoints)
+            .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 120.15))
+    }
+
+    @Test
+    fun `given orders analytics stats uiStructured, when parsed, then order metric stats card entry is returned`() {
+        val entries = parser.parse(
+            json.encodeToJsonElement(
+                ShowCardsUiStructured(
+                    cards = listOf(ordersAnalyticsStatsPayload())
+                )
+            )
+        )
+
+        assertThat(entries.single().key).isEqualTo(AssistantCardKey("analytics_stats", ANALYTICS_STATS_ID))
+        val card = entries.single().card as AssistantCard.Stats
+        assertThat(card.metric(AssistantCard.Stats.MetricType.TotalOrders).value).isEqualTo("42")
+        assertThat(card.metric(AssistantCard.Stats.MetricType.AverageOrderValue).chartPoints)
+            .containsExactly(AssistantCard.Stats.ChartPoint("2026-05-01", 80.10))
     }
 
     private fun analyticsStatsPayload() = ShowCardPayload(
@@ -117,8 +162,32 @@ class AssistantCardUiStructuredParserTest {
         ),
     )
 
+    private fun ordersAnalyticsStatsPayload() = ShowCardPayload(
+        family = "analytics_stats",
+        id = ANALYTICS_STATS_ID,
+        title = "Analytics",
+        details = ShowCardDetails.AnalyticsStats(
+            after = "2026-05-01",
+            before = "2026-05-07",
+            currency = "USD",
+            totals = buildJsonObject {
+                put("orders_count", "42")
+                put("avg_order_value", "85.30")
+            },
+            intervalSubtotals = listOf(
+                buildJsonObject {
+                    put("interval", "2026-05-01")
+                    putJsonObject("subtotals") {
+                        put("orders_count", "12")
+                        put("avg_order_value", "80.10")
+                    }
+                }
+            ),
+        ),
+    )
+
     private companion object {
         private const val ANALYTICS_STATS_ID =
-            "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
+            "analytics_orders:after:2026-05-01:before:2026-05-07:interval:day"
     }
 }

@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -19,13 +20,15 @@ import javax.inject.Inject
 internal class OrdersListToolHandler @Inject constructor(
     private val dataSource: AIOrdersDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
         name = "orders_list",
         description = "List orders, optionally filtered by status, date range, or customer. Use to find " +
-            "specific orders, list pending fulfilment, or pull the most recent N. For aggregate sales " +
-            "numbers prefer analytics_orders / analytics_revenue. For prose questions about a specific " +
+            "specific orders, list pending fulfilment, or pull the most recent N. For aggregate sales, revenue, " +
+            "order count, or average order value numbers prefer analytics_orders. For prose questions about " +
+            "a specific " +
             "order's payment method, customer email, etc., call orders_get with the ID.",
         inputSchema = inputSchema {
             enum(
@@ -92,9 +95,13 @@ internal class OrdersListToolHandler @Inject constructor(
                 )
                 ToolResult.Success(toolCallId = call.id, structured = json.encodeToJsonElement(response) as JsonObject)
             },
-            onFailure = {
-                // TODO Improve retryable detection logic to avoid unnecessary retries.
-                ToolResult.TransportError(toolCallId = call.id, retryable = true)
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
             },
         )
     }

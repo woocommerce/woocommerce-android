@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.ui.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,7 +33,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.aiassistant.R
-import com.woocommerce.android.aiassistant.ui.assistantCanvasColor
 import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
 
 @Composable
@@ -48,7 +49,7 @@ internal fun AssistantComposer(
     val showPendingHint = isTurnActive && !shouldShowStopControl
     Surface(
         modifier = modifier,
-        color = assistantCanvasColor(),
+        color = Color.Transparent,
     ) {
         Column(
             modifier = Modifier
@@ -63,7 +64,7 @@ internal fun AssistantComposer(
         ) {
             if (showPendingHint) {
                 Text(
-                    text = stringResource(R.string.assistant_chat_pending_confirmation_hint),
+                    text = stringResource(R.string.ai_assistant_chat_pending_confirmation_hint),
                     modifier = Modifier.padding(horizontal = 14.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodySmall,
@@ -74,8 +75,10 @@ internal fun AssistantComposer(
                     .fillMaxWidth()
                     .heightIn(min = COMPOSER_MIN_HEIGHT),
                 shape = RoundedCornerShape(COMPOSER_CORNER_RADIUS),
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surfaceContainer,
                 border = BorderStroke(1.dp, assistantOutlineColor()),
+                tonalElevation = 2.dp,
+                shadowElevation = if (isSystemInDarkTheme()) 0.dp else 2.dp,
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -133,7 +136,7 @@ private fun AssistantComposerInput(
             Box(contentAlignment = Alignment.CenterStart) {
                 if (inputText.isEmpty()) {
                     Text(
-                        text = stringResource(R.string.assistant_chat_placeholder),
+                        text = stringResource(R.string.ai_assistant_chat_placeholder),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -164,9 +167,9 @@ private fun AssistantComposerActionButton(
         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
     }
     val contentDescription = if (shouldShowStopControl) {
-        stringResource(R.string.assistant_chat_stop_content_description)
+        stringResource(R.string.ai_assistant_chat_stop_content_description)
     } else {
-        stringResource(R.string.assistant_chat_send_content_description)
+        stringResource(R.string.ai_assistant_chat_send_content_description)
     }
     val iconRes = if (shouldShowStopControl) {
         R.drawable.ic_assistant_composer_stop

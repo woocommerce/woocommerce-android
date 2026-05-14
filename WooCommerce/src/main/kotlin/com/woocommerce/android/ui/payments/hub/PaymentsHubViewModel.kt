@@ -45,8 +45,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingEr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -76,7 +74,6 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
-    private val featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -214,8 +211,7 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private val isPhoneEligibleAsCardReader: Boolean
-        get() = tapToPayAvailabilityStatus().isAvailable &&
-            featureFlagRepository.isEnabled(FeatureFlag.REMOTE_TAP_TO_PAY)
+        get() = tapToPayAvailabilityStatus().isAvailable
 
     private fun MutableList<ListItem>.addTapToPay() {
         if (tapToPayAvailabilityStatus().isAvailable) {
