@@ -3,15 +3,20 @@ package com.woocommerce.android.ui.aisupportchat
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
+import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,20 +60,25 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         launch {
-            diagnosticsService.runDiagnostics(issueType).collect { result ->
-                val hasFailure = result.firstFailure != null
-                _viewState.update {
-                    it.copy(
-                        input = "",
-                        selectedIssueType = issueType,
-                        selectedIssueLabel = issueLabel,
-                        diagnosticResult = result,
-                        isRunningDiagnostics = !result.isComplete && !hasFailure,
-                        showSendError = false,
-                        messages = diagnosticsMessages(result)
-                    )
+            diagnosticsService.runDiagnostics(issueType)
+                .catch { error ->
+                    if (error is CancellationException) throw error
+                    handleDiagnosticsFailure(issueType, issueLabel, error)
                 }
-            }
+                .collect { result ->
+                    val hasFailure = result.firstFailure != null
+                    _viewState.update {
+                        it.copy(
+                            input = "",
+                            selectedIssueType = issueType,
+                            selectedIssueLabel = issueLabel,
+                            diagnosticResult = result,
+                            isRunningDiagnostics = !result.isComplete && !hasFailure,
+                            showSendError = false,
+                            messages = diagnosticsMessages(result)
+                        )
+                    }
+                }
         }
     }
 
@@ -90,6 +100,31 @@ class AiSupportChatViewModel @Inject constructor(
                 isRunningDiagnostics = false,
                 showSendError = false,
                 messages = it.messages.appendPostDiagnosticsGreeting()
+            )
+        }
+    }
+
+    private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
+        val result = DiagnosticResult(
+            issueType = issueType,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.INTERNET_CONNECTION,
+                    status = TestStatus.Failed(
+                        technicalDetails = error.message ?: error::class.java.simpleName
+                    )
+                )
+            )
+        )
+        _viewState.update {
+            it.copy(
+                input = "",
+                selectedIssueType = issueType,
+                selectedIssueLabel = issueLabel,
+                diagnosticResult = result,
+                isRunningDiagnostics = false,
+                showSendError = false,
+                messages = diagnosticsMessages(result)
             )
         }
     }

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -269,6 +270,39 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
 
         verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ORDERS)
+    }
+
+    @Test
+    fun `given diagnostics flow throws, when issue selected, then failure is shown and loading stops`() = testBlocking {
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(
+            flow {
+                emit(
+                    DiagnosticResult(
+                        issueType = SupportIssueType.LOADING_ORDERS,
+                        statuses = listOf(
+                            DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Running)
+                        )
+                    )
+                )
+                error("Diagnostics unavailable")
+            }
+        )
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+        val state = viewModel.viewState.value
+        val diagnosticResult = requireNotNull(state.diagnosticResult)
+        assertThat(state.isRunningDiagnostics).isFalse()
+        assertThat(state.hasStartedChat).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(diagnosticResult.firstFailure?.status).isEqualTo(
+            TestStatus.Failed(technicalDetails = "Diagnostics unavailable")
+        )
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Greeting,
+            AiSupportChatMessageContent.DiagnosticsFailure(diagnosticResult)
+        )
+        verify(repository, never()).sendMessage(any(), any(), any(), any())
     }
 
     @Test
