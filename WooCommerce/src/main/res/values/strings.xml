@@ -213,14 +213,14 @@
     <string name="login_prologue_start_new_store">Starting a new store?</string>
 
     <!-- QR login prologue -->
-    <string name="login_qr_prologue_title">Scan to sign in</string>
+    <string name="login_qr_prologue_title">Scan to log in</string>
     <string name="login_qr_prologue_subtitle">On your computer, visit:</string>
     <string name="login_qr_prologue_url" translatable="false">woo.com/mobilelogin</string>
     <string name="login_qr_prologue_url_clipboard_label">WooCommerce login URL</string>
     <string name="login_qr_prologue_url_copied">Link copied to clipboard</string>
     <string name="login_qr_prologue_step_hint">Then scan the QR code that appears.</string>
     <string name="login_qr_prologue_scan_button">Scan QR code</string>
-    <string name="login_qr_prologue_fallback_link">Sign in with site address instead</string>
+    <string name="login_qr_prologue_fallback_link">No computer? Log in with site address</string>
     <string name="login_qr_prologue_camera_denied_title">Camera access needed</string>
     <string name="login_qr_prologue_camera_denied_body">Without camera access, you can still log in by entering your store address.</string>
     <string name="login_qr_prologue_camera_denied_allow_button">Allow camera access</string>
