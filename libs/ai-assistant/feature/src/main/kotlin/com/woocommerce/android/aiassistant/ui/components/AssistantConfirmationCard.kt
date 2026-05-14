@@ -65,6 +65,7 @@ internal fun AssistantConfirmationCardSegment(
         shape = shape,
         color = colors.container,
         border = BorderStroke(1.dp, colors.border),
+        shadowElevation = 1.dp,
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
@@ -268,7 +269,7 @@ private fun AssistantConfirmationCardState.confirmationCardColors(): AssistantCo
 
     return when (this) {
         AssistantConfirmationCardState.PENDING -> AssistantConfirmationCardColors(
-            container = colorScheme.surface,
+            container = colorScheme.surfaceContainer,
             border = colorScheme.outlineVariant,
             accent = if (isDarkTheme) Color(0xFFFFBF86) else Color(0xFFE68B28),
             title = colorScheme.onSurface,
@@ -276,7 +277,7 @@ private fun AssistantConfirmationCardState.confirmationCardColors(): AssistantCo
             value = colorScheme.onSurface,
         )
         AssistantConfirmationCardState.CONFIRMED -> AssistantConfirmationCardColors(
-            container = colorScheme.surface,
+            container = colorScheme.surfaceContainer,
             border = colorScheme.outlineVariant,
             accent = if (isDarkTheme) Color(0xFF1ED15A) else Color(0xFF008A20),
             title = colorScheme.onSurface,
@@ -284,7 +285,7 @@ private fun AssistantConfirmationCardState.confirmationCardColors(): AssistantCo
             value = colorScheme.onSurface,
         )
         AssistantConfirmationCardState.CANCELLED -> AssistantConfirmationCardColors(
-            container = colorScheme.surface,
+            container = colorScheme.surfaceContainer,
             border = colorScheme.outlineVariant,
             accent = if (isDarkTheme) Color(0xFFA7AAAD) else Color(0xFF787C82),
             title = colorScheme.onSurfaceVariant,
