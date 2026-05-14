@@ -419,13 +419,17 @@ private fun greetingMessage(): AiSupportChatMessage =
 private fun List<ConnectivityCheckCardData>.toDiagnosticResult(): DiagnosticResult =
     DiagnosticResult(
         issueType = SupportIssueType.OTHER,
-        statuses = map { check ->
-            DiagnosticStatus(
-                test = check.type.toDiagnosticTest(),
-                status = check.status.toTestStatus()
-            )
-        }
+        statuses = filter { it.status.isComplete }
+            .map { check ->
+                DiagnosticStatus(
+                    test = check.type.toDiagnosticTest(),
+                    status = check.status.toTestStatus()
+                )
+            }
     )
+
+private val ConnectivityCheckStatus.isComplete: Boolean
+    get() = this is ConnectivityCheckStatus.Success || this is ConnectivityCheckStatus.Failure
 
 private fun ConnectivityCheckType.toDiagnosticTest(): DiagnosticTest =
     when (this) {

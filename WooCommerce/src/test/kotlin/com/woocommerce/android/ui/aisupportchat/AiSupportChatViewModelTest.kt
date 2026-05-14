@@ -26,6 +26,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -230,7 +231,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             val checks = listOf(
                 ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success()),
-                ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, ConnectivityCheckStatus.Failure())
+                ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, ConnectivityCheckStatus.Failure()),
+                ConnectivityCheckCardData(ConnectivityCheckType.STORE, ConnectivityCheckStatus.NotStarted),
+                ConnectivityCheckCardData(ConnectivityCheckType.ORDERS, ConnectivityCheckStatus.InProgress)
             )
             whenever(resourceProvider.getString(R.string.ai_support_chat_connectivity_initial_message))
                 .thenReturn(CONNECTIVITY_MESSAGE)
@@ -245,10 +248,20 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isTrue()
             assertThat(state.sessionId).isEqualTo(SESSION_ID)
             assertThat(state.diagnosticResult?.statuses).hasSize(2)
+            assertThat(state.diagnosticResult?.statuses?.map { it.test }).containsExactly(
+                DiagnosticTest.INTERNET_CONNECTION,
+                DiagnosticTest.WPCOM_SERVERS
+            )
             assertThat(state.messages.map { it.content::class }).containsExactly(
                 AiSupportChatMessageContent.Greeting::class,
                 AiSupportChatMessageContent.DiagnosticsProgress::class,
                 AiSupportChatMessageContent.Text::class
+            )
+            val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
+            verify(contextProvider).buildInitialContext(diagnosticResultCaptor.capture())
+            assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
+                TestStatus.Passed,
+                TestStatus.Failed()
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, CONNECTIVITY_MESSAGE, CONTEXT, null, null)
         }
