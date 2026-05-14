@@ -3,7 +3,6 @@ package com.woocommerce.android.aiassistant.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +25,7 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.ui.assistantCanvasColor
 import com.woocommerce.android.aiassistant.ui.assistantOutlineColor
 
+@Suppress("UNUSED_PARAMETER")
 @Composable
 internal fun AssistantEarlyAccessNoticeCard(
     onFeedbackClick: () -> Unit,
@@ -42,35 +41,19 @@ internal fun AssistantEarlyAccessNoticeCard(
         tonalElevation = 2.dp,
         shadowElevation = if (isSystemInDarkTheme()) 0.dp else 2.dp,
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(EARLY_ACCESS_CARD_PADDING),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                AssistantEarlyAccessBadge()
-                Text(
-                    text = stringResource(R.string.ai_assistant_early_access_notice_body),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                AssistantEarlyAccessFeedbackButton(onClick = onFeedbackClick)
-            }
-            IconButton(
-                onClick = onDismissClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 4.dp, end = 4.dp),
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_assistant_notice_dismiss),
-                    contentDescription = stringResource(
-                        R.string.ai_assistant_early_access_notice_dismiss_content_description
-                    ),
-                    tint = earlyAccessMutedContentColor(),
-                )
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(EARLY_ACCESS_CARD_PADDING),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            AssistantEarlyAccessBadge()
+            Text(
+                text = stringResource(R.string.ai_assistant_early_access_notice_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            AssistantEarlyAccessFeedbackButton(onClick = onFeedbackClick)
         }
     }
 }
@@ -123,9 +106,6 @@ private fun AssistantEarlyAccessFeedbackButton(onClick: () -> Unit) {
 
 @Composable
 private fun earlyAccessButtonColor() = MaterialTheme.colorScheme.surface
-
-@Composable
-private fun earlyAccessMutedContentColor() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
 
 @Composable
 private fun earlyAccessBorderColor() = assistantOutlineColor()
