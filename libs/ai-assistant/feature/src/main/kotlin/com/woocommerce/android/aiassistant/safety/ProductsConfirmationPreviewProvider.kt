@@ -51,6 +51,7 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
             ),
             fields = fields,
             isBulk = true,
+            bulkEntries = ids.map { ConfirmationBulkEntry(it) },
         )
     }
 

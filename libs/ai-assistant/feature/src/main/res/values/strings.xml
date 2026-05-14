@@ -31,6 +31,7 @@
     <string name="ai_assistant_confirmation_eyebrow_pending">Pending change</string>
     <string name="ai_assistant_confirmation_eyebrow_confirmed">Confirmed</string>
     <string name="ai_assistant_confirmation_eyebrow_cancelled">Cancelled</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow">+%1$d more</string>
     <string name="ai_assistant_chat_title">Assistant</string>
     <string name="ai_assistant_chat_back_content_description">Back</string>
     <string name="ai_assistant_chat_restart_content_description">Start new conversation</string>

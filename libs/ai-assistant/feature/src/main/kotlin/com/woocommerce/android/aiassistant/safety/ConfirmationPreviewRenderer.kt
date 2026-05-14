@@ -19,6 +19,7 @@ internal class ConfirmationPreviewRenderer @Inject constructor(
                 )
             },
             isBulk = preview.isBulk,
+            bulkEntries = preview.bulkEntries,
         )
 
     @Suppress("SpreadOperator")
@@ -40,6 +41,7 @@ data class RenderedConfirmationPreview(
     val message: String,
     val fields: List<RenderedConfirmationDiffRow>,
     val isBulk: Boolean,
+    val bulkEntries: List<ConfirmationBulkEntry> = emptyList(),
 ) {
     constructor(message: String, fields: List<RenderedConfirmationPreviewField>) : this(
         message = message,

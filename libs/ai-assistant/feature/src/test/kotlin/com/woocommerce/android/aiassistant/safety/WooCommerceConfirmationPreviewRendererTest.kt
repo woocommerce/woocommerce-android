@@ -99,6 +99,10 @@ class WooCommerceConfirmationPreviewRendererTest {
                 )
             ),
             isBulk = true,
+            bulkEntries = listOf(
+                ConfirmationBulkEntry(7),
+                ConfirmationBulkEntry(8),
+            ),
         )
 
         val rendered = renderer.render(preview)
@@ -106,6 +110,10 @@ class WooCommerceConfirmationPreviewRendererTest {
         assertThat(rendered.isBulk).isTrue()
         assertThat(rendered.rows.single().beforeValue).isNull()
         assertThat(rendered.rows.single().afterValue).isEqualTo("draft")
+        assertThat(rendered.bulkEntries).containsExactly(
+            ConfirmationBulkEntry(7),
+            ConfirmationBulkEntry(8),
+        )
     }
 
     @Test
