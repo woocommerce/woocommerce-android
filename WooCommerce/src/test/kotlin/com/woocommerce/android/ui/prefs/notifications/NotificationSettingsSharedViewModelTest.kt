@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.prefs.notifications
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.push.PushNotificationRepository
+import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NewOrderNotificationPreference
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NotificationType
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -181,10 +182,10 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given fetched notification preferences, when view is loaded, then expose notification type states`() =
+    fun `given fetched notification preferences, when view is loaded, then expose notification states`() =
         testBlocking {
             val fetchedPreferences = WooPushNotificationPreferences(
-                storeOrder = StoreOrderPreferences(enabled = false),
+                storeOrder = StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)),
                 storeReview = StoreReviewPreferences(enabled = true),
                 storeStock = StoreStockPreferences(enabled = false)
             )
@@ -199,6 +200,11 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_ORDERS }.isEnabled).isFalse()
             assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_REVIEWS }.isEnabled).isTrue()
             assertThat(notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled).isFalse()
+
+            val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
+            assertThat(orderViewState.notificationsEnabled).isFalse()
+            assertThat(orderViewState.notificationPreference).isEqualTo(NewOrderNotificationPreference.HighValueOrders)
+            assertThat(orderViewState.thresholdAmount).isEqualTo(BigDecimal(50))
         }
 
     @Test
@@ -230,9 +236,62 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             viewModel.onNotificationTypeEnabledChanged(NotificationType.NEW_ORDERS, false)
             advanceUntilIdle()
 
+            val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
+            assertThat(orderViewState.notificationsEnabled).isFalse()
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeOrder)
                 .isEqualTo(StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)))
+        }
+
+    @Test
+    fun `when new order detail settings change, then save order preferences`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onNewOrderNotificationsEnabledChanged(false)
+            viewModel.onNewOrderNotificationPreferenceChanged(NewOrderNotificationPreference.HighValueOrders)
+            viewModel.onNewOrderThresholdAmountChanged(BigDecimal(50))
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeOrder)
+                .isEqualTo(StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)))
+        }
+
+    @Test
+    fun `given high value order preferences, when all orders is selected, then save preferences without threshold`() =
+        testBlocking {
+            val orderPreferences = WooPushNotificationPreferences(
+                storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
+            )
+            setup {
+                notificationPreferencesFlow.value = orderPreferences
+                mockSuccessfulFetch(orderPreferences)
+            }
+            advanceUntilIdle()
+
+            viewModel.onNewOrderNotificationPreferenceChanged(NewOrderNotificationPreference.AllOrders)
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeOrder)
+                .isEqualTo(StoreOrderPreferences(enabled = true, minAmount = null))
+        }
+
+    @Test
+    fun `when new order threshold amount is below minimum, then save minimum amount`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onNewOrderNotificationPreferenceChanged(NewOrderNotificationPreference.HighValueOrders)
+            viewModel.onNewOrderThresholdAmountChanged(BigDecimal.ZERO)
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeOrder)
+                .isEqualTo(StoreOrderPreferences(enabled = true, minAmount = BigDecimal.ONE))
         }
 
     @Test
