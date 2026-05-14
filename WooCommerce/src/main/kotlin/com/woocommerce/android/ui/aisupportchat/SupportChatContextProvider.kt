@@ -1,62 +1,51 @@
 package com.woocommerce.android.ui.aisupportchat
 
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
-import com.woocommerce.android.ui.aisupportchat.diagnostics.SuggestedFixAction
-import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
-import com.woocommerce.android.util.BuildConfigWrapper
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
 class SupportChatContextProvider @Inject constructor(
-    private val selectedSite: SelectedSite,
-    private val buildConfigWrapper: BuildConfigWrapper
+    private val selectedSite: SelectedSite
 ) {
-    fun buildInitialContext(
-        issueType: SupportIssueType? = null,
-        diagnosticResult: DiagnosticResult? = null
-    ): JsonObject {
+    fun buildInitialContext(diagnosticResult: DiagnosticResult? = null): JsonObject {
         val site = selectedSite.get()
         return JsonObject().apply {
-            addProperty("platform", "android")
-            addProperty("app_version", buildConfigWrapper.versionName)
-            addProperty("site_id", site.siteId)
-            addProperty("local_site_id", site.id)
+            addProperty("selectedSiteId", site.siteId)
             addProperty("site_url", site.url)
-            issueType?.let { addProperty("support_issue_type", it.name.lowercase()) }
-            diagnosticResult?.let { add("diagnostics", it.toJson()) }
+            diagnosticResult?.toTroubleshootingResults()?.let { troubleshootingResults ->
+                addProperty("troubleshootingResults", troubleshootingResults)
+            }
         }
     }
 
-    private fun DiagnosticResult.toJson(): JsonObject =
-        JsonObject().apply {
-            addProperty("issue_type", issueType.name.lowercase())
-            addProperty("is_complete", isComplete)
-            suggestedAction?.let { addProperty("suggested_action", it.toWireValue()) }
-            firstFailure?.let { add("first_failure", it.toJson()) }
-            add(
-                "statuses",
-                JsonArray().apply {
-                    statuses.forEach { add(it.toJson()) }
-                }
-            )
-        }
-
-    private fun DiagnosticStatus.toJson(): JsonObject =
-        JsonObject().apply {
-            addProperty("test", test.name.lowercase())
-            addProperty("status", status.toWireValue())
-            if (status is TestStatus.Failed) {
-                status.failureType?.let { addProperty("failure_type", it.name.lowercase()) }
-                status.technicalDetails?.let { addProperty("technical_details", it) }
-                addProperty("duration_ms", status.durationMs)
+    private fun DiagnosticResult.toTroubleshootingResults(): String? =
+        statuses
+            .filter { it.status.isComplete }
+            .takeIf { it.isNotEmpty() }
+            ?.mapIndexed { index, status ->
+                "## ${index + 1}. ${status.toTroubleshootingDescription()}"
             }
+            ?.joinToString(separator = "\n\n")
+
+    private fun DiagnosticStatus.toTroubleshootingDescription(): String {
+        val result = when (val currentStatus = status) {
+            TestStatus.Passed -> "Success"
+            is TestStatus.Failed -> currentStatus.failureType?.name ?: "Failed"
+            TestStatus.Pending,
+            TestStatus.Running -> status.toWireValue()
         }
+        val lines = mutableListOf(test.title, "Result: $result")
+        (status as? TestStatus.Failed)?.technicalDetails?.let { details ->
+            lines.add("Details: $details")
+        }
+        return lines.joinToString(separator = "\n")
+    }
 
     private fun TestStatus.toWireValue(): String =
         when (this) {
@@ -66,8 +55,12 @@ class SupportChatContextProvider @Inject constructor(
             is TestStatus.Failed -> "failed"
         }
 
-    private fun SuggestedFixAction.toWireValue(): String =
-        when (this) {
-            SuggestedFixAction.RetryDiagnostics -> "retry_diagnostics"
+    private val DiagnosticTest.title: String
+        get() = when (this) {
+            DiagnosticTest.INTERNET_CONNECTION -> "Internet Connection"
+            DiagnosticTest.WPCOM_SERVERS -> "Connecting to WordPress.com Servers"
+            DiagnosticTest.STORE_CONNECTION -> "Connecting to your site"
+            DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
+            DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
         }
 }
