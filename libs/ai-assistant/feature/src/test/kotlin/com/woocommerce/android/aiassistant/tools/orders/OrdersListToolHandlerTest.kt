@@ -89,6 +89,16 @@ class OrdersListToolHandlerTest {
         ToolCall(id = "call-1", name = "list_orders", arguments = arguments)
 
     @Test
+    fun `given descriptor, when inspected, then date filters are bare dates`() {
+        val schema = handler.descriptor.inputSchema.toString()
+
+        assertThat(schema).contains("YYYY-MM-DD lower bound on date_created")
+        assertThat(schema).contains("YYYY-MM-DD upper bound on date_created")
+        assertThat(schema).doesNotContain("ISO-8601 lower bound on date_created")
+        assertThat(schema).doesNotContain("ISO-8601 upper bound on date_created")
+    }
+
+    @Test
     fun `given orders are returned, when execute is called, then structured JSON contains count and ids`() =
         runTest {
             val order1 = makeOrder(id = 10L, status = "processing", total = "45.00")
@@ -183,6 +193,66 @@ class OrdersListToolHandlerTest {
 
             assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
             assertThat((result as ToolResult.ValidationError).reason).contains("Unsupported orders_list argument")
+            verify(dataSource, never()).fetchOrders(search = null)
+        }
+
+    @Test
+    fun `given bare date filters, when execute is called, then dates are padded to day boundaries`() =
+        runTest {
+            whenever(
+                dataSource.fetchOrders(
+                    search = null,
+                    after = "2026-05-14T00:00:00",
+                    before = "2026-05-14T23:59:59",
+                )
+            ).thenReturn(Result.success(AIOrdersDataSource.OrdersPage(orders = emptyList(), canLoadMore = false)))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "2026-05-14")
+                        put("before", "2026-05-14")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.Success::class.java)
+            verify(dataSource).fetchOrders(
+                search = null,
+                after = "2026-05-14T00:00:00",
+                before = "2026-05-14T23:59:59",
+            )
+        }
+
+    @Test
+    fun `given invalid date filter, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("after", "last week")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason).contains("after must be YYYY-MM-DD")
+            verify(dataSource, never()).fetchOrders(search = null)
+        }
+
+    @Test
+    fun `given invalid before date filter, when execute is called, then ValidationError is returned`() =
+        runTest {
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("before", "2026-02-31")
+                    }
+                )
+            )
+
+            assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+            assertThat((result as ToolResult.ValidationError).reason).contains("before must be YYYY-MM-DD")
             verify(dataSource, never()).fetchOrders(search = null)
         }
 
