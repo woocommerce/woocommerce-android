@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.dashboard.data
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -117,6 +118,24 @@ class DashboardRepositoryTest {
 
             // Then
             verify(dashboardDataStore, never()).updateDashboard(any())
+        }
+
+    @Test
+    fun `given ai assistant is stored and status is hidden, when observing widgets, then ai assistant is hidden`() =
+        runTest {
+            // Given
+            whenever(dashboardDataStore.widgets).thenReturn(flowOf(listOf(aiAssistantDataModel(isAdded = true))))
+            whenever(selectedSite.observe()).thenReturn(flowOf(null))
+            whenever(selectedSite.siteComponent).thenReturn(null)
+            val repository = createRepository()
+
+            // When
+            val widgets = repository.widgets.first()
+
+            // Then
+            assertThat(widgets.single().type).isEqualTo(DashboardWidget.Type.AI_ASSISTANT)
+            assertThat(widgets.single().status).isEqualTo(DashboardWidget.Status.Hidden)
+            assertThat(widgets.single().isVisible).isFalse()
         }
 
     private fun createRepository() = DashboardRepository(

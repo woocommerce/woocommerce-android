@@ -73,6 +73,30 @@ class DashboardWidgetEditorViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given ai assistant is hidden, when editor state is built, then ai assistant is not exposed`() =
+        testBlocking {
+            // GIVEN
+            val widgets = MutableSharedFlow<List<DashboardWidget>>(replay = 1)
+            setup(widgets)
+            widgets.emit(
+                listOf(
+                    dashboardWidget(
+                        type = DashboardWidget.Type.AI_ASSISTANT,
+                        isSelected = true,
+                        status = DashboardWidget.Status.Hidden
+                    ),
+                    dashboardWidget(DashboardWidget.Type.STATS, isSelected = true)
+                )
+            )
+
+            // WHEN
+            val state = viewModel.viewState.getOrAwaitValue()
+
+            // THEN
+            assertThat(state.orderedWidgetList.map { it.type }).doesNotContain(DashboardWidget.Type.AI_ASSISTANT)
+        }
+
     private fun setup(widgets: MutableSharedFlow<List<DashboardWidget>>) {
         whenever(dashboardRepository.widgets).thenReturn(widgets)
         viewModel = DashboardWidgetEditorViewModel(
