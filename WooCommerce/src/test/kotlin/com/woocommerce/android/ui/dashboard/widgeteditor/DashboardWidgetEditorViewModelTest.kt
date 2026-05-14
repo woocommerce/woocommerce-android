@@ -45,6 +45,34 @@ class DashboardWidgetEditorViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given ai assistant is first, when user reorders it below stats and saves, then new order is persisted`() =
+        testBlocking {
+            // GIVEN
+            val aiAssistant = dashboardWidget(DashboardWidget.Type.AI_ASSISTANT, isSelected = true)
+            val stats = dashboardWidget(DashboardWidget.Type.STATS, isSelected = true)
+            val orders = dashboardWidget(DashboardWidget.Type.ORDERS, isSelected = true)
+            val widgets = MutableSharedFlow<List<DashboardWidget>>(replay = 1)
+            setup(widgets)
+            widgets.emit(listOf(aiAssistant, stats, orders))
+            viewModel.viewState.getOrAwaitValue()
+
+            // WHEN
+            viewModel.onOrderChange(fromIndex = 0, toIndex = 1)
+            viewModel.onSaveClicked()
+
+            // THEN
+            verify(dashboardRepository).updateWidgets(
+                check {
+                    assertThat(it.map { widget -> widget.type }).containsExactly(
+                        DashboardWidget.Type.STATS,
+                        DashboardWidget.Type.AI_ASSISTANT,
+                        DashboardWidget.Type.ORDERS
+                    )
+                }
+            )
+        }
+
     private fun setup(widgets: MutableSharedFlow<List<DashboardWidget>>) {
         whenever(dashboardRepository.widgets).thenReturn(widgets)
         viewModel = DashboardWidgetEditorViewModel(

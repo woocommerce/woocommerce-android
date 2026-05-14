@@ -476,6 +476,34 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stored ai assistant is below stats, when dashboard state is built, then visible order follows storage`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                dashboardWidget(DashboardWidget.Type.STATS, isSelected = true),
+                dashboardWidget(DashboardWidget.Type.AI_ASSISTANT, isSelected = true),
+                dashboardWidget(DashboardWidget.Type.ORDERS, isSelected = true)
+            )
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val visibleConfigurableTypes = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+
+            // THEN
+            assertThat(visibleConfigurableTypes).containsExactly(
+                DashboardWidget.Type.STATS,
+                DashboardWidget.Type.AI_ASSISTANT,
+                DashboardWidget.Type.ORDERS
+            )
+        }
+
+    @Test
     fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {
         setup {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
