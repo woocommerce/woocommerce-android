@@ -8,6 +8,7 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CancellationException
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
 
 /**
@@ -29,7 +30,8 @@ class QrLoginAuthenticator @Inject constructor(
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val loginAnalyticsListener: LoginAnalyticsListener
 ) {
     suspend fun completeLogin(
         ticket: QrLoginPayload.Ticket,
@@ -62,6 +64,7 @@ class QrLoginAuthenticator @Inject constructor(
             throw t
         }
         selectedSite.set(site)
+        loginAnalyticsListener.trackAnalyticsSignIn(false)
         return site.id
     }
 
