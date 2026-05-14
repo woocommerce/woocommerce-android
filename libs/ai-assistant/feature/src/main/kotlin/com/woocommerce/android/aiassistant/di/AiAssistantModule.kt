@@ -18,6 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
+import kotlin.time.TimeSource
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,6 +42,7 @@ internal object AiAssistantModule {
         historyBudgeter: HistoryBudgeter,
         safetyOrchestrator: SafetyOrchestrator,
         @AiAssistantJson json: Json,
+        timeSource: TimeSource,
     ): AgenticLoop = AgenticLoopImpl(
         chatService,
         toolRegistry,
@@ -48,6 +50,7 @@ internal object AiAssistantModule {
         historyBudgeter,
         safetyOrchestrator,
         json,
+        timeSource,
     )
 
     @Provides
