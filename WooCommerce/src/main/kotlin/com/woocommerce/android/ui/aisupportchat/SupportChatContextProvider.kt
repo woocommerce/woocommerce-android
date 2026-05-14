@@ -21,7 +21,9 @@ class SupportChatContextProvider @Inject constructor(
             addProperty("platform", "android")
             addProperty("app_version", buildConfigWrapper.versionName)
             site?.let {
-                addProperty("selectedSiteId", it.siteId)
+                if (it.siteId > 0L) {
+                    addProperty("selectedSiteId", it.siteId)
+                }
                 addProperty("site_url", it.url)
             }
             diagnosticResult?.toTroubleshootingResults()?.let { troubleshootingResults ->

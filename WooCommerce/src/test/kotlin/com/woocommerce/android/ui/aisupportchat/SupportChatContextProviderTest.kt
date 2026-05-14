@@ -55,6 +55,23 @@ class SupportChatContextProviderTest {
     }
 
     @Test
+    fun `given selected site without remote id, when building context, then selected site id is omitted`() {
+        whenever(selectedSite.getIfExists()).thenReturn(
+            SiteModel().apply {
+                siteId = 0L
+                id = LOCAL_SITE_ID
+                url = SITE_URL
+            }
+        )
+        whenever(buildConfigWrapper.versionName).thenReturn(APP_VERSION)
+
+        val result = contextProvider.buildInitialContext()
+
+        assertThat(result.has("selectedSiteId")).isFalse
+        assertThat(result.get("site_url").asString).isEqualTo(SITE_URL)
+    }
+
+    @Test
     fun `given diagnostics, when context is built, then troubleshooting results are formatted as string`() {
         val diagnostics = DiagnosticResult(
             issueType = SupportIssueType.LOADING_ORDERS,
