@@ -32,70 +32,63 @@ internal object AssistantMarkdownParser {
     ) {
         var index = 0
         while (index < markdown.length) {
-            when {
-                parseLinks && markdown.startsWith(LINK_LABEL_START, index) -> {
-                    val parsed = appendLinkOrNull(
-                        markdown = markdown,
-                        startIndex = index,
-                        linkStyles = linkStyles,
-                        linkInteractionListener = linkInteractionListener,
-                    )
-                    if (parsed != null) {
-                        index = parsed
-                    } else {
-                        append(markdown[index])
-                        index += 1
-                    }
-                }
-                markdown.startsWith(BOLD_ITALIC_DELIMITER, index) -> {
-                    val parsed = appendStyledTextOrNull(
-                        markdown = markdown,
-                        startIndex = index,
-                        delimiter = BOLD_ITALIC_DELIMITER,
-                        style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic),
-                    )
-                    if (parsed != null) {
-                        index = parsed
-                    } else {
-                        append(markdown.substring(index))
-                        index = markdown.length
-                    }
-                }
-                markdown.startsWith(BOLD_DELIMITER, index) -> {
-                    val parsed = appendStyledTextOrNull(
-                        markdown = markdown,
-                        startIndex = index,
-                        delimiter = BOLD_DELIMITER,
-                        style = SpanStyle(fontWeight = FontWeight.Bold),
-                    )
-                    if (parsed != null) {
-                        index = parsed
-                    } else {
-                        append(markdown.substring(index))
-                        index = markdown.length
-                    }
-                }
-                markdown.startsWith(ITALIC_DELIMITER, index) -> {
-                    val parsed = appendStyledTextOrNull(
-                        markdown = markdown,
-                        startIndex = index,
-                        delimiter = ITALIC_DELIMITER,
-                        style = SpanStyle(fontStyle = FontStyle.Italic),
-                    )
-                    if (parsed != null) {
-                        index = parsed
-                    } else {
-                        append(markdown.substring(index))
-                        index = markdown.length
-                    }
-                }
-                else -> {
-                    append(markdown[index])
-                    index += 1
-                }
-            }
+            index = appendNextMarkdownToken(
+                markdown = markdown,
+                index = index,
+                linkStyles = linkStyles,
+                linkInteractionListener = linkInteractionListener,
+                parseLinks = parseLinks,
+            )
         }
     }
+
+    private fun AnnotatedString.Builder.appendNextMarkdownToken(
+        markdown: String,
+        index: Int,
+        linkStyles: TextLinkStyles?,
+        linkInteractionListener: LinkInteractionListener?,
+        parseLinks: Boolean,
+    ): Int = when {
+        parseLinks && markdown.startsWith(LINK_LABEL_START, index) -> {
+            appendLinkOrNull(
+                markdown = markdown,
+                startIndex = index,
+                linkStyles = linkStyles,
+                linkInteractionListener = linkInteractionListener,
+            ) ?: appendCharacter(markdown, index)
+        }
+        markdown.startsWith(BOLD_ITALIC_DELIMITER, index) -> appendStyledTextOrRemaining(
+            markdown = markdown,
+            startIndex = index,
+            delimiter = BOLD_ITALIC_DELIMITER,
+            style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic),
+        )
+        markdown.startsWith(BOLD_DELIMITER, index) -> appendStyledTextOrRemaining(
+            markdown = markdown,
+            startIndex = index,
+            delimiter = BOLD_DELIMITER,
+            style = SpanStyle(fontWeight = FontWeight.Bold),
+        )
+        markdown.startsWith(ITALIC_DELIMITER, index) -> appendStyledTextOrRemaining(
+            markdown = markdown,
+            startIndex = index,
+            delimiter = ITALIC_DELIMITER,
+            style = SpanStyle(fontStyle = FontStyle.Italic),
+        )
+        else -> appendCharacter(markdown, index)
+    }
+
+    private fun AnnotatedString.Builder.appendStyledTextOrRemaining(
+        markdown: String,
+        startIndex: Int,
+        delimiter: String,
+        style: SpanStyle,
+    ): Int = appendStyledTextOrNull(
+        markdown = markdown,
+        startIndex = startIndex,
+        delimiter = delimiter,
+        style = style,
+    ) ?: appendRemaining(markdown, startIndex)
 
     private fun AnnotatedString.Builder.appendStyledTextOrNull(
         markdown: String,
@@ -111,6 +104,16 @@ internal object AssistantMarkdownParser {
         append(markdown.substring(contentStart, endIndex))
         addStyle(style, start, length)
         return endIndex + delimiter.length
+    }
+
+    private fun AnnotatedString.Builder.appendCharacter(markdown: String, index: Int): Int {
+        append(markdown[index])
+        return index + 1
+    }
+
+    private fun AnnotatedString.Builder.appendRemaining(markdown: String, index: Int): Int {
+        append(markdown.substring(index))
+        return markdown.length
     }
 
     private fun AnnotatedString.Builder.appendLinkOrNull(
