@@ -92,7 +92,7 @@ fun AiSupportChatScreen(
         MessageList(
             messages = viewState.messages,
             isSending = viewState.isSending,
-            canUseDiagnosticActions = !viewState.hasProceededToChat && !viewState.isSending,
+            showDiagnosticActions = viewState.showDiagnosticActions,
             onIssueSelected = onIssueSelected,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -122,7 +122,7 @@ fun AiSupportChatScreen(
 private fun MessageList(
     messages: List<AiSupportChatMessage>,
     isSending: Boolean,
-    canUseDiagnosticActions: Boolean,
+    showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -149,7 +149,7 @@ private fun MessageList(
         items(messages, key = { it.id }) { message ->
             MessageBubble(
                 message = message,
-                canUseDiagnosticActions = canUseDiagnosticActions,
+                showDiagnosticActions = showDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -167,7 +167,7 @@ private fun MessageList(
 @Composable
 private fun MessageBubble(
     message: AiSupportChatMessage,
-    canUseDiagnosticActions: Boolean,
+    showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -197,7 +197,7 @@ private fun MessageBubble(
             MessageContent(
                 content = message.content,
                 textColor = textColor,
-                canUseDiagnosticActions = canUseDiagnosticActions,
+                showDiagnosticActions = showDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -210,7 +210,7 @@ private fun MessageBubble(
 private fun MessageContent(
     content: AiSupportChatMessageContent,
     textColor: Color,
-    canUseDiagnosticActions: Boolean,
+    showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
@@ -235,14 +235,14 @@ private fun MessageContent(
         is AiSupportChatMessageContent.DiagnosticsProgress -> DiagnosticsContent(
             result = content.result,
             textColor = textColor,
-            canUseDiagnosticActions = canUseDiagnosticActions,
+            showDiagnosticActions = showDiagnosticActions,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
         is AiSupportChatMessageContent.DiagnosticsFailure -> DiagnosticsContent(
             result = content.result,
             textColor = textColor,
-            canUseDiagnosticActions = canUseDiagnosticActions,
+            showDiagnosticActions = showDiagnosticActions,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
@@ -292,12 +292,11 @@ private fun IssuePickerContent(
 private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
-    canUseDiagnosticActions: Boolean,
+    showDiagnosticActions: Boolean,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
     val hasFailure = result.firstFailure != null
-    val showActions = canUseDiagnosticActions && (hasFailure || result.isComplete)
 
     Column(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
@@ -317,7 +316,7 @@ private fun DiagnosticsContent(
             DiagnosticStatusRow(status = status, textColor = textColor)
         }
 
-        if (showActions) {
+        if (showDiagnosticActions) {
             if (hasFailure) {
                 Text(
                     text = stringResource(R.string.ai_support_chat_diagnostics_failure),

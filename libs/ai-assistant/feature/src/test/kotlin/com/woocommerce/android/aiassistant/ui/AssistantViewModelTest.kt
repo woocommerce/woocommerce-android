@@ -28,7 +28,6 @@ import com.woocommerce.android.aiassistant.runtime.AssistantRuntimeEvent
 import com.woocommerce.android.aiassistant.runtime.AssistantTurnRequest
 import com.woocommerce.android.aiassistant.telemetry.AssistantIdGenerator
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
-import com.woocommerce.android.aiassistant.telemetry.FakeSystemClock
 import com.woocommerce.android.aiassistant.telemetry.RecordingAssistantTelemetryTracker
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
@@ -56,15 +55,18 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.TestTimeSource
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class AssistantViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var runtime: FakeAssistantRuntime
     private lateinit var selectedSite: SelectedSite
     private lateinit var assistantIdGenerator: AssistantIdGenerator
     private lateinit var assistantTelemetryTracker: RecordingAssistantTelemetryTracker
-    private lateinit var clock: FakeSystemClock
+    private lateinit var timeSource: TestTimeSource
     private lateinit var viewModel: AssistantViewModel
 
     @Before
@@ -76,12 +78,12 @@ class AssistantViewModelTest {
         }
         assistantIdGenerator = sequentialAssistantIdGenerator()
         assistantTelemetryTracker = RecordingAssistantTelemetryTracker()
-        clock = FakeSystemClock()
+        timeSource = TestTimeSource()
         viewModel = AssistantViewModel(
             runtime = runtime,
             selectedSite = selectedSite,
             assistantTelemetryTracker = assistantTelemetryTracker,
-            systemClock = clock,
+            assistantTelemetryTimeSource = timeSource,
             assistantIdGenerator = assistantIdGenerator,
         )
     }
@@ -253,7 +255,7 @@ class AssistantViewModelTest {
     fun `given successful loop completion, when runtime finishes, then turn_completed is emitted once with duration`() =
         runTest {
             viewModel.onSendMessage("Show orders")
-            clock.advance(750)
+            timeSource += 750.milliseconds
             runtime.emitTurnFinished(LoopOutcome.COMPLETED)
 
             val completed = assistantTelemetryTracker.events.filterIsInstance<AiAssistantTurnCompletedEvent>()
@@ -818,7 +820,7 @@ class AssistantViewModelTest {
                     ),
                 )
             )
-            assertThat(normalizedError.toMessageRes()).isEqualTo(R.string.assistant_chat_error_unknown)
+            assertThat(normalizedError.toMessageRes()).isEqualTo(R.string.ai_assistant_chat_error_unknown)
         }
 
     @Test
@@ -837,7 +839,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.MAX_ITERATIONS)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_max_iterations)
+            .isEqualTo(R.string.ai_assistant_chat_error_max_iterations)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.isTurnActive).isFalse()
@@ -1381,7 +1383,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CANCELLED)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_cancelled)
+            .isEqualTo(R.string.ai_assistant_chat_error_cancelled)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.canRetry).isFalse()
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
@@ -1687,7 +1689,7 @@ class AssistantViewModelTest {
         assertThat(viewModel.uiState.value.error).isEqualTo(AssistantUiError.CONFIRMATION_DEFERRED)
         assertThat(viewModel.uiState.value.shouldShowFallbackError).isTrue()
         assertThat(requireNotNull(viewModel.uiState.value.error).toMessageRes())
-            .isEqualTo(R.string.assistant_chat_error_confirmation_deferred)
+            .isEqualTo(R.string.ai_assistant_chat_error_confirmation_deferred)
         assertThat(viewModel.uiState.value.messages.last().error).isNull()
         assertThat(viewModel.uiState.value.activeConfirmationId).isNull()
     }

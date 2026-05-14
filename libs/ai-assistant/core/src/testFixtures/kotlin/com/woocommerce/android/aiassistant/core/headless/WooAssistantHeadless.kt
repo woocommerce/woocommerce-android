@@ -18,6 +18,7 @@ import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlin.time.TimeSource
 
 class WooAssistantHeadless(
     private val chatService: ChatService,
@@ -25,6 +26,7 @@ class WooAssistantHeadless(
     private val retryPolicy: RetryPolicy,
     private val historyBudgeter: HistoryBudgeter,
     private val json: Json,
+    private val timeSource: TimeSource,
     private val safetyOrchestrator: SafetyOrchestrator = ScriptedHeadlessSafetyOrchestrator(),
 ) {
     suspend fun runScenario(scenario: HeadlessScenario): HeadlessRunResult {
@@ -37,6 +39,7 @@ class WooAssistantHeadless(
                 historyBudgeter = historyBudgeter,
                 safetyOrchestrator = safetyOrchestrator,
                 json = json,
+                timeSource = timeSource,
             )
             val events = loop.runTurn(
                 conversationId = scenario.id,

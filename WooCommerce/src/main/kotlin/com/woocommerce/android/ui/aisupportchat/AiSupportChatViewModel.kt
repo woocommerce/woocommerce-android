@@ -15,11 +15,14 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -75,20 +78,25 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         launch {
-            diagnosticsService.runDiagnostics(issueType).collect { result ->
-                val hasFailure = result.firstFailure != null
-                _viewState.update {
-                    it.copy(
-                        input = "",
-                        selectedIssueType = issueType,
-                        selectedIssueLabel = issueLabel,
-                        diagnosticResult = result,
-                        isRunningDiagnostics = !result.isComplete && !hasFailure,
-                        showSendError = false,
-                        messages = diagnosticsMessages(result)
-                    )
+            diagnosticsService.runDiagnostics(issueType)
+                .catch { error ->
+                    if (error is CancellationException) throw error
+                    handleDiagnosticsFailure(issueType, issueLabel, error)
                 }
-            }
+                .collect { result ->
+                    val hasFailure = result.firstFailure != null
+                    _viewState.update {
+                        it.copy(
+                            input = "",
+                            selectedIssueType = issueType,
+                            selectedIssueLabel = issueLabel,
+                            diagnosticResult = result,
+                            isRunningDiagnostics = !result.isComplete && !hasFailure,
+                            showSendError = false,
+                            messages = diagnosticsMessages(result)
+                        )
+                    }
+                }
         }
     }
 
@@ -132,6 +140,31 @@ class AiSupportChatViewModel @Inject constructor(
         launch { sendMessage(initialMessage) }
     }
 
+    private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
+        val result = DiagnosticResult(
+            issueType = issueType,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.INTERNET_CONNECTION,
+                    status = TestStatus.Failed(
+                        technicalDetails = error.message ?: error::class.java.simpleName
+                    )
+                )
+            )
+        )
+        _viewState.update {
+            it.copy(
+                input = "",
+                selectedIssueType = issueType,
+                selectedIssueLabel = issueLabel,
+                diagnosticResult = result,
+                isRunningDiagnostics = false,
+                showSendError = false,
+                messages = diagnosticsMessages(result)
+            )
+        }
+    }
+
     private suspend fun sendMessage(message: String) {
         val state = _viewState.value
         if (message.isBlank() || state.isSending) return
@@ -170,8 +203,8 @@ class AiSupportChatViewModel @Inject constructor(
                 optimisticMessage = optimisticMessage,
                 wasInitialMessage = chatId == null
             )
-        }.onFailure {
-            handleSendFailure(message = message, optimisticMessage = optimisticMessage)
+        }.onFailure { error ->
+            handleSendFailure(message = message, optimisticMessage = optimisticMessage, error = error)
         }
     }
 
@@ -238,7 +271,9 @@ class AiSupportChatViewModel @Inject constructor(
                 (message.content as? AiSupportChatMessageContent.Text)?.text == text
         }
 
-    private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage) {
+    private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage, error: Throwable) {
+        WooLog.e(WooLog.T.AI, "Sending AI support chat message failed", error)
+
         _viewState.update {
             it.copy(
                 input = message,
@@ -333,7 +368,16 @@ data class AiSupportChatViewState(
     val isRunningDiagnostics: Boolean = false,
     val isSending: Boolean = false,
     val showSendError: Boolean = false
-)
+) {
+    val canUseDiagnosticActions: Boolean
+        get() = !hasProceededToChat && !isSending
+
+    val showDiagnosticActions: Boolean
+        get() {
+            val result = diagnosticResult ?: return false
+            return canUseDiagnosticActions && (result.firstFailure != null || result.isComplete)
+        }
+}
 
 data class AiSupportChatMessage(
     val id: String,

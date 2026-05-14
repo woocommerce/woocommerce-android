@@ -21,6 +21,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.time.TimeSource
 
 class WooAssistantHeadlessTest {
     private val json = Json {
@@ -220,6 +221,7 @@ class WooAssistantHeadlessTest {
         retryPolicy = ConservativeRetryPolicy,
         historyBudgeter = passThroughBudgeter(),
         json = json,
+        timeSource = TimeSource.Monotonic,
         safetyOrchestrator = safetyOrchestrator,
     )
 

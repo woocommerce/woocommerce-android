@@ -51,7 +51,7 @@ internal fun AssistantEarlyAccessNoticeCard(
             ) {
                 AssistantEarlyAccessBadge()
                 Text(
-                    text = stringResource(R.string.assistant_early_access_notice_body),
+                    text = stringResource(R.string.ai_assistant_early_access_notice_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -66,7 +66,7 @@ internal fun AssistantEarlyAccessNoticeCard(
                 Icon(
                     painter = painterResource(R.drawable.ic_assistant_notice_dismiss),
                     contentDescription = stringResource(
-                        R.string.assistant_early_access_notice_dismiss_content_description
+                        R.string.ai_assistant_early_access_notice_dismiss_content_description
                     ),
                     tint = earlyAccessMutedContentColor(),
                 )
@@ -83,7 +83,7 @@ private fun AssistantEarlyAccessBadge() {
         contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
         Text(
-            text = stringResource(R.string.assistant_early_access_notice_badge),
+            text = stringResource(R.string.ai_assistant_early_access_notice_badge),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
@@ -112,7 +112,7 @@ private fun AssistantEarlyAccessFeedbackButton(onClick: () -> Unit) {
                 tint = earlyAccessActionContentColor(),
             )
             Text(
-                text = stringResource(R.string.assistant_early_access_notice_feedback),
+                text = stringResource(R.string.ai_assistant_early_access_notice_feedback),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = earlyAccessActionContentColor(),

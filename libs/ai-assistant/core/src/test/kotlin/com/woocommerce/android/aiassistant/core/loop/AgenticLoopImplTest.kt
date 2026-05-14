@@ -37,8 +37,11 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.TestTimeSource
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class AgenticLoopImplTest {
     private val json = assistantJsonForTests()
     private val context = SessionContext(siteId = 1L, catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, emptyList()))
@@ -53,13 +56,22 @@ class AgenticLoopImplTest {
         registry: ToolRegistry = NoOpToolRegistry(),
         budgeter: HistoryBudgeter = passThroughBudgeter(),
         safetyOrchestrator: SafetyOrchestrator = SafetyOrchestratorImpl(),
+        timeSource: TestTimeSource = TestTimeSource(),
     ): AgenticLoopImpl {
         var callCount = 0
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest) =
                 turnResponses[minOf(callCount++, turnResponses.size - 1)]
         }
-        return AgenticLoopImpl(service, registry, ConservativeRetryPolicy, budgeter, safetyOrchestrator, json)
+        return AgenticLoopImpl(
+            service,
+            registry,
+            ConservativeRetryPolicy,
+            budgeter,
+            safetyOrchestrator,
+            json,
+            timeSource,
+        )
     }
 
     private fun stubRegistry(
@@ -271,6 +283,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
@@ -318,6 +331,30 @@ class AgenticLoopImplTest {
         assertThat(finished.toolName).isEqualTo("nonexistent_tool")
         assertThat(finished.decision).isEqualTo(ToolDecision.VALIDATION_FAILED)
         assertThat(finished.durationMs).isNull()
+    }
+
+    @Test
+    fun `given safe tool execution, when time advances, then tool duration uses monotonic elapsed time`() = runTest {
+        val timeSource = TestTimeSource()
+        val registry = object : ToolRegistry {
+            override fun descriptors() = listOf(safeEchoDescriptor())
+
+            override suspend fun execute(call: ToolCall): ToolResult {
+                timeSource += 25.milliseconds
+                return ToolResult.Success(call.id, buildJsonObject { put("ok", true) })
+            }
+        }
+        val loop = loopWith(
+            toolCallTurn(callId = "call_1", arguments = "{}"),
+            stopTurn(),
+            registry = registry,
+            timeSource = timeSource,
+        )
+
+        val events = loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
+
+        val finished = events.filterIsInstance<LoopEvent.ToolCallFinished>().single()
+        assertThat(finished.durationMs).isEqualTo(25L)
     }
 
     @Test
@@ -391,6 +428,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         loop.runTurn("conv", "go", history, context).toList()
@@ -419,6 +457,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
@@ -444,6 +483,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
@@ -470,6 +510,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
@@ -495,6 +536,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
@@ -519,6 +561,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
@@ -1052,6 +1095,7 @@ class AgenticLoopImplTest {
                 passThroughBudgeter(),
                 SafetyOrchestratorImpl(),
                 json,
+                TestTimeSource(),
             )
 
             loop.runTurn("conv", "go", history, contextWithTools(safeEchoDescriptor())).toList()
@@ -1112,6 +1156,7 @@ class AgenticLoopImplTest {
                 passThroughBudgeter(),
                 safetyOrchestrator,
                 json,
+                TestTimeSource(),
             )
             val events = mutableListOf<LoopEvent>()
 
@@ -1207,6 +1252,7 @@ class AgenticLoopImplTest {
                 passThroughBudgeter(),
                 safetyOrchestrator,
                 json,
+                TestTimeSource(),
             )
             val events = mutableListOf<LoopEvent>()
 
@@ -1275,6 +1321,7 @@ class AgenticLoopImplTest {
             twoMessageBudgeter,
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         loop.runTurn("conv", "hi", bigHistory, context).toList()
@@ -1305,6 +1352,7 @@ class AgenticLoopImplTest {
             droppingBudgeter,
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", bigHistory, context).toList()
@@ -1346,6 +1394,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()
@@ -1370,6 +1419,7 @@ class AgenticLoopImplTest {
             passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
+            TestTimeSource(),
         )
 
         val events = loop.runTurn("conv", "hi", history, context).toList()

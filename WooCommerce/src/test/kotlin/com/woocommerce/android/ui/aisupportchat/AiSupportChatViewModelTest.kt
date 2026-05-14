@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -57,6 +58,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
         assertThat(state.hasProceededToChat).isFalse()
         assertThat(state.hasStartedChat).isFalse()
+        assertThat(state.canUseDiagnosticActions).isTrue()
+        assertThat(state.showDiagnosticActions).isFalse()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
@@ -77,6 +80,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasProceededToChat).isFalse()
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isRunningDiagnostics).isFalse()
+            assertThat(state.canUseDiagnosticActions).isTrue()
+            assertThat(state.showDiagnosticActions).isTrue()
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
@@ -97,6 +102,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.hasProceededToChat).isTrue()
             assertThat(state.hasStartedChat).isFalse()
+            assertThat(state.canUseDiagnosticActions).isFalse()
+            assertThat(state.showDiagnosticActions).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
@@ -277,6 +284,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.LOADING_ORDERS)
             assertThat(state.diagnosticResult).isEqualTo(result)
+            assertThat(state.showDiagnosticActions).isTrue()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsFailure(result)
@@ -323,7 +331,42 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
         viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
 
+        assertThat(viewModel.viewState.value.showDiagnosticActions).isFalse()
         verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ORDERS)
+    }
+
+    @Test
+    fun `given diagnostics flow throws, when issue selected, then failure is shown and loading stops`() = testBlocking {
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(
+            flow {
+                emit(
+                    DiagnosticResult(
+                        issueType = SupportIssueType.LOADING_ORDERS,
+                        statuses = listOf(
+                            DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Running)
+                        )
+                    )
+                )
+                error("Diagnostics unavailable")
+            }
+        )
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+        val state = viewModel.viewState.value
+        val diagnosticResult = requireNotNull(state.diagnosticResult)
+        assertThat(state.isRunningDiagnostics).isFalse()
+        assertThat(state.hasStartedChat).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.showDiagnosticActions).isTrue()
+        assertThat(diagnosticResult.firstFailure?.status).isEqualTo(
+            TestStatus.Failed(technicalDetails = "Diagnostics unavailable")
+        )
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Greeting,
+            AiSupportChatMessageContent.DiagnosticsFailure(diagnosticResult)
+        )
+        verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
     }
 
     @Test

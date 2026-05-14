@@ -22,7 +22,6 @@ import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEventFactory
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryTracker
 import com.woocommerce.android.aiassistant.telemetry.CardTelemetryFamilyMapper
-import com.woocommerce.android.aiassistant.telemetry.SystemClock
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
@@ -40,6 +39,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 @HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
 @Suppress("LargeClass")
@@ -47,7 +48,7 @@ class AssistantViewModel @AssistedInject internal constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
     private val assistantTelemetryTracker: AssistantTelemetryTracker,
-    private val systemClock: SystemClock,
+    private val assistantTelemetryTimeSource: TimeSource,
     private val assistantIdGenerator: AssistantIdGenerator,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
@@ -213,7 +214,7 @@ class AssistantViewModel @AssistedInject internal constructor(
         activeTurn = ActiveTurn(
             context = telemetryContext,
             isRetry = isRetry,
-            startedAtMs = systemClock.nowMs(),
+            startedAt = assistantTelemetryTimeSource.markNow(),
         )
 
         _uiState.update { state ->
@@ -548,7 +549,7 @@ class AssistantViewModel @AssistedInject internal constructor(
                 context = turn.context,
                 outcome = outcome,
                 errorKind = errorKind,
-                durationMs = (systemClock.nowMs() - turn.startedAtMs).coerceAtLeast(0L),
+                durationMs = turn.startedAt.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L),
                 isRetry = turn.isRetry,
                 completionStack = AssistantConfig.COMPLETION_STACK,
                 promptVersion = AssistantConfig.PROMPT_VERSION,
@@ -730,7 +731,7 @@ class AssistantViewModel @AssistedInject internal constructor(
     private data class ActiveTurn(
         val context: AssistantTelemetryContext,
         val isRetry: Boolean,
-        val startedAtMs: Long,
+        val startedAt: TimeMark,
         var completedTracked: Boolean = false,
     )
 }
