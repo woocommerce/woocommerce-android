@@ -92,7 +92,7 @@ fun AiSupportChatScreen(
         MessageList(
             messages = viewState.messages,
             isSending = viewState.isSending,
-            canUseDiagnosticActions = !viewState.hasProceededToChat && !viewState.isSending,
+            canUseDiagnosticActions = viewState.canUseDiagnosticActions,
             onIssueSelected = onIssueSelected,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,

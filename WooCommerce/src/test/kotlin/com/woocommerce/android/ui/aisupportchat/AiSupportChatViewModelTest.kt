@@ -51,6 +51,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
         assertThat(state.hasProceededToChat).isFalse()
         assertThat(state.hasStartedChat).isFalse()
+        assertThat(state.canUseDiagnosticActions).isTrue()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
@@ -71,6 +72,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasProceededToChat).isFalse()
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isRunningDiagnostics).isFalse()
+            assertThat(state.canUseDiagnosticActions).isTrue()
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
@@ -91,6 +93,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.hasProceededToChat).isTrue()
             assertThat(state.hasStartedChat).isFalse()
+            assertThat(state.canUseDiagnosticActions).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
