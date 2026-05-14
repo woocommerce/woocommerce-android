@@ -57,6 +57,7 @@ internal class OrdersListToolHandler @Inject constructor(
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
         validateAllowedArguments(call.arguments, ORDERS_LIST_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
             return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")

@@ -52,9 +52,10 @@ class CustomersListToolHandlerTest {
         assertThat(descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.SAFE)
         assertThat(handler).isInstanceOf(AssistantToolHandler::class.java)
         assertThat(handler).isNotInstanceOf(StubToolHandler::class.java)
-        assertThat(descriptor.description).contains("include")
-        assertThat(descriptor.description).contains("known customer IDs")
-        assertThat(descriptor.description).contains("id", "first_name", "last_name", "email")
+        assertThat(descriptor.description).contains("optionally filtered by keyword")
+        assertThat(descriptor.description).contains("Use `include=[id]` to look up one customer by ID")
+        assertThat(descriptor.description).contains("After calling, pass results to `show_cards`")
+        assertThat(descriptor.description).contains("do not retry with")
         assertThat(properties.keys).containsExactlyInAnyOrder(
             "search",
             "email",
@@ -65,6 +66,12 @@ class CustomersListToolHandlerTest {
             "per_page",
         )
         assertThat(descriptor.inputSchema.getValue("additionalProperties").jsonPrimitive.content).isEqualTo("false")
+        assertThat(properties.getValue("search").jsonObject.getValue("description").jsonPrimitive.content)
+            .isEqualTo("Free-text search across name, email, username.")
+        assertThat(properties.getValue("email").jsonObject.getValue("description").jsonPrimitive.content)
+            .isEqualTo("Exact email lookup.")
+        assertThat(properties.getValue("include").jsonObject.getValue("description").jsonPrimitive.content)
+            .isEqualTo("Specific customer IDs to include.")
         assertThat(properties.getValue("orderby").jsonObject.getValue("enum").jsonArray.stringValues())
             .containsExactly("registered_date", "name", "id", "email")
         assertThat(properties.getValue("order").jsonObject.getValue("enum").jsonArray.stringValues())
@@ -138,8 +145,14 @@ class CustomersListToolHandlerTest {
         whenever(dataSource.fetchCustomers()).thenReturn(
             Result.success(
                 listOf(
-                    customer(id = 42, firstName = "Jane", lastName = "Doe", email = "jane@example.com"),
-                    customer(id = 73, firstName = "", lastName = "", email = ""),
+                    customer(
+                        id = 42,
+                        firstName = "Jane",
+                        lastName = "Doe",
+                        email = "jane@example.com",
+                        billingPhone = "",
+                    ),
+                    customer(id = 73, firstName = "", lastName = "", email = "", billingPhone = ""),
                 )
             )
         )
@@ -159,8 +172,8 @@ class CustomersListToolHandlerTest {
         assertThat(matches[0].jsonObject.getValue("first_name").jsonPrimitive.content).isEqualTo("Jane")
         assertThat(matches[0].jsonObject.getValue("last_name").jsonPrimitive.content).isEqualTo("Doe")
         assertThat(matches[0].jsonObject.getValue("email").jsonPrimitive.content).isEqualTo("jane@example.com")
-        assertThat(matches[1].jsonObject.keys).containsExactlyInAnyOrder("id", "billing", "shipping")
-        assertThat(result.structured.toString()).doesNotContain("analytics")
+        assertThat(matches[0].jsonObject.keys).containsExactlyInAnyOrder("id", "first_name", "last_name", "email")
+        assertThat(matches[1].jsonObject.keys).containsExactlyInAnyOrder("id")
     }
 
     @Test
@@ -176,6 +189,7 @@ class CustomersListToolHandlerTest {
                             email = "jane@example.com",
                             username = "jane",
                             dateCreated = "2026-05-01T10:00:00Z",
+                            billingPhone = "",
                         )
                     )
                 )
@@ -187,7 +201,14 @@ class CustomersListToolHandlerTest {
                 .getValue("matches").jsonArray.single().jsonObject
             assertThat(match.getValue("username").jsonPrimitive.content).isEqualTo("jane")
             assertThat(match.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
-            assertThat(match.keys).doesNotContain("orders_count", "total_spent")
+            assertThat(match.keys).containsExactlyInAnyOrder(
+                "id",
+                "first_name",
+                "last_name",
+                "email",
+                "username",
+                "date_created",
+            )
         }
 
     @Test
@@ -246,6 +267,34 @@ class CustomersListToolHandlerTest {
             toolCall(
                 arguments = buildJsonObject {
                     put("unexpected", "value")
+                }
+            )
+        )
+
+        // then
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        verify(dataSource, never()).fetchCustomers(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+        )
+    }
+
+    @Test
+    fun `given unsupported date args, when executed, then validation error is returned`() = runTest {
+        // given
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.success(emptyList()))
+
+        // when
+        val result = handler.execute(
+            toolCall(
+                arguments = buildJsonObject {
+                    put("after", "2026-05-01")
+                    put("before", "2026-05-07")
                 }
             )
         )
