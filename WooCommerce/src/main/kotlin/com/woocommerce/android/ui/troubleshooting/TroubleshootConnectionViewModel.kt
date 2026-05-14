@@ -64,10 +64,14 @@ class TroubleshootConnectionViewModel @Inject constructor(
     )
 
     val viewState = checksFlow.map { checks ->
+        val areChecksFinished = checks.isFinished()
+        val isAiSupportChatAvailable = isAiSupportChatAvailable()
+
         ViewState(
             checks = checks,
             shouldDisplaySummary = checks.all { it.status is Success },
-            shouldDisplayAiSupportChatButton = isAiSupportChatAvailable()
+            shouldDisplayAiSupportChatButton = areChecksFinished && isAiSupportChatAvailable,
+            shouldDisplayContactSupportButton = areChecksFinished && !isAiSupportChatAvailable
         )
     }.distinctUntilChanged().asLiveData()
 
@@ -213,7 +217,8 @@ class TroubleshootConnectionViewModel @Inject constructor(
     data class ViewState(
         val checks: List<ConnectivityCheckCardData>,
         val shouldDisplaySummary: Boolean,
-        val shouldDisplayAiSupportChatButton: Boolean
+        val shouldDisplayAiSupportChatButton: Boolean,
+        val shouldDisplayContactSupportButton: Boolean
     )
 
     companion object {

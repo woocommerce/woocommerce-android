@@ -47,14 +47,12 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Succes
 
 @Composable
 fun TroubleshootConnectionScreen(viewModel: TroubleshootConnectionViewModel) {
-    val isCheckFinished by viewModel.isCheckFinished.observeAsState()
     val viewState by viewModel.viewState.observeAsState()
     val technicalDetails by viewModel.technicalDetailsToShow.observeAsState()
 
     TroubleshootConnectionScreen(
-        shouldEnableContactSupportButton = isCheckFinished ?: false,
+        shouldDisplayContactSupportButton = viewState?.shouldDisplayContactSupportButton ?: false,
         shouldDisplayAiSupportChatButton = viewState?.shouldDisplayAiSupportChatButton ?: false,
-        shouldEnableAiSupportChatButton = isCheckFinished ?: false,
         shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
         checks = viewState?.checks ?: emptyList(),
         onAiSupportChatClicked = viewModel::onAiSupportChatClicked,
@@ -75,9 +73,8 @@ fun TroubleshootConnectionScreen(viewModel: TroubleshootConnectionViewModel) {
 
 @Composable
 fun TroubleshootConnectionScreen(
-    shouldEnableContactSupportButton: Boolean,
+    shouldDisplayContactSupportButton: Boolean,
     shouldDisplayAiSupportChatButton: Boolean,
-    shouldEnableAiSupportChatButton: Boolean,
     shouldDisplaySummarySection: Boolean,
     checks: List<ConnectivityCheckCardData>,
     onAiSupportChatClicked: () -> Unit,
@@ -132,7 +129,6 @@ fun TroubleshootConnectionScreen(
         Spacer(modifier = modifier.weight(1f))
         if (shouldDisplayAiSupportChatButton) {
             WCOutlinedButton(
-                enabled = shouldEnableAiSupportChatButton,
                 onClick = onAiSupportChatClicked,
                 modifier = modifier
                     .padding(
@@ -145,14 +141,15 @@ fun TroubleshootConnectionScreen(
                 Text(stringResource(id = R.string.ai_support_chat_connectivity_action))
             }
         }
-        WCOutlinedButton(
-            enabled = shouldEnableContactSupportButton,
-            onClick = { onContactSupportClicked() },
-            modifier = modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .fillMaxWidth()
-        ) {
-            Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
+        if (shouldDisplayContactSupportButton) {
+            WCOutlinedButton(
+                onClick = { onContactSupportClicked() },
+                modifier = modifier
+                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
+            }
         }
     }
 }
@@ -363,9 +360,8 @@ fun ResultIcon(
 fun TroubleshootConnectionScreenPreview() {
     WooThemeWithBackground {
         TroubleshootConnectionScreen(
-            shouldEnableContactSupportButton = true,
+            shouldDisplayContactSupportButton = false,
             shouldDisplayAiSupportChatButton = true,
-            shouldEnableAiSupportChatButton = true,
             shouldDisplaySummarySection = true,
             checks = listOf(
                 ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, NotStarted),
