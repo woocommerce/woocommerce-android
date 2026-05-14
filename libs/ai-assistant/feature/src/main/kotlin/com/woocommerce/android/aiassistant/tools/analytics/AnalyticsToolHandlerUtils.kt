@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.tools.analytics
 
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.RestDateBounds
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
@@ -9,20 +10,14 @@ import kotlinx.serialization.json.putJsonArray
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 
-internal fun parseAnalyticsDate(value: String): LocalDate? = try {
-    LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE)
-} catch (_: DateTimeParseException) {
-    null
-}
+internal fun parseAnalyticsDate(value: String): LocalDate? = RestDateBounds.parseDate(value)
 
-internal fun analyticsDateAfterBound(value: String) = "${value}T00:00:00"
+internal fun analyticsDateAfterBound(value: String) = requireNotNull(RestDateBounds.lowerBound(value))
 
-internal fun analyticsDateBeforeBound(value: String) = "${value}T23:59:59"
+internal fun analyticsDateBeforeBound(value: String) = requireNotNull(RestDateBounds.upperBound(value))
 
 internal fun validateAnalyticsDateRange(
     after: LocalDate,
@@ -78,8 +73,7 @@ internal fun previousPeriodFor(after: LocalDate, before: LocalDate): Pair<String
     val inclusiveDays = ChronoUnit.DAYS.between(after, before) + 1
     val previousBefore = after.minusDays(1)
     val previousAfter = previousBefore.minusDays(inclusiveDays - 1)
-    return previousAfter.format(DateTimeFormatter.ISO_LOCAL_DATE) to
-        previousBefore.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    return previousAfter.toString() to previousBefore.toString()
 }
 
 private fun intervalSubtotal(interval: JsonObject): JsonObject? {
