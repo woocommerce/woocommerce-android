@@ -326,6 +326,22 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given checks are not finished, when AI support chat clicked, then no event is emitted`() =
+        testBlocking {
+            // GIVEN
+            stubAiSupportChatAvailable()
+            createViewModel()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever { events.add(it) }
+
+            // WHEN
+            sut.onAiSupportChatClicked()
+
+            // THEN
+            assertThat(events).isEmpty()
+        }
+
+    @Test
     fun `given app password site, when all checks succeed, then isCheckFinished is true`() = testBlocking {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
