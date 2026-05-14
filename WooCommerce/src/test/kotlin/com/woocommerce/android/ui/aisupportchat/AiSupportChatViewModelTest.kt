@@ -96,7 +96,15 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, MESSAGE, CONTEXT, null))
                 .thenReturn(Result.success(createResponse()))
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID))
-                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.BOT, content = FOLLOW_UP_BOT_RESPONSE)
+                            )
+                        )
+                    )
+                )
 
             viewModel.onInputChanged(MESSAGE)
             viewModel.onSendClicked()
@@ -107,6 +115,11 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.chatId).isEqualTo(CHAT_ID)
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isFalse()
+            assertThat(state.messages).containsExactly(
+                AiSupportChatMessage("local-1", AiSupportChatMessageRole.USER, MESSAGE),
+                AiSupportChatMessage("local-2", AiSupportChatMessageRole.USER, FOLLOW_UP_MESSAGE),
+                AiSupportChatMessage("bot-3", AiSupportChatMessageRole.BOT, FOLLOW_UP_BOT_RESPONSE)
+            )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID)
             verify(repository).markChatAsUpdated(CHAT_ID)
         }
@@ -164,6 +177,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val MESSAGE = "I need help with orders"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val BOT_RESPONSE = "Let's troubleshoot orders."
+        const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
 
         val CONTEXT = JsonObject().apply {
             addProperty("site_id", 20L)

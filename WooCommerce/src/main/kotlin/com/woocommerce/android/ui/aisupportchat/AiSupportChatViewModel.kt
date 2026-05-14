@@ -60,6 +60,7 @@ class AiSupportChatViewModel @Inject constructor(
                 handleSendSuccess(
                     response = response,
                     sentMessage = message,
+                    optimisticMessage = optimisticMessage,
                     wasInitialMessage = chatId == null
                 )
             }.onFailure {
@@ -71,12 +72,16 @@ class AiSupportChatViewModel @Inject constructor(
     private suspend fun handleSendSuccess(
         response: SupportChatResponse,
         sentMessage: String,
+        optimisticMessage: AiSupportChatMessage,
         wasInitialMessage: Boolean
     ) {
         _viewState.update {
             it.copy(
                 chatId = response.chatId,
-                messages = response.messages.toUiMessages().ifEmpty { it.messages },
+                messages = it.messages.mergeWithRemoteMessages(
+                    remoteMessages = response.messages.toUiMessages(),
+                    optimisticMessage = optimisticMessage
+                ),
                 isSending = false,
                 showSendError = false
             )
@@ -94,6 +99,24 @@ class AiSupportChatViewModel @Inject constructor(
             }
         }
     }
+
+    private fun List<AiSupportChatMessage>.mergeWithRemoteMessages(
+        remoteMessages: List<AiSupportChatMessage>,
+        optimisticMessage: AiSupportChatMessage
+    ): List<AiSupportChatMessage> {
+        if (remoteMessages.isEmpty()) return this
+
+        val messagesWithoutRemoteOptimisticDuplicate = if (remoteMessages.containsUserMessage(optimisticMessage.content)) {
+            filterNot { it.id == optimisticMessage.id }
+        } else {
+            this
+        }
+        val existingMessageIds = messagesWithoutRemoteOptimisticDuplicate.map { it.id }.toSet()
+        return messagesWithoutRemoteOptimisticDuplicate + remoteMessages.filterNot { it.id in existingMessageIds }
+    }
+
+    private fun List<AiSupportChatMessage>.containsUserMessage(content: String): Boolean =
+        any { it.role == AiSupportChatMessageRole.USER && it.content == content }
 
     private fun handleSendFailure(message: String, optimisticMessage: AiSupportChatMessage) {
         _viewState.update {
