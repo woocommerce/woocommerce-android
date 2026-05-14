@@ -42,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -64,15 +63,16 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import java.math.BigDecimal
 
 private fun <S> AnimatedContentTransitionScope<S>.refundFadeTransition(): ContentTransform =
@@ -228,7 +228,7 @@ private fun RefundScreenHeader(
     closeButtonEnabled: Boolean = true,
 ) {
     val closeContentDescription = stringResource(R.string.close)
-    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -250,10 +250,10 @@ private fun RefundScreenHeader(
 
         WooPosText(
             text = title,
-            style = if (isPhoneLayout) WooPosTypography.BodyLarge else WooPosTypography.Heading,
+            style = if (isPhone) WooPosTypography.BodyLarge else WooPosTypography.Heading,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            maxLines = if (isPhoneLayout) 2 else 1,
+            maxLines = if (isPhone) 2 else 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -718,7 +718,7 @@ private fun ItemsHeaderRow(
                 color = WooPosTheme.colors.onSurfaceVariantLowest
             )
         }
-        if (LocalContext.current.isWooPosPhoneLayout()) {
+        if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
             Column {
                 selectAllLabel()
                 selectedCountLabel()
