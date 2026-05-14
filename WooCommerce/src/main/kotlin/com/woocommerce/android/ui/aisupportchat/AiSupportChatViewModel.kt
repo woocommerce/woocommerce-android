@@ -106,7 +106,9 @@ class AiSupportChatViewModel @Inject constructor(
     ): List<AiSupportChatMessage> {
         if (remoteMessages.isEmpty()) return this
 
-        val messagesWithoutRemoteOptimisticDuplicate = if (remoteMessages.containsUserMessage(optimisticMessage.content)) {
+        val messagesWithoutRemoteOptimisticDuplicate = if (
+            remoteMessages.containsUserMessage(optimisticMessage.content)
+        ) {
             filterNot { it.id == optimisticMessage.id }
         } else {
             this

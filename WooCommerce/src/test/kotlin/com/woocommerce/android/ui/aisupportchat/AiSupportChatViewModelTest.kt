@@ -100,7 +100,11 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     Result.success(
                         createResponse(
                             messages = listOf(
-                                createMessage(messageId = 3L, role = SupportChatRole.BOT, content = FOLLOW_UP_BOT_RESPONSE)
+                                createMessage(
+                                    messageId = 3L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
                             )
                         )
                     )
