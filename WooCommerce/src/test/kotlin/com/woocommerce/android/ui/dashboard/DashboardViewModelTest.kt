@@ -504,6 +504,32 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stored ai assistant is unselected, when dashboard state is built, then ai assistant is not visible`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            dashboardWidget(DashboardWidget.Type.AI_ASSISTANT, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.STATS, isSelected = true)
+                        )
+                    )
+                )
+            }
+
+            // WHEN
+            val visibleTypes = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+
+            // THEN
+            assertThat(visibleTypes).doesNotContain(DashboardWidget.Type.AI_ASSISTANT)
+        }
+
+    @Test
     fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {
         setup {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))

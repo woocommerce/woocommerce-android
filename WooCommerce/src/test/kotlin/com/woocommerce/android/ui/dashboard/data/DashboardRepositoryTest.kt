@@ -8,8 +8,10 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertNotNull
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -74,6 +76,49 @@ class DashboardRepositoryTest {
             )
         }
 
+    @Test
+    fun `given ai assistant is already stored unselected, when inserting default ai widget, then repository does not update widgets`() =
+        runTest {
+            // Given
+            whenever(dashboardDataStore.widgets).thenReturn(
+                flowOf(
+                    listOf(
+                        aiAssistantDataModel(isAdded = false),
+                        statsDataModel(isAdded = true)
+                    )
+                )
+            )
+            val repository = createRepository()
+
+            // When
+            repository.insertAIAssistantWidgetAtTopIfMissing()
+
+            // Then
+            verify(dashboardDataStore, never()).updateDashboard(any())
+        }
+
+    @Test
+    fun `given ai assistant is already stored below stats, when inserting default ai widget, then repository does not update widgets`() =
+        runTest {
+            // Given
+            whenever(dashboardDataStore.widgets).thenReturn(
+                flowOf(
+                    listOf(
+                        statsDataModel(isAdded = true),
+                        aiAssistantDataModel(isAdded = true),
+                        ordersDataModel(isAdded = true)
+                    )
+                )
+            )
+            val repository = createRepository()
+
+            // When
+            repository.insertAIAssistantWidgetAtTopIfMissing()
+
+            // Then
+            verify(dashboardDataStore, never()).updateDashboard(any())
+        }
+
     private fun createRepository() = DashboardRepository(
         selectedSite,
         dashboardDataStore,
@@ -92,6 +137,9 @@ class DashboardRepositoryTest {
             .setType(type.name)
             .setIsAdded(isAdded)
             .build()
+
+    private fun aiAssistantDataModel(isAdded: Boolean = true) =
+        widgetDataModel(DashboardWidget.Type.AI_ASSISTANT, isAdded)
 
     private fun statsDataModel(isAdded: Boolean = true) = widgetDataModel(DashboardWidget.Type.STATS, isAdded)
 
