@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import java.math.BigDecimal
 
 private fun <S> AnimatedContentTransitionScope<S>.refundFadeTransition(): ContentTransform =
@@ -226,6 +228,7 @@ private fun RefundScreenHeader(
     closeButtonEnabled: Boolean = true,
 ) {
     val closeContentDescription = stringResource(R.string.close)
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -247,10 +250,10 @@ private fun RefundScreenHeader(
 
         WooPosText(
             text = title,
-            style = WooPosTypography.BodyLarge,
+            style = if (isPhoneLayout) WooPosTypography.BodyLarge else WooPosTypography.Heading,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            maxLines = 2,
+            maxLines = if (isPhoneLayout) 2 else 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -699,19 +702,33 @@ private fun ItemsHeaderRow(
             )
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-        Column {
+        val selectAllLabel = @Composable {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_select_all_items),
                 style = WooPosTypography.Caption,
                 fontWeight = FontWeight.Bold,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
+        }
+        val selectedCountLabel = @Composable {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_items_selected_count, selectedCount),
                 style = WooPosTypography.Caption,
                 fontWeight = FontWeight.Normal,
                 color = WooPosTheme.colors.onSurfaceVariantLowest
             )
+        }
+        if (LocalContext.current.isWooPosPhoneLayout()) {
+            Column {
+                selectAllLabel()
+                selectedCountLabel()
+            }
+        } else {
+            Row {
+                selectAllLabel()
+                Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                selectedCountLabel()
+            }
         }
     }
 }
