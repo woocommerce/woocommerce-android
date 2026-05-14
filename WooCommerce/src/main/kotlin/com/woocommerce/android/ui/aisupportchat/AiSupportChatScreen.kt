@@ -146,6 +146,11 @@ private fun MessageList(
 @Composable
 private fun MessageBubble(message: AiSupportChatMessage, modifier: Modifier = Modifier) {
     val isUser = message.role == AiSupportChatMessageRole.USER
+    val textColor = if (isUser) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
@@ -159,27 +164,15 @@ private fun MessageBubble(message: AiSupportChatMessage, modifier: Modifier = Mo
             },
             modifier = Modifier.fillMaxWidth(0.88f)
         ) {
-            if (isUser) {
-                Text(
-                    text = message.content,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.major_100),
-                        vertical = dimensionResource(R.dimen.minor_100)
-                    )
+            Text(
+                text = message.content,
+                color = textColor,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(R.dimen.major_100),
+                    vertical = dimensionResource(R.dimen.minor_100)
                 )
-            } else {
-                Text(
-                    text = message.content,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.major_100),
-                        vertical = dimensionResource(R.dimen.minor_100)
-                    )
-                )
-            }
+            )
         }
     }
 }
