@@ -53,7 +53,6 @@ class AiAssistantHostFragment : BaseFragment() {
             }
 
             AssistantRoute(
-                conversationId = ASSISTANT_CONVERSATION_ID,
                 onBack = { findNavController().navigateUp() },
                 showEarlyAccessNotice = showEarlyAccessNotice,
                 onDismissEarlyAccessNotice = {
@@ -87,10 +86,6 @@ class AiAssistantHostFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    companion object {
-        private const val ASSISTANT_CONVERSATION_ID = "dashboard-assistant"
     }
 }
 

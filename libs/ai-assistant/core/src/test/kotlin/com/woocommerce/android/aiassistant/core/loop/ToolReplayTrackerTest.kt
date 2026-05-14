@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -21,6 +22,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.time.TimeSource
 
 class ToolReplayTrackerTest {
     private val json = assistantJsonForTests()
@@ -108,7 +110,9 @@ class ToolReplayTrackerTest {
             toolRegistry = registry,
             retryPolicy = ConservativeRetryPolicy,
             historyBudgeter = passThroughBudgeter(),
+            safetyOrchestrator = SafetyOrchestratorImpl(),
             json = json,
+            timeSource = TimeSource.Monotonic,
         )
     }
 

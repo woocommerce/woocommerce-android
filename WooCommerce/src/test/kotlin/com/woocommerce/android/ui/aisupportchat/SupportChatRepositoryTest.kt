@@ -249,7 +249,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     )
 
     private companion object {
-        const val BOT_SLUG = "woo-workflow-support_mobile_inapp"
+        const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 1234L
         const val LOCAL_SITE_ID = 10
         const val REMOTE_SITE_ID = 20L

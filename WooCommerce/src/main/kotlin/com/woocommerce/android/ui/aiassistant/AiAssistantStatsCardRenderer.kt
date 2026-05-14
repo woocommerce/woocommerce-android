@@ -25,7 +25,7 @@ internal class AiAssistantStatsCardRenderer(
         AiAssistantStatsCard(
             state = card.toStatsCardState(
                 currencyFormatter = currencyFormatter,
-                unavailableValue = context.getString(R.string.assistant_stats_card_metric_unavailable),
+                unavailableValue = context.getString(R.string.ai_assistant_stats_card_metric_unavailable),
             ),
             onClick = card.toStatsCardClickHandler(onAction),
             modifier = modifier,

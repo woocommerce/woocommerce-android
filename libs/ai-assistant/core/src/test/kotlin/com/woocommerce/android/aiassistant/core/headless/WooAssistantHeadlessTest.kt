@@ -21,6 +21,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.time.TimeSource
 
 class WooAssistantHeadlessTest {
     private val json = Json {
@@ -147,7 +148,18 @@ class WooAssistantHeadlessTest {
             assertThat(turn.outcome).isEqualTo(LoopOutcome.STOPPED)
             assertThat(turn.confirmationResults.single().decision).isEqualTo("CANCELLED")
             assertThat(turn.errors).isEmpty()
-            assertThat(turn.toolCalls).isEmpty()
+            assertThat(turn.toolCalls).containsExactly(
+                HeadlessToolCallTrace(
+                    id = "call_1",
+                    name = "orders_update",
+                    arguments = buildJsonObject {
+                        put("id", 42)
+                        put("status", "completed")
+                    },
+                    safetyLevel = ToolSafetyLevel.UNSAFE,
+                    resultKind = HeadlessToolResultKind.REJECTED_BY_SAFETY,
+                )
+            )
             assertThat(registry.calls).isEmpty()
         }
 
@@ -209,6 +221,7 @@ class WooAssistantHeadlessTest {
         retryPolicy = ConservativeRetryPolicy,
         historyBudgeter = passThroughBudgeter(),
         json = json,
+        timeSource = TimeSource.Monotonic,
         safetyOrchestrator = safetyOrchestrator,
     )
 
