@@ -100,6 +100,10 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         saveNotificationPreferencesTrigger.tryEmit(NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS)
     }
 
+    fun savePendingNotificationPreferences() {
+        saveNotificationPreferencesTrigger.tryEmit(0L)
+    }
+
     fun onNotificationTypeClicked(type: NotificationType) {
         when (type) {
             NotificationType.NEW_ORDERS -> triggerEvent(OpenNewOrderNotificationSettings)

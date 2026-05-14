@@ -243,6 +243,20 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given notification type change is pending, when screen stops, then save immediately`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+            viewModel.savePendingNotificationPreferences()
+            runCurrent()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
+        }
+
+    @Test
     fun `given user reverts notification type before debounce, when debounce completes, then skip update request`() =
         testBlocking {
             setup()
