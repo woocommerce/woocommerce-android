@@ -263,7 +263,7 @@ private fun IssuePickerContent(
             color = textColor,
             style = MaterialTheme.typography.bodyMedium
         )
-        SupportIssueType.entries.forEach { issueType ->
+        SupportIssueType.selectableEntries.forEach { issueType ->
             val issueLabel = stringResource(issueType.displayLabel)
             WCOutlinedButton(
                 onClick = { onIssueSelected(issueType, issueLabel) },
