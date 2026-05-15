@@ -1,1 +1,1 @@
-The My Store Performance card now lets you switch between Gross, Net, and Total revenue and pick your order date type (Paid, Placed, or Completed). We also fixed POS navigation resetting on rotation, refreshed the POS Orders empty state, and squashed bugs in the product list and image loading.
+Say hello to your new AI Assistant—a smarter way to run your store right from your pocket. Rolling out to selected stores, it helps you stay on top of your shop with a tap. We've also smoothed out the order list so it no longer flashes when you head back from an order's details.
