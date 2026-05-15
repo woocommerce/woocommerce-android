@@ -1,0 +1,2 @@
+24.7:
+La scheda Prestazioni del mio negozio ora consente di alternare tra entrate lorde, nette e totali e di selezionare il tipo di data dell'ordine (Pagato, Effettuato o Completato). Abbiamo inoltre risolto il problema della navigazione del POS che si ripristinava durante la rotazione dello schermo, rinnovato lo stato vuoto della sezione Ordini POS e corretto alcuni bug nell'elenco dei prodotti e nel caricamento delle immagini.

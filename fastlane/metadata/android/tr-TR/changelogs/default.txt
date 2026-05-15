@@ -1,0 +1,2 @@
+24.7:
+Mağaza Performansım kartı artık Brüt, Net ve Toplam gelir arasında geçiş yapmanızı ve sipariş tarihi türünüzü (Ödendi, Verildi veya Tamamlandı) seçmenizi sağlar. Ayrıca döndürürken POS gezinmesinin sıfırlanmasını düzelttik, POS Siparişleri boş durumunu yeniledik ve ürün listesi ve görselleri yüklenirken oluşan hataları giderdik.
