@@ -51,6 +51,7 @@ class AiSupportChatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        zendeskSettings.setup(context = requireContext())
         setupContactSupportToolbarAction()
         observeViewState()
         observeViewEvents()
