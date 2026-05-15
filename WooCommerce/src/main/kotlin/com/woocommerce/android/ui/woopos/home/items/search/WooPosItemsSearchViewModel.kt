@@ -241,6 +241,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.MissingVariationEvent -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                     is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
+                    is ParentToChildrenEvent.ShowCustomAmountForm -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> {
                         if (event.itemData is ItemClickedData.Product.Variation &&
                             searchHelper.isSearchOpen()

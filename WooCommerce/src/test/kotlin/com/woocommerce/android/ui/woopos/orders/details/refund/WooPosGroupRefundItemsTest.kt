@@ -315,4 +315,84 @@ class WooPosGroupRefundItemsTest {
         assertThat(result[0].itemId).isEqualTo(1L)
         assertThat(result[0].quantity).isEqualTo(100)
     }
+
+    @Test
+    fun `given lump-sum fee row, when invoke called, then emits quantity 0 with full total and taxes`() {
+        // GIVEN
+        val feeLine = Order.FeeLine(
+            id = 777L,
+            name = "Service",
+            total = BigDecimal("12.50"),
+            totalTax = BigDecimal("1.25"),
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+            taxes = listOf(Order.LineTaxEntry(rateId = 5L, taxAmount = BigDecimal("1.25"))),
+        )
+        val order = OrderTestUtils.generateTestOrder().copy(items = emptyList(), feesLines = listOf(feeLine))
+        val feeRow = WooPosRefundableItem(
+            orderItemId = 777L,
+            productId = 0L,
+            variationId = 0L,
+            name = "Service",
+            unitPrice = BigDecimal("12.50"),
+            unitTax = BigDecimal("1.25"),
+            formattedUnitPrice = "$12.50",
+            formattedUnitTax = "$1.25",
+            rowIndex = 0,
+            isLumpSum = true,
+        )
+
+        // WHEN
+        val result = sut(listOf(feeRow), order, 2)
+
+        // THEN
+        assertThat(result).hasSize(1)
+        assertThat(result[0].itemId).isEqualTo(777L)
+        assertThat(result[0].quantity).isEqualTo(0)
+        assertThat(result[0].refundTotal).isEqualByComparingTo(BigDecimal("12.50"))
+        assertThat(result[0].refundTax).hasSize(1)
+        assertThat(result[0].refundTax[0].taxRateId).isEqualTo(5L)
+        assertThat(result[0].refundTax[0].refundTotal).isEqualByComparingTo(BigDecimal("1.25"))
+    }
+
+    @Test
+    fun `given product row and fee row, when invoke called, then both emit with correct quantities`() {
+        // GIVEN
+        val product = createOrderItem(itemId = 1L, quantity = 1f, price = BigDecimal("10.00"))
+        val feeLine = Order.FeeLine(
+            id = 99L,
+            name = "Tip",
+            total = BigDecimal("5.00"),
+            totalTax = BigDecimal.ZERO,
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+            taxes = emptyList(),
+        )
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(product), feesLines = listOf(feeLine))
+        val rows = listOf(
+            createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("10.00")),
+            WooPosRefundableItem(
+                orderItemId = 99L,
+                productId = 0L,
+                variationId = 0L,
+                name = "Tip",
+                unitPrice = BigDecimal("5.00"),
+                unitTax = BigDecimal.ZERO,
+                formattedUnitPrice = "$5.00",
+                formattedUnitTax = "$0.00",
+                rowIndex = 0,
+                isLumpSum = true,
+            ),
+        )
+
+        // WHEN
+        val result = sut(rows, order, 2)
+
+        // THEN
+        assertThat(result).hasSize(2)
+        val productRequest = result.first { it.itemId == 1L }
+        val feeRequest = result.first { it.itemId == 99L }
+        assertThat(productRequest.quantity).isEqualTo(1)
+        assertThat(feeRequest.quantity).isEqualTo(0)
+        assertThat(feeRequest.refundTotal).isEqualByComparingTo(BigDecimal("5.00"))
+        assertThat(feeRequest.refundTax).isEmpty()
+    }
 }

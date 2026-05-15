@@ -120,6 +120,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "clear_cart_tapped"
         }
 
+        data object CustomAmountEntryRowTapped : Event() {
+            override val name: String = "custom_amount_entry_row_tapped"
+        }
+
         data class CustomAmountSubmitted(
             val mode: Mode,
             val isTaxable: Boolean,
