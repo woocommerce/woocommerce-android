@@ -79,8 +79,14 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         preferences?.toNewOrderNotificationSettingsViewState(thresholdAmount)
             ?: NewOrderNotificationSettingsViewState(thresholdAmount = thresholdAmount)
     }.asLiveData()
-    private val _newReviewNotificationSettingsViewState = MutableStateFlow(NewReviewNotificationSettingsViewState())
-    val newReviewNotificationSettingsViewState = _newReviewNotificationSettingsViewState.asLiveData()
+    private val displayedReviewRating = MutableStateFlow(DEFAULT_SELECTED_REVIEW_RATING)
+    val newReviewNotificationSettingsViewState = combine(
+        wooPushNotificationPreferences,
+        displayedReviewRating
+    ) { preferences, rating ->
+        preferences?.toNewReviewNotificationSettingsViewState(rating)
+            ?: NewReviewNotificationSettingsViewState(selectedRating = rating)
+    }.asLiveData()
 
     init {
         observeWooPushNotificationPreferences()
@@ -143,7 +149,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onNewReviewNotificationPreferenceChanged(preference: NewReviewNotificationPreference) {
         val preferences = wooPushNotificationPreferences.value ?: return
-        val updatedViewState = _newReviewNotificationSettingsViewState.value.copy(notificationPreference = preference)
+        val updatedViewState = preferences.toNewReviewNotificationSettingsViewState(
+            displayedRating = displayedReviewRating.value
+        ).copy(notificationPreference = preference)
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
         )
@@ -151,9 +159,11 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onNewReviewSelectedRatingChanged(rating: Int) {
         val preferences = wooPushNotificationPreferences.value ?: return
-        val updatedViewState = _newReviewNotificationSettingsViewState.value.copy(
-            selectedRating = rating.coerceIn(MIN_REVIEW_RATING, MAX_REVIEW_RATING)
-        )
+        val selectedRating = rating.coerceIn(MIN_REVIEW_RATING, MAX_REVIEW_RATING)
+        val updatedViewState = preferences.toNewReviewNotificationSettingsViewState(
+            displayedRating = displayedReviewRating.value
+        ).copy(selectedRating = selectedRating)
+        displayedReviewRating.value = selectedRating
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
         )
@@ -274,9 +284,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         wooPushNotificationPreferences.value = preferences
         _isNotificationTypeSelectionEnabled.value = true
         preferences.storeOrder?.minAmount?.let { displayedOrderThresholdAmount.value = it }
-        preferences.storeReview?.let { reviewPreferences ->
-            _newReviewNotificationSettingsViewState.update { it.copyWith(reviewPreferences) }
-        }
+        preferences.storeReview?.maxRating?.let { displayedReviewRating.value = it }
         _notificationTypeItems.update { items ->
             items.map { item ->
                 item.copy(isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled)
@@ -327,16 +335,16 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     )
 
-    private fun NewReviewNotificationSettingsViewState.copyWith(
-        reviewPreferences: StoreReviewPreferences
-    ): NewReviewNotificationSettingsViewState = copy(
-        notificationsEnabled = reviewPreferences.enabled ?: notificationsEnabled,
-        notificationPreference = if (reviewPreferences.maxRating == null) {
+    private fun WooPushNotificationPreferences.toNewReviewNotificationSettingsViewState(
+        displayedRating: Int
+    ) = NewReviewNotificationSettingsViewState(
+        notificationsEnabled = storeReview?.enabled ?: true,
+        notificationPreference = if (storeReview?.maxRating == null) {
             NewReviewNotificationPreference.AllReviews
         } else {
             NewReviewNotificationPreference.RatingFilteredReviews
         },
-        selectedRating = reviewPreferences.maxRating ?: selectedRating
+        selectedRating = storeReview?.maxRating ?: displayedRating
     )
 
     private fun NewReviewNotificationSettingsViewState.toStoreReviewPreferences() = StoreReviewPreferences(

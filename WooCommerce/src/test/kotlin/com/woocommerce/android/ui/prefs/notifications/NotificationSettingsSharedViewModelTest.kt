@@ -341,6 +341,9 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeReview)
                 .isEqualTo(StoreReviewPreferences(enabled = true, maxRating = null))
+
+            val reviewViewState = viewModel.newReviewNotificationSettingsViewState.captureValues().last()
+            assertThat(reviewViewState.selectedRating).isEqualTo(3)
         }
 
     @Test
