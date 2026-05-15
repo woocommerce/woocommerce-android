@@ -9,8 +9,8 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
-import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessageContext
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole

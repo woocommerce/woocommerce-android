@@ -16,8 +16,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.support.zendesk.TicketType
-import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
@@ -33,7 +33,9 @@ class AiSupportChatFragment : Fragment() {
     private var progressDialog: CustomProgressDialog? = null
 
     @Inject lateinit var zendeskSettings: ZendeskSettings
+
     @Inject lateinit var zendeskTicketRepository: ZendeskTicketRepository
+
     @Inject lateinit var selectedSite: SelectedSite
 
     private val supportRequestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

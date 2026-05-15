@@ -8,8 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,9 +26,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -76,7 +74,9 @@ fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
         onRetryDiagnosticsClicked = viewModel::onRetryDiagnosticsClicked,
         onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked,
         onContactSupportClicked = { viewModel.onContactSupportClicked(HumanSupportContactSource.BANNER) },
-        onContactSupportFromErrorClicked = { viewModel.onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
+        onContactSupportFromErrorClicked = {
+            viewModel.onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG)
+        },
         onSendErrorDismissed = viewModel::onSendErrorDismissed
     )
 }
