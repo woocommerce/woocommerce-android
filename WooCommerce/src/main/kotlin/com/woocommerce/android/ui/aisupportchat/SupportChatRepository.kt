@@ -44,14 +44,16 @@ class SupportChatRepository @Inject constructor(
 
     suspend fun fetchChat(
         botSlug: String,
-        chatId: Long
+        chatId: Long,
+        sessionId: String?
     ): Result<SupportChatResponse> = withContext(dispatchers.io) {
-        restClient.fetchChat(botSlug = botSlug, chatId = chatId).toResult()
+        restClient.fetchChat(botSlug = botSlug, chatId = chatId, sessionId = sessionId).toResult()
     }
 
     suspend fun registerChat(
         chatId: Long,
         botSlug: String,
+        sessionId: String?,
         firstUserMessage: String
     ): Unit = withContext(dispatchers.io) {
         val selectedSiteModel = selectedSite.get()
@@ -62,6 +64,7 @@ class SupportChatRepository @Inject constructor(
                 localSiteId = LocalId(selectedSiteModel.id),
                 remoteSiteId = selectedSiteModel.siteId,
                 botSlug = botSlug,
+                sessionId = sessionId,
                 title = firstUserMessage.trim().take(MAX_TITLE_LENGTH).ifBlank { null },
                 createdAt = now,
                 updatedAt = now
@@ -69,8 +72,12 @@ class SupportChatRepository @Inject constructor(
         )
     }
 
-    suspend fun markChatAsUpdated(chatId: Long): Unit = withContext(dispatchers.io) {
-        bookmarkDao.markAsUpdated(chatId = chatId, updatedAt = currentTimeProvider.currentDate().time)
+    suspend fun markChatAsUpdated(chatId: Long, sessionId: String?): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markAsUpdated(
+            chatId = chatId,
+            sessionId = sessionId,
+            updatedAt = currentTimeProvider.currentDate().time
+        )
     }
 
     suspend fun loadChatHistory(): List<SupportChatBookmark> = withContext(dispatchers.io) {
@@ -98,6 +105,7 @@ class SupportChatRepository @Inject constructor(
             localSiteId = localSiteId,
             remoteSiteId = remoteSiteId,
             botSlug = botSlug,
+            sessionId = sessionId,
             title = title,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -113,6 +121,7 @@ data class SupportChatBookmark(
     val localSiteId: LocalId,
     val remoteSiteId: Long,
     val botSlug: String,
+    val sessionId: String?,
     val title: String?,
     val createdAt: Long,
     val updatedAt: Long

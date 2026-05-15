@@ -10,6 +10,7 @@ data class SupportChatBookmarkEntity(
     val localSiteId: LocalId,
     val remoteSiteId: Long,
     val botSlug: String,
+    val sessionId: String?,
     val title: String?,
     val createdAt: Long,
     val updatedAt: Long

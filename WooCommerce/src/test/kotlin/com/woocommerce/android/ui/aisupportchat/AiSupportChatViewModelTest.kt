@@ -143,8 +143,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
                 AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS)
-            verify(repository, never()).markChatAsUpdated(any())
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
+            verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
     @Test
@@ -161,7 +161,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
-            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS))
+            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS))
                 .thenThrow(RuntimeException("Bookmark write failed"))
 
             continueToChatAfterSuccessfulDiagnostics(result)
@@ -219,7 +219,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE)
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID)
-            verify(repository).markChatAsUpdated(CHAT_ID)
+            verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
         }
 
     @Test
@@ -404,7 +404,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isTrue()
-            verify(repository, never()).registerChat(any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any())
         }
 
     @Test

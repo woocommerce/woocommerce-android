@@ -98,14 +98,14 @@ class SupportChatRestClientTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given chat id, when fetchChat, then GETs the slug-and-id URL`() = testBlocking {
+    fun `given chat id, when fetchChat, then GETs the slug-and-id URL with session id`() = testBlocking {
         stubGetResponse()
 
-        val result = restClient.fetchChat(botSlug = BOT_SLUG, chatId = CHAT_ID)
+        val result = restClient.fetchChat(botSlug = BOT_SLUG, chatId = CHAT_ID, sessionId = SESSION_ID)
 
         assertThat(urlCaptor.firstValue)
             .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
-        assertThat(paramsCaptor.firstValue).isEmpty()
+        assertThat(paramsCaptor.firstValue).containsEntry("session_id", SESSION_ID)
         assertThat(result).isInstanceOf(Response.Success::class.java)
         assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
     }
@@ -154,7 +154,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
         )
         stubGetResponse(error = error)
 
-        val result = restClient.fetchChat(BOT_SLUG, CHAT_ID)
+        val result = restClient.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)
 
         assertThat(result).isInstanceOf(Response.Error::class.java)
         assertThat((result as Response.Error).error.type).isEqualTo(BaseRequest.GenericErrorType.NOT_FOUND)

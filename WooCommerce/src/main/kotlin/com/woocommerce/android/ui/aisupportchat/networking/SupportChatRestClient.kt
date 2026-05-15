@@ -50,11 +50,12 @@ class SupportChatRestClient @Inject constructor(
 
     suspend fun fetchChat(
         botSlug: String,
-        chatId: Long
+        chatId: Long,
+        sessionId: String?
     ): Response<SupportChatResponse> = wpComGsonRequestBuilder.syncGetRequest(
         restClient = this,
         url = chatUrl(botSlug, chatId),
-        params = emptyMap(),
+        params = sessionId?.let { mapOf(SESSION_ID_KEY to it) }.orEmpty(),
         clazz = SupportChatResponse::class.java
     )
 

@@ -12,8 +12,15 @@ interface SupportChatBookmarkDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(bookmark: SupportChatBookmarkEntity)
 
-    @Query("UPDATE SupportChatBookmarkEntity SET updatedAt = :updatedAt WHERE chatId = :chatId")
-    suspend fun markAsUpdated(chatId: Long, updatedAt: Long): Int
+    @Query(
+        """
+        UPDATE SupportChatBookmarkEntity
+        SET updatedAt = :updatedAt,
+            sessionId = CASE WHEN :sessionId IS NULL THEN sessionId ELSE :sessionId END
+        WHERE chatId = :chatId
+        """
+    )
+    suspend fun markAsUpdated(chatId: Long, sessionId: String?, updatedAt: Long): Int
 
     @Query("SELECT * FROM SupportChatBookmarkEntity WHERE chatId = :chatId")
     suspend fun getByChatId(chatId: Long): SupportChatBookmarkEntity?
