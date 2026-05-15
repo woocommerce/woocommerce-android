@@ -5,29 +5,42 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.push.PushNotificationRepository
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.SiteModel
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreReviewPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreStockPreferences
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class NotificationSettingsSharedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    selectedSite: SelectedSite,
     private val pushNotificationRepository: PushNotificationRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     private val wooPushNotificationPreferences = MutableStateFlow<WooPushNotificationPreferences?>(null)
+    private var savedWooPushNotificationPreferences: WooPushNotificationPreferences? = null
+    private var saveInProgressWooPushNotificationPreferences: WooPushNotificationPreferences? = null
+    private val saveNotificationPreferencesTrigger = MutableSharedFlow<Long>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     private val _isNotificationSettingsLoading = MutableStateFlow(true)
     val isNotificationSettingsLoading = _isNotificationSettingsLoading.asLiveData()
     private val _isNotificationTypeSelectionEnabled = MutableStateFlow(false)
@@ -58,9 +71,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     val notificationTypeItems = _notificationTypeItems.asLiveData()
 
     init {
-        val site = selectedSite.get()
-        observeWooPushNotificationPreferences(site)
-        fetchWooPushNotificationPreferences(site)
+        observeWooPushNotificationPreferences()
+        fetchWooPushNotificationPreferences()
+        observeNotificationPreferencesChanges()
     }
 
     fun onNotificationTypeEnabledChanged(type: NotificationType, isEnabled: Boolean) {
@@ -69,15 +82,22 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             NotificationType.NEW_ORDERS -> preferences.copy(
                 storeOrder = (preferences.storeOrder ?: StoreOrderPreferences()).copy(enabled = isEnabled)
             )
+
             NotificationType.NEW_REVIEWS -> preferences.copy(
                 storeReview = (preferences.storeReview ?: StoreReviewPreferences()).copy(enabled = isEnabled)
             )
+
             NotificationType.STOCK -> preferences.copy(
                 storeStock = (preferences.storeStock ?: StoreStockPreferences()).copy(enabled = isEnabled)
             )
         }
 
-        applyWooPushNotificationPreferences(updatedPreferences)
+        applyDisplayedWooPushNotificationPreferences(updatedPreferences)
+        saveNotificationPreferencesTrigger.tryEmit(NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS)
+    }
+
+    fun savePendingNotificationPreferences() {
+        saveNotificationPreferencesTrigger.tryEmit(0L)
     }
 
     fun onNotificationTypeClicked(type: NotificationType) {
@@ -88,42 +108,105 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     }
 
-    private fun observeWooPushNotificationPreferences(site: SiteModel) {
+    private fun observeWooPushNotificationPreferences() {
         launch {
-            pushNotificationRepository.observeWooNotificationPreferences(site)
+            pushNotificationRepository.observeWooNotificationPreferences()
                 .collect { preferences ->
                     preferences?.let {
-                        applyWooPushNotificationPreferences(it)
+                        applyStoredWooPushNotificationPreferences(it)
                         _isNotificationSettingsLoading.value = false
                     }
                 }
         }
     }
 
-    private fun fetchWooPushNotificationPreferences(site: SiteModel) {
+    private fun fetchWooPushNotificationPreferences() {
         launch {
             try {
-                pushNotificationRepository.fetchWooNotificationPreferences(site)
-                    .onSuccess { applyWooPushNotificationPreferences(it) }
-                    .onFailure { showFetchError(site) }
+                pushNotificationRepository.fetchWooNotificationPreferences()
+                    .onSuccess { applyStoredWooPushNotificationPreferences(it) }
+                    .onFailure { showFetchError() }
             } finally {
                 _isNotificationSettingsLoading.value = false
             }
         }
     }
 
-    private fun showFetchError(site: SiteModel) {
+    private fun showFetchError() {
         triggerEvent(
             MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.settings_notifs_error_fetch),
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
-                fetchWooPushNotificationPreferences(site)
+                fetchWooPushNotificationPreferences()
             }
         )
     }
 
-    private fun applyWooPushNotificationPreferences(preferences: WooPushNotificationPreferences) {
+    private fun observeNotificationPreferencesChanges() {
+        launch {
+            saveNotificationPreferencesTrigger
+                .debounce { it }
+                .conflate()
+                .collect {
+                    wooPushNotificationPreferences.value?.let { preferences ->
+                        saveNotificationPreferences(preferences)
+                    }
+                }
+        }
+    }
+
+    private suspend fun saveNotificationPreferences(preferencesToSave: WooPushNotificationPreferences) {
+        val savedPreferences = savedWooPushNotificationPreferences ?: return
+        val updateRequest = preferencesToSave.diffFrom(savedPreferences)
+        if (updateRequest.isEmpty()) {
+            return
+        }
+
+        saveInProgressWooPushNotificationPreferences = preferencesToSave
+        // Once started, let the save request finish even if the screen is closed.
+        withContext(NonCancellable + coroutineDispatchers.main) {
+            pushNotificationRepository.updateWooNotificationPreferences(
+                preferences = updateRequest
+            )
+        }.onSuccess {
+            savedWooPushNotificationPreferences = preferencesToSave
+        }.onFailure {
+            if (wooPushNotificationPreferences.value != preferencesToSave) {
+                // User changed preferences after this save started, so don't rollback over the newer state.
+                return@onFailure
+            }
+            rollbackNotificationPreferences()
+            showUpdateError(preferencesToSave)
+        }
+        saveInProgressWooPushNotificationPreferences = null
+    }
+
+    private fun showUpdateError(preferencesToSave: WooPushNotificationPreferences) {
+        triggerEvent(
+            MultiLiveEvent.Event.ShowActionStringSnackbar(
+                message = resourceProvider.getString(R.string.settings_notifs_error_update),
+                actionText = resourceProvider.getString(R.string.retry),
+            ) {
+                applyDisplayedWooPushNotificationPreferences(preferencesToSave)
+                saveNotificationPreferencesTrigger.tryEmit(0L)
+            }
+        )
+    }
+
+    private fun applyStoredWooPushNotificationPreferences(preferences: WooPushNotificationPreferences) {
+        if (hasUnsavedNotificationPreferences()) {
+            return
+        }
+        if (saveInProgressWooPushNotificationPreferences != null) {
+            return
+        }
+
+        savedWooPushNotificationPreferences = preferences
+        applyDisplayedWooPushNotificationPreferences(preferences)
+    }
+
+    private fun applyDisplayedWooPushNotificationPreferences(preferences: WooPushNotificationPreferences) {
         wooPushNotificationPreferences.value = preferences
         _isNotificationTypeSelectionEnabled.value = true
         _notificationTypeItems.update { items ->
@@ -132,6 +215,29 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             }
         }
     }
+
+    private fun rollbackNotificationPreferences() {
+        savedWooPushNotificationPreferences?.let { applyDisplayedWooPushNotificationPreferences(it) }
+    }
+
+    private fun hasUnsavedNotificationPreferences(): Boolean {
+        return wooPushNotificationPreferences.value?.let { displayedPreferences ->
+            savedWooPushNotificationPreferences?.let { savedPreferences ->
+                displayedPreferences != savedPreferences
+            }
+        } ?: false
+    }
+
+    private fun WooPushNotificationPreferences.diffFrom(
+        savedPreferences: WooPushNotificationPreferences
+    ): WooPushNotificationPreferences = WooPushNotificationPreferences(
+        storeOrder = storeOrder.takeIf { storeOrder != savedPreferences.storeOrder },
+        storeReview = storeReview.takeIf { storeReview != savedPreferences.storeReview },
+        storeStock = storeStock.takeIf { storeStock != savedPreferences.storeStock }
+    )
+
+    private fun WooPushNotificationPreferences.isEmpty(): Boolean =
+        storeOrder == null && storeReview == null && storeStock == null
 
     private fun WooPushNotificationPreferences.isEnabled(type: NotificationType): Boolean? =
         when (type) {
@@ -155,5 +261,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         NEW_ORDERS,
         STOCK,
         NEW_REVIEWS
+    }
+
+    companion object {
+        private const val NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS = 1000L
     }
 }

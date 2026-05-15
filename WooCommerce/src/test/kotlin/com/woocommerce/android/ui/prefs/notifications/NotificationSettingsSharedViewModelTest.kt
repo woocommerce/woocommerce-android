@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.prefs.notifications
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.push.PushNotificationRepository
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NotificationType
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -19,49 +18,60 @@ import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreReviewPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreStockPreferences
+import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
-    private val selectedSite: SelectedSite = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
-    private val site = SiteModel().apply { id = 123 }
+    private val defaultNotificationPreferences = WooPushNotificationPreferences(
+        storeOrder = StoreOrderPreferences(enabled = true),
+        storeReview = StoreReviewPreferences(enabled = true),
+        storeStock = StoreStockPreferences(enabled = true)
+    )
     private lateinit var notificationPreferencesFlow: MutableStateFlow<WooPushNotificationPreferences?>
     private lateinit var viewModel: NotificationSettingsSharedViewModel
 
     private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
-        whenever(selectedSite.get()).thenReturn(site)
         notificationPreferencesFlow = MutableStateFlow(null)
-        whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+        whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
             notificationPreferencesFlow
         )
-        mockSuccessfulFetch(WooPushNotificationPreferences())
+        mockSuccessfulFetch(defaultNotificationPreferences)
+        mockSuccessfulUpdate()
         prepareMocks()
         viewModel = NotificationSettingsSharedViewModel(
             savedStateHandle = SavedStateHandle(),
-            selectedSite = selectedSite,
             pushNotificationRepository = pushNotificationRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
     }
 
     private suspend fun mockSuccessfulFetch(preferences: WooPushNotificationPreferences) {
-        whenever(pushNotificationRepository.fetchWooNotificationPreferences(site)).doSuspendableAnswer {
+        whenever(pushNotificationRepository.fetchWooNotificationPreferences()).doSuspendableAnswer {
             notificationPreferencesFlow.value = preferences
             Result.success(preferences)
+        }
+    }
+
+    private suspend fun mockSuccessfulUpdate() {
+        whenever(pushNotificationRepository.updateWooNotificationPreferences(any())).doSuspendableAnswer {
+            Result.success(it.getArgument<WooPushNotificationPreferences>(0))
         }
     }
 
@@ -84,7 +94,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        verify(pushNotificationRepository).fetchWooNotificationPreferences(site)
+        verify(pushNotificationRepository).fetchWooNotificationPreferences()
     }
 
     @Test
@@ -92,8 +102,8 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         testBlocking {
             val fetchResult = CompletableDeferred<Result<WooPushNotificationPreferences>>()
             setup {
-                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(flowOf(null))
-                whenever(pushNotificationRepository.fetchWooNotificationPreferences(site)).doSuspendableAnswer {
+                whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(flowOf(null))
+                whenever(pushNotificationRepository.fetchWooNotificationPreferences()).doSuspendableAnswer {
                     fetchResult.await()
                 }
             }
@@ -105,7 +115,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             assertThat(loadingValues).contains(true)
             assertThat(viewModel.isNotificationTypeSelectionEnabled.captureValues().last()).isFalse()
 
-            fetchResult.complete(Result.success(WooPushNotificationPreferences()))
+            fetchResult.complete(Result.success(defaultNotificationPreferences))
             advanceUntilIdle()
 
             assertThat(viewModel.isNotificationSettingsLoading.captureValues().last()).isFalse()
@@ -117,13 +127,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         testBlocking {
             var fetchFails = true
             setup {
-                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(flowOf(null))
-                whenever(pushNotificationRepository.fetchWooNotificationPreferences(site)).doSuspendableAnswer {
+                whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(flowOf(null))
+                whenever(pushNotificationRepository.fetchWooNotificationPreferences()).doSuspendableAnswer {
                     if (fetchFails) {
                         fetchFails = false
                         Result.failure(Exception())
                     } else {
-                        Result.success(WooPushNotificationPreferences())
+                        Result.success(defaultNotificationPreferences)
                     }
                 }
             }
@@ -139,7 +149,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             snackbar.action.onClick(null)
             advanceUntilIdle()
 
-            verify(pushNotificationRepository, times(2)).fetchWooNotificationPreferences(site)
+            verify(pushNotificationRepository, times(2)).fetchWooNotificationPreferences()
             assertThat(viewModel.isNotificationTypeSelectionEnabled.captureValues().last()).isTrue()
         }
 
@@ -148,10 +158,10 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         testBlocking {
             val fetchResult = CompletableDeferred<Result<WooPushNotificationPreferences>>()
             setup {
-                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
-                    flowOf(WooPushNotificationPreferences(storeOrder = StoreOrderPreferences(enabled = false)))
+                whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
+                    flowOf(defaultNotificationPreferences.copy(storeOrder = StoreOrderPreferences(enabled = false)))
                 )
-                whenever(pushNotificationRepository.fetchWooNotificationPreferences(site)).doSuspendableAnswer {
+                whenever(pushNotificationRepository.fetchWooNotificationPreferences()).doSuspendableAnswer {
                     fetchResult.await()
                 }
             }
@@ -166,7 +176,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
                     .isEnabled
             ).isFalse()
 
-            fetchResult.complete(Result.success(WooPushNotificationPreferences()))
+            fetchResult.complete(Result.success(defaultNotificationPreferences))
             advanceUntilIdle()
         }
 
@@ -189,6 +199,174 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_ORDERS }.isEnabled).isFalse()
             assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_REVIEWS }.isEnabled).isTrue()
             assertThat(notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled).isFalse()
+        }
+
+    @Test
+    fun `when notification type switch is changed, then save changed notification preferences`() = testBlocking {
+        setup()
+        advanceUntilIdle()
+
+        viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+        advanceUntilIdle()
+
+        val preferences = captureUpdatePreferences()
+        assertThat(preferences.storeOrder).isNull()
+        assertThat(preferences.storeReview).isNull()
+        assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
+    }
+
+    @Test
+    fun `given order preferences have threshold, when order switch is changed, then preserve threshold`() =
+        testBlocking {
+            val orderPreferences = WooPushNotificationPreferences(
+                storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
+            )
+            setup {
+                notificationPreferencesFlow.value = orderPreferences
+                mockSuccessfulFetch(orderPreferences)
+            }
+            advanceUntilIdle()
+
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.NEW_ORDERS, false)
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeOrder)
+                .isEqualTo(StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)))
+        }
+
+    @Test
+    fun `given notification type change is pending, when screen stops, then save immediately`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+            viewModel.savePendingNotificationPreferences()
+            runCurrent()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
+        }
+
+    @Test
+    fun `given user reverts notification type before debounce, when debounce completes, then skip update request`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, true)
+            advanceUntilIdle()
+
+            verify(pushNotificationRepository, never()).updateWooNotificationPreferences(any())
+        }
+
+    @Test
+    fun `given update request is pending, when cache emits stale value, then ignore stale cache value`() =
+        testBlocking {
+            val cachedPreferences = WooPushNotificationPreferences(
+                storeStock = StoreStockPreferences(enabled = true)
+            )
+            setup {
+                notificationPreferencesFlow.value = cachedPreferences
+                mockSuccessfulFetch(cachedPreferences)
+            }
+            advanceUntilIdle()
+
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+            notificationPreferencesFlow.value = WooPushNotificationPreferences(
+                storeStock = StoreStockPreferences(enabled = true)
+            )
+            runCurrent()
+
+            val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
+            assertThat(notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled).isFalse()
+        }
+
+    @Test
+    fun `given update fails, when notification type switch is changed, then rollback and show error`() =
+        testBlocking {
+            val cachedPreferences = WooPushNotificationPreferences(
+                storeStock = StoreStockPreferences(enabled = true)
+            )
+            setup {
+                notificationPreferencesFlow.value = cachedPreferences
+                mockSuccessfulFetch(cachedPreferences)
+                whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
+                    .thenReturn(Result.failure(Exception()))
+            }
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+                advanceUntilIdle()
+            }.last()
+
+            val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
+            assertThat(notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled).isTrue()
+            val snackbar = event as Event.ShowActionStringSnackbar
+            assertThat(snackbar.message).isEqualTo(resourceProvider.getString(R.string.settings_notifs_error_update))
+            assertThat(snackbar.actionText).isEqualTo(resourceProvider.getString(R.string.retry))
+        }
+
+    @Test
+    fun `given update fails, when retry is clicked, then save notification preferences again`() =
+        testBlocking {
+            var updateFails = true
+            setup {
+                whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
+                    .doSuspendableAnswer { invocation ->
+                        val preferences = invocation.getArgument<WooPushNotificationPreferences>(0)
+                        if (updateFails) {
+                            updateFails = false
+                            Result.failure(Exception())
+                        } else {
+                            Result.success(preferences)
+                        }
+                    }
+            }
+            advanceUntilIdle()
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+                advanceUntilIdle()
+            }.last()
+
+            (event as Event.ShowActionStringSnackbar).action.onClick(null)
+            advanceUntilIdle()
+
+            val preferences = captureLastUpdatePreferences()
+            assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
+        }
+
+    @Test
+    fun `given update is in progress, when notification type changes again, then save latest state`() =
+        testBlocking {
+            val firstUpdateGate = CompletableDeferred<Result<WooPushNotificationPreferences>>()
+            setup {
+                whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
+                    .doSuspendableAnswer { invocation ->
+                        val preferences = invocation.getArgument<WooPushNotificationPreferences>(0)
+                        if (preferences.storeStock?.enabled == false) {
+                            firstUpdateGate.await()
+                        } else {
+                            Result.success(preferences)
+                        }
+                    }
+            }
+            advanceUntilIdle()
+
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
+            advanceUntilIdle()
+            viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, true)
+            firstUpdateGate.complete(
+                Result.success(WooPushNotificationPreferences(storeStock = StoreStockPreferences(enabled = false)))
+            )
+            advanceUntilIdle()
+
+            val preferences = captureLastUpdatePreferences()
+            assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = true))
+            verify(pushNotificationRepository, times(2)).updateWooNotificationPreferences(any())
         }
 
     @Test
@@ -227,5 +405,18 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isInstanceOf(NotificationSettingsSharedViewModel.OpenStockNotificationSettings::class.java)
+    }
+
+    private suspend fun captureUpdatePreferences(): WooPushNotificationPreferences {
+        val preferencesCaptor = argumentCaptor<WooPushNotificationPreferences>()
+        verify(pushNotificationRepository).updateWooNotificationPreferences(preferencesCaptor.capture())
+        return preferencesCaptor.firstValue
+    }
+
+    private suspend fun captureLastUpdatePreferences(): WooPushNotificationPreferences {
+        val preferencesCaptor = argumentCaptor<WooPushNotificationPreferences>()
+        verify(pushNotificationRepository, times(2))
+            .updateWooNotificationPreferences(preferencesCaptor.capture())
+        return preferencesCaptor.lastValue
     }
 }

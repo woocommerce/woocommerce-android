@@ -55,6 +55,13 @@ class NotificationSettingsFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (navArgs.showSmarterNotifications) {
+            sharedViewModel.savePendingNotificationPreferences()
+        }
+    }
+
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
