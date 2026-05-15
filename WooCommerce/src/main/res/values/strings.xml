@@ -2317,7 +2317,7 @@
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
     <string name="settings_notifs_stock_low_stock_description">When a product variant reaches its low stock threshold.</string>
-    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store-wide threshold of&#160;&lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit store-wide threshold&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Products can use their own threshold or the store-wide threshold of &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Edit store-wide threshold&lt;/a&gt;</string>
     <string name="settings_notifs_stock_low_stock_threshold_unavailable">Products can use their own threshold or the store-wide threshold. &lt;a href=\'\'&gt;View store-wide threshold&lt;/a&gt; to see the current value.</string>
     <string name="settings_notifs_stock_low_stock_threshold_error">Unable to load store-wide threshold</string>
     <string name="settings_notifs_stock_out_of_stock_title">Out of stock</string>
@@ -4674,4 +4674,97 @@
     <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">the United States</string>
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">the United Kingdom</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">Update an order</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">Update order #%1$s</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">Update order #%1$s: emails the customer</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Update many orders</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Update %1$d order</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Update %1$d orders</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">Update %1$d order: emails the customer</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">Update %1$d orders: emails customers</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">Update a product</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">Update product #%1$s</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update product %1$s (#%2$s)</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Update many products</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Update %1$d product</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Update %1$d products</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">Update a product variation</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">Update variation #%1$s for product #%2$s</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">Review %1$s</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">Status</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">Customer note</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">Billing email</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">Name</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">Price</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">Sale</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Stock</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">Stock status</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">SKU</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Updated</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Off</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Pending change</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">Confirmed</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">Cancelled</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">+%1$d more</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">Assistant</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Back</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Start new conversation</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">Jump to latest</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">You: %1$s</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Assistant: %1$s</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">Assistant is thinking</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">Checking orders</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">Updating orders</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">Checking products</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">Updating products</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">Checking analytics</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">Checking customers</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">Checking your store</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">Assistant is working: %1$s</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">Orders</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">Products</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">Variations</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">Analytics</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">Customers</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">Cards</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">What can I help with?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">How\'s revenue this week?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">What\'s running low?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">Any orders need my attention?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">Who are my newest customers?</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">How\'s my revenue this week? Show me total sales for this week and how it compares to last week.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">What\'s running low? List the products that are out of stock or low on inventory so I know what to restock.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">Any orders that need my attention? Show me recent orders that are pending, on hold, or processing.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">Show my newest customers. List up to 10 customers sorted by registration date, newest first.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">Send suggestion: %1$s</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">EARLY ACCESS</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">Hi! We\'re just getting started, with more on the way. Let us know what\'s missing and what you\'d love help with!</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">Give Feedback</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">Dismiss early access notice</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">Total Sales</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">Net Sales</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">Total Orders</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">Average Order Value</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">Unavailable</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">Open analytics for %1$s</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">Ask about your store</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">Send message</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">Stop response</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">Resolve the pending change above.</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">Retry</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">Confirm %1$s?</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">Confirm</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">Cancel</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">Couldn\'t connect. Check your connection and try again.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">The assistant couldn\'t access your store. Please sign in again, then reopen the assistant.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">The assistant is busy right now. Try again in a moment.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">The request timed out. Try again.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">The assistant service couldn\'t finish this response. Please try again later.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">The assistant couldn\'t complete that store action.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">The assistant couldn\'t complete that request.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">I\'m not sure whether that change was applied. Please verify in your store before trying anything else.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Request stopped.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Confirmation isn\'t available yet. Please try again from the chat.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">The assistant couldn\'t finish after several steps.</string>
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Something went wrong while the assistant was working.</string>
 </resources>
