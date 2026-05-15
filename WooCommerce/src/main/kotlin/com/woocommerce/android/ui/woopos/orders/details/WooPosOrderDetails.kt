@@ -34,7 +34,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountTileAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
@@ -304,7 +304,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             bottom.linkTo(parent.bottom)
         }
         if (row.isLumpSum) {
-            CustomAmountAvatar(name = row.name, modifier = imageModifier)
+            WooPosCustomAmountTileAvatar(name = row.name, modifier = imageModifier)
         } else {
             OrderLineItemImage(imageUrl = row.imageUrl, modifier = imageModifier)
         }
@@ -362,16 +362,6 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             }
         )
     }
-}
-
-@Composable
-private fun CustomAmountAvatar(name: String, modifier: Modifier = Modifier) {
-    WooPosCustomAmountInitialsAvatar(
-        name = name,
-        modifier = modifier
-            .size(56.dp.toAdaptiveIconSize())
-            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-    )
 }
 
 @Composable
