@@ -2427,6 +2427,7 @@
     <string name="ai_support_chat_resolved_message">This chat has been marked as resolved.</string>
     <string name="ai_support_chat_toolbar_contact_support">Contact Support</string>
     <string name="ai_support_chat_mark_resolved">Mark Resolved</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Cancel</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">This will close the chat actions for this conversation.</string>
     <string name="ai_support_chat_escalation_transcript_header">Following is the transcript of an in-app AI support chat session:</string>
