@@ -149,7 +149,7 @@ class WooPosCartViewModelTest {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
-    private val customAmountCartHandler: WooPosCustomAmountCartHandler = WooPosCustomAmountCartHandler(formatPrice)
+    private val customAmountCartHandler: WooPosCustomAmountCartHandler = WooPosCustomAmountCartHandler()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
@@ -1862,6 +1862,29 @@ class WooPosCartViewModelTest {
         assertThat(customAmount.amount).isEqualByComparingTo(BigDecimal("7.50"))
         assertThat(customAmount.formattedAmount).isEqualTo("$7.50")
         assertThat(customAmount.isTaxable).isTrue()
+    }
+
+    @Test
+    fun `given empty cart, when first custom amount is submitted, then new transaction lifecycle starts`() = runTest {
+        // GIVEN
+        whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+        val sut = createSut()
+        sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.CustomAmountSubmitted(
+                name = "Service",
+                amount = BigDecimal("7.50"),
+                isTaxable = false,
+                editingItemNumber = null,
+            )
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+        verify(analyticsTracker).track(InteractionWithCustomerStarted)
     }
 
     @Test
