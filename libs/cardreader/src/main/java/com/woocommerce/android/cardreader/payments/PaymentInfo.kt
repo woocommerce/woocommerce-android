@@ -16,10 +16,22 @@ data class PaymentInfo(
     val orderKey: String?,
     val feeAmount: Long?,
     val channel: PaymentChannel?,
+    val cardPresentCaptureMethod: CardPresentCaptureMethod? = null,
+    val terminalPaymentPreparation: TerminalPaymentPreparation = TerminalPaymentPreparation.NONE,
     internal val countryCode: String? = null,
 ) {
     sealed class PaymentChannel(val value: String) {
         data object StoreManager : PaymentChannel("mobile_store_management")
         data object Pos : PaymentChannel("mobile_pos")
+    }
+
+    enum class CardPresentCaptureMethod {
+        MANUAL_PREFERRED,
+    }
+
+    enum class TerminalPaymentPreparation {
+        NONE,
+        CANADA_INTERAC,
+        AUSTRALIA_CARD_PRESENT,
     }
 }

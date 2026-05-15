@@ -232,7 +232,9 @@ internal class CardReaderRemoteNsd(
         const val TXT_KEY_DEVICE_NAME = "name"
         const val TXT_KEY_SITE_HASH = "siteHash"
         const val TXT_KEY_DEVICE_ID = "did"
-        const val PROTOCOL_VERSION = "1"
+
+        // Bump when collect-payment messages change in ways that affect payment correctness.
+        const val PROTOCOL_VERSION = "2"
         private const val SERVICE_NAME_PREFIX = "woopos-remote"
         private const val SUFFIX_RANGE_EXCLUSIVE = 0x10000
         private const val HEX_RADIX = 16

@@ -22,6 +22,7 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
         whenever(featureFlagRepository.awaitRemoteFlagsLoaded()).thenReturn(Unit)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(false)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)).thenReturn(false)
         sut = WooPosSupportedCountries(featureFlagRepository)
     }
 
@@ -67,7 +68,7 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given both flags on, when supportedCountryCurrencyPairs called, then all 16 pairs returned and AU absent`() = testBlocking {
+    fun `given primary and EU extended flags on, when supportedCountryCurrencyPairs called, then all 16 pairs returned and AU absent`() = testBlocking {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
 
@@ -77,15 +78,30 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given both flags on, when supportedCountries called, then all country codes returned`() = testBlocking {
+    fun `given AU flag on, when supportedCountryCurrencyPairs called, then base plus AU returned`() = testBlocking {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)).thenReturn(true)
+
+        assertThat(sut.supportedCountryCurrencyPairs())
+            .containsExactlyInAnyOrder(
+                "us" to "usd",
+                "pr" to "usd",
+                "gb" to "gbp",
+                "au" to "aud",
+            )
+    }
+
+    @Test
+    fun `given all expansion flags on, when supportedCountries called, then all country codes returned`() = testBlocking {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)).thenReturn(true)
 
         assertThat(sut.supportedCountries())
             .containsExactlyInAnyOrder(
                 "us", "pr", "gb",
                 "fr", "de", "ie", "nl", "sg", "nz",
                 "at", "be", "fi", "it", "lu", "pt", "es",
+                "au",
             )
     }
 }

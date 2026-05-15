@@ -38,4 +38,5 @@ enum class FeatureFlag(
     SMARTER_NOTIFICATIONS("smarter_notifications", localValue = PackageUtils.isDebugBuild()),
     IPP_COUNTRY_EXPANSION("woo_ipp_country_expansion"),
     IPP_COUNTRY_EXPANSION_EU_EXTENDED("woo_ipp_country_expansion_eu_extended"),
+    IPP_AUSTRALIA_WOOPAYMENTS("woo_ipp_australia_woopayments"),
 }
