@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Successful.PaymentAlreadyCaptured
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Successful.Success
+import com.woocommerce.android.cardreader.CardReaderStore.PreparePaymentResponse
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentError
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.AMOUNT_TOO_SMALL
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.CAPTURE_ERROR
@@ -16,6 +17,8 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentError
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.PAYMENT_ALREADY_CAPTURED
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentResponsePayload
+import org.wordpress.android.fluxc.model.payments.inperson.WCPrepareTerminalPaymentResponsePayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import javax.inject.Inject
 
 class CapturePaymentResponseMapper @Inject constructor() {
@@ -28,6 +31,11 @@ class CapturePaymentResponseMapper @Inject constructor() {
         SERVER_ERROR -> ServerError(response.error.messageOrDefault())
         NETWORK_ERROR -> NetworkError(response.error.messageOrDefault())
         AMOUNT_TOO_SMALL -> mapAmountTooSmallError(response)
+    }
+
+    fun mapResponse(response: WCPrepareTerminalPaymentResponsePayload) = when (response.error) {
+        null -> PreparePaymentResponse.Success
+        else -> PreparePaymentResponse.Error(response.error.messageOrDefault())
     }
 
     private fun mapAmountTooSmallError(response: WCCapturePaymentResponsePayload): CaptureError {
@@ -51,6 +59,8 @@ class CapturePaymentResponseMapper @Inject constructor() {
     }
 
     private fun WCCapturePaymentError?.messageOrDefault() = this?.message ?: "No error message provided"
+
+    private fun WooError?.messageOrDefault() = this?.message ?: "No error message provided"
 
     companion object {
         private const val MINIMUM_AMOUNT_CURRENCY_KEY = "minimum_amount_currency"

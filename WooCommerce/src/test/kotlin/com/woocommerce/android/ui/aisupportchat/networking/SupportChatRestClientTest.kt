@@ -34,12 +34,14 @@ class SupportChatRestClientTest : BaseUnitTest() {
     private val userAgent: UserAgent = mock()
 
     private lateinit var urlCaptor: KArgumentCaptor<String>
+    private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var bodyCaptor: KArgumentCaptor<Map<String, Any>>
     private lateinit var restClient: SupportChatRestClient
 
     @Before
     fun setUp() {
         urlCaptor = argumentCaptor()
+        paramsCaptor = argumentCaptor()
         bodyCaptor = argumentCaptor()
         restClient = SupportChatRestClient(
             wpComGsonRequestBuilder = wpComGsonRequestBuilder,
@@ -75,20 +77,22 @@ class SupportChatRestClientTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given existing chat, when sendFollowUpMessage, then posts to slug-and-id URL with message only`() =
+    fun `given existing chat, when sendFollowUpMessage, then posts to slug-and-id URL with message and session id`() =
         testBlocking {
             stubPostResponse()
 
             val result = restClient.sendFollowUpMessage(
                 botSlug = BOT_SLUG,
                 chatId = CHAT_ID,
+                sessionId = SESSION_ID,
                 message = MESSAGE
             )
 
             assertThat(urlCaptor.firstValue)
                 .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
-            assertThat(bodyCaptor.firstValue).containsOnlyKeys("message")
+            assertThat(bodyCaptor.firstValue).containsOnlyKeys("message", "session_id")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
+            assertThat(bodyCaptor.firstValue["session_id"]).isEqualTo(SESSION_ID)
             assertThat(result).isInstanceOf(Response.Success::class.java)
             assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
         }
@@ -101,6 +105,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
 
         assertThat(urlCaptor.firstValue)
             .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
+        assertThat(paramsCaptor.firstValue).isEmpty()
         assertThat(result).isInstanceOf(Response.Success::class.java)
         assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
     }
@@ -136,7 +141,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
         )
         stubPostResponse(error = error)
 
-        val result = restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, MESSAGE)
+        val result = restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, SESSION_ID, MESSAGE)
 
         assertThat(result).isInstanceOf(Response.Error::class.java)
         assertThat((result as Response.Error).error.type).isEqualTo(BaseRequest.GenericErrorType.TIMEOUT)
@@ -190,7 +195,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
             wpComGsonRequestBuilder.syncGetRequest(
                 restClient = eq(restClient),
                 url = urlCaptor.capture(),
-                params = eq(emptyMap()),
+                params = paramsCaptor.capture(),
                 clazz = eq(SupportChatResponse::class.java),
                 enableCaching = any(),
                 cacheTimeToLive = any(),
@@ -203,14 +208,15 @@ class SupportChatRestClientTest : BaseUnitTest() {
 
     private fun supportChatResponse() = SupportChatResponse(
         chatId = CHAT_ID,
-        sessionId = "session-abc-123",
+        sessionId = SESSION_ID,
         botSlug = BOT_SLUG,
         botVersion = "v1.0.0"
     )
 
     private companion object {
-        const val BOT_SLUG = "woo-workflow-support_mobile_inapp"
+        const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 4242L
+        const val SESSION_ID = "session-abc-123"
         const val MESSAGE = "I can't load my orders"
     }
 }

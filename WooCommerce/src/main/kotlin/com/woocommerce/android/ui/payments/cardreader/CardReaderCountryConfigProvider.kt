@@ -41,6 +41,7 @@ class CardReaderCountryConfigProvider @Inject constructor(
             "LU" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
             "PT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
             "ES" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
+            "AU" to FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS,
         )
     }
 }

@@ -114,7 +114,7 @@ class SupportChatBookmarkDaoTest {
         chatId: Long,
         localSiteId: LocalId = DEFAULT_SITE_ID,
         remoteSiteId: Long = 100L,
-        botSlug: String = "woo-workflow-support_mobile_inapp",
+        botSlug: String = "woo-workflow-support_mobile_inapp_all_users",
         title: String? = "Support chat",
         createdAt: Long = 1_000L,
         updatedAt: Long = 1_000L

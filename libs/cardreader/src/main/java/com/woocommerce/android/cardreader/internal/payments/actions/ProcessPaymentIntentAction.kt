@@ -32,4 +32,36 @@ internal class ProcessPaymentIntentAction(
             Failure(e)
         }
     }
+
+    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): ProcessPaymentIntentStatus {
+        logWrapper.d(LOG_TAG, "Collecting payment method")
+        return try {
+            val collectedPaymentIntent = terminal.collectPaymentMethod(paymentIntent)
+            logWrapper.d(LOG_TAG, "Collecting payment method succeeded")
+            Success(collectedPaymentIntent)
+        } catch (e: TerminalException) {
+            logWrapper.e(
+                LOG_TAG,
+                "Collecting payment method failed. " +
+                    "Message: ${e.errorMessage}, DeclineCode: ${e.apiError?.declineCode}"
+            )
+            Failure(e)
+        }
+    }
+
+    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): ProcessPaymentIntentStatus {
+        logWrapper.d(LOG_TAG, "Confirming payment intent")
+        return try {
+            val confirmedPaymentIntent = terminal.confirmPaymentIntent(paymentIntent)
+            logWrapper.d(LOG_TAG, "Confirming payment intent succeeded")
+            Success(confirmedPaymentIntent)
+        } catch (e: TerminalException) {
+            logWrapper.e(
+                LOG_TAG,
+                "Confirming payment intent failed. " +
+                    "Message: ${e.errorMessage}, DeclineCode: ${e.apiError?.declineCode}"
+            )
+            Failure(e)
+        }
+    }
 }

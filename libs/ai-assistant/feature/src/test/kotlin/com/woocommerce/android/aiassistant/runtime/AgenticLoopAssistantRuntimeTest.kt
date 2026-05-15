@@ -2,16 +2,16 @@ package com.woocommerce.android.aiassistant.runtime
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.automattic.eventhorizon.AiAssistantErrorKindValue
+import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
-import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
-import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
@@ -19,27 +19,27 @@ import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.loop.ToolDecision
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreview
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewField
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProvider
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
-import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewText
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
-import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
-import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryErrorKind
-import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryEvent
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
-import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
-import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
-import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
@@ -50,14 +50,15 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -157,46 +158,6 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `when loop finish carries error, then runtime records sanitized telemetry`() = runTest {
-        val telemetry = RecordingAssistantTelemetry()
-        val error = AssistantError.BadRequest(
-            diagnostics = Diagnostics(
-                transport = TransportDiagnostics(
-                    httpStatus = 400,
-                    requestId = "request-1",
-                    retryAfterMs = 1_000L,
-                    bodySnippet = "raw backend payload",
-                )
-            )
-        )
-        val runtime = runtime(
-            agenticLoop = FakeAgenticLoop(
-                events = listOf(
-                    LoopEvent.Finished(
-                        outcome = LoopOutcome.FAILED,
-                        updatedHistory = emptyList(),
-                        retryAffordance = RetryAffordance.None,
-                        error = error,
-                    )
-                )
-            ),
-            assistantTelemetry = telemetry,
-        )
-
-        runtime.startTurn(givenTurnRequest()).toList()
-
-        assertThat(telemetry.events).containsExactly(
-            AssistantTelemetryEvent(
-                kind = AssistantTelemetryErrorKind.BAD_REQUEST,
-                httpStatus = 400,
-                requestId = "request-1",
-                retryAfterMs = 1_000L,
-            )
-        )
-        assertThat(telemetry.events.single().toString()).doesNotContain("raw backend payload")
-    }
-
-    @Test
     fun `when loop requests confirmation, then runtime emits inline confirmation card data`() = runTest {
         val request = ConfirmationRequest(
             id = "confirmation-1",
@@ -208,18 +169,17 @@ class AgenticLoopAssistantRuntimeTest {
             },
             safetyLevel = ToolSafetyLevel.UNSAFE,
         )
-        val snapshot = ConfirmationSnapshot(
-            currentValues = mapOf(
-                "status" to "pending",
-            )
-        )
+        val previewRegistry = FakePreviewRegistry()
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
-            snapshotResolver = FakeSnapshotResolver(snapshot),
+            toolRegistry = FixedToolRegistry(listOf(orderUpdateDescriptor())),
+            confirmationPreviewProviderRegistry = previewRegistry,
         )
 
         val events = runtime.startTurn(givenTurnRequest()).toList()
 
+        assertThat(previewRegistry.receivedContext.request).isEqualTo(request)
+        assertThat(previewRegistry.receivedContext.descriptor).isEqualTo(orderUpdateDescriptor())
         assertThat(events).containsExactly(
             AssistantRuntimeEvent.AwaitingConfirmation(
                 AssistantConfirmationCard(
@@ -234,7 +194,7 @@ class AgenticLoopAssistantRuntimeTest {
                     ),
                     state = AssistantConfirmationCardState.PENDING,
                     preview = RenderedConfirmationPreview(
-                        message = "Update order #123: emails the customer",
+                        message = "Preview message",
                         fields = listOf(
                             RenderedConfirmationPreviewField(
                                 name = "status",
@@ -249,6 +209,35 @@ class AgenticLoopAssistantRuntimeTest {
             )
         )
     }
+
+    @Test
+    fun `given confirmation descriptor is missing, when runtime builds card, then fallback descriptor is used`() =
+        runTest {
+            val request = ConfirmationRequest(
+                id = "confirmation-1",
+                toolCallId = "call-1",
+                toolName = "mystery_write",
+                arguments = buildJsonObject { put("reason", "Preview") },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val previewRegistry = FakePreviewRegistry()
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
+                toolRegistry = FixedToolRegistry(emptyList()),
+                confirmationPreviewProviderRegistry = previewRegistry,
+            )
+
+            runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(previewRegistry.receivedContext.descriptor).isEqualTo(
+                ToolDescriptor(
+                    name = "mystery_write",
+                    description = "",
+                    inputSchema = buildJsonObject {},
+                    safetyLevel = ToolSafetyLevel.UNSAFE,
+                )
+            )
+        }
 
     @Test
     fun `when loop resolves confirmation, then runtime forwards the resolution event`() = runTest {
@@ -283,7 +272,7 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(call),
-                    LoopEvent.ToolCallFinished(result),
+                    loopToolCallFinished(result),
                 )
             ),
         )
@@ -295,7 +284,15 @@ class AgenticLoopAssistantRuntimeTest {
                 toolCallId = "call-1",
                 toolName = "orders_get",
             ),
-            AssistantRuntimeEvent.ToolCallFinished(toolCallId = "call-1"),
+            AssistantRuntimeEvent.ToolCallFinished(
+                toolCallId = "call-1",
+                toolName = "orders_get",
+                status = AiAssistantToolStatusValue.Success,
+                errorKind = null,
+                durationMs = null,
+                emitTelemetry = true,
+                telemetryContext = givenTurnRequest().telemetryContext,
+            ),
         )
     }
 
@@ -333,6 +330,36 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `when loop emits rejected safety decision, then runtime emits failed tool telemetry event`() = runTest {
+        val runtime = runtime(
+            agenticLoop = FakeAgenticLoop(
+                events = listOf(
+                    loopToolCallFinished(
+                        result = ToolResult.RejectedBySafety("call-1"),
+                        toolName = "orders_update",
+                        decision = ToolDecision.REJECTED_BY_SAFETY,
+                        durationMs = null,
+                    )
+                )
+            ),
+        )
+
+        val events = runtime.startTurn(givenTurnRequest()).toList()
+
+        assertThat(events).containsExactly(
+            AssistantRuntimeEvent.ToolCallFinished(
+                toolCallId = "call-1",
+                toolName = "orders_update",
+                status = AiAssistantToolStatusValue.Failure,
+                errorKind = AiAssistantErrorKindValue.ValidationError,
+                durationMs = null,
+                emitTelemetry = true,
+                telemetryContext = givenTurnRequest().telemetryContext,
+            )
+        )
+    }
+
+    @Test
     fun `when confirmation is resolved, then runtime forwards the core confirmation result to safety orchestrator`() =
         runTest {
             val safetyOrchestrator = FakeSafetyOrchestrator()
@@ -361,9 +388,9 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-validation")),
-                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                    loopToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-success")),
-                    LoopEvent.ToolCallFinished(
+                    loopToolCallFinished(
                         ToolResult.Success(
                             toolCallId = "call-success",
                             structured = buildJsonObject { put("rendered", 1) },
@@ -371,7 +398,7 @@ class AgenticLoopAssistantRuntimeTest {
                         )
                     ),
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-transport")),
-                    LoopEvent.ToolCallFinished(ToolResult.TransportError("call-transport", retryable = true)),
+                    loopToolCallFinished(ToolResult.TransportError("call-transport", retryable = true)),
                 )
             )
         )
@@ -407,7 +434,7 @@ class AgenticLoopAssistantRuntimeTest {
                             arguments = buildJsonObject {},
                         )
                     ),
-                    LoopEvent.ToolCallFinished(
+                    loopToolCallFinished(
                         ToolResult.Success(
                             toolCallId = "call-orders",
                             structured = buildJsonObject { put("ok", true) },
@@ -430,7 +457,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-analytics")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-analytics",
                                 structured = analyticsOrdersStructured(),
@@ -452,7 +479,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-stats",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -479,7 +506,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-stats")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-stats",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -507,7 +534,7 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-validation")),
-                    LoopEvent.ToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
+                    loopToolCallFinished(ToolResult.ValidationError("call-validation", "bad args")),
                 )
             )
         )
@@ -524,7 +551,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(analyticsOrdersCall(id = "call-arbitrary")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-arbitrary",
                                 structured = buildJsonObject {
@@ -551,7 +578,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-malformed")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-malformed",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -584,7 +611,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(
                     events = listOf(
                         LoopEvent.ToolCallStarted(showCardsCall(id = "call-partial")),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-partial",
                                 structured = buildJsonObject { put("rendered", 1) },
@@ -616,7 +643,7 @@ class AgenticLoopAssistantRuntimeTest {
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.ToolCallStarted(showCardsCall(id = "call-empty")),
-                    LoopEvent.ToolCallFinished(
+                    loopToolCallFinished(
                         ToolResult.Success(
                             toolCallId = "call-empty",
                             structured = buildJsonObject { put("rendered", 0) },
@@ -637,6 +664,68 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given show cards structured success, when adapted, then aggregate show cards telemetry is emitted`() =
+        runTest {
+            val request = givenTurnRequest()
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-show-cards")),
+                        loopToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-show-cards",
+                                structured = showCardsStructured(
+                                    requested = 3,
+                                    rendered = 1,
+                                    missing = 1,
+                                    rejected = 1,
+                                ),
+                                uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(request).toList()
+
+            assertThat(events.filterIsInstance<AssistantRuntimeEvent.ShowCardsProcessed>()).containsExactly(
+                AssistantRuntimeEvent.ShowCardsProcessed(
+                    counts = ShowCardsCounts(
+                        requestedCount = 3,
+                        renderedCount = 1,
+                        missingCount = 1,
+                        rejectedCount = 1,
+                    ),
+                    telemetryContext = request.telemetryContext,
+                )
+            )
+        }
+
+    @Test
+    fun `given show cards success with malformed structured payload, when adapted, then aggregate telemetry is skipped`() =
+        runTest {
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(
+                    events = listOf(
+                        LoopEvent.ToolCallStarted(showCardsCall(id = "call-malformed")),
+                        loopToolCallFinished(
+                            ToolResult.Success(
+                                toolCallId = "call-malformed",
+                                structured = buildJsonObject { put("requested", "not a number") },
+                                uiStructured = showCardsUiStructured(orderPayload(id = "123", title = "#123")),
+                            )
+                        ),
+                    )
+                )
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            assertThat(events.filterIsInstance<AssistantRuntimeEvent.ShowCardsProcessed>()).isEmpty()
+        }
+
+    @Test
     fun `given orders list success with json cards key, when adapted, then no fallback cards are emitted`() =
         runTest {
             val runtime = runtime(
@@ -649,7 +738,7 @@ class AgenticLoopAssistantRuntimeTest {
                                 arguments = buildJsonObject {},
                             )
                         ),
-                        LoopEvent.ToolCallFinished(
+                        loopToolCallFinished(
                             ToolResult.Success(
                                 toolCallId = "call-arbitrary",
                                 structured = buildJsonObject {
@@ -683,25 +772,31 @@ class AgenticLoopAssistantRuntimeTest {
 
     private fun runtime(
         agenticLoop: AgenticLoop = FakeAgenticLoop(events = emptyList()),
+        toolRegistry: ToolRegistry = EmptyToolRegistry,
         safetyOrchestrator: SafetyOrchestrator = FakeSafetyOrchestrator(),
-        snapshotResolver: WooCommerceConfirmationSnapshotResolver = FakeSnapshotResolver(),
+        confirmationPreviewProviderRegistry: ConfirmationPreviewProviderRegistry = FakePreviewRegistry(),
         systemPrompt: String = "system prompt v1",
-        assistantTelemetry: AssistantTelemetry = RecordingAssistantTelemetry(),
     ) = AgenticLoopAssistantRuntime(
         agenticLoop = agenticLoop,
-        toolRegistry = EmptyToolRegistry,
+        toolRegistry = toolRegistry,
         toolCatalogSelector = PassThroughToolCatalogSelector,
         safetyOrchestrator = safetyOrchestrator,
-        confirmationPreviewBuilder = WooCommerceConfirmationPreviewBuilder(),
+        confirmationPreviewProviderRegistry = confirmationPreviewProviderRegistry,
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
-        confirmationSnapshotResolver = snapshotResolver,
         cardParser = AssistantCardUiStructuredParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
-        assistantTelemetry = assistantTelemetry,
+        json = json,
     )
 
-    private fun givenTurnRequest() = AssistantTurnRequest(
+    private fun givenTurnRequest(
+        telemetryContext: AssistantTelemetryContext = AssistantTelemetryContext(
+            conversationId = "conversation-1",
+            requestId = "request-1",
+            messageId = "message-1",
+        ),
+    ) = AssistantTurnRequest(
         conversationId = "conversation-1",
+        telemetryContext = telemetryContext,
         siteId = 123L,
         toolScope = ToolScope.GLOBAL,
         userMessage = "Hello",
@@ -712,6 +807,18 @@ class AgenticLoopAssistantRuntimeTest {
         id = id,
         name = "show_cards",
         arguments = buildJsonObject {},
+    )
+
+    private fun loopToolCallFinished(
+        result: ToolResult,
+        toolName: String = "",
+        decision: ToolDecision = ToolDecision.EXECUTED,
+        durationMs: Long? = null,
+    ) = LoopEvent.ToolCallFinished(
+        result = result,
+        toolName = toolName,
+        decision = decision,
+        durationMs = durationMs,
     )
 
     private fun analyticsOrdersCall(id: String) = ToolCall(
@@ -734,6 +841,39 @@ class AgenticLoopAssistantRuntimeTest {
 
     private fun showCardsUiStructured(vararg cards: ShowCardPayload) =
         json.encodeToJsonElement(ShowCardsUiStructured(cards = cards.toList()))
+
+    private fun showCardsStructured(
+        requested: Int,
+        rendered: Int,
+        missing: Int,
+        rejected: Int,
+    ) = buildJsonObject {
+        put("requested", requested)
+        put("validated", requested - rejected)
+        put("rendered", rendered)
+        putJsonArray("resolved_refs") {}
+        putJsonArray("missing_refs") {
+            repeat(missing) { index ->
+                add(
+                    buildJsonObject {
+                        put("family", "order")
+                        put("id", "missing-$index")
+                        put("reason", "not_found")
+                    }
+                )
+            }
+        }
+        putJsonArray("rejected_refs") {
+            repeat(rejected) { index ->
+                add(
+                    buildJsonObject {
+                        put("index", index)
+                        put("reason", "duplicate_ref")
+                    }
+                )
+            }
+        }
+    }
 
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
         family = "order",
@@ -907,6 +1047,15 @@ class AgenticLoopAssistantRuntimeTest {
             error("Unexpected tool execution in runtime adapter test")
     }
 
+    private class FixedToolRegistry(
+        private val descriptors: List<ToolDescriptor>,
+    ) : ToolRegistry {
+        override fun descriptors(): List<ToolDescriptor> = descriptors
+
+        override suspend fun execute(call: ToolCall): ToolResult =
+            error("Unexpected tool execution in runtime adapter test")
+    }
+
     private object PassThroughToolCatalogSelector : ToolCatalogSelector {
         override fun select(scope: ToolScope, fullRegistry: List<ToolDescriptor>): CatalogSnapshot =
             CatalogSnapshot(scope = scope, tools = fullRegistry)
@@ -931,23 +1080,42 @@ class AgenticLoopAssistantRuntimeTest {
         override fun cancelPending(requestId: String): Boolean = false
     }
 
-    private class FakeSnapshotResolver(
-        private val snapshot: ConfirmationSnapshot? = null,
-    ) : WooCommerceConfirmationSnapshotResolver(
-        ordersDataSource = mock<AIOrdersDataSource>(),
-        productsDataSource = mock<AIProductsDataSource>(),
-        variationsDataSource = mock<AIProductVariationsDataSource>(),
-    ) {
-        override suspend fun resolve(request: ConfirmationRequest): ConfirmationSnapshot? = snapshot
-    }
+    private class FakePreviewRegistry(
+        private val preview: ConfirmationPreview = ConfirmationPreview(
+            message = ConfirmationPreviewText.Raw("Preview message"),
+            fields = listOf(
+                ConfirmationPreviewField(
+                    name = "status",
+                    label = ConfirmationPreviewText.Raw("Status"),
+                    value = ConfirmationPreviewText.Raw("processing"),
+                    beforeValue = ConfirmationPreviewText.Raw("pending"),
+                )
+            ),
+        ),
+    ) : ConfirmationPreviewProviderRegistry {
+        lateinit var receivedContext: ConfirmationPreviewContext
 
-    private class RecordingAssistantTelemetry : AssistantTelemetry {
-        val events = mutableListOf<AssistantTelemetryEvent>()
+        override fun providerFor(context: ConfirmationPreviewContext): ConfirmationPreviewProvider =
+            error("providerFor is not used by AgenticLoopAssistantRuntime")
 
-        override fun trackAssistantError(event: AssistantTelemetryEvent) {
-            events += event
+        override suspend fun buildPreview(context: ConfirmationPreviewContext): ConfirmationPreview {
+            receivedContext = context
+            return preview
         }
     }
+
+    private fun orderUpdateDescriptor() = ToolDescriptor(
+        name = "orders_update",
+        description = "Update order",
+        inputSchema = buildJsonObject {
+            put("type", "object")
+            putJsonObject("properties") {
+                putJsonObject("id") { put("type", "integer") }
+                putJsonObject("status") { put("type", "string") }
+            }
+        },
+        safetyLevel = ToolSafetyLevel.UNSAFE,
+    )
 
     private companion object {
         private const val ANALYTICS_STATS_ID =

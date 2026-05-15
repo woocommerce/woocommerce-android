@@ -117,6 +117,7 @@ object AppPrefs {
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
+        ENABLE_SIMULATED_EFTPOS,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
@@ -150,6 +151,7 @@ object AppPrefs {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
     }
 
@@ -283,6 +285,10 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
+    var isEftposEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, false)
+        set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, value)
+
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateFrequencyUiModel.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
@@ -342,6 +348,19 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var isAiAssistantEarlyAccessNoticeDismissed: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
+            default = false,
+        )
+        set(value) {
+            val committed = getPreferences()
+                .edit()
+                .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
+                .commit()
+            check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 

@@ -11,6 +11,8 @@ import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
+import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentIntentConfig
+import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentPreparationResolver
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -31,6 +33,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
+    private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
+
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
         val result = collectInternal(order, onCaptureStarting)
         when (result) {
@@ -41,10 +45,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     }
 
     private suspend fun collectInternal(order: Order, onCaptureStarting: suspend () -> Unit): Result {
-        val connected = remoteReaderSession.state.value as? WooPosRemoteReaderSession.State.Connected
-        if (connected?.reader?.isSimulated == true) {
-            onCaptureStarting()
-            return simulatePayment()
+        if (isSimulatedReaderConnected()) {
+            return simulatePayment(onCaptureStarting)
         }
 
         val site = selectedSite.get()
@@ -74,14 +76,32 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             storeName = site.name.ifEmpty { null },
             siteUrl = site.url.ifEmpty { null },
             countryCode = countryCode,
-            feeAmount = if (countryCode == CANADA_COUNTRY_CODE) CANADA_FEE_FLAT_IN_CENTS else null,
+            feeAmount = TerminalPaymentIntentConfig.calculateApplicationFeeInCents(
+                countryCode = countryCode,
+                orderTotal = order.total,
+                currencyCode = order.currency,
+            ),
             channel = PaymentInfo.PaymentChannel.Pos,
+            cardPresentCaptureMethod = TerminalPaymentIntentConfig.cardPresentCaptureMethod(countryCode),
+            terminalPaymentPreparation = terminalPaymentPreparationResolver.resolve(
+                countryCode = countryCode,
+                site = site,
+                onRouteCheckFailed = ::logTerminalPaymentPreparationRouteCheckFailed,
+            ),
         )
 
+        return collectRemotePayment(order.id, paymentInfo, onCaptureStarting)
+    }
+
+    private suspend fun collectRemotePayment(
+        orderId: Long,
+        paymentInfo: PaymentInfo,
+        onCaptureStarting: suspend () -> Unit,
+    ): Result {
         return when (val outcome = remoteReaderSession.sendCollectPayment(paymentInfo)) {
             is CollectPaymentOutcome.Success -> {
                 onCaptureStarting()
-                capture(order.id, outcome.paymentIntentId)
+                capture(orderId, outcome.paymentIntentId)
             }
             is CollectPaymentOutcome.Rejected -> {
                 logger.e("Remote payment rejected: ${outcome.code} - ${outcome.description}")
@@ -107,8 +127,15 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         }
     }
 
+    private fun isSimulatedReaderConnected(): Boolean =
+        (remoteReaderSession.state.value as? WooPosRemoteReaderSession.State.Connected)?.reader?.isSimulated == true
+
     private fun genericFailureMessage(): String =
         resourceProvider.getString(R.string.woopos_remote_payment_failed_generic)
+
+    private fun logTerminalPaymentPreparationRouteCheckFailed() {
+        logger.d("Skipping terminal payment preparation because the WCPay endpoint could not be verified.")
+    }
 
     private suspend fun capture(orderId: Long, paymentIntentId: String): Result =
         when (val response = cardReaderStore.capturePaymentIntent(orderId, paymentIntentId)) {
@@ -116,7 +143,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             is CapturePaymentResponse.Error -> Result.Failed(response.message)
         }
 
-    private suspend fun simulatePayment(): Result {
+    private suspend fun simulatePayment(onCaptureStarting: suspend () -> Unit): Result {
+        onCaptureStarting()
         delay(SIMULATED_PAYMENT_DELAY_MS)
         return Result.Completed
     }
@@ -127,8 +155,6 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     }
 
     private companion object {
-        const val CANADA_COUNTRY_CODE = "CA"
-        const val CANADA_FEE_FLAT_IN_CENTS = 15L
         const val SIMULATED_PAYMENT_DELAY_MS = 1_500L
         const val CONNECTION_LOST_MARKER = "Connection to phone reader was lost"
     }

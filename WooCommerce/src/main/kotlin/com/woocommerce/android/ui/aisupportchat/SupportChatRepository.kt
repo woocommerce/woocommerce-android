@@ -26,17 +26,26 @@ class SupportChatRepository @Inject constructor(
         botSlug: String,
         message: String,
         context: JsonObject,
-        chatId: Long? = null
+        chatId: Long? = null,
+        sessionId: String? = null
     ): Result<SupportChatResponse> = withContext(dispatchers.io) {
         val response = if (chatId == null) {
             restClient.sendMessage(botSlug = botSlug, message = message, context = context)
         } else {
-            restClient.sendFollowUpMessage(botSlug = botSlug, chatId = chatId, message = message)
+            restClient.sendFollowUpMessage(
+                botSlug = botSlug,
+                chatId = chatId,
+                sessionId = sessionId,
+                message = message
+            )
         }
         response.toResult()
     }
 
-    suspend fun fetchChat(botSlug: String, chatId: Long): Result<SupportChatResponse> = withContext(dispatchers.io) {
+    suspend fun fetchChat(
+        botSlug: String,
+        chatId: Long
+    ): Result<SupportChatResponse> = withContext(dispatchers.io) {
         restClient.fetchChat(botSlug = botSlug, chatId = chatId).toResult()
     }
 

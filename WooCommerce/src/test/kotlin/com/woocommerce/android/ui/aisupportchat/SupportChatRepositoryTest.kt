@@ -66,24 +66,25 @@ class SupportChatRepositoryTest : BaseUnitTest() {
 
         assertThat(result.getOrNull()).isEqualTo(response)
         verify(restClient).sendMessage(BOT_SLUG, MESSAGE, CONTEXT)
-        verify(restClient, never()).sendFollowUpMessage(any(), any(), any())
+        verify(restClient, never()).sendFollowUpMessage(any(), any(), any(), any())
     }
 
     @Test
     fun `given existing chat, when sending message, then rest client sends follow up message`() = testBlocking {
         val response = createResponse()
-        whenever(restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, MESSAGE))
+        whenever(restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, SESSION_ID, MESSAGE))
             .thenReturn(Response.Success(response, emptyList()))
 
         val result = repository.sendMessage(
             botSlug = BOT_SLUG,
             message = MESSAGE,
             context = CONTEXT,
-            chatId = CHAT_ID
+            chatId = CHAT_ID,
+            sessionId = SESSION_ID
         )
 
         assertThat(result.getOrNull()).isEqualTo(response)
-        verify(restClient).sendFollowUpMessage(BOT_SLUG, CHAT_ID, MESSAGE)
+        verify(restClient).sendFollowUpMessage(BOT_SLUG, CHAT_ID, SESSION_ID, MESSAGE)
         verify(restClient, never()).sendMessage(any(), any(), any())
     }
 
@@ -104,14 +105,15 @@ class SupportChatRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given failed send response, when sending follow up message, then failure result is returned`() = testBlocking {
-        whenever(restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, MESSAGE))
+        whenever(restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, SESSION_ID, MESSAGE))
             .thenReturn(Response.Error(createNetworkError()))
 
         val result = repository.sendMessage(
             botSlug = BOT_SLUG,
             message = MESSAGE,
             context = CONTEXT,
-            chatId = CHAT_ID
+            chatId = CHAT_ID,
+            sessionId = SESSION_ID
         )
 
         val exception = requireNotNull(result.exceptionOrNull()) as SupportChatRepositoryException
@@ -249,8 +251,9 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     )
 
     private companion object {
-        const val BOT_SLUG = "woo-workflow-support_mobile_inapp"
+        const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 1234L
+        const val SESSION_ID = "session-abc-123"
         const val LOCAL_SITE_ID = 10
         const val REMOTE_SITE_ID = 20L
         const val CURRENT_TIME = 1_234_567L

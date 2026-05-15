@@ -264,7 +264,12 @@ class CardReaderRemoteSession internal constructor(
         val paymentInfo = request.toPaymentInfo()
         when (val createResult = cardReaderManager.createPaymentIntent(paymentInfo)) {
             is CreatePaymentIntentResult.Success -> {
-                when (val collectResult = cardReaderManager.retrieveAndCollectPayment(createResult.clientSecret)) {
+                when (
+                    val collectResult = cardReaderManager.retrieveAndCollectPayment(
+                        createResult.clientSecret,
+                        paymentInfo
+                    )
+                ) {
                     is RetrieveAndCollectResult.Success -> accepted.send(
                         PaymentIntentResult(
                             requestId = request.requestId,
@@ -312,6 +317,8 @@ class CardReaderRemoteSession internal constructor(
         orderKey = orderKey,
         feeAmount = feeAmount,
         channel = PaymentInfo.PaymentChannel.Pos,
+        cardPresentCaptureMethod = cardPresentCaptureMethod,
+        terminalPaymentPreparation = terminalPaymentPreparation ?: PaymentInfo.TerminalPaymentPreparation.NONE,
         countryCode = countryCode,
     )
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.RestDateBounds
 import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
 import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
@@ -42,8 +43,8 @@ internal class OrdersListToolHandler @Inject constructor(
             string("search", description = "Free-text search across order content.")
             integer("customer", description = "Customer ID; resolve via customers_list first.")
             array("include", itemType = "integer", description = "Specific order IDs to include.")
-            string("after", description = "ISO-8601 lower bound on date_created.")
-            string("before", description = "ISO-8601 upper bound on date_created.")
+            string("after", description = "YYYY-MM-DD lower bound on date_created.")
+            string("before", description = "YYYY-MM-DD upper bound on date_created.")
             enum(
                 "orderby",
                 values = listOf("date", "id", "modified", "title"),
@@ -56,6 +57,7 @@ internal class OrdersListToolHandler @Inject constructor(
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
         validateAllowedArguments(call.arguments, ORDERS_LIST_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
             return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
@@ -63,6 +65,8 @@ internal class OrdersListToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
+        val dateRange = args.toRestDateRange(call.id)
+        dateRange.validationError?.let { return it }
         return dataSource.fetchOrders(
             search = args.search,
             status = args.status,
@@ -70,8 +74,8 @@ internal class OrdersListToolHandler @Inject constructor(
             perPage = args.perPage,
             customer = args.customer,
             include = args.include,
-            after = args.after,
-            before = args.before,
+            after = dateRange.after,
+            before = dateRange.before,
             orderby = args.orderby,
             order = args.order,
         ).fold(
@@ -118,6 +122,28 @@ internal class OrdersListToolHandler @Inject constructor(
         val order: String? = null,
         val page: Int = 1,
         @SerialName("per_page") val perPage: Int = 20,
+    )
+
+    private fun Args.toRestDateRange(toolCallId: String): RestDateRange {
+        val after = after?.let {
+            RestDateBounds.lowerBound(it)
+                ?: return RestDateRange(
+                    validationError = ToolResult.ValidationError(toolCallId, "after must be YYYY-MM-DD")
+                )
+        }
+        val before = before?.let {
+            RestDateBounds.upperBound(it)
+                ?: return RestDateRange(
+                    validationError = ToolResult.ValidationError(toolCallId, "before must be YYYY-MM-DD")
+                )
+        }
+        return RestDateRange(after = after, before = before)
+    }
+
+    private data class RestDateRange(
+        val after: String? = null,
+        val before: String? = null,
+        val validationError: ToolResult.ValidationError? = null,
     )
 
     @Serializable
