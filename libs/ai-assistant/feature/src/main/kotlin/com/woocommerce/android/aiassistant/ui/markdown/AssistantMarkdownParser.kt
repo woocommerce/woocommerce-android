@@ -131,7 +131,7 @@ internal object AssistantMarkdownParser {
 
         val label = markdown.substring(startIndex + 1, labelEnd)
         val url = markdown.substring(urlStart, urlEnd)
-        if (label.isBlank() || url.isBlank()) return null
+        if (label.isBlank() || url.isBlank() || !isAllowedScheme(url)) return null
 
         val linkAnnotation = LinkAnnotation.Url(
             url = url,
@@ -147,6 +147,11 @@ internal object AssistantMarkdownParser {
             )
         }
         return urlEnd + 1
+    }
+
+    private fun isAllowedScheme(url: String): Boolean {
+        val scheme = url.substringBefore(':', "").lowercase()
+        return scheme == "http" || scheme == "https"
     }
 
     private const val LINK_LABEL_START = "["

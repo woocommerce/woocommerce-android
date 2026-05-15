@@ -25,6 +25,16 @@ class AssistantMarkdownParserTest {
     }
 
     @Test
+    fun `given markdown link with unsupported scheme, when parsed, then source text is preserved`() {
+        // WHEN
+        val parsed = AssistantMarkdownParser.parse("Open [docs](javascript:alert) today.")
+
+        // THEN
+        assertThat(parsed.text).isEqualTo("Open [docs](javascript:alert) today.")
+        assertThat(parsed.getLinkAnnotations(0, parsed.length)).isEmpty()
+    }
+
+    @Test
     fun `given bold and italic markdown, when parsed, then markers are removed and styles are applied`() {
         // WHEN
         val parsed = AssistantMarkdownParser.parse("This is ***bold italic***, **bold**, and *italic*.")
