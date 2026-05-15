@@ -2378,6 +2378,7 @@
     <string name="optional_update_available_reader" translatable="false">Optional Update Available</string>
     <string name="randomly_update_reader">Randomly</string>
     <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
+    <string name="enable_eftpos_payment" translatable="false">Enable EFTPOS Payment</string>
 
     <!--
         WCToggleSingleOptionView

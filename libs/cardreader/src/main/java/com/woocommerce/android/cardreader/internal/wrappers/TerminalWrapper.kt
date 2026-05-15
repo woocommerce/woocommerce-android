@@ -131,10 +131,20 @@ internal class TerminalWrapper {
 
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
-    fun setupSimulator(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {
+    fun setupSimulator(
+        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
+        useInterac: Boolean,
+        useEftpos: Boolean,
+    ) {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
             update = mapFrequencyOptions(updateFrequency),
-            simulatedCard = SimulatedCard(if (useInterac) SimulatedCardType.INTERAC else SimulatedCardType.VISA)
+            simulatedCard = SimulatedCard(
+                when {
+                    useEftpos -> SimulatedCardType.EFTPOS_AU_DEBIT
+                    useInterac -> SimulatedCardType.INTERAC
+                    else -> SimulatedCardType.VISA
+                }
+            )
         )
     }
 

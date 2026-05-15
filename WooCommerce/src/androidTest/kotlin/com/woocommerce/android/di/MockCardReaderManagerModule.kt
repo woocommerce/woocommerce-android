@@ -70,10 +70,17 @@ class MockCardReaderManagerModule {
         override val connectionTokenProvider: CompositeConnectionTokenProvider
             get() = error("connectionTokenProvider is not used in instrumented tests")
 
-        override fun initialize(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean, isDebug: Boolean) {}
+        override fun initialize(
+            updateFrequency: SimulatorUpdateFrequency,
+            useInterac: Boolean,
+            useEftpos: Boolean,
+            isDebug: Boolean
+        ) {}
+
         override fun reinitializeSimulatedTerminal(
             updateFrequency: SimulatorUpdateFrequency,
-            useInterac: Boolean
+            useInterac: Boolean,
+            useEftpos: Boolean,
         ) {}
 
         override fun discoverReaders(
