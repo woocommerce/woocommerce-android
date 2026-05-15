@@ -179,10 +179,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             rollbackNotificationPreferences()
             showUpdateError(preferencesToSave)
         }
-        if (saveInProgressWooPushNotificationPreferences == preferencesToSave) {
-            // Clear only if another save hasn't started.
-            saveInProgressWooPushNotificationPreferences = null
-        }
+        saveInProgressWooPushNotificationPreferences = null
     }
 
     private fun showUpdateError(preferencesToSave: WooPushNotificationPreferences) {
