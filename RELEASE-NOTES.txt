@@ -4,6 +4,7 @@
 
 24.8
 -----
+- [*] Woo POS: "Other payment methods" in Checkout now opens as a bottom sheet instead of a fullscreen page (phone) or centered dialog (tablet)
 - [*] Woo POS: Use your phone as a Tap to Pay card reader for the POS tablet over Wi-Fi [https://github.com/woocommerce/woocommerce-android/pull/15781]
 - [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
 
