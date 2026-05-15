@@ -124,7 +124,9 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     @Test
     fun `given successful fetch response, when fetching chat, then success result is returned`() = testBlocking {
         val response = createResponse()
-        whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Response.Success(response, emptyList()))
+        whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(
+            Response.Success(response, emptyList())
+        )
 
         val result = repository.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)
 
