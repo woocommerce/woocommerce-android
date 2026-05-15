@@ -206,17 +206,16 @@ private fun PhoneToolbar(
     titleRes: Int,
     onCloseClick: () -> Unit,
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(
-                horizontal = WooPosSpacing.Small.value,
-                vertical = WooPosSpacing.Small.value,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(WooPosSpacing.Small.value),
     ) {
-        IconButton(onClick = onCloseClick) {
+        IconButton(
+            onClick = onCloseClick,
+            modifier = Modifier.align(Alignment.CenterStart),
+        ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(R.string.close),
@@ -230,9 +229,7 @@ private fun PhoneToolbar(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = WooPosIconSize.Large.value + WooPosSpacing.Small.value),
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }
