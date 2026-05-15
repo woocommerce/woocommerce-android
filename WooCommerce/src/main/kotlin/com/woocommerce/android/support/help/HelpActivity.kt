@@ -248,12 +248,12 @@ class HelpActivity : AppCompatActivity() {
         )
 
     private fun showAiSupportChat() {
-        val intent = if (shouldUsePreLoginAiSupportChat()) {
-            AiSupportChatActivity.createPreLoginIntent(this)
-        } else {
-            AiSupportChatActivity.createIntent(this)
-        }
-        startActivity(intent)
+        startActivity(
+            AiSupportChatActivity.createIntent(
+                context = this,
+                preLogin = shouldUsePreLoginAiSupportChat()
+            )
+        )
     }
 
     private fun shouldUsePreLoginAiSupportChat(): Boolean =

@@ -68,12 +68,9 @@ class AiSupportChatActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun createIntent(context: Context): Intent =
-            Intent(context, AiSupportChatActivity::class.java)
-
-        fun createPreLoginIntent(context: Context): Intent =
+        fun createIntent(context: Context, preLogin: Boolean = false): Intent =
             Intent(context, AiSupportChatActivity::class.java).apply {
-                putExtra(EXTRA_PRE_LOGIN, true)
+                putExtra(EXTRA_PRE_LOGIN, preLogin)
             }
 
         fun createConnectivityToolIntent(

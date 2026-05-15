@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMess
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
@@ -32,9 +33,15 @@ class AiSupportChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: SupportChatRepository,
     private val contextProvider: SupportChatContextProvider,
-    private val diagnosticsService: SupportDiagnosticsService
+    private val diagnosticsService: SupportDiagnosticsService,
+    private val accountRepository: AccountRepository
 ) : ScopedViewModel(savedStateHandle) {
-    private val _viewState = MutableStateFlow(AiSupportChatViewState(messages = initialMessages()))
+    private val _viewState = MutableStateFlow(
+        AiSupportChatViewState(
+            messages = initialMessages(),
+            canPersistChatHistory = accountRepository.isUserLoggedIn()
+        )
+    )
     val viewState = _viewState.asStateFlow()
 
     private var localMessageId = 0L
@@ -157,6 +164,7 @@ class AiSupportChatViewModel @Inject constructor(
     private fun startFromPreLogin() {
         _viewState.update {
             it.copy(
+                input = "",
                 messages = listOf(greetingMessage()),
                 hasStartedChat = true,
                 hasProceededToChat = true,
@@ -175,6 +183,7 @@ class AiSupportChatViewModel @Inject constructor(
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 hasProceededToChat = true,
+                canPersistChatHistory = accountRepository.isUserLoggedIn(),
                 showSendError = false
             )
         }
