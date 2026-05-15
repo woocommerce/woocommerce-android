@@ -165,13 +165,11 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
         saveInProgressWooPushNotificationPreferences = preferencesToSave
         // Once started, let the save request finish even if the screen is closed.
-        val result = withContext(NonCancellable + coroutineDispatchers.main) {
+        withContext(NonCancellable + coroutineDispatchers.main) {
             pushNotificationRepository.updateWooNotificationPreferences(
                 preferences = updateRequest
             )
-        }
-
-        result.onSuccess {
+        }.onSuccess {
             savedWooPushNotificationPreferences = preferencesToSave
         }.onFailure {
             if (wooPushNotificationPreferences.value != preferencesToSave) {
