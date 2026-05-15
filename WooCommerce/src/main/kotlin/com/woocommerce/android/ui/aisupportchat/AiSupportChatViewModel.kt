@@ -11,10 +11,12 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -56,9 +58,41 @@ class AiSupportChatViewModel @Inject constructor(
     fun onSendClicked() {
         val state = _viewState.value
         val message = state.input.trim()
-        if (message.isBlank() || state.isSending || !state.hasProceededToChat) return
+        if (message.isBlank() || state.isSending || !state.canSendMessages) return
 
         launch { sendMessage(message) }
+    }
+
+    fun onSendErrorDismissed() {
+        _viewState.update { it.copy(showSendError = false) }
+    }
+
+    fun onContactSupportClicked(source: HumanSupportContactSource) {
+        val state = _viewState.value
+        if (state.hasCreatedTicket || state.isSending) return
+
+        if (source == HumanSupportContactSource.ERROR_DIALOG) {
+            _viewState.update { it.copy(showSendError = false) }
+        }
+        triggerEvent(
+            ContactHumanSupport(
+                chatId = state.chatId,
+                transcript = state.messages.toTranscript(draftUserMessage = state.input.takeIf { state.showSendError }),
+                supportArea = state.latestSupportArea,
+                source = source
+            )
+        )
+    }
+
+    fun onSupportTicketCreated() {
+        _viewState.update {
+            it.copy(
+                input = "",
+                hasCreatedTicket = true,
+                showHumanSupportPrompt = false,
+                showSendError = false
+            )
+        }
     }
 
     fun onIssueSelected(issueType: SupportIssueType, issueLabel: String) {
@@ -222,11 +256,19 @@ class AiSupportChatViewModel @Inject constructor(
     ) {
         _viewState.update {
             val remoteMessages = response.messages.toUiMessages()
+            val latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea
+            val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
+            val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
+                if (response.messages.hasBotResponse()) 1 else 0
             it.copy(
                 chatId = response.chatId,
                 sessionId = response.sessionId,
                 botSlug = response.botSlug,
                 hasStartedChat = true,
+                hasSentChatMessage = true,
+                completedUserMessageResponseCount = completedUserMessageResponseCount,
+                latestSupportArea = latestSupportArea,
+                showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
                 messages = if (remoteMessages.isEmpty()) {
                     it.messages
                 } else {
@@ -254,6 +296,18 @@ class AiSupportChatViewModel @Inject constructor(
             }
         }
     }
+
+    private fun List<SupportChatMessage>.latestSupportArea(): SupportChatSupportArea? =
+        asReversed()
+            .firstOrNull { it.role == SupportChatRole.BOT && it.context?.supportArea != null }
+            ?.context
+            ?.supportArea
+
+    private fun List<SupportChatMessage>.shouldPromptHumanSupport(): Boolean =
+        any { it.role == SupportChatRole.BOT && it.context?.flags?.forwardToHumanSupport == true }
+
+    private fun List<SupportChatMessage>.hasBotResponse(): Boolean =
+        any { it.role == SupportChatRole.BOT }
 
     private fun List<AiSupportChatMessage>.mergeWithRemoteMessages(
         remoteMessages: List<AiSupportChatMessage>,
@@ -293,13 +347,17 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     private fun List<SupportChatMessage>.toUiMessages(): List<AiSupportChatMessage> =
-        map { message ->
-            AiSupportChatMessage(
-                id = "${message.role.wireValue}-${message.messageId}",
-                role = message.role.toUiRole(),
-                content = AiSupportChatMessageContent.Text(message.content)
-            )
-        }
+        filterNot { it.isBotEscalationPrompt() }
+            .map { message ->
+                AiSupportChatMessage(
+                    id = "${message.role.wireValue}-${message.messageId}",
+                    role = message.role.toUiRole(),
+                    content = AiSupportChatMessageContent.Text(message.content)
+                )
+            }
+
+    private fun SupportChatMessage.isBotEscalationPrompt(): Boolean =
+        role == SupportChatRole.BOT && context?.flags?.forwardToHumanSupport == true
 
     private fun List<AiSupportChatMessage>.supportMessages(): List<AiSupportChatMessage> =
         filter { message ->
@@ -355,6 +413,43 @@ class AiSupportChatViewModel @Inject constructor(
         return "local-$localMessageId"
     }
 
+    private fun List<AiSupportChatMessage>.toTranscript(draftUserMessage: String? = null): String =
+        buildList {
+            addAll(this@toTranscript.filter { it.content !is AiSupportChatMessageContent.Greeting })
+            draftUserMessage?.takeIf { it.isNotBlank() }?.let { draft ->
+                add(
+                    AiSupportChatMessage(
+                        id = "draft-user-message",
+                        role = AiSupportChatMessageRole.USER,
+                        content = AiSupportChatMessageContent.Text(draft)
+                    )
+                )
+            }
+        }.joinToString(separator = "\n\n") { message ->
+            val role = when (message.role) {
+                AiSupportChatMessageRole.USER -> "User"
+                AiSupportChatMessageRole.BOT -> "Bot"
+            }
+            "$role: ${message.content.transcriptText()}"
+        }
+
+    private fun AiSupportChatMessageContent.transcriptText(): String =
+        when (this) {
+            AiSupportChatMessageContent.Greeting -> ""
+            AiSupportChatMessageContent.IssuePicker -> "[Issue picker shown]"
+            AiSupportChatMessageContent.PostDiagnosticsGreeting -> "Please describe your issue in more detail."
+            is AiSupportChatMessageContent.Text -> text
+            is AiSupportChatMessageContent.DiagnosticsProgress ->
+                "[Diagnostics: ${result.statuses.toTranscriptText()}]"
+            is AiSupportChatMessageContent.DiagnosticsFailure ->
+                "[Diagnostics failed: ${result.statuses.toTranscriptText()}]"
+        }
+
+    private fun List<DiagnosticStatus>.toTranscriptText(): String =
+        joinToString(separator = ", ") { status ->
+            "${status.test.name}: ${status.status::class.java.simpleName}"
+        }
+
     companion object {
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
 
@@ -376,17 +471,45 @@ data class AiSupportChatViewState(
     val isRunningDiagnostics: Boolean = false,
     val isSending: Boolean = false,
     val canPersistChatHistory: Boolean = true,
-    val showSendError: Boolean = false
+    val showSendError: Boolean = false,
+    val showHumanSupportPrompt: Boolean = false,
+    val hasCreatedTicket: Boolean = false,
+    val hasSentChatMessage: Boolean = false,
+    val completedUserMessageResponseCount: Int = 0,
+    val latestSupportArea: SupportChatSupportArea? = null
 ) {
     val canUseDiagnosticActions: Boolean
         get() = !hasProceededToChat && !isSending
+
+    val canSendMessages: Boolean
+        get() = hasProceededToChat && !hasCreatedTicket
 
     val showDiagnosticActions: Boolean
         get() {
             val result = diagnosticResult ?: return false
             return canUseDiagnosticActions && (result.firstFailure != null || result.isComplete)
         }
+
+    val canContactHumanSupportFromToolbar: Boolean
+        get() = canSendMessages && completedUserMessageResponseCount >= MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR
+
+    private companion object {
+        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 2
+    }
 }
+
+enum class HumanSupportContactSource {
+    TOOLBAR,
+    BANNER,
+    ERROR_DIALOG
+}
+
+data class ContactHumanSupport(
+    val chatId: Long?,
+    val transcript: String,
+    val supportArea: SupportChatSupportArea?,
+    val source: HumanSupportContactSource
+) : Event()
 
 data class AiSupportChatMessage(
     val id: String,

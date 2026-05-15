@@ -10,12 +10,16 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsSe
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessageContext
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
@@ -278,6 +282,152 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given bot forwards to human support, when message succeeds, then human support prompt is shown`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val supportArea = SupportChatSupportArea(
+                area = "card-reader",
+                topic = "woo_mobile_issue_card_reader",
+                confidence = "high"
+            )
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(
+                        messageId = 2L,
+                        role = SupportChatRole.BOT,
+                        content = BOT_RESPONSE,
+                        context = SupportChatMessageContext(
+                            flags = SupportChatFlags(forwardToHumanSupport = true),
+                            supportArea = supportArea
+                        )
+                    )
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.showHumanSupportPrompt).isTrue
+            assertThat(state.latestSupportArea).isEqualTo(supportArea)
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            assertThat(state.messages.map { it.content }).doesNotContain(AiSupportChatMessageContent.Text(BOT_RESPONSE))
+        }
+
+    @Test
+    fun `given first user message has bot response, when chat updates, then toolbar support is unavailable`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasSentChatMessage).isTrue
+            assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        }
+
+    @Test
+    fun `given second user message has bot response, when chat updates, then toolbar support is available`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                            )
+                        )
+                    )
+                )
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = 4L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.completedUserMessageResponseCount).isEqualTo(2)
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue
+        }
+
+    @Test
+    fun `given send fails, when contact support from error is clicked, then escalation event is emitted`() =
+        testBlocking {
+            val result = createFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.failure(Exception()))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+            viewModel.onContinueAfterDiagnosticsClicked()
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG)
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.chatId).isNull()
+            assertThat(event.source).isEqualTo(HumanSupportContactSource.ERROR_DIALOG)
+            assertThat(event.transcript).contains("User: $ISSUE_DETAILS")
+        }
+
+    @Test
+    fun `given ticket is created, when state updates, then escalation controls are hidden`() = testBlocking {
+        val result = createSuccessDiagnosticResult()
+        startChat(result)
+
+        viewModel.onSupportTicketCreated()
+
+        val state = viewModel.viewState.value
+        assertThat(state.hasCreatedTicket).isTrue
+        assertThat(state.canSendMessages).isFalse
+        assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        assertThat(state.showSendError).isFalse
+        assertThat(state.showHumanSupportPrompt).isFalse
+    }
+
+    @Test
     fun `given connectivity launch mode, when loaded, then chat waits for user input with connectivity context`() =
         testBlocking {
             val checks = listOf(
@@ -525,11 +675,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private fun createMessage(
         messageId: Long,
         role: SupportChatRole,
-        content: String = BOT_RESPONSE
+        content: String = BOT_RESPONSE,
+        context: SupportChatMessageContext? = null
     ): SupportChatMessage = SupportChatMessage(
         messageId = messageId,
         role = role,
-        content = content
+        content = content,
+        context = context
     )
 
     private companion object {

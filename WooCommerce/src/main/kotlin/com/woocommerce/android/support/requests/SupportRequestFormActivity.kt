@@ -1,5 +1,7 @@
 package com.woocommerce.android.support.requests
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -24,7 +27,6 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
-import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -47,6 +49,15 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private val diagnosticLog by lazy {
         intent.extras?.getString(DIAGNOSTIC_LOG_KEY)
+    }
+
+    private val prefill by lazy {
+        SupportRequestFormViewModel.Prefill(
+            ticketType = intent.extras?.parcelable(PREFILL_TICKET_TYPE_KEY),
+            subject = intent.extras?.getString(PREFILL_SUBJECT_KEY).orEmpty(),
+            siteAddress = intent.extras?.getString(PREFILL_SITE_ADDRESS_KEY).orEmpty(),
+            message = intent.extras?.getString(PREFILL_MESSAGE_KEY).orEmpty()
+        )
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -76,6 +87,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             setupActionBar()
             observeViewEvents(this)
             observeViewModelEvents(this)
+            applyPrefill(this)
         }
         viewModel.onViewCreated()
 
@@ -162,24 +174,22 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun showRequestCreationSuccessDialog() {
-        WooDialog.showDialog(
-            activity = this,
-            titleId = R.string.support_request_success_title,
-            messageId = R.string.support_request_success_message,
-            positiveButtonId = R.string.support_request_dialog_action,
-            posBtnAction = { _, _ ->
+        setResult(Activity.RESULT_OK)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.support_request_success_title)
+            .setMessage(R.string.support_request_success_message)
+            .setPositiveButton(R.string.support_request_dialog_action) { _, _ ->
                 finish()
             }
-        )
+            .show()
     }
 
     private fun showRequestCreationFailureDialog() {
-        WooDialog.showDialog(
-            activity = this,
-            titleId = R.string.support_request_error_title,
-            messageId = R.string.support_request_error_message,
-            positiveButtonId = R.string.support_request_dialog_action
-        )
+        AlertDialog.Builder(this)
+            .setTitle(R.string.support_request_error_title)
+            .setMessage(R.string.support_request_error_message)
+            .setPositiveButton(R.string.support_request_dialog_action, null)
+            .show()
     }
 
     private fun showProgressDialog() {
@@ -210,21 +220,50 @@ class SupportRequestFormActivity : AppCompatActivity() {
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
+    private fun applyPrefill(binding: ActivitySupportRequestFormBinding) {
+        viewModel.onPrefillReceived(prefill)
+
+        binding.requestSubject.setTextIfDifferent(prefill.subject)
+        binding.requestSiteAddress.setTextIfDifferent(prefill.siteAddress)
+        binding.requestMessage.setText(prefill.message)
+        when (prefill.ticketType) {
+            TicketType.MobileApp -> binding.helpOptionsGroup.check(binding.mobileAppOption.id)
+            TicketType.InPersonPayments -> binding.helpOptionsGroup.check(binding.ippOption.id)
+            TicketType.Payments -> binding.helpOptionsGroup.check(binding.paymentsOption.id)
+            TicketType.WooPlugin -> binding.helpOptionsGroup.check(binding.wooPluginOption.id)
+            TicketType.OtherPlugins -> binding.helpOptionsGroup.check(binding.otherOption.id)
+            null -> Unit
+        }
+    }
+
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
         private const val DIAGNOSTIC_LOG_KEY = "DIAGNOSTIC_LOG_KEY"
+        private const val PREFILL_TICKET_TYPE_KEY = "PREFILL_TICKET_TYPE_KEY"
+        private const val PREFILL_SUBJECT_KEY = "PREFILL_SUBJECT_KEY"
+        private const val PREFILL_SITE_ADDRESS_KEY = "PREFILL_SITE_ADDRESS_KEY"
+        private const val PREFILL_MESSAGE_KEY = "PREFILL_MESSAGE_KEY"
 
         @JvmStatic
+        @Suppress("LongParameterList")
         fun createIntent(
             context: Context,
             origin: HelpOrigin,
             extraTags: java.util.ArrayList<String>,
-            diagnosticLog: String? = null
+            diagnosticLog: String? = null,
+            preselectedTicketType: TicketType? = null,
+            prefilledSubject: String? = null,
+            prefilledSiteAddress: String? = null,
+            prefilledMessage: String? = null
         ) = Intent(context, SupportRequestFormActivity::class.java).apply {
             putExtra(ORIGIN_KEY, origin)
             putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
             diagnosticLog?.let { putExtra(DIAGNOSTIC_LOG_KEY, it) }
+            preselectedTicketType?.let { putExtra(PREFILL_TICKET_TYPE_KEY, it) }
+            prefilledSubject?.let { putExtra(PREFILL_SUBJECT_KEY, it) }
+            prefilledSiteAddress?.let { putExtra(PREFILL_SITE_ADDRESS_KEY, it) }
+            prefilledMessage?.let { putExtra(PREFILL_MESSAGE_KEY, it) }
         }
     }
 }

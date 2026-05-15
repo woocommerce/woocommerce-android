@@ -30,11 +30,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -72,7 +74,10 @@ fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
         onSendClicked = viewModel::onSendClicked,
         onIssueSelected = viewModel::onIssueSelected,
         onRetryDiagnosticsClicked = viewModel::onRetryDiagnosticsClicked,
-        onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked
+        onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked,
+        onContactSupportClicked = { viewModel.onContactSupportClicked(HumanSupportContactSource.BANNER) },
+        onContactSupportFromErrorClicked = { viewModel.onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
+        onSendErrorDismissed = viewModel::onSendErrorDismissed
     )
 }
 
@@ -84,6 +89,9 @@ fun AiSupportChatScreen(
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
+    onContactSupportClicked: () -> Unit,
+    onContactSupportFromErrorClicked: () -> Unit,
+    onSendErrorDismissed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -102,20 +110,27 @@ fun AiSupportChatScreen(
                 .weight(1f)
                 .fillMaxWidth()
         )
-        if (viewState.showSendError) {
-            ErrorBanner(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(R.dimen.major_100))
+        when {
+            viewState.hasCreatedTicket -> TicketCreatedBanner(modifier = Modifier.fillMaxWidth())
+            viewState.showHumanSupportPrompt -> HumanSupportBanner(
+                onContactSupportClicked = onContactSupportClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
+            else -> InputBar(
+                input = viewState.input,
+                isSending = viewState.isSending,
+                enabled = viewState.canSendMessages,
+                onInputChanged = onInputChanged,
+                onSendClicked = onSendClicked,
+                modifier = Modifier.fillMaxWidth()
             )
         }
-        InputBar(
-            input = viewState.input,
-            isSending = viewState.isSending,
-            enabled = viewState.hasProceededToChat,
-            onInputChanged = onInputChanged,
-            onSendClicked = onSendClicked,
-            modifier = Modifier.fillMaxWidth()
+    }
+
+    if (viewState.showSendError) {
+        SendErrorDialog(
+            onContactSupportClicked = onContactSupportFromErrorClicked,
+            onDismiss = onSendErrorDismissed
         )
     }
 }
@@ -457,23 +472,65 @@ private fun AnimatedTypingText() {
 }
 
 @Composable
-private fun ErrorBanner(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.errorContainer,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(dimensionResource(R.dimen.minor_100)),
-        contentAlignment = Alignment.Center
+private fun TicketCreatedBanner(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surface
     ) {
         Text(
-            text = stringResource(R.string.ai_support_chat_send_error),
-            color = MaterialTheme.colorScheme.onErrorContainer,
+            text = stringResource(R.string.ai_support_chat_ticket_created_message),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+        )
+    }
+}
+
+@Composable
+private fun HumanSupportBanner(
+    onContactSupportClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(dimensionResource(R.dimen.major_100)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
+    ) {
+        Text(
+            text = stringResource(R.string.ai_support_chat_human_support_message),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
         )
+        WCOutlinedButton(onClick = onContactSupportClicked) {
+            Text(text = stringResource(R.string.ai_support_chat_contact_support))
+        }
     }
+}
+
+@Composable
+private fun SendErrorDialog(
+    onContactSupportClicked: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.ai_support_chat_error_title)) },
+        text = { Text(text = stringResource(R.string.ai_support_chat_send_error)) },
+        confirmButton = {
+            TextButton(onClick = onContactSupportClicked) {
+                Text(text = stringResource(R.string.ai_support_chat_contact_support))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.ai_support_chat_error_dismiss))
+            }
+        }
+    )
 }
 
 @Composable
@@ -553,7 +610,10 @@ private fun AiSupportChatScreenPreview() {
             onSendClicked = {},
             onIssueSelected = { _, _ -> },
             onRetryDiagnosticsClicked = {},
-            onContinueAfterDiagnosticsClicked = {}
+            onContinueAfterDiagnosticsClicked = {},
+            onContactSupportClicked = {},
+            onContactSupportFromErrorClicked = {},
+            onSendErrorDismissed = {}
         )
     }
 }

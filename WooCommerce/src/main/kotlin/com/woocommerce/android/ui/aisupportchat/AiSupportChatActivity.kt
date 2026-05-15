@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.aisupportchat
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -17,6 +18,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AiSupportChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAiSupportChatBinding
+    private var contactSupportMenuItem: MenuItem? = null
+    private var isContactSupportActionVisible = false
+    var onContactSupportClicked: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +41,30 @@ class AiSupportChatActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_ai_support_chat, menu)
+        contactSupportMenuItem = menu.findItem(R.id.menu_contact_support)
+        contactSupportMenuItem?.isVisible = isContactSupportActionVisible
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressedDispatcher.onBackPressed()
-            return true
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                return true
+            }
+            R.id.menu_contact_support -> {
+                onContactSupportClicked?.invoke()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun setContactSupportActionVisible(isVisible: Boolean) {
+        isContactSupportActionVisible = isVisible
+        contactSupportMenuItem?.isVisible = isVisible
     }
 
     companion object {

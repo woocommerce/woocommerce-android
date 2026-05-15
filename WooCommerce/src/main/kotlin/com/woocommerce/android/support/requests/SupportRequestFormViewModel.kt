@@ -52,6 +52,17 @@ class SupportRequestFormViewModel @Inject constructor(
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
+    fun onPrefillReceived(prefill: Prefill) {
+        viewState.update {
+            it.copy(
+                ticketType = prefill.ticketType ?: it.ticketType,
+                subject = prefill.subject.ifBlank { it.subject },
+                siteAddress = prefill.siteAddress.ifBlank { it.siteAddress },
+                message = prefill.message.ifBlank { it.message }
+            )
+        }
+    }
+
     fun onHelpOptionSelected(ticketType: TicketType) {
         viewState.update { it.copy(ticketType = ticketType) }
     }
@@ -146,6 +157,13 @@ class SupportRequestFormViewModel @Inject constructor(
         val emailSuggestion: String,
         val nameSuggestion: String
     ) : Event()
+
+    data class Prefill(
+        val ticketType: TicketType? = null,
+        val subject: String = "",
+        val siteAddress: String = "",
+        val message: String = ""
+    )
 
     @Parcelize
     data class ViewState(
