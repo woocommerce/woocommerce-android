@@ -2413,6 +2413,12 @@
     <string name="ai_support_chat_help_row_title">AI Troubleshooting</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
     <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_history_row_title">Chat history</string>
+    <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
+    <string name="ai_support_chat_history_title">Chat history</string>
+    <string name="ai_support_chat_history_empty">You haven\'t chatted with support yet.</string>
+    <string name="ai_support_chat_history_load_error">Unable to load chat history.</string>
+    <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
     <string name="ai_support_chat_greeting">Hi! Tell me what\'s happening with your store, and I\'ll help troubleshoot it.</string>
     <string name="ai_support_chat_input_hint">Message AI Troubleshooting</string>
