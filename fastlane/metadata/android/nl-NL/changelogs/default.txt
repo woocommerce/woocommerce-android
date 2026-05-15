@@ -1,2 +1,0 @@
-24.7:
-Met de Prestatiekaart Mijn winkel kan je nu wisselen tussen Bruto-, Netto- en Totale omzet en het type besteldatum kiezen (Betaald, Geplaatst of Voltooid). We hebben ook de POS-navigatie gereset bij rotatie, de lege status van POS-bestellingen vernieuwd en bugs in de productlijst en het laden van afbeeldingen gesquasht.
