@@ -19,8 +19,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class AiSupportChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAiSupportChatBinding
     private var contactSupportMenuItem: MenuItem? = null
+    private var markResolvedMenuItem: MenuItem? = null
     private var isContactSupportActionVisible = false
+    private var isMarkResolvedActionVisible = false
     var onContactSupportClicked: (() -> Unit)? = null
+    var onMarkResolvedClicked: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +47,9 @@ class AiSupportChatActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_ai_support_chat, menu)
         contactSupportMenuItem = menu.findItem(R.id.menu_contact_support)
+        markResolvedMenuItem = menu.findItem(R.id.menu_mark_resolved)
         contactSupportMenuItem?.isVisible = isContactSupportActionVisible
+        markResolvedMenuItem?.isVisible = isMarkResolvedActionVisible
         return true
     }
 
@@ -58,6 +63,10 @@ class AiSupportChatActivity : AppCompatActivity() {
                 onContactSupportClicked?.invoke()
                 return true
             }
+            R.id.menu_mark_resolved -> {
+                onMarkResolvedClicked?.invoke()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -65,6 +74,11 @@ class AiSupportChatActivity : AppCompatActivity() {
     fun setContactSupportActionVisible(isVisible: Boolean) {
         isContactSupportActionVisible = isVisible
         contactSupportMenuItem?.isVisible = isVisible
+    }
+
+    fun setMarkResolvedActionVisible(isVisible: Boolean) {
+        isMarkResolvedActionVisible = isVisible
+        markResolvedMenuItem?.isVisible = isVisible
     }
 
     companion object {

@@ -81,7 +81,18 @@ class AiSupportChatViewModel @Inject constructor(
         if (messageId in state.messageRatings) return
 
         _viewState.update {
-            it.copy(messageRatings = it.messageRatings + (messageId to rating))
+            val updatedRatings = it.messageRatings + (messageId to rating)
+            it.copy(
+                messageRatings = updatedRatings,
+                messages = if (
+                    rating == AiSupportChatFeedbackRating.UP &&
+                    it.messages.latestBotResponse?.messageId == messageId
+                ) {
+                    it.messages.appendResolvedPromptIfNeeded()
+                } else {
+                    it.messages
+                }
+            )
         }
 
         launch {
@@ -94,6 +105,26 @@ class AiSupportChatViewModel @Inject constructor(
             ).onFailure { error ->
                 WooLog.e(WooLog.T.AI, "Submitting AI support chat feedback failed", error)
             }
+        }
+    }
+
+    fun onMarkResolvedClicked() {
+        _viewState.update { it.copy(showMarkResolvedConfirmation = true) }
+    }
+
+    fun onMarkResolvedDismissed() {
+        _viewState.update { it.copy(showMarkResolvedConfirmation = false) }
+    }
+
+    fun onMarkResolvedConfirmed() {
+        _viewState.update {
+            it.copy(
+                isChatResolved = true,
+                showMarkResolvedConfirmation = false,
+                showHumanSupportPrompt = false,
+                showSendError = false,
+                input = ""
+            )
         }
     }
 
@@ -292,6 +323,20 @@ class AiSupportChatViewModel @Inject constructor(
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
                 if (response.messages.hasBotResponse()) 1 else 0
+            val messages = if (remoteMessages.isEmpty()) {
+                it.messages
+            } else {
+                it.messages.supportMessages() + it.messages.threadMessages().mergeWithRemoteMessages(
+                    remoteMessages = remoteMessages,
+                    optimisticMessage = optimisticMessage
+                )
+            }.let { messages ->
+                if (!shouldPromptHumanSupport && messages.latestBotResponse?.isResolved == true) {
+                    messages.appendResolvedPromptIfNeeded()
+                } else {
+                    messages
+                }
+            }
             it.copy(
                 chatId = response.chatId,
                 sessionId = response.sessionId,
@@ -301,14 +346,7 @@ class AiSupportChatViewModel @Inject constructor(
                 completedUserMessageResponseCount = completedUserMessageResponseCount,
                 latestSupportArea = latestSupportArea,
                 showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
-                messages = if (remoteMessages.isEmpty()) {
-                    it.messages
-                } else {
-                    it.messages.supportMessages() + it.messages.threadMessages().mergeWithRemoteMessages(
-                        remoteMessages = remoteMessages,
-                        optimisticMessage = optimisticMessage
-                    )
-                },
+                messages = messages,
                 isSending = false,
                 showSendError = false
             )
@@ -385,6 +423,7 @@ class AiSupportChatViewModel @Inject constructor(
                     id = "${message.role.wireValue}-${message.messageId}",
                     messageId = if (message.role == SupportChatRole.BOT) message.messageId else null,
                     role = message.role.toUiRole(),
+                    isResolved = message.context?.isResolved == true,
                     content = AiSupportChatMessageContent.Text(message.content)
                 )
             }
@@ -400,12 +439,30 @@ class AiSupportChatViewModel @Inject constructor(
                 is AiSupportChatMessageContent.DiagnosticsFailure,
                 is AiSupportChatMessageContent.DiagnosticsProgress -> true
                 AiSupportChatMessageContent.IssuePicker,
+                AiSupportChatMessageContent.ResolvedPrompt,
                 is AiSupportChatMessageContent.Text -> false
             }
         }
 
     private fun List<AiSupportChatMessage>.threadMessages(): List<AiSupportChatMessage> =
-        filter { it.content is AiSupportChatMessageContent.Text }
+        filter {
+            it.content is AiSupportChatMessageContent.Text ||
+                it.content == AiSupportChatMessageContent.ResolvedPrompt
+        }
+
+    private val List<AiSupportChatMessage>.latestBotResponse: AiSupportChatMessage?
+        get() = lastOrNull { it.role == AiSupportChatMessageRole.BOT && it.messageId != null }
+
+    private fun List<AiSupportChatMessage>.appendResolvedPromptIfNeeded(): List<AiSupportChatMessage> =
+        if (any { it.content == AiSupportChatMessageContent.ResolvedPrompt }) {
+            this
+        } else {
+            this + AiSupportChatMessage(
+                id = RESOLVED_PROMPT_MESSAGE_ID,
+                role = AiSupportChatMessageRole.BOT,
+                content = AiSupportChatMessageContent.ResolvedPrompt
+            )
+        }
 
     private fun List<AiSupportChatMessage>.appendPostDiagnosticsGreeting(): List<AiSupportChatMessage> =
         if (any { it.id == POST_DIAGNOSTICS_GREETING_MESSAGE_ID }) {
@@ -471,6 +528,9 @@ class AiSupportChatViewModel @Inject constructor(
             AiSupportChatMessageContent.Greeting -> ""
             AiSupportChatMessageContent.IssuePicker -> "[Issue picker shown]"
             AiSupportChatMessageContent.PostDiagnosticsGreeting -> "Please describe your issue in more detail."
+            AiSupportChatMessageContent.ResolvedPrompt ->
+                "Please mark the chat as resolved if your problem is resolved, " +
+                    "or leave a message if you have other questions."
             is AiSupportChatMessageContent.Text -> when (role) {
                 AiSupportChatMessageRole.USER -> content.text
                 AiSupportChatMessageRole.BOT -> content.text.trimToFirstParagraph()
@@ -500,6 +560,7 @@ class AiSupportChatViewModel @Inject constructor(
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
 
         private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
+        private const val RESOLVED_PROMPT_MESSAGE_ID = "resolved-prompt"
     }
 }
 
@@ -520,6 +581,8 @@ data class AiSupportChatViewState(
     val showSendError: Boolean = false,
     val showHumanSupportPrompt: Boolean = false,
     val hasCreatedTicket: Boolean = false,
+    val isChatResolved: Boolean = false,
+    val showMarkResolvedConfirmation: Boolean = false,
     val hasSentChatMessage: Boolean = false,
     val completedUserMessageResponseCount: Int = 0,
     val latestSupportArea: SupportChatSupportArea? = null,
@@ -529,7 +592,7 @@ data class AiSupportChatViewState(
         get() = !hasProceededToChat && !isSending
 
     val canSendMessages: Boolean
-        get() = hasProceededToChat && !hasCreatedTicket
+        get() = hasProceededToChat && !hasCreatedTicket && !isChatResolved
 
     val showInputBar: Boolean
         get() = canSendMessages && !showHumanSupportPrompt
@@ -543,8 +606,21 @@ data class AiSupportChatViewState(
     val canContactHumanSupportFromToolbar: Boolean
         get() = canSendMessages && completedUserMessageResponseCount >= MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR
 
+    val shouldShowResolvedButton: Boolean
+        get() {
+            if (showHumanSupportPrompt || isChatResolved) return false
+            val botResponses = messages.filter {
+                it.role == AiSupportChatMessageRole.BOT && it.messageId != null
+            }
+            val latestBotResponse = botResponses.lastOrNull() ?: return false
+            return latestBotResponse.isResolved ||
+                messageRatings[latestBotResponse.messageId] == AiSupportChatFeedbackRating.UP ||
+                botResponses.size >= MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION
+        }
+
     private companion object {
         const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 2
+        const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
 }
 
@@ -570,6 +646,7 @@ data class AiSupportChatMessage(
     val id: String,
     val messageId: Long? = null,
     val role: AiSupportChatMessageRole,
+    val isResolved: Boolean = false,
     val content: AiSupportChatMessageContent
 )
 
@@ -582,6 +659,7 @@ sealed interface AiSupportChatMessageContent {
     data object Greeting : AiSupportChatMessageContent
     data object IssuePicker : AiSupportChatMessageContent
     data object PostDiagnosticsGreeting : AiSupportChatMessageContent
+    data object ResolvedPrompt : AiSupportChatMessageContent
     data class Text(val text: String) : AiSupportChatMessageContent
     data class DiagnosticsProgress(val result: DiagnosticResult) : AiSupportChatMessageContent
     data class DiagnosticsFailure(val result: DiagnosticResult) : AiSupportChatMessageContent

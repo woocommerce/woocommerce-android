@@ -62,7 +62,9 @@ class AiSupportChatFragment : Fragment() {
         super.onDestroyView()
         (activity as? AiSupportChatActivity)?.apply {
             onContactSupportClicked = null
+            onMarkResolvedClicked = null
             setContactSupportActionVisible(false)
+            setMarkResolvedActionVisible(false)
         }
         hideProgressDialog()
     }
@@ -71,6 +73,7 @@ class AiSupportChatFragment : Fragment() {
         (activity as? AiSupportChatActivity)?.onContactSupportClicked = {
             viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
         }
+        (activity as? AiSupportChatActivity)?.onMarkResolvedClicked = viewModel::onMarkResolvedClicked
     }
 
     private fun observeViewState() {
@@ -79,6 +82,8 @@ class AiSupportChatFragment : Fragment() {
                 viewModel.viewState.collect { state ->
                     (activity as? AiSupportChatActivity)
                         ?.setContactSupportActionVisible(state.canContactHumanSupportFromToolbar)
+                    (activity as? AiSupportChatActivity)
+                        ?.setMarkResolvedActionVisible(state.shouldShowResolvedButton)
                 }
             }
         }
