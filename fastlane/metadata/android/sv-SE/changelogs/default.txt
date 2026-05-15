@@ -1,0 +1,2 @@
+24.7:
+Prestandakortet för Min butik låter dig nu växla mellan brutto-, netto- och totala intäkter och välja typ av beställningsdatum (Betald, Placerad eller Slutförd). Vi åtgärdade också återställning av POS-navigering vid rotation, uppdaterade tom status för POS-beställningar och åtgärdade buggar i produktlistan och bildinläsning.

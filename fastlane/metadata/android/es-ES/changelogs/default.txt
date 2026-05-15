@@ -1,0 +1,2 @@
+24.7:
+La tarjeta de rendimiento de Mi tienda ahora te permite cambiar entre ingresos brutos, netos y totales y elegir el tipo de fecha del pedido (pagado, realizado o completado). También hemos corregido el restablecimiento de la navegación del punto de venta al girar, hemos actualizado el estado vacío de los pedidos del punto de venta y hemos eliminado errores en la lista de productos y en la carga de imágenes. 

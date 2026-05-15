@@ -1,0 +1,2 @@
+24.7:
+Di kartu Performa Toko Saya, kini Anda bisa beralih antara Pendapatan Kotor, Pendapatan Bersih, dan Total Pendapatan, lalu memilih jenis tanggal pesanan Anda (Dibayar, Dibuat, atau Selesai). Kami juga memperbaiki navigasi POS yang sebelumnya kembali ke menu awal saat layar perangkat diputar, mendesain ulang halaman Pesanan POS yang masih kosong, serta memperbaiki bug di daftar produk dan pemuatan gambar.

@@ -1,0 +1,2 @@
+24.7:
+O cartão "Desempenho da minha loja" agora permite que você alterne entre receita bruta, líquida e total e escolha o tipo de data de pedido (pago, feito ou concluído). Também corrigimos a redefinição da navegação do POS ao girar a tela, atualizamos o estado vazio de pedidos do POS e eliminamos bugs na lista de produtos e no carregamento de imagens.

@@ -1,0 +1,2 @@
+24.7 :
+La fiche Performances de ma boutique vous permet désormais de basculer entre le chiffre d’affaires brut, net et total, et de choisir le type de date de commande (payée, passée ou finalisée). Nous avons également corrigé la réinitialisation de la navigation dans le module de point de vente lors de la rotation, actualisé l’état vide des commandes du module de point de vente et corrigé des bugs dans la liste des produits et le chargement des images.

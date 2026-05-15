@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-24 17:55:46+0000
+Translation-Revision-Date: 2026-05-06 13:57:31+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">Okuyucunun pili %d%%, bu da bu güncellemeyi yüklemek için çok düşük. Lütfen okuyucunuzu en az %%50\'ye kadar şarj edin ve tekrar deneyin.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Okuyucunun pili bu güncellemeyi yüklemek için çok düşük. Lütfen okuyucunuzu en az %50\'ye kadar şarj edin ve tekrar deneyin.</string>
+    <string name="woopos_card_reader_update_failed_title">Güncelleme başarısız</string>
+    <string name="woopos_card_reader_update_completed_title">Yazılım güncellendi</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Yine de iptal et</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Bir yazılım güncellemesi devam ederken iptal etmeniz önerilmez. İptal ederseniz okuyucu bağlantınız engellenir.</string>
+    <string name="woopos_card_reader_update_optional_message">Sorunsuz çalışmaya devam etmesi için kart okuyucunuzun yazılımının güncellenmesi gerekir.</string>
+    <string name="woopos_card_reader_update_required_message">Ödeme almak için kart okuyucu yazılımınızın güncellenmesi gerekiyor. İptal ederseniz okuyucu bağlantınız engellenir.</string>
+    <string name="woopos_card_reader_update_progress">%d%% tamamlandı</string>
+    <string name="woopos_card_reader_updating_optional_title">Okuyucunuzun yazılımını güncelleme</string>
+    <string name="woopos_card_reader_updating_title">Yazılım güncelleniyor</string>
+    <string name="woopos_card_reader_cancel_button">İptal Et</string>
+    <string name="woopos_card_reader_retry_button">Tekrar Dene</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">Mağaza posta kodunuz eksik veya geçersiz. Lütfen WooCommerce ayarlarında mağaza adresinizi güncelleyin.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Geçersiz posta kodu</string>
+    <string name="woopos_card_reader_invalid_address_message">Mağaza adresiniz eksik veya tamamlanmamış. Lütfen WooCommerce ayarlarında mağaza adresinizi güncelleyin.</string>
+    <string name="woopos_card_reader_invalid_address_title">Geçersiz satıcı adresi</string>
+    <string name="woopos_card_reader_grant_permission_button">İzin verin</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">Kart okuyucuya bağlanmak için Bluetooth izni gereklidir.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth izni gerekli</string>
+    <string name="woopos_card_reader_location_permission_message">Bluetooth yoluyla bir kart okuyucuya bağlanmak için konum izni gereklidir.</string>
+    <string name="woopos_card_reader_location_permission_title">Konum izni gerekli</string>
+    <string name="woopos_card_reader_enable_location_button">Konumu Etkinleştir</string>
+    <string name="woopos_card_reader_location_disabled_message">Kart okuyucuya bağlanmak için Konumu etkinleştirin.</string>
+    <string name="woopos_card_reader_location_disabled_title">Konum kapalı</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Bluetooth\'u etkinleştir</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Kart okuyucuya bağlanmak için Bluetooth\'u etkinleştirin.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth kapalı</string>
+    <string name="woopos_card_reader_battery_low_message">Okuyucunun pili kritik düzeyde düşük. Lütfen okuyucuyu şarj edin ve yeniden deneyin.</string>
+    <string name="woopos_card_reader_battery_low_title">Pil çok düşük</string>
+    <string name="woopos_card_reader_connected_title">Bağlı</string>
+    <string name="woopos_card_reader_connecting_failed_title">Bağlantı başarısız oldu</string>
+    <string name="woopos_card_reader_connecting_message">Okuyucunuz bağlanırken lütfen bekleyin</string>
+    <string name="woopos_card_reader_connecting_title">Bağlanılıyor</string>
+    <string name="woopos_card_reader_multiple_found_description">Okuyucu seçin</string>
+    <string name="woopos_card_reader_multiple_found_title">Birden fazla okuyucu bulundu</string>
+    <string name="woopos_card_reader_keep_searching_button">Aramaya devam et</string>
+    <string name="woopos_card_reader_connect_button">Bağlan</string>
+    <string name="woopos_card_reader_found_description">Bu okuyucuya bağlanmak istiyor musunuz?</string>
+    <string name="woopos_card_reader_found_title">%s bulundu</string>
+    <string name="woopos_card_reader_scanning_failed_title">Tarama başarısız</string>
+    <string name="woopos_card_reader_scanning_instruction">Okuyucunuzun şarjlı ve açık olduğundan emin olun</string>
+    <string name="woopos_card_reader_scanning_title">Okuyucu taranıyor</string>
+    <string name="woopos_card_reader_close_content_description">Kapat</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Kart okuyucu bağlantısı iletişim kutusu</string>
+    <string name="woopos_orders_empty_list_message">POS\'ta satışları işlemeye başladığınızda siparişler burada görünür.</string>
+    <string name="woopos_battery_critical">Kart okuyucu pili kritik</string>
+    <string name="woopos_battery_low">Kart okuyucu pili düşük</string>
+    <string name="woopos_reader_reconnecting">Yeniden bağlantı kuruluyor…</string>
+    <string name="more_menu_button_ai_assistant_description">Mağazanız hakkında soru sorun</string>
+    <string name="more_menu_button_ai_assistant">Yapay Zeka Asistanı</string>
+    <string name="settings_notifs_new_reviews_subtitle">Tüm incelemeler</string>
+    <string name="settings_notifs_new_reviews">Yeni yorumlar</string>
+    <string name="settings_notifs_stock_subtitle">Tüm stok uyarıları</string>
+    <string name="settings_notifs_stock">Stok</string>
+    <string name="settings_notifs_new_orders_subtitle">Tüm siparişler</string>
+    <string name="settings_notifs_new_orders">Yeni siparişler</string>
+    <string name="settings_push_notifications">Anlık bildirimler</string>
+    <string name="settings_logout_dialog_message">Oturumunuz kapatılıyor.</string>
+    <string name="card_reader_detail_reconnecting_cancel">Yeniden bağlantıyı iptal et</string>
+    <string name="card_reader_detail_reconnecting_header">Kart okuyucuya yeniden bağlanıyor…</string>
+    <string name="dashboard_stats_order_date_type_update_error">Sipariş türü güncellenemiyor. Lütfen tekrar deneyin.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">Bu, mağaza genelinde kullanılan ve aynı zamanda WooCommerce yönetici analizleri ayarlarında \"Tarih türü\" seçeneğini de kontrol eden bir ayardır.</string>
+    <string name="dashboard_stats_completed_orders_description">Tamamlandı olarak işaretlendikleri tarihteki siparişleri sayın.</string>
+    <string name="dashboard_stats_placed_orders_description">Verildikleri veya oluşturuldukları tarihteki siparişleri sayın.</string>
+    <string name="dashboard_stats_paid_orders_description">Siparişin ödendiği tarihteki siparişleri sayın.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Seçilen zaman aralığı için performans ölçümlerinize hangi siparişlerin dahil edileceğini seçin.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Sipariş tarihi türü</string>
+    <string name="dashboard_stats_completed_orders">Tamamlanmış siparişler</string>
+    <string name="dashboard_stats_placed_orders">Verilen siparişler</string>
+    <string name="dashboard_stats_paid_orders">Ödenen siparişler</string>
+    <string name="dashboard_stats_revenue_type_total">Toplam</string>
+    <string name="dashboard_stats_revenue_type_net">Net</string>
+    <string name="dashboard_stats_revenue_type_gross">Brüt</string>
     <string name="booking_reschedule_change_team_member">Ekip üyesini değiştir</string>
     <string name="booking_reschedule_screen_title">Rezervasyonu yeniden zamanlayın</string>
     <string name="booking_details_reschedule_button">Yeniden zamanla</string>
@@ -354,8 +428,7 @@ Language: tr
     <string name="woopos_orders_loading_error_message">Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="woopos_orders_loading_error_title">Siparişler yüklenemiyor</string>
     <string name="woopos_orders_empty_list_image_description">Sipariş yok</string>
-    <string name="woopos_orders_empty_action_label">Daha fazla bilgi edinin</string>
-    <string name="woopos_orders_empty_list_message">Mağaza satışlarınızı nasıl artırabileceğinizi keşfedin.</string>
+    <string name="woopos_orders_empty_action_label">Yenile</string>
     <string name="woopos_orders_empty_list_title">Sipariş bulunamadı</string>
     <string name="woopos_date_yesterday_at">Dün, %s</string>
     <string name="woopos_date_today_at">Bugün şu saatte: %s</string>
@@ -530,6 +603,8 @@ Language: tr
     <string name="woopos_scanning_setup_device_selection_title">Bir barkod tarayıcı ayarlama</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barkod</string>
     <string name="woopos_scanning_setup_dialog_content_description">Tarayıcı kurulum iletişim kutusu</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">İngiltere</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ABD</string>
     <string name="woopos_eligibility_screen_unable_to_load">Yüklenemedi</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS sistemi, mağazanızın para biriminde kullanılamıyor. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>

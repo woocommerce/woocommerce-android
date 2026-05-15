@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-21 09:55:39+0000
+Translation-Revision-Date: 2026-05-07 13:54:57+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">리더 배터리 잔량이 %d%%입니다. 너무 적으므로 이 업데이트를 설치할 수 없습니다. 리더를 50%% 이상 충전하고 다시 시도하세요.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">리더 배터리 잔량이 너무 적으므로 이 업데이트를 설치할 수 없습니다. 리더를 50% 이상으로 충전하고 다시 시도하세요.</string>
+    <string name="woopos_card_reader_update_failed_title">업데이트 실패</string>
+    <string name="woopos_card_reader_update_completed_title">소프트웨어 업데이트됨</string>
+    <string name="woopos_card_reader_cancel_anyway_button">강제 취소</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">진행 중인 소프트웨어 업데이트는 취소하지 않는 것이 좋습니다. 취소하면 리더 연결이 차단됩니다.</string>
+    <string name="woopos_card_reader_update_optional_message">카드 리더가 계속 원활하게 작동하려면 소프트웨어를 업데이트해야 합니다.</string>
+    <string name="woopos_card_reader_update_required_message">결제 대금을 수령하려면 카드 리더 소프트웨어를 업데이트해야 합니다. 취소하면 리더 연결이 차단됩니다.</string>
+    <string name="woopos_card_reader_update_progress">%d%% 완료</string>
+    <string name="woopos_card_reader_updating_optional_title">리더의 소프트웨어 업데이트 중</string>
+    <string name="woopos_card_reader_updating_title">소프트웨어 업데이트 중</string>
+    <string name="woopos_card_reader_cancel_button">취소</string>
+    <string name="woopos_card_reader_retry_button">다시 시도</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">스토어 우편번호가 누락되었거나 유효하지 않습니다. 우커머스 설정에서 스토어 주소를 업데이트하세요.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">유효하지 않은 우편번호</string>
+    <string name="woopos_card_reader_invalid_address_message">스토어 주소가 누락되었거나 불완전합니다. 우커머스 설정에서 스토어 주소를 업데이트하세요.</string>
+    <string name="woopos_card_reader_invalid_address_title">유효하지 않은 판매자 주소</string>
+    <string name="woopos_card_reader_grant_permission_button">권한 부여</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">카드 리더에 연결하려면 블루투스 권한이 필요합니다.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">블루투스 권한 필요</string>
+    <string name="woopos_card_reader_location_permission_message">블루투스를 통해 카드 리더에 연결하려면 위치 권한이 필요합니다.</string>
+    <string name="woopos_card_reader_location_permission_title">위치 권한 필요</string>
+    <string name="woopos_card_reader_enable_location_button">위치 활성화</string>
+    <string name="woopos_card_reader_location_disabled_message">위치를 활성화하고 카드 리더에 연결하세요.</string>
+    <string name="woopos_card_reader_location_disabled_title">위치 꺼짐</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">블루투스 활성화</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">블루투스를 활성화하고 카드 리더에 연결하세요.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">블루투스 꺼짐</string>
+    <string name="woopos_card_reader_battery_low_message">리더 배터리 잔량이 매우 적습니다. 리더를 충전하고 다시 시도하세요.</string>
+    <string name="woopos_card_reader_battery_low_title">배터리 잔량이 너무 적음</string>
+    <string name="woopos_card_reader_connected_title">연결됨</string>
+    <string name="woopos_card_reader_connecting_failed_title">연결 실패</string>
+    <string name="woopos_card_reader_connecting_message">리더에 연결하는 동안 기다려 주세요.</string>
+    <string name="woopos_card_reader_connecting_title">연결 중</string>
+    <string name="woopos_card_reader_multiple_found_description">리더 선택</string>
+    <string name="woopos_card_reader_multiple_found_title">여러 개의 리더 발견</string>
+    <string name="woopos_card_reader_keep_searching_button">계속 검색</string>
+    <string name="woopos_card_reader_connect_button">연결</string>
+    <string name="woopos_card_reader_found_description">이 리더에 연결하시겠어요?</string>
+    <string name="woopos_card_reader_found_title">%s개 발견</string>
+    <string name="woopos_card_reader_scanning_failed_title">스캔 실패</string>
+    <string name="woopos_card_reader_scanning_instruction">리더가 충전되고 켜져 있어야 합니다.</string>
+    <string name="woopos_card_reader_scanning_title">리더 스캔 중</string>
+    <string name="woopos_card_reader_close_content_description">닫기</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">카드 리더 연결 대화 상자</string>
+    <string name="woopos_orders_empty_list_message">POS에서 판매 처리를 시작하면 여기에 주문이 표시됩니다.</string>
+    <string name="woopos_battery_critical">카드 리더 배터리 잔량이 매우 적음</string>
+    <string name="woopos_battery_low">카드 리더 배터리 잔량이 적음</string>
+    <string name="woopos_reader_reconnecting">다시 연결하는 중…</string>
+    <string name="more_menu_button_ai_assistant_description">스토어에 대해 질문하기</string>
+    <string name="more_menu_button_ai_assistant">AI 도우미</string>
+    <string name="settings_notifs_new_reviews_subtitle">모든 리뷰</string>
+    <string name="settings_notifs_new_reviews">새 리뷰</string>
+    <string name="settings_notifs_stock_subtitle">모든 재고 알림</string>
+    <string name="settings_notifs_stock">재고</string>
+    <string name="settings_notifs_new_orders_subtitle">모든 주문</string>
+    <string name="settings_notifs_new_orders">새 주문</string>
+    <string name="settings_push_notifications">푸시 알림</string>
+    <string name="settings_logout_dialog_message">로그아웃 중입니다.</string>
+    <string name="card_reader_detail_reconnecting_cancel">재연결 취소</string>
+    <string name="card_reader_detail_reconnecting_header">카드 리더에 다시 연결하는 중…</string>
+    <string name="dashboard_stats_order_date_type_update_error">주문 유형을 업데이트할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">스토어 전체 설정으로, 우커머스 관리자 분석 설정의 \"날짜 유형\" 옵션도 제어합니다.</string>
+    <string name="dashboard_stats_completed_orders_description">완료된 것으로 표시된 날짜의 주문 수를 계산합니다.</string>
+    <string name="dashboard_stats_placed_orders_description">접수 또는 생성된 날짜의 주문 수를 계산합니다.</string>
+    <string name="dashboard_stats_paid_orders_description">결제된 날짜의 주문 수를 계산합니다.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">선택한 시간 범위에 대한 실적 지표에 포함할 주문을 선택합니다.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">주문 날짜 유형</string>
+    <string name="dashboard_stats_completed_orders">완료된 주문</string>
+    <string name="dashboard_stats_placed_orders">접수된 주문</string>
+    <string name="dashboard_stats_paid_orders">결제된 주문</string>
+    <string name="dashboard_stats_revenue_type_total">전체 수익</string>
+    <string name="dashboard_stats_revenue_type_net">순수익</string>
+    <string name="dashboard_stats_revenue_type_gross">총수익</string>
     <string name="booking_reschedule_change_team_member">팀 구성원 변경</string>
     <string name="booking_reschedule_screen_title">예약 일정 조정</string>
     <string name="booking_details_reschedule_button">다시 예약</string>
@@ -354,8 +428,7 @@ Language: ko_KR
     <string name="woopos_orders_loading_error_message">연결을 확인하고 다시 시도하세요.</string>
     <string name="woopos_orders_loading_error_title">주문을 로드할 수 없음</string>
     <string name="woopos_orders_empty_list_image_description">주문 없음</string>
-    <string name="woopos_orders_empty_action_label">더 알아보기</string>
-    <string name="woopos_orders_empty_list_message">스토어 판매를 늘리는 방법을 살펴보세요.</string>
+    <string name="woopos_orders_empty_action_label">새로 고침</string>
     <string name="woopos_orders_empty_list_title">주문을 찾을 수 없음</string>
     <string name="woopos_date_yesterday_at">어제 %s</string>
     <string name="woopos_date_today_at">오늘 %s</string>
@@ -530,6 +603,8 @@ Language: ko_KR
     <string name="woopos_scanning_setup_device_selection_title">바코드 스캐너 설정</string>
     <string name="woopos_scanning_setup_barcode_content_description">바코드</string>
     <string name="woopos_scanning_setup_dialog_content_description">스캐너 설정 대화 상자</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">영국</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">미국</string>
     <string name="woopos_eligibility_screen_unable_to_load">로드할 수 없음</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. %1$s에서는 현재 %2$s만 지원됩니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>

@@ -1,0 +1,2 @@
+24.7:
+Mit der „Meine Shop-Performance“-Karte kannst du jetzt zwischen Brutto-, Netto- und Gesamteinnahmen wechseln und den Datumstyp deiner Bestellung auswählen (bezahlt, aufgegeben oder abgeschlossen). Wir haben auch das Zurücksetzen der POS-Navigation beim Drehen behoben, den leeren Status von POS-Bestellungen aktualisiert und Fehler in der Produktliste und beim Laden von Bildern behoben.

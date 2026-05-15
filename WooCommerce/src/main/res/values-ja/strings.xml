@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-21 09:59:02+0000
+Translation-Revision-Date: 2026-05-07 09:55:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">リーダーのバッテリー残量が%d%% しかないため、この更新をインストールできません。 リーダーを50%% 以上充電して、もう一度お試しください。</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">リーダーのバッテリー残量が少なすぎるため、この更新をインストールできません。 リーダーを50% 以上充電して、もう一度お試しください。</string>
+    <string name="woopos_card_reader_update_failed_title">更新が失敗しました</string>
+    <string name="woopos_card_reader_update_completed_title">ソフトウェアが更新されました</string>
+    <string name="woopos_card_reader_cancel_anyway_button">キャンセルする</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">実行中のソフトウェア更新をキャンセルすることは推奨されません。 キャンセルするとリーダーの接続がブロックされます。</string>
+    <string name="woopos_card_reader_update_optional_message">カードリーダーのソフトウェアを更新して順調な動作が継続するようにする必要があります</string>
+    <string name="woopos_card_reader_update_required_message">支払いを受け取るには、カードリーダーのソフトウェアを更新する必要があります。 キャンセルするとリーダーの接続がブロックされます。</string>
+    <string name="woopos_card_reader_update_progress">%d%% 完了</string>
+    <string name="woopos_card_reader_updating_optional_title">リーダーのソフトウェアを更新しています</string>
+    <string name="woopos_card_reader_updating_title">ソフトウェアを更新しています</string>
+    <string name="woopos_card_reader_cancel_button">キャンセル</string>
+    <string name="woopos_card_reader_retry_button">再試行</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">ストアの郵便番号が入力されていないか、無効です。 WooCommerce 設定でストアの住所を更新してください。</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">郵便番号が無効です</string>
+    <string name="woopos_card_reader_invalid_address_message">ストアの住所が入力されていないか、不完全です。 WooCommerce 設定でストアの住所を更新してください。</string>
+    <string name="woopos_card_reader_invalid_address_title">マーチャント住所が無効です</string>
+    <string name="woopos_card_reader_grant_permission_button">権限を付与</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">カードリーダーに接続するには Bluetooth の権限が必要です。</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth の権限が必要です</string>
+    <string name="woopos_card_reader_location_permission_message">Bluetooth 経由でカードリーダーに接続するには、位置情報の権限が必要です。</string>
+    <string name="woopos_card_reader_location_permission_title">位置情報の権限が必要です</string>
+    <string name="woopos_card_reader_enable_location_button">位置情報を有効化</string>
+    <string name="woopos_card_reader_location_disabled_message">位置情報を有効化してカードリーダーに接続します。</string>
+    <string name="woopos_card_reader_location_disabled_title">位置情報がオフです</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Bluetooth を有効化</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Bluetooth を有効化してカードリーダーに接続します。</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth がオフです</string>
+    <string name="woopos_card_reader_battery_low_message">リーダーのバッテリー残量が非常に少なくなっています。 リーダーを充電して、もう一度お試しください。</string>
+    <string name="woopos_card_reader_battery_low_title">バッテリー残量が少なすぎます</string>
+    <string name="woopos_card_reader_connected_title">接続済み</string>
+    <string name="woopos_card_reader_connecting_failed_title">接続に失敗しました</string>
+    <string name="woopos_card_reader_connecting_message">リーダーに接続する間、しばらくお待ちください</string>
+    <string name="woopos_card_reader_connecting_title">接続を開始中</string>
+    <string name="woopos_card_reader_multiple_found_description">リーダーを選択</string>
+    <string name="woopos_card_reader_multiple_found_title">複数のリーダーが見つかりました</string>
+    <string name="woopos_card_reader_keep_searching_button">検索を続ける</string>
+    <string name="woopos_card_reader_connect_button">接続</string>
+    <string name="woopos_card_reader_found_description">このリーダーに接続しますか ?</string>
+    <string name="woopos_card_reader_found_title">%s 件検出</string>
+    <string name="woopos_card_reader_scanning_failed_title">スキャンに失敗しました</string>
+    <string name="woopos_card_reader_scanning_instruction">リーダーが充電され、オンになっていることを確認してください</string>
+    <string name="woopos_card_reader_scanning_title">リーダーをスキャンしています</string>
+    <string name="woopos_card_reader_close_content_description">閉じる</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">カードリーダー接続ダイアログ</string>
+    <string name="woopos_orders_empty_list_message">POS で売上の処理を開始すると、注文がここに表示されます。</string>
+    <string name="woopos_battery_critical">カードリーダーのバッテリー残量が極めて少ない</string>
+    <string name="woopos_battery_low">カードリーダーのバッテリー残量が少ない</string>
+    <string name="woopos_reader_reconnecting">再接続中…</string>
+    <string name="more_menu_button_ai_assistant_description">ストアについて尋ねる</string>
+    <string name="more_menu_button_ai_assistant">AI アシスタント</string>
+    <string name="settings_notifs_new_reviews_subtitle">すべてのレビュー</string>
+    <string name="settings_notifs_new_reviews">新しいレビュー</string>
+    <string name="settings_notifs_stock_subtitle">すべての在庫アラート</string>
+    <string name="settings_notifs_stock">在庫</string>
+    <string name="settings_notifs_new_orders_subtitle">すべての注文</string>
+    <string name="settings_notifs_new_orders">新しい注文</string>
+    <string name="settings_push_notifications">プッシュ通知</string>
+    <string name="settings_logout_dialog_message">ログアウトしています。</string>
+    <string name="card_reader_detail_reconnecting_cancel">再接続をキャンセル</string>
+    <string name="card_reader_detail_reconnecting_header">カードリーダーに再接続しています…</string>
+    <string name="dashboard_stats_order_date_type_update_error">注文タイプを更新できません。 もう一度お試しください。</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">これはストア全体の設定であり、WooCommerce の管理分析設定の「日付タイプ」オプションも制御します。</string>
+    <string name="dashboard_stats_completed_orders_description">完了としてマークされた日付に注文をカウントします。</string>
+    <string name="dashboard_stats_placed_orders_description">注文が行われた日付または作成された日付に注文をカウントします。</string>
+    <string name="dashboard_stats_paid_orders_description">注文が支払われた日付に注文をカウントします。</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">選択した時間範囲のパフォーマンスメトリクスに含める注文を選択します。</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">注文日の種類</string>
+    <string name="dashboard_stats_completed_orders">完了した注文</string>
+    <string name="dashboard_stats_placed_orders">注文済み注文</string>
+    <string name="dashboard_stats_paid_orders">支払い済み注文</string>
+    <string name="dashboard_stats_revenue_type_total">合計</string>
+    <string name="dashboard_stats_revenue_type_net">純額</string>
+    <string name="dashboard_stats_revenue_type_gross">総額</string>
     <string name="booking_reschedule_change_team_member">チームメンバーを変更</string>
     <string name="booking_reschedule_screen_title">予約を変更</string>
     <string name="booking_details_reschedule_button">予約変更</string>
@@ -354,8 +428,7 @@ Language: ja_JP
     <string name="woopos_orders_loading_error_message">連携を確認して、もう一度お試しください。</string>
     <string name="woopos_orders_loading_error_title">注文を読み込めません</string>
     <string name="woopos_orders_empty_list_image_description">注文はありません</string>
-    <string name="woopos_orders_empty_action_label">さらに詳しく</string>
-    <string name="woopos_orders_empty_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
+    <string name="woopos_orders_empty_action_label">再読み込み</string>
     <string name="woopos_orders_empty_list_title">注文がありません</string>
     <string name="woopos_date_yesterday_at">昨日 %s</string>
     <string name="woopos_date_today_at">本日 %s</string>
@@ -530,6 +603,8 @@ Language: ja_JP
     <string name="woopos_scanning_setup_device_selection_title">バーコードスキャナーを設定</string>
     <string name="woopos_scanning_setup_barcode_content_description">バーコード</string>
     <string name="woopos_scanning_setup_dialog_content_description">スキャナー設定ダイアログ</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">イギリス</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">米国</string>
     <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
