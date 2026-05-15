@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -87,8 +88,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         preferences?.toNewReviewNotificationSettingsViewState(rating)
             ?: NewReviewNotificationSettingsViewState(selectedRating = rating)
     }.asLiveData()
-    private val _newStockNotificationSettingsViewState = MutableStateFlow(NewStockNotificationSettingsViewState())
-    val newStockNotificationSettingsViewState = _newStockNotificationSettingsViewState.asLiveData()
+    val newStockNotificationSettingsViewState = wooPushNotificationPreferences
+        .map { it?.storeStock?.toNewStockNotificationSettingsViewState() ?: NewStockNotificationSettingsViewState() }
+        .asLiveData()
 
     init {
         observeWooPushNotificationPreferences()
@@ -177,13 +179,15 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onStockNotificationSubtypeEnabledChanged(type: StockNotificationType, isEnabled: Boolean) {
         val preferences = wooPushNotificationPreferences.value ?: return
+        val stockViewState = preferences.storeStock?.toNewStockNotificationSettingsViewState()
+            ?: NewStockNotificationSettingsViewState()
         val updatedViewState = when (type) {
             StockNotificationType.LowStock ->
-                _newStockNotificationSettingsViewState.value.copy(lowStockNotificationsEnabled = isEnabled)
+                stockViewState.copy(lowStockNotificationsEnabled = isEnabled)
             StockNotificationType.OutOfStock ->
-                _newStockNotificationSettingsViewState.value.copy(outOfStockNotificationsEnabled = isEnabled)
+                stockViewState.copy(outOfStockNotificationsEnabled = isEnabled)
             StockNotificationType.Backorder ->
-                _newStockNotificationSettingsViewState.value.copy(backorderNotificationsEnabled = isEnabled)
+                stockViewState.copy(backorderNotificationsEnabled = isEnabled)
         }
 
         updateDisplayedWooPushNotificationPreferences(
@@ -307,9 +311,6 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         _isNotificationTypeSelectionEnabled.value = true
         preferences.storeOrder?.minAmount?.let { displayedOrderThresholdAmount.value = it }
         preferences.storeReview?.maxRating?.let { displayedReviewRating.value = it }
-        preferences.storeStock?.let { stockPreferences ->
-            _newStockNotificationSettingsViewState.update { it.copyWith(stockPreferences) }
-        }
         _notificationTypeItems.update { items ->
             items.map { item ->
                 item.copy(isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled)
@@ -380,13 +381,11 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     )
 
-    private fun NewStockNotificationSettingsViewState.copyWith(
-        stockPreferences: StoreStockPreferences
-    ): NewStockNotificationSettingsViewState = copy(
-        notificationsEnabled = stockPreferences.enabled ?: notificationsEnabled,
-        lowStockNotificationsEnabled = stockPreferences.lowStock ?: lowStockNotificationsEnabled,
-        outOfStockNotificationsEnabled = stockPreferences.outOfStock ?: outOfStockNotificationsEnabled,
-        backorderNotificationsEnabled = stockPreferences.onBackorder ?: backorderNotificationsEnabled
+    private fun StoreStockPreferences.toNewStockNotificationSettingsViewState() = NewStockNotificationSettingsViewState(
+        notificationsEnabled = enabled ?: true,
+        lowStockNotificationsEnabled = lowStock ?: true,
+        outOfStockNotificationsEnabled = outOfStock ?: true,
+        backorderNotificationsEnabled = onBackorder ?: true
     )
 
     private fun NewStockNotificationSettingsViewState.toStoreStockPreferences() = StoreStockPreferences(
