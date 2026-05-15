@@ -28,6 +28,12 @@ interface SupportChatBookmarkDao {
     @Query("SELECT * FROM SupportChatBookmarkEntity WHERE localSiteId = :localSiteId ORDER BY updatedAt DESC")
     suspend fun getForSite(localSiteId: LocalId): List<SupportChatBookmarkEntity>
 
+    @Query("UPDATE SupportChatBookmarkEntity SET hasCreatedTicket = 1 WHERE chatId = :chatId")
+    suspend fun markTicketCreated(chatId: Long): Int
+
+    @Query("UPDATE SupportChatBookmarkEntity SET isResolved = 1 WHERE chatId = :chatId")
+    suspend fun markResolved(chatId: Long): Int
+
     @Query("DELETE FROM SupportChatBookmarkEntity WHERE chatId = :chatId")
     suspend fun delete(chatId: Long): Int
 }

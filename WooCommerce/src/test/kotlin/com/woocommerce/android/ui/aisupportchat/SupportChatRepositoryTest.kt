@@ -162,6 +162,8 @@ class SupportChatRepositoryTest : BaseUnitTest() {
             assertThat(bookmarkCaptor.firstValue.remoteSiteId).isEqualTo(REMOTE_SITE_ID)
             assertThat(bookmarkCaptor.firstValue.botSlug).isEqualTo(BOT_SLUG)
             assertThat(bookmarkCaptor.firstValue.sessionId).isEqualTo(SESSION_ID)
+            assertThat(bookmarkCaptor.firstValue.hasCreatedTicket).isFalse()
+            assertThat(bookmarkCaptor.firstValue.isResolved).isFalse()
             assertThat(bookmarkCaptor.firstValue.title).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX")
             assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(CURRENT_TIME)
             assertThat(bookmarkCaptor.firstValue.updatedAt).isEqualTo(CURRENT_TIME)
@@ -191,6 +193,20 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when marking chat as ticket created, then dao marks ticket created`() = testBlocking {
+        repository.markChatAsTicketCreated(CHAT_ID)
+
+        verify(bookmarkDao).markTicketCreated(CHAT_ID)
+    }
+
+    @Test
+    fun `when marking chat as resolved, then dao marks resolved`() = testBlocking {
+        repository.markChatAsResolved(CHAT_ID)
+
+        verify(bookmarkDao).markResolved(CHAT_ID)
+    }
+
+    @Test
     fun `when deleting chat, then dao deletes chat id`() = testBlocking {
         repository.deleteChat(CHAT_ID)
 
@@ -213,6 +229,8 @@ class SupportChatRepositoryTest : BaseUnitTest() {
                 remoteSiteId = entity.remoteSiteId,
                 botSlug = entity.botSlug,
                 sessionId = entity.sessionId,
+                hasCreatedTicket = entity.hasCreatedTicket,
+                isResolved = entity.isResolved,
                 title = entity.title,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt
@@ -242,6 +260,8 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         remoteSiteId = REMOTE_SITE_ID,
         botSlug = BOT_SLUG,
         sessionId = SESSION_ID,
+        hasCreatedTicket = true,
+        isResolved = true,
         title = "Support chat",
         createdAt = 1_000L,
         updatedAt = 2_000L
