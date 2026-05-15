@@ -1003,7 +1003,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         messageId = messageId,
         role = role,
         content = content,
-        context = context ?: SupportChatMessageContext(isResolved = isResolved)
+        context = context ?: if (isResolved) SupportChatMessageContext(isResolved = true) else null
     )
 
     private companion object {
