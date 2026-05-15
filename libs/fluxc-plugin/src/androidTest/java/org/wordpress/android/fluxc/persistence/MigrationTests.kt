@@ -597,7 +597,7 @@ class MigrationTests {
     }
 
     @Test
-    fun testMigration85to86_addsSupportChatBookmarkSessionId() {
+    fun testMigration85to86_addsSupportChatBookmarkState() {
         helper.createDatabase(TEST_DB, 85).use { db ->
             db.execSQL(
                 """
@@ -614,7 +614,7 @@ class MigrationTests {
 
         migratedDb.query(
             """
-            SELECT chatId, sessionId
+            SELECT chatId, sessionId, hasCreatedTicket, isResolved
             FROM SupportChatBookmarkEntity
             WHERE chatId = 1234
             """.trimIndent()
@@ -623,6 +623,8 @@ class MigrationTests {
             cursor.moveToFirst()
             assertThat(cursor.getLong(0)).isEqualTo(1234)
             assertThat(cursor.isNull(1)).isTrue()
+            assertThat(cursor.getInt(2)).isEqualTo(0)
+            assertThat(cursor.getInt(3)).isEqualTo(0)
         }
     }
 

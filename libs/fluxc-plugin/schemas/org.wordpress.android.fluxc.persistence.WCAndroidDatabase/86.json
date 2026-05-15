@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 86,
-    "identityHash": "621e012d5b1854b5c194a773cd99205c",
+    "identityHash": "13f709bbb870d5d6c04f42e846fa36a2",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -4762,7 +4762,7 @@
       },
       {
         "tableName": "SupportChatBookmarkEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chatId` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteSiteId` INTEGER NOT NULL, `botSlug` TEXT NOT NULL, `sessionId` TEXT, `title` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`chatId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chatId` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteSiteId` INTEGER NOT NULL, `botSlug` TEXT NOT NULL, `sessionId` TEXT, `hasCreatedTicket` INTEGER NOT NULL DEFAULT 0, `isResolved` INTEGER NOT NULL DEFAULT 0, `title` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`chatId`))",
         "fields": [
           {
             "fieldPath": "chatId",
@@ -4794,6 +4794,20 @@
             "affinity": "TEXT"
           },
           {
+            "fieldPath": "hasCreatedTicket",
+            "columnName": "hasCreatedTicket",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isResolved",
+            "columnName": "isResolved",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
             "fieldPath": "title",
             "columnName": "title",
             "affinity": "TEXT"
@@ -4821,7 +4835,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '621e012d5b1854b5c194a773cd99205c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '13f709bbb870d5d6c04f42e846fa36a2')"
     ]
   }
 }
