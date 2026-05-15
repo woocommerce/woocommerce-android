@@ -124,7 +124,7 @@ fun AiSupportChatScreen(
                 onContactSupportClicked = onContactSupportClicked,
                 modifier = Modifier.fillMaxWidth()
             )
-            else -> InputBar(
+            viewState.showInputBar -> InputBar(
                 input = viewState.input,
                 isSending = viewState.isSending,
                 enabled = viewState.canSendMessages,
@@ -438,14 +438,6 @@ private fun DiagnosticsContent(
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))) {
-                if (hasFailure) {
-                    WCOutlinedButton(
-                        onClick = onRetryDiagnosticsClicked,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(text = stringResource(R.string.ai_support_chat_diagnostics_retry))
-                    }
-                }
                 WCColoredButton(
                     onClick = onContinueAfterDiagnosticsClicked,
                     text = stringResource(R.string.ai_support_chat_diagnostics_continue),

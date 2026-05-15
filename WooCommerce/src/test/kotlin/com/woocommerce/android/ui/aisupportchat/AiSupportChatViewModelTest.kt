@@ -68,6 +68,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasProceededToChat).isFalse()
         assertThat(state.hasStartedChat).isFalse()
         assertThat(state.canUseDiagnosticActions).isTrue()
+        assertThat(state.showInputBar).isFalse()
         assertThat(state.showDiagnosticActions).isFalse()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
@@ -170,6 +171,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasProceededToChat).isTrue()
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.canUseDiagnosticActions).isFalse()
+            assertThat(state.showInputBar).isTrue()
             assertThat(state.showDiagnosticActions).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
@@ -354,6 +356,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showHumanSupportPrompt).isTrue
             assertThat(state.latestSupportArea).isEqualTo(supportArea)
             assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            assertThat(state.showInputBar).isFalse
             assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
             assertThat(state.messages.map { it.content }).doesNotContain(AiSupportChatMessageContent.Text(BOT_RESPONSE))
         }

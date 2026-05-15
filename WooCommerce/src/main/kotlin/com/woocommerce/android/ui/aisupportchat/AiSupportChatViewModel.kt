@@ -531,6 +531,9 @@ data class AiSupportChatViewState(
     val canSendMessages: Boolean
         get() = hasProceededToChat && !hasCreatedTicket
 
+    val showInputBar: Boolean
+        get() = canSendMessages && !showHumanSupportPrompt
+
     val showDiagnosticActions: Boolean
         get() {
             val result = diagnosticResult ?: return false
