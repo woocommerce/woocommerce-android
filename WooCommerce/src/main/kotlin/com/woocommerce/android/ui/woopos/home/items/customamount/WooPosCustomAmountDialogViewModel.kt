@@ -25,8 +25,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     private val _state = MutableStateFlow(WooPosCustomAmountDialogState())
     val state: StateFlow<WooPosCustomAmountDialogState> = _state.asStateFlow()
 
-    @Volatile
-    private var hasInitializedFor: Any? = null
+    private var hasInitializedFor: WooPosCustomAmountDialogState.Mode? = null
 
     init {
         viewModelScope.launch {
@@ -41,13 +40,14 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
     }
 
     fun initializeFor(editing: WooPosCartItemViewState.CustomAmount?) {
-        val key: Any = editing?.itemNumber ?: ADD_MODE_KEY
-        if (hasInitializedFor == key) return
-        hasInitializedFor = key
+        val mode = editing
+            ?.let { WooPosCustomAmountDialogState.Mode.Edit(it.itemNumber) }
+            ?: WooPosCustomAmountDialogState.Mode.Add
+        if (hasInitializedFor == mode) return
+        hasInitializedFor = mode
 
         _state.value = _state.value.copy(
-            mode = editing?.let { WooPosCustomAmountDialogState.Mode.Edit(it.itemNumber) }
-                ?: WooPosCustomAmountDialogState.Mode.Add,
+            mode = mode,
             amount = editing?.amount,
             name = editing?.name.orEmpty(),
             isTaxable = editing?.isTaxable ?: false,
@@ -69,7 +69,7 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     fun onSubmit() {
         val current = _state.value
-        if (!current.isSubmitEnabled || current.isSubmitting) return
+        if (!current.isSubmitEnabled) return
         val amount = current.amount ?: return
         val editingItemNumber = (current.mode as? WooPosCustomAmountDialogState.Mode.Edit)?.itemNumber
 
@@ -97,8 +97,4 @@ class WooPosCustomAmountDialogViewModel @Inject constructor(
 
     private fun defaultName(): String =
         resourceProvider.getString(R.string.woopos_custom_amount_dialog_name_placeholder)
-
-    private companion object {
-        const val ADD_MODE_KEY = "add"
-    }
 }
