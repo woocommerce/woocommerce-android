@@ -75,7 +75,6 @@ fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
         onInputChanged = viewModel::onInputChanged,
         onSendClicked = viewModel::onSendClicked,
         onIssueSelected = viewModel::onIssueSelected,
-        onRetryDiagnosticsClicked = viewModel::onRetryDiagnosticsClicked,
         onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked,
         onContactSupportClicked = { viewModel.onContactSupportClicked(HumanSupportContactSource.BANNER) },
         onContactSupportFromErrorClicked = {
@@ -92,7 +91,6 @@ fun AiSupportChatScreen(
     onInputChanged: (String) -> Unit,
     onSendClicked: () -> Unit,
     onIssueSelected: (SupportIssueType, String) -> Unit,
-    onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onContactSupportClicked: () -> Unit,
     onContactSupportFromErrorClicked: () -> Unit,
@@ -111,7 +109,6 @@ fun AiSupportChatScreen(
             isSending = viewState.isSending,
             showDiagnosticActions = viewState.showDiagnosticActions,
             onIssueSelected = onIssueSelected,
-            onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onFeedbackClicked = onFeedbackClicked,
             modifier = Modifier
@@ -150,7 +147,6 @@ private fun MessageList(
     isSending: Boolean,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
-    onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
     modifier: Modifier = Modifier
@@ -179,7 +175,6 @@ private fun MessageList(
                 feedbackRating = message.messageId?.let { messageRatings[it] },
                 showDiagnosticActions = showDiagnosticActions,
                 onIssueSelected = onIssueSelected,
-                onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
                 onFeedbackClicked = onFeedbackClicked
             )
@@ -199,7 +194,6 @@ private fun MessageBubble(
     feedbackRating: AiSupportChatFeedbackRating?,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
-    onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
     modifier: Modifier = Modifier
@@ -233,7 +227,6 @@ private fun MessageBubble(
                     textColor = textColor,
                     showDiagnosticActions = showDiagnosticActions,
                     onIssueSelected = onIssueSelected,
-                    onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
                 )
             }
@@ -325,7 +318,6 @@ private fun MessageContent(
     textColor: Color,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
-    onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
     when (content) {
@@ -349,14 +341,12 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
-            onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
         is AiSupportChatMessageContent.DiagnosticsFailure -> DiagnosticsContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
-            onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
         )
     }
@@ -406,7 +396,6 @@ private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
     showDiagnosticActions: Boolean,
-    onRetryDiagnosticsClicked: () -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
     val hasFailure = result.firstFailure != null
@@ -696,7 +685,6 @@ private fun AiSupportChatScreenPreview() {
             onInputChanged = {},
             onSendClicked = {},
             onIssueSelected = { _, _ -> },
-            onRetryDiagnosticsClicked = {},
             onContinueAfterDiagnosticsClicked = {},
             onContactSupportClicked = {},
             onContactSupportFromErrorClicked = {},

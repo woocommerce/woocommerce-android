@@ -816,7 +816,11 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     createResponse(
                         messages = listOf(
                             createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
-                            createMessage(messageId = BOT_MESSAGE_ID, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                            createMessage(
+                                messageId = BOT_MESSAGE_ID,
+                                role = SupportChatRole.BOT,
+                                content = BOT_RESPONSE
+                            )
                         )
                     )
                 )

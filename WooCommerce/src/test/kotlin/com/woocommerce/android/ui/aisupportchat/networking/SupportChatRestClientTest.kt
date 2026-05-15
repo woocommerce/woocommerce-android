@@ -161,7 +161,10 @@ class SupportChatRestClientTest : BaseUnitTest() {
             )
 
             assertThat(urlCaptor.firstValue)
-                .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/$MESSAGE_ID/feedback")
+                .isEqualTo(
+                    "https://public-api.wordpress.com/wpcom/v2/odie/chat/" +
+                        "$BOT_SLUG/$CHAT_ID/$MESSAGE_ID/feedback"
+                )
             assertThat(bodyCaptor.firstValue).containsOnlyKeys("session_id", "rating_value")
             assertThat(bodyCaptor.firstValue["session_id"]).isEqualTo(SESSION_ID)
             assertThat(bodyCaptor.firstValue["rating_value"]).isEqualTo(1)
