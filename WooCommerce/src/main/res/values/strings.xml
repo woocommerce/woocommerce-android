@@ -2449,6 +2449,8 @@
     <string name="ai_support_chat_diagnostics_status_failed">Failed</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
     <string name="ai_support_chat_connectivity_action">Chat with support</string>
+    <string name="ai_support_chat_feedback_helpful">Helpful</string>
+    <string name="ai_support_chat_feedback_not_helpful">Not helpful</string>
 
     <string name="support_developer_section_title" translatable="false">DEVELOPER</string>
     <string name="support_override_feature_flags" translatable="false">Override Feature Flags</string>

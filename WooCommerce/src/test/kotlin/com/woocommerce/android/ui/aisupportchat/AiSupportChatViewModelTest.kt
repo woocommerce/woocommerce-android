@@ -384,6 +384,98 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given bot response has server message id, when chat updates, then bot UI message keeps message id`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = BOT_MESSAGE_ID, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val botMessage = viewModel.viewState.value.messages.single {
+                it.content == AiSupportChatMessageContent.Text(BOT_RESPONSE)
+            }
+            assertThat(botMessage.messageId).isEqualTo(BOT_MESSAGE_ID)
+        }
+
+    @Test
+    fun `given unrated bot response, when thumbs up clicked, then rating is stored and submitted`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(
+                repository.submitFeedback(
+                    DEFAULT_BOT_SLUG,
+                    CHAT_ID,
+                    BOT_MESSAGE_ID,
+                    SESSION_ID,
+                    true
+                )
+            ).thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+
+            assertThat(viewModel.viewState.value.messageRatings)
+                .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true)
+        }
+
+    @Test
+    fun `given unrated bot response, when thumbs down clicked, then rating is stored and submitted`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(
+                repository.submitFeedback(
+                    DEFAULT_BOT_SLUG,
+                    CHAT_ID,
+                    BOT_MESSAGE_ID,
+                    SESSION_ID,
+                    false
+                )
+            ).thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            assertThat(viewModel.viewState.value.messageRatings)
+                .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+            verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, false)
+        }
+
+    @Test
+    fun `given rated bot response, when feedback clicked again, then feedback is not submitted twice`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            assertThat(viewModel.viewState.value.messageRatings)
+                .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true)
+            verify(repository, never()).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, false)
+        }
+
+    @Test
+    fun `given chat identifiers are missing, when feedback clicked, then feedback is not submitted`() =
+        testBlocking {
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+
+            assertThat(viewModel.viewState.value.messageRatings).isEmpty()
+            verify(repository, never()).submitFeedback(any(), any(), any(), any(), any())
+        }
+
+    @Test
     fun `given second user message has bot response, when chat updates, then toolbar support is available`() =
         testBlocking {
             val result = createSuccessDiagnosticResult()
@@ -711,6 +803,27 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onSendClicked()
     }
 
+    private suspend fun startChatWithBotResponse() {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+            .thenReturn(
+                Result.success(
+                    createResponse(
+                        messages = listOf(
+                            createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                            createMessage(messageId = BOT_MESSAGE_ID, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                        )
+                    )
+                )
+            )
+
+        continueToChatAfterSuccessfulDiagnostics(result)
+        viewModel.onInputChanged(ISSUE_DETAILS)
+        viewModel.onSendClicked()
+    }
+
     private fun createSuccessDiagnosticResult(issueType: SupportIssueType = SupportIssueType.LOADING_ORDERS) =
         DiagnosticResult(
             issueType = issueType,
@@ -763,6 +876,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val ISSUE_LABEL = "I can't see my orders"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
+        const val BOT_MESSAGE_ID = 2L
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
 
