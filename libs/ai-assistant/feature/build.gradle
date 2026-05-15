@@ -63,6 +63,7 @@ dependencies {
     ksp(libs.google.dagger.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling.main)
+    debugImplementation(testFixtures(project(":libs:ai-assistant:core")))
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)

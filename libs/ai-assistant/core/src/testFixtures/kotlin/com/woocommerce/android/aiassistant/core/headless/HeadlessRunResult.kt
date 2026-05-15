@@ -12,6 +12,38 @@ data class HeadlessRunResult(
 )
 
 @Serializable
+data class HeadlessSuiteRunResult(
+    val metadata: HeadlessRunMetadata,
+    val scenarios: List<HeadlessScenarioRunResult>,
+)
+
+@Serializable
+data class HeadlessRunMetadata(
+    val modelId: String,
+    val promptVersion: String,
+    val toolCatalogVersion: String,
+    val startedAtIso8601: String,
+    val chatServiceClass: String,
+    val toolRegistryClass: String,
+    val safetyPolicy: String,
+)
+
+@Serializable
+data class HeadlessScenarioRunResult(
+    val scenarioId: String,
+    val category: HeadlessScenarioCategory,
+    val result: HeadlessRunResult,
+    val hardCheckResults: List<HeadlessHardCheckResult>,
+    val status: HeadlessScenarioStatus,
+)
+
+@Serializable
+enum class HeadlessScenarioStatus {
+    PASS,
+    FAIL,
+}
+
+@Serializable
 data class HeadlessTurnResult(
     val turnIndex: Int,
     val userMessage: String,

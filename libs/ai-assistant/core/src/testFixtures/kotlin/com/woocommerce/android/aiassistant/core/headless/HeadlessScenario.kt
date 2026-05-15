@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.core.headless
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
+import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +15,10 @@ data class HeadlessBaseline(
 data class HeadlessScenarioSpec(
     val id: String,
     val turns: List<HeadlessTurnSpec>,
-    val hardChecks: List<HeadlessHardCheck> = emptyList(),
+    val category: HeadlessScenarioCategory,
+    val scope: ToolScope,
+    val hardChecks: List<HeadlessHardCheck>,
+    val smokeFixture: HeadlessSmokeFixture?,
 )
 
 data class HeadlessScenario(
@@ -27,7 +31,23 @@ data class HeadlessScenario(
 @Serializable
 data class HeadlessTurnSpec(
     val userMessage: String,
-    val hardChecks: List<HeadlessHardCheck> = emptyList(),
+    val hardChecks: List<HeadlessHardCheck>,
+)
+
+@Serializable
+enum class HeadlessScenarioCategory {
+    LEGACY_SCRIPTED,
+    ORDERS_READ,
+    PRODUCTS_READ,
+    ANALYTICS_READ,
+    WRITE_CONFIRMATION,
+    OFF_DOMAIN_REFUSAL,
+}
+
+@Serializable
+data class HeadlessSmokeFixture(
+    val ownerTag: String,
+    val allowApproval: Boolean,
 )
 
 @Serializable
@@ -40,6 +60,12 @@ data class HeadlessHardCheck(
 enum class HeadlessHardCheckType {
     OUTCOME_EQUALS,
     ASSISTANT_TEXT_CONTAINS,
+    ASSISTANT_TEXT_NOT_CONTAINS,
+    ASSISTANT_REFUSAL,
     TOOL_CALLED,
     TOOL_NOT_CALLED,
+    TOOL_CALL_COUNT_AT_MOST,
+    TOOL_RESULT_KIND_EQUALS,
+    CONFIRMATION_DECISION_EQUALS,
+    TOOL_ARGUMENT_JSON_CONTAINS,
 }
