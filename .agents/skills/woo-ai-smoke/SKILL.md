@@ -5,48 +5,71 @@ description: Run the Android AI Assistant headless smoke regression harness with
 
 # Woo AI Smoke
 
-## Default Command
+## Default Live Command
 
-```bash
-./gradlew :libs:ai-assistant:feature:testDebugUnitTest --tests "*.WooAiSmokeRobolectricTest"
-```
-
-This is the default smoke harness. It does not require a connected device, emulator, installed app, login state,
-selected site, live network, or live Jetpack AI credentials.
-
-Review artifacts are written to:
+If `~/.woo-ai-smoke/store.env` does not exist, create it with these keys and stop so the developer
+can fill it in outside the repo:
 
 ```text
-libs/ai-assistant/feature/build/outputs/woo-ai-smoke/latest
+WOO_SITE_URL=
+WOO_SITE_ID=
+WOO_USERNAME=
+WOO_APP_PASSWORD=
 ```
 
-## No-Device Baseline Approval
+Never print the file contents, expanded env, username, app password, JWTs, Basic auth headers,
+cookies, or raw credential config.
 
 ```bash
-./gradlew :libs:ai-assistant:feature:testDebugUnitTest --tests "*.WooAiSmokeRobolectricApprovalTest"
+while IFS='=' read -r key value; do
+  case "$key" in
+    WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
+  esac
+done < "$HOME/.woo-ai-smoke/store.env"
+WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
+  ./gradlew -PwooAiSmokeEnableHiltUnitTests=true :WooCommerce:testWasabiDebugUnitTest \
+    --tests "*.WooAiSmokeLiveRobolectricTest"
 ```
 
-After reviewer approval, update the checked-in baseline with:
+Artifacts are written to:
+
+```text
+WooCommerce/build/outputs/woo-ai-smoke/live/latest
+```
+
+## Live Baseline Approval
+
+```bash
+while IFS='=' read -r key value; do
+  case "$key" in
+    WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
+  esac
+done < "$HOME/.woo-ai-smoke/store.env"
+WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve \
+  ./gradlew -PwooAiSmokeEnableHiltUnitTests=true :WooCommerce:testWasabiDebugUnitTest \
+    --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
+```
+
+After reviewer inspection:
 
 ```bash
 cp \
-  libs/ai-assistant/feature/build/outputs/woo-ai-smoke/latest/approved-baseline.json \
-  libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/baseline.json
+  WooCommerce/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
+  libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
 ```
+
+## Support/Unit Coverage
+
+```bash
+./gradlew :libs:ai-assistant:feature:testDebugUnitTest --tests "*.WooAiSmokeDeterministicSupport*"
+```
+
+Deterministic support tests validate harness wiring only. They are not accepted primary smoke
+evidence and must not be used to approve the live baseline.
 
 ## Optional Device-Backed Live Adapter
 
-Use this only when explicit live/device verification is needed.
-
-### Preconditions
-
-- A Wasabi debug build is installed.
-- The app is already logged into the smoke store and has a selected site.
-- The command passes `clearPackageData=false` so existing app auth and `SelectedSite` remain available.
-- Smoke config only reads `wooAiSmoke*` arguments. Normal runner args and e2e secret args are ignored by smoke config.
-- The command does not accept `wooAiSmoke` token, password, credential, or secret arguments.
-- Unsafe write confirmations are declined by the smoke harness.
-- The smoke run does not launch an Activity or Compose screen.
+Use only for explicit device-backed verification:
 
 ```bash
 ./gradlew :WooCommerce:connectedWasabiDebugAndroidTest \
@@ -55,8 +78,4 @@ Use this only when explicit live/device verification is needed.
   -Pandroid.testInstrumentationRunnerArguments.wooAiSmoke=true \
   -Pandroid.testInstrumentationRunnerArguments.wooAiSmokeBaselineMode=check \
   -Pandroid.testInstrumentationRunnerArguments.wooAiSmokeWriteMode=decline
-mkdir -p WooCommerce/build/outputs/woo-ai-smoke/latest
-adb exec-out run-as com.woocommerce.android.dev \
-  tar -C files/woo-ai-smoke/latest -cf - . \
-  | tar -C WooCommerce/build/outputs/woo-ai-smoke/latest -xf -
 ```

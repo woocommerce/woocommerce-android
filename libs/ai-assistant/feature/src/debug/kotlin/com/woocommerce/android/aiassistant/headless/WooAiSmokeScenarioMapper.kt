@@ -16,11 +16,12 @@ internal class WooAiSmokeScenarioMapper(
     private val systemPromptProvider: AssistantSystemPromptProvider,
     private val json: Json,
     private val selectedSiteId: Long,
+    private val resourceName: String,
 ) {
     fun loadScenarioSpecs(): List<HeadlessScenarioSpec> {
         val source = requireNotNull(
-            javaClass.classLoader?.getResource("woo-ai-smoke/scenarios.json")
-        ) { "Missing woo-ai-smoke/scenarios.json" }.readText()
+            javaClass.classLoader?.getResource("woo-ai-smoke/$resourceName")
+        ) { "Missing woo-ai-smoke/$resourceName" }.readText()
         return HeadlessBaselineParser(json).parseStrict(source).scenarios
     }
 

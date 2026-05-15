@@ -28,6 +28,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
 
 class WooAiSmokeRunWriterTest {
     @get:Rule
@@ -36,7 +37,7 @@ class WooAiSmokeRunWriterTest {
     @Test
     fun `when writing run artifacts, then machine readable and summary files are created`() {
         val outputDirectory = temporaryFolder.newFolder("latest")
-        val artifacts = WooAiSmokeRunWriter(json, outputDirectory).write(
+        val artifacts = writer(outputDirectory).write(
             suite = suite(),
             comparison = comparison(),
             approvedBaseline = approvedBaseline(),
@@ -55,7 +56,7 @@ class WooAiSmokeRunWriterTest {
     @Test
     fun `given no approved baseline, when writing run artifacts, then approval file is omitted`() {
         val outputDirectory = temporaryFolder.newFolder("latest")
-        WooAiSmokeRunWriter(json, outputDirectory).write(
+        writer(outputDirectory).write(
             suite = suite(),
             comparison = comparison(),
             approvedBaseline = null,
@@ -64,15 +65,50 @@ class WooAiSmokeRunWriterTest {
         assertThat(outputDirectory.resolve("approved-baseline.json")).doesNotExist()
     }
 
-    private fun suite() = HeadlessSuiteRunResult(
+    @Test
+    fun `given artifact text contains secrets, when writing run artifacts, then secrets are redacted`() {
+        val outputDirectory = temporaryFolder.newFolder("latest")
+
+        writer(outputDirectory).write(
+            suite = suite(assistantText = "merchant@example.com app password"),
+            comparison = comparison(),
+            approvedBaseline = null,
+        )
+
+        assertThat(outputDirectory.walkTopDown().filter { it.isFile }.joinToString("\n") { it.readText() })
+            .doesNotContain("merchant@example.com")
+            .doesNotContain("app password")
+    }
+
+    @Test
+    fun `given per run layout, when writing run artifacts, then latest is updated after a run directory is written`() {
+        val latestDirectory = temporaryFolder.newFolder("live").resolve("latest")
+
+        val artifacts = writer(latestDirectory, usePerRunDirectory = true).write(
+            suite = suite(),
+            comparison = comparison(),
+            approvedBaseline = null,
+        )
+
+        assertThat(artifacts.outputDirectory).isEqualTo(latestDirectory)
+        assertThat(latestDirectory.resolve("run.json")).exists()
+        assertThat(requireNotNull(latestDirectory.parentFile).resolve("runs").listFiles()).hasSize(1)
+    }
+
+    private fun suite(
+        assistantText: String = "Here are your recent orders.",
+    ) = HeadlessSuiteRunResult(
         metadata = HeadlessRunMetadata(
             modelId = "gpt-4o",
             promptVersion = "1.0.0",
             toolCatalogVersion = "1.0.0",
             startedAtIso8601 = "2026-05-15T00:00:00Z",
             chatServiceClass = "JetpackAiChatService",
+            jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
             toolRegistryClass = "WooCommerceToolRegistry",
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
+            smokeStoreLabel = "store",
+            credentialSource = "test",
         ),
         scenarios = listOf(
             HeadlessScenarioRunResult(
@@ -84,7 +120,7 @@ class WooAiSmokeRunWriterTest {
                         HeadlessTurnResult(
                             turnIndex = 0,
                             userMessage = "Show orders",
-                            assistantText = "Here are your recent orders.",
+                            assistantText = assistantText,
                             outcome = LoopOutcome.COMPLETED,
                             toolCalls = listOf(
                                 HeadlessToolCallTrace(
@@ -139,6 +175,21 @@ class WooAiSmokeRunWriterTest {
                 ),
             )
         ),
+    )
+
+    private fun writer(
+        outputDirectory: File,
+        usePerRunDirectory: Boolean = false,
+    ) = WooAiSmokeRunWriter(
+        json = json,
+        outputDirectory = outputDirectory,
+        approvedBaselineFileName = "approved-baseline.json",
+        redactor = WooAiSmokeRedactor(
+            siteUrl = "https://store.example",
+            username = "merchant@example.com",
+            appPassword = "app password",
+        ),
+        usePerRunDirectory = usePerRunDirectory,
     )
 
     private companion object {

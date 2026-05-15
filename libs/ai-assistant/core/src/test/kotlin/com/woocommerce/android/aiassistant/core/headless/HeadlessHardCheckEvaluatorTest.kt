@@ -198,17 +198,35 @@ class HeadlessHardCheckEvaluatorTest {
         val result = runResult(
             assistantText = "I can only help with your WooCommerce store, so I can't write that poem."
         )
+        val scopedRedirection = runResult(
+            assistantText = "I'm here to help with your WooCommerce store-related questions."
+        )
+        val scopedAssistance = runResult(
+            assistantText = "I'm here to assist with your WooCommerce store-related inquiries."
+        )
+        val scopedCanHelp = runResult(
+            assistantText = "I can help you with questions about your WooCommerce store."
+        )
         val missingScope = runResult(assistantText = "I can't write that poem.")
 
         val checks = HeadlessHardCheckEvaluator.evaluate(
             result,
             listOf(HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_REFUSAL, "woocommerce_scope"))
         ) + HeadlessHardCheckEvaluator.evaluate(
+            scopedRedirection,
+            listOf(HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_REFUSAL, "woocommerce_scope"))
+        ) + HeadlessHardCheckEvaluator.evaluate(
+            scopedAssistance,
+            listOf(HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_REFUSAL, "woocommerce_scope"))
+        ) + HeadlessHardCheckEvaluator.evaluate(
+            scopedCanHelp,
+            listOf(HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_REFUSAL, "woocommerce_scope"))
+        ) + HeadlessHardCheckEvaluator.evaluate(
             missingScope,
             listOf(HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_REFUSAL, "woocommerce_scope"))
         )
 
-        assertThat(checks.map { it.passed }).containsExactly(true, false)
+        assertThat(checks.map { it.passed }).containsExactly(true, true, true, true, false)
     }
 
     @Test

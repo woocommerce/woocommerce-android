@@ -23,7 +23,7 @@ import kotlinx.serialization.json.put
 import java.io.File
 import kotlin.time.TimeSource
 
-internal object WooAiSmokeNoDeviceHarness {
+internal object WooAiSmokeDeterministicSupportFixtures {
     const val SITE_ID = 2922L
 
     val json = Json {
@@ -52,8 +52,8 @@ internal object WooAiSmokeNoDeviceHarness {
         outputDirectory: File,
         baselineMode: WooAiSmokeBaselineMode,
     ) = WooAiSmokeRunner(
-        chatService = WooAiSmokeNoDeviceChatService(),
-        toolRegistry = WooAiSmokeNoDeviceToolRegistry(),
+        chatService = WooAiSmokeDeterministicSupportChatService(),
+        toolRegistry = WooAiSmokeDeterministicSupportToolRegistry(),
         toolCatalogSelector = DefaultToolCatalogSelector(),
         retryPolicy = ConservativeRetryPolicy,
         historyBudgeter = HistoryBudgeter { system, transcript, user ->
@@ -67,9 +67,20 @@ internal object WooAiSmokeNoDeviceHarness {
             baselineMode = baselineMode,
             writeMode = WooAiSmokeWriteMode.DECLINE,
             outputDirectoryName = "woo-ai-smoke",
+            scenarioResourceName = "support-scenarios.json",
+            baselineResourceName = "support-baseline.json",
+            approvedBaselineFileName = "approved-baseline.json",
         ),
         selectedSiteId = SITE_ID,
         outputDirectory = outputDirectory,
+        jwtProviderClass = "none",
+        storeLabel = "deterministic-support",
+        credentialSource = "support-fixtures",
+        redactor = WooAiSmokeRedactor(
+            siteUrl = "",
+            username = "",
+            appPassword = "",
+        ),
     )
 
     private object StaticSystemPromptProvider : AssistantSystemPromptProvider {
@@ -78,7 +89,7 @@ internal object WooAiSmokeNoDeviceHarness {
     }
 }
 
-internal class WooAiSmokeNoDeviceChatService : ChatService {
+internal class WooAiSmokeDeterministicSupportChatService : ChatService {
     private val responses = mutableListOf(
         toolResponse(
             "Checking recent orders.",
@@ -141,7 +152,7 @@ internal class WooAiSmokeNoDeviceChatService : ChatService {
     }
 }
 
-internal class WooAiSmokeNoDeviceToolRegistry : ToolRegistry {
+internal class WooAiSmokeDeterministicSupportToolRegistry : ToolRegistry {
     val executedCalls = mutableListOf<ToolCall>()
 
     override fun descriptors(): List<ToolDescriptor> = DESCRIPTORS

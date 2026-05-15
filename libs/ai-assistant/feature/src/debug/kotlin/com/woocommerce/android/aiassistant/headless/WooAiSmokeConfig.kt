@@ -5,6 +5,9 @@ data class WooAiSmokeConfig(
     val baselineMode: WooAiSmokeBaselineMode,
     val writeMode: WooAiSmokeWriteMode,
     val outputDirectoryName: String,
+    val scenarioResourceName: String,
+    val baselineResourceName: String,
+    val approvedBaselineFileName: String,
 ) {
     companion object {
         fun fromInstrumentationArguments(arguments: Map<String, String?>): WooAiSmokeConfig {
@@ -33,6 +36,9 @@ data class WooAiSmokeConfig(
                 baselineMode = WooAiSmokeBaselineMode.from(arguments["wooAiSmokeBaselineMode"] ?: "check"),
                 writeMode = WooAiSmokeWriteMode.DECLINE,
                 outputDirectoryName = arguments["wooAiSmokeOutputDir"] ?: "woo-ai-smoke",
+                scenarioResourceName = "live-scenarios.json",
+                baselineResourceName = "live-baseline.json",
+                approvedBaselineFileName = "approved-live-baseline.json",
             )
         }
     }

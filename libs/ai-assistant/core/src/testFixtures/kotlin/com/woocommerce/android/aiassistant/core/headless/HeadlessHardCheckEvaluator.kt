@@ -106,7 +106,17 @@ object HeadlessHardCheckEvaluator {
     }
 
     private fun String.isWooCommerceScopeRefusal(): Boolean {
-        val refusalTokens = listOf("can't", "cannot", "can only", "not able", "outside")
+        val refusalTokens = listOf(
+            "can't",
+            "cannot",
+            "can help",
+            "can only",
+            "not able",
+            "outside",
+            "here to help",
+            "assist with",
+            "focus on",
+        )
         val scopeTokens = listOf("woocommerce", "store")
         return refusalTokens.any { contains(it, ignoreCase = true) } &&
             scopeTokens.any { contains(it, ignoreCase = true) }

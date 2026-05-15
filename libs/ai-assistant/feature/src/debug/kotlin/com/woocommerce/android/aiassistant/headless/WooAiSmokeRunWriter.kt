@@ -8,29 +8,41 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 internal class WooAiSmokeRunWriter(
     private val json: Json,
     private val outputDirectory: File,
+    private val approvedBaselineFileName: String,
+    private val redactor: WooAiSmokeRedactor,
+    private val usePerRunDirectory: Boolean,
 ) {
     fun write(
         suite: HeadlessSuiteRunResult,
         comparison: HeadlessBaselineComparison,
         approvedBaseline: HeadlessApprovedBaseline?,
     ): WooAiSmokeArtifacts {
-        outputDirectory.deleteRecursively()
-        outputDirectory.mkdirs()
-        File(outputDirectory, "run.json").writeText(json.encodeToString(suite))
-        File(outputDirectory, "baseline-comparison.json").writeText(json.encodeToString(comparison))
-        File(outputDirectory, "summary.md").writeText(WooAiSmokeSummaryRenderer.render(suite, comparison))
+        val writeDirectory = if (usePerRunDirectory) perRunDirectory() else outputDirectory
+        writeDirectory.deleteRecursively()
+        writeDirectory.mkdirs()
+        File(writeDirectory, "run.json").writeRedacted(json.encodeToString(suite))
+        File(writeDirectory, "baseline-comparison.json").writeRedacted(json.encodeToString(comparison))
+        File(writeDirectory, "summary.md").writeRedacted(WooAiSmokeSummaryRenderer.render(suite, comparison))
         File(
-            outputDirectory,
+            writeDirectory,
             "turns.jsonl",
-        ).writeText(
+        ).writeRedacted(
             turnRecords(suite).joinToString("\n") { json.encodeToString(it) }
         )
         if (approvedBaseline != null) {
-            File(outputDirectory, "approved-baseline.json").writeText(json.encodeToString(approvedBaseline))
+            File(writeDirectory, approvedBaselineFileName).writeRedacted(json.encodeToString(approvedBaseline))
+        }
+        if (usePerRunDirectory) {
+            outputDirectory.deleteRecursively()
+            writeDirectory.copyRecursively(outputDirectory, overwrite = true)
         }
         return WooAiSmokeArtifacts(outputDirectory = outputDirectory)
     }
@@ -49,6 +61,26 @@ internal class WooAiSmokeRunWriter(
                 )
             }
         }
+
+    private fun File.writeRedacted(text: String) {
+        writeText(redactor.redact(text))
+    }
+
+    private fun perRunDirectory(): File {
+        val latestParent = requireNotNull(outputDirectory.parentFile) {
+            "Output directory must have a parent: $outputDirectory"
+        }
+        val timestamp = RUN_DIRECTORY_TIMESTAMP.format(Instant.now())
+        val shortRunId = UUID.randomUUID().toString().take(SHORT_RUN_ID_LENGTH)
+        return File(latestParent, "runs/$timestamp-$shortRunId")
+    }
+
+    private companion object {
+        private const val SHORT_RUN_ID_LENGTH = 8
+        private val RUN_DIRECTORY_TIMESTAMP = DateTimeFormatter
+            .ofPattern("yyyyMMdd-HHmmss")
+            .withZone(ZoneOffset.UTC)
+    }
 }
 
 internal data class WooAiSmokeArtifacts(

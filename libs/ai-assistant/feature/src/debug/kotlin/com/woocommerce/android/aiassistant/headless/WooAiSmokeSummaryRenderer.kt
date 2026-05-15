@@ -15,8 +15,11 @@ internal object WooAiSmokeSummaryRenderer {
         appendLine("Prompt: ${suite.metadata.promptVersion}")
         appendLine("Tool catalog: ${suite.metadata.toolCatalogVersion}")
         appendLine("ChatService: ${suite.metadata.chatServiceClass}")
+        appendLine("JwtProvider: ${suite.metadata.jwtProviderClass}")
         appendLine("ToolRegistry: ${suite.metadata.toolRegistryClass}")
         appendLine("Safety: ${suite.metadata.safetyPolicy}")
+        appendLine("Store label: ${suite.metadata.smokeStoreLabel}")
+        appendLine("Credential source: ${suite.metadata.credentialSource}")
         appendLine(statusCounts(suite, comparison))
         suite.scenarios.forEach { scenario ->
             appendLine()

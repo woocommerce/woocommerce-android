@@ -24,8 +24,11 @@ data class HeadlessRunMetadata(
     val toolCatalogVersion: String,
     val startedAtIso8601: String,
     val chatServiceClass: String,
+    val jwtProviderClass: String,
     val toolRegistryClass: String,
     val safetyPolicy: String,
+    val smokeStoreLabel: String,
+    val credentialSource: String,
 )
 
 @Serializable

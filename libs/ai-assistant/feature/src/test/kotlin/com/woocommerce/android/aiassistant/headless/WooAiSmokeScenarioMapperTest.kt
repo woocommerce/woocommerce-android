@@ -66,7 +66,7 @@ class WooAiSmokeScenarioMapperTest {
 
     @Test
     fun `given scenario resource, when parsed strictly from classpath, then it is readable`() {
-        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/scenarios.json")).readText()
+        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/live-scenarios.json")).readText()
         val baseline = HeadlessBaselineParser(json).parseStrict(source)
 
         assertThat(baseline.scenarios).hasSize(5)
@@ -74,7 +74,7 @@ class WooAiSmokeScenarioMapperTest {
 
     @Test
     fun `given approved baseline resource, when parsed from classpath, then it is readable`() {
-        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/baseline.json")).readText()
+        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/support-baseline.json")).readText()
         val baseline = HeadlessBaselineParser(json).parseApprovedBaseline(source)
 
         assertThat(baseline.scenarios.map { it.scenarioId }).containsExactlyInAnyOrder(
@@ -92,6 +92,7 @@ class WooAiSmokeScenarioMapperTest {
         systemPromptProvider = StaticSystemPromptProvider,
         json = json,
         selectedSiteId = selectedSiteId,
+        resourceName = "live-scenarios.json",
     )
 
     private object StaticSystemPromptProvider : AssistantSystemPromptProvider {

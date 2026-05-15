@@ -14,6 +14,7 @@ data class HeadlessBaselineMetadata(
     val modelId: String,
     val promptVersion: String,
     val toolCatalogVersion: String,
+    val smokeStoreLabel: String? = null,
 )
 
 @Serializable

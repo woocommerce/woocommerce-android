@@ -14,14 +14,14 @@ import org.robolectric.RobolectricTestRunner
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
-class WooAiSmokeRobolectricTest {
-    private val json = WooAiSmokeNoDeviceHarness.json
+class WooAiSmokeDeterministicSupportTest {
+    private val json = WooAiSmokeDeterministicSupportFixtures.json
 
     @Test
-    fun `when primary no-device smoke runs, then scenarios baseline and stable artifacts pass`() = runTest {
-        val outputDirectory = WooAiSmokeNoDeviceHarness.stableOutputDirectory()
+    fun `when support no-device smoke runs, then scenarios baseline and stable artifacts pass`() = runTest {
+        val outputDirectory = WooAiSmokeDeterministicSupportFixtures.stableOutputDirectory()
 
-        val exit = WooAiSmokeNoDeviceHarness.runner(
+        val exit = WooAiSmokeDeterministicSupportFixtures.runner(
             outputDirectory = outputDirectory,
             baselineMode = WooAiSmokeBaselineMode.CHECK,
         ).run()
@@ -43,8 +43,8 @@ class WooAiSmokeRobolectricTest {
         assertThat(suite.metadata.modelId).isEqualTo(AssistantConfig.MODEL_ID)
         assertThat(suite.metadata.promptVersion).isEqualTo(AssistantConfig.PROMPT_VERSION)
         assertThat(suite.metadata.toolCatalogVersion).isEqualTo(AssistantConfig.TOOL_CATALOG_VERSION)
-        assertThat(suite.metadata.chatServiceClass).isEqualTo("WooAiSmokeNoDeviceChatService")
-        assertThat(suite.metadata.toolRegistryClass).isEqualTo("WooAiSmokeNoDeviceToolRegistry")
+        assertThat(suite.metadata.chatServiceClass).isEqualTo("WooAiSmokeDeterministicSupportChatService")
+        assertThat(suite.metadata.toolRegistryClass).isEqualTo("WooAiSmokeDeterministicSupportToolRegistry")
         assertThat(suite.scenarios.map { it.scenarioId }).containsExactly(
             "orders-read-recent",
             "products-search-card",

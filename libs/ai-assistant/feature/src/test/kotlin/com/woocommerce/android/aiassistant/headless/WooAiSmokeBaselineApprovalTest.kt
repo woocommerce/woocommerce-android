@@ -64,8 +64,11 @@ class WooAiSmokeBaselineApprovalTest {
             toolCatalogVersion = "1.0.0",
             startedAtIso8601 = "2026-05-15T00:00:00Z",
             chatServiceClass = "JetpackAiChatService",
+            jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
             toolRegistryClass = "WooCommerceToolRegistry",
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
+            smokeStoreLabel = "store",
+            credentialSource = "test",
         ),
         scenarios = scenarios.toList(),
     )

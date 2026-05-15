@@ -1,3 +1,5 @@
+@file:Suppress("ImportOrdering")
+
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.config.AssistantConfig
@@ -7,7 +9,10 @@ import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineComparator
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineComparison
+import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadataStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
+import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineRegressionStatus
+import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckEvaluator
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
@@ -38,6 +43,10 @@ internal class WooAiSmokeRunner(
     private val config: WooAiSmokeConfig,
     private val selectedSiteId: Long,
     private val outputDirectory: File,
+    private val jwtProviderClass: String,
+    private val storeLabel: String,
+    private val credentialSource: String,
+    private val redactor: WooAiSmokeRedactor,
 ) {
     suspend fun run(): WooAiSmokeRunExit {
         val scenarioMapper = WooAiSmokeScenarioMapper(
@@ -46,24 +55,40 @@ internal class WooAiSmokeRunner(
             systemPromptProvider = systemPromptProvider,
             json = json,
             selectedSiteId = selectedSiteId,
+            resourceName = config.scenarioResourceName,
         )
         val scenarioSpecs = scenarioMapper.loadScenarioSpecs()
         val suite = runSuite(scenarioSpecs, scenarioMapper)
-        val baseline = loadApprovedBaseline()
-        val comparison = HeadlessBaselineComparator.compare(suite, baseline)
+        val baseline = loadApprovedBaselineOrNull()
+        val comparison = if (baseline != null) {
+            HeadlessBaselineComparator.compare(suite, baseline)
+        } else {
+            missingBaselineComparison(suite)
+        }
         val approvedBaseline = if (config.baselineMode == WooAiSmokeBaselineMode.APPROVE) {
             WooAiSmokeBaselineApproval.approvedBaselineOrNull(suite)
         } else {
             null
         }
-        val artifacts = WooAiSmokeRunWriter(json, outputDirectory).write(
+        val artifacts = WooAiSmokeRunWriter(
+            json = json,
+            outputDirectory = outputDirectory,
+            approvedBaselineFileName = config.approvedBaselineFileName,
+            redactor = redactor,
+            usePerRunDirectory = config.baselineResourceName == "live-baseline.json",
+        ).write(
             suite = suite,
             comparison = comparison,
             approvedBaseline = approvedBaseline,
         )
         return WooAiSmokeRunExit(
             artifactsDirectory = artifacts.outputDirectory,
-            failureMessage = failureMessageFor(suite, comparison, approvedBaseline),
+            failureMessage = failureMessageFor(
+                suite = suite,
+                comparison = comparison,
+                approvedBaseline = approvedBaseline,
+                baselineMissing = baseline == null,
+            ),
         )
     }
 
@@ -119,21 +144,35 @@ internal class WooAiSmokeRunner(
             toolCatalogVersion = AssistantConfig.TOOL_CATALOG_VERSION,
             startedAtIso8601 = Instant.now().toString(),
             chatServiceClass = chatService::class.simpleName ?: chatService.javaClass.simpleName,
+            jwtProviderClass = jwtProviderClass,
             toolRegistryClass = toolRegistry::class.simpleName ?: toolRegistry.javaClass.simpleName,
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
+            smokeStoreLabel = storeLabel,
+            credentialSource = credentialSource,
         )
 
-    private fun loadApprovedBaseline(): HeadlessApprovedBaseline {
-        val source = requireNotNull(
-            javaClass.classLoader?.getResource("woo-ai-smoke/baseline.json")
-        ) { "Missing woo-ai-smoke/baseline.json" }.readText()
-        return HeadlessBaselineParser(json).parseApprovedBaseline(source)
-    }
+    private fun loadApprovedBaselineOrNull(): HeadlessApprovedBaseline? =
+        javaClass.classLoader?.getResource("woo-ai-smoke/${config.baselineResourceName}")
+            ?.readText()
+            ?.let { HeadlessBaselineParser(json).parseApprovedBaseline(it) }
+
+    private fun missingBaselineComparison(suite: HeadlessSuiteRunResult) = HeadlessBaselineComparison(
+        metadataStatus = HeadlessBaselineMetadataStatus.STALE,
+        scenarioStatuses = suite.scenarios.map { scenario ->
+            HeadlessBaselineScenarioStatus(
+                scenarioId = scenario.scenarioId,
+                status = HeadlessBaselineRegressionStatus.NEW,
+                message = "Scenario has no approved live baseline.",
+            )
+        },
+        message = "Live baseline approval required: missing woo-ai-smoke/${config.baselineResourceName}",
+    )
 
     private fun failureMessageFor(
         suite: HeadlessSuiteRunResult,
         comparison: HeadlessBaselineComparison,
         approvedBaseline: HeadlessApprovedBaseline?,
+        baselineMissing: Boolean,
     ): String? {
         val failedScenarios = suite.scenarios.filter { it.status == HeadlessScenarioStatus.FAIL }
         if (failedScenarios.isNotEmpty()) {
@@ -142,7 +181,9 @@ internal class WooAiSmokeRunner(
 
         return when (config.baselineMode) {
             WooAiSmokeBaselineMode.CHECK -> {
-                if (comparison.hasBlockingFailure) {
+                if (baselineMissing) {
+                    "Live baseline approval required: missing woo-ai-smoke/${config.baselineResourceName}"
+                } else if (comparison.hasBlockingFailure) {
                     "Woo AI smoke baseline check failed: ${comparison.message}"
                 } else {
                     null

@@ -16,6 +16,7 @@ internal object WooAiSmokeBaselineApproval {
                 modelId = current.metadata.modelId,
                 promptVersion = current.metadata.promptVersion,
                 toolCatalogVersion = current.metadata.toolCatalogVersion,
+                smokeStoreLabel = current.metadata.smokeStoreLabel,
             ),
             scenarios = current.scenarios.map { scenario ->
                 HeadlessApprovedScenarioBaseline(

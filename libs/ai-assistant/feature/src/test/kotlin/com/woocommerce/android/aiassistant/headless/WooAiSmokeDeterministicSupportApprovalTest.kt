@@ -12,14 +12,14 @@ import org.robolectric.RobolectricTestRunner
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
-class WooAiSmokeRobolectricApprovalTest {
-    private val json = WooAiSmokeNoDeviceHarness.json
+class WooAiSmokeDeterministicSupportApprovalTest {
+    private val json = WooAiSmokeDeterministicSupportFixtures.json
 
     @Test
     fun `when no-device approval runs, then approved baseline is written to stable artifacts`() = runTest {
-        val outputDirectory = WooAiSmokeNoDeviceHarness.stableOutputDirectory()
+        val outputDirectory = WooAiSmokeDeterministicSupportFixtures.stableOutputDirectory()
 
-        val exit = WooAiSmokeNoDeviceHarness.runner(
+        val exit = WooAiSmokeDeterministicSupportFixtures.runner(
             outputDirectory = outputDirectory,
             baselineMode = WooAiSmokeBaselineMode.APPROVE,
         ).run()
