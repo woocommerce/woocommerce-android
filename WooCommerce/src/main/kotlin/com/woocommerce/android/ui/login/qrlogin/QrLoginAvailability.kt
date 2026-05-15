@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.login.qrlogin.QrLoginAvailability.Companion.ROLLOUT_BUCKETS_ENABLED
+import com.woocommerce.android.ui.login.qrlogin.QrLoginAvailability.Companion.ROLLOUT_BUCKET_MAX
+import com.woocommerce.android.ui.login.qrlogin.QrLoginAvailability.Companion.ROLLOUT_BUCKET_MIN
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -21,22 +24,32 @@ import kotlin.random.Random
  * value is treated as off) since this is in the login flow so the remote might not be loaded yet.
  * Each install is assigned a number in
  * [ROLLOUT_BUCKET_MIN]..[ROLLOUT_BUCKET_MAX] on first read and persisted, so the decision is stable
- * across restarts. Only installs in [ROLLOUT_BUCKETS_ENABLED] get the entry point. A debug override
- * on the flag bypasses both the remote check and the bucket check.
+ * across restarts. Only installs in [ROLLOUT_BUCKETS_ENABLED] get the in-app entry point via
+ * [isAvailable].
+ *
+ * The bucket only gates discovery from within the app. If the user is already in the flow from
+ * elsewhere (e.g. scanned a QR from wp-admin with a 3rd-party camera), use
+ * [isAvailableForDeepLink], which still respects the feature flag and camera check but ignores the
+ * rollout bucket.
  */
 class QrLoginAvailability @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
     private val deviceFeatures: DeviceFeatures,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) {
-    fun isAvailable(): Boolean {
+    fun isAvailable(): Boolean = isAvailable(applyRolloutBucket = true)
+
+    fun isAvailableForDeepLink(): Boolean = isAvailable(applyRolloutBucket = false)
+
+    @Suppress("ReturnCount")
+    private fun isAvailable(applyRolloutBucket: Boolean): Boolean {
         val flagState = featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)
         val override = flagState.overrideValue
         if (override != null) {
             if (!override) return false
         } else {
             if (flagState.remoteValue != true) return false
-            if (getOrAssignRolloutBucket() !in ROLLOUT_BUCKETS_ENABLED) {
+            if (applyRolloutBucket && getOrAssignRolloutBucket() !in ROLLOUT_BUCKETS_ENABLED) {
                 WooLog.d(WooLog.T.LOGIN, "QR login unavailable: outside rollout bucket")
                 return false
             }

@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -87,6 +88,42 @@ class QrLoginAvailabilityTest : BaseUnitTest() {
         availability.isAvailable()
 
         verify(appPrefsWrapper).qrLoginRolloutBucket = argThat<Int> { this in 1..10 }
+    }
+
+    @Test
+    fun `given remote true, when isAvailableForDeepLink, then true regardless of bucket`() {
+        assertThat(availability.isAvailableForDeepLink()).isTrue()
+
+        verify(appPrefsWrapper, never()).qrLoginRolloutBucket
+    }
+
+    @Test
+    fun `given remote false, when isAvailableForDeepLink, then false`() {
+        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = false))
+
+        assertThat(availability.isAvailableForDeepLink()).isFalse()
+    }
+
+    @Test
+    fun `given remote not loaded, when isAvailableForDeepLink, then false`() {
+        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = null))
+
+        assertThat(availability.isAvailableForDeepLink()).isFalse()
+    }
+
+    @Test
+    fun `given override disabled, when isAvailableForDeepLink, then false`() {
+        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN))
+            .thenReturn(flagState(remote = true, override = false))
+
+        assertThat(availability.isAvailableForDeepLink()).isFalse()
+    }
+
+    @Test
+    fun `given no camera, when isAvailableForDeepLink, then false`() {
+        whenever(deviceFeatures.hasCamera()).thenReturn(false)
+
+        assertThat(availability.isAvailableForDeepLink()).isFalse()
     }
 
     private fun flagState(remote: Boolean?, override: Boolean? = null) = FeatureFlagState(
