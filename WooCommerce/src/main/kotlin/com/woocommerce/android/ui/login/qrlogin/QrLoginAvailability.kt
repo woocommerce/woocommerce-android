@@ -12,44 +12,40 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 /**
- * Decides whether the QR login entry point should be offered on this device.
+ * Decides whether the QR login flow should be offered.
  *
- * Hard requirement: the device needs a camera — there's no QR flow without one. We don't gate on
- * Google Play Services: we ship the bundled ML Kit barcode scanning variant, which is designed to
- * work on GMS-less devices. If the scanner fails at runtime (binding error, model init, etc.),
- * [com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.onBindingException] already
- * surfaces a snackbar, so offering the entry point optimistically is safe.
+ * The remote feature flag gates both entry points: we require an explicit `remoteValue == true`
+ * (a `null`/not-yet-loaded remote value is treated as off) since this runs in the login flow before
+ * remote flags are guaranteed to have loaded. Only a debug override bypasses this.
  *
- * We require an explicit remote=true (a null/not-yet-loaded remote
- * value is treated as off) since this is in the login flow so the remote might not be loaded yet.
- * Each install is assigned a number in
- * [ROLLOUT_BUCKET_MIN]..[ROLLOUT_BUCKET_MAX] on first read and persisted, so the decision is stable
- * across restarts. Only installs in [ROLLOUT_BUCKETS_ENABLED] get the in-app entry point via
- * [isAvailable].
+ * For the in-app entry point ([isAvailable]):
+ *  - The device must have a camera — we don't gate on Google Play Services: we ship the bundled
+ *    ML Kit barcode scanning variant, which works on GMS-less devices. If the scanner fails at
+ *    runtime,
+ *    [com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.onBindingException]
+ *    surfaces a snackbar.
+ *  - Each install is assigned a number in [ROLLOUT_BUCKET_MIN]..[ROLLOUT_BUCKET_MAX] on first read
+ *    and persisted, so the decision is stable across restarts. Only installs in
+ *    [ROLLOUT_BUCKETS_ENABLED] get the entry point. A debug override bypasses the bucket check.
  *
- * The bucket only gates discovery from within the app. If the user is already in the flow from
- * elsewhere (e.g. scanned a QR from wp-admin with a 3rd-party camera), use
- * [isAvailableForDeepLink], which still respects the feature flag and camera check but ignores the
- * rollout bucket.
+ * For deep-link entry ([isAvailableForDeepLink]), e.g. scanning a QR from wp-admin with a
+ * 3rd-party camera: the bucket is bypassed (the user already chose this flow), and the camera
+ * check is skipped (they already have the token; no scanning needed in-app).
  */
 class QrLoginAvailability @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
     private val deviceFeatures: DeviceFeatures,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) {
-    fun isAvailable(): Boolean = isAvailable(applyRolloutBucket = true)
-
-    fun isAvailableForDeepLink(): Boolean = isAvailable(applyRolloutBucket = false)
-
     @Suppress("ReturnCount")
-    private fun isAvailable(applyRolloutBucket: Boolean): Boolean {
+    fun isAvailable(): Boolean {
         val flagState = featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)
         val override = flagState.overrideValue
         if (override != null) {
             if (!override) return false
         } else {
             if (flagState.remoteValue != true) return false
-            if (applyRolloutBucket && getOrAssignRolloutBucket() !in ROLLOUT_BUCKETS_ENABLED) {
+            if (getOrAssignRolloutBucket() !in ROLLOUT_BUCKETS_ENABLED) {
                 WooLog.d(WooLog.T.LOGIN, "QR login unavailable: outside rollout bucket")
                 return false
             }
@@ -61,6 +57,11 @@ class QrLoginAvailability @Inject constructor(
         }
 
         return true
+    }
+
+    fun isAvailableForDeepLink(): Boolean {
+        val flagState = featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)
+        return flagState.overrideValue ?: (flagState.remoteValue == true)
     }
 
     private fun getOrAssignRolloutBucket(): Int =

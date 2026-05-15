@@ -120,10 +120,10 @@ class QrLoginAvailabilityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no camera, when isAvailableForDeepLink, then false`() {
-        whenever(deviceFeatures.hasCamera()).thenReturn(false)
+    fun `when isAvailableForDeepLink, then camera presence is not checked`() {
+        availability.isAvailableForDeepLink()
 
-        assertThat(availability.isAvailableForDeepLink()).isFalse()
+        verify(deviceFeatures, never()).hasCamera()
     }
 
     private fun flagState(remote: Boolean?, override: Boolean? = null) = FeatureFlagState(
