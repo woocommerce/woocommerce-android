@@ -54,7 +54,7 @@ class CardTelemetryFamilyMapperTest {
     private fun variationCard() = AssistantCard.Variation(
         parentProductId = 1L,
         variationId = 2L,
-        name = "Blue socks",
+        parentProductName = "Woo socks",
         sku = "sku",
         price = "12.34",
         stockStatus = "instock",
