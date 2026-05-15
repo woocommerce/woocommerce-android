@@ -24,10 +24,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import org.wordpress.android.util.ToastUtils
@@ -142,11 +145,17 @@ private fun WooPosHomeScreen(
         }
 
         if (!isPreviewMode()) {
-            WooPosHomeScreenToolbar(
-                modifier = Modifier
-                    .padding(WooPosSpacing.Large.value)
-                    .align(Alignment.BottomStart),
-            )
+            val itemsViewModel: WooPosItemsViewModel = hiltViewModel()
+            val itemsState by itemsViewModel.viewState.collectAsState()
+            val isFloatingToolbarVisible = itemsState !is WooPosItemsToolbarViewState.CustomAmountForm
+
+            if (isFloatingToolbarVisible) {
+                WooPosHomeScreenToolbar(
+                    modifier = Modifier
+                        .padding(WooPosSpacing.Large.value)
+                        .align(Alignment.BottomStart),
+                )
+            }
 
             WooPosHomeDialogs(state.dialogState, onHomeUIEvent)
         }
