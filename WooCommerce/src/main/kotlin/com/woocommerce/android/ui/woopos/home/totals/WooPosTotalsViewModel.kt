@@ -26,6 +26,8 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusP
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsCompleteEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsScanToPayEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
@@ -81,6 +83,8 @@ class WooPosTotalsViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable,
+    private val isScanToPayEnabled: WooPosIsScanToPayEnabled,
+    private val isMarkOrderAsCompleteEnabled: WooPosIsMarkOrderAsCompleteEnabled,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
@@ -1056,7 +1060,9 @@ class WooPosTotalsViewModel @Inject constructor(
             val dataState = dataState.value
             checkNotNull(dataState.orderTotal)
             val template = when (paymentMethod) {
-                PaymentMethod.CARD -> R.string.woopos_totals_success_payment_card
+                PaymentMethod.CARD,
+                PaymentMethod.SCAN_TO_PAY,
+                PaymentMethod.EXTERNAL -> R.string.woopos_totals_success_payment_card
                 PaymentMethod.CASH -> R.string.woopos_totals_success_payment_cash
             }
             val orderTotalText = resourceProvider.getString(
@@ -1098,6 +1104,8 @@ class WooPosTotalsViewModel @Inject constructor(
             ),
             readerStatus = readerStatus,
             isTapToPayAvailable = isTapToPayAvailable(),
+            isScanToPayEnabled = isScanToPayEnabled(),
+            isMarkOrderAsCompleteEnabled = isMarkOrderAsCompleteEnabled(),
         )
     }
 

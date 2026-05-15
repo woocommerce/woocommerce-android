@@ -55,7 +55,9 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 val priceText = priceFormat(order.total)
                 val stringRes = when (source) {
                     PaymentSuccessSource.CARD_CHECKOUT,
-                    PaymentSuccessSource.CARD_BOOKINGS -> R.string.woopos_totals_success_payment_card
+                    PaymentSuccessSource.CARD_BOOKINGS,
+                    PaymentSuccessSource.SCAN_TO_PAY,
+                    PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> R.string.woopos_totals_success_payment_card
                     PaymentSuccessSource.CASH_BOOKINGS -> R.string.woopos_totals_success_payment_cash
                 }
                 resourceProvider.getString(stringRes, priceText)
@@ -70,7 +72,9 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                         ?.let { email ->
                             resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
                         }
-                PaymentSuccessSource.CASH_BOOKINGS -> null
+                PaymentSuccessSource.CASH_BOOKINGS,
+                PaymentSuccessSource.SCAN_TO_PAY,
+                PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> null
             }
             _state.value = PaymentSuccessViewState(
                 orderTotalText = orderTotalText,
@@ -107,7 +111,9 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
 
     private suspend fun emitNavigateBack() {
         when (source) {
-            PaymentSuccessSource.CARD_CHECKOUT -> {
+            PaymentSuccessSource.CARD_CHECKOUT,
+            PaymentSuccessSource.SCAN_TO_PAY,
+            PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> {
                 _navigationEvent.emit(WooPosNavigationEvent.GoBack)
             }
             PaymentSuccessSource.CARD_BOOKINGS,
