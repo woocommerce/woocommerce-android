@@ -20,6 +20,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import java.io.IOException
+import java.security.MessageDigest
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WpComQrLoginRestClientTest : BaseUnitTest() {
@@ -182,17 +183,18 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     // region session status
 
     @Test
-    fun `given session-status, when GET, then includes session_id and creds in query and disables cache`() =
+    fun `given session-status, when GET, then includes session_id, token_hash and creds in query and disables cache`() =
         testBlocking {
             responder = { ok(it, """{"status":"scanned"}""") }
 
-            client.checkSessionStatus("sess-99")
+            client.checkSessionStatus("sess-99", "tok-42")
 
             val request = requireNotNull(lastRequest)
             assertThat(request.method).isEqualTo("GET")
             assertThat(request.url.toString()).contains(
                 "https://public-api.wordpress.com/wpcom/v2/auth/qr-code-app/session-status",
                 "session_id=sess-99",
+                "token_hash=${sha256Hex("tok-42")}",
                 "client_id=$CLIENT_ID",
                 "client_secret=$CLIENT_SECRET",
             )
@@ -202,10 +204,23 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given session-status token_hash, when GET, then is lowercase hex SHA-256 of the token`() =
+        testBlocking {
+            responder = { ok(it, """{"status":"scanned"}""") }
+
+            client.checkSessionStatus("sess-1", "tok-42")
+
+            val tokenHash = requireNotNull(lastRequest).url.queryParameter("token_hash")
+            assertThat(tokenHash).isEqualTo(sha256Hex("tok-42"))
+            assertThat(tokenHash).hasSize(64)
+            assertThat(tokenHash).matches("[0-9a-f]{64}")
+        }
+
+    @Test
     fun `given status=scanned, when session-status, then Scanned`() = testBlocking {
         responder = { ok(it, """{"status":"scanned"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Scanned)
     }
@@ -214,7 +229,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given status=approved with grant, when session-status, then Approved`() = testBlocking {
         responder = { ok(it, """{"status":"approved","exchange_grant":"grant-99"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Approved("grant-99"))
     }
@@ -223,7 +238,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given status=approved without grant, when session-status, then fails closed as Expired`() = testBlocking {
         responder = { ok(it, """{"status":"approved"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Expired)
     }
@@ -232,7 +247,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given status=rejected, when session-status, then Rejected`() = testBlocking {
         responder = { ok(it, """{"status":"rejected"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Rejected)
     }
@@ -241,7 +256,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given status=expired, when session-status, then Expired`() = testBlocking {
         responder = { ok(it, """{"status":"expired"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Expired)
     }
@@ -250,7 +265,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given status=consumed, when session-status, then Consumed`() = testBlocking {
         responder = { ok(it, """{"status":"consumed"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Consumed)
     }
@@ -259,7 +274,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given unknown status, when session-status, then fails closed as Expired`() = testBlocking {
         responder = { ok(it, """{"status":"some_future_state"}""") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Expired)
     }
@@ -270,16 +285,25 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
         // that means the session timed out — we treat it as Expired rather than a hard error.
         responder = { respond(it, code = 404) }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.getOrNull()).isEqualTo(WpComQrLoginSessionStatus.Expired)
+    }
+
+    @Test
+    fun `given 403, when session-status, then TokenHashMismatch`() = testBlocking {
+        responder = { respond(it, code = 403) }
+
+        val result = client.checkSessionStatus("sess-1", "tok")
+
+        assertThat(result.exceptionOrNull()).isEqualTo(WpComQrLoginSessionStatusException.TokenHashMismatch)
     }
 
     @Test
     fun `given 429, when session-status, then RateLimited`() = testBlocking {
         responder = { respond(it, code = 429) }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.exceptionOrNull()).isEqualTo(WpComQrLoginSessionStatusException.RateLimited)
     }
@@ -288,7 +312,7 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
     fun `given network IOException, when session-status, then Network`() = testBlocking {
         responder = { throw IOException("disconnect") }
 
-        val result = client.checkSessionStatus("sess-1")
+        val result = client.checkSessionStatus("sess-1", "tok")
 
         assertThat(result.exceptionOrNull()).isEqualTo(WpComQrLoginSessionStatusException.Network)
     }
@@ -434,5 +458,12 @@ class WpComQrLoginRestClientTest : BaseUnitTest() {
         const val DEFAULT_EXCHANGE_BODY =
             """{"magic_link_url":"https://wordpress.com/log-in/link/use/abc"}"""
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+
+        fun sha256Hex(input: String): String {
+            val digest = MessageDigest.getInstance("SHA-256").digest(input.toByteArray(Charsets.UTF_8))
+            return buildString(digest.size * 2) {
+                digest.forEach { append("%02x".format(it)) }
+            }
+        }
     }
 }

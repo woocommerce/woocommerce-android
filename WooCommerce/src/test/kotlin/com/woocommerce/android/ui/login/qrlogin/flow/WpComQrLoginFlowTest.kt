@@ -44,7 +44,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     fun `given scan succeeds, when start fires, then state moves through WaitingForApproval with email subtitle`() =
         testBlocking {
             whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-            whenever(restClient.checkSessionStatus(scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
                 .thenReturn(Result.success(WpComQrLoginSessionStatus.Scanned))
                 .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
             val flow = newFlow()
@@ -120,7 +120,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     @Test
     fun `given polling returns Rejected, when start fires, then state is MatchRejected`() = testBlocking {
         whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Rejected))
         val flow = newFlow()
 
@@ -133,7 +133,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     @Test
     fun `given polling returns Consumed, when start fires, then state is MatchAlreadyCompleted`() = testBlocking {
         whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Consumed))
         val flow = newFlow()
 
@@ -146,7 +146,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     @Test
     fun `given polling returns Expired, when start fires, then state is MatchTimedOut`() = testBlocking {
         whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Expired))
         val flow = newFlow()
 
@@ -159,7 +159,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     @Test
     fun `given polling hits rate-limit, when start fires, then state is RateLimited`() = testBlocking {
         whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
             .thenReturn(Result.failure(WpComQrLoginSessionStatusException.RateLimited))
         val flow = newFlow()
 
@@ -167,6 +167,21 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
         advanceUntilIdle()
 
         assertThat((flow.state.value as FlowState.Failed).reason).isEqualTo(ErrorReason.RateLimited)
+    }
+
+    @Test
+    fun `given polling hits TokenHashMismatch, when start fires, then terminal TokenRejected`() = testBlocking {
+        whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
+            .thenReturn(Result.failure(WpComQrLoginSessionStatusException.TokenHashMismatch))
+        val flow = newFlow()
+
+        flow.start()
+        advanceUntilIdle()
+
+        val state = flow.state.value as FlowState.Failed
+        assertThat(state.reason).isEqualTo(ErrorReason.TokenRejected)
+        assertThat(state.retryable).isFalse()
     }
 
     // endregion
@@ -177,7 +192,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     fun `given exchange fails with AlreadyConsumed, when polling approves, then state is MatchAlreadyCompleted`() =
         testBlocking {
             whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-            whenever(restClient.checkSessionStatus(scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
                 .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
             whenever(restClient.exchange(payload.token, payload.encrypted, "wpc-grant-1"))
                 .thenReturn(Result.failure(WpComQrLoginExchangeException.AlreadyConsumed))
@@ -193,7 +208,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     fun `given exchange fails with InvalidExchangeGrant, when polling approves, then state is MatchInvalidGrant`() =
         testBlocking {
             whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-            whenever(restClient.checkSessionStatus(scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
                 .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
             whenever(restClient.exchange(payload.token, payload.encrypted, "wpc-grant-1"))
                 .thenReturn(Result.failure(WpComQrLoginExchangeException.InvalidExchangeGrant))
@@ -224,7 +239,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     @Test
     fun `given retryable exchange failure, when retry is called, then exchange is invoked again`() = testBlocking {
         whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
         whenever(restClient.exchange(payload.token, payload.encrypted, "wpc-grant-1"))
             .thenReturn(Result.failure(WpComQrLoginExchangeException.Network))
@@ -246,7 +261,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
 
     private suspend fun stubHappyPath() {
         whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(scanResult.sessionId))
+        whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
             .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
         whenever(restClient.exchange(payload.token, payload.encrypted, "wpc-grant-1"))
             .thenReturn(Result.success(WpComQrLoginExchangeResult(magicLinkUrl = "https://wordpress.com/magic")))
