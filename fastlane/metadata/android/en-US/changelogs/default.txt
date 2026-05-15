@@ -1,4 +1,1 @@
-- [*] Fixed the order list flashing when returning from the order detail screen [https://github.com/woocommerce/woocommerce-android/pull/15886]
-- [*] Introducing the AI Assistant: a new way to run your store from your pocket. Rolling out to selected stores. [https://github.com/woocommerce/woocommerce-android/pull/15921]
-- [*] Woo POS: Use your phone as a Tap to Pay card reader for the POS tablet over Wi-Fi [https://github.com/woocommerce/woocommerce-android/pull/15781]
-- [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
+Say hello to your new AI Assistant—a smarter way to run your store right from your pocket. Rolling out to selected stores, it helps you stay on top of your shop with a tap. We've also smoothed out the order list so it no longer flashes when you head back from an order's details.
