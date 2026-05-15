@@ -71,6 +71,8 @@ object WooPosOrdersState {
                     val lineTotal: String,
                     val imageUrl: String?,
                     val bookingInfo: BookingInfo? = null,
+                    val isLumpSum: Boolean = false,
+                    val includesTax: Boolean = false,
                 )
 
                 @Immutable

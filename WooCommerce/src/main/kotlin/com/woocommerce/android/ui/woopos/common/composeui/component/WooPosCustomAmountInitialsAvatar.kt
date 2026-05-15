@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -38,6 +39,26 @@ fun WooPosCustomAmountInitialsAvatar(
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
+}
+
+/**
+ * Tile wrapper around [WooPosCustomAmountInitialsAvatar] that applies a fixed size and rounded
+ * corner clip. Used by order details and refund custom amount rows; the cart row sizes the avatar
+ * by filling its parent card height instead and does not use this helper.
+ */
+@Composable
+fun WooPosCustomAmountTileAvatar(
+    name: String,
+    modifier: Modifier = Modifier,
+    size: Dp = WooPosComponentSize.XSmall.value,
+    cornerRadius: Dp = WooPosCornerRadius.Small.value,
+) {
+    WooPosCustomAmountInitialsAvatar(
+        name = name,
+        modifier = modifier
+            .size(size)
+            .clip(RoundedCornerShape(cornerRadius)),
+    )
 }
 
 @WooPosPreview
