@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.orders.details.refund.navigateToRefundR
 import com.woocommerce.android.ui.woopos.orders.navigateToOrderDetailsScreen
 import com.woocommerce.android.ui.woopos.orders.navigateToOrdersScreen
 import com.woocommerce.android.ui.woopos.paymentsuccess.navigateToPaymentSuccessScreen
+import com.woocommerce.android.ui.woopos.scantopay.navigateToScanToPayScreen
 import com.woocommerce.android.ui.woopos.settings.navigateToSettingsScreen
 import com.woocommerce.android.ui.woopos.splash.navigateToSplashScreen
 
@@ -35,6 +36,7 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.OpenHomeFromSplash -> navigateToHomeScreen()
         is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId, event.source)
         is WooPosNavigationEvent.OpenMarkOrderAsComplete -> navigateToMarkOrderAsCompleteScreen(event.orderId)
+        is WooPosNavigationEvent.OpenScanToPay -> navigateToScanToPayScreen(event.orderId)
 
         is WooPosNavigationEvent.OpenCardPayment ->
             navigateToCardPaymentScreen(event.orderId, event.source, event.showCashPaymentButton)
