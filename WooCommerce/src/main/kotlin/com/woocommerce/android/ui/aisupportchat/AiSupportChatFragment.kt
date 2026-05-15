@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.aisupportchat
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -156,11 +156,13 @@ class AiSupportChatFragment : Fragment() {
     }
 
     private fun showTicketCreatedDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.support_request_success_title)
-            .setMessage(R.string.support_request_success_message)
-            .setPositiveButton(R.string.support_request_dialog_action) { _, _ -> requireActivity().finish() }
-            .show()
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.support_request_success_title,
+            messageId = R.string.support_request_success_message,
+            positiveButtonId = R.string.support_request_dialog_action,
+            posBtnAction = { _, _ -> requireActivity().finish() }
+        )
     }
 
     private val ContactHumanSupport.description: String
