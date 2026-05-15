@@ -1,5 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -139,21 +144,25 @@ private fun WooPosPhoneProductsContent(
             )
         }
 
-        if (itemsState is WooPosItemsToolbarViewState.CouponList) {
+        AnimatedVisibility(
+            visible = itemsState is WooPosItemsToolbarViewState.CouponList,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .imePadding()
+                .padding(WooPosSpacing.Medium.value),
+        ) {
             FloatingActionButton(
                 onClick = { onItemsUIEvent(WooPosItemsUIEvent.AddCouponIconClicked) },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .navigationBarsPadding()
-                    .imePadding()
-                    .padding(WooPosSpacing.Medium.value),
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = stringResource(
-                        id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                        id = R.string.woopos_phone_items_add_coupon_fab_accessibility_label,
                     ),
                 )
             }
