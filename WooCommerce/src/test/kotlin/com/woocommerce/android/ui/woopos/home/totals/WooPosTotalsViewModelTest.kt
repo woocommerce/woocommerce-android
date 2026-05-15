@@ -2183,7 +2183,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when OnAllPaymentMethodsVisibilityChanged true, then dialog flag flips to visible`() = runTest {
+    fun `when OnAllPaymentMethodsVisibilityChanged true, then bottom sheet flag flips to visible`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
 
@@ -2192,11 +2192,11 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isAllPaymentMethodsDialogVisible).isTrue()
+        assertThat(state.isAllPaymentMethodsBottomSheetVisible).isTrue()
     }
 
     @Test
-    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() =
+    fun `given bottom sheet visible, when OnAllPaymentMethodsVisibilityChanged false, then flag flips back`() =
         runTest {
             // GIVEN
             val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -2207,7 +2207,7 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-            assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
+            assertThat(state.isAllPaymentMethodsBottomSheetVisible).isFalse()
         }
 
     @Test

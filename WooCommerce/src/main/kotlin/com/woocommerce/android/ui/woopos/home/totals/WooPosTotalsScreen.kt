@@ -301,8 +301,8 @@ private fun TotalsLoaded(
         )
     }
 
-    WooPosAllPaymentMethodsDialog(
-        isVisible = state.isAllPaymentMethodsDialogVisible,
+    WooPosAllPaymentMethodsBottomSheet(
+        isVisible = state.isAllPaymentMethodsBottomSheetVisible,
         methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))

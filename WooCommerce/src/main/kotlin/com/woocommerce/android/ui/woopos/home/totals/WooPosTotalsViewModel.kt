@@ -287,7 +287,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = isVisible)
+        uiState.value = checkout.copy(isAllPaymentMethodsBottomSheetVisible = isVisible)
     }
 
     private fun startTapToPayPayment() {

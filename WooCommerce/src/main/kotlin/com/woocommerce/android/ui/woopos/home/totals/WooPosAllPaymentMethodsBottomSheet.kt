@@ -44,7 +44,7 @@ private const val ANIMATION_DURATION_MS = 300
 private const val SCRIM_ALPHA = 0.4f
 
 @Composable
-internal fun WooPosAllPaymentMethodsDialog(
+internal fun WooPosAllPaymentMethodsBottomSheet(
     isVisible: Boolean,
     methods: List<WooPosPaymentMethod>,
     onMethodClicked: (WooPosPaymentMethod) -> Unit,
@@ -119,7 +119,7 @@ private fun PaymentMethodsBottomSheetContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         WooPosText(
-            text = stringResource(R.string.woopos_payment_method_picker_dialog_title),
+            text = stringResource(R.string.woopos_payment_method_picker_bottom_sheet_title),
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,

@@ -11,7 +11,7 @@ sealed class WooPosTotalsViewState : Parcelable {
         val totals: Totals,
         val readerStatus: ReaderStatus,
         val isTapToPayAvailable: Boolean = false,
-        val isAllPaymentMethodsDialogVisible: Boolean = false,
+        val isAllPaymentMethodsBottomSheetVisible: Boolean = false,
         // UI-only rendering hint covering the TTP loading window. `Preparing` is the
         // pre-overlay phase (location lookup + SDK init + reader connect); `SdkActive`
         // is set once the Stripe overlay surfaces. Mirrors the VM-side `isTapToPayPayment`
