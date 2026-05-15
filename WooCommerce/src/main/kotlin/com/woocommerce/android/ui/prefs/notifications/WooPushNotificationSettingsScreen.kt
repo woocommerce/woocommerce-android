@@ -45,23 +45,21 @@ fun WooPushNotificationSettingsScreen(
     viewModel: NotificationSettingsViewModel,
     sharedViewModel: NotificationSettingsSharedViewModel
 ) {
-    sharedViewModel.notificationTypeItems.observeAsState().value?.let {
-        val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.observeAsState(initial = true).value
-        val isNotificationSettingsLoading =
-            sharedViewModel.isNotificationSettingsLoading.observeAsState(initial = false).value
-        val isNotificationTypeSelectionEnabled =
-            sharedViewModel.isNotificationTypeSelectionEnabled.observeAsState(initial = false).value
+    val notificationTypeItems = sharedViewModel.notificationTypeItems.observeAsState().value ?: return
+    val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.observeAsState().value ?: return
+    val isNotificationSettingsLoading = sharedViewModel.isNotificationSettingsLoading.observeAsState().value ?: return
+    val isNotificationTypeSelectionEnabled =
+        sharedViewModel.isNotificationTypeSelectionEnabled.observeAsState().value ?: return
 
-        WooPushNotificationSettingsScreen(
-            items = it,
-            isAppNotificationsEnabled = isAppNotificationsEnabled,
-            isNotificationSettingsLoading = isNotificationSettingsLoading,
-            isNotificationTypeSelectionEnabled = isNotificationTypeSelectionEnabled,
-            onNotificationTypeEnabledChanged = sharedViewModel::onNotificationTypeEnabledChanged,
-            onNotificationTypeClicked = sharedViewModel::onNotificationTypeClicked,
-            onDeviceNotificationSettingsClicked = viewModel::onDeviceNotificationSettingsClicked
-        )
-    }
+    WooPushNotificationSettingsScreen(
+        items = notificationTypeItems,
+        isAppNotificationsEnabled = isAppNotificationsEnabled,
+        isNotificationSettingsLoading = isNotificationSettingsLoading,
+        isNotificationTypeSelectionEnabled = isNotificationTypeSelectionEnabled,
+        onNotificationTypeEnabledChanged = sharedViewModel::onNotificationTypeEnabledChanged,
+        onNotificationTypeClicked = sharedViewModel::onNotificationTypeClicked,
+        onDeviceNotificationSettingsClicked = viewModel::onDeviceNotificationSettingsClicked
+    )
 }
 
 @Composable
