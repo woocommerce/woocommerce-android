@@ -20,6 +20,9 @@ class HeadlessBaselineParser(
     fun parseStrict(source: String): HeadlessBaseline =
         json.decodeFromString(HeadlessBaseline.serializer(), source)
 
+    fun parseApprovedBaseline(source: String): HeadlessApprovedBaseline =
+        json.decodeFromString(HeadlessApprovedBaseline.serializer(), source)
+
     private fun migrateLegacyBaseline(source: JsonObject): JsonObject {
         val scenarios = source.getValue("scenarios").jsonArray.map { scenarioElement ->
             val scenario = scenarioElement.jsonObject

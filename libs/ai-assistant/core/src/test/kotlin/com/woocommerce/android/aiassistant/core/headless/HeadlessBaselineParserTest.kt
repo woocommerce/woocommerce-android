@@ -102,4 +102,37 @@ class HeadlessBaselineParserTest {
         assertThat(scenario.scope).isEqualTo(ToolScope.ORDERS)
         assertThat(scenario.turns.single().hardChecks.single().type).isEqualTo(HeadlessHardCheckType.TOOL_CALLED)
     }
+
+    @Test
+    fun `given approved baseline json, when parsing, then metadata and scenario checks are decoded`() {
+        val baseline = parser.parseApprovedBaseline(
+            """
+            {
+              "version": 1,
+              "metadata": {
+                "modelId": "gpt-4o",
+                "promptVersion": "1.0.0",
+                "toolCatalogVersion": "1.0.0"
+              },
+              "scenarios": [
+                {
+                  "scenarioId": "write-confirmation-declined",
+                  "category": "WRITE_CONFIRMATION",
+                  "approvedStatus": "PASS",
+                  "approvedHardChecks": [
+                    { "type": "OUTCOME_EQUALS", "value": "STOPPED" },
+                    { "type": "CONFIRMATION_DECISION_EQUALS", "value": "CANCELLED" },
+                    { "type": "TOOL_RESULT_KIND_EQUALS", "value": "orders_update:REJECTED_BY_SAFETY" }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertThat(baseline.metadata.modelId).isEqualTo("gpt-4o")
+        assertThat(baseline.scenarios.single().category).isEqualTo(HeadlessScenarioCategory.WRITE_CONFIRMATION)
+        assertThat(baseline.scenarios.single().approvedHardChecks.map { it.value })
+            .contains("STOPPED", "CANCELLED", "orders_update:REJECTED_BY_SAFETY")
+    }
 }

@@ -72,6 +72,20 @@ class WooAiSmokeScenarioMapperTest {
         assertThat(baseline.scenarios).hasSize(5)
     }
 
+    @Test
+    fun `given approved baseline resource, when parsed from classpath, then it is readable`() {
+        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/baseline.json")).readText()
+        val baseline = HeadlessBaselineParser(json).parseApprovedBaseline(source)
+
+        assertThat(baseline.scenarios.map { it.scenarioId }).containsExactlyInAnyOrder(
+            "orders-read-recent",
+            "products-search-card",
+            "analytics-orders-this-month",
+            "write-confirmation-declined",
+            "off-domain-refusal",
+        )
+    }
+
     private fun mapper(selectedSiteId: Long = 1L) = WooAiSmokeScenarioMapper(
         toolRegistry = StaticToolRegistry,
         toolCatalogSelector = DefaultToolCatalogSelector(),

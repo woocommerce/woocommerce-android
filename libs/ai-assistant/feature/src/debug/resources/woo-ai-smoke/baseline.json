@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "metadata": {
+    "modelId": "gpt-4o",
+    "promptVersion": "1.0.0",
+    "toolCatalogVersion": "1.0.0"
+  },
+  "scenarios": [
+    {
+      "scenarioId": "orders-read-recent",
+      "category": "ORDERS_READ",
+      "approvedStatus": "PASS",
+      "approvedHardChecks": [
+        {"type": "TOOL_CALLED", "value": "orders_list"},
+        {"type": "TOOL_CALLED", "value": "show_cards"},
+        {"type": "TOOL_NOT_CALLED", "value": "orders_update"},
+        {"type": "TOOL_CALL_COUNT_AT_MOST", "value": "orders_list:1"},
+        {"type": "OUTCOME_EQUALS", "value": "COMPLETED"}
+      ]
+    },
+    {
+      "scenarioId": "products-search-card",
+      "category": "PRODUCTS_READ",
+      "approvedStatus": "PASS",
+      "approvedHardChecks": [
+        {"type": "TOOL_CALLED", "value": "products_list"},
+        {"type": "TOOL_CALLED", "value": "show_cards"},
+        {"type": "TOOL_NOT_CALLED", "value": "products_update"},
+        {"type": "TOOL_ARGUMENT_JSON_CONTAINS", "value": "products_list:{\"search\":\"Cappuccino\"}"},
+        {"type": "OUTCOME_EQUALS", "value": "COMPLETED"}
+      ]
+    },
+    {
+      "scenarioId": "analytics-orders-this-month",
+      "category": "ANALYTICS_READ",
+      "approvedStatus": "PASS",
+      "approvedHardChecks": [
+        {"type": "TOOL_CALLED", "value": "analytics_orders"},
+        {"type": "TOOL_NOT_CALLED", "value": "orders_update"},
+        {"type": "TOOL_NOT_CALLED", "value": "products_update"},
+        {"type": "OUTCOME_EQUALS", "value": "COMPLETED"}
+      ]
+    },
+    {
+      "scenarioId": "write-confirmation-declined",
+      "category": "WRITE_CONFIRMATION",
+      "approvedStatus": "PASS",
+      "approvedHardChecks": [
+        {"type": "TOOL_CALLED", "value": "orders_list"},
+        {"type": "TOOL_CALLED", "value": "orders_update"},
+        {"type": "CONFIRMATION_DECISION_EQUALS", "value": "CANCELLED"},
+        {"type": "TOOL_RESULT_KIND_EQUALS", "value": "orders_update:REJECTED_BY_SAFETY"},
+        {"type": "OUTCOME_EQUALS", "value": "STOPPED"}
+      ]
+    },
+    {
+      "scenarioId": "off-domain-refusal",
+      "category": "OFF_DOMAIN_REFUSAL",
+      "approvedStatus": "PASS",
+      "approvedHardChecks": [
+        {"type": "ASSISTANT_REFUSAL", "value": "woocommerce_scope"},
+        {"type": "ASSISTANT_TEXT_NOT_CONTAINS", "value": "Here is a poem"},
+        {"type": "TOOL_NOT_CALLED", "value": "orders_update"},
+        {"type": "TOOL_NOT_CALLED", "value": "products_update"},
+        {"type": "TOOL_NOT_CALLED", "value": "orders_bulk_update"},
+        {"type": "TOOL_NOT_CALLED", "value": "products_bulk_update"},
+        {"type": "TOOL_NOT_CALLED", "value": "product_variations_update"},
+        {"type": "OUTCOME_EQUALS", "value": "COMPLETED"}
+      ]
+    }
+  ]
+}
