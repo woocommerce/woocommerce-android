@@ -15,6 +15,7 @@ data class HeadlessHardCheckResult(
 )
 
 object HeadlessHardCheckEvaluator {
+    @Suppress("CyclomaticComplexMethod")
     fun evaluate(
         result: HeadlessRunResult,
         checks: List<HeadlessHardCheck>,
@@ -60,7 +61,7 @@ object HeadlessHardCheckEvaluator {
             message = if (passed) {
                 "Passed ${check.type} for ${check.value}"
             } else {
-            "Failed ${check.type} for ${check.value}"
+                "Failed ${check.type} for ${check.value}"
             },
         )
     }

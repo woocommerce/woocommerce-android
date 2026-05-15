@@ -23,7 +23,9 @@ internal interface WooAiSmokeDebugEntryPoint {
     fun retryPolicy(): RetryPolicy
     fun historyBudgeter(): HistoryBudgeter
     fun systemPromptProvider(): AssistantSystemPromptProvider
-    @AiAssistantJson fun json(): Json
+
+    @AiAssistantJson
+    fun json(): Json
     fun timeSource(): TimeSource
     fun selectedSite(): SelectedSite
 }

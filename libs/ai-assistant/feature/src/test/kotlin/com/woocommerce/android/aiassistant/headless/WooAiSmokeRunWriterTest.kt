@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.headless
 
+import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedHardCheck
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
@@ -21,7 +22,6 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessToolCallTrace
 import com.woocommerce.android.aiassistant.core.headless.HeadlessToolResultKind
 import com.woocommerce.android.aiassistant.core.headless.HeadlessTurnResult
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
-import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat

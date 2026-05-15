@@ -23,7 +23,12 @@ internal class WooAiSmokeRunWriter(
         File(outputDirectory, "run.json").writeText(json.encodeToString(suite))
         File(outputDirectory, "baseline-comparison.json").writeText(json.encodeToString(comparison))
         File(outputDirectory, "summary.md").writeText(WooAiSmokeSummaryRenderer.render(suite, comparison))
-        File(outputDirectory, "turns.jsonl").writeText(turnRecords(suite).joinToString("\n") { json.encodeToString(it) })
+        File(
+            outputDirectory,
+            "turns.jsonl",
+        ).writeText(
+            turnRecords(suite).joinToString("\n") { json.encodeToString(it) }
+        )
         if (approvedBaseline != null) {
             File(outputDirectory, "approved-baseline.json").writeText(json.encodeToString(approvedBaseline))
         }

@@ -70,7 +70,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `assistant text not contains is case insensitive and fails when forbidden text appears`() {
+    fun `when assistant text not contains is evaluated, then it is case insensitive`() {
         val result = runResult(assistantText = "Here are your recent orders.")
 
         val checks = HeadlessHardCheckEvaluator.evaluate(
@@ -85,7 +85,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `tool result kind equals matches the named tool result kind`() {
+    fun `when tool result kind equals is evaluated, then it matches the named tool result kind`() {
         val result = runResult(
             toolCalls = listOf(
                 toolCall("orders_update", HeadlessToolResultKind.REJECTED_BY_SAFETY),
@@ -111,7 +111,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `confirmation decision equals matches a recorded cancellation`() {
+    fun `when confirmation decision equals is evaluated, then it matches a recorded cancellation`() {
         val result = runResult(
             confirmationResults = listOf(
                 HeadlessConfirmationResultTrace(
@@ -133,7 +133,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `tool call count at most passes only under the configured maximum`() {
+    fun `when tool call count at most is evaluated, then it passes only under the configured maximum`() {
         val result = runResult(
             toolCalls = listOf(
                 toolCall("orders_list"),
@@ -154,7 +154,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `tool argument json contains matches a recursive json object subset`() {
+    fun `when tool argument json contains is evaluated, then it matches a recursive json subset`() {
         val result = runResult(
             toolCalls = listOf(
                 toolCall(
@@ -194,7 +194,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `assistant refusal requires refusal and woocommerce scope language`() {
+    fun `when assistant refusal is evaluated, then it requires refusal and woocommerce scope language`() {
         val result = runResult(
             assistantText = "I can only help with your WooCommerce store, so I can't write that poem."
         )
@@ -212,7 +212,7 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
-    fun `declined write scenario expects stopped outcome cancelled confirmation and rejected safety result together`() {
+    fun `when declined write checks are evaluated, then stopped cancelled and rejected safety pass together`() {
         val declinedWrite = runResult(
             outcome = LoopOutcome.STOPPED,
             toolCalls = listOf(toolCall("orders_update", HeadlessToolResultKind.REJECTED_BY_SAFETY)),

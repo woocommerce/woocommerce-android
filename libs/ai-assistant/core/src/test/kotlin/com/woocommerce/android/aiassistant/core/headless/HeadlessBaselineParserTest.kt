@@ -1,7 +1,7 @@
 package com.woocommerce.android.aiassistant.core.headless
 
-import kotlinx.serialization.json.Json
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -63,7 +63,14 @@ class HeadlessBaselineParserTest {
     fun `given smoke baseline missing category, when strict parse is used, then parsing fails`() {
         assertThatThrownBy {
             parser.parseStrict(
-                """{"version":1,"scenarios":[{"id":"bad","scope":"GLOBAL","turns":[],"hardChecks":[],"smokeFixture":null}]}"""
+                """
+                {
+                  "version": 1,
+                  "scenarios": [
+                    {"id": "bad", "scope": "GLOBAL", "turns": [], "hardChecks": [], "smokeFixture": null}
+                  ]
+                }
+                """.trimIndent()
             )
         }.hasMessageContaining("category")
     }
