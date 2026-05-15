@@ -6,6 +6,7 @@
 -----
 - [*] Woo POS: Use your phone as a Tap to Pay card reader for the POS tablet over Wi-Fi [https://github.com/woocommerce/woocommerce-android/pull/15781]
 - [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
+- [Internal] Added WOO_POS_SCAN_TO_PAY and WOO_POS_MARK_ORDER_AS_COMPLETE feature flags (off in production) for the upcoming Woo POS Scan to Pay and Mark Order as Complete payment methods
 
 24.7
 -----
