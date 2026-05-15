@@ -63,12 +63,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
@@ -226,6 +228,7 @@ private fun RefundScreenHeader(
     closeButtonEnabled: Boolean = true,
 ) {
     val closeContentDescription = stringResource(R.string.close)
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -247,10 +250,10 @@ private fun RefundScreenHeader(
 
         WooPosText(
             text = title,
-            style = WooPosTypography.Heading,
+            style = if (isPhone) WooPosTypography.BodyLarge else WooPosTypography.Heading,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
+            maxLines = if (isPhone) 2 else 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -699,20 +702,33 @@ private fun ItemsHeaderRow(
             )
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-        Row {
+        val selectAllLabel = @Composable {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_select_all_items),
                 style = WooPosTypography.Caption,
                 fontWeight = FontWeight.Bold,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
-            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+        }
+        val selectedCountLabel = @Composable {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_items_selected_count, selectedCount),
                 style = WooPosTypography.Caption,
                 fontWeight = FontWeight.Normal,
                 color = WooPosTheme.colors.onSurfaceVariantLowest
             )
+        }
+        if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+            Column {
+                selectAllLabel()
+                selectedCountLabel()
+            }
+        } else {
+            Row {
+                selectAllLabel()
+                Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                selectedCountLabel()
+            }
         }
     }
 }
