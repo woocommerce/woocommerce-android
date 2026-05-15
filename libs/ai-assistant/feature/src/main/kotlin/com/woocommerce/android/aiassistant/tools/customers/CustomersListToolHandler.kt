@@ -31,16 +31,19 @@ internal class CustomersListToolHandler @Inject constructor(
 ) : AssistantToolHandler {
     override val descriptor = ToolDescriptor(
         name = "customers_list",
-        description = "List customers or look up known customer IDs by passing include as an array of IDs. " +
-            "Returns compact matches with id, first_name, last_name, email, username, and date_created.",
+        description = "List customers, optionally filtered by keyword (matches name, email, username) or email. " +
+            "Use `include=[id]` to look up one customer by ID; the per-id customer endpoint requires " +
+            "manage_woocommerce so include is the universal path. After calling, pass results to `show_cards` " +
+            "to render. If a search returns no matches, do not retry with synonyms, capitalization variants, " +
+            "or broader terms - say no match was found.",
         inputSchema = buildJsonObject {
             put("type", "object")
             putJsonObject("properties") {
-                stringProperty("search", "Search customers by name, username, or similar customer text.")
-                stringProperty("email", "Filter customers by email address.")
+                stringProperty("search", "Free-text search across name, email, username.")
+                stringProperty("email", "Exact email lookup.")
                 putJsonObject("include") {
                     put("type", "array")
-                    put("description", "Customer IDs to return from the list endpoint.")
+                    put("description", "Specific customer IDs to include.")
                     putJsonObject("items") {
                         put("type", "integer")
                         put("minimum", 1)
@@ -48,7 +51,7 @@ internal class CustomersListToolHandler @Inject constructor(
                 }
                 putJsonObject("orderby") {
                     put("type", "string")
-                    put("description", "Customer sort field.")
+                    put("description", "Sort key; default 'registered_date'.")
                     putJsonArray("enum") {
                         add("registered_date")
                         add("name")
@@ -58,7 +61,7 @@ internal class CustomersListToolHandler @Inject constructor(
                 }
                 putJsonObject("order") {
                     put("type", "string")
-                    put("description", "Sort direction.")
+                    put("description", "Sort direction; default 'desc'.")
                     putJsonArray("enum") {
                         add("asc")
                         add("desc")
@@ -67,13 +70,13 @@ internal class CustomersListToolHandler @Inject constructor(
                 putJsonObject("page") {
                     put("type", "integer")
                     put("minimum", 1)
-                    put("description", "Results page. Only sent to WooCommerce when greater than 1.")
+                    put("description", "1-based page number; default 1.")
                 }
                 putJsonObject("per_page") {
                     put("type", "integer")
                     put("minimum", 1)
                     put("maximum", MAX_PER_PAGE)
-                    put("description", "Results per page. Values are clamped to 1..50.")
+                    put("description", "Max items; clamped 1-50, default 20.")
                 }
             }
             put("additionalProperties", false)
@@ -212,14 +215,20 @@ internal class CustomersListToolHandler @Inject constructor(
                         putOptionalString("email", customer.email)
                         putOptionalString("username", customer.username)
                         putOptionalString("date_created", customer.dateCreated)
-                        putJsonObject("billing") {
+                        val billing = buildJsonObject {
                             putOptionalString("phone", customer.billingPhone)
                             putOptionalString("city", customer.billingCity)
                             putOptionalString("country", customer.billingCountry)
                         }
-                        putJsonObject("shipping") {
+                        if (billing.isNotEmpty()) {
+                            put("billing", billing)
+                        }
+                        val shipping = buildJsonObject {
                             putOptionalString("city", customer.shippingCity)
                             putOptionalString("country", customer.shippingCountry)
+                        }
+                        if (shipping.isNotEmpty()) {
+                            put("shipping", shipping)
                         }
                         putOptionalString("role", customer.role)
                         putOptionalString("avatar_url", customer.avatarUrl)
