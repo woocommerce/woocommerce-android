@@ -11,7 +11,6 @@ import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.notifications.push.PushNotificationRepository
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,7 +29,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import java.math.BigDecimal
@@ -46,12 +44,9 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val showTestNotification: ShowTestNotification,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    selectedSite: SelectedSite,
     private val pushNotificationRepository: PushNotificationRepository,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
-    private val site: SiteModel = selectedSite.get()
-
     private val _viewState = MutableStateFlow(
         ViewState(
             currencySymbol = parameterRepository.getParameters().currencySymbol.orEmpty(),
@@ -122,7 +117,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
 
     private fun observeCachedNotificationPreferences() {
         launch {
-            pushNotificationRepository.observeWooNotificationPreferences(site)
+            pushNotificationRepository.observeWooNotificationPreferences()
                 .mapNotNull { it?.storeOrder }
                 .distinctUntilChanged()
                 .collect { orderPreferences ->
@@ -157,7 +152,6 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
         // Once started, let the save request finish even if the screen is closed.
         val result = withContext(NonCancellable + coroutineDispatchers.main) {
             pushNotificationRepository.updateWooNotificationPreferences(
-                site = site,
                 preferences = WooPushNotificationPreferences(storeOrder = orderPreferences)
             )
         }

@@ -8,7 +8,6 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.notifications.push.PushNotificationRepository
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsViewModel.NotificationPreference
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -30,13 +29,11 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import java.math.BigDecimal
@@ -50,9 +47,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val showTestNotification: ShowTestNotification = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
-    private val selectedSite: SelectedSite = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
-    private val site = SiteModel().apply { id = 123 }
     private lateinit var viewModel: NewOrderNotificationSettingsViewModel
 
     private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -68,12 +63,11 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         )
         whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
             .thenReturn(NotificationChannelsHandler.NewOrderNotificationSoundStatus.DEFAULT)
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(pushNotificationRepository.observeWooNotificationPreferences(site))
+        whenever(pushNotificationRepository.observeWooNotificationPreferences())
             .thenReturn(flowOf(null))
-        whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
+        whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
             .doSuspendableAnswer { invocation ->
-                val preferences = invocation.getArgument<WooPushNotificationPreferences>(1)
+                val preferences = invocation.getArgument<WooPushNotificationPreferences>(0)
                 Result.success(preferences)
             }
         prepareMocks()
@@ -84,7 +78,6 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
             notificationChannelsHandler = notificationChannelsHandler,
             showTestNotification = showTestNotification,
             analyticsTracker = analyticsTracker,
-            selectedSite = selectedSite,
             pushNotificationRepository = pushNotificationRepository,
             coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
@@ -101,7 +94,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     @Test
     fun `given cached order preferences, when view is loaded, then apply cached preferences`() = testBlocking {
         setup {
-            whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+            whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
                 flowOf(
                     WooPushNotificationPreferences(
                         storeOrder = StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50))
@@ -146,7 +139,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
             viewModel.onNotificationsEnabledChanged(true)
             advanceUntilIdle()
 
-            verify(pushNotificationRepository, never()).updateWooNotificationPreferences(eq(site), any())
+            verify(pushNotificationRepository, never()).updateWooNotificationPreferences(any())
         }
 
     @Test
@@ -162,7 +155,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     @Test
     fun `when all orders preference is selected, then save order preferences without amount`() = testBlocking {
         setup {
-            whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+            whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
                 flowOf(
                     WooPushNotificationPreferences(
                         storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
@@ -216,7 +209,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     fun `given threshold amount save is pending, when flushing pending preferences, then save immediately`() =
         testBlocking {
             setup {
-                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+                whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
                     flowOf(
                         WooPushNotificationPreferences(
                             storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
@@ -242,7 +235,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
             viewModel.savePendingOrderPreferences()
 
-            verify(pushNotificationRepository, never()).updateWooNotificationPreferences(eq(site), any())
+            verify(pushNotificationRepository, never()).updateWooNotificationPreferences(any())
         }
 
     @Test
@@ -250,16 +243,16 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         testBlocking {
             val updateGate = CompletableDeferred<Result<WooPushNotificationPreferences>>()
             setup {
-                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+                whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
                     flowOf(
                         WooPushNotificationPreferences(
                             storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
                         )
                     )
                 )
-                whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
+                whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
                     .doSuspendableAnswer { invocation ->
-                        val preferences = invocation.getArgument<WooPushNotificationPreferences>(1)
+                        val preferences = invocation.getArgument<WooPushNotificationPreferences>(0)
                         updateGate.await().map { preferences }
                     }
             }
@@ -272,7 +265,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
             updateGate.complete(Result.success(WooPushNotificationPreferences()))
             advanceUntilIdle()
 
-            verify(pushNotificationRepository, times(1)).updateWooNotificationPreferences(eq(site), any())
+            verify(pushNotificationRepository, times(1)).updateWooNotificationPreferences(any())
         }
 
     @Test
@@ -280,9 +273,9 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
         val firstUpdateGate = CompletableDeferred<Result<WooPushNotificationPreferences>>()
 
         setup {
-            whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
+            whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
                 .doSuspendableAnswer { invocation ->
-                    val preferences = invocation.getArgument<WooPushNotificationPreferences>(1)
+                    val preferences = invocation.getArgument<WooPushNotificationPreferences>(0)
                     val result = if (preferences.storeOrder?.enabled == false) {
                         firstUpdateGate.await()
                     } else {
@@ -312,9 +305,9 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     fun `given update fails, when retry is clicked, then save requested preferences again`() = testBlocking {
         var updateFails = true
         setup {
-            whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
+            whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
                 .doSuspendableAnswer { invocation ->
-                    val preferences = invocation.getArgument<WooPushNotificationPreferences>(1)
+                    val preferences = invocation.getArgument<WooPushNotificationPreferences>(0)
                     if (updateFails) {
                         updateFails = false
                         Result.failure(Exception())
@@ -334,7 +327,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
         val preferencesCaptor = argumentCaptor<WooPushNotificationPreferences>()
         verify(pushNotificationRepository, times(2))
-            .updateWooNotificationPreferences(eq(site), preferencesCaptor.capture())
+            .updateWooNotificationPreferences(preferencesCaptor.capture())
         assertThat(preferencesCaptor.allValues.map { it.storeOrder }).containsOnly(
             StoreOrderPreferences(enabled = false, minAmount = null)
         )
@@ -344,14 +337,14 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     fun `given saved order preferences, when update fails, then rollback to latest saved state`() =
         testBlocking {
             setup {
-                whenever(pushNotificationRepository.observeWooNotificationPreferences(site)).thenReturn(
+                whenever(pushNotificationRepository.observeWooNotificationPreferences()).thenReturn(
                     flowOf(
                         WooPushNotificationPreferences(
                             storeOrder = StoreOrderPreferences(enabled = true, minAmount = BigDecimal(50))
                         )
                     )
                 )
-                whenever(pushNotificationRepository.updateWooNotificationPreferences(eq(site), any()))
+                whenever(pushNotificationRepository.updateWooNotificationPreferences(any()))
                     .thenReturn(Result.failure(Exception()))
             }
 
@@ -442,14 +435,14 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
 
     private suspend fun captureUpdatePreferences(): WooPushNotificationPreferences {
         val preferencesCaptor = argumentCaptor<WooPushNotificationPreferences>()
-        verify(pushNotificationRepository).updateWooNotificationPreferences(eq(site), preferencesCaptor.capture())
+        verify(pushNotificationRepository).updateWooNotificationPreferences(preferencesCaptor.capture())
         return preferencesCaptor.firstValue
     }
 
     private suspend fun captureLastUpdatePreferences(): WooPushNotificationPreferences {
         val preferencesCaptor = argumentCaptor<WooPushNotificationPreferences>()
         verify(pushNotificationRepository, atLeastOnce())
-            .updateWooNotificationPreferences(eq(site), preferencesCaptor.capture())
+            .updateWooNotificationPreferences(preferencesCaptor.capture())
         return preferencesCaptor.lastValue
     }
 }

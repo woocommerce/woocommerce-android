@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.push.PushNotificationRepository
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreReviewPreferences
@@ -32,12 +30,10 @@ import javax.inject.Inject
 @HiltViewModel
 class NotificationSettingsSharedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    selectedSite: SelectedSite,
     private val pushNotificationRepository: PushNotificationRepository,
     private val resourceProvider: ResourceProvider,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
-    private val site: SiteModel = selectedSite.get()
     private val wooPushNotificationPreferences = MutableStateFlow<WooPushNotificationPreferences?>(null)
     private var savedWooPushNotificationPreferences: WooPushNotificationPreferences? = null
     private var saveInProgressWooPushNotificationPreferences: WooPushNotificationPreferences? = null
@@ -75,8 +71,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     val notificationTypeItems = _notificationTypeItems.asLiveData()
 
     init {
-        observeWooPushNotificationPreferences(site)
-        fetchWooPushNotificationPreferences(site)
+        observeWooPushNotificationPreferences()
+        fetchWooPushNotificationPreferences()
         observeNotificationPreferencesChanges()
     }
 
@@ -112,9 +108,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     }
 
-    private fun observeWooPushNotificationPreferences(site: SiteModel) {
+    private fun observeWooPushNotificationPreferences() {
         launch {
-            pushNotificationRepository.observeWooNotificationPreferences(site)
+            pushNotificationRepository.observeWooNotificationPreferences()
                 .collect { preferences ->
                     preferences?.let {
                         applyStoredWooPushNotificationPreferences(it)
@@ -124,25 +120,25 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     }
 
-    private fun fetchWooPushNotificationPreferences(site: SiteModel) {
+    private fun fetchWooPushNotificationPreferences() {
         launch {
             try {
-                pushNotificationRepository.fetchWooNotificationPreferences(site)
+                pushNotificationRepository.fetchWooNotificationPreferences()
                     .onSuccess { applyStoredWooPushNotificationPreferences(it) }
-                    .onFailure { showFetchError(site) }
+                    .onFailure { showFetchError() }
             } finally {
                 _isNotificationSettingsLoading.value = false
             }
         }
     }
 
-    private fun showFetchError(site: SiteModel) {
+    private fun showFetchError() {
         triggerEvent(
             MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.settings_notifs_error_fetch),
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
-                fetchWooPushNotificationPreferences(site)
+                fetchWooPushNotificationPreferences()
             }
         )
     }
@@ -171,7 +167,6 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         // Once started, let the save request finish even if the screen is closed.
         val result = withContext(NonCancellable + coroutineDispatchers.main) {
             pushNotificationRepository.updateWooNotificationPreferences(
-                site = site,
                 preferences = updateRequest
             )
         }
