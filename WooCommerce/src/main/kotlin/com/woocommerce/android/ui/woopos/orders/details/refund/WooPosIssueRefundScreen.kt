@@ -57,6 +57,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -718,6 +719,16 @@ private fun ItemsHeaderRow(
 }
 
 @Composable
+private fun CustomAmountRefundAvatar(name: String) {
+    WooPosCustomAmountInitialsAvatar(
+        name = name,
+        modifier = Modifier
+            .size(WooPosComponentSize.XSmall.value)
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
+    )
+}
+
+@Composable
 private fun RefundableItemRow(
     item: WooPosRefundableItem,
     isSelected: Boolean,
@@ -758,14 +769,18 @@ private fun RefundableItemRow(
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
 
-        WooPosItemImage(
-            modifier = Modifier
-                .size(WooPosComponentSize.XSmall.value)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-            imageUrl = null,
-            placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-            placeholderIconSize = WooPosIconSize.Small.value
-        )
+        if (item.isLumpSum) {
+            CustomAmountRefundAvatar(name = item.name)
+        } else {
+            WooPosItemImage(
+                modifier = Modifier
+                    .size(WooPosComponentSize.XSmall.value)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
+                imageUrl = null,
+                placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
+                placeholderIconSize = WooPosIconSize.Small.value
+            )
+        }
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
         Column(

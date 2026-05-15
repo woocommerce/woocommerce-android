@@ -32,7 +32,7 @@ class WooPosCalculateRefundSubtotalTest {
     @Test
     fun `given empty list, when invoke called, then returns zero`() {
         val result = sut(emptyList(), 2)
-        assertThat(result).isEqualTo(BigDecimal("0"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("0"))
     }
 
     @Test
@@ -43,7 +43,7 @@ class WooPosCalculateRefundSubtotalTest {
 
         val result = sut(refundableItems, 2)
 
-        assertThat(result).isEqualTo(BigDecimal("20.00"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("20.00"))
     }
 
     @Test
@@ -56,7 +56,7 @@ class WooPosCalculateRefundSubtotalTest {
 
         val result = sut(refundableItems, 2)
 
-        assertThat(result).isEqualTo(BigDecimal("60.00"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("60.00"))
     }
 
     @Test
@@ -69,7 +69,7 @@ class WooPosCalculateRefundSubtotalTest {
 
         val result = sut(refundableItems, 2)
 
-        assertThat(result).isEqualTo(BigDecimal("60.00"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("60.00"))
     }
 
     @Test
@@ -85,7 +85,7 @@ class WooPosCalculateRefundSubtotalTest {
 
         val result = sut(refundableItems, 2)
 
-        assertThat(result).isEqualTo(BigDecimal("85.00"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("85.00"))
     }
 
     @Test
@@ -98,7 +98,7 @@ class WooPosCalculateRefundSubtotalTest {
 
         val result = sut(refundableItems, 2)
 
-        assertThat(result).isEqualTo(BigDecimal("31.00"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("31.00"))
     }
 
     @Test
@@ -110,6 +110,47 @@ class WooPosCalculateRefundSubtotalTest {
 
         val result = sut(refundableItems, 3)
 
-        assertThat(result).isEqualTo(BigDecimal("20.667"))
+        assertThat(result).isEqualByComparingTo(BigDecimal("20.667"))
+    }
+
+    @Test
+    fun `given lump-sum fee row, when invoke called, then total is the fee unit price, not multiplied by quantity`() {
+        val feeRow = WooPosRefundableItem(
+            orderItemId = 99L,
+            productId = 0L,
+            variationId = 0L,
+            name = "Tip",
+            unitPrice = BigDecimal("12.50"),
+            unitTax = BigDecimal.ZERO,
+            formattedUnitPrice = "$12.50",
+            formattedUnitTax = "$0.00",
+            rowIndex = 0,
+            isLumpSum = true,
+        )
+
+        val result = sut(listOf(feeRow), 2)
+
+        assertThat(result).isEqualByComparingTo(BigDecimal("12.50"))
+    }
+
+    @Test
+    fun `given product and lump-sum rows, when invoke called, then both are summed`() {
+        val product = createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("20.00"))
+        val fee = WooPosRefundableItem(
+            orderItemId = 99L,
+            productId = 0L,
+            variationId = 0L,
+            name = "Tip",
+            unitPrice = BigDecimal("5.00"),
+            unitTax = BigDecimal.ZERO,
+            formattedUnitPrice = "$5.00",
+            formattedUnitTax = "$0.00",
+            rowIndex = 0,
+            isLumpSum = true,
+        )
+
+        val result = sut(listOf(product, fee), 2)
+
+        assertThat(result).isEqualByComparingTo(BigDecimal("25.00"))
     }
 }

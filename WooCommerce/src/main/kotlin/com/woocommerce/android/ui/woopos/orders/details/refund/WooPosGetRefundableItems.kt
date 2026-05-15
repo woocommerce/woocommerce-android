@@ -25,9 +25,13 @@ class WooPosGetRefundableItems @Inject constructor(
         order: Order,
         refunds: List<Refund>,
     ): List<WooPosRefundableItem> {
-        if (order.items.isEmpty()) {
-            return emptyList()
-        }
+        val productRows = buildProductRows(order, refunds)
+        val feeRows = buildFeeRows(order, refunds)
+        return productRows + feeRows
+    }
+
+    private fun buildProductRows(order: Order, refunds: List<Refund>): List<WooPosRefundableItem> {
+        if (order.items.isEmpty()) return emptyList()
 
         val maxQuantities: Map<Long, Float> = calculateMaxRefundQuantities(refunds, order.items)
 
@@ -53,11 +57,35 @@ class WooPosGetRefundableItems @Inject constructor(
                         unitTax = unitTax,
                         formattedUnitPrice = formattedUnitPrice,
                         formattedUnitTax = formattedUnitTax,
-                        rowIndex = index
+                        rowIndex = index,
                     )
                 }
             }
         }
+    }
+
+    private fun buildFeeRows(order: Order, refunds: List<Refund>): List<WooPosRefundableItem> {
+        if (order.feesLines.isEmpty()) return emptyList()
+        // Fees are always refunded whole — POS does not split a single fee across refunds. Any past refund
+        // touching a fee removes it from the refundable list. If the back-end ever introduces partial-fee
+        // refunds, this needs to subtract the refunded amount instead.
+        val refundedFeeIds = refunds.flatMap { it.feeLines }.map { it.id }.toSet()
+        return order.feesLines
+            .filter { it.id !in refundedFeeIds }
+            .map { feeLine ->
+                WooPosRefundableItem(
+                    orderItemId = feeLine.id,
+                    productId = 0L,
+                    variationId = 0L,
+                    name = feeLine.name.orEmpty(),
+                    unitPrice = feeLine.total,
+                    unitTax = feeLine.totalTax,
+                    formattedUnitPrice = PriceUtils.formatCurrency(feeLine.total, order.currency, currencyFormatter),
+                    formattedUnitTax = PriceUtils.formatCurrency(feeLine.totalTax, order.currency, currencyFormatter),
+                    rowIndex = 0,
+                    isLumpSum = true,
+                )
+            }
     }
 
     /**
