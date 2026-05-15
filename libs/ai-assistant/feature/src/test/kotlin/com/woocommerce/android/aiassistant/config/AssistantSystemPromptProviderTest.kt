@@ -64,13 +64,13 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
-    fun `when prompt is built, then app how-to guidance includes mobile docs markdown link`() {
+    fun `when prompt is built, then app how-to guidance includes mobile docs link instructions`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 
-        assertThat(prompt).contains(
-            "[WooCommerce mobile documentation](https://woocommerce.com/documentation/woocommerce/mobile/)"
-        )
-        assertThat(prompt).contains("how the Android app works")
+        assertThat(prompt).contains("WooCommerce mobile app documentation link")
+        assertThat(prompt).contains("https://woocommerce.com/documentation/woocommerce/mobile/")
+        assertThat(prompt).contains("rendered as a Markdown link")
+        assertThat(prompt).contains("how the app works")
         assertThat(prompt).contains("what it can do")
         assertThat(prompt).contains("where to do something")
     }

@@ -27,7 +27,7 @@ class AICustomersDataSourceTest {
     fun `given customer store succeeds, when customers are fetched, then store result is returned`() = runTest {
         // given
         val customer = customer(42)
-        whenever(selectedSite.getOrNull()).thenReturn(DEFAULT_SITE)
+        whenever(selectedSite.get()).thenReturn(DEFAULT_SITE)
         doReturn(WooResult(listOf(customer)))
             .whenever(customerStore)
             .fetchCustomers(
@@ -59,7 +59,7 @@ class AICustomersDataSourceTest {
     @Test
     fun `given customer store fails, when customers are fetched, then OnChangedException is returned`() = runTest {
         // given
-        whenever(selectedSite.getOrNull()).thenReturn(DEFAULT_SITE)
+        whenever(selectedSite.get()).thenReturn(DEFAULT_SITE)
         whenever(customerStore.fetchCustomers(DEFAULT_SITE)).thenReturn(WooResult(TEST_ERROR))
 
         // when
