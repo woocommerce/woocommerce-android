@@ -439,20 +439,29 @@ class AiSupportChatViewModel @Inject constructor(
                 AiSupportChatMessageRole.USER -> "User"
                 AiSupportChatMessageRole.BOT -> "Bot"
             }
-            "$role: ${message.content.transcriptText()}"
+            "$role: ${message.transcriptText()}"
         }
 
-    private fun AiSupportChatMessageContent.transcriptText(): String =
-        when (this) {
+    private fun AiSupportChatMessage.transcriptText(): String =
+        when (content) {
             AiSupportChatMessageContent.Greeting -> ""
             AiSupportChatMessageContent.IssuePicker -> "[Issue picker shown]"
             AiSupportChatMessageContent.PostDiagnosticsGreeting -> "Please describe your issue in more detail."
-            is AiSupportChatMessageContent.Text -> text
+            is AiSupportChatMessageContent.Text -> when (role) {
+                AiSupportChatMessageRole.USER -> content.text
+                AiSupportChatMessageRole.BOT -> content.text.firstParagraph()
+            }
             is AiSupportChatMessageContent.DiagnosticsProgress ->
-                "[Diagnostics: ${result.statuses.toTranscriptText()}]"
+                "[Diagnostics: ${content.result.statuses.toTranscriptText()}]"
             is AiSupportChatMessageContent.DiagnosticsFailure ->
-                "[Diagnostics failed: ${result.statuses.toTranscriptText()}]"
+                "[Diagnostics failed: ${content.result.statuses.toTranscriptText()}]"
         }
+
+    private fun String.firstParagraph(): String =
+        trim()
+            .split(Regex("\\n\\s*\\n"))
+            .firstOrNull()
+            .orEmpty()
 
     private fun List<DiagnosticStatus>.toTranscriptText(): String =
         joinToString(separator = ", ") { status ->

@@ -354,6 +354,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showHumanSupportPrompt).isTrue
             assertThat(state.latestSupportArea).isEqualTo(supportArea)
             assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
             assertThat(state.messages.map { it.content }).doesNotContain(AiSupportChatMessageContent.Text(BOT_RESPONSE))
         }
 
@@ -447,6 +448,40 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(event.chatId).isNull()
             assertThat(event.source).isEqualTo(HumanSupportContactSource.ERROR_DIALOG)
             assertThat(event.transcript).contains("User: $ISSUE_DETAILS")
+        }
+
+    @Test
+    fun `given bot response has multiple paragraphs, when contact support is clicked, then transcript keeps first paragraph`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                                createMessage(
+                                    messageId = 2L,
+                                    role = SupportChatRole.BOT,
+                                    content = "$BOT_RESPONSE\n\nSecond paragraph with extra details."
+                                )
+                            )
+                        )
+                    )
+                )
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.transcript).contains("Bot: $BOT_RESPONSE")
+            assertThat(event.transcript).doesNotContain("Second paragraph with extra details.")
         }
 
     @Test
