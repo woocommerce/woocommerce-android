@@ -277,6 +277,9 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeOrder)
                 .isEqualTo(StoreOrderPreferences(enabled = true, minAmount = null))
+
+            val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
+            assertThat(orderViewState.thresholdAmount).isEqualTo(BigDecimal(50))
         }
 
     @Test

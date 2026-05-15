@@ -15,6 +15,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
@@ -70,8 +71,14 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         )
     )
     val notificationTypeItems = _notificationTypeItems.asLiveData()
-    private val _newOrderNotificationSettingsViewState = MutableStateFlow(NewOrderNotificationSettingsViewState())
-    val newOrderNotificationSettingsViewState = _newOrderNotificationSettingsViewState.asLiveData()
+    private val displayedOrderThresholdAmount = MutableStateFlow(BigDecimal(DEFAULT_ORDER_THRESHOLD_AMOUNT))
+    val newOrderNotificationSettingsViewState = combine(
+        wooPushNotificationPreferences,
+        displayedOrderThresholdAmount
+    ) { preferences, thresholdAmount ->
+        preferences?.toNewOrderNotificationSettingsViewState(thresholdAmount)
+            ?: NewOrderNotificationSettingsViewState(thresholdAmount = thresholdAmount)
+    }.asLiveData()
 
     init {
         observeWooPushNotificationPreferences()
@@ -108,7 +115,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onNewOrderNotificationPreferenceChanged(preference: NewOrderNotificationPreference) {
         val preferences = wooPushNotificationPreferences.value ?: return
-        val updatedViewState = _newOrderNotificationSettingsViewState.value.copy(notificationPreference = preference)
+        val updatedViewState = preferences.toNewOrderNotificationSettingsViewState(
+            displayedThresholdAmount = displayedOrderThresholdAmount.value
+        ).copy(notificationPreference = preference)
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeOrder = updatedViewState.toStoreOrderPreferences())
         )
@@ -116,9 +125,11 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onNewOrderThresholdAmountChanged(amount: BigDecimal) {
         val preferences = wooPushNotificationPreferences.value ?: return
-        val updatedViewState = _newOrderNotificationSettingsViewState.value.copy(
-            thresholdAmount = amount.coerceAtLeast(MIN_ORDER_THRESHOLD_AMOUNT)
-        )
+        val thresholdAmount = amount.coerceAtLeast(MIN_ORDER_THRESHOLD_AMOUNT)
+        val updatedViewState = preferences.toNewOrderNotificationSettingsViewState(
+            displayedThresholdAmount = displayedOrderThresholdAmount.value
+        ).copy(thresholdAmount = thresholdAmount)
+        displayedOrderThresholdAmount.value = thresholdAmount
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeOrder = updatedViewState.toStoreOrderPreferences())
         )
@@ -238,9 +249,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     private fun applyDisplayedWooPushNotificationPreferences(preferences: WooPushNotificationPreferences) {
         wooPushNotificationPreferences.value = preferences
         _isNotificationTypeSelectionEnabled.value = true
-        preferences.storeOrder?.let { orderPreferences ->
-            _newOrderNotificationSettingsViewState.update { it.copyWith(orderPreferences) }
-        }
+        preferences.storeOrder?.minAmount?.let { displayedOrderThresholdAmount.value = it }
         _notificationTypeItems.update { items ->
             items.map { item ->
                 item.copy(isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled)
@@ -271,16 +280,16 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     private fun WooPushNotificationPreferences.isEmpty(): Boolean =
         storeOrder == null && storeReview == null && storeStock == null
 
-    private fun NewOrderNotificationSettingsViewState.copyWith(
-        orderPreferences: StoreOrderPreferences
-    ): NewOrderNotificationSettingsViewState = copy(
-        notificationsEnabled = orderPreferences.enabled ?: notificationsEnabled,
-        notificationPreference = if (orderPreferences.minAmount == null) {
+    private fun WooPushNotificationPreferences.toNewOrderNotificationSettingsViewState(
+        displayedThresholdAmount: BigDecimal
+    ) = NewOrderNotificationSettingsViewState(
+        notificationsEnabled = storeOrder?.enabled ?: true,
+        notificationPreference = if (storeOrder?.minAmount == null) {
             NewOrderNotificationPreference.AllOrders
         } else {
             NewOrderNotificationPreference.HighValueOrders
         },
-        thresholdAmount = orderPreferences.minAmount ?: thresholdAmount
+        thresholdAmount = storeOrder?.minAmount ?: displayedThresholdAmount
     )
 
     private fun NewOrderNotificationSettingsViewState.toStoreOrderPreferences() = StoreOrderPreferences(
