@@ -55,10 +55,10 @@ class SupportRequestFormViewModel @Inject constructor(
     fun onPrefillReceived(prefill: Prefill) {
         viewState.update {
             it.copy(
-                ticketType = prefill.ticketType ?: it.ticketType,
-                subject = prefill.subject.ifBlank { it.subject },
-                siteAddress = prefill.siteAddress.ifBlank { it.siteAddress },
-                message = prefill.message.ifBlank { it.message }
+                ticketType = it.ticketType ?: prefill.ticketType,
+                subject = it.subject.ifBlank { prefill.subject },
+                siteAddress = it.siteAddress.ifBlank { prefill.siteAddress },
+                message = it.message.ifBlank { prefill.message }
             )
         }
     }

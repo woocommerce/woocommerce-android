@@ -87,7 +87,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             setupActionBar()
             observeViewEvents(this)
             observeViewModelEvents(this)
-            applyPrefill(this)
+            if (savedInstanceState == null) {
+                applyPrefill(this)
+            }
         }
         viewModel.onViewCreated()
 

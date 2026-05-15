@@ -245,6 +245,41 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given existing form data, when prefill data is received, then existing values are not overwritten`() =
+        testBlocking {
+            // Given
+            val context = mock<android.content.Context>()
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.onSubjectChanged("Edited subject")
+            sut.onSiteAddressChanged("https://edited.example.com")
+            sut.onMessageChanged("Edited message")
+
+            // When
+            sut.onPrefillReceived(
+                SupportRequestFormViewModel.Prefill(
+                    ticketType = TicketType.Payments,
+                    subject = "WooPayments Support Request",
+                    siteAddress = "https://example.com",
+                    message = "Transcript"
+                )
+            )
+            sut.submitSupportRequest(context, HelpOrigin.AI_TROUBLESHOOTING, listOf("in_app_support_escalate"))
+
+            // Then
+            verify(zendeskTicketRepository).createRequest(
+                context = eq(context),
+                origin = eq(HelpOrigin.AI_TROUBLESHOOTING),
+                ticketType = eq(TicketType.MobileApp),
+                selectedSite = any(),
+                subject = eq("Edited subject"),
+                description = eq("Edited message"),
+                extraTags = eq(listOf("in_app_support_escalate")),
+                siteAddress = eq("https://edited.example.com"),
+                diagnosticLog = anyOrNull()
+            )
+        }
+
+    @Test
     fun `when onUserIdentitySet is called, then run the expected actions`() = testBlocking {
         // Given
         val email = "email@test.com"
