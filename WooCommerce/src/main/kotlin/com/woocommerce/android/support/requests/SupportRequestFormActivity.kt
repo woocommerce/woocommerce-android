@@ -1,7 +1,6 @@
 package com.woocommerce.android.support.requests
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -27,6 +26,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -177,21 +177,24 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private fun showRequestCreationSuccessDialog() {
         setResult(Activity.RESULT_OK)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.support_request_success_title)
-            .setMessage(R.string.support_request_success_message)
-            .setPositiveButton(R.string.support_request_dialog_action) { _, _ ->
+        WooDialog.showDialog(
+            activity = this,
+            titleId = R.string.support_request_success_title,
+            messageId = R.string.support_request_success_message,
+            positiveButtonId = R.string.support_request_dialog_action,
+            posBtnAction = { _, _ ->
                 finish()
             }
-            .show()
+        )
     }
 
     private fun showRequestCreationFailureDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.support_request_error_title)
-            .setMessage(R.string.support_request_error_message)
-            .setPositiveButton(R.string.support_request_dialog_action, null)
-            .show()
+        WooDialog.showDialog(
+            activity = this,
+            titleId = R.string.support_request_error_title,
+            messageId = R.string.support_request_error_message,
+            positiveButtonId = R.string.support_request_dialog_action
+        )
     }
 
     private fun showProgressDialog() {
