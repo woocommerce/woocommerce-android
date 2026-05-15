@@ -286,6 +286,62 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given resume launch mode, when loaded, then saved chat is fetched with session id`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.chatId).isEqualTo(CHAT_ID)
+        assertThat(state.sessionId).isEqualTo(SESSION_ID)
+        assertThat(state.hasProceededToChat).isTrue()
+        assertThat(state.hasStartedChat).isTrue()
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Text(ISSUE_DETAILS),
+            AiSupportChatMessageContent.Text(BOT_RESPONSE)
+        )
+        verify(repository).fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)
+        verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
+    }
+
+    @Test
+    fun `given resume fetch fails, when loaded, then chat remains usable and error is shown`() = testBlocking {
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.failure(Exception()))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.chatId).isEqualTo(CHAT_ID)
+        assertThat(state.sessionId).isEqualTo(SESSION_ID)
+        assertThat(state.hasProceededToChat).isTrue()
+        assertThat(state.hasStartedChat).isTrue()
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showSendError).isTrue()
+        assertThat(state.messages).isEmpty()
+        verify(repository, never()).markChatAsUpdated(any(), any())
+    }
+
+    @Test
     fun `given diagnostics fail, when issue selected, then failure is shown and chat does not start`() =
         testBlocking {
             val result = createFailedDiagnosticResult()

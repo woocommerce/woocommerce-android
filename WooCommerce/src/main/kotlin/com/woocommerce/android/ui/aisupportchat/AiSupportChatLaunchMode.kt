@@ -8,4 +8,10 @@ sealed interface AiSupportChatLaunchMode {
     data class ConnectivityTool(
         val checks: List<ConnectivityCheckCardData>
     ) : AiSupportChatLaunchMode
+
+    data class Resume(
+        val chatId: Long,
+        val botSlug: String,
+        val sessionId: String?
+    ) : AiSupportChatLaunchMode
 }

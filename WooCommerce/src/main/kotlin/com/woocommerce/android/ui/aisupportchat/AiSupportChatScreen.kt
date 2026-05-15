@@ -92,6 +92,7 @@ fun AiSupportChatScreen(
         MessageList(
             messages = viewState.messages,
             isSending = viewState.isSending,
+            isLoadingHistory = viewState.isLoadingHistory,
             showDiagnosticActions = viewState.showDiagnosticActions,
             onIssueSelected = onIssueSelected,
             onRetryDiagnosticsClicked = onRetryDiagnosticsClicked,
@@ -110,7 +111,7 @@ fun AiSupportChatScreen(
         InputBar(
             input = viewState.input,
             isSending = viewState.isSending,
-            enabled = viewState.hasProceededToChat,
+            enabled = viewState.hasProceededToChat && !viewState.isLoadingHistory,
             onInputChanged = onInputChanged,
             onSendClicked = onSendClicked,
             modifier = Modifier.fillMaxWidth()
@@ -122,6 +123,7 @@ fun AiSupportChatScreen(
 private fun MessageList(
     messages: List<AiSupportChatMessage>,
     isSending: Boolean,
+    isLoadingHistory: Boolean,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onRetryDiagnosticsClicked: () -> Unit,
@@ -130,6 +132,16 @@ private fun MessageList(
 ) {
     val listState = rememberLazyListState()
     val itemCount = messages.size + (if (isSending) 1 else 0)
+
+    if (isLoadingHistory) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     LaunchedEffect(messages.size, isSending) {
         if (itemCount > 0) {

@@ -49,6 +49,17 @@ class AiSupportChatActivity : AppCompatActivity() {
         fun createIntent(context: Context): Intent =
             Intent(context, AiSupportChatActivity::class.java)
 
+        fun createResumeIntent(
+            context: Context,
+            chatId: Long,
+            botSlug: String,
+            sessionId: String?
+        ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
+            putExtra(EXTRA_CHAT_ID, chatId)
+            putExtra(EXTRA_BOT_SLUG, botSlug)
+            putExtra(EXTRA_SESSION_ID, sessionId)
+        }
+
         fun createConnectivityToolIntent(
             context: Context,
             checks: List<ConnectivityCheckCardData>
@@ -63,9 +74,20 @@ class AiSupportChatActivity : AppCompatActivity() {
                 return AiSupportChatLaunchMode.ConnectivityTool(checks)
             }
 
+            if (extras.containsKey(EXTRA_CHAT_ID)) {
+                return AiSupportChatLaunchMode.Resume(
+                    chatId = extras.getLong(EXTRA_CHAT_ID),
+                    botSlug = extras.getString(EXTRA_BOT_SLUG) ?: AiSupportChatViewModel.DEFAULT_BOT_SLUG,
+                    sessionId = extras.getString(EXTRA_SESSION_ID)
+                )
+            }
+
             return AiSupportChatLaunchMode.Help
         }
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
+        private const val EXTRA_CHAT_ID = "extra_chat_id"
+        private const val EXTRA_BOT_SLUG = "extra_bot_slug"
+        private const val EXTRA_SESSION_ID = "extra_session_id"
     }
 }

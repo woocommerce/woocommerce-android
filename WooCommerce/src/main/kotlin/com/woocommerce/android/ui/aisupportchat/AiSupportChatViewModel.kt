@@ -45,6 +45,7 @@ class AiSupportChatViewModel @Inject constructor(
         when (launchMode) {
             AiSupportChatLaunchMode.Help -> Unit
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
+            is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
     }
 
@@ -55,7 +56,7 @@ class AiSupportChatViewModel @Inject constructor(
     fun onSendClicked() {
         val state = _viewState.value
         val message = state.input.trim()
-        if (message.isBlank() || state.isSending || !state.hasProceededToChat) return
+        if (message.isBlank() || state.isSending || state.isLoadingHistory || !state.hasProceededToChat) return
 
         launch { sendMessage(message) }
     }
@@ -130,6 +131,52 @@ class AiSupportChatViewModel @Inject constructor(
                 hasProceededToChat = true,
                 showSendError = false
             )
+        }
+    }
+
+    private fun resumeChat(launchMode: AiSupportChatLaunchMode.Resume) {
+        _viewState.update {
+            it.copy(
+                input = "",
+                messages = emptyList(),
+                chatId = launchMode.chatId,
+                sessionId = launchMode.sessionId,
+                botSlug = launchMode.botSlug,
+                hasProceededToChat = true,
+                hasStartedChat = true,
+                isLoadingHistory = true,
+                showSendError = false
+            )
+        }
+
+        launch {
+            repository.fetchChat(
+                botSlug = launchMode.botSlug,
+                chatId = launchMode.chatId,
+                sessionId = launchMode.sessionId
+            ).onSuccess { response ->
+                _viewState.update {
+                    it.copy(
+                        chatId = response.chatId,
+                        sessionId = response.sessionId,
+                        botSlug = response.botSlug,
+                        messages = response.messages.toUiMessages(),
+                        isLoadingHistory = false,
+                        showSendError = false
+                    )
+                }
+                runCatching {
+                    repository.markChatAsUpdated(response.chatId, response.sessionId)
+                }
+            }.onFailure { error ->
+                WooLog.e(WooLog.T.AI, "Fetching AI support chat history failed", error)
+                _viewState.update {
+                    it.copy(
+                        isLoadingHistory = false,
+                        showSendError = true
+                    )
+                }
+            }
         }
     }
 
@@ -360,6 +407,7 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val diagnosticResult: DiagnosticResult? = null,
     val isRunningDiagnostics: Boolean = false,
+    val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
     val showSendError: Boolean = false
 ) {
