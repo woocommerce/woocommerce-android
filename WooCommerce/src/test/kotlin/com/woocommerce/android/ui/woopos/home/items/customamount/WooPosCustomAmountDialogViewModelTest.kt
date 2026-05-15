@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -13,9 +14,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 
@@ -26,7 +30,7 @@ class WooPosCustomAmountDialogViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val getCurrencyFormattingParameters: WooPosGetCurrencyFormattingParameters = mock {
-        onBlocking { invoke() }.thenReturn(
+        on { invoke() }.thenReturn(
             WooPosCurrencyFormattingParameters(
                 currencySymbol = "$",
                 currencyPosition = CurrencyPosition.LEFT,
@@ -175,6 +179,10 @@ class WooPosCustomAmountDialogViewModelTest {
 
     @Test
     fun `given submission in flight, when onSubmit called again, then second submission is ignored`() = runTest {
+        val sendGate = CompletableDeferred<Unit>()
+        whenever(childrenToParentEventSender.sendToParent(any())).doSuspendableAnswer {
+            sendGate.await()
+        }
         val sut = createSut()
         advanceUntilIdle()
         sut.initializeFor(editing = null)
@@ -182,9 +190,10 @@ class WooPosCustomAmountDialogViewModelTest {
 
         sut.onSubmit()
         sut.onSubmit()
+        sendGate.complete(Unit)
         advanceUntilIdle()
 
-        verify(childrenToParentEventSender).sendToParent(
+        verify(childrenToParentEventSender, times(1)).sendToParent(
             ChildToParentEvent.CustomAmountSubmitted(
                 name = DEFAULT_NAME,
                 amount = BigDecimal("3.00"),
