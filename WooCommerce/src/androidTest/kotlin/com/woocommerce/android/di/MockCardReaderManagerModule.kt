@@ -95,7 +95,10 @@ class MockCardReaderManagerModule {
         override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult =
             CreatePaymentIntentResult.Failed(IllegalStateException("Not used in instrumented tests"))
 
-        override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult =
+        override suspend fun retrieveAndCollectPayment(
+            clientSecret: String,
+            paymentInfo: PaymentInfo
+        ): RetrieveAndCollectResult =
             RetrieveAndCollectResult.Failed(IllegalStateException("Not used in instrumented tests"))
 
         override suspend fun refundInteracPayment(

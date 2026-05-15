@@ -68,7 +68,7 @@ interface CardReaderManager {
      * Tap-to-Pay flow. The returned status is the PaymentIntent's status after processing —
      * typically `requires_capture`.
      */
-    suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult
+    suspend fun retrieveAndCollectPayment(clientSecret: String, paymentInfo: PaymentInfo): RetrieveAndCollectResult
 
     suspend fun refundInteracPayment(
         refundParams: RefundParams,
