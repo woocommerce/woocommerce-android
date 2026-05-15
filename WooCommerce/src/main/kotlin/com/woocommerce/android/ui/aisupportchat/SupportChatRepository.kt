@@ -65,6 +65,8 @@ class SupportChatRepository @Inject constructor(
                 remoteSiteId = selectedSiteModel.siteId,
                 botSlug = botSlug,
                 sessionId = sessionId,
+                hasCreatedTicket = false,
+                isResolved = false,
                 title = firstUserMessage.trim().take(MAX_TITLE_LENGTH).ifBlank { null },
                 createdAt = now,
                 updatedAt = now
@@ -82,6 +84,14 @@ class SupportChatRepository @Inject constructor(
 
     suspend fun loadChatHistory(): List<SupportChatBookmark> = withContext(dispatchers.io) {
         bookmarkDao.getForSite(LocalId(selectedSite.get().id)).map { it.toSupportChatBookmark() }
+    }
+
+    suspend fun markChatAsTicketCreated(chatId: Long): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markTicketCreated(chatId)
+    }
+
+    suspend fun markChatAsResolved(chatId: Long): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markResolved(chatId)
     }
 
     suspend fun deleteChat(chatId: Long): Unit = withContext(dispatchers.io) {
@@ -106,6 +116,8 @@ class SupportChatRepository @Inject constructor(
             remoteSiteId = remoteSiteId,
             botSlug = botSlug,
             sessionId = sessionId,
+            hasCreatedTicket = hasCreatedTicket,
+            isResolved = isResolved,
             title = title,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -122,6 +134,8 @@ data class SupportChatBookmark(
     val remoteSiteId: Long,
     val botSlug: String,
     val sessionId: String?,
+    val hasCreatedTicket: Boolean,
+    val isResolved: Boolean,
     val title: String?,
     val createdAt: Long,
     val updatedAt: Long
