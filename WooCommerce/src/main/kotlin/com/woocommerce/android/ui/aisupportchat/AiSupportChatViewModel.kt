@@ -613,9 +613,10 @@ data class AiSupportChatViewState(
                 it.role == AiSupportChatMessageRole.BOT && it.messageId != null
             }
             val latestBotResponse = botResponses.lastOrNull() ?: return false
-            return latestBotResponse.isResolved ||
-                messageRatings[latestBotResponse.messageId] == AiSupportChatFeedbackRating.UP ||
-                botResponses.size >= MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION
+            val latestResponseResolved = latestBotResponse.isResolved
+            val latestResponseUpvoted = messageRatings[latestBotResponse.messageId] == AiSupportChatFeedbackRating.UP
+            val hasEnoughBotResponses = botResponses.size >= MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION
+            return latestResponseResolved || latestResponseUpvoted || hasEnoughBotResponses
         }
 
     private companion object {
