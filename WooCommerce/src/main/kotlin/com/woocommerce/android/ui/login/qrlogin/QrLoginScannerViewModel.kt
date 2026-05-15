@@ -55,7 +55,15 @@ class QrLoginScannerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(Idle)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private var loggedIn = false
+    /**
+     * Set once we've fired a terminal [Dispatch] event — either a real sign-in
+     * ([FlowCompletion.LoggedIn]) or a handoff to another surface (browser Custom Tab,
+     * in-app login route). While true, [isIdle] rejects new scans and deep links so the
+     * scanner doesn't fire a second handoff under the first. Cleared on [onScreenResumed]
+     * so the user has a way back if the handoff doesn't bring them home (browser closed
+     * without OAuth completing, back-stack pop from the in-app login screen).
+     */
+    private var terminalEventDispatched = false
     private var currentFlow: QrLoginFlow? = null
     private var flowObserverJob: Job? = null
 
@@ -84,7 +92,7 @@ class QrLoginScannerViewModel @Inject constructor(
         handlePayload(parser.parse(raw))
     }
 
-    private fun isIdle(): Boolean = !loggedIn && _uiState.value is Idle
+    private fun isIdle(): Boolean = !terminalEventDispatched && _uiState.value is Idle
 
     private fun handlePayload(payload: QrLoginPayload) {
         when (payload) {
@@ -128,24 +136,24 @@ class QrLoginScannerViewModel @Inject constructor(
             is PendingHandoff.WpComMagicLink -> {
                 // Hand the URL off to a Custom Tab; wp.com 3xx-redirects to
                 // woocommerce://magic-login and MagicLinkInterceptActivity finishes sign-in.
-                loggedIn = true
+                terminalEventDispatched = true
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
                 triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = pending.url))
             }
             is PendingHandoff.SiteUrlPrefill -> {
-                loggedIn = true
+                terminalEventDispatched = true
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
                 triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = pending.siteUrl))
             }
             is PendingHandoff.AppLoginCredentials -> {
-                loggedIn = true
+                terminalEventDispatched = true
                 trackAppLoginHandoff(flowValue = AnalyticsTracker.VALUE_NO_WP_COM)
                 triggerEvent(
                     Dispatch.RouteToAppLoginCredentials(siteUrl = pending.siteUrl, username = pending.username)
                 )
             }
             is PendingHandoff.AppLoginWpComEmail -> {
-                loggedIn = true
+                terminalEventDispatched = true
                 trackAppLoginHandoff(flowValue = AnalyticsTracker.VALUE_WP_COM)
                 triggerEvent(
                     Dispatch.RouteToAppLoginWpComEmail(siteUrl = pending.siteUrl, wpComEmail = pending.wpComEmail)
@@ -197,7 +205,7 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     private fun handleCompletion(completion: FlowCompletion) {
-        loggedIn = true
+        terminalEventDispatched = true
         when (completion) {
             is FlowCompletion.LoggedIn -> {
                 analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
@@ -244,6 +252,22 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     /**
+     * Recovery hook for the case where a terminal handoff didn't carry the user home.
+     * Examples: the Custom Tab was closed before the wp.com magic-link redirect fired,
+     * or the user backed out of the in-app login route. Returning to the scanner with a
+     * stale `terminalEventDispatched` would otherwise leave [isIdle] permanently false
+     * and the UI frozen on whatever state we last set. Clearing it on resume drops us
+     * back to a fresh scanner. Safe to call on every resume — it's a no-op if no terminal
+     * event has been dispatched.
+     */
+    fun onScreenResumed() {
+        if (!terminalEventDispatched) return
+        terminalEventDispatched = false
+        endActiveFlow()
+        _uiState.value = Idle
+    }
+
+    /**
      * Cancel the in-flight number-match step. The server keeps the session in `scanned`
      * until its 90-second window elapses; the merchant-side polling auto-transitions to the
      * "denied" terminal screen.
@@ -259,7 +283,7 @@ class QrLoginScannerViewModel @Inject constructor(
      * never retry the same payload — the scanner reappears and the merchant generates a new code.
      */
     fun onStartOver() {
-        if (loggedIn) return
+        if (terminalEventDispatched) return
         endActiveFlow()
         _uiState.value = Idle
     }

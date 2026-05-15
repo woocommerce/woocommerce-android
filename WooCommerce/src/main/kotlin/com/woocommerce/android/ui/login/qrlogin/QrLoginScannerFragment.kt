@@ -139,6 +139,10 @@ class QrLoginScannerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Recovery for handoffs that didn't carry the user home (Custom Tab closed without
+        // OAuth redirect, back-press from the in-app login route). Must run before
+        // startCodesRecognition so the VM is back in Idle when the scanner re-enables.
+        qrLoginViewModel.onScreenResumed()
         if (!isDeepLinkEntry) {
             scannerViewModel.startCodesRecognition()
         }
