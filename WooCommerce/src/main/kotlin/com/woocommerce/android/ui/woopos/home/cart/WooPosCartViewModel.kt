@@ -54,6 +54,9 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
+// LargeClass: cart-mutation paths should follow WooPosCustomAmountCartHandler's
+// handler-extraction pattern; the suppression goes away once coupon and product
+// mutations move out too.
 @Suppress("LargeClass")
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
@@ -262,15 +265,27 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private suspend fun handleCustomAmountSubmitted(event: ParentToChildrenEvent.CustomAmountSubmitted) {
+        val formattedAmount = formatPrice(event.amount)
         val result = customAmountCartHandler.applySubmittedToCart(
-            currentBody = _state.value.body,
             event = event,
+            formattedAmount = formattedAmount,
             nextItemNumber = { getItemNumber() },
         )
         when (result) {
             is WooPosCustomAmountCartHandler.SubmittedResult.Edited -> {
-                val currentBody = _state.value.body as? WooPosCartState.Body.WithItems ?: return
-                _state.value = _state.value.copy(body = currentBody.copy(itemsInCart = result.updatedItems))
+                // Re-derive against the live state at write time so any concurrent cart
+                // mutations during the formatPrice suspension are preserved.
+                val current = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+                val updated = current.itemsInCart.map { item ->
+                    if (item is WooPosCartItemViewState.CustomAmount &&
+                        item.itemNumber == result.editingItemNumber
+                    ) {
+                        result.updatedItem
+                    } else {
+                        item
+                    }
+                }
+                _state.value = _state.value.copy(body = current.copy(itemsInCart = updated))
                 analyticsTracker.track(
                     CustomAmountSubmitted(CustomAmountSubmitted.Mode.EDIT, event.isTaxable)
                 )
