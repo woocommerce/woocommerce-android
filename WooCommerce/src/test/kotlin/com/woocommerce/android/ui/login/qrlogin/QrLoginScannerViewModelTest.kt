@@ -215,6 +215,12 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(CodeScannerStatus.Failure(error = "bad", type = CodeScanningErrorType.Other(null)))
         advanceUntilIdle()
 
+        assertThat(viewModel.uiState.value).isEqualTo(
+            UiState.Error(
+                reason = ErrorReason.Scanner,
+                retryable = false,
+            )
+        )
         verify(unifiedLoginTracker).setStep(Step.QR_ERROR)
         verify(unifiedLoginTracker).trackFailure("Scanner")
     }
