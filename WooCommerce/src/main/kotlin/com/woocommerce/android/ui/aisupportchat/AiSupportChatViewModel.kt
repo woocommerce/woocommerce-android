@@ -449,7 +449,7 @@ class AiSupportChatViewModel @Inject constructor(
             AiSupportChatMessageContent.PostDiagnosticsGreeting -> "Please describe your issue in more detail."
             is AiSupportChatMessageContent.Text -> when (role) {
                 AiSupportChatMessageRole.USER -> content.text
-                AiSupportChatMessageRole.BOT -> content.text.firstParagraph()
+                AiSupportChatMessageRole.BOT -> content.text.trimToFirstParagraph()
             }
             is AiSupportChatMessageContent.DiagnosticsProgress ->
                 "[Diagnostics: ${content.result.statuses.toTranscriptText()}]"
@@ -457,11 +457,15 @@ class AiSupportChatViewModel @Inject constructor(
                 "[Diagnostics failed: ${content.result.statuses.toTranscriptText()}]"
         }
 
-    private fun String.firstParagraph(): String =
-        trim()
-            .split(Regex("\\n\\s*\\n"))
-            .firstOrNull()
-            .orEmpty()
+    private fun String.trimToFirstParagraph(): String {
+        val paragraphs = trim().split(Regex("\\n\\s*\\n"))
+        val firstParagraph = paragraphs.firstOrNull().orEmpty()
+        return if (paragraphs.size > 1) {
+            "$firstParagraph\n[AI response trimmed]"
+        } else {
+            firstParagraph
+        }
+    }
 
     private fun List<DiagnosticStatus>.toTranscriptText(): String =
         joinToString(separator = ", ") { status ->

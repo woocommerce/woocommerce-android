@@ -480,7 +480,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
 
             val event = events.single() as ContactHumanSupport
-            assertThat(event.transcript).contains("Bot: $BOT_RESPONSE")
+            assertThat(event.transcript).contains("Bot: $BOT_RESPONSE\n[AI response trimmed]")
             assertThat(event.transcript).doesNotContain("Second paragraph with extra details.")
         }
 
