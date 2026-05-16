@@ -75,7 +75,7 @@ internal class WooAiSmokeRunner(
             outputDirectory = outputDirectory,
             approvedBaselineFileName = config.approvedBaselineFileName,
             redactor = redactor,
-            usePerRunDirectory = config.baselineResourceName == "live-baseline.json",
+            usePerRunDirectory = config.usePerRunDirectory,
         ).write(
             suite = suite,
             comparison = comparison,
@@ -83,6 +83,7 @@ internal class WooAiSmokeRunner(
         )
         return WooAiSmokeRunExit(
             artifactsDirectory = artifacts.outputDirectory,
+            sourceArtifactsDirectory = artifacts.sourceOutputDirectory,
             failureMessage = failureMessageFor(
                 suite = suite,
                 comparison = comparison,

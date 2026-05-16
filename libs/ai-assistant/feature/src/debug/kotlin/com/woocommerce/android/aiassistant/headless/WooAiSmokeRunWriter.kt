@@ -25,26 +25,29 @@ internal class WooAiSmokeRunWriter(
         comparison: HeadlessBaselineComparison,
         approvedBaseline: HeadlessApprovedBaseline?,
     ): WooAiSmokeArtifacts {
-        val writeDirectory = if (usePerRunDirectory) perRunDirectory() else outputDirectory
-        writeDirectory.deleteRecursively()
-        writeDirectory.mkdirs()
-        File(writeDirectory, "run.json").writeRedacted(json.encodeToString(suite))
-        File(writeDirectory, "baseline-comparison.json").writeRedacted(json.encodeToString(comparison))
-        File(writeDirectory, "summary.md").writeRedacted(WooAiSmokeSummaryRenderer.render(suite, comparison))
+        val sourceOutputDirectory = if (usePerRunDirectory) perRunDirectory() else outputDirectory
+        sourceOutputDirectory.deleteRecursively()
+        sourceOutputDirectory.mkdirs()
+        File(sourceOutputDirectory, "run.json").writeRedacted(json.encodeToString(suite))
+        File(sourceOutputDirectory, "baseline-comparison.json").writeRedacted(json.encodeToString(comparison))
+        File(sourceOutputDirectory, "summary.md").writeRedacted(WooAiSmokeSummaryRenderer.render(suite, comparison))
         File(
-            writeDirectory,
+            sourceOutputDirectory,
             "turns.jsonl",
         ).writeRedacted(
             turnRecords(suite).joinToString("\n") { json.encodeToString(it) }
         )
         if (approvedBaseline != null) {
-            File(writeDirectory, approvedBaselineFileName).writeRedacted(json.encodeToString(approvedBaseline))
+            File(sourceOutputDirectory, approvedBaselineFileName).writeRedacted(json.encodeToString(approvedBaseline))
         }
         if (usePerRunDirectory) {
             outputDirectory.deleteRecursively()
-            writeDirectory.copyRecursively(outputDirectory, overwrite = true)
+            sourceOutputDirectory.copyRecursively(outputDirectory, overwrite = true)
         }
-        return WooAiSmokeArtifacts(outputDirectory = outputDirectory)
+        return WooAiSmokeArtifacts(
+            outputDirectory = outputDirectory,
+            sourceOutputDirectory = sourceOutputDirectory,
+        )
     }
 
     private fun turnRecords(suite: HeadlessSuiteRunResult): List<WooAiSmokeTurnRecord> =
@@ -85,7 +88,11 @@ internal class WooAiSmokeRunWriter(
 
 internal data class WooAiSmokeArtifacts(
     val outputDirectory: File,
-)
+    val sourceOutputDirectory: File,
+) {
+    fun artifactDirectories(): List<File> = listOf(sourceOutputDirectory, outputDirectory)
+        .distinctBy { it.absolutePath }
+}
 
 @Serializable
 private data class WooAiSmokeTurnRecord(

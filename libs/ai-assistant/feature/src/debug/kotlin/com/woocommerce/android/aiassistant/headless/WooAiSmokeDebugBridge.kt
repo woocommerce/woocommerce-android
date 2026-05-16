@@ -15,8 +15,12 @@ import kotlin.time.Duration.Companion.seconds
 
 data class WooAiSmokeRunExit(
     val artifactsDirectory: File,
+    val sourceArtifactsDirectory: File = artifactsDirectory,
     val failureMessage: String?,
-)
+) {
+    fun artifactDirectories(): List<File> = listOf(sourceArtifactsDirectory, artifactsDirectory)
+        .distinctBy { it.absolutePath }
+}
 
 object WooAiSmokeDebugBridge {
     @Suppress("LongMethod")
@@ -53,7 +57,8 @@ object WooAiSmokeDebugBridge {
 
             outputDirectory.mkdirs()
             val preflightJson = entryPoint.json().encodeToString(bootstrap.preflight)
-            File(outputDirectory, PREFLIGHT_FILE_NAME).writeText(preflightJson)
+            val redactedPreflightJson = redactor.redact(preflightJson)
+            File(outputDirectory, PREFLIGHT_FILE_NAME).writeText(redactedPreflightJson)
 
             require(entryPoint.toolRegistry() is WooCommerceToolRegistry) {
                 "Expected WooCommerceToolRegistry"
@@ -69,13 +74,11 @@ object WooAiSmokeDebugBridge {
                     json = entryPoint.json(),
                     timeSource = entryPoint.timeSource(),
                     config = WooAiSmokeConfig(
-                        enabled = true,
                         baselineMode = credentials.mode,
-                        writeMode = WooAiSmokeWriteMode.DECLINE,
-                        outputDirectoryName = "woo-ai-smoke",
                         scenarioResourceName = "live-scenarios.json",
                         baselineResourceName = "live-baseline.json",
                         approvedBaselineFileName = "approved-live-baseline.json",
+                        usePerRunDirectory = true,
                     ),
                     selectedSiteId = bootstrap.site.siteId,
                     outputDirectory = outputDirectory,
@@ -85,54 +88,28 @@ object WooAiSmokeDebugBridge {
                     redactor = redactor,
                 ).run()
             }
-            File(exit.artifactsDirectory, PREFLIGHT_FILE_NAME).writeText(preflightJson)
+            writePreflightArtifacts(
+                exit = exit,
+                preflightJson = redactedPreflightJson,
+            )
             exit
         }.getOrElse { error ->
             WooAiSmokeRunExit(
                 artifactsDirectory = outputDirectory,
+                sourceArtifactsDirectory = outputDirectory,
                 failureMessage = redactor.redact(error.message ?: error::class.java.simpleName),
             )
         }
     }
 
-    suspend fun run(
-        application: Application,
-        instrumentationArguments: Map<String, String?>,
-    ): WooAiSmokeRunExit {
-        val config = WooAiSmokeConfig.fromInstrumentationArguments(instrumentationArguments)
-        if (!config.enabled) {
-            return WooAiSmokeRunExit(
-                artifactsDirectory = File(application.filesDir, "${config.outputDirectoryName}/latest"),
-                failureMessage = null,
-            )
+    internal fun writePreflightArtifacts(
+        exit: WooAiSmokeRunExit,
+        preflightJson: String,
+    ) {
+        exit.artifactDirectories().forEach { directory ->
+            directory.mkdirs()
+            File(directory, PREFLIGHT_FILE_NAME).writeText(preflightJson)
         }
-
-        val entryPoint = EntryPoints.get(application, WooAiSmokeDebugEntryPoint::class.java)
-        val preflight = WooAiSmokePreflight(entryPoint.selectedSite())
-        val selectedSite = preflight.requireReady()
-        val outputDirectory = File(application.filesDir, "${config.outputDirectoryName}/latest")
-
-        return WooAiSmokeRunner(
-            chatService = entryPoint.chatService(),
-            toolRegistry = entryPoint.toolRegistry(),
-            toolCatalogSelector = entryPoint.toolCatalogSelector(),
-            retryPolicy = entryPoint.retryPolicy(),
-            historyBudgeter = entryPoint.historyBudgeter(),
-            systemPromptProvider = entryPoint.systemPromptProvider(),
-            json = entryPoint.json(),
-            timeSource = entryPoint.timeSource(),
-            config = config,
-            selectedSiteId = selectedSite.siteId,
-            outputDirectory = outputDirectory,
-            jwtProviderClass = "WpComJetpackAiTokenProvider",
-            storeLabel = "selected-app-site",
-            credentialSource = "instrumentation",
-            redactor = WooAiSmokeRedactor(
-                siteUrl = selectedSite.url,
-                username = selectedSite.username ?: "",
-                appPassword = "",
-            ),
-        ).run()
     }
 
     private suspend fun <T> runPhase(

@@ -91,7 +91,11 @@ class WooAiSmokeRunWriterTest {
         )
 
         assertThat(artifacts.outputDirectory).isEqualTo(latestDirectory)
+        assertThat(artifacts.sourceOutputDirectory).isNotEqualTo(latestDirectory)
         assertThat(latestDirectory.resolve("run.json")).exists()
+        assertThat(artifacts.sourceOutputDirectory.resolve("run.json")).exists()
+        assertThat(artifacts.sourceOutputDirectory.resolve("run.json").readText())
+            .isEqualTo(latestDirectory.resolve("run.json").readText())
         assertThat(requireNotNull(latestDirectory.parentFile).resolve("runs").listFiles()).hasSize(1)
     }
 

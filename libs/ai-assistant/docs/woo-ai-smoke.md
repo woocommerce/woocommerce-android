@@ -89,22 +89,3 @@ The accepted live baseline must come from `JetpackAiChatService`,
 These deterministic tests validate harness wiring, scenario parsing, hard checks, baseline
 comparison, and artifact writing with fake no-device chat/tool fixtures. They are not accepted
 primary smoke evidence and must not be used to approve `live-baseline.json`.
-
-## Optional Device-Backed Live Adapter
-
-Use this only when you explicitly want to reuse an installed authenticated Wasabi debug app and the
-app's selected-site state. It requires a connected device or emulator and is not the primary success
-path.
-
-```bash
-./gradlew :WooCommerce:connectedWasabiDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.woocommerce.android.aiassistant.headless.WooAiSmokeAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
-  -Pandroid.testInstrumentationRunnerArguments.wooAiSmoke=true \
-  -Pandroid.testInstrumentationRunnerArguments.wooAiSmokeBaselineMode=check \
-  -Pandroid.testInstrumentationRunnerArguments.wooAiSmokeWriteMode=decline
-mkdir -p WooCommerce/build/outputs/woo-ai-smoke/latest
-adb exec-out run-as com.woocommerce.android.dev \
-  tar -C files/woo-ai-smoke/latest -cf - . \
-  | tar -C WooCommerce/build/outputs/woo-ai-smoke/latest -xf -
-```

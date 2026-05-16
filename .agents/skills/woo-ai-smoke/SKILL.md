@@ -66,16 +66,3 @@ cp \
 
 Deterministic support tests validate harness wiring only. They are not accepted primary smoke
 evidence and must not be used to approve the live baseline.
-
-## Optional Device-Backed Live Adapter
-
-Use only for explicit device-backed verification:
-
-```bash
-./gradlew :WooCommerce:connectedWasabiDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.woocommerce.android.aiassistant.headless.WooAiSmokeAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
-  -Pandroid.testInstrumentationRunnerArguments.wooAiSmoke=true \
-  -Pandroid.testInstrumentationRunnerArguments.wooAiSmokeBaselineMode=check \
-  -Pandroid.testInstrumentationRunnerArguments.wooAiSmokeWriteMode=decline
-```

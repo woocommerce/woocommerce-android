@@ -16,7 +16,6 @@ A short orientation before any of the details:
   of read-only "preflight" tools so basic setup failures show up early.
 - Every run writes JSON/Markdown artifacts under `build/outputs`. These are generated; they are never committed.
 - The only checked-in piece is `live-baseline.json` under `src/debug/resources`. A developer updates it by hand.
-- `:WooCommerce` keeps an optional device-backed adapter, but the primary success path is the Robolectric test.
 
 ## End-to-End Flow
 
@@ -39,7 +38,6 @@ The rest of the doc follows that order.
 | --- | --- | --- |
 | `WooAiSmokeLiveRobolectricTest` | `:libs:ai-assistant:feature` (testDebug) | Default. Live run, compares to checked-in baseline. |
 | `WooAiSmokeLiveRobolectricApprovalTest` | `:libs:ai-assistant:feature` (testDebug) | Live run that writes a baseline candidate. Used only when intentionally refreshing. |
-| `WooAiSmokeAndroidTest` | `:WooCommerce` androidTest | Optional device adapter for an already-installed authenticated debug app. |
 
 Both Robolectric tests check `WOO_AI_SMOKE_RUN_LIVE=true` via `WooAiSmokeLiveEnvRule` before Hilt injection. Without it
 they skip by JUnit assumption, so the live Hilt graph is never built and no live network calls happen.
@@ -182,5 +180,3 @@ A green primary live run proves the Android AI Assistant runtime can, without a 
 - run the real `JetpackAiChatService`,
 - exercise the real `WooCommerceToolRegistry`,
 - match canonical merchant scenarios and hard checks against the checked-in baseline.
-
-It does not prove full app-launch behavior. That is the role of the optional `:WooCommerce` device-backed adapter.

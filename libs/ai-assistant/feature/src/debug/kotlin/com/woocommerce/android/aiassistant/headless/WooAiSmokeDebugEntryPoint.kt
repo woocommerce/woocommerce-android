@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
-import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.RetryPolicy
@@ -19,7 +18,6 @@ import kotlin.time.TimeSource
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 internal interface WooAiSmokeDebugEntryPoint {
-    fun chatService(): ChatService
     fun toolRegistry(): ToolRegistry
     fun toolCatalogSelector(): ToolCatalogSelector
     fun retryPolicy(): RetryPolicy
