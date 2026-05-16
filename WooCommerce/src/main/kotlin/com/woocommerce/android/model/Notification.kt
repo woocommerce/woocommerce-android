@@ -83,7 +83,7 @@ fun NotificationModel.getUniqueId(): Long {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.meta?.ids?.order ?: 0L
         NotificationModel.Kind.COMMENT -> this.meta?.ids?.comment ?: 0L
-        NotificationModel.Kind.STORE_STOCK -> this.meta?.ids?.post ?: 0L
+        NotificationModel.Kind.STORE_STOCK -> this.meta?.ids?.product ?: 0L
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
