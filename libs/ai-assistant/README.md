@@ -47,3 +47,8 @@ Owns only host/app concerns — no assistant feature logic:
 
 New concerns stay inside the assistant module family, not in `:WooCommerce`. Candidates
 when the time comes: `:libs:ai-assistant:cards`, `:libs:ai-assistant:tools`.
+
+## Docs
+
+- [Woo AI Smoke](docs/woo-ai-smoke.md) covers day-to-day commands for the headless smoke harness.
+- [Woo AI Smoke Architecture](docs/woo-ai-smoke-architecture.md) explains the module, runtime, and artifact flow.
