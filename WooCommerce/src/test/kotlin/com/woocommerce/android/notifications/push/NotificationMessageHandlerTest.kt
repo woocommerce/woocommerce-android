@@ -278,6 +278,44 @@ class NotificationMessageHandlerTest {
         }
 
     @Test
+    fun `given store stock notification, when notification received, then process it as stock`() =
+        runTest {
+            val payload = mapOf("type" to "store_stock")
+            val productId = 32L
+            val stockModel = NotificationModel(
+                remoteNoteId = 0L,
+                remoteSiteId = orderNotification.remoteSiteId,
+                type = NotificationModel.Kind.STORE_STOCK,
+                meta = FormattableMeta(
+                    ids = FormattableMeta.Ids(site = orderNotification.remoteSiteId, product = productId)
+                )
+            )
+            val mockParser: NotificationsParser = mock {
+                on { buildNotificationModelFromPayloadMap(any()) } doReturn stockModel
+            }
+            createNotificationMessageHandler(mockParser)
+
+            notificationMessageHandler.onNewMessageReceived(payload)
+
+            val stockNotification = stockModel.toAppModel(resourceProvider)
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+            verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
+                pushId = any(),
+                notification = eq(stockNotification),
+                source = eq(NotificationSource.WOO_DRIVEN),
+                analyticsId = eq("${orderNotification.remoteSiteId}:STORE_STOCK:$productId"),
+                isGroupNotification = eq(false)
+            )
+            verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
+                stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED),
+                siteId = eq(orderNotification.remoteSiteId),
+                notificationId = eq("${orderNotification.remoteSiteId}:STORE_STOCK:$productId"),
+                noteTypeTrackingValue = eq(WooNotificationType.Stock.trackingValue),
+                source = eq(NotificationSource.WOO_DRIVEN)
+            )
+        }
+
+    @Test
     fun `when the notification payload is empty then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(
             mapOf(
