@@ -362,11 +362,6 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.androidx.test.main.core)
-    testImplementation(libs.google.dagger.hilt.android.testing)
-    testImplementation(libs.squareup.okhttp3.urlconnection)
-    testImplementation(libs.apache.http.client.android)
-    testImplementation(libs.apache.http.core)
-    kspTest(libs.google.dagger.hilt.compiler)
     testImplementation(libs.androidx.arch.core.testing) {
         exclude group: 'com.android.support', module: 'support-compat'
         exclude group: 'com.android.support', module: 'support-annotations'

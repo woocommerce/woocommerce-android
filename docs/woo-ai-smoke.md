@@ -1,10 +1,10 @@
 # Woo AI Smoke
 
 `woo-ai-smoke` runs the Android AI Assistant headless regression harness without launching UI.
-The accepted default path is a live no-device Robolectric test in `:WooCommerce`: it uses
+The accepted default path is a live no-device Robolectric test in `:libs:ai-assistant:feature`: it uses
 iOS-style smoke credentials from `~/.woo-ai-smoke/store.env`, mints a smoke-only Jetpack AI JWT,
-bootstraps Android `SelectedSite` plus application-password state, and runs the real
-`JetpackAiChatService` with the real `WooCommerceToolRegistry`.
+bootstraps Android `SelectedSite` plus application-password state through feature-owned test Hilt modules,
+and runs the real `JetpackAiChatService` with the real `WooCommerceToolRegistry`.
 
 ## Credential File
 
@@ -29,15 +29,15 @@ while IFS='=' read -r key value; do
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
-  ./gradlew -PwooAiSmokeEnableHiltUnitTests=true :WooCommerce:testWasabiDebugUnitTest \
+  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricTest"
 ```
 
 Review artifacts are written to:
 
 ```text
-WooCommerce/build/outputs/woo-ai-smoke/live/latest
-WooCommerce/build/outputs/woo-ai-smoke/live/runs/<yyyyMMdd-HHmmss>-<shortRunId>
+libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest
+libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/runs/<yyyyMMdd-HHmmss>-<shortRunId>
 ```
 
 Expected artifacts:
@@ -63,7 +63,7 @@ while IFS='=' read -r key value; do
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve \
-  ./gradlew -PwooAiSmokeEnableHiltUnitTests=true :WooCommerce:testWasabiDebugUnitTest \
+  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
 ```
 
@@ -71,7 +71,7 @@ After reviewer inspection, update the checked-in live baseline manually:
 
 ```bash
 cp \
-  WooCommerce/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
+  libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
   libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
 ```
 

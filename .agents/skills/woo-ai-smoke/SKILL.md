@@ -27,14 +27,14 @@ while IFS='=' read -r key value; do
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
-  ./gradlew -PwooAiSmokeEnableHiltUnitTests=true :WooCommerce:testWasabiDebugUnitTest \
+  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricTest"
 ```
 
 Artifacts are written to:
 
 ```text
-WooCommerce/build/outputs/woo-ai-smoke/live/latest
+libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest
 ```
 
 ## Live Baseline Approval
@@ -46,7 +46,7 @@ while IFS='=' read -r key value; do
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve \
-  ./gradlew -PwooAiSmokeEnableHiltUnitTests=true :WooCommerce:testWasabiDebugUnitTest \
+  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
 ```
 
@@ -54,7 +54,7 @@ After reviewer inspection:
 
 ```bash
 cp \
-  WooCommerce/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
+  libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
   libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
 ```
 

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package com.woocommerce.android.aiassistant.headless
 
 import org.assertj.core.api.Assertions.assertThat
@@ -64,7 +66,7 @@ class WooAiSmokeLiveEnvRuleTest {
 
         rule.apply(noOpStatement(), Description.EMPTY).evaluate()
 
-        assertThat(rule.requireValidCredentials().siteId).isEqualTo(2922L)
+        assertThat(rule.requireValidCredentials().siteId).isEqualTo(SITE_ID)
     }
 
     private fun noOpStatement() = object : Statement() {
@@ -74,8 +76,12 @@ class WooAiSmokeLiveEnvRuleTest {
     private fun validEnvironment() = mapOf(
         "WOO_AI_SMOKE_RUN_LIVE" to "true",
         "WOO_SITE_URL" to "https://store.example",
-        "WOO_SITE_ID" to "2922",
+        "WOO_SITE_ID" to SITE_ID.toString(),
         "WOO_USERNAME" to "merchant@example.com",
         "WOO_APP_PASSWORD" to "app password",
     )
+
+    private companion object {
+        const val SITE_ID = 2922L
+    }
 }
