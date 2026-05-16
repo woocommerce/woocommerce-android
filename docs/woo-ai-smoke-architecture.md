@@ -1,181 +1,103 @@
 # Woo AI Smoke Architecture
 
-This document explains the Android AI Assistant headless smoke harness after the primary no-device path moved into
-`:libs:ai-assistant:feature`.
+This document explains how the Android AI Assistant headless smoke harness is built.
+For commands and day-to-day use, see [Woo AI Smoke](woo-ai-smoke.md).
 
-## Overview
+## Mental Model
 
-**Why this exists**
+A short orientation before any of the details:
 
-The harness is meant to catch regressions in the live AI Assistant path without launching the app UI or requiring an
-Android device. Deterministic fake-site tests are still useful for unit coverage, but they do not prove that the assistant
-can talk to the real chat service, mint a real smoke JWT, bootstrap Android store state, and execute the real Woo tool
-registry.
+- The harness is a Robolectric unit test in `:libs:ai-assistant:feature`. No Android device required.
+- It opts in to a live run that talks to the real chat service and real Woo tool registry. Without the opt-in env var,
+  the test skips.
+- A second test runs in approval mode. Approval is the only path that produces a new baseline candidate.
+- Live store credentials come from a file outside the repo (`~/.woo-ai-smoke/store.env`).
+- Before any scenario runs, the harness bootstraps `SelectedSite` and application-password state, then runs a small set
+  of read-only "preflight" tools so basic setup failures show up early.
+- Every run writes JSON/Markdown artifacts under `build/outputs`. These are generated; they are never committed.
+- The only checked-in piece is `live-baseline.json` under `src/debug/resources`. A developer updates it by hand.
+- `:WooCommerce` keeps an optional device-backed adapter, but the primary success path is the Robolectric test.
 
-**How it works**
+## End-to-End Flow
 
-- The primary harness is a Robolectric unit test in `:libs:ai-assistant:feature`.
-- It reads explicit smoke-store credentials from `~/.woo-ai-smoke/store.env`.
-- It mints a smoke-only Jetpack AI JWT through debug/test code.
-- It bootstraps `SelectedSite` and application-password state in a feature-owned Hilt test graph.
-- It runs the real `JetpackAiChatService` and real `WooCommerceToolRegistry`.
-- It writes review artifacts under `build/outputs`; tests do not edit source files.
-- The checked-in baseline changes only when a developer intentionally copies an approved generated baseline into
-  `src/debug/resources`.
-
-## Module Ownership
-
-**Why this boundary exists**
-
-AI Assistant code should live with the AI Assistant modules. Keeping the primary no-device harness in `:feature` avoids
-making `:WooCommerce` own a local-unit test graph purely for assistant smoke coverage. It also preserves the production
-dependency direction: app module depends on assistant feature, not the other way around.
-
-**How it is organized**
-
-```mermaid
-flowchart TD
-    WooCommerce[":WooCommerce"] --> Feature[":libs:ai-assistant:feature"]
-    Feature --> Core[":libs:ai-assistant:core"]
-
-    Feature --> FeatureDebug["feature/src/debug\nrunner, scenarios, live JWT provider, artifacts"]
-    Feature --> FeatureTestDebug["feature/src/testDebug\nRobolectric live tests and test Hilt graph"]
-    Core --> CoreFixtures["core testFixtures\nheadless contracts, baseline comparator, hard checks"]
-    WooCommerce --> OptionalAdapter["WooCommerce/src/androidTest\noptional installed-app adapter"]
-```
-
-`:WooCommerce` is not the primary no-device harness anymore. It keeps only optional installed-app/device coverage through
-`WooAiSmokeAndroidTest`.
-
-## Test Entrypoints
-
-**Why there are multiple entrypoints**
-
-The live smoke harness has two primary no-device workflows: normal regression checking and intentional baseline approval.
-The optional device adapter exists for a different purpose: validating an already installed, authenticated debug app and
-its selected-site state.
-
-**How the entrypoints map to runtime code**
+A live run, in order:
 
 ```mermaid
 flowchart LR
-    Check["WooAiSmokeLiveRobolectricTest\ncheck mode"] --> RunLive["WooAiSmokeDebugBridge.runLive"]
-    Approve["WooAiSmokeLiveRobolectricApprovalTest\napprove mode"] --> RunLive
-    Device["WooAiSmokeAndroidTest\noptional device adapter"] --> RunDevice["WooAiSmokeDebugBridge.run"]
+    Env["WOO_AI_SMOKE_RUN_LIVE=true\n+ store.env"] --> Test[":feature Robolectric test"]
+    Test --> Boot["Bootstrap: site, app password,\nSelectedSite, preflight tools"]
+    Boot --> Scen["Live scenarios:\nreal chat + tool registry"]
+    Scen --> Out["build/outputs/...\npreflight.json, run.json,\nturns.jsonl, summary.md"]
+    Out --> Cmp["check mode: compare to\nlive-baseline.json"]
 ```
 
-Primary commands:
+The rest of the doc follows that order.
 
-```bash
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
-    --tests "*.WooAiSmokeLiveRobolectricTest"
+## 1. Entrypoints
 
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
-    --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
-```
+| Test class | Module | Purpose |
+| --- | --- | --- |
+| `WooAiSmokeLiveRobolectricTest` | `:libs:ai-assistant:feature` (testDebug) | Default. Live run, compares to checked-in baseline. |
+| `WooAiSmokeLiveRobolectricApprovalTest` | `:libs:ai-assistant:feature` (testDebug) | Live run that writes a baseline candidate. Used only when intentionally refreshing. |
+| `WooAiSmokeAndroidTest` | `:WooCommerce` androidTest | Optional device adapter for an already-installed authenticated debug app. |
 
-The optional `:WooCommerce` instrumentation adapter is secondary evidence, not the default success path.
+Both Robolectric tests check `WOO_AI_SMOKE_RUN_LIVE=true` via `WooAiSmokeLiveEnvRule` before Hilt injection. Without it
+they skip by JUnit assumption, so the live Hilt graph is never built and no live network calls happen.
 
-## Live Robolectric Flow
+Splitting check and approval into two test classes prevents a normal run from accidentally rewriting the accepted
+baseline.
 
-**Why the flow has explicit phases**
+## 2. Credentials
 
-The harness needs failures to be attributable. A live failure could come from missing credentials, JWT minting, selected
-site bootstrap, application-password state, tool execution, model output, hard-check evaluation, or baseline comparison.
-The flow separates these phases so artifacts and failure messages point to the failing layer.
+The harness will not pull live credentials from production storage. They must be provided explicitly.
 
-**How a check or approval run executes**
+- File: `~/.woo-ai-smoke/store.env`, kept outside the repo.
+- Keys: `WOO_SITE_URL`, `WOO_SITE_ID`, `WOO_USERNAME`, `WOO_APP_PASSWORD`.
+- Loaded into env vars before the test runs; consumed by `WooAiSmokeLiveEnvRule`.
 
-```mermaid
-sequenceDiagram
-    participant Test as Live Robolectric test
-    participant Env as WooAiSmokeLiveEnvRule
-    participant Hilt as Feature test Hilt graph
-    participant Bridge as WooAiSmokeDebugBridge.runLive
-    participant JWT as WooAiSmokeDirectJwtTokenProvider
-    participant Bootstrap as WooAiSmokeCredentialBootstrap
-    participant Tools as WooCommerceToolRegistry
-    participant Runner as WooAiSmokeRunner
-    participant Writer as WooAiSmokeRunWriter
+For chat auth, `WooAiSmokeDirectJwtTokenProvider` (debug-only code in `:feature`) mints a smoke-only Jetpack AI JWT.
+This avoids depending on production auth flows.
 
-    Test->>Env: parse WOO_* credentials
-    Env-->>Test: skip when live opt-in is absent
-    Test->>Hilt: inject feature test graph
-    Test->>Bridge: runLive(application, credentials)
-    Bridge->>JWT: mint smoke-only Jetpack AI JWT
-    Bridge->>Bootstrap: persist SiteModel, app password, SelectedSite
-    Bootstrap->>Tools: execute safe read-only preflight tools
-    Tools-->>Bootstrap: ToolResult.Success for each preflight tool
-    Bootstrap-->>Bridge: WooAiSmokePreflightReport
-    Bridge->>Writer: write preflight.json under build/outputs
-    Bridge->>Runner: run live scenario suite
-    Runner->>Tools: model-requested tool calls
-    Runner->>Writer: write run.json, turns.jsonl, summary.md, comparison
-```
+## 3. Hilt Test Graph
 
-The env rule runs before Hilt injection. Without `WOO_AI_SMOKE_RUN_LIVE=true`, the live tests skip by JUnit assumption and
-do not build the live graph.
+The tool stack expects bindings the app module normally provides (`Context`, `CoroutineDispatcher`, `UserAgent`,
+`AppSecrets`, and so on). But `:libs:ai-assistant:feature` cannot depend on `:WooCommerce` — that would invert the
+production dependency. So the feature module supplies a small test graph of its own.
 
-## Feature Test Hilt Graph
+Two test-only modules under `feature/src/testDebug` make this work:
 
-**Why the feature test graph exists**
+- `WooAiSmokeFeatureRobolectricModule` includes the FluxC/Woo database and network modules, and swaps Volley's
+  main-thread delivery for a direct executor so FluxC callbacks complete predictably under Robolectric.
+- `WooAiSmokeFeatureAppBindingsModule` provides the app-level bindings the tool stack needs: unqualified `Context`,
+  a `CoroutineDispatcher`, `UserAgent`, blank `AppSecrets`, a smoke-only `ApplicationPasswordsConfiguration`, and a
+  no-op `AssistantTelemetryTracker`.
 
-The production app Hilt graph supplies bindings that the assistant tool stack expects, but `:feature` cannot import
-`:WooCommerce`. The feature test graph provides only the app-level pieces needed to run the real assistant and tool stack
-under Robolectric.
+Production direction stays `:WooCommerce -> :libs:ai-assistant:feature -> :libs:ai-assistant:core`. There is no reverse
+arrow.
 
-**How the graph is assembled**
+## 4. Bootstrap and Preflight
 
-`WooAiSmokeFeatureRobolectricModule` includes the FluxC/Woo database and network modules required by the tool stack. It
-also includes `WooAiSmokeRobolectricNetworkModule`, which replaces Volley delivery with a direct executor so FluxC network
-callbacks complete predictably under Robolectric.
+`WooAiSmokeCredentialBootstrap` runs before any scenario. It:
 
-`WooAiSmokeFeatureAppBindingsModule` provides the small set of app-level bindings needed by the feature graph:
+1. Persists a `SiteModel` for the smoke store.
+2. Stores application-password credentials for that site.
+3. Sets `SelectedSite` to the smoke store.
+4. Verifies the real `WooCommerceToolRegistry` is in place.
+5. Executes a fixed set of read-only preflight tools:
+   - `products_list`
+   - `orders_list`
+   - `orders_list` with pending-order arguments (reported under the name `orders_list_pending`)
+   - `analytics_orders`
 
-- unqualified `Context`;
-- `CoroutineDispatcher`;
-- `UserAgent`;
-- blank `AppSecrets`;
-- smoke-only `ApplicationPasswordsConfiguration`;
-- no-op `AssistantTelemetryTracker`.
+**Preflight enforcement.** Each call goes through `executePreflight`, which `require()`s `ToolResult.Success`. Any other
+result — validation error, transport error, safety rejection, or timeout — throws and the scenarios never run. That
+throw is the enforcement.
 
-The dependency direction remains:
-
-```text
-:WooCommerce -> :libs:ai-assistant:feature -> :libs:ai-assistant:core
-```
-
-There is no dependency from `:libs:ai-assistant:feature` back to `:WooCommerce`.
-
-## Bootstrap And Preflight
-
-**Why bootstrap exists**
-
-The model scenarios should run against the same Android data-layer assumptions as production tools: a selected site,
-application-password credentials, and a real Woo tool registry. Bootstrap creates that state before the model sends any
-prompt. It also runs a small set of safe read-only tools first, so a scenario failure is less likely to hide a basic site
-or tool-stack setup problem.
-
-**How bootstrap prepares the run**
-
-Bootstrap does the following before scenarios run:
-
-1. persist a `SiteModel` for the smoke site;
-2. store application-password credentials for that site;
-3. set `SelectedSite`;
-4. verify the real `WooCommerceToolRegistry`;
-5. execute safe read-only preflight tools:
-   - `products_list`;
-   - `orders_list`;
-   - `orders_list` with pending-order arguments, reported as `orders_list_pending`;
-   - `analytics_orders`.
-
-Each preflight tool must return `ToolResult.Success`. If one does not, bootstrap fails and the live scenarios do not run.
-
-`safeToolResults` is part of `WooAiSmokePreflightReport`. It is report data written into `preflight.json`; it records which
-preflight tools ran and what result kind they returned.
+**`safeToolResults` is the report, not the enforcement.** After preflight finishes successfully, bootstrap records what
+ran and what kind of result each call returned into `WooAiSmokePreflightReport`. That report is serialized as
+`preflight.json`. The `safeToolResults` field is a list of `{ toolName, resultKind }` entries — a piece of report
+metadata that lets a reviewer reading `preflight.json` see what preflight covered. It does not gate anything later in
+the run.
 
 ```json
 {
@@ -188,91 +110,77 @@ preflight tools ran and what result kind they returned.
 }
 ```
 
-The enforcement is the preflight execution itself. `safeToolResults` does not drive later control flow; it makes the
-generated report explain what the preflight phase proved.
+Because bootstrap throws on the first non-success, every `safeToolResults` entry in a published `preflight.json` will
+be `SUCCESS`. The field exists for traceability, not control flow.
 
-## Artifacts And Baseline
+## 5. Scenarios
 
-**Why artifacts are separate from the checked-in baseline**
+Once bootstrap returns, `WooAiSmokeRunner` reads `live-scenarios.json` from the feature module's `debug` resources and
+runs each scenario against:
 
-A live smoke run produces evidence that reviewers need to inspect, but most of that evidence is run-specific and should
-not be committed. The checked-in baseline is the stable expected result for check mode. Keeping generated artifacts under
-`build/outputs` prevents tests from silently editing source files.
+- the real `JetpackAiChatService` for chat completion,
+- the real `WooCommerceToolRegistry` for any tool calls the model makes.
 
-**How artifacts and baseline files move**
+Each scenario also defines hard checks (structural assertions about the model's tool usage and final answer). They run
+after the scenario completes. Turn-by-turn output is redacted before it reaches disk.
 
-```mermaid
-flowchart TD
-    Run["Live smoke run"] --> BuildArtifacts["build/outputs/woo-ai-smoke/live/latest\nand live/runs/<timestamp-id>"]
-    BuildArtifacts --> Preflight["preflight.json\nbootstrap/report metadata"]
-    BuildArtifacts --> RunJson["run.json\nscenario results"]
-    BuildArtifacts --> Turns["turns.jsonl\nredacted turn/tool trace"]
-    BuildArtifacts --> Summary["summary.md\nhuman-readable result"]
-    BuildArtifacts --> Approved["approved-live-baseline.json\napproval mode only"]
+## 6. Artifacts and Baseline
 
-    SourceBaseline["src/debug/resources/woo-ai-smoke/live-baseline.json\nchecked in"] --> CheckMode["check mode comparison"]
-    BuildArtifacts --> CheckMode
-    Approved -. manual copy after review .-> SourceBaseline
-```
-
-Generated artifacts live under:
+Every run writes to two directories under the feature module's `build/outputs`:
 
 ```text
 libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest
 libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/runs/<yyyyMMdd-HHmmss>-<shortRunId>
 ```
 
-These generated files are not source code and are not committed.
+Files written there:
 
-The checked-in live baseline is:
+| File | What it is |
+| --- | --- |
+| `preflight.json` | Bootstrap report, including `safeToolResults`. |
+| `run.json` | Per-scenario results and hard-check outcomes. |
+| `turns.jsonl` | Redacted turn-by-turn trace of chat and tool calls. |
+| `summary.md` | Human-readable run summary. |
+| `baseline-comparison.json` | Diff against the checked-in baseline (check mode). |
+| `approved-live-baseline.json` | Baseline candidate (approval mode only). |
+
+**These files are generated. They live under `build/`, they are not source code, and they are not committed.**
+
+The only checked-in expectation is:
 
 ```text
 libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
 ```
 
-Approval mode writes `approved-live-baseline.json` into `build/outputs`. A developer updates the checked-in baseline only
-by manually copying that generated file into `src/debug/resources` after review.
+A developer updates that file by hand after reviewing an approval run's `approved-live-baseline.json`:
 
-## Check Mode Versus Approval Mode
-
-**Why there are two modes**
-
-Check mode is for regression detection. Approval mode is for intentionally refreshing expected live behavior after a
-reviewer decides the new live output is acceptable. Separating the modes prevents a normal test run from rewriting the
-accepted baseline.
-
-**How the modes differ**
-
-```mermaid
-flowchart LR
-    Scenarios["live-scenarios.json"] --> Runner
-    Runner["WooAiSmokeRunner"] --> Results["current live results"]
-    Baseline["live-baseline.json"] --> Comparator["baseline comparator"]
-    Results --> Comparator
-    Comparator --> Check["check mode\nfails on missing/stale baseline or regression"]
-    Results --> Approval["approval mode\nwrites approved-live-baseline.json"]
+```bash
+cp \
+  libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
+  libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
 ```
 
-Check mode compares current live results to the checked-in `live-baseline.json`. Approval mode writes
-`approved-live-baseline.json` under `build/outputs`, and a developer copies it into `src/debug/resources` only after review.
+Tests never write into `src/`.
 
-## What The Harness Proves
+## 7. Check Mode vs Approval Mode
 
-**Why this distinction matters**
+- **Check mode** (`WOO_AI_SMOKE_MODE=check`, the default): runs the live scenarios and compares results to
+  `live-baseline.json`. Fails on mismatch. Fails with "Live baseline approval required" if the baseline is missing or
+  stale.
+- **Approval mode** (`WOO_AI_SMOKE_MODE=approve`): runs the live scenarios and writes `approved-live-baseline.json`
+  under `build/outputs`. Does not touch the checked-in baseline.
 
-The harness is deliberately headless. It should prove the assistant runtime and tool stack work without device friction,
-but it should not be mistaken for a full app launch or UI integration test.
+The two modes are wired to different test classes so a normal run cannot accidentally produce an approved baseline.
 
-**How to interpret a passing run**
+## What a Passing Live Run Proves
 
-A passing primary live run proves the Android assistant can run without UI or device while using:
+A green primary live run proves the Android AI Assistant runtime can, without a device or UI:
 
-- explicit live smoke credentials;
-- the debug-only direct Jetpack AI JWT provider;
-- real `JetpackAiChatService`;
-- real `WooCommerceToolRegistry`;
-- real FluxC/Woo stores and application-password state;
-- canonical merchant scenarios and hard checks;
-- redacted run artifacts for review.
+- accept explicit smoke credentials,
+- mint a smoke-only Jetpack AI JWT,
+- bootstrap `SelectedSite` and application-password state under Robolectric,
+- run the real `JetpackAiChatService`,
+- exercise the real `WooCommerceToolRegistry`,
+- match canonical merchant scenarios and hard checks against the checked-in baseline.
 
-It does not prove full app launch behavior. That remains the role of the optional `:WooCommerce` device-backed adapter.
+It does not prove full app-launch behavior. That is the role of the optional `:WooCommerce` device-backed adapter.
