@@ -6,6 +6,8 @@ iOS-style smoke credentials from `~/.woo-ai-smoke/store.env`, mints a smoke-only
 bootstraps Android `SelectedSite` plus application-password state through feature-owned test Hilt modules,
 and runs the real `JetpackAiChatService` with the real `WooCommerceToolRegistry`.
 
+For the full module and artifact flow, see [Woo AI Smoke Architecture](woo-ai-smoke-architecture.md).
+
 ## Credential File
 
 Create `~/.woo-ai-smoke/store.env` outside the repo:
