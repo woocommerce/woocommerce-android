@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -126,6 +127,18 @@ class WooAiSmokeScenarioMapperTest {
             "write-confirmation-declined",
             "off-domain-refusal",
         )
+    }
+
+    @Test
+    fun `given live approved baseline resource, when parsed from classpath, then iOS parity baseline is readable`() {
+        val source = requireNotNull(
+            javaClass.classLoader?.getResource("woo-ai-smoke/live-baseline.json")
+        ).readText()
+        val baseline = HeadlessBaselineParser(json).parseApprovedBaseline(source)
+
+        assertThat(baseline.scenarios).hasSize(25)
+        assertThat(baseline.scenarios.single { it.scenarioId == "orders_with_email" }.approvedStatus)
+            .isEqualTo(HeadlessScenarioStatus.FAIL)
     }
 
     private fun mapper(selectedSiteId: Long = 1L) = WooAiSmokeScenarioMapper(
