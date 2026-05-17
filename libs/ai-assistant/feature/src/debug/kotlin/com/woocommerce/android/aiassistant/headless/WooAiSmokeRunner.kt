@@ -100,10 +100,9 @@ internal class WooAiSmokeRunner(
         val harness = createHarness()
         val scenarioResults = scenarioSpecs.map { spec ->
             val result = harness.runScenario(scenarioMapper.toHeadlessScenario(spec))
-            val checksToEvaluate = spec.turns.flatMap { it.hardChecks } + spec.hardChecks
             val hardCheckResults = HeadlessHardCheckEvaluator.evaluate(
                 result = result,
-                checks = checksToEvaluate,
+                scenario = spec,
             )
             HeadlessScenarioRunResult(
                 scenarioId = spec.id,

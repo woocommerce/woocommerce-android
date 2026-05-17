@@ -10,7 +10,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
-import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -24,12 +23,49 @@ class WooAiSmokeScenarioMapperTest {
 
         assertThat(scenarios.map { it.category }.toSet()).containsAll(
             setOf(
-                HeadlessScenarioCategory.ORDERS_READ,
-                HeadlessScenarioCategory.PRODUCTS_READ,
-                HeadlessScenarioCategory.ANALYTICS_READ,
-                HeadlessScenarioCategory.WRITE_CONFIRMATION,
-                HeadlessScenarioCategory.OFF_DOMAIN_REFUSAL,
+                HeadlessScenarioCategory.READ,
+                HeadlessScenarioCategory.ANALYTICS,
+                HeadlessScenarioCategory.WRITE,
+                HeadlessScenarioCategory.SEARCH,
+                HeadlessScenarioCategory.LIMITS,
+                HeadlessScenarioCategory.EDGE,
+                HeadlessScenarioCategory.ROBUSTNESS,
+                HeadlessScenarioCategory.MEMORY,
+                HeadlessScenarioCategory.SAFETY,
             )
+        )
+    }
+
+    @Test
+    fun `given debug resources, when loading scenarios, then iOS parity scenario ids are present in order`() {
+        val scenarios = mapper().loadScenarioSpecs()
+
+        assertThat(scenarios.map { it.id }).containsExactly(
+            "recent_orders",
+            "orders_with_email",
+            "orders_with_payment",
+            "order_drill",
+            "customer_drill",
+            "revenue_today",
+            "avg_order_value",
+            "new_customers_week",
+            "write_status",
+            "write_note_then_status",
+            "search_no_match",
+            "search_drilldown",
+            "missing_capability_email",
+            "unknown_setting",
+            "spanish",
+            "typos",
+            "multi_intent",
+            "empty_prompt",
+            "memory_identity_switch",
+            "memory_reference_resolution",
+            "prompt_injection_system_leak",
+            "prompt_injection_pii_exfil",
+            "prompt_injection_tool_hijack",
+            "false_completion_claim",
+            "fraud_coaching",
         )
     }
 
@@ -51,13 +87,17 @@ class WooAiSmokeScenarioMapperTest {
             HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
             HeadlessHardCheckType.CONFIRMATION_DECISION_EQUALS,
             HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS,
+            HeadlessHardCheckType.TOOL_CALLED_ANY,
+            HeadlessHardCheckType.TOTAL_TOOL_CALL_COUNT_AT_MOST,
+            HeadlessHardCheckType.ASSISTANT_TEXT_CONTAINS_ANY,
+            HeadlessHardCheckType.TOOL_ARGUMENT_NOT_CONTAINS,
         )
     }
 
     @Test
     fun `given scenario spec, when mapping, then selected site id is carried into session context`() {
         val scenario = mapper(selectedSiteId = SELECTED_SITE_ID).toHeadlessScenario(
-            mapper().loadScenarioSpecs().first { it.scope == ToolScope.ORDERS }
+            mapper().loadScenarioSpecs().first()
         )
 
         assertThat(scenario.context.siteId).isEqualTo(SELECTED_SITE_ID)
@@ -66,10 +106,12 @@ class WooAiSmokeScenarioMapperTest {
 
     @Test
     fun `given scenario resource, when parsed strictly from classpath, then it is readable`() {
-        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/live-scenarios.json")).readText()
+        val source = requireNotNull(
+            javaClass.classLoader?.getResource("woo-ai-smoke/live-scenarios.json")
+        ).readText()
         val baseline = HeadlessBaselineParser(json).parseStrict(source)
 
-        assertThat(baseline.scenarios).hasSize(5)
+        assertThat(baseline.scenarios).hasSize(25)
     }
 
     @Test
@@ -112,6 +154,8 @@ class WooAiSmokeScenarioMapperTest {
             "product_variations_list",
             "product_variations_update",
             "analytics_orders",
+            "analytics_revenue",
+            "customers_list",
             "show_cards",
         ).map { toolName ->
             ToolDescriptor(

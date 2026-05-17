@@ -15,6 +15,31 @@ data class HeadlessHardCheckResult(
 )
 
 object HeadlessHardCheckEvaluator {
+    fun evaluate(
+        result: HeadlessRunResult,
+        scenario: HeadlessScenarioSpec,
+    ): List<HeadlessHardCheckResult> {
+        val turnResultsByIndex = result.turns.associateBy { it.turnIndex }
+        val turnCheckResults = scenario.turns.flatMapIndexed { index, turnSpec ->
+            val turnResult = turnResultsByIndex[index]
+            if (turnResult == null) {
+                turnSpec.hardChecks.map { check ->
+                    HeadlessHardCheckResult(
+                        check = check,
+                        passed = false,
+                        message = "Failed ${check.type} for ${check.value}: turn $index did not run",
+                    )
+                }
+            } else {
+                evaluate(
+                    result = result.copy(turns = listOf(turnResult)),
+                    checks = turnSpec.hardChecks,
+                )
+            }
+        }
+        return turnCheckResults + evaluate(result, scenario.hardChecks)
+    }
+
     @Suppress("CyclomaticComplexMethod")
     fun evaluate(
         result: HeadlessRunResult,
@@ -30,16 +55,26 @@ object HeadlessHardCheckEvaluator {
                 combinedAssistantText.contains(check.value, ignoreCase = true)
             HeadlessHardCheckType.ASSISTANT_TEXT_NOT_CONTAINS ->
                 !combinedAssistantText.contains(check.value, ignoreCase = true)
+            HeadlessHardCheckType.ASSISTANT_TEXT_CONTAINS_ANY ->
+                parsePipeSeparatedValues(check.value).any {
+                    combinedAssistantText.contains(it, ignoreCase = true)
+                }
             HeadlessHardCheckType.ASSISTANT_REFUSAL ->
                 check.value == "woocommerce_scope" && combinedAssistantText.isWooCommerceScopeRefusal()
             HeadlessHardCheckType.TOOL_CALLED ->
                 toolCalls.any { it.name == check.value }
+            HeadlessHardCheckType.TOOL_CALLED_ANY ->
+                parsePipeSeparatedValues(check.value).any { expectedTool ->
+                    toolCalls.any { it.name == expectedTool }
+                }
             HeadlessHardCheckType.TOOL_NOT_CALLED ->
                 toolCalls.none { it.name == check.value }
             HeadlessHardCheckType.TOOL_CALL_COUNT_AT_MOST -> {
                 val expectation = parseToolCountLimit(check.value)
                 toolCalls.count { it.name == expectation.toolName } <= expectation.maxCount
             }
+            HeadlessHardCheckType.TOTAL_TOOL_CALL_COUNT_AT_MOST ->
+                toolCalls.size <= check.value.toInt()
             HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS -> {
                 val expectation = parseToolResultExpectation(check.value)
                 toolCalls.any {
@@ -54,6 +89,12 @@ object HeadlessHardCheckEvaluator {
                     it.name == expectation.toolName && it.arguments.containsSubset(expectation.expectedArguments)
                 }
             }
+            HeadlessHardCheckType.TOOL_ARGUMENT_NOT_CONTAINS -> {
+                val expectation = parseToolArgumentTextExpectation(check.value)
+                toolCalls
+                    .filter { it.name == expectation.toolName }
+                    .none { it.arguments.toString().contains(expectation.forbiddenText, ignoreCase = true) }
+            }
         }
         HeadlessHardCheckResult(
             check = check,
@@ -65,6 +106,9 @@ object HeadlessHardCheckEvaluator {
             },
         )
     }
+
+    private fun parsePipeSeparatedValues(value: String): List<String> =
+        value.split("|").map { it.trim() }.filter { it.isNotEmpty() }
 
     private fun parseToolCountLimit(value: String): ToolCountLimit {
         val parts = value.split(":", limit = 2)
@@ -90,6 +134,15 @@ object HeadlessHardCheckEvaluator {
         return ToolArgumentExpectation(
             toolName = parts[0],
             expectedArguments = json.parseToJsonElement(parts[1]).jsonObject,
+        )
+    }
+
+    private fun parseToolArgumentTextExpectation(value: String): ToolArgumentTextExpectation {
+        val parts = value.split(":", limit = 2)
+        require(parts.size == 2) { "Expected <toolName>:<forbiddenText> for TOOL_ARGUMENT_NOT_CONTAINS" }
+        return ToolArgumentTextExpectation(
+            toolName = parts[0],
+            forbiddenText = parts[1],
         )
     }
 
@@ -135,5 +188,10 @@ object HeadlessHardCheckEvaluator {
     private data class ToolArgumentExpectation(
         val toolName: String,
         val expectedArguments: JsonObject,
+    )
+
+    private data class ToolArgumentTextExpectation(
+        val toolName: String,
+        val forbiddenText: String,
     )
 }

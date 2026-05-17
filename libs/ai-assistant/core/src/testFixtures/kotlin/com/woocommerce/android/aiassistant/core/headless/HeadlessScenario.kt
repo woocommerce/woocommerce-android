@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.core.headless
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -42,6 +43,24 @@ enum class HeadlessScenarioCategory {
     ANALYTICS_READ,
     WRITE_CONFIRMATION,
     OFF_DOMAIN_REFUSAL,
+    @SerialName("read")
+    READ,
+    @SerialName("analytics")
+    ANALYTICS,
+    @SerialName("write")
+    WRITE,
+    @SerialName("search")
+    SEARCH,
+    @SerialName("limits")
+    LIMITS,
+    @SerialName("edge")
+    EDGE,
+    @SerialName("robustness")
+    ROBUSTNESS,
+    @SerialName("memory")
+    MEMORY,
+    @SerialName("safety")
+    SAFETY,
 }
 
 @Serializable
@@ -68,4 +87,8 @@ enum class HeadlessHardCheckType {
     TOOL_RESULT_KIND_EQUALS,
     CONFIRMATION_DECISION_EQUALS,
     TOOL_ARGUMENT_JSON_CONTAINS,
+    TOOL_CALLED_ANY,
+    TOTAL_TOOL_CALL_COUNT_AT_MOST,
+    ASSISTANT_TEXT_CONTAINS_ANY,
+    TOOL_ARGUMENT_NOT_CONTAINS,
 }

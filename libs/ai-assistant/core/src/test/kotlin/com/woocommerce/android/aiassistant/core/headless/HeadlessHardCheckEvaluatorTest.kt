@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.core.headless
 
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
+import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
@@ -267,6 +268,126 @@ class HeadlessHardCheckEvaluatorTest {
         assertThat(failingChecks).allMatch { !it.passed }
     }
 
+    @Test
+    fun `given scenario spec, when evaluating hard checks, then turn checks apply only to their turn`() {
+        val result = HeadlessRunResult(
+            scenarioId = "multi-turn",
+            turns = listOf(
+                turnResult(
+                    turnIndex = 0,
+                    toolCalls = listOf(toolCall("orders_list")),
+                ),
+                turnResult(
+                    turnIndex = 1,
+                    toolCalls = emptyList(),
+                ),
+            ),
+        )
+        val scenario = HeadlessScenarioSpec(
+            id = "multi-turn",
+            category = HeadlessScenarioCategory.READ,
+            scope = ToolScope.GLOBAL,
+            smokeFixture = null,
+            turns = listOf(
+                HeadlessTurnSpec(
+                    userMessage = "show me orders",
+                    hardChecks = listOf(HeadlessHardCheck(HeadlessHardCheckType.TOOL_CALLED, "orders_list")),
+                ),
+                HeadlessTurnSpec(
+                    userMessage = "thanks",
+                    hardChecks = listOf(HeadlessHardCheck(HeadlessHardCheckType.TOOL_NOT_CALLED, "orders_list")),
+                ),
+            ),
+            hardChecks = listOf(HeadlessHardCheck(HeadlessHardCheckType.TOTAL_TOOL_CALL_COUNT_AT_MOST, "1")),
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(result, scenario)
+
+        assertThat(checks).allMatch { it.passed }
+    }
+
+    @Test
+    fun `when tool called any is evaluated, then it accepts any listed tool`() {
+        val result = runResult(toolCalls = listOf(toolCall("analytics_orders")))
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_CALLED_ANY,
+                    "analytics_revenue|analytics_orders",
+                ),
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_CALLED_ANY,
+                    "orders_update|orders_bulk_update",
+                ),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(true, false)
+    }
+
+    @Test
+    fun `when total tool call count at most is evaluated, then it checks all tools`() {
+        val result = runResult(
+            toolCalls = listOf(
+                toolCall("orders_list"),
+                toolCall("show_cards"),
+            )
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(HeadlessHardCheckType.TOTAL_TOOL_CALL_COUNT_AT_MOST, "2"),
+                HeadlessHardCheck(HeadlessHardCheckType.TOTAL_TOOL_CALL_COUNT_AT_MOST, "1"),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(true, false)
+    }
+
+    @Test
+    fun `when assistant text contains any is evaluated, then it accepts any listed token`() {
+        val result = runResult(assistantText = "Tienes 3 pedidos hoy.")
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_TEXT_CONTAINS_ANY, "pedido|pedidos"),
+                HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_TEXT_CONTAINS_ANY, "ayer|yesterday"),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(true, false)
+    }
+
+    @Test
+    fun `when tool argument not contains is evaluated, then it rejects matching arguments for that tool`() {
+        val result = runResult(
+            toolCalls = listOf(
+                toolCall(
+                    name = "customers_list",
+                    arguments = json.parseToJsonElement("""{"search":"Alice"}""").jsonObject,
+                ),
+                toolCall(
+                    name = "orders_list",
+                    arguments = json.parseToJsonElement("""{"search":"Alice"}""").jsonObject,
+                ),
+            )
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(HeadlessHardCheckType.TOOL_ARGUMENT_NOT_CONTAINS, "customers_list:Ben"),
+                HeadlessHardCheck(HeadlessHardCheckType.TOOL_ARGUMENT_NOT_CONTAINS, "customers_list:Alice"),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(true, false)
+    }
+
     private fun runResult(
         assistantText: String = "Assistant text",
         outcome: LoopOutcome = LoopOutcome.COMPLETED,
@@ -275,15 +396,29 @@ class HeadlessHardCheckEvaluatorTest {
     ) = HeadlessRunResult(
         scenarioId = "scenario",
         turns = listOf(
-            HeadlessTurnResult(
+            turnResult(
                 turnIndex = 0,
-                userMessage = "User message",
                 assistantText = assistantText,
                 outcome = outcome,
                 toolCalls = toolCalls,
                 confirmationResults = confirmationResults,
             )
         ),
+    )
+
+    private fun turnResult(
+        turnIndex: Int,
+        assistantText: String = "Assistant text",
+        outcome: LoopOutcome = LoopOutcome.COMPLETED,
+        toolCalls: List<HeadlessToolCallTrace> = emptyList(),
+        confirmationResults: List<HeadlessConfirmationResultTrace> = emptyList(),
+    ) = HeadlessTurnResult(
+        turnIndex = turnIndex,
+        userMessage = "User message",
+        assistantText = assistantText,
+        outcome = outcome,
+        toolCalls = toolCalls,
+        confirmationResults = confirmationResults,
     )
 
     private fun toolCall(
