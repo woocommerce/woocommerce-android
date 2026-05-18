@@ -22,6 +22,9 @@ class HeadlessBaselineParserTest {
               "scenarios": [
                 {
                   "id": "orders-processing",
+                  "category": "ORDERS_READ",
+                  "scope": "ORDERS",
+                  "smokeFixture": null,
                   "turns": [
                     {
                       "userMessage": "How many processing orders do I have?",
@@ -40,29 +43,18 @@ class HeadlessBaselineParserTest {
         )
 
         assertThat(baseline.version).isEqualTo(1)
-        assertThat(baseline.scenarios.single().id).isEqualTo("orders-processing")
-        assertThat(baseline.scenarios.single().turns.single().hardChecks.single())
+        val scenario = baseline.scenarios.single()
+        assertThat(scenario.id).isEqualTo("orders-processing")
+        assertThat(scenario.category).isEqualTo(HeadlessScenarioCategory.ORDERS_READ)
+        assertThat(scenario.scope).isEqualTo(ToolScope.ORDERS)
+        assertThat(scenario.turns.single().hardChecks.single())
             .isEqualTo(HeadlessHardCheck(HeadlessHardCheckType.TOOL_CALLED, "orders_list"))
     }
 
     @Test
-    fun `given legacy baseline, when parse is used, then legacy fields are explicit`() {
-        val baseline = parser.parse(
-            """{"version":1,"scenarios":[{"id":"legacy","turns":[{"userMessage":"Hi"}]}]}"""
-        )
-
-        val scenario = baseline.scenarios.single()
-        assertThat(scenario.category).isEqualTo(HeadlessScenarioCategory.LEGACY_SCRIPTED)
-        assertThat(scenario.scope).isEqualTo(ToolScope.GLOBAL)
-        assertThat(scenario.hardChecks).isEmpty()
-        assertThat(scenario.smokeFixture).isNull()
-        assertThat(scenario.turns.single().hardChecks).isEmpty()
-    }
-
-    @Test
-    fun `given smoke baseline missing category, when strict parse is used, then parsing fails`() {
+    fun `given smoke baseline missing category, when parse is used, then parsing fails`() {
         assertThatThrownBy {
-            parser.parseStrict(
+            parser.parse(
                 """
                 {
                   "version": 1,
@@ -76,8 +68,8 @@ class HeadlessBaselineParserTest {
     }
 
     @Test
-    fun `given complete smoke baseline, when strict parse is used, then required fields are decoded`() {
-        val baseline = parser.parseStrict(
+    fun `given complete smoke baseline, when parse is used, then required fields are decoded`() {
+        val baseline = parser.parse(
             """
             {
               "version": 1,

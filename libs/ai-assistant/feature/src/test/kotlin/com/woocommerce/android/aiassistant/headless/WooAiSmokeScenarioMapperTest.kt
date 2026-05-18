@@ -79,11 +79,11 @@ class WooAiSmokeScenarioMapperTest {
     }
 
     @Test
-    fun `given scenario resource, when parsed strictly from classpath, then it is readable`() {
+    fun `given scenario resource, when parsed from classpath, then it is readable`() {
         val source = requireNotNull(
             javaClass.classLoader?.getResource("woo-ai-smoke/deterministic-scenarios.json")
         ).readText()
-        val baseline = HeadlessBaselineParser(json).parseStrict(source)
+        val baseline = HeadlessBaselineParser(json).parse(source)
 
         assertThat(baseline.scenarios).hasSize(5)
     }

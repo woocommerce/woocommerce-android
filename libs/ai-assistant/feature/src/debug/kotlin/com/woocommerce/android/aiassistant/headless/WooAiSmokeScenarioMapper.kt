@@ -22,7 +22,7 @@ internal class WooAiSmokeScenarioMapper(
         val source = requireNotNull(
             javaClass.classLoader?.getResource("woo-ai-smoke/$resourceName")
         ) { "Missing woo-ai-smoke/$resourceName" }.readText()
-        return HeadlessBaselineParser(json).parseStrict(source).scenarios
+        return HeadlessBaselineParser(json).parse(source).scenarios
     }
 
     fun toHeadlessScenario(spec: HeadlessScenarioSpec): HeadlessScenario =

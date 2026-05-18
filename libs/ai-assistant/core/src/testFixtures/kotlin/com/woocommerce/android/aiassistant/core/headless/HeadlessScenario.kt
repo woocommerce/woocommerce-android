@@ -39,7 +39,6 @@ data class HeadlessTurnSpec(
 
 @Serializable
 enum class HeadlessScenarioCategory {
-    LEGACY_SCRIPTED,
     ORDERS_READ,
     PRODUCTS_READ,
     ANALYTICS_READ,
