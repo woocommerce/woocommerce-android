@@ -160,8 +160,10 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
         progressDialog = CustomProgressDialog.show(
             getString(R.string.support_request_loading_title),
             getString(R.string.support_request_loading_message)
-        ).also { it.show(childFragmentManager, CustomProgressDialog.TAG) }
-        progressDialog?.isCancelable = false
+        ).also {
+            it.isCancelable = false
+            it.show(childFragmentManager, CustomProgressDialog.TAG)
+        }
     }
 
     private fun hideProgressDialog() {
