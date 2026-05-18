@@ -246,7 +246,7 @@ private fun UrlBadge() {
     val url = stringResource(id = R.string.login_qr_prologue_url)
     val clipboardLabel = stringResource(id = R.string.login_qr_prologue_url_clipboard_label)
     val copiedMessage = stringResource(id = R.string.login_qr_prologue_url_copied)
-    Box(
+    Row(
         modifier = Modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
             .background(colorResource(id = R.color.prologue_login_url_badge_background))
@@ -257,8 +257,16 @@ private fun UrlBadge() {
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_125),
                 vertical = dimensionResource(id = R.dimen.major_85)
-            )
+            ),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_computer),
+            contentDescription = null,
+            tint = colorResource(id = R.color.prologue_login_on_background),
+            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_80))
+        )
         Text(
             text = url,
             style = MaterialTheme.typography.titleLarge,
