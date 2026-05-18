@@ -203,6 +203,8 @@ private fun AiSupportChatHistoryScreenPreview() {
                         remoteSiteId = 2L,
                         botSlug = AiSupportChatViewModel.DEFAULT_BOT_SLUG,
                         sessionId = "session-id",
+                        hasCreatedTicket = false,
+                        isResolved = false,
                         title = "My orders are fine, all is good",
                         createdAt = System.currentTimeMillis(),
                         updatedAt = System.currentTimeMillis()

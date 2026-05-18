@@ -55,6 +55,8 @@ class AiSupportChatHistoryViewModelTest : BaseUnitTest() {
         remoteSiteId = 20L,
         botSlug = AiSupportChatViewModel.DEFAULT_BOT_SLUG,
         sessionId = "session-id",
+        hasCreatedTicket = false,
+        isResolved = false,
         title = "My orders are fine, all is good",
         createdAt = 1_000L,
         updatedAt = 2_000L
