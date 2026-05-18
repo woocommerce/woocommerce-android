@@ -68,7 +68,10 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
+fun AiSupportChatScreen(
+    viewModel: AiSupportChatViewModel,
+    onContactSupportClicked: (HumanSupportContactSource) -> Unit
+) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     AiSupportChatScreen(
         viewState = viewState,
@@ -76,10 +79,8 @@ fun AiSupportChatScreen(viewModel: AiSupportChatViewModel) {
         onSendClicked = viewModel::onSendClicked,
         onIssueSelected = viewModel::onIssueSelected,
         onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked,
-        onContactSupportClicked = { viewModel.onContactSupportClicked(HumanSupportContactSource.BANNER) },
-        onContactSupportFromErrorClicked = {
-            viewModel.onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG)
-        },
+        onContactSupportClicked = { onContactSupportClicked(HumanSupportContactSource.BANNER) },
+        onContactSupportFromErrorClicked = { onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
         onSendErrorDismissed = viewModel::onSendErrorDismissed,
         onFeedbackClicked = viewModel::onFeedbackClicked
     )

@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
+import com.woocommerce.android.R
+import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
@@ -97,7 +100,7 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
-    fun onContactSupportClicked(source: HumanSupportContactSource) {
+    fun onContactSupportClicked(source: HumanSupportContactSource, canCreateTicketDirectly: Boolean) {
         val state = _viewState.value
         if (state.hasCreatedTicket || state.isSending) return
 
@@ -105,11 +108,12 @@ class AiSupportChatViewModel @Inject constructor(
             _viewState.update { it.copy(showSendError = false) }
         }
         triggerEvent(
-            ContactHumanSupport(
+            createContactHumanSupportEvent(
                 chatId = state.chatId,
                 transcript = state.messages.toTranscript(draftUserMessage = state.input.takeIf { state.showSendError }),
+                source = source,
                 supportArea = state.latestSupportArea,
-                source = source
+                canCreateTicketDirectly = canCreateTicketDirectly
             )
         )
     }
@@ -509,11 +513,61 @@ class AiSupportChatViewModel @Inject constructor(
             "${status.test.name}: ${status.status::class.java.simpleName}"
         }
 
+    private fun createContactHumanSupportEvent(
+        chatId: Long?,
+        transcript: String,
+        source: HumanSupportContactSource,
+        supportArea: SupportChatSupportArea?,
+        canCreateTicketDirectly: Boolean
+    ): ContactHumanSupport {
+        val mode = if (supportArea != null && supportArea.isHighConfidence && canCreateTicketDirectly) {
+            HumanSupportContactMode.DIRECT_CREATE
+        } else {
+            HumanSupportContactMode.OPEN_FORM
+        }
+        return ContactHumanSupport(
+            chatId = chatId,
+            transcript = transcript,
+            source = source,
+            mode = mode,
+            ticketType = supportArea?.ticketType,
+            subjectResId = supportArea?.subjectResId,
+            extraTags = supportArea.extraTags()
+        )
+    }
+
+    private fun SupportChatSupportArea?.extraTags(): List<String> =
+        buildList {
+            add(SOURCE_TAG)
+            add(AI_SKIP_TAG)
+            this@extraTags?.topic?.takeIf { it.isNotBlank() }?.let { add(it) }
+        }
+
+    private val SupportChatSupportArea.ticketType: TicketType
+        get() = when (areaType) {
+            SupportAreaType.MOBILE_APP -> TicketType.MobileApp
+            SupportAreaType.CARD_READER -> TicketType.InPersonPayments
+            SupportAreaType.WOO_PAYMENTS -> TicketType.Payments
+            SupportAreaType.WOO_COMMERCE_PLUGIN -> TicketType.WooPlugin
+            SupportAreaType.OTHER_EXTENSION_PLUGIN -> TicketType.OtherPlugins
+        }
+
+    private val SupportChatSupportArea.subjectResId: Int
+        get() = when (areaType) {
+            SupportAreaType.MOBILE_APP -> R.string.ai_support_chat_support_request_subject_mobile_app
+            SupportAreaType.CARD_READER -> R.string.ai_support_chat_support_request_subject_card_reader
+            SupportAreaType.WOO_PAYMENTS -> R.string.ai_support_chat_support_request_subject_woo_payments
+            SupportAreaType.WOO_COMMERCE_PLUGIN -> R.string.ai_support_chat_support_request_subject_woo_plugin
+            SupportAreaType.OTHER_EXTENSION_PLUGIN -> R.string.ai_support_chat_support_request_subject_other_plugin
+        }
+
     companion object {
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
 
         private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
         private const val MAX_TRANSCRIPT_MESSAGES = 20
+        private const val SOURCE_TAG = "in_app_support_escalate"
+        private const val AI_SKIP_TAG = "ai_skip"
     }
 }
 
@@ -573,11 +627,19 @@ enum class AiSupportChatFeedbackRating {
     DOWN
 }
 
+enum class HumanSupportContactMode {
+    DIRECT_CREATE,
+    OPEN_FORM
+}
+
 data class ContactHumanSupport(
     val chatId: Long?,
     val transcript: String,
-    val supportArea: SupportChatSupportArea?,
-    val source: HumanSupportContactSource
+    val source: HumanSupportContactSource,
+    val mode: HumanSupportContactMode,
+    val ticketType: TicketType?,
+    val subjectResId: Int?,
+    val extraTags: List<String>
 ) : Event()
 
 data class AiSupportChatMessage(

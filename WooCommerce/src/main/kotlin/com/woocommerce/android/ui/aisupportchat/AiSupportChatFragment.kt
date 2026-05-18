@@ -18,12 +18,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
-import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
-import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -51,7 +48,10 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         composeView {
-            AiSupportChatScreen(viewModel = viewModel)
+            AiSupportChatScreen(
+                viewModel = viewModel,
+                onContactSupportClicked = ::onContactSupportClicked
+            )
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,11 +81,19 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         if (menuItem.itemId == R.id.menu_contact_support) {
-            viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+            onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
             return true
         }
 
         return false
+    }
+
+    private fun onContactSupportClicked(source: HumanSupportContactSource) {
+        zendeskSettings.refreshIdentity()
+        viewModel.onContactSupportClicked(
+            source = source,
+            canCreateTicketDirectly = zendeskSettings.isIdentitySet
+        )
     }
 
     private fun observeViewState() {
@@ -107,24 +115,21 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     }
 
     private fun handleContactHumanSupport(event: ContactHumanSupport) {
-        val supportArea = event.supportArea
-        zendeskSettings.refreshIdentity()
-        if (supportArea != null && supportArea.isHighConfidence && zendeskSettings.isIdentitySet) {
-            createTicketDirectly(event, supportArea)
-        } else {
-            openSupportRequestForm(event)
+        when (event.mode) {
+            HumanSupportContactMode.DIRECT_CREATE -> createTicketDirectly(event)
+            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event)
         }
     }
 
-    private fun createTicketDirectly(event: ContactHumanSupport, supportArea: SupportChatSupportArea) {
+    private fun createTicketDirectly(event: ContactHumanSupport) {
         showProgressDialog()
         viewLifecycleOwner.lifecycleScope.launch {
             zendeskTicketRepository.createRequest(
                 context = requireContext(),
                 origin = HelpOrigin.AI_TROUBLESHOOTING,
-                ticketType = supportArea.ticketType,
+                ticketType = requireNotNull(event.ticketType),
                 selectedSite = selectedSite.getIfExists(),
-                subject = supportArea.subject,
+                subject = requireNotNull(event.subject),
                 description = event.description,
                 extraTags = event.extraTags,
                 siteAddress = selectedSite.getIfExists()?.url.orEmpty()
@@ -148,8 +153,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 context = requireContext(),
                 origin = HelpOrigin.AI_TROUBLESHOOTING,
                 extraTags = ArrayList(event.extraTags),
-                preselectedTicketType = event.supportArea?.ticketType,
-                prefilledSubject = event.supportArea?.subject,
+                preselectedTicketType = event.ticketType,
+                prefilledSubject = event.subject,
                 prefilledMessage = event.description,
                 prefilledSiteAddress = selectedSite.getIfExists()?.url.orEmpty()
             )
@@ -187,35 +192,6 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
             .filter { it.isNotBlank() }
             .joinToString(separator = "\n\n")
 
-    private val ContactHumanSupport.extraTags: List<String>
-        get() = buildList {
-            add(SOURCE_TAG)
-            add(AI_SKIP_TAG)
-            supportArea?.topic?.takeIf { it.isNotBlank() }?.let { add(it) }
-        }
-
-    private val SupportChatSupportArea.ticketType: TicketType
-        get() = when (areaType) {
-            SupportAreaType.MOBILE_APP -> TicketType.MobileApp
-            SupportAreaType.CARD_READER -> TicketType.InPersonPayments
-            SupportAreaType.WOO_PAYMENTS -> TicketType.Payments
-            SupportAreaType.WOO_COMMERCE_PLUGIN -> TicketType.WooPlugin
-            SupportAreaType.OTHER_EXTENSION_PLUGIN -> TicketType.OtherPlugins
-        }
-
-    private val SupportChatSupportArea.subject: String
-        get() = getString(
-            when (areaType) {
-                SupportAreaType.MOBILE_APP -> R.string.ai_support_chat_support_request_subject_mobile_app
-                SupportAreaType.CARD_READER -> R.string.ai_support_chat_support_request_subject_card_reader
-                SupportAreaType.WOO_PAYMENTS -> R.string.ai_support_chat_support_request_subject_woo_payments
-                SupportAreaType.WOO_COMMERCE_PLUGIN -> R.string.ai_support_chat_support_request_subject_woo_plugin
-                SupportAreaType.OTHER_EXTENSION_PLUGIN -> R.string.ai_support_chat_support_request_subject_other_plugin
-            }
-        )
-
-    private companion object {
-        const val SOURCE_TAG = "in_app_support_escalate"
-        const val AI_SKIP_TAG = "ai_skip"
-    }
+    private val ContactHumanSupport.subject: String?
+        get() = subjectResId?.let { getString(it) }
 }
