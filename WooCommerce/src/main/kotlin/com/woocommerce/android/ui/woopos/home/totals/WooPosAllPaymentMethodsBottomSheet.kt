@@ -152,7 +152,7 @@ private fun PaymentMethodButtons(
 
 @Composable
 @WooPosPreview
-private fun PaymentMethodsBottomSheetReaderConnectedPreview() {
+fun PaymentMethodsBottomSheetReaderConnectedPreview() {
     WooPosTheme {
         WooPosAllPaymentMethodsBottomSheet(
             isVisible = true,
@@ -169,7 +169,7 @@ private fun PaymentMethodsBottomSheetReaderConnectedPreview() {
 
 @Composable
 @WooPosPreview
-private fun PaymentMethodsBottomSheetReaderDisconnectedPreview() {
+fun PaymentMethodsBottomSheetReaderDisconnectedPreview() {
     WooPosTheme {
         WooPosAllPaymentMethodsBottomSheet(
             isVisible = true,
