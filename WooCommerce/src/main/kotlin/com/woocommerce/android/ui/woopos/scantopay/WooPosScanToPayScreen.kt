@@ -18,6 +18,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -55,7 +56,7 @@ fun WooPosScanToPayScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 
     WooPosScanToPayScreen(
         state = state,
-        onCancelClicked = { viewModel.onBackClicked() },
+        onCancelClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.CancelClicked) },
         onRetryClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.RetryClicked) },
     )
     BackHandler { viewModel.onBackClicked() }
@@ -171,15 +172,18 @@ private fun Failed(
 @Composable
 private fun MaxBrightnessWhen(active: Boolean) {
     val window = LocalContext.current.findActivity()?.window ?: return
+    // Capture the user's brightness once. Re-reading it inside DisposableEffect(active)
+    // would observe our own FULL override on a true→false→true cycle and lock the app
+    // to max brightness even after the screen closes.
+    val originalBrightness = remember { window.attributes.screenBrightness }
     DisposableEffect(active) {
-        val previous = window.attributes.screenBrightness
         if (active) {
             window.attributes = window.attributes.apply {
                 screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
             }
         }
         onDispose {
-            window.attributes = window.attributes.apply { screenBrightness = previous }
+            window.attributes = window.attributes.apply { screenBrightness = originalBrightness }
         }
     }
 }

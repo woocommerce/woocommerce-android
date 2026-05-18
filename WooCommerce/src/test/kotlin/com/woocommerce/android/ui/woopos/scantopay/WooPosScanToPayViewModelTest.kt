@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromScanToPay
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayCollectPaymentSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayPaymentDetectedViaPolling
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayPaymentFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -27,6 +28,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -178,6 +180,93 @@ class WooPosScanToPayViewModelTest {
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
         verify(tracker).track(BackToCheckoutFromScanToPay)
+    }
+
+    @Test
+    fun `given QR shown, when polling sees Processing status, then payment detected`() = runTest {
+        // GIVEN
+        val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            paymentUrl = "https://example.com/pay/abc",
+            status = Order.Status.Pending,
+        )
+        val processingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            datePaid = null,
+            status = Order.Status.Processing,
+        )
+        whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
+        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, processingOrder)
+        whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
+        whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
+
+        // WHEN
+        val viewModel = createViewModel()
+        runCurrent()
+
+        // THEN
+        viewModel.navigationEvent.test {
+            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+        }
+        verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
+    }
+
+    @Test
+    fun `given QR shown, when polling sees OnHold status, then payment not detected`() = runTest {
+        // GIVEN: OnHold means awaiting verification, not paid — we should keep waiting
+        val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            paymentUrl = "https://example.com/pay/abc",
+            status = Order.Status.Pending,
+        )
+        val onHoldOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            datePaid = null,
+            status = Order.Status.OnHold,
+        )
+        whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
+        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, onHoldOrder)
+        whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
+
+        // WHEN
+        val viewModel = createViewModel()
+        runCurrent()
+        // Allow at least one poll cycle
+        advanceTimeBy(2_500)
+        runCurrent()
+
+        // THEN
+        verify(tracker, never()).track(ScanToPayPaymentDetectedViaPolling)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
+    }
+
+    @Test
+    fun `given non-paid order, when polling exhausts MAX_POLL_ATTEMPTS, then ScanToPayPaymentFailed tracked`() = runTest {
+        // GIVEN
+        val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            paymentUrl = "https://example.com/pay/abc",
+            status = Order.Status.Pending,
+        )
+        val nonPaidOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            datePaid = null,
+            status = Order.Status.Pending,
+        )
+        whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
+        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, nonPaidOrder)
+        whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
+
+        // WHEN
+        val viewModel = createViewModel()
+        runCurrent()
+        // Advance past the 5.5-min ceiling (15 × 2s + 60 × 5s = 330s)
+        advanceTimeBy(340_000)
+        runCurrent()
+
+        // THEN
+        verify(tracker).track(ScanToPayPaymentFailed)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.Failed::class.java)
     }
 
     @Test

@@ -45,5 +45,5 @@ private fun encodeToBitmap(data: String, sizePx: Int): Bitmap {
             pixels[y * sizePx + x] = if (matrix.get(x, y)) Color.BLACK else Color.WHITE
         }
     }
-    return Bitmap.createBitmap(pixels, sizePx, sizePx, Bitmap.Config.ARGB_8888)
+    return Bitmap.createBitmap(pixels, sizePx, sizePx, Bitmap.Config.RGB_565)
 }

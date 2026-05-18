@@ -123,8 +123,11 @@ class WooPosScanToPayViewModel @Inject constructor(
     private suspend fun onPaymentDetected() {
         analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
         _state.value = WooPosScanToPayState.PaymentDetected
-        // Best-effort audit note; failures are logged in the repo and ignored.
-        repository.addOrderNote(orderId, resourceProvider.getString(R.string.woopos_scan_to_pay_order_note))
+        // Best-effort audit note. The success transition must not block on it, so we
+        // fire it off independently — failures are logged in the repo and ignored.
+        viewModelScope.launch {
+            repository.addOrderNote(orderId, resourceProvider.getString(R.string.woopos_scan_to_pay_order_note))
+        }
         analyticsTracker.track(ScanToPayCollectPaymentSuccess)
         parentToChildrenEventSender.sendToChildren(
             ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY),
@@ -154,10 +157,12 @@ class WooPosScanToPayViewModel @Inject constructor(
         // 15 fast (30s) + 60 slow (300s) ≈ 5.5 min total ceiling before we give up.
         const val MAX_POLL_ATTEMPTS = 75
 
+        // OnHold is intentionally excluded: on-hold means the gateway is awaiting verification
+        // (e.g. delayed-capture, manual BACS) — not a confirmed payment. Treating it as paid
+        // would post a "Customer paid via Scan to Pay" note before the customer actually did.
         val PAID_STATUSES: Set<Order.Status> = setOf(
             Order.Status.Processing,
             Order.Status.Completed,
-            Order.Status.OnHold,
         )
     }
 }
