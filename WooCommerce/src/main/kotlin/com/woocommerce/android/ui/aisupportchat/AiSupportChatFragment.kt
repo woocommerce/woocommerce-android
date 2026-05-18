@@ -3,9 +3,13 @@ package com.woocommerce.android.ui.aisupportchat
 import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -28,9 +32,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AiSupportChatFragment : Fragment() {
+class AiSupportChatFragment : Fragment(), MenuProvider {
     private val viewModel: AiSupportChatViewModel by viewModels()
     private var progressDialog: CustomProgressDialog? = null
+    private var contactSupportMenuItem: MenuItem? = null
+    private var markResolvedMenuItem: MenuItem? = null
 
     @Inject lateinit var zendeskSettings: ZendeskSettings
 
@@ -60,30 +66,44 @@ class AiSupportChatFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? AiSupportChatActivity)?.apply {
-            onContactSupportClicked = null
-            onMarkResolvedClicked = null
-            setContactSupportActionVisible(false)
-            setMarkResolvedActionVisible(false)
-        }
+        contactSupportMenuItem = null
+        markResolvedMenuItem = null
         hideProgressDialog()
     }
 
     private fun setupContactSupportToolbarAction() {
-        (activity as? AiSupportChatActivity)?.onContactSupportClicked = {
-            viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_ai_support_chat, menu)
+        contactSupportMenuItem = menu.findItem(R.id.menu_contact_support)
+        markResolvedMenuItem = menu.findItem(R.id.menu_mark_resolved)
+        contactSupportMenuItem?.isVisible = viewModel.viewState.value.canContactHumanSupportFromToolbar
+        markResolvedMenuItem?.isVisible = viewModel.viewState.value.shouldShowResolvedButton
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.menu_contact_support -> {
+                viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+                return true
+            }
+            R.id.menu_mark_resolved -> {
+                viewModel.onMarkResolvedClicked()
+                return true
+            }
         }
-        (activity as? AiSupportChatActivity)?.onMarkResolvedClicked = viewModel::onMarkResolvedClicked
+
+        return false
     }
 
     private fun observeViewState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.viewState.collect { state ->
-                    (activity as? AiSupportChatActivity)
-                        ?.setContactSupportActionVisible(state.canContactHumanSupportFromToolbar)
-                    (activity as? AiSupportChatActivity)
-                        ?.setMarkResolvedActionVisible(state.shouldShowResolvedButton)
+                    contactSupportMenuItem?.isVisible = state.canContactHumanSupportFromToolbar
+                    markResolvedMenuItem?.isVisible = state.shouldShowResolvedButton
                 }
             }
         }
@@ -99,6 +119,7 @@ class AiSupportChatFragment : Fragment() {
 
     private fun handleContactHumanSupport(event: ContactHumanSupport) {
         val supportArea = event.supportArea
+        zendeskSettings.refreshIdentity()
         if (supportArea != null && supportArea.isHighConfidence && zendeskSettings.isIdentitySet) {
             createTicketDirectly(event, supportArea)
         } else {
@@ -151,8 +172,10 @@ class AiSupportChatFragment : Fragment() {
         progressDialog = CustomProgressDialog.show(
             getString(R.string.support_request_loading_title),
             getString(R.string.support_request_loading_message)
-        ).also { it.show(childFragmentManager, CustomProgressDialog.TAG) }
-        progressDialog?.isCancelable = false
+        ).also {
+            it.isCancelable = false
+            it.show(childFragmentManager, CustomProgressDialog.TAG)
+        }
     }
 
     private fun hideProgressDialog() {

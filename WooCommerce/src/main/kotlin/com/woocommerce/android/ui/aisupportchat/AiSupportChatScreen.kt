@@ -225,7 +225,7 @@ private fun MessageBubble(
                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
         ) {
             Surface(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(MESSAGE_BUBBLE_CORNER_RADIUS),
                 color = if (isUser) {
                     MaterialTheme.colorScheme.primary
                 } else {
@@ -275,7 +275,7 @@ private fun MessageFeedback(
             null -> {
                 IconButton(
                     onClick = { onFeedbackClicked(messageId, AiSupportChatFeedbackRating.UP) },
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(FEEDBACK_BUTTON_SIZE)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_thumb_up),
@@ -285,7 +285,7 @@ private fun MessageFeedback(
                 }
                 IconButton(
                     onClick = { onFeedbackClicked(messageId, AiSupportChatFeedbackRating.DOWN) },
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(FEEDBACK_BUTTON_SIZE)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_thumb_down),
@@ -315,7 +315,7 @@ private fun RatedFeedback(
         painter = painterResource(icon),
         contentDescription = null,
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.size(18.dp)
+        modifier = Modifier.size(RATED_FEEDBACK_ICON_SIZE)
     )
     Spacer(modifier = Modifier.width(dimensionResource(R.dimen.minor_50)))
     Text(
@@ -513,7 +513,7 @@ private fun TypingIndicator(modifier: Modifier = Modifier) {
     val typingDescription = stringResource(R.string.ai_support_chat_typing)
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(MESSAGE_BUBBLE_CORNER_RADIUS),
             color = MaterialTheme.colorScheme.surface,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             shadowElevation = 1.dp,
@@ -535,7 +535,7 @@ private fun TypingIndicator(modifier: Modifier = Modifier) {
                 CircularProgressIndicator(
                     strokeWidth = 2.dp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(TYPING_INDICATOR_SIZE)
                 )
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.minor_100)))
                 AnimatedTypingText()
@@ -750,3 +750,7 @@ private fun AiSupportChatScreenPreview() {
 }
 
 private const val MAX_BUBBLE_WIDTH_FRACTION = 0.88f
+private val MESSAGE_BUBBLE_CORNER_RADIUS = 16.dp
+private val FEEDBACK_BUTTON_SIZE = 48.dp
+private val RATED_FEEDBACK_ICON_SIZE = 18.dp
+private val TYPING_INDICATOR_SIZE = 16.dp
