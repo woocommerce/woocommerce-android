@@ -522,11 +522,74 @@ class HeadlessHardCheckEvaluatorTest {
         assertThat(checks.map { it.passed }).containsExactly(true, false)
     }
 
+    @Test
+    fun `when failed turn has blank text and no error, then text guard fails`() {
+        val failedRun = runResult(
+            assistantText = "",
+            outcome = LoopOutcome.FAILED,
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluateGlobalGuards(failedRun)
+
+        assertThat(checks.map { it.check.type }).containsExactly(
+            HeadlessHardCheckType.NO_FAILED_OUTCOME,
+            HeadlessHardCheckType.NO_TURN_ERRORS,
+            HeadlessHardCheckType.ASSISTANT_TEXT_NOT_BLANK,
+        )
+        assertThat(checks.map { it.passed }).containsExactly(false, true, false)
+    }
+
+    @Test
+    fun `when failed turn has an error and blank text, then text guard does not mask the error`() {
+        val failedRun = runResult(
+            assistantText = "",
+            outcome = LoopOutcome.FAILED,
+            errors = listOf("RATE_LIMIT"),
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluateGlobalGuards(failedRun)
+
+        assertThat(checks.map { it.passed }).containsExactly(false, false, true)
+    }
+
+    @Test
+    fun `when blank stopped turn has safety cancellation evidence, then text guard passes`() {
+        val cancelledWrite = runResult(
+            assistantText = "",
+            outcome = LoopOutcome.STOPPED,
+            toolCalls = listOf(toolCall("orders_update", HeadlessToolResultKind.REJECTED_BY_SAFETY)),
+            confirmationResults = listOf(
+                HeadlessConfirmationResultTrace(
+                    requestId = "call_1-confirmation",
+                    decision = "CANCELLED",
+                )
+            ),
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluateGlobalGuards(cancelledWrite)
+
+        assertThat(checks.map { it.passed }).containsExactly(true, true, true)
+    }
+
+    @Test
+    fun `when blank stopped turn lacks complete safety cancellation evidence, then text guard fails`() {
+        val incompleteCancellation = runResult(
+            assistantText = "",
+            outcome = LoopOutcome.STOPPED,
+            toolCalls = listOf(toolCall("orders_update", HeadlessToolResultKind.REJECTED_BY_SAFETY)),
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluateGlobalGuards(incompleteCancellation)
+
+        assertThat(checks.map { it.passed }).containsExactly(true, true, false)
+    }
+
     private fun runResult(
         assistantText: String = "Assistant text",
         outcome: LoopOutcome = LoopOutcome.COMPLETED,
         toolCalls: List<HeadlessToolCallTrace> = emptyList(),
         confirmationResults: List<HeadlessConfirmationResultTrace> = emptyList(),
+        errors: List<String> = emptyList(),
     ) = HeadlessRunResult(
         scenarioId = "scenario",
         turns = listOf(
@@ -536,6 +599,7 @@ class HeadlessHardCheckEvaluatorTest {
                 outcome = outcome,
                 toolCalls = toolCalls,
                 confirmationResults = confirmationResults,
+                errors = errors,
             )
         ),
     )
@@ -546,6 +610,7 @@ class HeadlessHardCheckEvaluatorTest {
         outcome: LoopOutcome = LoopOutcome.COMPLETED,
         toolCalls: List<HeadlessToolCallTrace> = emptyList(),
         confirmationResults: List<HeadlessConfirmationResultTrace> = emptyList(),
+        errors: List<String> = emptyList(),
     ) = HeadlessTurnResult(
         turnIndex = turnIndex,
         userMessage = "User message",
@@ -553,6 +618,7 @@ class HeadlessHardCheckEvaluatorTest {
         outcome = outcome,
         toolCalls = toolCalls,
         confirmationResults = confirmationResults,
+        errors = errors,
     )
 
     private fun toolCall(

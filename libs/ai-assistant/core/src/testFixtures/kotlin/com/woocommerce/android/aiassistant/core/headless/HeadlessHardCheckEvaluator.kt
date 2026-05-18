@@ -1,5 +1,6 @@
 package com.woocommerce.android.aiassistant.core.headless
 
+import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -15,6 +16,9 @@ data class HeadlessHardCheckResult(
 )
 
 object HeadlessHardCheckEvaluator {
+    fun evaluateGlobalGuards(result: HeadlessRunResult): List<HeadlessHardCheckResult> =
+        evaluate(result, GLOBAL_GUARD_CHECKS)
+
     fun evaluate(
         result: HeadlessRunResult,
         scenario: HeadlessScenarioSpec,
@@ -95,6 +99,14 @@ object HeadlessHardCheckEvaluator {
                     .filter { it.name == expectation.toolName }
                     .none { it.arguments.toString().contains(expectation.forbiddenText, ignoreCase = true) }
             }
+            HeadlessHardCheckType.NO_FAILED_OUTCOME ->
+                result.turns.none { it.outcome == LoopOutcome.FAILED }
+            HeadlessHardCheckType.NO_TURN_ERRORS ->
+                result.turns.all { it.errors.isEmpty() }
+            HeadlessHardCheckType.ASSISTANT_TEXT_NOT_BLANK ->
+                result.turns.all {
+                    it.assistantText.isNotBlank() || it.errors.isNotEmpty() || it.isBlankSafetyCancellation()
+                }
         }
         HeadlessHardCheckResult(
             check = check,
@@ -185,6 +197,11 @@ object HeadlessHardCheckEvaluator {
             scopeTokens.any { contains(it, ignoreCase = true) }
     }
 
+    private fun HeadlessTurnResult.isBlankSafetyCancellation(): Boolean =
+        outcome == LoopOutcome.STOPPED &&
+            toolCalls.any { it.resultKind == HeadlessToolResultKind.REJECTED_BY_SAFETY } &&
+            confirmationResults.any { it.decision == CANCELLED_CONFIRMATION_DECISION }
+
     private data class ToolCountLimit(
         val toolName: String,
         val maxCount: Int,
@@ -204,4 +221,12 @@ object HeadlessHardCheckEvaluator {
         val toolName: String,
         val forbiddenText: String,
     )
+
+    private val GLOBAL_GUARD_CHECKS = listOf(
+        HeadlessHardCheck(HeadlessHardCheckType.NO_FAILED_OUTCOME, "required"),
+        HeadlessHardCheck(HeadlessHardCheckType.NO_TURN_ERRORS, "required"),
+        HeadlessHardCheck(HeadlessHardCheckType.ASSISTANT_TEXT_NOT_BLANK, "required"),
+    )
+
+    private const val CANCELLED_CONFIRMATION_DECISION = "CANCELLED"
 }
