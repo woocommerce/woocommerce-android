@@ -71,6 +71,127 @@ class HeadlessBaselineComparatorTest {
     }
 
     @Test
+    fun `given sampled known failure has later changed failure shape, when comparing, then scenario is regression`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = failingScenario("orders-with-email").copy(
+                    sampleResults = listOf(
+                        sampleResult(
+                            sampleIndex = 1,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 2,
+                            hardCheckResults = expectedFailureHardCheckResults() + hardCheckResult(
+                                check = HeadlessHardCheck(
+                                    HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                                    "orders_search:SUCCESS",
+                                ),
+                                passed = false,
+                            ),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 3,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                    ),
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FAIL),
+                ),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-with-email",
+                knownFailure = knownFailure(),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.REGRESSION)
+        assertThat(scenarioStatus.message).contains("Known failure")
+        assertThat(comparison.hasBlockingFailure).isTrue
+    }
+
+    @Test
+    fun `given sampled known failure has matching failing samples, when comparing, then scenario is non blocking`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = failingScenario("orders-with-email").copy(
+                    sampleResults = listOf(
+                        sampleResult(
+                            sampleIndex = 1,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 2,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 3,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                    ),
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FAIL),
+                ),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-with-email",
+                knownFailure = knownFailure(),
+            ),
+        )
+
+        assertThat(comparison.scenarioStatuses.single().status)
+            .isEqualTo(HeadlessBaselineRegressionStatus.KNOWN_FAILURE)
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
+    fun `given sampled known failure has no failing samples, when comparing, then scenario is marked fixed`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = passingScenario("orders-with-email").copy(
+                    sampleResults = listOf(
+                        sampleResult(
+                            sampleIndex = 1,
+                            hardCheckResults = expectedPassingHardCheckResults(),
+                            status = HeadlessScenarioStatus.PASS,
+                        ),
+                        sampleResult(
+                            sampleIndex = 2,
+                            hardCheckResults = expectedPassingHardCheckResults(),
+                            status = HeadlessScenarioStatus.PASS,
+                        ),
+                        sampleResult(
+                            sampleIndex = 3,
+                            hardCheckResults = expectedPassingHardCheckResults(),
+                            status = HeadlessScenarioStatus.PASS,
+                        ),
+                    ),
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.PASS),
+                ),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-with-email",
+                knownFailure = knownFailure(),
+            ),
+        )
+
+        assertThat(comparison.scenarioStatuses.single().status)
+            .isEqualTo(HeadlessBaselineRegressionStatus.KNOWN_FAILURE_FIXED)
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
     fun `given approved scenario missing from current run, when comparing, then scenario is missing`() {
         val comparison = HeadlessBaselineComparator.compare(
             current = suite(modelId = "gpt-4o", scenario = passingScenario("products-search-card")),
@@ -233,23 +354,72 @@ class HeadlessBaselineComparatorTest {
         status = status,
     )
 
+    private fun sampleResult(
+        sampleIndex: Int,
+        hardCheckResults: List<HeadlessHardCheckResult>,
+        status: HeadlessScenarioStatus,
+    ) = HeadlessScenarioSampleRunResult(
+        sampleIndex = sampleIndex,
+        result = HeadlessRunResult(
+            scenarioId = "orders-with-email",
+            turns = listOf(
+                HeadlessTurnResult(
+                    turnIndex = 0,
+                    userMessage = "Show orders",
+                    assistantText = "Orders",
+                    outcome = LoopOutcome.COMPLETED,
+                    toolCalls = emptyList(),
+                )
+            ),
+        ),
+        hardCheckResults = hardCheckResults,
+        status = status,
+    )
+
     private fun HeadlessScenarioRunResult.withSampleSummary(
         classification: HeadlessSampleClassification,
     ) = copy(
-        sampleSummary = HeadlessScenarioSampleSummary(
-            requestedSamples = 3,
-            passCount = when (classification) {
-                HeadlessSampleClassification.PASS -> 3
-                HeadlessSampleClassification.FLAKY -> 2
-                HeadlessSampleClassification.FAIL -> 0
-            },
-            failCount = when (classification) {
-                HeadlessSampleClassification.PASS -> 0
-                HeadlessSampleClassification.FLAKY -> 1
-                HeadlessSampleClassification.FAIL -> 3
-            },
-            classification = classification,
+        sampleSummary = sampleSummary(classification)
+    )
+
+    private fun sampleSummary(
+        classification: HeadlessSampleClassification,
+    ) = HeadlessScenarioSampleSummary(
+        requestedSamples = 3,
+        passCount = when (classification) {
+            HeadlessSampleClassification.PASS -> 3
+            HeadlessSampleClassification.FLAKY -> 2
+            HeadlessSampleClassification.FAIL -> 0
+        },
+        failCount = when (classification) {
+            HeadlessSampleClassification.PASS -> 0
+            HeadlessSampleClassification.FLAKY -> 1
+            HeadlessSampleClassification.FAIL -> 3
+        },
+        classification = classification,
+    )
+
+    private fun expectedFailureHardCheckResults() = listOf(
+        hardCheckResult(
+            check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+            passed = false,
         )
+    )
+
+    private fun expectedPassingHardCheckResults() = listOf(
+        hardCheckResult(
+            check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+            passed = true,
+        )
+    )
+
+    private fun hardCheckResult(
+        check: HeadlessHardCheck,
+        passed: Boolean,
+    ) = HeadlessHardCheckResult(
+        check = check,
+        passed = passed,
+        message = "check",
     )
 
     private fun approvedBaseline(

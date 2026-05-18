@@ -250,8 +250,9 @@ Tests never write into `src/`.
   Fails with "Live baseline approval required" if the baseline is missing or stale.
 - **Approval mode** (`WOO_AI_SMOKE_MODE=approve`): runs the live scenarios and writes
   `approved-live-baseline.json` under `build/outputs`. Does not touch the checked-in baseline.
-  Existing `knownFailure` metadata is preserved while that scenario still fails, and dropped once it
-  passes.
+  Existing `knownFailure` metadata is preserved only while every failing sample has a failed
+  hard-check set that exactly matches `knownFailure.expectedFailedHardChecks`, and dropped once the
+  scenario passes. Extra or different failures block approval.
 
 The two modes are wired to different test classes so a normal run cannot accidentally produce an
 approved baseline.

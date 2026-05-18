@@ -48,7 +48,9 @@ WOO_AI_SMOKE_SCENARIO_ID=orders_with_email WOO_AI_SMOKE_SAMPLES=3 \
 full suite and rejects scenario filters. `WOO_AI_SMOKE_SAMPLES` supports `1..3`. In check mode,
 sampling is report-only for the deterministic gate: primary scenario status uses sample 1, and the
 baseline comparison also uses sample 1 unless the checked-in baseline contains an approved sample
-expectation.
+expectation. When a sampled comparison has a `sampleSummary`, the requested sample count must match
+the approved expectation. A single-sample failure can match an approved `FLAKY` expectation, but
+the summary should tell you to rerun a sampled check before refreshing the baseline.
 
 Artifacts are written to:
 
@@ -63,8 +65,9 @@ comparison against the checked-in baseline. Do not paste raw `turns.jsonl`, cred
 Basic auth headers, cookies, or expanded environment values.
 
 `KNOWN_FAILURE` in the baseline column is an accepted, explicitly documented live failure; include
-it in the recap instead of converting it to PASS. Any `REGRESSION`, `NEW`, or `MISSING` status still
-needs triage.
+it in the recap instead of converting it to PASS. `KNOWN_FAILURE_FIXED` is non-blocking but means the
+baseline exception should be removed after review. Any `REGRESSION`, `NEW`, or `MISSING` status
+still needs triage.
 
 Every scenario also has global guards for no `FAILED` outcome, no turn errors, and non-blank
 assistant text. Empty/error outputs should never be treated as passing just because negative checks
@@ -118,7 +121,8 @@ WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve WOO_AI_SMOKE_SAMPLES=3 \
 Approval mode accepts `WOO_AI_SMOKE_SAMPLES=1..3` and still rejects scenario filters. A sampled
 approval writes a `sampleExpectation` for each approvable scenario: all-pass samples approve
 `PASS`, mixed pass/fail samples approve `FLAKY`, and all-fail samples are rejected unless an
-existing `knownFailure` is being preserved. Approved `FLAKY` is separate from `knownFailure`.
+existing `knownFailure` is being preserved because every failing sample has the same expected failed
+hard-check set. Approved `FLAKY` is separate from `knownFailure`.
 
 After reviewer inspection:
 
@@ -130,10 +134,11 @@ cp \
 
 After an approval run, print the same scenario recap table from
 `libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest`. Also state whether
-`approved-live-baseline.json` was produced. Approval can preserve an existing `knownFailure` entry,
-but new failures must not be added by hand without a reason and expected failed hard checks. If a
-scenario is intentionally flaky, approve it with sampled approval so the checked-in baseline records
-the `FLAKY` sample expectation instead of hiding it as a known failure.
+`approved-live-baseline.json` was produced. Approval can preserve an existing `knownFailure` entry
+only when every failing sample still has the same expected failed hard-check set, but new failures
+must not be added by hand without a reason and expected failed hard checks. If a scenario is
+intentionally flaky, approve it with sampled approval so the checked-in baseline records the `FLAKY`
+sample expectation instead of hiding it as a known failure.
 
 ## Support/Unit Coverage
 

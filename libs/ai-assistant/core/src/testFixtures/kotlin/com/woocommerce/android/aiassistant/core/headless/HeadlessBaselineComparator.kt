@@ -149,7 +149,8 @@ object HeadlessBaselineComparator {
         approved: HeadlessApprovedScenarioBaseline,
     ): HeadlessBaselineScenarioStatus {
         val knownFailure = requireNotNull(approved.knownFailure)
-        if (status == HeadlessScenarioStatus.PASS) {
+        val failingSamples = failingSampleHardCheckResults()
+        if (failingSamples.isEmpty()) {
             return HeadlessBaselineScenarioStatus(
                 scenarioId = scenarioId,
                 status = HeadlessBaselineRegressionStatus.KNOWN_FAILURE_FIXED,
@@ -157,23 +158,20 @@ object HeadlessBaselineComparator {
             )
         }
 
-        val currentChecks = hardCheckResults.associateBy { it.check.type to it.check.value }
         val expectedFailedChecks = knownFailure.expectedFailedHardChecks.toSet()
-        val actualFailedChecks = hardCheckResults
-            .filterNot { it.passed }
-            .map { it.check }
-            .toSet()
-        val expectedFailuresStillFail = expectedFailedChecks.all { expectedFailed ->
-            currentChecks[expectedFailed.type to expectedFailed.value]?.passed == false
+        val failingSamplesMatchKnownFailure = failingSamples.all { hardCheckResults ->
+            hardCheckResults.failedHardChecks() == expectedFailedChecks
         }
-        val onlyExpectedFailuresFail = actualFailedChecks == expectedFailedChecks
-        val requiredChecksStillPass = approved.approvedHardChecks
-            .filterNot { it in expectedFailedChecks }
-            .all { approvedCheck ->
-                currentChecks[approvedCheck.type to approvedCheck.value]?.passed == true
-            }
+        val requiredChecksStillPass = failingSamples.all { hardCheckResults ->
+            val currentChecks = hardCheckResults.associateBy { it.check.type to it.check.value }
+            approved.approvedHardChecks
+                .filterNot { it in expectedFailedChecks }
+                .all { approvedCheck ->
+                    currentChecks[approvedCheck.type to approvedCheck.value]?.passed == true
+                }
+        }
 
-        return if (expectedFailuresStillFail && onlyExpectedFailuresFail && requiredChecksStillPass) {
+        return if (failingSamplesMatchKnownFailure && requiredChecksStillPass) {
             HeadlessBaselineScenarioStatus(
                 scenarioId = scenarioId,
                 status = HeadlessBaselineRegressionStatus.KNOWN_FAILURE,
@@ -183,7 +181,7 @@ object HeadlessBaselineComparator {
             HeadlessBaselineScenarioStatus(
                 scenarioId = scenarioId,
                 status = HeadlessBaselineRegressionStatus.REGRESSION,
-                message = "Known failure shape changed.",
+                message = "Known failure sampled failure shape changed.",
             )
         }
     }

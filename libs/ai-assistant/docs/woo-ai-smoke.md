@@ -49,7 +49,7 @@ keep the harness honest from the side.
 Module: `:libs:ai-assistant:core`. Plain JVM, no Android, no Hilt, no Robolectric.
 
 ```bash
-./gradlew :libs:ai-assistant:core:testDebugUnitTest
+./gradlew :libs:ai-assistant:core:test
 ```
 
 What it proves: the loop-harness contract is well-defined. Scripted assistant turns produce the
@@ -140,15 +140,18 @@ scenarios in `live-scenarios.json` (plus their hard checks) against the checked-
 `live-baseline.json`. This is the only level whose green status is accepted regression evidence
 for merge.
 
-PR4 parity controls:
+Focused and sampled controls:
 - `WOO_AI_SMOKE_SCENARIO_ID=orders_with_email` runs a focused subset in check mode. Multiple ids
   can be comma-separated. Filtered check runs compare only the selected scenarios against the
   checked-in baseline so they are useful for debugging; approval mode rejects filters because a
   baseline refresh must cover the full suite.
 - `WOO_AI_SMOKE_SAMPLES=3` repeats each selected scenario. Valid values are `1..3`. In check mode,
   primary scenario status and JUnit failure use sample 1; baseline comparison also uses sample 1
-  unless the checked-in baseline contains an approved sample expectation. Approval mode accepts
-  sampled runs and can intentionally approve `PASS` or `FLAKY` sample classifications.
+  unless the checked-in baseline contains an approved sample expectation. When a sampled comparison
+  has a `sampleSummary`, the requested sample count must match the approved expectation. A
+  single-sample failure can match an approved `FLAKY` expectation, but the summary tells you to
+  rerun a sampled check before refreshing the baseline. Approval mode accepts sampled runs and can
+  intentionally approve `PASS` or `FLAKY` sample classifications.
 - Every scenario now gets global hard guards in addition to its JSON hard checks: no `FAILED`
   outcome, no turn errors, and non-blank assistant text. This prevents empty/error responses from
   passing scenarios that mostly contain negative checks.
@@ -225,8 +228,9 @@ Do not add undocumented failures.
 
 Sampled approval writes `sampleExpectation` into `approved-live-baseline.json`: all-pass samples
 record `PASS`, mixed pass/fail samples record `FLAKY`, and all-fail samples are rejected unless an
-existing `knownFailure` is deliberately preserved. Flaky approval is separate from `knownFailure`;
-use it when the live behavior is acceptable but not stable across repeated samples.
+existing `knownFailure` is deliberately preserved because every failing sample has the same expected
+failed hard-check set. Flaky approval is separate from `knownFailure`; use it when the live behavior
+is acceptable but not stable across repeated samples.
 
 Check and approval are wired to **two separate test classes** so a normal Level 3 run cannot
 accidentally produce a candidate baseline.

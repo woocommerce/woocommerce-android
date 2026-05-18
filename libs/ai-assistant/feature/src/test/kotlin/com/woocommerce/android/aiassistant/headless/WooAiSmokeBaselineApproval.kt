@@ -4,11 +4,12 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaselin
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedSampleExpectation
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
-import com.woocommerce.android.aiassistant.core.headless.HeadlessKnownFailure
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSampleClassification
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
+import com.woocommerce.android.aiassistant.core.headless.failingSampleHardCheckResults
+import com.woocommerce.android.aiassistant.core.headless.matchesKnownFailureShape
 
 internal object WooAiSmokeBaselineApproval {
     fun approvedBaselineOrNull(
@@ -37,7 +38,7 @@ internal object WooAiSmokeBaselineApproval {
                     category = scenario.category,
                     approvedHardChecks = scenario.hardCheckResults.map { it.check },
                     knownFailure = previousScenario?.knownFailure?.takeIf {
-                        scenario.matchesKnownFailure(it)
+                        scenario.matchesKnownFailureShape(it)
                     },
                     sampleExpectation = scenario.sampleExpectationOrNull(current.metadata.sampleCount),
                 )
@@ -49,15 +50,20 @@ internal object WooAiSmokeBaselineApproval {
         sampleCount: Int,
         previousScenario: HeadlessApprovedScenarioBaseline?,
     ): Boolean {
+        val knownFailure = previousScenario?.knownFailure
+        if (knownFailure != null && failingSampleHardCheckResults().isNotEmpty()) {
+            return matchesKnownFailureShape(knownFailure)
+        }
+
         if (sampleCount == 1) {
-            return !isFailing() || matchesKnownFailure(previousScenario?.knownFailure)
+            return !isFailing()
         }
 
         val summary = sampleSummary ?: return false
         return when (summary.classification) {
             HeadlessSampleClassification.PASS,
             HeadlessSampleClassification.FLAKY -> true
-            HeadlessSampleClassification.FAIL -> matchesKnownFailure(previousScenario?.knownFailure)
+            HeadlessSampleClassification.FAIL -> false
         }
     }
 
@@ -79,18 +85,4 @@ internal object WooAiSmokeBaselineApproval {
 
     private fun HeadlessScenarioRunResult.isFailing(): Boolean =
         status == HeadlessScenarioStatus.FAIL
-
-    private fun HeadlessScenarioRunResult.matchesKnownFailure(
-        knownFailure: HeadlessKnownFailure?,
-    ): Boolean {
-        if (!isFailing() || knownFailure == null) return false
-
-        return failedHardChecks() == knownFailure.expectedFailedHardChecks.toSet()
-    }
-
-    private fun HeadlessScenarioRunResult.failedHardChecks() =
-        hardCheckResults
-            .filterNot { it.passed }
-            .map { it.check }
-            .toSet()
 }
