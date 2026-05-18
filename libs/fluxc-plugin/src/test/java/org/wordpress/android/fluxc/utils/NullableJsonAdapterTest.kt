@@ -24,6 +24,12 @@ class NullableJsonAdapterTest {
         val amount: BigDecimal?
     )
 
+    data class IntExample(
+        @JsonAdapter(NullIntJsonAdapter::class, nullSafe = false)
+        @SerializedName("rating")
+        val rating: Int?
+    )
+
     private val gson = Gson()
 
     @Test
@@ -142,5 +148,66 @@ class NullableJsonAdapterTest {
         val json = gson.toJson(example)
 
         assertThat(json).contains(""""amount":100.50""")
+    }
+
+    @Test
+    fun `when passing null integer in json, then it should be deserialized to null value`() {
+        val json = """{
+            "rating": null
+            }"""
+
+        val example = gson.fromJson(json, IntExample::class.java)
+
+        assertThat(example.rating).isNull()
+    }
+
+    @Test
+    fun `when passing non-null integer value in json, then it should be deserialized to the correct value`() {
+        val json = """{
+            "rating": 3
+            }"""
+
+        val example = gson.fromJson(json, IntExample::class.java)
+
+        assertThat(example.rating).isEqualTo(3)
+    }
+
+    @Test
+    fun `when passing non-null integer string value in json, then it should be deserialized to the correct value`() {
+        val json = """{
+            "rating": "3"
+            }"""
+
+        val example = gson.fromJson(json, IntExample::class.java)
+
+        assertThat(example.rating).isEqualTo(3)
+    }
+
+    @Test
+    fun `when passing invalid integer string value in json, then it should throw`() {
+        val json = """{
+            "rating": "invalid"
+            }"""
+
+        assertThatThrownBy { gson.fromJson(json, IntExample::class.java).rating }
+            .hasCauseInstanceOf(MalformedJsonException::class.java)
+    }
+
+    @Test
+    fun `when serializing a null integer value, then it should be exposed to the json`() {
+        val example = IntExample(null)
+
+        val json = gson.toJson(example)
+
+        assertThat(json).contains(""""rating":null""")
+    }
+
+    @Test
+    fun `when serializing a non-null integer value, then it should be correctly serialized`() {
+        val example = IntExample(3)
+
+        val json = gson.toJson(example)
+
+        assertThat(json).contains(""""rating":3""")
     }
 }
