@@ -205,7 +205,7 @@ cp \
 The accepted live baseline must come from `JetpackAiChatService`,
 `WooAiSmokeDirectJwtTokenProvider`, and `WooCommerceToolRegistry`. There is no Level 2 approval
 baseline. If a scenario cannot reliably pass yet, keep the scenario in the baseline with a
-`knownFailure` block containing a reason, issue link/id, and the exact hard checks expected to fail.
+`knownFailure` block containing a reason and the exact hard checks expected to fail.
 Do not add undocumented failures.
 
 Check and approval are wired to **two separate test classes** so a normal Level 3 run cannot

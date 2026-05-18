@@ -9,7 +9,7 @@ description: Run the Android AI Assistant headless smoke regression harness with
 
 The live suite mirrors the iOS `/woo-ai-smoke` scenario list from
 `woocommerce/woocommerce-ios#17016`: 25 scripted scenarios. iOS samples each scenario 3 times; Android
-currently runs one sample per scenario and records that decision in `live-scenarios.json` metadata.
+currently runs one sample per scenario.
 
 If `~/.woo-ai-smoke/store.env` does not exist, create it with these keys and stop so the developer
 can fill it in outside the repo:
