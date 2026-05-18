@@ -633,7 +633,7 @@ private fun SendErrorDialog(
             onClick = onContactSupportClicked
         ),
         negativeButton = DialogState.DialogButton(
-            text = R.string.ai_support_chat_mark_resolved_cancel,
+            text = R.string.ai_support_chat_error_dismiss,
             onClick = onDismiss
         ),
         isCancelable = false,
@@ -654,7 +654,7 @@ private fun MarkResolvedConfirmationDialog(
             onClick = onConfirm
         ),
         negativeButton = DialogState.DialogButton(
-            text = R.string.ai_support_chat_error_dismiss,
+            text = R.string.ai_support_chat_mark_resolved_cancel,
             onClick = onDismiss
         ),
         isCancelable = false,
