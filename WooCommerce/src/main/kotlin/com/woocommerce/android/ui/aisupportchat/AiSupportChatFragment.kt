@@ -108,6 +108,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
 
     private fun handleContactHumanSupport(event: ContactHumanSupport) {
         val supportArea = event.supportArea
+        zendeskSettings.refreshIdentity()
         if (supportArea != null && supportArea.isHighConfidence && zendeskSettings.isIdentitySet) {
             createTicketDirectly(event, supportArea)
         } else {
