@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsComplete
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
@@ -245,6 +246,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
 
+            WooPosTotalsUIEvent.OnMarkOrderAsCompleteClicked -> handleMarkOrderAsCompleteClicked()
+
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
 
@@ -287,6 +290,16 @@ class WooPosTotalsViewModel @Inject constructor(
         childrenToParentEventSender.sendToParent(
             ToCashPayment(dataState.value.orderId)
         )
+    }
+
+    private fun handleMarkOrderAsCompleteClicked() = viewModelScope.launch {
+        val orderId = dataState.value.orderId
+        if (orderId == EMPTY_ORDER_ID) {
+            wooPosLogWrapper.e("Mark order as complete tapped before order draft was created")
+            return@launch
+        }
+        totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+        childrenToParentEventSender.sendToParent(ToMarkOrderAsComplete(orderId))
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {

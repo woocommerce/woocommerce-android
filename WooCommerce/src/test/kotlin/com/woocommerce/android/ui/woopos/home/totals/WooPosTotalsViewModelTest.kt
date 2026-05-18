@@ -86,6 +86,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -741,6 +742,42 @@ class WooPosTotalsViewModelTest {
             // THEN
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
         }
+
+    @Test
+    fun `given order draft created, when OnMarkOrderAsCompleteClicked, then track analytic and emit ToMarkOrderAsComplete`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsCompleteClicked)
+
+            // THEN
+            verify(analyticsTracker).track(
+                com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped,
+            )
+            verify(childrenToParentEventSender).sendToParent(
+                isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsComplete>(),
+            )
+        }
+
+    @Test
+    fun `given no order draft, when OnMarkOrderAsCompleteClicked, then do not emit navigation event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
+        val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsCompleteClicked)
+
+        // THEN
+        verify(childrenToParentEventSender, never()).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsComplete>(),
+        )
+    }
 
     @Test
     fun `given order draft created, when reader connects, then start payment automatically`() = runTest {
