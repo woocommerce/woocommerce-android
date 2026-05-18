@@ -749,6 +749,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasCreatedTicket).isTrue
         assertThat(state.canSendMessages).isFalse
         assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        assertThat(state.shouldShowResolvedButton).isFalse
         assertThat(state.showSendError).isFalse
         assertThat(state.showHumanSupportPrompt).isFalse
     }

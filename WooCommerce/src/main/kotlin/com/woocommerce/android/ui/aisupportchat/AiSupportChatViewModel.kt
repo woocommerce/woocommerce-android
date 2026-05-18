@@ -622,7 +622,7 @@ data class AiSupportChatViewState(
 
     val shouldShowResolvedButton: Boolean
         get() {
-            if (showHumanSupportPrompt || isChatResolved) return false
+            if (!canSendMessages || showHumanSupportPrompt) return false
             val botResponses = messages.filter {
                 it.role == AiSupportChatMessageRole.BOT && it.messageId != null
             }
