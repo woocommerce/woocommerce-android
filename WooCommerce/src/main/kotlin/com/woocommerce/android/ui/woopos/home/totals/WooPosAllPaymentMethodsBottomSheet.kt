@@ -152,30 +152,34 @@ private fun PaymentMethodButtons(
 
 @Composable
 @WooPosPreview
-fun PaymentMethodsBottomSheetReaderConnectedPreview() {
+private fun PaymentMethodsBottomSheetReaderConnectedPreview() {
     WooPosTheme {
-        PaymentMethodsBottomSheetContent(
+        WooPosAllPaymentMethodsBottomSheet(
+            isVisible = true,
             methods = listOf(
                 WooPosPaymentMethod.TAP_TO_PAY,
                 WooPosPaymentMethod.SCAN_TO_PAY,
                 WooPosPaymentMethod.MARK_ORDER_AS_PAID,
             ),
             onMethodClicked = {},
+            onDismissRequest = {},
         )
     }
 }
 
 @Composable
 @WooPosPreview
-fun PaymentMethodsBottomSheetReaderDisconnectedPreview() {
+private fun PaymentMethodsBottomSheetReaderDisconnectedPreview() {
     WooPosTheme {
-        PaymentMethodsBottomSheetContent(
+        WooPosAllPaymentMethodsBottomSheet(
+            isVisible = true,
             methods = listOf(
                 WooPosPaymentMethod.CARD_READER,
                 WooPosPaymentMethod.SCAN_TO_PAY,
                 WooPosPaymentMethod.MARK_ORDER_AS_PAID,
             ),
             onMethodClicked = {},
+            onDismissRequest = {},
         )
     }
 }
