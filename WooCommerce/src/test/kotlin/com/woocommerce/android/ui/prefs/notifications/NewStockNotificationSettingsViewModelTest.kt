@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsViewModel.StockNotificationType
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -49,26 +48,13 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view is loaded, then expose default stock notification states`() = testBlocking {
+    fun `when view is loaded, then expose default low stock threshold state`() = testBlocking {
         setup()
 
         val viewState = viewModel.viewState.getOrAwaitValue()
 
-        assertThat(viewState.notificationsEnabled).isTrue()
-        assertThat(viewState.lowStockNotificationsEnabled).isTrue()
-        assertThat(viewState.outOfStockNotificationsEnabled).isTrue()
-        assertThat(viewState.backorderNotificationsEnabled).isTrue()
         assertThat(viewState.defaultLowStockThreshold).isNull()
         assertThat(viewState.isDefaultLowStockThresholdLoading).isFalse()
-    }
-
-    @Test
-    fun `when notifications switch is changed, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onNotificationsEnabledChanged(false)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().notificationsEnabled).isFalse()
     }
 
     @Test
@@ -172,33 +158,6 @@ class NewStockNotificationSettingsViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.getOrAwaitValue().defaultLowStockThreshold).isEqualTo(2)
             assertThat(viewModel.viewState.getOrAwaitValue().isDefaultLowStockThresholdLoading).isFalse()
         }
-
-    @Test
-    fun `when low stock switch is changed, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onStockNotificationEnabledChanged(StockNotificationType.LowStock, false)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().lowStockNotificationsEnabled).isFalse()
-    }
-
-    @Test
-    fun `when out of stock switch is changed, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onStockNotificationEnabledChanged(StockNotificationType.OutOfStock, false)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().outOfStockNotificationsEnabled).isFalse()
-    }
-
-    @Test
-    fun `when backorder switch is changed, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onStockNotificationEnabledChanged(StockNotificationType.Backorder, false)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().backorderNotificationsEnabled).isFalse()
-    }
 
     @Test
     fun `when edit store settings is clicked, then open authenticated web view`() =

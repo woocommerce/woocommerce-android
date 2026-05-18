@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreReviewPreferences
 import java.math.BigDecimal
 
 class WooPushNotificationPreferencesRequestMapperTest {
@@ -39,5 +40,27 @@ class WooPushNotificationPreferencesRequestMapperTest {
         val requestJson = Gson().toJson(preferences.toRequestMap())
 
         assertThat(requestJson).isEqualTo("{}")
+    }
+
+    @Test
+    fun `given all reviews preference, when mapped to request body, then max rating is cleared`() {
+        val preferences = WooPushNotificationPreferences(
+            storeReview = StoreReviewPreferences(enabled = true, maxRating = null)
+        )
+
+        val requestJson = Gson().toJson(preferences.toRequestMap())
+
+        assertThat(requestJson).isEqualTo("""{"store_review":{"enabled":true,"max_rating":null}}""")
+    }
+
+    @Test
+    fun `given rating filtered reviews preference, when mapped to request body, then max rating is sent`() {
+        val preferences = WooPushNotificationPreferences(
+            storeReview = StoreReviewPreferences(enabled = true, maxRating = 3)
+        )
+
+        val requestJson = Gson().toJson(preferences.toRequestMap())
+
+        assertThat(requestJson).isEqualTo("""{"store_review":{"enabled":true,"max_rating":3}}""")
     }
 }
