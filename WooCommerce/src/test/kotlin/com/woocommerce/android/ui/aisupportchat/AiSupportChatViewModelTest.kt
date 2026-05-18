@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
@@ -36,16 +37,23 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val repository: SupportChatRepository = mock()
     private val contextProvider: SupportChatContextProvider = mock()
     private val diagnosticsService: SupportDiagnosticsService = mock()
+    private val accountRepository: AccountRepository = mock()
 
     private lateinit var viewModel: AiSupportChatViewModel
 
     @Before
     fun setUp() {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        createViewModel()
+    }
+
+    private fun createViewModel() {
         viewModel = AiSupportChatViewModel(
             savedStateHandle = SavedStateHandle(),
             repository = repository,
             contextProvider = contextProvider,
-            diagnosticsService = diagnosticsService
+            diagnosticsService = diagnosticsService,
+            accountRepository = accountRepository
         )
     }
 
@@ -62,6 +70,64 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             AiSupportChatMessageContent.IssuePicker
         )
     }
+
+    @Test
+    fun `given pre-login launch mode, when loaded, then chat starts without issue picker`() =
+        testBlocking {
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+
+            val state = viewModel.viewState.value
+            assertThat(state.input).isEmpty()
+            assertThat(state.hasStartedChat).isTrue()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given pre-login launch mode, when message sent, then chat starts with generic context`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.isSending).isFalse()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.selectedIssueType).isNull()
+            assertThat(state.diagnosticResult).isNull()
+            verify(contextProvider).buildInitialContext()
+            verify(repository, never()).registerChat(any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any())
+        }
+
+    @Test
+    fun `given pre-login chat exists, when follow up message sent, then bookmark is not touched`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(BOT_RESPONSE)
+            viewModel.onSendClicked()
+
+            verify(repository, never()).registerChat(any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any())
+        }
 
     @Test
     fun `given diagnostics pass, when issue selected, then success is shown and chat does not start`() =
@@ -144,6 +210,32 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
             verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS)
+            verify(repository, never()).markChatAsUpdated(any())
+        }
+
+    @Test
+    fun `given unauthenticated user, when sending succeeds, then bookmark is not touched`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
+            createViewModel()
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            assertThat(viewModel.viewState.value.chatId).isEqualTo(CHAT_ID)
+            verify(repository, never()).registerChat(any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any())
         }
 
@@ -247,8 +339,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DiagnosticTest.WPCOM_SERVERS
             )
             assertThat(state.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting,
-                AiSupportChatMessageContent.PostDiagnosticsGreeting
+                AiSupportChatMessageContent.Greeting
             )
             verify(contextProvider, never()).buildInitialContext(any())
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
@@ -266,6 +357,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 TestStatus.Failed()
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS)
         }
 
     @Test
@@ -279,8 +371,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
 
             assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting,
-                AiSupportChatMessageContent.PostDiagnosticsGreeting
+                AiSupportChatMessageContent.Greeting
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }

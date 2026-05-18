@@ -2411,12 +2411,12 @@
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
 
-    <string name="ai_support_chat_help_row_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
-    <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_screen_title">Chat with support</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
-    <string name="ai_support_chat_greeting">Hi! Tell me what\'s happening with your store, and I\'ll help troubleshoot it.</string>
-    <string name="ai_support_chat_input_hint">Message AI Troubleshooting</string>
+    <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
+    <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
@@ -30,9 +31,15 @@ class AiSupportChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: SupportChatRepository,
     private val contextProvider: SupportChatContextProvider,
-    private val diagnosticsService: SupportDiagnosticsService
+    private val diagnosticsService: SupportDiagnosticsService,
+    private val accountRepository: AccountRepository
 ) : ScopedViewModel(savedStateHandle) {
-    private val _viewState = MutableStateFlow(AiSupportChatViewState(messages = initialMessages()))
+    private val _viewState = MutableStateFlow(
+        AiSupportChatViewState(
+            messages = initialMessages(),
+            canPersistChatHistory = accountRepository.isUserLoggedIn()
+        )
+    )
     val viewState = _viewState.asStateFlow()
 
     private var localMessageId = 0L
@@ -44,6 +51,7 @@ class AiSupportChatViewModel @Inject constructor(
 
         when (launchMode) {
             AiSupportChatLaunchMode.Help -> Unit
+            AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
         }
     }
@@ -119,15 +127,29 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
+    private fun startFromPreLogin() {
+        _viewState.update {
+            it.copy(
+                input = "",
+                messages = listOf(greetingMessage()),
+                hasStartedChat = true,
+                hasProceededToChat = true,
+                canPersistChatHistory = false,
+                showSendError = false
+            )
+        }
+    }
+
     private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
         val result = checks.toDiagnosticResult()
         _viewState.update {
             it.copy(
                 input = "",
-                messages = listOf(greetingMessage()).appendPostDiagnosticsGreeting(),
+                messages = listOf(greetingMessage()),
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 hasProceededToChat = true,
+                canPersistChatHistory = accountRepository.isUserLoggedIn(),
                 showSendError = false
             )
         }
@@ -227,15 +249,17 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
 
-        runCatching {
-            if (wasInitialMessage) {
-                repository.registerChat(
-                    chatId = response.chatId,
-                    botSlug = response.botSlug,
-                    firstUserMessage = sentMessage
-                )
-            } else {
-                repository.markChatAsUpdated(response.chatId)
+        if (_viewState.value.canPersistChatHistory) {
+            runCatching {
+                if (wasInitialMessage) {
+                    repository.registerChat(
+                        chatId = response.chatId,
+                        botSlug = response.botSlug,
+                        firstUserMessage = sentMessage
+                    )
+                } else {
+                    repository.markChatAsUpdated(response.chatId)
+                }
             }
         }
     }
@@ -360,6 +384,7 @@ data class AiSupportChatViewState(
     val diagnosticResult: DiagnosticResult? = null,
     val isRunningDiagnostics: Boolean = false,
     val isSending: Boolean = false,
+    val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false
 ) {
     val canUseDiagnosticActions: Boolean
