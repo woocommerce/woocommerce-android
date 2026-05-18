@@ -34,7 +34,7 @@ data class HeadlessRunMetadata(
 @Serializable
 data class HeadlessScenarioRunResult(
     val scenarioId: String,
-    val category: HeadlessScenarioCategory,
+    val category: String,
     val result: HeadlessRunResult,
     val hardCheckResults: List<HeadlessHardCheckResult>,
     val status: HeadlessScenarioStatus,

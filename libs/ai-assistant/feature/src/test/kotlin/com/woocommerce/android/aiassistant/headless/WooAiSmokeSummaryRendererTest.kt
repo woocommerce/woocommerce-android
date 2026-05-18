@@ -10,7 +10,6 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
-import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
@@ -63,7 +62,7 @@ class WooAiSmokeSummaryRendererTest {
         scenarios = listOf(
             HeadlessScenarioRunResult(
                 scenarioId = "write-confirmation-declined",
-                category = HeadlessScenarioCategory.WRITE_CONFIRMATION,
+                category = "write",
                 result = HeadlessRunResult(
                     scenarioId = "write-confirmation-declined",
                     turns = listOf(

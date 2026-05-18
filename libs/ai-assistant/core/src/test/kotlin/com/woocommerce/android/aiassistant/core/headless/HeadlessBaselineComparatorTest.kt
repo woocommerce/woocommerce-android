@@ -118,7 +118,7 @@ class HeadlessBaselineComparatorTest {
         hardCheckPassed: Boolean,
     ) = HeadlessScenarioRunResult(
         scenarioId = scenarioId,
-        category = HeadlessScenarioCategory.ORDERS_READ,
+        category = "read",
         result = HeadlessRunResult(
             scenarioId = scenarioId,
             turns = listOf(
@@ -155,7 +155,7 @@ class HeadlessBaselineComparatorTest {
         scenarios = listOf(
             HeadlessApprovedScenarioBaseline(
                 scenarioId = scenarioId,
-                category = HeadlessScenarioCategory.ORDERS_READ,
+                category = "read",
                 approvedHardChecks = listOf(
                     HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),

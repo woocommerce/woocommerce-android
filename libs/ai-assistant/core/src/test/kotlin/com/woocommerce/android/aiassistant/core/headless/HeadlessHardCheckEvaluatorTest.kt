@@ -285,7 +285,7 @@ class HeadlessHardCheckEvaluatorTest {
         )
         val scenario = HeadlessScenarioSpec(
             id = "multi-turn",
-            category = HeadlessScenarioCategory.READ,
+            category = "read",
             scope = ToolScope.GLOBAL,
             smokeFixture = null,
             turns = listOf(

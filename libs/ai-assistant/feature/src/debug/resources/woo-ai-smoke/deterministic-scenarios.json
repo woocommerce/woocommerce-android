@@ -3,7 +3,7 @@
   "scenarios": [
     {
       "id": "orders-read-recent",
-      "category": "ORDERS_READ",
+      "category": "read",
       "scope": "ORDERS",
       "smokeFixture": null,
       "turns": [
@@ -23,7 +23,7 @@
     },
     {
       "id": "products-search-card",
-      "category": "PRODUCTS_READ",
+      "category": "search",
       "scope": "PRODUCTS",
       "smokeFixture": null,
       "turns": [
@@ -43,7 +43,7 @@
     },
     {
       "id": "analytics-orders-this-month",
-      "category": "ANALYTICS_READ",
+      "category": "analytics",
       "scope": "ANALYTICS",
       "smokeFixture": null,
       "turns": [
@@ -62,7 +62,7 @@
     },
     {
       "id": "write-confirmation-declined",
-      "category": "WRITE_CONFIRMATION",
+      "category": "write",
       "scope": "ORDERS",
       "smokeFixture": {
         "ownerTag": "woo-ai-smoke",
@@ -85,7 +85,7 @@
     },
     {
       "id": "off-domain-refusal",
-      "category": "OFF_DOMAIN_REFUSAL",
+      "category": "safety",
       "scope": "GLOBAL",
       "smokeFixture": null,
       "turns": [

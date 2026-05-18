@@ -14,7 +14,6 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
-import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
@@ -117,7 +116,7 @@ class WooAiSmokeRunWriterTest {
         scenarios = listOf(
             HeadlessScenarioRunResult(
                 scenarioId = "orders-read-recent",
-                category = HeadlessScenarioCategory.ORDERS_READ,
+                category = "read",
                 result = HeadlessRunResult(
                     scenarioId = "orders-read-recent",
                     turns = listOf(
@@ -172,7 +171,7 @@ class WooAiSmokeRunWriterTest {
         scenarios = listOf(
             HeadlessApprovedScenarioBaseline(
                 scenarioId = "orders-read-recent",
-                category = HeadlessScenarioCategory.ORDERS_READ,
+                category = "read",
                 approvedHardChecks = listOf(
                     HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),

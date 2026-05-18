@@ -22,7 +22,7 @@ class HeadlessBaselineParserTest {
               "scenarios": [
                 {
                   "id": "orders-processing",
-                  "category": "ORDERS_READ",
+                  "category": "read",
                   "scope": "ORDERS",
                   "smokeFixture": null,
                   "turns": [
@@ -45,7 +45,7 @@ class HeadlessBaselineParserTest {
         assertThat(baseline.version).isEqualTo(1)
         val scenario = baseline.scenarios.single()
         assertThat(scenario.id).isEqualTo("orders-processing")
-        assertThat(scenario.category).isEqualTo(HeadlessScenarioCategory.ORDERS_READ)
+        assertThat(scenario.category).isEqualTo("read")
         assertThat(scenario.scope).isEqualTo(ToolScope.ORDERS)
         assertThat(scenario.turns.single().hardChecks.single())
             .isEqualTo(HeadlessHardCheck(HeadlessHardCheckType.TOOL_CALLED, "orders_list"))
@@ -76,7 +76,7 @@ class HeadlessBaselineParserTest {
               "scenarios": [
                 {
                   "id": "orders-read",
-                  "category": "ORDERS_READ",
+                  "category": "read",
                   "scope": "ORDERS",
                   "smokeFixture": null,
                   "turns": [
@@ -97,7 +97,7 @@ class HeadlessBaselineParserTest {
         )
 
         val scenario = baseline.scenarios.single()
-        assertThat(scenario.category).isEqualTo(HeadlessScenarioCategory.ORDERS_READ)
+        assertThat(scenario.category).isEqualTo("read")
         assertThat(scenario.scope).isEqualTo(ToolScope.ORDERS)
         assertThat(scenario.turns.single().hardChecks.single().type).isEqualTo(HeadlessHardCheckType.TOOL_CALLED)
     }
@@ -116,7 +116,7 @@ class HeadlessBaselineParserTest {
               "scenarios": [
                 {
                   "scenarioId": "write-confirmation-declined",
-                  "category": "WRITE_CONFIRMATION",
+                  "category": "write",
                   "approvedHardChecks": [
                     { "type": "OUTCOME_EQUALS", "value": "STOPPED" },
                     { "type": "CONFIRMATION_DECISION_EQUALS", "value": "CANCELLED" },
@@ -136,7 +136,7 @@ class HeadlessBaselineParserTest {
         )
 
         assertThat(baseline.metadata.modelId).isEqualTo("gpt-4o")
-        assertThat(baseline.scenarios.single().category).isEqualTo(HeadlessScenarioCategory.WRITE_CONFIRMATION)
+        assertThat(baseline.scenarios.single().category).isEqualTo("write")
         assertThat(baseline.scenarios.single().knownFailure?.issue).isEqualTo("WOOMOB-2922")
         assertThat(baseline.scenarios.single().knownFailure?.expectedFailedHardChecks?.single()?.value)
             .isEqualTo("STOPPED")

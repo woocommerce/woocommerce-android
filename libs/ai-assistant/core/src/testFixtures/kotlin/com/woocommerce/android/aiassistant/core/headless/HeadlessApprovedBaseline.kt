@@ -20,7 +20,7 @@ data class HeadlessBaselineMetadata(
 @Serializable
 data class HeadlessApprovedScenarioBaseline(
     val scenarioId: String,
-    val category: HeadlessScenarioCategory,
+    val category: String,
     val approvedHardChecks: List<HeadlessApprovedHardCheck>,
     val knownFailure: HeadlessKnownFailure? = null,
 )

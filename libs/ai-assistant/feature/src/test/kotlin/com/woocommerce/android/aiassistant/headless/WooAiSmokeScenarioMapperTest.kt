@@ -9,7 +9,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
-import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -22,11 +21,11 @@ class WooAiSmokeScenarioMapperTest {
         val scenarios = mapper().loadScenarioSpecs()
 
         assertThat(scenarios.map { it.category }).containsExactly(
-            HeadlessScenarioCategory.ORDERS_READ,
-            HeadlessScenarioCategory.PRODUCTS_READ,
-            HeadlessScenarioCategory.ANALYTICS_READ,
-            HeadlessScenarioCategory.WRITE_CONFIRMATION,
-            HeadlessScenarioCategory.OFF_DOMAIN_REFUSAL,
+            "read",
+            "search",
+            "analytics",
+            "write",
+            "safety",
         )
     }
 

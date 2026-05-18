@@ -10,7 +10,6 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessKnownFailure
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
-import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
@@ -35,11 +34,11 @@ class WooAiSmokeBaselineApprovalTest {
             suite(
                 scenario(
                     scenarioId = "orders-read-recent",
-                    category = HeadlessScenarioCategory.ORDERS_READ,
+                    category = "read",
                 ),
                 scenario(
                     scenarioId = "write-confirmation-declined",
-                    category = HeadlessScenarioCategory.WRITE_CONFIRMATION,
+                    category = "write",
                     hardCheck = HeadlessHardCheck(
                         HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
                         "orders_update:REJECTED_BY_SAFETY",
@@ -55,7 +54,7 @@ class WooAiSmokeBaselineApprovalTest {
         assertThat(approval.scenarios.map { it.scenarioId })
             .containsExactly("orders-read-recent", "write-confirmation-declined")
         assertThat(approval.scenarios.map { it.category })
-            .containsExactly(HeadlessScenarioCategory.ORDERS_READ, HeadlessScenarioCategory.WRITE_CONFIRMATION)
+            .containsExactly("read", "write")
         assertThat(approval.scenarios.last().approvedHardChecks.single().value)
             .isEqualTo("orders_update:REJECTED_BY_SAFETY")
     }
@@ -115,7 +114,7 @@ class WooAiSmokeBaselineApprovalTest {
 
     private fun scenario(
         scenarioId: String = "scenario",
-        category: HeadlessScenarioCategory = HeadlessScenarioCategory.ORDERS_READ,
+        category: String = "read",
         status: HeadlessScenarioStatus = HeadlessScenarioStatus.PASS,
         hardCheck: HeadlessHardCheck = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
     ) = HeadlessScenarioRunResult(
@@ -153,7 +152,7 @@ class WooAiSmokeBaselineApprovalTest {
         scenarios = listOf(
             HeadlessApprovedScenarioBaseline(
                 scenarioId = "orders-with-email",
-                category = HeadlessScenarioCategory.ORDERS_READ,
+                category = "read",
                 approvedHardChecks = listOf(
                     HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),
