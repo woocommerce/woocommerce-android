@@ -146,12 +146,14 @@ Focused and sampled controls:
   checked-in baseline so they are useful for debugging; approval mode rejects filters because a
   baseline refresh must cover the full suite.
 - `WOO_AI_SMOKE_SAMPLES=3` repeats each selected scenario. Valid values are `1..3`. In check mode,
-  primary scenario status and JUnit failure use sample 1; baseline comparison also uses sample 1
-  unless the checked-in baseline contains an approved sample expectation. When a sampled comparison
-  has a `sampleSummary`, the requested sample count must match the approved expectation. A
-  single-sample failure can match an approved `FLAKY` expectation, but the summary tells you to
-  rerun a sampled check before refreshing the baseline. Approval mode accepts sampled runs and can
-  intentionally approve `PASS` or `FLAKY` sample classifications.
+  primary scenario status and JUnit failure use sample 1. Baseline comparison also uses sample 1
+  unless the checked-in baseline contains an approved `sampleExpectation` or `knownFailure`.
+  `sampleExpectation` checks compare the sampled classification and requested sample count; approved
+  `knownFailure` checks compare every failing sample's failed hard-check set against
+  `knownFailure.expectedFailedHardChecks`. A single-sample failure can match an approved `FLAKY`
+  expectation, but the baseline comparison message tells you to rerun a sampled check before
+  refreshing the baseline. Approval mode accepts sampled runs and can intentionally approve `PASS`
+  or `FLAKY` sample classifications.
 - Every scenario now gets global hard guards in addition to its JSON hard checks: no `FAILED`
   outcome, no turn errors, and non-blank assistant text. This prevents empty/error responses from
   passing scenarios that mostly contain negative checks.
@@ -184,7 +186,7 @@ How to read common failures:
 | --- | --- | --- |
 | `Live baseline approval required: missing woo-ai-smoke/live-baseline.json` | Checked-in baseline was deleted or renamed. | `feature/src/debug/resources/woo-ai-smoke/live-baseline.json`. Do not work around with approval mode; find out why the baseline went missing. |
 | `Woo AI smoke baseline check failed: ...` | A blocking diff (`REGRESSION`, `NEW`, or `MISSING`). Hard-check failures surface here as `REGRESSION`. | `baseline-comparison.json` first, then `run.json` or `summary.md` for failed hard checks. |
-| `PHASE_TIMEOUT: <phase>` (one of `jwt_mint`, `selected_site_and_tool_preflight`, `live_scenarios`) | The named phase exceeded its timeout (30s / 3min / 5min respectively). | `preflight.json` first — that tells you whether bootstrap finished. |
+| `PHASE_TIMEOUT: <phase>` (one of `jwt_mint`, `selected_site_and_tool_preflight`, `live_scenarios`) | The named phase exceeded its timeout (`jwt_mint`: 30s, `selected_site_and_tool_preflight`: 3min, `live_scenarios`: 5min multiplied by `WOO_AI_SMOKE_SAMPLES`). | `preflight.json` first — that tells you whether bootstrap finished. |
 | `PREFLIGHT_FAILED: <tool> returned <kind>` | A read-only preflight tool returned anything other than `Success`. Scenarios never ran. | The named tool, plus credentials/site setup. |
 
 Reminder: `safeToolResults` in `preflight.json` is a **report, not enforcement**. The enforcement
@@ -226,11 +228,12 @@ baseline. If a scenario cannot reliably pass yet, keep the scenario in the basel
 `knownFailure` block containing a reason and the exact hard checks expected to fail.
 Do not add undocumented failures.
 
-Sampled approval writes `sampleExpectation` into `approved-live-baseline.json`: all-pass samples
-record `PASS`, mixed pass/fail samples record `FLAKY`, and all-fail samples are rejected unless an
-existing `knownFailure` is deliberately preserved because every failing sample has the same expected
-failed hard-check set. Flaky approval is separate from `knownFailure`; use it when the live behavior
-is acceptable but not stable across repeated samples.
+Sampled approval writes `sampleExpectation` into `approved-live-baseline.json` for all-pass and
+mixed pass/fail scenarios: all-pass samples record `PASS`, mixed pass/fail samples record `FLAKY`,
+and all-fail samples are rejected unless an existing `knownFailure` is deliberately preserved
+because every failing sample has the same expected failed hard-check set. Preserved known-failure
+approvals do not write `sampleExpectation`. Flaky approval is separate from `knownFailure`; use it
+when the live behavior is acceptable but not stable across repeated samples.
 
 Check and approval are wired to **two separate test classes** so a normal Level 3 run cannot
 accidentally produce a candidate baseline.

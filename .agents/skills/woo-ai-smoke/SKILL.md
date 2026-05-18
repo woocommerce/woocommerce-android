@@ -46,11 +46,13 @@ WOO_AI_SMOKE_SCENARIO_ID=orders_with_email WOO_AI_SMOKE_SAMPLES=3 \
 
 `WOO_AI_SMOKE_SCENARIO_ID` supports a comma-separated list in check mode. Approval mode must run the
 full suite and rejects scenario filters. `WOO_AI_SMOKE_SAMPLES` supports `1..3`. In check mode,
-sampling is report-only for the deterministic gate: primary scenario status uses sample 1, and the
-baseline comparison also uses sample 1 unless the checked-in baseline contains an approved sample
-expectation. When a sampled comparison has a `sampleSummary`, the requested sample count must match
-the approved expectation. A single-sample failure can match an approved `FLAKY` expectation, but
-the summary should tell you to rerun a sampled check before refreshing the baseline.
+primary scenario status and JUnit failure use sample 1. Baseline comparison also uses sample 1
+unless the checked-in baseline contains an approved `sampleExpectation` or `knownFailure`.
+`sampleExpectation` checks compare the sampled classification and requested sample count; approved
+`knownFailure` checks compare every failing sample's failed hard-check set against
+`knownFailure.expectedFailedHardChecks`. A single-sample failure can match an approved `FLAKY`
+expectation, but the baseline comparison message should tell you to rerun a sampled check before
+refreshing the baseline.
 
 Artifacts are written to:
 
@@ -119,10 +121,11 @@ WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve WOO_AI_SMOKE_SAMPLES=3 \
 ```
 
 Approval mode accepts `WOO_AI_SMOKE_SAMPLES=1..3` and still rejects scenario filters. A sampled
-approval writes a `sampleExpectation` for each approvable scenario: all-pass samples approve
-`PASS`, mixed pass/fail samples approve `FLAKY`, and all-fail samples are rejected unless an
-existing `knownFailure` is being preserved because every failing sample has the same expected failed
-hard-check set. Approved `FLAKY` is separate from `knownFailure`.
+approval writes a `sampleExpectation` for all-pass and mixed pass/fail scenarios: all-pass samples
+approve `PASS`, mixed pass/fail samples approve `FLAKY`, and all-fail samples are rejected unless
+an existing `knownFailure` is being preserved because every failing sample has the same expected
+failed hard-check set. Preserved known-failure approvals do not write `sampleExpectation`. Approved
+`FLAKY` is separate from `knownFailure`.
 
 After reviewer inspection:
 

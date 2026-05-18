@@ -247,7 +247,8 @@ Tests never write into `src/`.
   results to `live-baseline.json`. Fails on undocumented mismatches. A documented `knownFailure`
   is non-blocking only when the same hard checks still fail and every other approved check passes.
   If a known failure starts passing, the comparison marks it fixed so the exception can be removed.
-  Fails with "Live baseline approval required" if the baseline is missing or stale.
+  A missing baseline fails with "Live baseline approval required"; stale baseline metadata fails as
+  a normal blocking baseline check failure.
 - **Approval mode** (`WOO_AI_SMOKE_MODE=approve`): runs the live scenarios and writes
   `approved-live-baseline.json` under `build/outputs`. Does not touch the checked-in baseline.
   Existing `knownFailure` metadata is preserved only while every failing sample has a failed
