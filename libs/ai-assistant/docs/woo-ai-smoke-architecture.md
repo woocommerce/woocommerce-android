@@ -39,7 +39,7 @@ So the harness is decomposed into levels that each pay back a different kind of 
 | Level | Pays back | Cost |
 | --- | --- | --- |
 | 1. Core unit | Harness contracts and supporting types are well-defined | Seconds, no env |
-| 2. Feature support | `WooAiSmokeRunner` glue (scenario mapper, run writer, redactor, comparator) works end to end against the same harness Level 3 uses | Seconds, no env |
+| 2. Feature support | `WooAiSmokeRunner` glue (scenario mapper, run writer, redactor, direct hard-check failure) works end to end against the same harness Level 3 uses | Seconds, no env |
 | 3. Live no-device | The real chat service, JWT mint, tool registry, and merchant scenarios still match the accepted baseline | Minutes, needs credentials |
 | 4. Live approval | A new baseline candidate, ready for human review | Same as Level 3 |
 
@@ -60,7 +60,8 @@ flowchart LR
 ```
 
 Level 2 follows the same flow from "Test" onward — but with fake chat and fake tool registry, no
-opt-in env, no bootstrap, and a stable `build/outputs/woo-ai-smoke/latest` directory.
+opt-in env, no bootstrap, no baseline comparison, and a stable
+`build/outputs/woo-ai-smoke/latest` directory.
 
 ## 1. `WooAssistantHeadless`: the shared loop harness
 
@@ -70,7 +71,7 @@ Lives in `:libs:ai-assistant:core` `testFixtures` so it can be consumed by:
 - `:feature` debug source set, via `debugImplementation(testFixtures(project(":libs:ai-assistant:core")))`
   so `WooAiSmokeRunner` — which lives under `feature/src/debug/kotlin/` — can use it at runtime.
 - `:feature` test sources, via `testImplementation(testFixtures(project(":libs:ai-assistant:core")))`
-  so Level 2 tests (`WooAiSmokeDeterministicSupport*Test`, `JetpackAiChatServiceHeadlessHarnessTest`)
+  so Level 2 tests (`WooAiSmokeDeterministicSupportTest`, `JetpackAiChatServiceHeadlessHarnessTest`)
   can use it directly. Both lines are required; one is not enough.
 
 Given a `HeadlessScenario` and a `SessionContext`, the harness constructs an `AgenticLoopImpl` per
@@ -97,7 +98,7 @@ honest from the side.
 | `WooAssistantHeadlessTest` | `:libs:ai-assistant:core` | `src/test` | Level 1. Pins the harness contract with scripted chat + recording fake registry. |
 | `Headless{Baseline,HardCheck}*Test` | `:libs:ai-assistant:core` | `src/test` | Level 1. Pin parser, comparator, and hard-check evaluator contracts. Do not instantiate the harness. |
 | `JetpackAiChatServiceHeadlessHarnessTest` | `:libs:ai-assistant:feature` | `src/test` | Level 2. Drives the harness with real `JetpackAiChatService` against `MockWebServer`. No credentials, no Robolectric. |
-| `WooAiSmokeDeterministicSupportTest`, `WooAiSmokeDeterministicSupportApprovalTest` | `:libs:ai-assistant:feature` | `src/test` | Level 2. Run the full `WooAiSmokeRunner` with fake chat + fake tool registry under Robolectric. Validate harness wiring end to end. |
+| `WooAiSmokeDeterministicSupportTest` | `:libs:ai-assistant:feature` | `src/test` | Level 2. Run the full `WooAiSmokeRunner` with fake chat + fake tool registry under Robolectric. Validate harness wiring end to end. |
 | `WooAiSmokeLiveRobolectricTest` | `:libs:ai-assistant:feature` | `src/testDebug` | Level 3. Default. Live run, compares to checked-in `live-baseline.json`. |
 | `WooAiSmokeLiveRobolectricApprovalTest` | `:libs:ai-assistant:feature` | `src/testDebug` | Level 4. Live run that writes `approved-live-baseline.json`. Used only when intentionally refreshing. |
 
@@ -184,7 +185,7 @@ Because bootstrap throws on the first non-success, every `safeToolResults` entry
 `WooAiSmokeRunner` reads scenarios from a JSON file under
 `feature/src/debug/resources/woo-ai-smoke/`:
 
-- Level 2 uses `support-scenarios.json` (paired with `support-baseline.json`).
+- Level 2 uses `deterministic-scenarios.json`.
 - Levels 3–4 use `live-scenarios.json` (paired with `live-baseline.json`).
 
 The runner then drives each scenario through `WooAssistantHeadless` against the level's chat
@@ -213,17 +214,16 @@ Files written there:
 | `run.json` | Per-scenario results and hard-check outcomes. |
 | `turns.jsonl` | Redacted turn-by-turn trace of chat and tool calls. |
 | `summary.md` | Human-readable run summary. |
-| `baseline-comparison.json` | Diff against the checked-in baseline (check mode). |
-| `approved-{live-,}baseline.json` | Baseline candidate (approval mode only). |
+| `baseline-comparison.json` | Diff against the checked-in baseline (live check/approval modes only). |
+| `approved-live-baseline.json` | Live baseline candidate (approval mode only). |
 
 **These files are generated. They live under `build/`, they are not source code, and they are not
 committed.**
 
-The only checked-in expectations are:
+The only checked-in baseline expectation is:
 
 ```text
 libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
-libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/support-baseline.json
 ```
 
 A developer updates `live-baseline.json` by hand after reviewing an approval run's
@@ -235,19 +235,23 @@ cp \
   libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
 ```
 
-`support-baseline.json` is refreshed the same way from the Level 2 approval run's
-`approved-baseline.json`, but only matters for the deterministic harness wiring — not for any
-live-regression claim.
+Level 2 intentionally has no baseline or approval mode. It is deterministic fake-chat/fake-tool
+coverage, so a broken scenario should fail directly instead of comparing against a second checked-in
+file.
 
 Tests never write into `src/`.
 
 ## 8. Check mode vs approval mode
 
 - **Check mode** (`WOO_AI_SMOKE_MODE=check`, the default): runs the live scenarios and compares
-  results to `live-baseline.json`. Fails on mismatch. Fails with "Live baseline approval required"
-  if the baseline is missing or stale.
+  results to `live-baseline.json`. Fails on undocumented mismatches. A documented `knownFailure`
+  is non-blocking only when the same hard checks still fail and every other approved check passes.
+  If a known failure starts passing, the comparison marks it fixed so the exception can be removed.
+  Fails with "Live baseline approval required" if the baseline is missing or stale.
 - **Approval mode** (`WOO_AI_SMOKE_MODE=approve`): runs the live scenarios and writes
   `approved-live-baseline.json` under `build/outputs`. Does not touch the checked-in baseline.
+  Existing `knownFailure` metadata is preserved while that scenario still fails, and dropped once it
+  passes.
 
 The two modes are wired to different test classes so a normal run cannot accidentally produce an
 approved baseline.
@@ -265,7 +269,7 @@ artifacts are written, the skill states that and surfaces the failure reason ins
 - **Level 1 (core unit)**: harness contract, baseline parser, baseline comparator, and hard-check
   evaluator behave as specified.
 - **Level 2 (feature support)**: the full `WooAiSmokeRunner` pipeline — Hilt wiring, scenario
-  mapper, harness invocation, hard-check evaluator, baseline comparator, redactor, and run writer —
+  mapper, harness invocation, hard-check evaluator, redactor, and run writer —
   works end to end. Says nothing about real chat or real tools.
 - **Level 3 (live no-device, check mode)**: the Android AI Assistant runtime can, without a device
   or UI, accept explicit smoke credentials, mint a smoke-only Jetpack AI JWT, bootstrap

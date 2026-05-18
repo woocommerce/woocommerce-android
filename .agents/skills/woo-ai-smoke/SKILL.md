@@ -46,6 +46,10 @@ scenario recap in the final response. The recap must show every scenario, the ru
 comparison against the checked-in baseline. Do not paste raw `turns.jsonl`, credentials, JWTs, Basic
 auth headers, cookies, or expanded environment values.
 
+`KNOWN_FAILURE` in the baseline column is an accepted, explicitly documented live failure; include
+it in the recap instead of converting it to PASS. Any `REGRESSION`, `NEW`, or `MISSING` status still
+needs triage.
+
 Use this helper when the artifact files exist:
 
 ```bash
@@ -97,13 +101,15 @@ cp \
 
 After an approval run, print the same scenario recap table from
 `libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest`. Also state whether
-`approved-live-baseline.json` was produced.
+`approved-live-baseline.json` was produced. Approval can preserve an existing `knownFailure` entry,
+but new failures must not be added by hand without a reason and expected failed hard checks.
 
 ## Support/Unit Coverage
 
 ```bash
-./gradlew :libs:ai-assistant:feature:testDebugUnitTest --tests "*.WooAiSmokeDeterministicSupport*"
+./gradlew :libs:ai-assistant:feature:testDebugUnitTest --tests "*.WooAiSmokeDeterministicSupportTest"
 ```
 
 Deterministic support tests validate harness wiring only. They are not accepted primary smoke
-evidence and must not be used to approve the live baseline.
+evidence and must not be used to approve the live baseline. They do not use a deterministic
+baseline; fake-chat/fake-tool failures fail directly.

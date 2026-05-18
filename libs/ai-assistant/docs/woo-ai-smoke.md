@@ -36,7 +36,7 @@ differs only in *what gets plugged into it*:
 | 1. `WooAssistantHeadlessTest` | scripted `ScriptedHeadlessChatService` | recording fake | plain JVM | Direct |
 | 1. `Headless{Baseline,HardCheck}*Test` | n/a | n/a | plain JVM | No — tests supporting contracts only |
 | 2. `JetpackAiChatServiceHeadlessHarnessTest` | real `JetpackAiChatService` against `MockWebServer` | `NoOpToolRegistry` | plain JVM | Direct |
-| 2. `WooAiSmokeDeterministicSupport*Test` | fake `WooAiSmokeDeterministicSupportChatService` | fake `WooAiSmokeDeterministicSupportToolRegistry` | Robolectric | Indirect, via `WooAiSmokeRunner.run()` |
+| 2. `WooAiSmokeDeterministicSupportTest` | fake `WooAiSmokeDeterministicSupportChatService` | fake `WooAiSmokeDeterministicSupportToolRegistry` | Robolectric | Indirect, via `WooAiSmokeRunner.run()` |
 | 3. `WooAiSmokeLiveRobolectricTest` | real `JetpackAiChatService` against Jetpack AI | real `WooCommerceToolRegistry` | Robolectric | Indirect, via `WooAiSmokeRunner.run()` |
 | 4. `WooAiSmokeLiveRobolectricApprovalTest` | same as Level 3 | same as Level 3 | Robolectric, approval mode | Indirect, via `WooAiSmokeRunner.run()` |
 
@@ -72,15 +72,17 @@ Fakes for both the chat service and the tool registry.
 
 ```bash
 ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
-  --tests "*.WooAiSmokeDeterministicSupport*"
+  --tests "*.WooAiSmokeDeterministicSupportTest"
 ```
 
 What it proves: the whole `WooAiSmokeRunner` glue works. Scenario JSON parses into the harness, the
-harness runs the agentic loop end to end, hard checks fire, the comparator runs against the
-checked-in `support-baseline.json`, and the run writer produces every artifact (`run.json`,
-`turns.jsonl`, `summary.md`, `baseline-comparison.json`, plus `approved-baseline.json` in approval
-mode). The same `WooAiSmokeRunner` is what Level 3 invokes, so a broken run writer, scenario
-mapper, redactor, or Hilt test wiring surfaces here — fast, offline, and reproducible.
+harness runs the agentic loop end to end, hard checks fire, and the run writer produces the
+deterministic artifacts (`run.json`, `turns.jsonl`, `summary.md`). The same `WooAiSmokeRunner` is
+what Level 3 invokes, so a broken run writer, scenario mapper, redactor, or Hilt test wiring
+surfaces here — fast, offline, and reproducible.
+
+There is no deterministic baseline. Because fake chat and fake tools have no model or store drift,
+Level 2 fails directly when a scenario or hard check breaks. Baselines are reserved for live runs.
 
 What it does not prove: anything about the real model, the real chat service, the real tool
 registry, or the real store. Both chat and tool registry are
@@ -91,11 +93,10 @@ Artifacts land under `libs/ai-assistant/feature/build/outputs/woo-ai-smoke/lates
 directory).
 
 How to read a failure:
-- A failed scenario or hard check → the assertion will reference a scenario id and a hard-check
-  type. Walk back to `support-scenarios.json` (under `feature/src/debug/resources/woo-ai-smoke`)
-  and the scripted response in `WooAiSmokeDeterministicSupportFixtures.kt`.
-- A baseline mismatch → diff `build/outputs/.../baseline-comparison.json` against
-  `support-baseline.json`.
+- A failed scenario or hard check → the failure message names the failing scenario id. The specific
+  failed hard checks are in `summary.md`; walk back from there to `deterministic-scenarios.json`
+  (under `feature/src/debug/resources/woo-ai-smoke`) and the scripted response in
+  `WooAiSmokeDeterministicSupportFixtures.kt`.
 - A missing artifact → the runner threw before the writer reached it; the JUnit failure message
   names the phase.
 
@@ -155,7 +156,7 @@ libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/runs/<yyyyMMdd-HHmmss>
 | --- | --- |
 | `preflight.json` | Did SelectedSite, app password, JWT, and the read-only preflight tools bootstrap? `safeToolResults` lists every preflight call with its result kind. |
 | `run.json` | Per-scenario status and hard-check outcomes. |
-| `baseline-comparison.json` | Per-scenario diff against `live-baseline.json`. Any status other than `PASS` is a regression to triage. |
+| `baseline-comparison.json` | Per-scenario diff against `live-baseline.json`. `PASS`, `KNOWN_FAILURE`, and `KNOWN_FAILURE_FIXED` are non-blocking; `REGRESSION`, `NEW`, and `MISSING` need triage. |
 | `turns.jsonl` | Redacted turn-by-turn trace of chat and tool calls. Inspect when you need to see exactly which tool was called and what came back. |
 | `summary.md` | Human-readable summary of the run. |
 
@@ -164,8 +165,7 @@ How to read common failures:
 | Failure message | Most likely cause | First place to look |
 | --- | --- | --- |
 | `Live baseline approval required: missing woo-ai-smoke/live-baseline.json` | Checked-in baseline was deleted or renamed. | `feature/src/debug/resources/woo-ai-smoke/live-baseline.json`. Do not work around with approval mode; find out why the baseline went missing. |
-| `Woo AI smoke baseline check failed: ...` | A scenario diverged from the baseline. | `baseline-comparison.json` for the per-scenario diff. |
-| `Woo AI smoke hard checks failed: <scenario-id>` | A hard assertion on the trace failed (e.g. expected tool not called). | `run.json`, hard-check section for that scenario. |
+| `Woo AI smoke baseline check failed: ...` | A blocking diff (`REGRESSION`, `NEW`, or `MISSING`). Hard-check failures surface here as `REGRESSION`. | `baseline-comparison.json` first, then `run.json` or `summary.md` for failed hard checks. |
 | `PHASE_TIMEOUT: <phase>` (one of `jwt_mint`, `selected_site_and_tool_preflight`, `live_scenarios`) | The named phase exceeded its timeout (30s / 3min / 5min respectively). | `preflight.json` first — that tells you whether bootstrap finished. |
 | `PREFLIGHT_FAILED: <tool> returned <kind>` | A read-only preflight tool returned anything other than `Success`. Scenarios never ran. | The named tool, plus credentials/site setup. |
 
@@ -203,8 +203,10 @@ cp \
 ```
 
 The accepted live baseline must come from `JetpackAiChatService`,
-`WooAiSmokeDirectJwtTokenProvider`, and `WooCommerceToolRegistry`. A Level 2 approval baseline is
-not a substitute.
+`WooAiSmokeDirectJwtTokenProvider`, and `WooCommerceToolRegistry`. There is no Level 2 approval
+baseline. If a scenario cannot reliably pass yet, keep the scenario in the baseline with a
+`knownFailure` block containing a reason, issue link/id, and the exact hard checks expected to fail.
+Do not add undocumented failures.
 
 Check and approval are wired to **two separate test classes** so a normal Level 3 run cannot
 accidentally produce a candidate baseline.
