@@ -3,9 +3,13 @@ package com.woocommerce.android.ui.aisupportchat
 import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -28,9 +32,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AiSupportChatFragment : Fragment() {
+class AiSupportChatFragment : Fragment(), MenuProvider {
     private val viewModel: AiSupportChatViewModel by viewModels()
     private var progressDialog: CustomProgressDialog? = null
+    private var contactSupportMenuItem: MenuItem? = null
 
     @Inject lateinit var zendeskSettings: ZendeskSettings
 
@@ -60,25 +65,34 @@ class AiSupportChatFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? AiSupportChatActivity)?.apply {
-            onContactSupportClicked = null
-            setContactSupportActionVisible(false)
-        }
+        contactSupportMenuItem = null
         hideProgressDialog()
     }
 
     private fun setupContactSupportToolbarAction() {
-        (activity as? AiSupportChatActivity)?.onContactSupportClicked = {
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_ai_support_chat, menu)
+        contactSupportMenuItem = menu.findItem(R.id.menu_contact_support)
+        contactSupportMenuItem?.isVisible = viewModel.viewState.value.canContactHumanSupportFromToolbar
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        if (menuItem.itemId == R.id.menu_contact_support) {
             viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+            return true
         }
+
+        return false
     }
 
     private fun observeViewState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.viewState.collect { state ->
-                    (activity as? AiSupportChatActivity)
-                        ?.setContactSupportActionVisible(state.canContactHumanSupportFromToolbar)
+                    contactSupportMenuItem?.isVisible = state.canContactHumanSupportFromToolbar
                 }
             }
         }
