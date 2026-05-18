@@ -56,7 +56,9 @@ class AiSupportChatViewModel @Inject constructor(
     fun onSendClicked() {
         val state = _viewState.value
         val message = state.input.trim()
-        if (message.isBlank() || state.isSending || state.isLoadingHistory || !state.hasProceededToChat) return
+        if (message.isBlank()) return
+        if (state.isSending || state.isLoadingHistory) return
+        if (!state.hasProceededToChat) return
 
         launch { sendMessage(message) }
     }
