@@ -210,9 +210,6 @@ class LoginActivity :
             savedInstanceState == null &&
                 intent?.action == Intent.ACTION_VIEW &&
                 intent.data?.authority == QR_LOGIN_AUTHORITY -> {
-                // Gate the deep link on the feature flag + camera, but bypass the rollout bucket:
-                // the bucket only restricts in-app discovery. A user arriving here already chose
-                // to scan a QR (e.g. from wp-admin with a 3rd-party camera), so honor that intent.
                 if (qrLoginAvailability.isAvailableForDeepLink()) {
                     intent.data?.let { uri -> handleQrLoginUri(uri) }
                 } else {
