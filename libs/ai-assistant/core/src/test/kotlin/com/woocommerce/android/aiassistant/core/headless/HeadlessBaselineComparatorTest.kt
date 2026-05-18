@@ -146,7 +146,6 @@ class HeadlessBaselineComparatorTest {
         scenarioId: String,
         knownFailure: HeadlessKnownFailure? = null,
     ) = HeadlessApprovedBaseline(
-        version = 1,
         metadata = HeadlessBaselineMetadata(
             modelId = modelId,
             promptVersion = "1.0.0",
@@ -157,7 +156,7 @@ class HeadlessBaselineComparatorTest {
                 scenarioId = scenarioId,
                 category = "read",
                 approvedHardChecks = listOf(
-                    HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+                    HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),
                 knownFailure = knownFailure,
             )
@@ -166,9 +165,8 @@ class HeadlessBaselineComparatorTest {
 
     private fun knownFailure() = HeadlessKnownFailure(
         reason = "Model does not consistently mention where to find customer email.",
-        issue = "WOOMOB-2922",
         expectedFailedHardChecks = listOf(
-            HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+            HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
         ),
     )
 }

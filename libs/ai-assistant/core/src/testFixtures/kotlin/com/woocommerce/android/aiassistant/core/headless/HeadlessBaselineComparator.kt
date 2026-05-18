@@ -91,7 +91,7 @@ object HeadlessBaselineComparator {
         val expectedFailedChecks = knownFailure.expectedFailedHardChecks.toSet()
         val actualFailedChecks = hardCheckResults
             .filterNot { it.passed }
-            .map { HeadlessApprovedHardCheck(it.check.type, it.check.value) }
+            .map { it.check }
             .toSet()
         val expectedFailuresStillFail = expectedFailedChecks.all { expectedFailed ->
             currentChecks[expectedFailed.type to expectedFailed.value]?.passed == false

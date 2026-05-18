@@ -18,13 +18,11 @@ class HeadlessBaselineParserTest {
         val baseline = parser.parse(
             """
             {
-              "version": 1,
               "scenarios": [
                 {
                   "id": "orders-processing",
                   "category": "read",
                   "scope": "ORDERS",
-                  "smokeFixture": null,
                   "turns": [
                     {
                       "userMessage": "How many processing orders do I have?",
@@ -42,7 +40,6 @@ class HeadlessBaselineParserTest {
             """.trimIndent()
         )
 
-        assertThat(baseline.version).isEqualTo(1)
         val scenario = baseline.scenarios.single()
         assertThat(scenario.id).isEqualTo("orders-processing")
         assertThat(scenario.category).isEqualTo("read")
@@ -57,9 +54,8 @@ class HeadlessBaselineParserTest {
             parser.parse(
                 """
                 {
-                  "version": 1,
                   "scenarios": [
-                    {"id": "bad", "scope": "GLOBAL", "turns": [], "hardChecks": [], "smokeFixture": null}
+                    {"id": "bad", "scope": "GLOBAL", "turns": [], "hardChecks": []}
                   ]
                 }
                 """.trimIndent()
@@ -72,13 +68,11 @@ class HeadlessBaselineParserTest {
         val baseline = parser.parse(
             """
             {
-              "version": 1,
               "scenarios": [
                 {
                   "id": "orders-read",
                   "category": "read",
                   "scope": "ORDERS",
-                  "smokeFixture": null,
                   "turns": [
                     {
                       "userMessage": "Show recent orders",
@@ -107,7 +101,6 @@ class HeadlessBaselineParserTest {
         val baseline = parser.parseApprovedBaseline(
             """
             {
-              "version": 1,
               "metadata": {
                 "modelId": "gpt-4o",
                 "promptVersion": "1.0.0",
@@ -124,7 +117,6 @@ class HeadlessBaselineParserTest {
                   ],
                   "knownFailure": {
                     "reason": "Model currently asks for confirmation after safety cancellation.",
-                    "issue": "WOOMOB-2922",
                     "expectedFailedHardChecks": [
                       { "type": "OUTCOME_EQUALS", "value": "STOPPED" }
                     ]
@@ -137,7 +129,6 @@ class HeadlessBaselineParserTest {
 
         assertThat(baseline.metadata.modelId).isEqualTo("gpt-4o")
         assertThat(baseline.scenarios.single().category).isEqualTo("write")
-        assertThat(baseline.scenarios.single().knownFailure?.issue).isEqualTo("WOOMOB-2922")
         assertThat(baseline.scenarios.single().knownFailure?.expectedFailedHardChecks?.single()?.value)
             .isEqualTo("STOPPED")
         assertThat(baseline.scenarios.single().approvedHardChecks.map { it.value })

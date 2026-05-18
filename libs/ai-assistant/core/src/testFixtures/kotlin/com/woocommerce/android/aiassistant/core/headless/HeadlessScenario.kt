@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class HeadlessBaseline(
-    val version: Int,
     val scenarios: List<HeadlessScenarioSpec>,
 )
 
@@ -20,7 +19,6 @@ data class HeadlessScenarioSpec(
     val category: String,
     val scope: ToolScope,
     val hardChecks: List<HeadlessHardCheck>,
-    val smokeFixture: HeadlessSmokeFixture?,
 )
 
 data class HeadlessScenario(
@@ -34,12 +32,6 @@ data class HeadlessScenario(
 data class HeadlessTurnSpec(
     val userMessage: String,
     val hardChecks: List<HeadlessHardCheck>,
-)
-
-@Serializable
-data class HeadlessSmokeFixture(
-    val ownerTag: String,
-    val allowApproval: Boolean,
 )
 
 @Serializable

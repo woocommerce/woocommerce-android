@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
-import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedHardCheck
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheck
@@ -143,7 +142,6 @@ class WooAiSmokeBaselineApprovalTest {
     )
 
     private fun previousBaselineWithKnownFailure() = HeadlessApprovedBaseline(
-        version = 1,
         metadata = HeadlessBaselineMetadata(
             modelId = "gpt-4o",
             promptVersion = "1.0.0",
@@ -154,13 +152,12 @@ class WooAiSmokeBaselineApprovalTest {
                 scenarioId = "orders-with-email",
                 category = "read",
                 approvedHardChecks = listOf(
-                    HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+                    HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),
                 knownFailure = HeadlessKnownFailure(
                     reason = "Model does not consistently mention where to find customer email.",
-                    issue = "WOOMOB-2922",
                     expectedFailedHardChecks = listOf(
-                        HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+                        HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                     ),
                 ),
             )

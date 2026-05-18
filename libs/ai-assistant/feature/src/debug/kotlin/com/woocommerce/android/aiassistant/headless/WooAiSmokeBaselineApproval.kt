@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
-import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedHardCheck
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
@@ -21,21 +20,17 @@ internal object WooAiSmokeBaselineApproval {
         if (unapprovedFailures.isNotEmpty()) return null
 
         return HeadlessApprovedBaseline(
-            version = 1,
             metadata = HeadlessBaselineMetadata(
                 modelId = current.metadata.modelId,
                 promptVersion = current.metadata.promptVersion,
                 toolCatalogVersion = current.metadata.toolCatalogVersion,
-                smokeStoreLabel = current.metadata.smokeStoreLabel,
             ),
             scenarios = current.scenarios.map { scenario ->
                 val previousScenario = previousScenariosById[scenario.scenarioId]
                 HeadlessApprovedScenarioBaseline(
                     scenarioId = scenario.scenarioId,
                     category = scenario.category,
-                    approvedHardChecks = scenario.hardCheckResults.map {
-                        HeadlessApprovedHardCheck(it.check.type, it.check.value)
-                    },
+                    approvedHardChecks = scenario.hardCheckResults.map { it.check },
                     knownFailure = previousScenario?.knownFailure?.takeIf {
                         scenario.isFailing()
                     },

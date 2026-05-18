@@ -287,7 +287,6 @@ class HeadlessHardCheckEvaluatorTest {
             id = "multi-turn",
             category = "read",
             scope = ToolScope.GLOBAL,
-            smokeFixture = null,
             turns = listOf(
                 HeadlessTurnSpec(
                     userMessage = "show me orders",

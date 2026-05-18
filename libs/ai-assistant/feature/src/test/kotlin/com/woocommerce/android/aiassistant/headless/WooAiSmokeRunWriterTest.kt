@@ -2,7 +2,6 @@ package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
-import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedHardCheck
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineComparison
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
@@ -162,7 +161,6 @@ class WooAiSmokeRunWriterTest {
     )
 
     private fun approvedBaseline() = HeadlessApprovedBaseline(
-        version = 1,
         metadata = HeadlessBaselineMetadata(
             modelId = "gpt-4o",
             promptVersion = "1.0.0",
@@ -173,7 +171,7 @@ class WooAiSmokeRunWriterTest {
                 scenarioId = "orders-read-recent",
                 category = "read",
                 approvedHardChecks = listOf(
-                    HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+                    HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),
             )
         ),
