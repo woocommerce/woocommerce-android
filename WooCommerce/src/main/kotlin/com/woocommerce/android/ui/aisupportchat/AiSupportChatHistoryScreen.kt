@@ -122,7 +122,7 @@ private fun HistoryList(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100))
     ) {
