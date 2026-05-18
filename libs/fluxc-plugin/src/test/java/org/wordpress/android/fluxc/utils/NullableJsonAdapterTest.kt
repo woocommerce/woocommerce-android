@@ -18,7 +18,7 @@ class NullableJsonAdapterTest {
         val id: String?
     )
 
-    data class NumberExample(
+    data class BigDecimalExample(
         @JsonAdapter(NullBigDecimalJsonAdapter::class, nullSafe = false)
         @SerializedName("amount")
         val amount: BigDecimal?
@@ -95,7 +95,7 @@ class NullableJsonAdapterTest {
             "amount": null
             }"""
 
-        val example = gson.fromJson(json, NumberExample::class.java)
+        val example = gson.fromJson(json, BigDecimalExample::class.java)
 
         assertThat(example.amount).isNull()
     }
@@ -106,7 +106,7 @@ class NullableJsonAdapterTest {
             "amount": 100.50
             }"""
 
-        val example = gson.fromJson(json, NumberExample::class.java)
+        val example = gson.fromJson(json, BigDecimalExample::class.java)
 
         assertThat(example.amount).isEqualByComparingTo(BigDecimal("100.50"))
     }
@@ -117,7 +117,7 @@ class NullableJsonAdapterTest {
             "amount": "100.50"
             }"""
 
-        val example = gson.fromJson(json, NumberExample::class.java)
+        val example = gson.fromJson(json, BigDecimalExample::class.java)
 
         assertThat(example.amount).isEqualByComparingTo(BigDecimal("100.50"))
     }
@@ -128,13 +128,13 @@ class NullableJsonAdapterTest {
             "amount": "invalid"
             }"""
 
-        assertThatThrownBy { gson.fromJson(json, NumberExample::class.java).amount }
+        assertThatThrownBy { gson.fromJson(json, BigDecimalExample::class.java).amount }
             .hasCauseInstanceOf(MalformedJsonException::class.java)
     }
 
     @Test
     fun `when serializing a null number value, then it should be exposed to the json`() {
-        val example = NumberExample(null)
+        val example = BigDecimalExample(null)
 
         val json = gson.toJson(example)
 
@@ -143,7 +143,7 @@ class NullableJsonAdapterTest {
 
     @Test
     fun `when serializing a non-null number value, then it should be correctly serialized`() {
-        val example = NumberExample(BigDecimal("100.50"))
+        val example = BigDecimalExample(BigDecimal("100.50"))
 
         val json = gson.toJson(example)
 
