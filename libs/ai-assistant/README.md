@@ -47,8 +47,3 @@ Owns only host/app concerns — no assistant feature logic:
 
 New concerns stay inside the assistant module family, not in `:WooCommerce`. Candidates
 when the time comes: `:libs:ai-assistant:cards`, `:libs:ai-assistant:tools`.
-
-## Docs
-
-- [Woo AI Smoke](docs/woo-ai-smoke.md) — which headless test level to run for which change, with commands and how to read failures.
-- [Woo AI Smoke Architecture](docs/woo-ai-smoke-architecture.md) — why the harness splits into levels, plus the module, runtime, and artifact flow.
