@@ -55,10 +55,10 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 val priceText = priceFormat(order.total)
                 val stringRes = when (source) {
                     PaymentSuccessSource.CARD_CHECKOUT,
-                    PaymentSuccessSource.CARD_BOOKINGS,
-                    PaymentSuccessSource.SCAN_TO_PAY,
-                    PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> R.string.woopos_totals_success_payment_card
+                    PaymentSuccessSource.CARD_BOOKINGS -> R.string.woopos_totals_success_payment_card
                     PaymentSuccessSource.CASH_BOOKINGS -> R.string.woopos_totals_success_payment_cash
+                    PaymentSuccessSource.SCAN_TO_PAY -> R.string.woopos_totals_success_payment_qr
+                    PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> R.string.woopos_totals_success_payment_external
                 }
                 resourceProvider.getString(stringRes, priceText)
             } else {

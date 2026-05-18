@@ -9,12 +9,7 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given reader connected and TTP available, when building methods, then list is TapToPay, ScanToPay, MarkOrderAsPaid`() {
-        val methods = buildAllPaymentMethods(
-            readerStatus = readyForPayment,
-            isTapToPayAvailable = true,
-            isScanToPayEnabled = true,
-            isMarkOrderAsCompleteEnabled = true,
-        )
+        val methods = build(readerStatus = readyForPayment, isTapToPayAvailable = true)
 
         assertThat(methods).containsExactly(
             WooPosPaymentMethod.TAP_TO_PAY,
@@ -25,12 +20,7 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given reader connected and TTP unavailable, when building methods, then list is ScanToPay, MarkOrderAsPaid`() {
-        val methods = buildAllPaymentMethods(
-            readerStatus = readyForPayment,
-            isTapToPayAvailable = false,
-            isScanToPayEnabled = true,
-            isMarkOrderAsCompleteEnabled = true,
-        )
+        val methods = build(readerStatus = readyForPayment, isTapToPayAvailable = false)
 
         assertThat(methods).containsExactly(
             WooPosPaymentMethod.SCAN_TO_PAY,
@@ -40,12 +30,7 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given reader disconnected and TTP available, when building methods, then list is CardReader, ScanToPay, MarkOrderAsPaid`() {
-        val methods = buildAllPaymentMethods(
-            readerStatus = disconnected,
-            isTapToPayAvailable = true,
-            isScanToPayEnabled = true,
-            isMarkOrderAsCompleteEnabled = true,
-        )
+        val methods = build(readerStatus = disconnected, isTapToPayAvailable = true)
 
         assertThat(methods).containsExactly(
             WooPosPaymentMethod.CARD_READER,
@@ -56,12 +41,7 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given reader disconnected and TTP unavailable, when building methods, then list is ScanToPay, MarkOrderAsPaid`() {
-        val methods = buildAllPaymentMethods(
-            readerStatus = disconnected,
-            isTapToPayAvailable = false,
-            isScanToPayEnabled = true,
-            isMarkOrderAsCompleteEnabled = true,
-        )
+        val methods = build(readerStatus = disconnected, isTapToPayAvailable = false)
 
         assertThat(methods).containsExactly(
             WooPosPaymentMethod.SCAN_TO_PAY,
@@ -73,12 +53,7 @@ class BuildAllPaymentMethodsTest {
     fun `given reader Preparing and TTP available, when building methods, then TapToPay is included`() {
         val preparing = WooPosTotalsViewState.ReaderStatus.Preparing("title", "subtitle")
 
-        val methods = buildAllPaymentMethods(
-            readerStatus = preparing,
-            isTapToPayAvailable = true,
-            isScanToPayEnabled = true,
-            isMarkOrderAsCompleteEnabled = true,
-        )
+        val methods = build(readerStatus = preparing, isTapToPayAvailable = true)
 
         assertThat(methods).contains(WooPosPaymentMethod.TAP_TO_PAY)
         assertThat(methods).doesNotContain(WooPosPaymentMethod.CARD_READER)
@@ -86,11 +61,9 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given reader Unavailable and TTP available, when building methods, then CardReader is included`() {
-        val methods = buildAllPaymentMethods(
+        val methods = build(
             readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
             isTapToPayAvailable = true,
-            isScanToPayEnabled = true,
-            isMarkOrderAsCompleteEnabled = true,
         )
 
         assertThat(methods).contains(WooPosPaymentMethod.CARD_READER)
@@ -99,11 +72,10 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given ScanToPay disabled, when building methods, then ScanToPay is not included`() {
-        val methods = buildAllPaymentMethods(
+        val methods = build(
             readerStatus = disconnected,
             isTapToPayAvailable = false,
             isScanToPayEnabled = false,
-            isMarkOrderAsCompleteEnabled = true,
         )
 
         assertThat(methods).doesNotContain(WooPosPaymentMethod.SCAN_TO_PAY)
@@ -112,10 +84,9 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given MarkOrderAsComplete disabled, when building methods, then MarkOrderAsPaid is not included`() {
-        val methods = buildAllPaymentMethods(
+        val methods = build(
             readerStatus = disconnected,
             isTapToPayAvailable = false,
-            isScanToPayEnabled = true,
             isMarkOrderAsCompleteEnabled = false,
         )
 
@@ -125,7 +96,7 @@ class BuildAllPaymentMethodsTest {
 
     @Test
     fun `given both flags disabled, when building methods, then neither new method is included`() {
-        val methods = buildAllPaymentMethods(
+        val methods = build(
             readerStatus = disconnected,
             isTapToPayAvailable = false,
             isScanToPayEnabled = false,
@@ -135,4 +106,16 @@ class BuildAllPaymentMethodsTest {
         assertThat(methods).doesNotContain(WooPosPaymentMethod.SCAN_TO_PAY)
         assertThat(methods).doesNotContain(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
     }
+
+    private fun build(
+        readerStatus: WooPosTotalsViewState.ReaderStatus,
+        isTapToPayAvailable: Boolean,
+        isScanToPayEnabled: Boolean = true,
+        isMarkOrderAsCompleteEnabled: Boolean = true,
+    ) = buildAllPaymentMethods(
+        readerStatus = readerStatus,
+        isTapToPayAvailable = isTapToPayAvailable,
+        isScanToPayEnabled = isScanToPayEnabled,
+        isMarkOrderAsCompleteEnabled = isMarkOrderAsCompleteEnabled,
+    )
 }

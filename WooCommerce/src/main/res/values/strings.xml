@@ -3892,6 +3892,8 @@
     <string name="woopos_cart_product_unknown_item">Unknown item</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
+    <string name="woopos_totals_success_payment_qr">A payment of %1$s was successfully received.</string>
+    <string name="woopos_totals_success_payment_external">Order of %1$s was marked as complete.</string>
 
     <string name="woopos_variations_empty_list_title">No supported variations found</string>
     <string name="woopos_variations_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>

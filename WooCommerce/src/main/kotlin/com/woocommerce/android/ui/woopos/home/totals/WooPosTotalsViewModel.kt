@@ -1060,10 +1060,10 @@ class WooPosTotalsViewModel @Inject constructor(
             val dataState = dataState.value
             checkNotNull(dataState.orderTotal)
             val template = when (paymentMethod) {
-                PaymentMethod.CARD,
-                PaymentMethod.SCAN_TO_PAY,
-                PaymentMethod.EXTERNAL -> R.string.woopos_totals_success_payment_card
+                PaymentMethod.CARD -> R.string.woopos_totals_success_payment_card
                 PaymentMethod.CASH -> R.string.woopos_totals_success_payment_cash
+                PaymentMethod.SCAN_TO_PAY -> R.string.woopos_totals_success_payment_qr
+                PaymentMethod.EXTERNAL -> R.string.woopos_totals_success_payment_external
             }
             val orderTotalText = resourceProvider.getString(
                 template,
