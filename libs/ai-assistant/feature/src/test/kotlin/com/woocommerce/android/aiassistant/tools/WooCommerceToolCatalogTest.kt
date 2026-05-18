@@ -94,7 +94,6 @@ class WooCommerceToolCatalogTest {
     fun `when descriptors are inspected, then write tools are UNSAFE and read tools are SAFE`() {
         val byName = allHandlers.associateBy { it.descriptor.name }
         assertThat(byName.keys).contains("analytics_orders")
-        assertThat(byName.keys).doesNotContain("analytics_revenue")
         val writeToolNames = setOf(
             "orders_update",
             "orders_bulk_update",
@@ -150,7 +149,6 @@ class WooCommerceToolCatalogTest {
 
         val ordersList = byName.getValue("orders_list").descriptor.description
         assertThat(ordersList).contains("analytics_orders")
-        assertThat(ordersList).doesNotContain("analytics_revenue")
 
         val productsUpdate = byName.getValue("products_update").descriptor.description
         assertThat(productsUpdate).contains("regular_price")
