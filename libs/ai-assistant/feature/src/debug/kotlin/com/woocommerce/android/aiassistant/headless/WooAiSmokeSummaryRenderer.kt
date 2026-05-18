@@ -8,7 +8,7 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 internal object WooAiSmokeSummaryRenderer {
     fun render(
         suite: HeadlessSuiteRunResult,
-        comparison: HeadlessBaselineComparison,
+        comparison: HeadlessBaselineComparison?,
     ): String = buildString {
         appendLine("# Woo AI Smoke Summary")
         appendLine("Model: ${suite.metadata.modelId}")
@@ -37,12 +37,16 @@ internal object WooAiSmokeSummaryRenderer {
 
     private fun statusCounts(
         suite: HeadlessSuiteRunResult,
-        comparison: HeadlessBaselineComparison,
+        comparison: HeadlessBaselineComparison?,
     ): String {
         val passCount = suite.scenarios.count { it.status == HeadlessScenarioStatus.PASS }
         val failCount = suite.scenarios.count { it.status == HeadlessScenarioStatus.FAIL }
+        if (comparison == null) return "Status counts: PASS=$passCount FAIL=$failCount"
+
         val baselineCounts = comparison.scenarioStatuses.groupingBy { it.status }.eachCount()
         return "Status counts: PASS=$passCount FAIL=$failCount " +
+            "KNOWN_FAILURE=${baselineCounts[HeadlessBaselineRegressionStatus.KNOWN_FAILURE] ?: 0} " +
+            "KNOWN_FAILURE_FIXED=${baselineCounts[HeadlessBaselineRegressionStatus.KNOWN_FAILURE_FIXED] ?: 0} " +
             "NEW=${baselineCounts[HeadlessBaselineRegressionStatus.NEW] ?: 0} " +
             "MISSING=${baselineCounts[HeadlessBaselineRegressionStatus.MISSING] ?: 0} " +
             "REGRESSION=${baselineCounts[HeadlessBaselineRegressionStatus.REGRESSION] ?: 0}"

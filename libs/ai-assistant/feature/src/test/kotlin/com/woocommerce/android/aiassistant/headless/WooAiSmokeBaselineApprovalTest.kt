@@ -1,8 +1,13 @@
 package com.woocommerce.android.aiassistant.headless
 
+import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
+import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedHardCheck
+import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
+import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheck
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
+import com.woocommerce.android.aiassistant.core.headless.HeadlessKnownFailure
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
@@ -55,6 +60,41 @@ class WooAiSmokeBaselineApprovalTest {
             .isEqualTo("orders_update:REJECTED_BY_SAFETY")
     }
 
+    @Test
+    fun `given failed known failure, when generating approval, then known failure is preserved`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.FAIL,
+                )
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        requireNotNull(approval)
+        val scenario = approval.scenarios.single()
+        assertThat(scenario.knownFailure?.reason)
+            .isEqualTo("Model does not consistently mention where to find customer email.")
+    }
+
+    @Test
+    fun `given known failure starts passing, when generating approval, then known failure is cleared`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.PASS,
+                )
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        requireNotNull(approval)
+        val scenario = approval.scenarios.single()
+        assertThat(scenario.knownFailure).isNull()
+    }
+
     private fun suite(
         vararg scenarios: HeadlessScenarioRunResult,
     ) = HeadlessSuiteRunResult(
@@ -101,5 +141,30 @@ class WooAiSmokeBaselineApprovalTest {
             )
         ),
         status = status,
+    )
+
+    private fun previousBaselineWithKnownFailure() = HeadlessApprovedBaseline(
+        version = 1,
+        metadata = HeadlessBaselineMetadata(
+            modelId = "gpt-4o",
+            promptVersion = "1.0.0",
+            toolCatalogVersion = "1.0.0",
+        ),
+        scenarios = listOf(
+            HeadlessApprovedScenarioBaseline(
+                scenarioId = "orders-with-email",
+                category = HeadlessScenarioCategory.ORDERS_READ,
+                approvedHardChecks = listOf(
+                    HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+                ),
+                knownFailure = HeadlessKnownFailure(
+                    reason = "Model does not consistently mention where to find customer email.",
+                    issue = "WOOMOB-2922",
+                    expectedFailedHardChecks = listOf(
+                        HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
+                    ),
+                ),
+            )
+        ),
     )
 }

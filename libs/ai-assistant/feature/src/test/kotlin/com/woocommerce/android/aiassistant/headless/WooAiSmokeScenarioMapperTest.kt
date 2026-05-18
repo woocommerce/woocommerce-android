@@ -10,7 +10,6 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioCategory
-import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -116,20 +115,6 @@ class WooAiSmokeScenarioMapperTest {
     }
 
     @Test
-    fun `given approved baseline resource, when parsed from classpath, then it is readable`() {
-        val source = requireNotNull(javaClass.classLoader?.getResource("woo-ai-smoke/support-baseline.json")).readText()
-        val baseline = HeadlessBaselineParser(json).parseApprovedBaseline(source)
-
-        assertThat(baseline.scenarios.map { it.scenarioId }).containsExactlyInAnyOrder(
-            "orders-read-recent",
-            "products-search-card",
-            "analytics-orders-this-month",
-            "write-confirmation-declined",
-            "off-domain-refusal",
-        )
-    }
-
-    @Test
     fun `given live approved baseline resource, when parsed from classpath, then iOS parity baseline is readable`() {
         val source = requireNotNull(
             javaClass.classLoader?.getResource("woo-ai-smoke/live-baseline.json")
@@ -137,8 +122,10 @@ class WooAiSmokeScenarioMapperTest {
         val baseline = HeadlessBaselineParser(json).parseApprovedBaseline(source)
 
         assertThat(baseline.scenarios).hasSize(25)
-        assertThat(baseline.scenarios.single { it.scenarioId == "orders_with_email" }.approvedStatus)
-            .isEqualTo(HeadlessScenarioStatus.FAIL)
+        val knownFailure = baseline.scenarios.single { it.scenarioId == "orders_with_email" }
+        assertThat(knownFailure.knownFailure?.issue).isEqualTo("WOOMOB-2922")
+        assertThat(knownFailure.knownFailure?.expectedFailedHardChecks?.single()?.type)
+            .isEqualTo(HeadlessHardCheckType.ASSISTANT_TEXT_CONTAINS_ANY)
     }
 
     private fun mapper(selectedSiteId: Long = 1L) = WooAiSmokeScenarioMapper(

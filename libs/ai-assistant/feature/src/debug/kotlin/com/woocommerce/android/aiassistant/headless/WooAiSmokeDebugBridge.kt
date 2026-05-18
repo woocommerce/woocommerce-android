@@ -74,10 +74,12 @@ object WooAiSmokeDebugBridge {
                     json = entryPoint.json(),
                     timeSource = entryPoint.timeSource(),
                     config = WooAiSmokeConfig(
-                        baselineMode = credentials.mode,
                         scenarioResourceName = "live-scenarios.json",
-                        baselineResourceName = "live-baseline.json",
-                        approvedBaselineFileName = "approved-live-baseline.json",
+                        baseline = WooAiSmokeBaselineConfig(
+                            mode = credentials.mode,
+                            resourceName = "live-baseline.json",
+                            approvedFileName = "approved-live-baseline.json",
+                        ),
                         usePerRunDirectory = true,
                     ),
                     selectedSiteId = bootstrap.site.siteId,

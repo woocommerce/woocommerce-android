@@ -16,20 +16,22 @@ import java.util.UUID
 internal class WooAiSmokeRunWriter(
     private val json: Json,
     private val outputDirectory: File,
-    private val approvedBaselineFileName: String,
+    private val approvedBaselineFileName: String?,
     private val redactor: WooAiSmokeRedactor,
     private val usePerRunDirectory: Boolean,
 ) {
     fun write(
         suite: HeadlessSuiteRunResult,
-        comparison: HeadlessBaselineComparison,
+        comparison: HeadlessBaselineComparison?,
         approvedBaseline: HeadlessApprovedBaseline?,
     ): WooAiSmokeArtifacts {
         val sourceOutputDirectory = if (usePerRunDirectory) perRunDirectory() else outputDirectory
         sourceOutputDirectory.deleteRecursively()
         sourceOutputDirectory.mkdirs()
         File(sourceOutputDirectory, "run.json").writeRedacted(json.encodeToString(suite))
-        File(sourceOutputDirectory, "baseline-comparison.json").writeRedacted(json.encodeToString(comparison))
+        if (comparison != null) {
+            File(sourceOutputDirectory, "baseline-comparison.json").writeRedacted(json.encodeToString(comparison))
+        }
         File(sourceOutputDirectory, "summary.md").writeRedacted(WooAiSmokeSummaryRenderer.render(suite, comparison))
         File(
             sourceOutputDirectory,
@@ -38,7 +40,10 @@ internal class WooAiSmokeRunWriter(
             turnRecords(suite).joinToString("\n") { json.encodeToString(it) }
         )
         if (approvedBaseline != null) {
-            File(sourceOutputDirectory, approvedBaselineFileName).writeRedacted(json.encodeToString(approvedBaseline))
+            val fileName = requireNotNull(approvedBaselineFileName) {
+                "Approved baseline file name is required when writing an approved baseline"
+            }
+            File(sourceOutputDirectory, fileName).writeRedacted(json.encodeToString(approvedBaseline))
         }
         if (usePerRunDirectory) {
             outputDirectory.deleteRecursively()

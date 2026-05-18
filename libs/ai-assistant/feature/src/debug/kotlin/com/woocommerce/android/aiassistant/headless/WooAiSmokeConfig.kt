@@ -1,11 +1,15 @@
 package com.woocommerce.android.aiassistant.headless
 
 data class WooAiSmokeConfig(
-    val baselineMode: WooAiSmokeBaselineMode,
     val scenarioResourceName: String,
-    val baselineResourceName: String,
-    val approvedBaselineFileName: String,
+    val baseline: WooAiSmokeBaselineConfig?,
     val usePerRunDirectory: Boolean,
+)
+
+data class WooAiSmokeBaselineConfig(
+    val mode: WooAiSmokeBaselineMode,
+    val resourceName: String,
+    val approvedFileName: String,
 )
 
 enum class WooAiSmokeBaselineMode {

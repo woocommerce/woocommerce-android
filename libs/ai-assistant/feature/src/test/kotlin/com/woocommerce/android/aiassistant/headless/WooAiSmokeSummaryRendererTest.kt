@@ -37,7 +37,10 @@ class WooAiSmokeSummaryRendererTest {
         assertThat(summary).contains("ChatService: JetpackAiChatService")
         assertThat(summary).contains("ToolRegistry: WooCommerceToolRegistry")
         assertThat(summary).contains("Safety: ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)")
-        assertThat(summary).contains("Status counts: PASS=0 FAIL=1 NEW=1 MISSING=1 REGRESSION=1")
+        assertThat(summary).contains(
+            "Status counts: PASS=0 FAIL=1 KNOWN_FAILURE=0 KNOWN_FAILURE_FIXED=0 " +
+                "NEW=1 MISSING=1 REGRESSION=1"
+        )
         assertThat(summary).contains("Tools: orders_update(REJECTED_BY_SAFETY)")
         assertThat(summary).contains("Assistant: I can only help with your WooCommerce store.")
         assertThat(summary).contains("Failed checks:")

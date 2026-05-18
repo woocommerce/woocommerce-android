@@ -39,6 +39,38 @@ class HeadlessBaselineComparatorTest {
     }
 
     @Test
+    fun `given known failure fails in expected shape, when comparing, then scenario is non blocking`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(modelId = "gpt-4o", scenario = failingScenario("orders-with-email")),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-with-email",
+                knownFailure = knownFailure(),
+            ),
+        )
+
+        assertThat(comparison.scenarioStatuses.single().status)
+            .isEqualTo(HeadlessBaselineRegressionStatus.KNOWN_FAILURE)
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
+    fun `given known failure starts passing, when comparing, then scenario is marked fixed and non blocking`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(modelId = "gpt-4o", scenario = passingScenario("orders-with-email")),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-with-email",
+                knownFailure = knownFailure(),
+            ),
+        )
+
+        assertThat(comparison.scenarioStatuses.single().status)
+            .isEqualTo(HeadlessBaselineRegressionStatus.KNOWN_FAILURE_FIXED)
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
     fun `given approved scenario missing from current run, when comparing, then scenario is missing`() {
         val comparison = HeadlessBaselineComparator.compare(
             current = suite(modelId = "gpt-4o", scenario = passingScenario("products-search-card")),
@@ -112,6 +144,7 @@ class HeadlessBaselineComparatorTest {
     private fun approvedBaseline(
         modelId: String,
         scenarioId: String,
+        knownFailure: HeadlessKnownFailure? = null,
     ) = HeadlessApprovedBaseline(
         version = 1,
         metadata = HeadlessBaselineMetadata(
@@ -123,11 +156,19 @@ class HeadlessBaselineComparatorTest {
             HeadlessApprovedScenarioBaseline(
                 scenarioId = scenarioId,
                 category = HeadlessScenarioCategory.ORDERS_READ,
-                approvedStatus = HeadlessScenarioStatus.PASS,
                 approvedHardChecks = listOf(
                     HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),
+                knownFailure = knownFailure,
             )
+        ),
+    )
+
+    private fun knownFailure() = HeadlessKnownFailure(
+        reason = "Model does not consistently mention where to find customer email.",
+        issue = "WOOMOB-2922",
+        expectedFailedHardChecks = listOf(
+            HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
         ),
     )
 }

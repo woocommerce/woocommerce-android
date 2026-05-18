@@ -4,12 +4,22 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaselin
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedHardCheck
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 
 internal object WooAiSmokeBaselineApproval {
-    fun approvedBaselineOrNull(current: HeadlessSuiteRunResult): HeadlessApprovedBaseline? {
-        if (current.scenarios.any { it.status != HeadlessScenarioStatus.PASS }) return null
+    fun approvedBaselineOrNull(
+        current: HeadlessSuiteRunResult,
+        previousBaseline: HeadlessApprovedBaseline? = null,
+    ): HeadlessApprovedBaseline? {
+        val previousScenariosById = previousBaseline?.scenarios.orEmpty().associateBy { it.scenarioId }
+        val unapprovedFailures = current.scenarios.filter { scenario ->
+            scenario.isFailing() &&
+                previousScenariosById[scenario.scenarioId]?.knownFailure == null
+        }
+        if (unapprovedFailures.isNotEmpty()) return null
+
         return HeadlessApprovedBaseline(
             version = 1,
             metadata = HeadlessBaselineMetadata(
@@ -19,15 +29,21 @@ internal object WooAiSmokeBaselineApproval {
                 smokeStoreLabel = current.metadata.smokeStoreLabel,
             ),
             scenarios = current.scenarios.map { scenario ->
+                val previousScenario = previousScenariosById[scenario.scenarioId]
                 HeadlessApprovedScenarioBaseline(
                     scenarioId = scenario.scenarioId,
                     category = scenario.category,
-                    approvedStatus = HeadlessScenarioStatus.PASS,
                     approvedHardChecks = scenario.hardCheckResults.map {
                         HeadlessApprovedHardCheck(it.check.type, it.check.value)
+                    },
+                    knownFailure = previousScenario?.knownFailure?.takeIf {
+                        scenario.isFailing()
                     },
                 )
             },
         )
     }
+
+    private fun HeadlessScenarioRunResult.isFailing(): Boolean =
+        status == HeadlessScenarioStatus.FAIL
 }

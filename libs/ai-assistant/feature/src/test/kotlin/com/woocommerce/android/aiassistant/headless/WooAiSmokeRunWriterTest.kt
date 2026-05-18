@@ -173,7 +173,6 @@ class WooAiSmokeRunWriterTest {
             HeadlessApprovedScenarioBaseline(
                 scenarioId = "orders-read-recent",
                 category = HeadlessScenarioCategory.ORDERS_READ,
-                approvedStatus = HeadlessScenarioStatus.PASS,
                 approvedHardChecks = listOf(
                     HeadlessApprovedHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),

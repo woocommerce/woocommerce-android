@@ -48,12 +48,19 @@ internal object WooAiSmokeDeterministicSupportFixtures {
         return File(moduleDir, "build/outputs/woo-ai-smoke/latest")
     }
 
-    fun runner(
-        outputDirectory: File,
-        baselineMode: WooAiSmokeBaselineMode,
-    ) = WooAiSmokeRunner(
+    fun runner(outputDirectory: File) = runner(
+        outputDirectory = outputDirectory,
         chatService = WooAiSmokeDeterministicSupportChatService(),
         toolRegistry = WooAiSmokeDeterministicSupportToolRegistry(),
+    )
+
+    fun runner(
+        outputDirectory: File,
+        chatService: ChatService,
+        toolRegistry: ToolRegistry,
+    ) = WooAiSmokeRunner(
+        chatService = chatService,
+        toolRegistry = toolRegistry,
         toolCatalogSelector = DefaultToolCatalogSelector(),
         retryPolicy = ConservativeRetryPolicy,
         historyBudgeter = HistoryBudgeter { system, transcript, user ->
@@ -63,10 +70,8 @@ internal object WooAiSmokeDeterministicSupportFixtures {
         json = json,
         timeSource = TimeSource.Monotonic,
         config = WooAiSmokeConfig(
-            baselineMode = baselineMode,
-            scenarioResourceName = "support-scenarios.json",
-            baselineResourceName = "support-baseline.json",
-            approvedBaselineFileName = "approved-baseline.json",
+            scenarioResourceName = "deterministic-scenarios.json",
+            baseline = null,
             usePerRunDirectory = false,
         ),
         selectedSiteId = SITE_ID,

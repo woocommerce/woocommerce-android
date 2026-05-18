@@ -60,20 +60,19 @@ internal class WooAiSmokeRunner(
         val scenarioSpecs = scenarioMapper.loadScenarioSpecs()
         val suite = runSuite(scenarioSpecs, scenarioMapper)
         val baseline = loadApprovedBaselineOrNull()
-        val comparison = if (baseline != null) {
-            HeadlessBaselineComparator.compare(suite, baseline)
-        } else {
-            missingBaselineComparison(suite)
-        }
-        val approvedBaseline = if (config.baselineMode == WooAiSmokeBaselineMode.APPROVE) {
-            WooAiSmokeBaselineApproval.approvedBaselineOrNull(suite)
+        val comparison = baselineComparisonOrNull(suite, baseline)
+        val approvedBaseline = if (config.baseline?.mode == WooAiSmokeBaselineMode.APPROVE) {
+            WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+                current = suite,
+                previousBaseline = baseline,
+            )
         } else {
             null
         }
         val artifacts = WooAiSmokeRunWriter(
             json = json,
             outputDirectory = outputDirectory,
-            approvedBaselineFileName = config.approvedBaselineFileName,
+            approvedBaselineFileName = config.baseline?.approvedFileName,
             redactor = redactor,
             usePerRunDirectory = config.usePerRunDirectory,
         ).write(
@@ -152,11 +151,27 @@ internal class WooAiSmokeRunner(
         )
 
     private fun loadApprovedBaselineOrNull(): HeadlessApprovedBaseline? =
-        javaClass.classLoader?.getResource("woo-ai-smoke/${config.baselineResourceName}")
+        config.baseline?.resourceName
+            ?.let { javaClass.classLoader?.getResource("woo-ai-smoke/$it") }
             ?.readText()
             ?.let { HeadlessBaselineParser(json).parseApprovedBaseline(it) }
 
-    private fun missingBaselineComparison(suite: HeadlessSuiteRunResult) = HeadlessBaselineComparison(
+    private fun baselineComparisonOrNull(
+        suite: HeadlessSuiteRunResult,
+        baseline: HeadlessApprovedBaseline?,
+    ): HeadlessBaselineComparison? {
+        val baselineConfig = config.baseline ?: return null
+        return if (baseline != null) {
+            HeadlessBaselineComparator.compare(suite, baseline)
+        } else {
+            missingBaselineComparison(suite, baselineConfig)
+        }
+    }
+
+    private fun missingBaselineComparison(
+        suite: HeadlessSuiteRunResult,
+        baselineConfig: WooAiSmokeBaselineConfig,
+    ) = HeadlessBaselineComparison(
         metadataStatus = HeadlessBaselineMetadataStatus.STALE,
         scenarioStatuses = suite.scenarios.map { scenario ->
             HeadlessBaselineScenarioStatus(
@@ -165,25 +180,29 @@ internal class WooAiSmokeRunner(
                 message = "Scenario has no approved live baseline.",
             )
         },
-        message = "Live baseline approval required: missing woo-ai-smoke/${config.baselineResourceName}",
+        message = "Live baseline approval required: missing woo-ai-smoke/${baselineConfig.resourceName}",
     )
 
     private fun failureMessageFor(
         suite: HeadlessSuiteRunResult,
-        comparison: HeadlessBaselineComparison,
+        comparison: HeadlessBaselineComparison?,
         approvedBaseline: HeadlessApprovedBaseline?,
         baselineMissing: Boolean,
     ): String? {
-        val failedScenarios = suite.scenarios.filter { it.status == HeadlessScenarioStatus.FAIL }
-        if (failedScenarios.isNotEmpty()) {
-            return "Woo AI smoke hard checks failed: ${failedScenarios.joinToString { it.scenarioId }}"
-        }
+        val baselineConfig = config.baseline
+            ?: return suite.scenarios
+                .filter { it.status == HeadlessScenarioStatus.FAIL }
+                .takeIf { it.isNotEmpty() }
+                ?.joinToString(
+                    prefix = "Woo AI deterministic smoke failed: ",
+                    transform = { it.scenarioId },
+                )
 
-        return when (config.baselineMode) {
+        return when (baselineConfig.mode) {
             WooAiSmokeBaselineMode.CHECK -> {
                 if (baselineMissing) {
-                    "Live baseline approval required: missing woo-ai-smoke/${config.baselineResourceName}"
-                } else if (comparison.hasBlockingFailure) {
+                    "Live baseline approval required: missing woo-ai-smoke/${baselineConfig.resourceName}"
+                } else if (comparison?.hasBlockingFailure == true) {
                     "Woo AI smoke baseline check failed: ${comparison.message}"
                 } else {
                     null
