@@ -580,6 +580,37 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given long chat history, when contact support is clicked, then transcript keeps recent messages`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = (1L..25L).map { messageId ->
+                    createMessage(
+                        messageId = messageId,
+                        role = if (messageId % 2 == 0L) SupportChatRole.BOT else SupportChatRole.USER,
+                        content = "message-$messageId"
+                    )
+                }
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.transcript).contains("[Earlier messages trimmed]")
+            assertThat(event.transcript.lines()).doesNotContain("User: message-1")
+            assertThat(event.transcript).contains("message-25")
+        }
+
+    @Test
     fun `given ticket is created, when state updates, then escalation controls are hidden`() = testBlocking {
         val result = createSuccessDiagnosticResult()
         startChat(result)

@@ -458,13 +458,26 @@ class AiSupportChatViewModel @Inject constructor(
                     )
                 )
             }
-        }.joinToString(separator = "\n\n") { message ->
-            val role = when (message.role) {
-                AiSupportChatMessageRole.USER -> "User"
-                AiSupportChatMessageRole.BOT -> "Bot"
+        }.toBoundedTranscript()
+
+    private fun List<AiSupportChatMessage>.toBoundedTranscript(): String {
+        val messages = takeLast(MAX_TRANSCRIPT_MESSAGES)
+        return buildString {
+            if (this@toBoundedTranscript.size > MAX_TRANSCRIPT_MESSAGES) {
+                append("[Earlier messages trimmed]")
+                append("\n\n")
             }
-            "$role: ${message.transcriptText()}"
+            append(
+                messages.joinToString(separator = "\n\n") { message ->
+                    val role = when (message.role) {
+                        AiSupportChatMessageRole.USER -> "User"
+                        AiSupportChatMessageRole.BOT -> "Bot"
+                    }
+                    "$role: ${message.transcriptText()}"
+                }
+            )
         }
+    }
 
     private fun AiSupportChatMessage.transcriptText(): String =
         when (content) {
@@ -500,6 +513,7 @@ class AiSupportChatViewModel @Inject constructor(
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
 
         private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
+        private const val MAX_TRANSCRIPT_MESSAGES = 20
     }
 }
 
