@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.headless
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedScenarioBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineMetadata
+import com.woocommerce.android.aiassistant.core.headless.HeadlessKnownFailure
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
@@ -15,7 +16,7 @@ internal object WooAiSmokeBaselineApproval {
         val previousScenariosById = previousBaseline?.scenarios.orEmpty().associateBy { it.scenarioId }
         val unapprovedFailures = current.scenarios.filter { scenario ->
             scenario.isFailing() &&
-                previousScenariosById[scenario.scenarioId]?.knownFailure == null
+                !scenario.matchesKnownFailure(previousScenariosById[scenario.scenarioId]?.knownFailure)
         }
         if (unapprovedFailures.isNotEmpty()) return null
 
@@ -32,7 +33,7 @@ internal object WooAiSmokeBaselineApproval {
                     category = scenario.category,
                     approvedHardChecks = scenario.hardCheckResults.map { it.check },
                     knownFailure = previousScenario?.knownFailure?.takeIf {
-                        scenario.isFailing()
+                        scenario.matchesKnownFailure(it)
                     },
                 )
             },
@@ -41,4 +42,18 @@ internal object WooAiSmokeBaselineApproval {
 
     private fun HeadlessScenarioRunResult.isFailing(): Boolean =
         status == HeadlessScenarioStatus.FAIL
+
+    private fun HeadlessScenarioRunResult.matchesKnownFailure(
+        knownFailure: HeadlessKnownFailure?,
+    ): Boolean {
+        if (!isFailing() || knownFailure == null) return false
+
+        return failedHardChecks() == knownFailure.expectedFailedHardChecks.toSet()
+    }
+
+    private fun HeadlessScenarioRunResult.failedHardChecks() =
+        hardCheckResults
+            .filterNot { it.passed }
+            .map { it.check }
+            .toSet()
 }

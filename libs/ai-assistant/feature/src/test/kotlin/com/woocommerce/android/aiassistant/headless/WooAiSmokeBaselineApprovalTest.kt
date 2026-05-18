@@ -77,6 +77,62 @@ class WooAiSmokeBaselineApprovalTest {
     }
 
     @Test
+    fun `given known failure has extra failed hard check, when generating approval, then null is returned`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.FAIL,
+                    hardCheckResults = listOf(
+                        hardCheckResult(
+                            check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+                            passed = false,
+                        ),
+                        hardCheckResult(
+                            check = HeadlessHardCheck(
+                                HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                                "orders_search:SUCCESS",
+                            ),
+                            passed = false,
+                        ),
+                    ),
+                )
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        assertThat(approval).isNull()
+    }
+
+    @Test
+    fun `given known failure has different failed hard check, when generating approval, then null is returned`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.FAIL,
+                    hardCheckResults = listOf(
+                        hardCheckResult(
+                            check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+                            passed = true,
+                        ),
+                        hardCheckResult(
+                            check = HeadlessHardCheck(
+                                HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                                "orders_search:SUCCESS",
+                            ),
+                            passed = false,
+                        ),
+                    ),
+                )
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        assertThat(approval).isNull()
+    }
+
+    @Test
     fun `given known failure starts passing, when generating approval, then known failure is cleared`() {
         val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
             current = suite(
@@ -116,6 +172,12 @@ class WooAiSmokeBaselineApprovalTest {
         category: String = "read",
         status: HeadlessScenarioStatus = HeadlessScenarioStatus.PASS,
         hardCheck: HeadlessHardCheck = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+        hardCheckResults: List<HeadlessHardCheckResult> = listOf(
+            hardCheckResult(
+                check = hardCheck,
+                passed = status == HeadlessScenarioStatus.PASS,
+            )
+        ),
     ) = HeadlessScenarioRunResult(
         scenarioId = scenarioId,
         category = category,
@@ -131,14 +193,17 @@ class WooAiSmokeBaselineApprovalTest {
                 )
             ),
         ),
-        hardCheckResults = listOf(
-            HeadlessHardCheckResult(
-                check = hardCheck,
-                passed = status == HeadlessScenarioStatus.PASS,
-                message = "check",
-            )
-        ),
+        hardCheckResults = hardCheckResults,
         status = status,
+    )
+
+    private fun hardCheckResult(
+        check: HeadlessHardCheck,
+        passed: Boolean,
+    ) = HeadlessHardCheckResult(
+        check = check,
+        passed = passed,
+        message = "check",
     )
 
     private fun previousBaselineWithKnownFailure() = HeadlessApprovedBaseline(
