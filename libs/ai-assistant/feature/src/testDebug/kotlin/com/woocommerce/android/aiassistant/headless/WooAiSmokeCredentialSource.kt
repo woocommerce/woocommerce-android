@@ -15,13 +15,19 @@ object WooAiSmokeCredentialSource {
         environment: Map<String, String>,
         defaultOutputDirectory: File,
         runLiveEnabled: Boolean,
-    ): WooAiSmokeCredentialParseResult {
-        if (!runLiveEnabled) {
-            return WooAiSmokeCredentialParseResult.Skipped(
+    ): WooAiSmokeCredentialParseResult =
+        if (runLiveEnabled) {
+            parseLiveEnvironment(environment, defaultOutputDirectory)
+        } else {
+            WooAiSmokeCredentialParseResult.Skipped(
                 WooAiSmokeLiveRunGate.DISABLED_REASON
             )
         }
 
+    private fun parseLiveEnvironment(
+        environment: Map<String, String>,
+        defaultOutputDirectory: File,
+    ): WooAiSmokeCredentialParseResult {
         val missingKeys = requiredKeys.filter { environment[it].isNullOrBlank() }
         if (missingKeys.isNotEmpty()) {
             return WooAiSmokeCredentialParseResult.Invalid(
@@ -29,41 +35,44 @@ object WooAiSmokeCredentialSource {
             )
         }
 
-        val siteUrl = environment.getValue("WOO_SITE_URL").trim().trimEnd('/')
-        val siteId = environment.getValue("WOO_SITE_ID").toLongOrNull()
-        val sampleCount = parseSampleCount(environment["WOO_AI_SMOKE_SAMPLES"]).getOrElse { error ->
-            return WooAiSmokeCredentialParseResult.Invalid(error.message ?: "Invalid WOO_AI_SMOKE_SAMPLES.")
-        }
-        val scenarioIds = parseScenarioIds(environment["WOO_AI_SMOKE_SCENARIO_ID"]).getOrElse { error ->
-            return WooAiSmokeCredentialParseResult.Invalid(error.message ?: "Invalid WOO_AI_SMOKE_SCENARIO_ID.")
-        }
-        val outputDirectory = defaultOutputDirectory
-
-        return when {
-            siteId == null || siteId <= 0L -> WooAiSmokeCredentialParseResult.Invalid(
-                "WOO_SITE_ID must be a positive numeric remote site id."
-            )
-            !siteUrl.isHttpsUrl() -> WooAiSmokeCredentialParseResult.Invalid(
-                "WOO_SITE_URL must be an HTTPS URL."
-            )
-            else -> runCatching {
-                WooAiSmokeCredentialParseResult.Valid(
-                    WooAiSmokeCredentialConfig(
-                        siteUrl = siteUrl,
-                        siteId = siteId,
-                        username = environment.getValue("WOO_USERNAME"),
-                        appPassword = environment.getValue("WOO_APP_PASSWORD"),
-                        storeLabel = environment["WOO_AI_SMOKE_STORE_LABEL"]?.ifBlank { null } ?: "redacted-store",
-                        outputDirectory = outputDirectory,
-                        credentialSource = "environment",
-                        sampleCount = sampleCount,
-                        scenarioIds = scenarioIds,
-                    )
-                )
-            }.getOrElse { error ->
+        return runCatching {
+            environment.toCredentialConfig(defaultOutputDirectory)
+        }.fold(
+            onSuccess = { WooAiSmokeCredentialParseResult.Valid(it) },
+            onFailure = { error ->
                 WooAiSmokeCredentialParseResult.Invalid(error.message ?: "Invalid Woo AI smoke credentials.")
             }
+        )
+    }
+
+    private fun Map<String, String>.toCredentialConfig(outputDirectory: File): WooAiSmokeCredentialConfig {
+        val siteUrl = getValue("WOO_SITE_URL").trim().trimEnd('/')
+        val siteId = parseSiteId()
+        val scenarioIds = parseScenarioIds(this["WOO_AI_SMOKE_SCENARIO_ID"]).getOrThrow()
+
+        require(siteUrl.isHttpsUrl()) {
+            "WOO_SITE_URL must be an HTTPS URL."
         }
+
+        return WooAiSmokeCredentialConfig(
+            siteUrl = siteUrl,
+            siteId = siteId,
+            username = getValue("WOO_USERNAME"),
+            appPassword = getValue("WOO_APP_PASSWORD"),
+            storeLabel = this["WOO_AI_SMOKE_STORE_LABEL"]?.ifBlank { null } ?: "redacted-store",
+            outputDirectory = outputDirectory,
+            credentialSource = "environment",
+            sampleCount = parseSampleCount(this["WOO_AI_SMOKE_SAMPLES"]).getOrThrow(),
+            scenarioIds = scenarioIds,
+        )
+    }
+
+    private fun Map<String, String>.parseSiteId(): Long {
+        val siteId = getValue("WOO_SITE_ID").toLongOrNull()
+        require(siteId != null && siteId > 0L) {
+            "WOO_SITE_ID must be a positive numeric remote site id."
+        }
+        return siteId
     }
 
     private fun String.isHttpsUrl(): Boolean =

@@ -80,51 +80,88 @@ object HeadlessBaselineComparator {
     ): HeadlessBaselineScenarioStatus? {
         val expectation = requireNotNull(approved.sampleExpectation)
         val currentSummary = sampleSummary
+        return sampleCountMismatchStatus(expectation, currentSummary)
+            ?: sampleExpectationStatus(approved, expectation, currentSummary)
+    }
+
+    private fun HeadlessScenarioRunResult.sampleCountMismatchStatus(
+        expectation: HeadlessApprovedSampleExpectation,
+        currentSummary: HeadlessScenarioSampleSummary?,
+    ): HeadlessBaselineScenarioStatus? =
         if (currentSummary != null && currentSummary.requestedSamples != expectation.sampleCount) {
-            return HeadlessBaselineScenarioStatus(
+            HeadlessBaselineScenarioStatus(
                 scenarioId = scenarioId,
                 status = HeadlessBaselineRegressionStatus.REGRESSION,
                 message = "Approved sample count is ${expectation.sampleCount}, current sample count is " +
                     "${currentSummary.requestedSamples}.",
             )
+        } else {
+            null
         }
 
-        val currentClassification = currentSummary?.classification ?: when (status) {
-            HeadlessScenarioStatus.PASS -> HeadlessSampleClassification.PASS
-            HeadlessScenarioStatus.FAIL -> HeadlessSampleClassification.FAIL
-        }
-
+    private fun HeadlessScenarioRunResult.sampleExpectationStatus(
+        approved: HeadlessApprovedScenarioBaseline,
+        expectation: HeadlessApprovedSampleExpectation,
+        currentSummary: HeadlessScenarioSampleSummary?,
+    ): HeadlessBaselineScenarioStatus? {
+        val currentClassification = currentSampleClassification(currentSummary)
         return when (expectation.acceptedClassification) {
-            HeadlessSampleClassification.PASS -> if (currentClassification == HeadlessSampleClassification.PASS) {
-                null
-            } else {
-                sampleRegressionStatus(expectation, currentClassification)
-            }
-            HeadlessSampleClassification.FLAKY -> when {
-                currentClassification == HeadlessSampleClassification.FLAKY -> HeadlessBaselineScenarioStatus(
-                    scenarioId = scenarioId,
-                    status = HeadlessBaselineRegressionStatus.PASS,
-                    message = "Approved flaky sample expectation still matches.",
-                )
-                currentClassification == HeadlessSampleClassification.PASS ->
-                    standardStatus(approved).takeUnless { it.status == HeadlessBaselineRegressionStatus.PASS }
-                        ?: HeadlessBaselineScenarioStatus(
-                            scenarioId = scenarioId,
-                            status = HeadlessBaselineRegressionStatus.PASS,
-                            message = "Approved flaky sample expectation now passes; refresh the baseline to " +
-                                "accept PASS.",
-                        )
-                currentSummary == null -> HeadlessBaselineScenarioStatus(
-                    scenarioId = scenarioId,
-                    status = HeadlessBaselineRegressionStatus.PASS,
-                    message = "Single-sample FAIL accepted by approved flaky sample expectation; run sampled check " +
-                        "to confirm before refreshing the baseline.",
-                )
-                else -> sampleRegressionStatus(expectation, currentClassification)
-            }
+            HeadlessSampleClassification.PASS -> passSampleExpectationStatus(expectation, currentClassification)
+            HeadlessSampleClassification.FLAKY -> flakySampleExpectationStatus(
+                approved = approved,
+                expectation = expectation,
+                currentSummary = currentSummary,
+                currentClassification = currentClassification,
+            )
             HeadlessSampleClassification.FAIL -> sampleRegressionStatus(expectation, currentClassification)
         }
     }
+
+    private fun HeadlessScenarioRunResult.passSampleExpectationStatus(
+        expectation: HeadlessApprovedSampleExpectation,
+        currentClassification: HeadlessSampleClassification,
+    ): HeadlessBaselineScenarioStatus? =
+        if (currentClassification == HeadlessSampleClassification.PASS) {
+            null
+        } else {
+            sampleRegressionStatus(expectation, currentClassification)
+        }
+
+    private fun HeadlessScenarioRunResult.flakySampleExpectationStatus(
+        approved: HeadlessApprovedScenarioBaseline,
+        expectation: HeadlessApprovedSampleExpectation,
+        currentSummary: HeadlessScenarioSampleSummary?,
+        currentClassification: HeadlessSampleClassification,
+    ): HeadlessBaselineScenarioStatus =
+        when {
+            currentClassification == HeadlessSampleClassification.FLAKY -> HeadlessBaselineScenarioStatus(
+                scenarioId = scenarioId,
+                status = HeadlessBaselineRegressionStatus.PASS,
+                message = "Approved flaky sample expectation still matches.",
+            )
+            currentClassification == HeadlessSampleClassification.PASS ->
+                standardStatus(approved).takeUnless { it.status == HeadlessBaselineRegressionStatus.PASS }
+                    ?: HeadlessBaselineScenarioStatus(
+                        scenarioId = scenarioId,
+                        status = HeadlessBaselineRegressionStatus.PASS,
+                        message = "Approved flaky sample expectation now passes; refresh the baseline to accept PASS.",
+                    )
+            currentSummary == null -> HeadlessBaselineScenarioStatus(
+                scenarioId = scenarioId,
+                status = HeadlessBaselineRegressionStatus.PASS,
+                message = "Single-sample FAIL accepted by approved flaky sample expectation; run sampled check " +
+                    "to confirm before refreshing the baseline.",
+            )
+            else -> sampleRegressionStatus(expectation, currentClassification)
+        }
+
+    private fun HeadlessScenarioRunResult.currentSampleClassification(
+        currentSummary: HeadlessScenarioSampleSummary?,
+    ): HeadlessSampleClassification =
+        currentSummary?.classification ?: when (status) {
+            HeadlessScenarioStatus.PASS -> HeadlessSampleClassification.PASS
+            HeadlessScenarioStatus.FAIL -> HeadlessSampleClassification.FAIL
+        }
 
     private fun HeadlessScenarioRunResult.sampleRegressionStatus(
         expectation: HeadlessApprovedSampleExpectation,

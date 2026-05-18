@@ -90,52 +90,57 @@ class WooAiSmokeSummaryRendererTest {
             credentialSource = "test",
             sampleCount = if (sampled) 3 else 1,
         ),
-        scenarios = listOf(
-            HeadlessScenarioRunResult(
-                scenarioId = "write-confirmation-declined",
-                category = "write",
-                result = HeadlessRunResult(
-                    scenarioId = "write-confirmation-declined",
-                    turns = listOf(
-                        HeadlessTurnResult(
-                            turnIndex = 0,
-                            userMessage = "Update order",
-                            assistantText = "I can only help with your WooCommerce store.\nThe write was declined.",
-                            outcome = LoopOutcome.STOPPED,
-                            toolCalls = listOf(
-                                HeadlessToolCallTrace(
-                                    id = "call_1",
-                                    name = "orders_update",
-                                    arguments = buildJsonObject { },
-                                    safetyLevel = ToolSafetyLevel.UNSAFE,
-                                    resultKind = HeadlessToolResultKind.REJECTED_BY_SAFETY,
-                                )
-                            ),
-                            errors = errors,
-                        )
-                    ),
-                ),
-                hardCheckResults = listOf(
-                    HeadlessHardCheckResult(
-                        check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
-                        passed = false,
-                        message = "Failed OUTCOME_EQUALS for COMPLETED",
-                    )
-                ),
-                status = HeadlessScenarioStatus.FAIL,
-                sampleSummary = if (sampled) {
-                    HeadlessScenarioSampleSummary(
-                        requestedSamples = 3,
-                        passCount = 2,
-                        failCount = 1,
-                        classification = HeadlessSampleClassification.FLAKY,
-                    )
-                } else {
-                    null
-                },
+        scenarios = listOf(scenario(sampled, errors)),
+    )
+
+    private fun scenario(
+        sampled: Boolean,
+        errors: List<String>,
+    ) = HeadlessScenarioRunResult(
+        scenarioId = "write-confirmation-declined",
+        category = "write",
+        result = HeadlessRunResult(
+            scenarioId = "write-confirmation-declined",
+            turns = listOf(turn(errors)),
+        ),
+        hardCheckResults = listOf(
+            HeadlessHardCheckResult(
+                check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+                passed = false,
+                message = "Failed OUTCOME_EQUALS for COMPLETED",
             )
         ),
+        status = HeadlessScenarioStatus.FAIL,
+        sampleSummary = sampleSummary(sampled),
     )
+
+    private fun turn(errors: List<String>) = HeadlessTurnResult(
+        turnIndex = 0,
+        userMessage = "Update order",
+        assistantText = "I can only help with your WooCommerce store.\nThe write was declined.",
+        outcome = LoopOutcome.STOPPED,
+        toolCalls = listOf(
+            HeadlessToolCallTrace(
+                id = "call_1",
+                name = "orders_update",
+                arguments = buildJsonObject { },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+                resultKind = HeadlessToolResultKind.REJECTED_BY_SAFETY,
+            )
+        ),
+        errors = errors,
+    )
+
+    private fun sampleSummary(sampled: Boolean) = if (sampled) {
+        HeadlessScenarioSampleSummary(
+            requestedSamples = 3,
+            passCount = 2,
+            failCount = 1,
+            classification = HeadlessSampleClassification.FLAKY,
+        )
+    } else {
+        null
+    }
 
     private fun comparison() = HeadlessBaselineComparison(
         metadataStatus = HeadlessBaselineMetadataStatus.CURRENT,
