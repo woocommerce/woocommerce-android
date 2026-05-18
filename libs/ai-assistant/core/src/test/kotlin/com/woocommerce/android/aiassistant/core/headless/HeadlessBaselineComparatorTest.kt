@@ -81,6 +81,98 @@ class HeadlessBaselineComparatorTest {
             .isEqualTo(HeadlessBaselineRegressionStatus.MISSING)
     }
 
+    @Test
+    fun `given approved pass sample expectation and current flaky, when comparing, then scenario is regression`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = passingScenario("orders-read-recent").withSampleSummary(HeadlessSampleClassification.FLAKY),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.PASS),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.REGRESSION)
+        assertThat(scenarioStatus.message).contains("sample classification")
+    }
+
+    @Test
+    fun `given approved flaky sample expectation and current flaky, when comparing, then scenario is non blocking`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = passingScenario("orders-read-recent").withSampleSummary(HeadlessSampleClassification.FLAKY),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.FLAKY),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.PASS)
+        assertThat(scenarioStatus.message).contains("Approved flaky sample expectation still matches")
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
+    fun `given approved flaky sample expectation and current pass, when comparing, then scenario is non blocking`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(modelId = "gpt-4o", scenario = passingScenario("orders-read-recent")),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.FLAKY),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.PASS)
+        assertThat(scenarioStatus.message).contains("Approved flaky sample expectation now passes")
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
+    fun `given approved flaky sample expectation and sampled current fail, when comparing, then scenario is regression`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = failingScenario("orders-read-recent").withSampleSummary(HeadlessSampleClassification.FAIL),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.FLAKY),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.REGRESSION)
+        assertThat(scenarioStatus.message).contains("sample classification")
+    }
+
+    @Test
+    fun `given approved flaky sample expectation and single-sample current fail, when comparing, then scenario is non blocking`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(modelId = "gpt-4o", scenario = failingScenario("orders-read-recent")),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.FLAKY),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.PASS)
+        assertThat(scenarioStatus.message).contains("Single-sample FAIL accepted by approved flaky sample expectation")
+        assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
     private fun suite(
         modelId: String,
         scenario: HeadlessScenarioRunResult,
@@ -141,10 +233,30 @@ class HeadlessBaselineComparatorTest {
         status = status,
     )
 
+    private fun HeadlessScenarioRunResult.withSampleSummary(
+        classification: HeadlessSampleClassification,
+    ) = copy(
+        sampleSummary = HeadlessScenarioSampleSummary(
+            requestedSamples = 3,
+            passCount = when (classification) {
+                HeadlessSampleClassification.PASS -> 3
+                HeadlessSampleClassification.FLAKY -> 2
+                HeadlessSampleClassification.FAIL -> 0
+            },
+            failCount = when (classification) {
+                HeadlessSampleClassification.PASS -> 0
+                HeadlessSampleClassification.FLAKY -> 1
+                HeadlessSampleClassification.FAIL -> 3
+            },
+            classification = classification,
+        )
+    )
+
     private fun approvedBaseline(
         modelId: String,
         scenarioId: String,
         knownFailure: HeadlessKnownFailure? = null,
+        sampleExpectation: HeadlessApprovedSampleExpectation? = null,
     ) = HeadlessApprovedBaseline(
         metadata = HeadlessBaselineMetadata(
             modelId = modelId,
@@ -159,8 +271,16 @@ class HeadlessBaselineComparatorTest {
                     HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED")
                 ),
                 knownFailure = knownFailure,
+                sampleExpectation = sampleExpectation,
             )
         ),
+    )
+
+    private fun sampleExpectation(
+        classification: HeadlessSampleClassification,
+    ) = HeadlessApprovedSampleExpectation(
+        sampleCount = 3,
+        acceptedClassification = classification,
     )
 
     private fun knownFailure() = HeadlessKnownFailure(

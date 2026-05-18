@@ -21,6 +21,13 @@ data class HeadlessApprovedScenarioBaseline(
     val category: String,
     val approvedHardChecks: List<HeadlessHardCheck>,
     val knownFailure: HeadlessKnownFailure? = null,
+    val sampleExpectation: HeadlessApprovedSampleExpectation? = null,
+)
+
+@Serializable
+data class HeadlessApprovedSampleExpectation(
+    val sampleCount: Int,
+    val acceptedClassification: HeadlessSampleClassification,
 )
 
 @Serializable
