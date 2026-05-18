@@ -223,7 +223,9 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
 
-        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
+
+        QR_LOGIN_ROLLOUT_BUCKET
     }
 
     fun init(context: Context) {
@@ -335,6 +337,14 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var qrLoginRolloutBucket: Int?
+        get() = UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET
+            .takeIf { exists(it) }
+            ?.let { getInt(it) }
+        set(value) {
+            value?.let { setInt(UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET, it) }
+        }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 

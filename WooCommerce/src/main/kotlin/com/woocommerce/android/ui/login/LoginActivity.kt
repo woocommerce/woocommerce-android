@@ -209,9 +209,7 @@ class LoginActivity :
             savedInstanceState == null &&
                 intent?.action == Intent.ACTION_VIEW &&
                 intent.data?.authority == QR_LOGIN_AUTHORITY -> {
-                // Gate the deep link on the same availability check as the in-app entry, so
-                // the system camera / 3rd-party scanner path cannot bypass the feature flag.
-                if (qrLoginAvailability.isAvailable()) {
+                if (qrLoginAvailability.isAvailableForDeepLink()) {
                     intent.data?.let { uri -> handleQrLoginUri(uri) }
                 } else {
                     loginAnalyticsListener.trackLoginAccessed()

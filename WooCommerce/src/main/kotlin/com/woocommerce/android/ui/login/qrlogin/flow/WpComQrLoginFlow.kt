@@ -76,7 +76,7 @@ internal class WpComQrLoginFlow(
                         subtitle = scan.userEmail,
                         expiresAtEpochMs = expiresAt,
                     )
-                    pollUntilApprovedOrTerminal(sessionId = scan.sessionId)
+                    pollUntilApprovedOrTerminal(sessionId = scan.sessionId, token = payload.token)
                 },
                 onFailure = { failure ->
                     failWith(step = FailureStep.Scan, reason = failure.toScanReason())
@@ -85,12 +85,12 @@ internal class WpComQrLoginFlow(
         }
     }
 
-    private suspend fun pollUntilApprovedOrTerminal(sessionId: String) {
+    private suspend fun pollUntilApprovedOrTerminal(sessionId: String, token: String) {
         WooLog.d(WooLog.T.LOGIN, "QR login wp.com poll: starting")
         val outcome = pollUntilTerminal(
             shouldContinue = { _state.value is FlowState.WaitingForApproval },
             poll = {
-                restClient.checkSessionStatus(sessionId).fold(
+                restClient.checkSessionStatus(sessionId, token).fold(
                     onSuccess = { it.toPollOutcome() },
                     onFailure = { it.toPollErrorOutcome() }
                 )
@@ -166,9 +166,16 @@ internal class WpComQrLoginFlow(
 
     private fun Throwable.toPollErrorOutcome(): PollOutcome = PollOutcome.TransientError(
         reason = toPollReason(),
-        terminal = this is WpComQrLoginSessionStatusException.RateLimited,
+        terminal = isTerminalPollFailure(),
         cause = this,
     )
+
+    private fun Throwable.isTerminalPollFailure(): Boolean = when (this) {
+        WpComQrLoginSessionStatusException.RateLimited,
+        // 403 — token-hash mismatch. Per spec: treat as compromised, abort, require fresh scan.
+        WpComQrLoginSessionStatusException.TokenHashMismatch -> true
+        else -> false
+    }
 
     private fun Throwable.toScanReason(): ErrorReason = when (this) {
         WpComQrLoginScanException.RestForbidden -> ErrorReason.TokenRejected
@@ -192,6 +199,10 @@ internal class WpComQrLoginFlow(
         WpComQrLoginSessionStatusException.RateLimited -> ErrorReason.RateLimited
         WpComQrLoginSessionStatusException.Network -> ErrorReason.Network
         WpComQrLoginSessionStatusException.MalformedResponse -> ErrorReason.ServerError
+        WpComQrLoginSessionStatusException.TokenHashMismatch -> {
+            WooLog.w(WooLog.T.LOGIN, "QR login wp.com poll: token_hash did not match session — aborting")
+            ErrorReason.TokenRejected
+        }
         is WpComQrLoginSessionStatusException.HttpError -> ErrorReason.ServerError
         is WpComQrLoginSessionStatusException.Unknown -> ErrorReason.Unknown
         else -> {

@@ -21,6 +21,7 @@ import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import java.net.HttpURLConnection.HTTP_PRECON_FAILED
+import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -45,6 +46,7 @@ class WpComQrLoginRestClient @Inject constructor(
     private val gson: Gson,
     private val dispatchers: CoroutineDispatchers,
     private val appSecrets: AppSecrets,
+    private val deviceInfoProvider: QrLoginDeviceInfoProvider,
 ) {
 
     suspend fun scan(token: String, encrypted: String): Result<WpComQrLoginScanResult> =
@@ -58,10 +60,10 @@ class WpComQrLoginRestClient @Inject constructor(
             }
         }
 
-    suspend fun checkSessionStatus(sessionId: String): Result<WpComQrLoginSessionStatus> =
+    suspend fun checkSessionStatus(sessionId: String, token: String): Result<WpComQrLoginSessionStatus> =
         withContext(dispatchers.io) {
             try {
-                Result.success(performSessionStatus(sessionId))
+                Result.success(performSessionStatus(sessionId, token))
             } catch (ce: CancellationException) {
                 throw ce
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -104,6 +106,7 @@ class WpComQrLoginRestClient @Inject constructor(
                 token = token,
                 encrypted = encrypted,
                 supportsNumberMatching = true,
+                device = deviceInfoProvider.get(),
             )
         )
         return Request.Builder()
@@ -161,8 +164,8 @@ class WpComQrLoginRestClient @Inject constructor(
 
     // region session status
 
-    private fun performSessionStatus(sessionId: String): WpComQrLoginSessionStatus {
-        val request = buildSessionStatusRequest(sessionId)
+    private fun performSessionStatus(sessionId: String, token: String): WpComQrLoginSessionStatus {
+        val request = buildSessionStatusRequest(sessionId, token)
         okHttpClient.newCall(request).execute().use { response ->
             // The server keeps `rejected`/`consumed` records for ~2 minutes after their terminal
             // event; once the cache TTL elapses the row is gone and we get a 404. Per the wp.com
@@ -182,11 +185,12 @@ class WpComQrLoginRestClient @Inject constructor(
         }
     }
 
-    private fun buildSessionStatusRequest(sessionId: String): Request {
+    private fun buildSessionStatusRequest(sessionId: String, token: String): Request {
         val url = WPCOMV2.auth.qr_code_app.session_status.url.toHttpUrl().newBuilder()
             .addQueryParameter("client_id", appSecrets.appId)
             .addQueryParameter("client_secret", appSecrets.appSecret)
             .addQueryParameter("session_id", sessionId)
+            .addQueryParameter("token_hash", sha256Hex(token))
             .build()
         return Request.Builder()
             .url(url)
@@ -199,6 +203,10 @@ class WpComQrLoginRestClient @Inject constructor(
 
     private fun mapSessionStatusHttpStatus(code: Int): WpComQrLoginSessionStatusException = when (code) {
         // Note: 404 is handled as `Expired` upstream and never reaches this mapper.
+        // 403 — server-computed token_hash does not match the session's bound token. Per spec
+        // this means the QR token is compromised (or the app's token-state is stale); abort the
+        // flow and require a fresh scan.
+        HTTP_FORBIDDEN -> WpComQrLoginSessionStatusException.TokenHashMismatch
         HTTP_TOO_MANY_REQUESTS -> WpComQrLoginSessionStatusException.RateLimited
         else -> WpComQrLoginSessionStatusException.HttpError(code)
     }
@@ -313,6 +321,7 @@ class WpComQrLoginRestClient @Inject constructor(
         val token: String,
         val encrypted: String,
         @SerializedName("supports_number_matching") val supportsNumberMatching: Boolean,
+        val device: QrLoginDeviceInfo,
     )
 
     private data class ScanResponse(
@@ -381,6 +390,17 @@ class WpComQrLoginRestClient @Inject constructor(
             .noStore()
             .build()
         val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+
+        /**
+         * Lowercase-hex SHA-256 of the input's UTF-8 bytes. Matches PHP's `hash('sha256', $token)`
+         * so the client and server hashes line up byte-for-byte under the server's `hash_equals`.
+         */
+        fun sha256Hex(input: String): String {
+            val digest = MessageDigest.getInstance("SHA-256").digest(input.toByteArray(Charsets.UTF_8))
+            return buildString(digest.size * 2) {
+                digest.forEach { append("%02x".format(it)) }
+            }
+        }
     }
 }
 
@@ -458,6 +478,11 @@ sealed class WpComQrLoginScanException(message: String) : Exception(message) {
 }
 
 sealed class WpComQrLoginSessionStatusException(message: String) : Exception(message) {
+    /** 403 — server's token_hash check did not match the bound session. Treat as compromised. */
+    data object TokenHashMismatch : WpComQrLoginSessionStatusException(
+        "wp.com QR session-status token_hash did not match the bound session"
+    )
+
     data object RateLimited : WpComQrLoginSessionStatusException("Rate limit hit on wp.com QR session-status")
     data object Network : WpComQrLoginSessionStatusException("Network failure during wp.com QR session-status")
     data object MalformedResponse :
