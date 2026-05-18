@@ -187,7 +187,12 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val fetchedPreferences = WooPushNotificationPreferences(
                 storeOrder = StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)),
                 storeReview = StoreReviewPreferences(enabled = false, maxRating = 3),
-                storeStock = StoreStockPreferences(enabled = false)
+                storeStock = StoreStockPreferences(
+                    enabled = false,
+                    lowStock = false,
+                    outOfStock = true,
+                    onBackorder = false
+                )
             )
             setup {
                 mockSuccessfulFetch(fetchedPreferences)
@@ -211,6 +216,12 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             assertThat(reviewViewState.notificationPreference)
                 .isEqualTo(NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews)
             assertThat(reviewViewState.selectedRating).isEqualTo(3)
+
+            val stockViewState = viewModel.newStockNotificationSettingsViewState.captureValues().last()
+            assertThat(stockViewState.notificationsEnabled).isFalse()
+            assertThat(stockViewState.lowStockNotificationsEnabled).isFalse()
+            assertThat(stockViewState.outOfStockNotificationsEnabled).isTrue()
+            assertThat(stockViewState.backorderNotificationsEnabled).isFalse()
         }
 
     @Test
@@ -344,6 +355,30 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val reviewViewState = viewModel.newReviewNotificationSettingsViewState.captureValues().last()
             assertThat(reviewViewState.selectedRating).isEqualTo(3)
+        }
+
+    @Test
+    fun `when stock detail settings change, then save stock preferences`() =
+        testBlocking {
+            setup()
+            advanceUntilIdle()
+
+            viewModel.onStockNotificationsEnabledChanged(false)
+            viewModel.onStockNotificationSubtypeEnabledChanged(
+                NotificationSettingsSharedViewModel.StockNotificationType.LowStock,
+                false
+            )
+            advanceUntilIdle()
+
+            val preferences = captureUpdatePreferences()
+            assertThat(preferences.storeStock).isEqualTo(
+                StoreStockPreferences(
+                    enabled = false,
+                    lowStock = false,
+                    outOfStock = true,
+                    onBackorder = true
+                )
+            )
         }
 
     @Test

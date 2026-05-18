@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -87,6 +88,9 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         preferences?.toNewReviewNotificationSettingsViewState(rating)
             ?: NewReviewNotificationSettingsViewState(selectedRating = rating)
     }.asLiveData()
+    val newStockNotificationSettingsViewState = wooPushNotificationPreferences
+        .map { it?.storeStock?.toNewStockNotificationSettingsViewState() ?: NewStockNotificationSettingsViewState() }
+        .asLiveData()
 
     init {
         observeWooPushNotificationPreferences()
@@ -174,6 +178,28 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         displayedReviewRating.value = selectedRating
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
+        )
+    }
+
+    fun onStockNotificationsEnabledChanged(isEnabled: Boolean) {
+        onNotificationTypeEnabledChanged(NotificationType.STOCK, isEnabled)
+    }
+
+    fun onStockNotificationSubtypeEnabledChanged(type: StockNotificationType, isEnabled: Boolean) {
+        val preferences = wooPushNotificationPreferences.value ?: return
+        val stockViewState = preferences.storeStock?.toNewStockNotificationSettingsViewState()
+            ?: NewStockNotificationSettingsViewState()
+        val updatedViewState = when (type) {
+            StockNotificationType.LowStock ->
+                stockViewState.copy(lowStockNotificationsEnabled = isEnabled)
+            StockNotificationType.OutOfStock ->
+                stockViewState.copy(outOfStockNotificationsEnabled = isEnabled)
+            StockNotificationType.Backorder ->
+                stockViewState.copy(backorderNotificationsEnabled = isEnabled)
+        }
+
+        updateDisplayedWooPushNotificationPreferences(
+            preferences.copy(storeStock = updatedViewState.toStoreStockPreferences())
         )
     }
 
@@ -355,6 +381,20 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         }
     )
 
+    private fun StoreStockPreferences.toNewStockNotificationSettingsViewState() = NewStockNotificationSettingsViewState(
+        notificationsEnabled = enabled ?: true,
+        lowStockNotificationsEnabled = lowStock ?: true,
+        outOfStockNotificationsEnabled = outOfStock ?: true,
+        backorderNotificationsEnabled = onBackorder ?: true
+    )
+
+    private fun NewStockNotificationSettingsViewState.toStoreStockPreferences() = StoreStockPreferences(
+        enabled = notificationsEnabled,
+        lowStock = lowStockNotificationsEnabled,
+        outOfStock = outOfStockNotificationsEnabled,
+        onBackorder = backorderNotificationsEnabled
+    )
+
     private fun WooPushNotificationPreferences.isEnabled(type: NotificationType): Boolean? =
         when (type) {
             NotificationType.NEW_ORDERS -> storeOrder?.enabled
@@ -393,6 +433,19 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     enum class NewReviewNotificationPreference {
         AllReviews,
         RatingFilteredReviews
+    }
+
+    data class NewStockNotificationSettingsViewState(
+        val notificationsEnabled: Boolean = true,
+        val lowStockNotificationsEnabled: Boolean = true,
+        val outOfStockNotificationsEnabled: Boolean = true,
+        val backorderNotificationsEnabled: Boolean = true
+    )
+
+    enum class StockNotificationType {
+        LowStock,
+        OutOfStock,
+        Backorder
     }
 
     enum class NotificationType {

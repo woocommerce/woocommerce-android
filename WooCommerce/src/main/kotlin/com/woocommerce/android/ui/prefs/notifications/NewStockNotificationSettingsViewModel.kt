@@ -29,20 +29,6 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
         refreshDefaultLowStockThreshold()
     }
 
-    fun onNotificationsEnabledChanged(isEnabled: Boolean) {
-        _viewState.update { it.copy(notificationsEnabled = isEnabled) }
-    }
-
-    fun onStockNotificationEnabledChanged(type: StockNotificationType, isEnabled: Boolean) {
-        _viewState.update {
-            when (type) {
-                StockNotificationType.LowStock -> it.copy(lowStockNotificationsEnabled = isEnabled)
-                StockNotificationType.OutOfStock -> it.copy(outOfStockNotificationsEnabled = isEnabled)
-                StockNotificationType.Backorder -> it.copy(backorderNotificationsEnabled = isEnabled)
-            }
-        }
-    }
-
     fun onStoreSettingsWebViewClosed() {
         refreshDefaultLowStockThreshold()
     }
@@ -97,19 +83,9 @@ class NewStockNotificationSettingsViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val notificationsEnabled: Boolean = true,
-        val lowStockNotificationsEnabled: Boolean = true,
-        val outOfStockNotificationsEnabled: Boolean = true,
-        val backorderNotificationsEnabled: Boolean = true,
         val defaultLowStockThreshold: Int? = null,
         val isDefaultLowStockThresholdLoading: Boolean = true
     )
-
-    enum class StockNotificationType {
-        LowStock,
-        OutOfStock,
-        Backorder
-    }
 
     companion object {
         private const val STOCK_SETTINGS_PATH = "admin.php?page=wc-settings&tab=products&section=inventory"
