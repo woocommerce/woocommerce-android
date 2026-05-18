@@ -74,10 +74,11 @@ class WooPosScanToPayViewModelTest {
     @Test
     fun `given promote succeeds and paymentUrl available, when VM initializes, then state ShowingQR`() = runTest {
         // GIVEN
-        val cached: Order = mock { on { total }.thenReturn(BigDecimal("42.00")) }
-        val pendingOrder: Order = mock {
-            on { paymentUrl }.thenReturn("https://example.com/pay/abc")
-        }
+        val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
+        val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            paymentUrl = "https://example.com/pay/abc",
+        )
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(cached)
@@ -112,7 +113,7 @@ class WooPosScanToPayViewModelTest {
     @Test
     fun `given paymentUrl blank after retry, when VM initializes, then state Failed retryable`() = runTest {
         // GIVEN
-        val blankOrder: Order = mock { on { paymentUrl }.thenReturn("") }
+        val blankOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, paymentUrl = "")
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(blankOrder)
 
@@ -130,15 +131,14 @@ class WooPosScanToPayViewModelTest {
     fun `given QR shown, when polling detects paid order, then analytics tracked, parent event sent and GoBack emitted`() =
         runTest {
             // GIVEN
-            val cached: Order = mock { on { total }.thenReturn(BigDecimal("42.00")) }
-            val pendingOrder: Order = mock {
-                on { paymentUrl }.thenReturn("https://example.com/pay/abc")
-                on { datePaid }.thenReturn(null)
-                on { status }.thenReturn(Order.Status.Pending)
-            }
-            val paidOrder: Order = mock {
-                on { datePaid }.thenReturn(Date())
-            }
+            val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
+            val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+                id = orderId,
+                paymentUrl = "https://example.com/pay/abc",
+                datePaid = null,
+                status = Order.Status.Pending,
+            )
+            val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, datePaid = Date())
             whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
             whenever(repository.fetchOrderSnapshot(orderId))
                 .thenReturn(pendingOrder) // initial paymentUrl fetch
@@ -183,10 +183,11 @@ class WooPosScanToPayViewModelTest {
     @Test
     fun `given Failed state, when RetryClicked, then attempts to prepare again`() = runTest {
         // GIVEN: first attempt fails, second succeeds
-        val cached: Order = mock { on { total }.thenReturn(BigDecimal("42.00")) }
-        val pendingOrder: Order = mock {
-            on { paymentUrl }.thenReturn("https://example.com/pay/abc")
-        }
+        val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
+        val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            paymentUrl = "https://example.com/pay/abc",
+        )
         whenever(repository.promoteOrderToPending(orderId))
             .thenReturn(Result.failure(Exception("boom")))
             .thenReturn(Result.success(Unit))

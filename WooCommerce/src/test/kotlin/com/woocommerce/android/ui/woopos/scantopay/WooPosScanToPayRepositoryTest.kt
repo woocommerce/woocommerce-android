@@ -13,6 +13,8 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -23,6 +25,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import java.util.Date
 
 class WooPosScanToPayRepositoryTest {
 
@@ -43,7 +46,7 @@ class WooPosScanToPayRepositoryTest {
         val orderId = 123L
         val site: SiteModel = mock()
         val statusModel = WCOrderStatusModel(statusKey = Order.Status.Pending.value)
-        val updateResult = UpdateOrderResult.RemoteUpdateResult(mock { on { isError }.thenReturn(false) })
+        val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
 
         whenever(selectedSite.get()).thenReturn(site)
         whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Pending.value)).thenReturn(statusModel)
@@ -86,8 +89,8 @@ class WooPosScanToPayRepositoryTest {
         // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
-        val entity: OrderEntity = mock()
-        val order: Order = mock()
+        val entity = OrderEntity(localSiteId = LocalId(1), orderId = orderId)
+        val order = Order.getEmptyOrder(Date(), Date()).copy(id = orderId)
 
         whenever(selectedSite.get()).thenReturn(site)
         whenever(orderStore.fetchSingleOrderSync(site, orderId)).thenReturn(WooResult(entity))
@@ -126,7 +129,17 @@ class WooPosScanToPayRepositoryTest {
         whenever(
             orderStore.postOrderNote(site = eq(site), orderId = eq(orderId), note = any(), isCustomerNote = eq(false))
         )
-            .thenReturn(WooResult(mock<OrderNoteEntity>()))
+            .thenReturn(
+                WooResult(
+                    OrderNoteEntity(
+                        localSiteId = LocalId(1),
+                        noteId = RemoteId(1L),
+                        orderId = RemoteId(orderId),
+                        isSystemNote = false,
+                        isCustomerNote = false,
+                    )
+                )
+            )
 
         // WHEN
         val result = repository.addOrderNote(orderId, "Customer paid via Scan to Pay")
