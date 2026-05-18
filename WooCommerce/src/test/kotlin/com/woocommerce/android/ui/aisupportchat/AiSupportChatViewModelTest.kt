@@ -536,6 +536,44 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given resolved prompt exists, when later bot response is upvoted, then prompt moves after latest response`() =
+        testBlocking {
+            val latestBotMessageId = 4L
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = latestBotMessageId,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, latestBotMessageId, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onFeedbackClicked(latestBotMessageId, AiSupportChatFeedbackRating.UP)
+
+            val contents = viewModel.viewState.value.messages.map { it.content }
+            assertThat(contents.count { it == AiSupportChatMessageContent.ResolvedPrompt }).isEqualTo(1)
+            assertThat(contents).endsWith(
+                AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
+        }
+
+    @Test
     fun `given chat identifiers are missing, when feedback clicked, then feedback is not submitted`() =
         testBlocking {
             viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)

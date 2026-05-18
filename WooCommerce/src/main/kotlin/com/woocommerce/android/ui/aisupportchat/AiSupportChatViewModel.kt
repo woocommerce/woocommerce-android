@@ -453,16 +453,22 @@ class AiSupportChatViewModel @Inject constructor(
     private val List<AiSupportChatMessage>.latestBotResponse: AiSupportChatMessage?
         get() = lastOrNull { it.role == AiSupportChatMessageRole.BOT && it.messageId != null }
 
-    private fun List<AiSupportChatMessage>.appendResolvedPromptIfNeeded(): List<AiSupportChatMessage> =
-        if (any { it.content == AiSupportChatMessageContent.ResolvedPrompt }) {
-            this
-        } else {
-            this + AiSupportChatMessage(
-                id = RESOLVED_PROMPT_MESSAGE_ID,
-                role = AiSupportChatMessageRole.BOT,
-                content = AiSupportChatMessageContent.ResolvedPrompt
-            )
+    private fun List<AiSupportChatMessage>.appendResolvedPromptIfNeeded(): List<AiSupportChatMessage> {
+        val messagesWithoutPrompt = filterNot { it.content == AiSupportChatMessageContent.ResolvedPrompt }
+        val latestBotResponseIndex = messagesWithoutPrompt.indexOfLast {
+            it.role == AiSupportChatMessageRole.BOT && it.messageId != null
         }
+        if (latestBotResponseIndex == -1) return messagesWithoutPrompt
+
+        val resolvedPrompt = AiSupportChatMessage(
+            id = RESOLVED_PROMPT_MESSAGE_ID,
+            role = AiSupportChatMessageRole.BOT,
+            content = AiSupportChatMessageContent.ResolvedPrompt
+        )
+        return messagesWithoutPrompt.toMutableList().apply {
+            add(latestBotResponseIndex + 1, resolvedPrompt)
+        }
+    }
 
     private fun List<AiSupportChatMessage>.appendPostDiagnosticsGreeting(): List<AiSupportChatMessage> =
         if (any { it.id == POST_DIAGNOSTICS_GREETING_MESSAGE_ID }) {
