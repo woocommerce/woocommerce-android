@@ -35,6 +35,10 @@ android {
     testOptions {
         unitTests.includeAndroidResources = true
     }
+
+    sourceSets {
+        testDebug.java.srcDirs += 'src/testDebug/kotlin'
+    }
 }
 
 dependencies {
@@ -73,7 +77,12 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
+    testImplementation(libs.google.dagger.hilt.android.testing)
+    testImplementation(libs.squareup.okhttp3.urlconnection)
+    testImplementation(libs.apache.http.client.android)
+    testImplementation(libs.apache.http.core)
     testImplementation(testFixtures(project(":libs:ai-assistant:core")))
+    kspTest(libs.google.dagger.hilt.compiler)
 }
 
 dependencyAnalysis {
