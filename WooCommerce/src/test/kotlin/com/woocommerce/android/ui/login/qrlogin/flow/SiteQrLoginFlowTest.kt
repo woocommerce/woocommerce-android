@@ -295,6 +295,38 @@ class SiteQrLoginFlowTest : BaseUnitTest() {
                 .isEqualTo(FlowState.Completed(FlowCompletion.LoggedIn(localSiteId = LOCAL_SITE_ID)))
         }
 
+    @Test
+    fun `given retryable poll failure, when retry is called, then session status is polled again with same session id and scan is not re-invoked`() =
+        testBlocking {
+            whenever(restClient.scan(ticket.siteUrl, ticket.token)).thenReturn(Result.success(scanResult))
+            // Trip the poll-step bail-out (4 consecutive Network errors), then on retry let polling
+            // succeed with Approved so the flow can complete end-to-end.
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
+                .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
+                .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
+                .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
+                .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
+                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
+            whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
+                .thenReturn(Result.success(credentials))
+            whenever(authenticator.completeLogin(ticket, credentials)).thenReturn(Result.success(LOCAL_SITE_ID))
+            val flow = newFlow()
+            flow.start()
+            advanceUntilIdle()
+            val failed = flow.state.value as FlowState.Failed
+            assertThat(failed.failedAt).isEqualTo(FailureStep.Poll)
+            assertThat(failed.retryable).isTrue()
+
+            flow.retry()
+            advanceUntilIdle()
+
+            verify(restClient, org.mockito.kotlin.times(1)).scan(ticket.siteUrl, ticket.token)
+            verify(restClient, org.mockito.kotlin.atLeast(5))
+                .checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token)
+            assertThat(flow.state.value)
+                .isEqualTo(FlowState.Completed(FlowCompletion.LoggedIn(localSiteId = LOCAL_SITE_ID)))
+        }
+
     // endregion
 
     // region failedAt diagnostic field

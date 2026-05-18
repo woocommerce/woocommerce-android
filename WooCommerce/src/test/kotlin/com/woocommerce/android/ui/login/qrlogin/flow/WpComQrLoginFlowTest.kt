@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -241,6 +242,34 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
         assertThat(flow.state.value)
             .isEqualTo(FlowState.Completed(FlowCompletion.OpenMagicLink(url = "https://wordpress.com/magic")))
     }
+
+    @Test
+    fun `given retryable poll failure, when retry is called, then session status is polled again with same session id and scan is not re-invoked`() =
+        testBlocking {
+            whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
+            whenever(restClient.checkSessionStatus(scanResult.sessionId))
+                .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
+                .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
+                .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
+                .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
+                .thenReturn(Result.success(WpComQrLoginSessionStatus.Approved("wpc-grant-1")))
+            whenever(restClient.exchange(payload.token, payload.encrypted, "wpc-grant-1"))
+                .thenReturn(Result.success(WpComQrLoginExchangeResult(magicLinkUrl = "https://wordpress.com/magic")))
+            val flow = newFlow()
+            flow.start()
+            advanceUntilIdle()
+            val failed = flow.state.value as FlowState.Failed
+            assertThat(failed.failedAt).isEqualTo(FailureStep.Poll)
+            assertThat(failed.retryable).isTrue()
+
+            flow.retry()
+            advanceUntilIdle()
+
+            verify(restClient, times(1)).scan(payload.token, payload.encrypted)
+            verify(restClient, atLeast(5)).checkSessionStatus(scanResult.sessionId)
+            assertThat(flow.state.value)
+                .isEqualTo(FlowState.Completed(FlowCompletion.OpenMagicLink(url = "https://wordpress.com/magic")))
+        }
 
     // endregion
 

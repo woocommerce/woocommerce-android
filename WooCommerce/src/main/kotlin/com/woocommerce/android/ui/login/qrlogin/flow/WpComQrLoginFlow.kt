@@ -43,6 +43,10 @@ internal class WpComQrLoginFlow(
 
     private var activeJob: Job? = null
     private var retainedGrant: String? = null
+    // Holds the WaitingForApproval snapshot from the most recent successful scan so a retry from
+    // a Poll-step failure can resume polling the existing session instead of re-issuing the scan.
+    // Set the moment we transition into WaitingForApproval; consulted only from retry()'s Poll branch.
+    private var retainedWaitingForApproval: FlowState.WaitingForApproval? = null
 
     override fun start() {
         if (_state.value !is FlowState.Initial) return
@@ -53,17 +57,28 @@ internal class WpComQrLoginFlow(
         activeJob?.cancel()
         activeJob = null
         retainedGrant = null
+        retainedWaitingForApproval = null
         _state.value = FlowState.Initial
     }
 
     override fun retry() {
         val failed = _state.value as? FlowState.Failed ?: return
         if (!failed.retryable) return
-        retainedGrant?.let { grant -> startExchange(grant) } ?: startScan()
+        when (failed.failedAt) {
+            FailureStep.Exchange -> retainedGrant?.let(::startExchange) ?: startScan()
+            FailureStep.Poll -> retainedWaitingForApproval?.let(::resumePolling) ?: startScan()
+            else -> startScan()
+        }
+    }
+
+    private fun resumePolling(waiting: FlowState.WaitingForApproval) {
+        _state.value = waiting
+        activeJob = scope.launch { pollUntilApprovedOrTerminal(sessionId = waiting.sessionId) }
     }
 
     private fun startScan() {
         retainedGrant = null
+        retainedWaitingForApproval = null
         _state.value = FlowState.Authenticating(AuthPhase.Scan)
         activeJob = scope.launch {
             restClient.scan(token = payload.token, encrypted = payload.encrypted).fold(
@@ -75,7 +90,7 @@ internal class WpComQrLoginFlow(
                         subtitleLabelRes = R.string.login_qr_match_account_label,
                         subtitle = scan.userEmail,
                         expiresAtEpochMs = expiresAt,
-                    )
+                    ).also { retainedWaitingForApproval = it }
                     pollUntilApprovedOrTerminal(sessionId = scan.sessionId)
                 },
                 onFailure = { failure ->
