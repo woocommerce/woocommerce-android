@@ -1,10 +1,8 @@
 {
-  "version": 1,
   "metadata": {
     "modelId": "gpt-4o",
     "promptVersion": "1.0.0",
-    "toolCatalogVersion": "1.0.0",
-    "smokeStoreLabel": "redacted-store"
+    "toolCatalogVersion": "1.0.0"
   },
   "scenarios": [
     {

@@ -83,9 +83,6 @@ internal class WooAiSmokeCredentialBootstrap(
                 appPasswordCredentialsPresent = applicationPasswordsStore.hasCredentials(selected),
                 toolRegistryClass = toolRegistry::class.java.simpleName,
                 jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
-                robolectricVolleyDelivery = "direct-executor",
-                toolPreflightStarted = "products_list",
-                toolPreflightResult = "success",
                 safeToolResults = listOf(
                     WooAiSmokePreflightToolResult("products_list", productResult.kindName()),
                     WooAiSmokePreflightToolResult("orders_list", ordersResult.kindName()),
@@ -185,9 +182,6 @@ data class WooAiSmokePreflightReport(
     val appPasswordCredentialsPresent: Boolean,
     val toolRegistryClass: String,
     val jwtProviderClass: String,
-    val robolectricVolleyDelivery: String,
-    val toolPreflightStarted: String,
-    val toolPreflightResult: String,
     val safeToolResults: List<WooAiSmokePreflightToolResult>,
 )
 

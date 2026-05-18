@@ -1,11 +1,9 @@
 {
-  "version": 1,
   "scenarios": [
     {
       "id": "recent_orders_smoke",
       "category": "read",
       "scope": "ORDERS",
-      "smokeFixture": null,
       "turns": [
         {
           "userMessage": "Show me the latest five orders and include order cards.",
