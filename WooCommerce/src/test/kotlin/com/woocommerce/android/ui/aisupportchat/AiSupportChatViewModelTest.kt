@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
+import com.woocommerce.android.R
+import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatViewModel.Companion.DEFAULT_BOT_SLUG
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
@@ -9,6 +11,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessageContext
@@ -442,11 +445,15 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onContinueAfterDiagnosticsClicked()
             viewModel.onInputChanged(ISSUE_DETAILS)
             viewModel.onSendClicked()
-            viewModel.onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG)
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.ERROR_DIALOG,
+                canCreateTicketDirectly = false
+            )
 
             val event = events.single() as ContactHumanSupport
             assertThat(event.chatId).isNull()
             assertThat(event.source).isEqualTo(HumanSupportContactSource.ERROR_DIALOG)
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
             assertThat(event.transcript).contains("User: $ISSUE_DETAILS")
         }
 
@@ -477,7 +484,10 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             continueToChatAfterSuccessfulDiagnostics(result)
             viewModel.onInputChanged(ISSUE_DETAILS)
             viewModel.onSendClicked()
-            viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
 
             val event = events.single() as ContactHumanSupport
             assertThat(event.transcript).contains("Bot: $BOT_RESPONSE\n[AI response trimmed]")
@@ -507,12 +517,144 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             continueToChatAfterSuccessfulDiagnostics(result)
             viewModel.onInputChanged(ISSUE_DETAILS)
             viewModel.onSendClicked()
-            viewModel.onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
 
             val event = events.single() as ContactHumanSupport
             assertThat(event.transcript).contains("[Earlier messages trimmed]")
             assertThat(event.transcript.lines()).doesNotContain("User: message-1")
             assertThat(event.transcript).contains("message-25")
+        }
+
+    @Test
+    fun `given high confidence support area and identity, when contact support is clicked, then direct event is emitted`() =
+        testBlocking {
+            val supportArea = createSupportArea(
+                area = "woopayments",
+                topic = "woo_mobile_issue_payments",
+                confidence = "high"
+            )
+            givenStartedChatWithSupportArea(supportArea)
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.DIRECT_CREATE)
+            assertThat(event.ticketType).isEqualTo(TicketType.Payments)
+            assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_woo_payments)
+            assertThat(event.extraTags).containsExactly(
+                "in_app_support_escalate",
+                "ai_skip",
+                "woo_mobile_issue_payments"
+            )
+        }
+
+    @Test
+    fun `given high confidence support area without identity, when contact support is clicked, then form event is emitted`() =
+        testBlocking {
+            givenStartedChatWithSupportArea(createSupportArea(area = "card-reader", confidence = "high"))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.ticketType).isEqualTo(TicketType.InPersonPayments)
+            assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_card_reader)
+        }
+
+    @Test
+    fun `given low confidence support area and identity, when contact support is clicked, then form event is emitted`() =
+        testBlocking {
+            givenStartedChatWithSupportArea(createSupportArea(area = "card-reader", confidence = "low"))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.ticketType).isEqualTo(TicketType.InPersonPayments)
+            assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_card_reader)
+        }
+
+    @Test
+    fun `given no support area and identity, when contact support is clicked, then form event has no preselected type`() =
+        testBlocking {
+            startChat(createSuccessDiagnosticResult())
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.ticketType).isNull()
+            assertThat(event.subjectResId).isNull()
+            assertThat(event.extraTags).containsExactly("in_app_support_escalate", "ai_skip")
+        }
+
+    @Test
+    fun `given support areas, when contact support is clicked, then ticket type and subject are mapped`() =
+        testBlocking {
+            listOf(
+                SupportAreaMapping(
+                    areaType = SupportAreaType.MOBILE_APP,
+                    ticketType = TicketType.MobileApp,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_mobile_app
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.CARD_READER,
+                    ticketType = TicketType.InPersonPayments,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_card_reader
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.WOO_PAYMENTS,
+                    ticketType = TicketType.Payments,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_woo_payments
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.WOO_COMMERCE_PLUGIN,
+                    ticketType = TicketType.WooPlugin,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_woo_plugin
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.OTHER_EXTENSION_PLUGIN,
+                    ticketType = TicketType.OtherPlugins,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_other_plugin
+                )
+            ).forEach { mapping ->
+                createViewModel()
+                givenStartedChatWithSupportArea(createSupportArea(area = mapping.areaType.wireValue))
+                val events = mutableListOf<MultiLiveEvent.Event>()
+                viewModel.event.observeForever { events.add(it) }
+
+                viewModel.onContactSupportClicked(
+                    source = HumanSupportContactSource.BANNER,
+                    canCreateTicketDirectly = true
+                )
+
+                val event = events.single() as ContactHumanSupport
+                assertThat(event.ticketType).isEqualTo(mapping.ticketType)
+                assertThat(event.subjectResId).isEqualTo(mapping.subjectResId)
+            }
         }
 
     @Test
@@ -742,6 +884,46 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onSendClicked()
     }
 
+    private suspend fun givenStartedChatWithSupportArea(supportArea: SupportChatSupportArea) {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+            .thenReturn(
+                Result.success(
+                    createResponse(
+                        messages = listOf(
+                            createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                            createMessage(
+                                messageId = 2L,
+                                role = SupportChatRole.BOT,
+                                content = BOT_RESPONSE,
+                                context = SupportChatMessageContext(
+                                    flags = SupportChatFlags(forwardToHumanSupport = true),
+                                    supportArea = supportArea
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+        continueToChatAfterSuccessfulDiagnostics(result)
+        viewModel.onInputChanged(ISSUE_DETAILS)
+        viewModel.onSendClicked()
+    }
+
+    private fun createSupportArea(
+        area: String,
+        topic: String? = null,
+        confidence: String = "high"
+    ): SupportChatSupportArea =
+        SupportChatSupportArea(
+            area = area,
+            topic = topic,
+            confidence = confidence
+        )
+
     private fun createSuccessDiagnosticResult(issueType: SupportIssueType = SupportIssueType.LOADING_ORDERS) =
         DiagnosticResult(
             issueType = issueType,
@@ -786,6 +968,12 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         role = role,
         content = content,
         context = context
+    )
+
+    private data class SupportAreaMapping(
+        val areaType: SupportAreaType,
+        val ticketType: TicketType,
+        val subjectResId: Int
     )
 
     private companion object {
