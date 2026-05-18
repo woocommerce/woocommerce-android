@@ -53,6 +53,18 @@ sealed interface QrLoginPayload {
     data class SiteUrl(val siteUrl: String) : QrLoginPayload
 
     /**
+     * The merchant scanned the wp.com QR-app-login deeplink
+     * (`woocommerce://qr-login?token=…&encrypted=…`) shown by a desktop browser they're already
+     * signed in to wp.com on. The flow then mirrors the wc-admin variant — scan, number-match,
+     * exchange — but against the wp.com QR-code-app endpoints and ends by opening a magic link.
+     *
+     * [token] is the compound `{64-hex}:{32-hex}` server-side handle; [encrypted] is the
+     * Base64-URL-encoded AEAD blob the server needs to verify the app held the full QR.
+     * Both are single-use and must not be cached or logged.
+     */
+    data class WpComToken(val token: String, val encrypted: String) : QrLoginPayload
+
+    /**
      * Legacy wc-admin `app-login` QR. Two shapes are accepted, mirroring the OS-deeplink path:
      *  - [Credentials] for self-hosted sites: site URL + `username`, hands off to the existing
      *    site-credentials screen with both fields prefilled (password still required).

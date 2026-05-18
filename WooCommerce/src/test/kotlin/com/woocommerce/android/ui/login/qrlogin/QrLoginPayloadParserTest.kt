@@ -365,6 +365,62 @@ class QrLoginPayloadParserTest : BaseUnitTest() {
         assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
     }
 
+    @Test
+    fun `given qr-login deep link with token and encrypted but no siteUrl, when parsed, then returns WpComToken`() {
+        val token = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef:" +
+            "fedcba9876543210fedcba9876543210"
+        val encrypted = "AAECAwQFBgcICQoLDA0ODw"
+        val raw = "woocommerce://qr-login?token=$token&encrypted=$encrypted"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(QrLoginPayload.WpComToken(token = token, encrypted = encrypted))
+    }
+
+    @Test
+    fun `given qr-login deep link with token, encrypted, and siteUrl, when parsed, then prefers self-hosted Ticket`() {
+        val raw = "woocommerce://qr-login?token=$VALID_TOKEN&siteUrl=https%3A%2F%2Fexample.com" +
+            "&encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        val result = parser.parse(raw)
+
+        assertThat(result).isEqualTo(
+            QrLoginPayload.Ticket(token = VALID_TOKEN, siteUrl = "https://example.com")
+        )
+    }
+
+    @Test
+    fun `given qr-login deep link with token but no encrypted and no siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?token=$VALID_TOKEN"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link with encrypted but no token and no siteUrl, when parsed, then returns Invalid`() {
+        val raw = "woocommerce://qr-login?encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link with malformed wp_com token shape, when parsed, then returns Invalid`() {
+        // Missing colon, not 64 hex + colon + 32 hex.
+        val raw = "woocommerce://qr-login?token=not-a-valid-wpcom-token&encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
+    @Test
+    fun `given qr-login deep link with non-hex chars in wp_com token, when parsed, then returns Invalid`() {
+        // 64 chars + colon + 32 chars but with non-hex letters in both halves.
+        val token = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ:" +
+            "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        val raw = "woocommerce://qr-login?token=$token&encrypted=AAECAwQFBgcICQoLDA0ODw"
+
+        assertThat(parser.parse(raw)).isEqualTo(QrLoginPayload.Invalid)
+    }
+
     private companion object {
         const val VALID_TOKEN = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCD"
     }

@@ -1,1065 +1,490 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.network.qrlogin.QrLoginCredentials
-import com.woocommerce.android.network.qrlogin.QrLoginExchangeException
-import com.woocommerce.android.network.qrlogin.QrLoginRestClient
-import com.woocommerce.android.network.qrlogin.QrLoginScanException
-import com.woocommerce.android.network.qrlogin.QrLoginScanResult
-import com.woocommerce.android.network.qrlogin.QrLoginSessionStatus
-import com.woocommerce.android.network.qrlogin.QrLoginSessionStatusException
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.ErrorReason
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.Dispatch
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState
+import com.woocommerce.android.ui.login.qrlogin.flow.AuthPhase
+import com.woocommerce.android.ui.login.qrlogin.flow.ErrorReason
+import com.woocommerce.android.ui.login.qrlogin.flow.FailureStep
+import com.woocommerce.android.ui.login.qrlogin.flow.FlowCompletion
+import com.woocommerce.android.ui.login.qrlogin.flow.FlowState
+import com.woocommerce.android.ui.login.qrlogin.flow.QrLoginFlow
+import com.woocommerce.android.ui.login.qrlogin.flow.QrLoginFlowFactory
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QrLoginScannerViewModelTest : BaseUnitTest() {
 
     private val ticket = QrLoginPayload.Ticket(token = "tok", siteUrl = "https://store.example")
-    private val scanResult = QrLoginScanResult(
-        sessionId = "sess-1",
-        realNumber = "042",
-        expiresInSeconds = 90,
-    )
-    private val credentials = QrLoginCredentials(
-        userLogin = "admin",
-        applicationPassword = "ap-secret",
-    )
-
     private val parser: QrLoginPayloadParser = mock()
-    private val restClient: QrLoginRestClient = mock()
-    private val authenticator: QrLoginAuthenticator = mock()
+    private val flowFactory: QrLoginFlowFactory = mock()
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+
+    private val fakeFlow = FakeQrLoginFlow()
 
     private val viewModel by lazy {
         QrLoginScannerViewModel(
             savedState = SavedStateHandle(),
             parser = parser,
-            restClient = restClient,
-            authenticator = authenticator,
+            flowFactory = flowFactory,
             accountRepository = accountRepository,
-            errorMapper = QrLoginErrorMapper(),
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
         )
     }
 
     @Before
     fun setUp() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(ticket)
-        // Default to "no active session" so existing flows behave as before; individual tests
-        // that exercise the session-replace warning override this.
         whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
         whenever(accountRepository.logout()).thenReturn(true)
-        whenever(restClient.scan(ticket.siteUrl, ticket.token)).thenReturn(Result.success(scanResult))
-        whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
-            .thenReturn(Result.success(credentials))
-        whenever(authenticator.completeLogin(ticket, credentials)).thenReturn(Result.success(DEFAULT_SITE_ID))
+        whenever(flowFactory.create(eq(ticket), any())).thenReturn(fakeFlow)
     }
 
-    /**
-     * Tests that don't override [restClient]'s session-status mock still need polling to
-     * terminate so `runTest`'s post-body drain doesn't chase the loop forever, but the
-     * immediate-first-tick optimization means a single `Expired` mock would race past
-     * `WaitingForApproval` before the test can assert on it. Returning `Scanned` for the
-     * first call (loop keeps state in WaitingForApproval, then suspends on the 2-s delay)
-     * and `Expired` for subsequent calls (loop exits cleanly when `runTest` drains time)
-     * gives both the assertion window and the clean shutdown. Strict Mockito complains
-     * about a global setUp stub that some tests don't use, so each test opting into the
-     * default calls this helper instead.
-     */
-    private suspend fun stubPollingTerminates() {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
-            .thenReturn(Result.success(QrLoginSessionStatus.Expired))
-    }
-
-    // region scan → waiting for approval
+    // region flow lifecycle
 
     @Test
-    fun `given valid ticket, when scan succeeds, then state transitions to WaitingForApproval`() = testBlocking {
-        stubPollingTerminates()
-
+    fun `given ticket payload, when scan succeeds, then factory creates a flow and start is invoked`() = testBlocking {
         viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+
+        verify(flowFactory).create(eq(ticket), any())
+        assertThat(fakeFlow.startCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `given flow emits WaitingForApproval, when observed, then UiState mirrors it`() = testBlocking {
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+
+        fakeFlow.emit(
+            FlowState.WaitingForApproval(
+                sessionId = "sess-1",
+                realNumber = "042",
+                subtitleLabelRes = R.string.login_qr_match_host_label,
+                subtitle = "store.example",
+                expiresAtEpochMs = 123L,
+            )
+        )
+        advanceUntilIdle()
 
         val state = viewModel.uiState.value as UiState.WaitingForApproval
-        assertThat(state.realNumber).isEqualTo("042")
         assertThat(state.sessionId).isEqualTo("sess-1")
-        assertThat(state.host).isEqualTo("store.example")
-        assertThat(state.ticket).isEqualTo(ticket)
-        assertThat(state.expiresAtEpochMs).isGreaterThan(System.currentTimeMillis())
+        assertThat(state.realNumber).isEqualTo("042")
+        assertThat(state.subtitle).isEqualTo("store.example")
     }
 
     @Test
-    fun `given scan endpoint returns 409, when scan, then emits MatchAlreadyScanned without retry`() = testBlocking {
-        whenever(restClient.scan(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.failure(QrLoginScanException.AlreadyScanned))
-
+    fun `given flow completes with LoggedIn, when observed, then dispatches LoggedIn event`() = testBlocking {
+        val events = viewModel.event.captureValues()
         viewModel.onScanResult(successScan())
+        advanceUntilIdle()
 
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.MatchAlreadyScanned)
-        assertThat(state.retryTicket).isNull()
+        fakeFlow.emit(FlowState.Completed(FlowCompletion.LoggedIn(localSiteId = 42)))
+        advanceUntilIdle()
+
+        assertThat(events.last()).isEqualTo(Dispatch.LoggedIn(localSiteId = 42))
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
     }
 
     @Test
-    fun `given scan endpoint returns network error, when scan, then emits Network with retry ticket`() = testBlocking {
-        whenever(restClient.scan(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.failure(QrLoginScanException.Network))
-
+    fun `given flow completes with OpenMagicLink, when observed, then dispatches magic-link event`() = testBlocking {
+        val events = viewModel.event.captureValues()
         viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+
+        fakeFlow.emit(FlowState.Completed(FlowCompletion.OpenMagicLink(url = "https://wordpress.com/magic")))
+        advanceUntilIdle()
+
+        assertThat(events.last()).isEqualTo(Dispatch.OpenWpComMagicLinkUrl("https://wordpress.com/magic"))
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+    }
+
+    @Test
+    fun `given flow emits Failed, when observed, then UiState is Error with retryable flag`() = testBlocking {
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+
+        fakeFlow.emit(
+            FlowState.Failed(
+                reason = ErrorReason.Network,
+                retryable = true,
+                failedAt = FailureStep.Scan,
+            )
+        )
+        advanceUntilIdle()
 
         val state = viewModel.uiState.value as UiState.Error
         assertThat(state.reason).isEqualTo(ErrorReason.Network)
-        assertThat(state.retryTicket).isEqualTo(ticket)
+        assertThat(state.retryable).isTrue()
     }
 
     @Test
-    fun `given scan endpoint returns 426 upgrade required, when scan, then maps to EndpointMissing`() = testBlocking {
-        whenever(restClient.scan(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.failure(QrLoginScanException.UpgradeRequired))
-
+    fun `given flow emits Authenticating, when observed, then UiState mirrors phase`() = testBlocking {
         viewModel.onScanResult(successScan())
+        advanceUntilIdle()
 
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.EndpointMissing)
+        fakeFlow.emit(FlowState.Authenticating(AuthPhase.Exchange))
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Authenticating
+        assertThat(state.phase).isEqualTo(AuthPhase.Exchange)
     }
 
-    // endregion
-
-    // region polling → approval
-
     @Test
-    fun `given approved with grant on first poll, when polling fires, then exchange runs and emits LoggedIn`() =
+    fun `given flow emits Failed at scan, when observed, then VM tracks LOGIN_QR_SCAN_FAILED with step and reason`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-            val events = viewModel.event.captureValues()
-
             viewModel.onScanResult(successScan())
             advanceUntilIdle()
 
-            verify(restClient).exchange(ticket.siteUrl, ticket.token, "grant-1")
-            verify(authenticator).completeLogin(ticket, credentials)
-            assertThat(events.last())
-                .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
-        }
-
-    @Test
-    fun `given rejected on poll, when polling fires, then state is MatchRejected with no retry`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Rejected))
-
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.MatchRejected)
-        assertThat(state.retryTicket).isNull()
-        verify(restClient, never()).exchange(any(), any(), any())
-    }
-
-    @Test
-    fun `given expired on poll, when polling fires, then state is MatchTimedOut`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Expired))
-
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.MatchTimedOut)
-        verify(restClient, never()).exchange(any(), any(), any())
-    }
-
-    @Test
-    fun `given scanned on poll, when polling fires, then state stays WaitingForApproval`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
-
-        viewModel.onScanResult(successScan())
-        // Loops indefinitely while still scanned — advance a couple of ticks (with the +1 nudge
-        // so the delay-at-exactly-N edge case fires) and then assert the loop is still alive.
-        advanceTimeBy(POLL_TICK_MS * 2 + 1)
-
-        assertThat(viewModel.uiState.value).isInstanceOf(UiState.WaitingForApproval::class.java)
-        verify(restClient, atLeastOnce()).checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token)
-        // Stop the loop so runTest's post-body advanceUntilIdle doesn't chase it forever.
-        viewModel.onCancelNumberMatch()
-    }
-
-    @Test
-    fun `given transient poll errors, when fewer than threshold occur, then polling continues`() = testBlocking {
-        // Three transient failures, then a Scanned response: polling must still be active.
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
-            .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
-            .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
-            .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
-
-        viewModel.onScanResult(successScan())
-        advanceTimeBy(POLL_TICK_MS * 4 + 1)
-
-        assertThat(viewModel.uiState.value).isInstanceOf(UiState.WaitingForApproval::class.java)
-        // Stop the loop so runTest's post-body advanceUntilIdle doesn't chase the Scanned mock.
-        viewModel.onCancelNumberMatch()
-    }
-
-    @Test
-    fun `given transient poll errors, when threshold reached, then state transitions to Network error with retry`() =
-        testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
-
-            viewModel.onScanResult(successScan())
+            fakeFlow.emit(
+                FlowState.Failed(
+                    reason = ErrorReason.Network,
+                    retryable = true,
+                    failedAt = FailureStep.Scan,
+                )
+            )
             advanceUntilIdle()
 
-            val state = viewModel.uiState.value as UiState.Error
-            assertThat(state.reason).isEqualTo(ErrorReason.Network)
-            assertThat(state.retryTicket).isEqualTo(ticket)
+            verify(analyticsTracker).track(
+                eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED),
+                any(),
+                errorContext = eq(null),
+                errorType = eq("Network"),
+                errorDescription = eq(null),
+            )
         }
-
-    @Test
-    fun `given rate-limited poll, when first error fires, then transitions immediately`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.failure(QrLoginSessionStatusException.RateLimited))
-
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.RateLimited)
-        assertThat(state.retryTicket).isEqualTo(ticket)
-    }
-
-    @Test
-    fun `given endpoint-missing poll, when first error fires, then transitions without retry`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.failure(QrLoginSessionStatusException.EndpointMissing))
-
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.EndpointMissing)
-        assertThat(state.retryTicket).isNull()
-    }
 
     // endregion
 
-    // region cancel + start over
+    // region user actions delegated to flow
 
     @Test
-    fun `given WaitingForApproval, when onCancelNumberMatch, then state returns to Idle and polling stops`() =
+    fun `given waiting for approval, when user cancels number match, then flow is cancelled and state returns to Idle`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
-
             viewModel.onScanResult(successScan())
-            advanceTimeBy(POLL_TICK_MS + 1)
+            advanceUntilIdle()
+            fakeFlow.emit(
+                FlowState.WaitingForApproval(
+                    sessionId = "sess-1",
+                    realNumber = "042",
+                    subtitleLabelRes = R.string.login_qr_match_host_label,
+                    subtitle = "store.example",
+                    expiresAtEpochMs = 123L,
+                )
+            )
+            advanceUntilIdle()
+
             viewModel.onCancelNumberMatch()
-            advanceTimeBy(POLL_TICK_MS * 3)
 
             assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
-            // Once cancel fires, no further polls should happen.
-            verify(restClient, atLeastOnce()).checkSessionStatus(any(), any(), any())
+            assertThat(fakeFlow.cancelCount).isEqualTo(1)
         }
 
     @Test
-    fun `given waiting for approval, when another scan arrives, then it is ignored`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
+    fun `given error state, when user retries exchange, then flow retry is invoked`() = testBlocking {
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+        fakeFlow.emit(
+            FlowState.Failed(
+                reason = ErrorReason.Network,
+                retryable = true,
+                failedAt = FailureStep.Scan,
+            )
+        )
+        advanceUntilIdle()
 
-        viewModel.onScanResult(successScan(RAW_SCAN))
-        // Fire one poll tick so the Scanned mock is actually consumed (otherwise strict-mode
-        // Mockito flags it as an unused stubbing). The +1 nudges the dispatcher past the
-        // delay-at-exactly-N edge case in kotlinx.coroutines.test.
-        advanceTimeBy(POLL_TICK_MS + 1)
-        viewModel.onScanResult(successScan("second-raw"))
+        viewModel.onRetryExchange()
 
-        verify(parser, never()).parse("second-raw")
-        // Stop the loop so runTest's post-body advanceUntilIdle doesn't chase it forever.
-        viewModel.onCancelNumberMatch()
+        assertThat(fakeFlow.retryCount).isEqualTo(1)
     }
 
     @Test
-    fun `given Error state, when onStartOver, then state returns to Idle`() = testBlocking {
-        whenever(restClient.scan(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.failure(QrLoginScanException.TokenRejected))
-
+    fun `given error state, when user starts over, then flow is cancelled and state returns to Idle`() = testBlocking {
         viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+        fakeFlow.emit(
+            FlowState.Failed(
+                reason = ErrorReason.Network,
+                retryable = true,
+                failedAt = FailureStep.Scan,
+            )
+        )
+        advanceUntilIdle()
+
         viewModel.onStartOver()
 
         assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
-    }
-
-    @Test
-    fun `given Network error, when onRetryExchange, then scan is re-run`() = testBlocking {
-        whenever(restClient.scan(ticket.siteUrl, ticket.token))
-            .thenReturn(Result.failure(QrLoginScanException.Network))
-            .thenReturn(Result.success(scanResult))
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Scanned))
-
-        viewModel.onScanResult(successScan())
-        viewModel.onRetryExchange()
-        // Let the second scan's poll fire once so the Scanned mock is consumed and the
-        // strict-mode Mockito doesn't flag it as unused.
-        advanceTimeBy(POLL_TICK_MS + 1)
-
-        verify(restClient, times(2)).scan(ticket.siteUrl, ticket.token)
-        // Stop the polling loop the second scan started so the test runner can wind down.
-        viewModel.onCancelNumberMatch()
+        assertThat(fakeFlow.cancelCount).isEqualTo(1)
     }
 
     // endregion
 
-    // region exchange failures
+    // region non-flow payloads
 
     @Test
-    fun `given exchange returns InvalidExchangeGrant, when polling triggers exchange, then MatchInvalidGrant`() =
-        testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-            whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
-                .thenReturn(Result.failure(QrLoginExchangeException.InvalidExchangeGrant))
+    fun `given SiteUrl payload, when scan succeeds, then dispatches RouteToSiteAddressEntry`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
+        val events = viewModel.event.captureValues()
 
-            viewModel.onScanResult(successScan())
-            advanceUntilIdle()
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
 
-            val state = viewModel.uiState.value as UiState.Error
-            assertThat(state.reason).isEqualTo(ErrorReason.MatchInvalidGrant)
-            assertThat(state.retryTicket).isNull()
-        }
+        assertThat(events.last()).isEqualTo(Dispatch.RouteToSiteAddressEntry(siteUrl = SITE_URL))
+        verify(flowFactory, never()).create(any(), any())
+    }
 
     @Test
-    fun `given exchange returns Network, when polling triggers exchange, then Network with retry ticket`() =
-        testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-            whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
-                .thenReturn(Result.failure(QrLoginExchangeException.Network))
+    fun `given WpComMagicLinkUrl payload, when scan succeeds, then dispatches OpenWpComMagicLinkUrl`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+        val events = viewModel.event.captureValues()
 
-            viewModel.onScanResult(successScan())
-            advanceUntilIdle()
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
 
-            val state = viewModel.uiState.value as UiState.Error
-            assertThat(state.reason).isEqualTo(ErrorReason.Network)
-            assertThat(state.retryTicket).isEqualTo(ticket)
-            assertThat(state.retryExchangeGrant).isEqualTo("grant-1")
-        }
+        assertThat(events.last()).isEqualTo(Dispatch.OpenWpComMagicLinkUrl(WP_COM_URL))
+    }
 
     @Test
-    fun `given exchange network error, when retried, then exchange is re-run with same grant`() =
+    fun `given AppLogin Credentials payload, when scan succeeds, then dispatches RouteToAppLoginCredentials`() =
         testBlocking {
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-            whenever(restClient.exchange(ticket.siteUrl, ticket.token, "grant-1"))
-                .thenReturn(Result.failure(QrLoginExchangeException.Network))
-                .thenReturn(Result.success(credentials))
+            whenever(parser.parse(RAW_SCAN))
+                .thenReturn(QrLoginPayload.AppLogin.Credentials(siteUrl = SITE_URL, username = USERNAME))
             val events = viewModel.event.captureValues()
 
             viewModel.onScanResult(successScan())
             advanceUntilIdle()
-            viewModel.onRetryExchange()
-            advanceUntilIdle()
 
-            verify(restClient, times(1)).scan(ticket.siteUrl, ticket.token)
-            verify(restClient, times(2)).exchange(ticket.siteUrl, ticket.token, "grant-1")
             assertThat(events.last())
-                .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
+                .isEqualTo(Dispatch.RouteToAppLoginCredentials(siteUrl = SITE_URL, username = USERNAME))
         }
 
     @Test
-    fun `given authenticator returns NotAWooSite, when login completes, then NotAWooSite error`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-        whenever(authenticator.completeLogin(ticket, credentials))
-            .thenReturn(Result.failure(QrLoginAuthenticationException.NotAWooSite))
-
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.NotAWooSite)
-    }
-
-    @Test
-    fun `given authenticator returns IOException, when login completes, then Network error`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-        whenever(authenticator.completeLogin(ticket, credentials))
-            .thenReturn(Result.failure(IOException("offline")))
-
-        viewModel.onScanResult(successScan())
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.Network)
-    }
-
-    // endregion
-
-    // region scanner / payload errors (unchanged behavior)
-
-    @Test
-    fun `given Invalid payload, when scan succeeds, then InvalidPayload error and no scan call`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
-
-        viewModel.onScanResult(successScan())
-
-        val state = viewModel.uiState.value as UiState.Error
-        assertThat(state.reason).isEqualTo(ErrorReason.InvalidPayload)
-        verify(restClient, never()).scan(any(), any())
-    }
-
-    @Test
-    fun `given InstallQrCode payload, when scan succeeds, then InstallQrCode error`() = testBlocking {
+    fun `given InstallQrCode payload, when scan succeeds, then state is InstallQrCode error`() = testBlocking {
         whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.InstallQrCode)
 
         viewModel.onScanResult(successScan())
+        advanceUntilIdle()
 
         val state = viewModel.uiState.value as UiState.Error
         assertThat(state.reason).isEqualTo(ErrorReason.InstallQrCode)
     }
 
     @Test
-    fun `given scanner Failure, when scan result received, then Scanner error`() = testBlocking {
-        viewModel.onScanResult(
-            CodeScannerStatus.Failure(error = "boom", type = CodeScanningErrorType.Unknown)
-        )
+    fun `given WpComToken payload, when scan succeeds, then factory creates a flow and start is invoked`() =
+        testBlocking {
+            val wpComPayload = QrLoginPayload.WpComToken(token = "wpc-tok", encrypted = "enc")
+            whenever(parser.parse(RAW_SCAN)).thenReturn(wpComPayload)
+            whenever(flowFactory.create(eq(wpComPayload), any())).thenReturn(fakeFlow)
+
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+
+            verify(flowFactory).create(eq(wpComPayload), any())
+            assertThat(fakeFlow.startCount).isEqualTo(1)
+        }
+
+    @Test
+    fun `given Invalid payload, when scan succeeds, then state is InvalidPayload error`() = testBlocking {
+        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.Invalid)
+
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value as UiState.Error
+        assertThat(state.reason).isEqualTo(ErrorReason.InvalidPayload)
+    }
+
+    @Test
+    fun `given camera scan failure, when handled, then state is Scanner error`() = testBlocking {
+        viewModel.onScanResult(CodeScannerStatus.Failure(error = "bad", type = CodeScanningErrorType.Other(null)))
+        advanceUntilIdle()
 
         val state = viewModel.uiState.value as UiState.Error
         assertThat(state.reason).isEqualTo(ErrorReason.Scanner)
     }
 
-    @Test
-    fun `given NotFound status, when scan result received, then state stays Idle`() = testBlocking {
-        viewModel.onScanResult(CodeScannerStatus.NotFound)
-
-        assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
-    }
-
     // endregion
 
-    // region analytics + lifecycle
+    // region session replace warning
 
     @Test
-    fun `given successful login, when LoggedIn dispatched, then tracks LOGIN_QR_SUCCESS`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
+    fun `given user is logged in, when ticket scanned, then state is WarningSessionReplace`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
 
         viewModel.onScanResult(successScan())
         advanceUntilIdle()
 
-        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
+        assertThat(viewModel.uiState.value).isInstanceOf(UiState.WarningSessionReplace::class.java)
+        verify(flowFactory, never()).create(any(), any())
+        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
     }
 
     @Test
-    fun `given scanner binding failure, when delivered, then tracks scan failed with scanner step`() = testBlocking {
-        viewModel.onScanResult(
-            CodeScannerStatus.Failure(error = "boom", type = CodeScanningErrorType.Unknown)
-        )
+    fun `given session-replace shown, when user confirms and logout succeeds, then flow is created and started`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
 
-        verify(analyticsTracker).track(
-            stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
-            properties = mapOf(AnalyticsTracker.KEY_STEP to "scanner"),
-            errorContext = "Unknown",
-            errorType = "Scanner",
-            errorDescription = null,
-        )
-    }
+            viewModel.onConfirmSessionReplace()
+            advanceUntilIdle()
+
+            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
+            verify(flowFactory).create(eq(ticket), any())
+            assertThat(fakeFlow.startCount).isEqualTo(1)
+        }
 
     @Test
-    fun `given rejected match, when polling fires, then tracks scan failed with approve step`() = testBlocking {
-        whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-            .thenReturn(Result.success(QrLoginSessionStatus.Rejected))
+    fun `given session-replace shown, when user confirms and logout fails, then state is Network error`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(accountRepository.logout()).thenReturn(false)
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
 
+            viewModel.onConfirmSessionReplace()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value as UiState.Error
+            assertThat(state.reason).isEqualTo(ErrorReason.Network)
+            verify(flowFactory, never()).create(any(), any())
+        }
+
+    @Test
+    fun `given session-replace shown, when user cancels, then state returns to Idle`() = testBlocking {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         viewModel.onScanResult(successScan())
         advanceUntilIdle()
-
-        verify(analyticsTracker).track(
-            stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
-            properties = mapOf(AnalyticsTracker.KEY_STEP to "approve"),
-            errorContext = null,
-            errorType = "MatchRejected",
-            errorDescription = null,
-        )
-    }
-
-    @Test
-    fun `given deep link payload, when onDeepLinkPayload invoked, then state advances to WaitingForApproval`() =
-        testBlocking {
-            stubPollingTerminates()
-
-            viewModel.onDeepLinkPayload(RAW_SCAN)
-
-            val state = viewModel.uiState.value as UiState.WaitingForApproval
-            assertThat(state.ticket).isEqualTo(ticket)
-            assertThat(state.realNumber).isEqualTo("042")
-        }
-
-    // endregion
-
-    @Test
-    fun `given wp dot com url payload, when scan succeeds, then emits OpenWpComMagicLinkUrl`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(successScan())
-
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = WP_COM_URL)
-        )
-    }
-
-    @Test
-    fun `given wp dot com url payload, when scan succeeds, then ui state stays idle`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-
-        viewModel.onScanResult(successScan())
-
-        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
-        verify(restClient, never()).scan(any(), any())
-    }
-
-    @Test
-    fun `given wp dot com url via deep link, when received, then emits OpenWpComMagicLinkUrl`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onDeepLinkPayload(RAW_SCAN)
-
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = WP_COM_URL)
-        )
-    }
-
-    @Test
-    fun `given wp dot com url handed off, when another scan arrives, then it is ignored`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-
-        viewModel.onScanResult(successScan(RAW_SCAN))
-        viewModel.onScanResult(successScan("second-raw"))
-
-        verify(parser, never()).parse("second-raw")
-    }
-
-    @Test
-    fun `given wp dot com url payload, when scan succeeds, then tracks LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-
-            viewModel.onScanResult(successScan())
-
-            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
-        }
-
-    @Test
-    fun `given wp dot com url payload, when scan succeeds, then does not track LOGIN_QR_SCAN_FAILED or LOGIN_QR_SUCCESS`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-
-            viewModel.onScanResult(successScan())
-
-            // The wp.com handoff is the happy path, not a failure, and not a completed sign-in.
-            verify(analyticsTracker, never()).track(eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED), any(), any(), any(), any())
-            verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
-        }
-
-    @Test
-    fun `given site url payload, when scan succeeds, then emits RouteToSiteAddressEntry`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onScanResult(successScan())
-
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry(siteUrl = SITE_URL)
-        )
-    }
-
-    @Test
-    fun `given site url payload, when scan succeeds, then ui state stays idle`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-
-        viewModel.onScanResult(successScan())
-
-        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
-        verify(restClient, never()).scan(any(), any())
-    }
-
-    @Test
-    fun `given site url via deep link, when received, then emits RouteToSiteAddressEntry`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-        val events = viewModel.event.captureValues()
-
-        viewModel.onDeepLinkPayload(RAW_SCAN)
-
-        assertThat(events.last()).isEqualTo(
-            QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry(siteUrl = SITE_URL)
-        )
-    }
-
-    @Test
-    fun `given site url handed off, when another scan arrives, then it is ignored`() = testBlocking {
-        whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-
-        viewModel.onScanResult(successScan(RAW_SCAN))
-        viewModel.onScanResult(successScan("second-raw"))
-
-        verify(parser, never()).parse("second-raw")
-    }
-
-    @Test
-    fun `given site url payload, when scan succeeds, then tracks LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-
-            viewModel.onScanResult(successScan())
-
-            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
-        }
-
-    @Test
-    fun `given legacy app login credentials payload, when scan succeeds, then emits RouteToAppLoginCredentials`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToAppLoginCredentials(
-                    siteUrl = SITE_URL,
-                    username = USERNAME
-                )
-            )
-            verify(restClient, never()).scan(any(), any())
-        }
-
-    @Test
-    fun `given legacy app login wpcom payload, when scan succeeds, then emits RouteToAppLoginWpComEmail`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail(
-                    siteUrl = SITE_URL,
-                    wpComEmail = WP_COM_EMAIL
-                )
-            )
-            verify(restClient, never()).scan(any(), any())
-        }
-
-    @Test
-    fun `given legacy app login credentials payload, when handed off, then tracks app login success with qr source`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
-
-            viewModel.onScanResult(successScan())
-
-            verify(analyticsTracker).track(
-                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NO_WP_COM,
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
-                )
-            )
-        }
-
-    @Test
-    fun `given legacy app login wpcom payload, when handed off, then tracks app login success with qr source`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
-
-            viewModel.onScanResult(successScan())
-
-            verify(analyticsTracker).track(
-                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WP_COM,
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
-                )
-            )
-        }
-
-    @Test
-    fun `given site url payload, when scan succeeds, then does not track LOGIN_QR_SCAN_FAILED or LOGIN_QR_SUCCESS`() =
-        testBlocking {
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-
-            viewModel.onScanResult(successScan())
-
-            // Site-URL handoff is the happy path; the user hasn't completed a sign-in yet.
-            verify(analyticsTracker, never()).track(eq(AnalyticsEvent.LOGIN_QR_SCAN_FAILED), any(), any(), any(), any())
-            verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SUCCESS)
-        }
-
-    // region Session-replace warning (logged-in user)
-
-    @Test
-    fun `given logged in and ticket payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(viewModel.uiState.value).isEqualTo(
-                QrLoginScannerViewModel.UiState.WarningSessionReplace(
-                    QrLoginScannerViewModel.PendingHandoff.Ticket(ticket = ticket, host = "store.example")
-                )
-            )
-            verify(restClient, never()).scan(any(), any())
-        }
-
-    @Test
-    fun `given logged in and wp dot com payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(viewModel.uiState.value).isEqualTo(
-                QrLoginScannerViewModel.UiState.WarningSessionReplace(
-                    QrLoginScannerViewModel.PendingHandoff.WpComMagicLink(url = WP_COM_URL)
-                )
-            )
-            assertThat(events).isEmpty()
-        }
-
-    @Test
-    fun `given logged in and site url payload, when scan succeeds, then ui state exposes WarningSessionReplace`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(viewModel.uiState.value).isEqualTo(
-                QrLoginScannerViewModel.UiState.WarningSessionReplace(
-                    QrLoginScannerViewModel.PendingHandoff.SiteUrlPrefill(siteUrl = SITE_URL)
-                )
-            )
-            assertThat(events).isEmpty()
-        }
-
-    @Test
-    fun `given logged in and legacy app login credentials, when scan succeeds, then ui state exposes WarningSessionReplace`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(viewModel.uiState.value).isEqualTo(
-                QrLoginScannerViewModel.UiState.WarningSessionReplace(
-                    QrLoginScannerViewModel.PendingHandoff.AppLoginCredentials(
-                        siteUrl = SITE_URL,
-                        username = USERNAME
-                    )
-                )
-            )
-            assertThat(events).isEmpty()
-        }
-
-    @Test
-    fun `given logged in and legacy app login wpcom, when scan succeeds, then ui state exposes WarningSessionReplace`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-
-            assertThat(viewModel.uiState.value).isEqualTo(
-                QrLoginScannerViewModel.UiState.WarningSessionReplace(
-                    QrLoginScannerViewModel.PendingHandoff.AppLoginWpComEmail(
-                        siteUrl = SITE_URL,
-                        wpComEmail = WP_COM_EMAIL
-                    )
-                )
-            )
-            assertThat(events).isEmpty()
-        }
-
-    @Test
-    fun `given logged in and any payload, when scan succeeds, then tracks LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-
-            viewModel.onScanResult(successScan())
-
-            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
-        }
-
-    @Test
-    fun `given logged in and ticket via deep link, when received, then ui state exposes WarningSessionReplace`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-
-            viewModel.onDeepLinkPayload(RAW_SCAN)
-
-            assertThat(viewModel.uiState.value)
-                .isInstanceOf(QrLoginScannerViewModel.UiState.WarningSessionReplace::class.java)
-        }
-
-    @Test
-    fun `given warning state, when another scan arrives, then it is ignored`() = testBlocking {
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        viewModel.onScanResult(successScan(RAW_SCAN))
-
-        viewModel.onScanResult(successScan("second-raw"))
-
-        verify(parser, never()).parse("second-raw")
-    }
-
-    @Test
-    fun `given warning for ticket, when confirmed, then logs out and advances to number match`() = testBlocking {
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        stubPollingTerminates()
-        viewModel.onScanResult(successScan())
-
-        viewModel.onConfirmSessionReplace()
-
-        verify(accountRepository).logout()
-        assertThat(viewModel.uiState.value).isInstanceOf(UiState.WaitingForApproval::class.java)
-        verify(authenticator, never()).completeLogin(any(), any())
-    }
-
-    @Test
-    fun `given warning for wp dot com, when confirmed, then logs out and emits OpenWpComMagicLinkUrl`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
-            val events = viewModel.event.captureValues()
-            viewModel.onScanResult(successScan())
-
-            viewModel.onConfirmSessionReplace()
-
-            verify(accountRepository).logout()
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.OpenWpComMagicLinkUrl(url = WP_COM_URL)
-            )
-            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
-        }
-
-    @Test
-    fun `given warning for site url, when confirmed, then logs out and emits RouteToSiteAddressEntry`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.SiteUrl(SITE_URL))
-            val events = viewModel.event.captureValues()
-            viewModel.onScanResult(successScan())
-
-            viewModel.onConfirmSessionReplace()
-
-            verify(accountRepository).logout()
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToSiteAddressEntry(siteUrl = SITE_URL)
-            )
-            verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
-        }
-
-    @Test
-    fun `given warning for legacy app login credentials, when confirmed, then logs out and emits RouteToAppLoginCredentials`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.Credentials(SITE_URL, USERNAME))
-            val events = viewModel.event.captureValues()
-            viewModel.onScanResult(successScan())
-
-            viewModel.onConfirmSessionReplace()
-
-            verify(accountRepository).logout()
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToAppLoginCredentials(
-                    siteUrl = SITE_URL,
-                    username = USERNAME
-                )
-            )
-            verify(analyticsTracker).track(
-                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NO_WP_COM,
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
-                )
-            )
-        }
-
-    @Test
-    fun `given warning for legacy app login wpcom, when confirmed, then logs out and emits RouteToAppLoginWpComEmail`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(parser.parse(RAW_SCAN))
-                .thenReturn(QrLoginPayload.AppLogin.WpComEmail(SITE_URL, WP_COM_EMAIL))
-            val events = viewModel.event.captureValues()
-            viewModel.onScanResult(successScan())
-
-            viewModel.onConfirmSessionReplace()
-
-            verify(accountRepository).logout()
-            assertThat(events.last()).isEqualTo(
-                QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail(
-                    siteUrl = SITE_URL,
-                    wpComEmail = WP_COM_EMAIL
-                )
-            )
-            verify(analyticsTracker).track(
-                AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WP_COM,
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_APP_LOGIN_SOURCE_QR,
-                )
-            )
-        }
-
-    @Test
-    fun `given warning, when confirmed, then tracks LOGIN_QR_SESSION_REPLACE_CONFIRMED`() = testBlocking {
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        viewModel.onScanResult(successScan())
-
-        viewModel.onConfirmSessionReplace()
-
-        verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
-    }
-
-    @Test
-    fun `given warning, when cancelled, then returns to idle without logging out`() = testBlocking {
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        viewModel.onScanResult(successScan())
 
         viewModel.onCancelSessionReplace()
 
-        assertThat(viewModel.uiState.value).isEqualTo(QrLoginScannerViewModel.UiState.Idle)
-        verify(accountRepository, never()).logout()
+        assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
         verify(analyticsTracker).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_DISMISSED)
-    }
-
-    @Test
-    fun `given not in warning state, when onConfirmSessionReplace, then nothing happens`() = testBlocking {
-        // user is not logged in, so payload goes straight to number matching
-        stubPollingTerminates()
-        viewModel.onScanResult(successScan())
-
-        viewModel.onConfirmSessionReplace()
-
-        verify(accountRepository, never()).logout()
-        verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
-    }
-
-    @Test
-    fun `given warning, when confirmed and logout fails, then does not resume and surfaces network error`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(accountRepository.logout()).thenReturn(false)
-            val events = viewModel.event.captureValues()
-            viewModel.onScanResult(successScan())
-
-            viewModel.onConfirmSessionReplace()
-
-            val state = viewModel.uiState.value as UiState.Error
-            assertThat(state.reason).isEqualTo(QrLoginScannerViewModel.ErrorReason.Network)
-            assertThat(state.retryTicket).isNull()
-            assertThat(events).noneMatch { it is QrLoginScannerViewModel.Dispatch }
-        }
-
-    @Test
-    fun `given warning, when confirmed and logout fails, then tracks scan failed with logout error type`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(accountRepository.logout()).thenReturn(false)
-            viewModel.onScanResult(successScan())
-
-            viewModel.onConfirmSessionReplace()
-
-            verify(analyticsTracker).track(
-                stat = AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
-                properties = mapOf(AnalyticsTracker.KEY_STEP to "exchange"),
-                errorContext = null,
-                errorType = "session_replace_logout_failed",
-                errorDescription = null,
-            )
-        }
-
-    @Test
-    fun `given logged in and ticket, when warning confirmed and site confirmed, then emits LoggedIn`() =
-        testBlocking {
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
-                .thenReturn(Result.success(QrLoginSessionStatus.Approved("grant-1")))
-            val events = viewModel.event.captureValues()
-
-            viewModel.onScanResult(successScan())
-            viewModel.onConfirmSessionReplace()
-            advanceTimeBy(POLL_TICK_MS)
-            advanceUntilIdle()
-
-            assertThat(events.last())
-                .isEqualTo(QrLoginScannerViewModel.Dispatch.LoggedIn(localSiteId = DEFAULT_SITE_ID))
-        }
-
-    @Test
-    fun `given logged out, when ticket payload arrives, then warning is not shown`() = testBlocking {
-        // Default mock returns isUserLoggedIn=false; verify legacy path is preserved.
-        stubPollingTerminates()
-        viewModel.onScanResult(successScan())
-
-        assertThat(viewModel.uiState.value)
-            .isInstanceOf(UiState.WaitingForApproval::class.java)
-        verify(analyticsTracker, never()).track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
     }
 
     // endregion
 
-    private fun successScan(raw: String = RAW_SCAN) =
-        CodeScannerStatus.Success(code = raw, format = BarcodeFormat.FormatQRCode)
+    // region resume recovery
+
+    @Test
+    fun `given OpenMagicLink dispatched, when screen resumes, then state returns to Idle and flow is cancelled`() =
+        testBlocking {
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+            fakeFlow.emit(FlowState.Authenticating(AuthPhase.Exchange))
+            advanceUntilIdle()
+            fakeFlow.emit(FlowState.Completed(FlowCompletion.OpenMagicLink(url = WP_COM_URL)))
+            advanceUntilIdle()
+            assertThat(viewModel.uiState.value).isEqualTo(UiState.Authenticating(AuthPhase.Exchange))
+            val cancelCountBefore = fakeFlow.cancelCount
+
+            viewModel.onScreenResumed()
+
+            assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
+            assertThat(fakeFlow.cancelCount).isEqualTo(cancelCountBefore + 1)
+        }
+
+    @Test
+    fun `given WpComMagicLink handoff dispatched, when screen resumes and user scans again, then handoff fires again`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+            val eventCountAfterFirstHandoff = events.size
+
+            viewModel.onScreenResumed()
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+
+            assertThat(events.size).isGreaterThan(eventCountAfterFirstHandoff)
+            assertThat(events.last()).isEqualTo(Dispatch.OpenWpComMagicLinkUrl(WP_COM_URL))
+        }
+
+    @Test
+    fun `given no terminal event dispatched, when screen resumes, then state is unchanged`() = testBlocking {
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+        fakeFlow.emit(
+            FlowState.WaitingForApproval(
+                sessionId = "sess",
+                realNumber = "247",
+                subtitleLabelRes = R.string.login_qr_match_account_label,
+                subtitle = "user@example.com",
+                expiresAtEpochMs = 0L,
+            )
+        )
+        advanceUntilIdle()
+        val stateBefore = viewModel.uiState.value
+
+        viewModel.onScreenResumed()
+
+        assertThat(viewModel.uiState.value).isEqualTo(stateBefore)
+    }
+
+    // endregion
+
+    private fun successScan() = CodeScannerStatus.Success(code = RAW_SCAN, format = BarcodeFormat.FormatQRCode)
+
+    private class FakeQrLoginFlow : QrLoginFlow {
+        private val _state = MutableStateFlow<FlowState>(FlowState.Initial)
+        override val state: StateFlow<FlowState> = _state.asStateFlow()
+
+        var startCount = 0
+            private set
+        var cancelCount = 0
+            private set
+        var retryCount = 0
+            private set
+
+        override fun start() {
+            startCount++
+        }
+
+        override fun cancel() {
+            cancelCount++
+        }
+
+        override fun retry() {
+            retryCount++
+        }
+
+        fun emit(state: FlowState) {
+            _state.value = state
+        }
+
+    }
 
     private companion object {
         const val RAW_SCAN = "raw"
-        const val DEFAULT_SITE_ID = 42
         const val WP_COM_URL =
             "https://wordpress.com/wp-login.php?action=magic-login&scheme=woocommerce&token=abc"
         const val SITE_URL = "https://store.example.com"
         const val USERNAME = "admin"
-        const val WP_COM_EMAIL = "admin@example.com"
-        const val POLL_TICK_MS = 2_000L
     }
 }
