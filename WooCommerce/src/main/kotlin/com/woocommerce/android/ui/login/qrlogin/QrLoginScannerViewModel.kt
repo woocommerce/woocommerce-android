@@ -6,6 +6,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Authenticating
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Error
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.Idle
@@ -13,7 +17,6 @@ import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.
 import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerViewModel.UiState.WarningSessionReplace
 import com.woocommerce.android.ui.login.qrlogin.flow.AuthPhase
 import com.woocommerce.android.ui.login.qrlogin.flow.ErrorReason
-import com.woocommerce.android.ui.login.qrlogin.flow.FailureStep
 import com.woocommerce.android.ui.login.qrlogin.flow.FlowCompletion
 import com.woocommerce.android.ui.login.qrlogin.flow.FlowState
 import com.woocommerce.android.ui.login.qrlogin.flow.QrLoginFlow
@@ -50,6 +53,7 @@ class QrLoginScannerViewModel @Inject constructor(
     private val flowFactory: QrLoginFlowFactory,
     private val accountRepository: AccountRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val unifiedLoginTracker: UnifiedLoginTracker,
 ) : ScopedViewModel(savedState) {
 
     private val _uiState = MutableStateFlow<UiState>(Idle)
@@ -72,11 +76,7 @@ class QrLoginScannerViewModel @Inject constructor(
         when (status) {
             is CodeScannerStatus.Success -> handlePayload(parser.parse(status.code))
             is CodeScannerStatus.Failure -> {
-                trackScanFailure(
-                    step = "scanner",
-                    errorContext = status.type::class.java.simpleName,
-                    errorType = ErrorReason.Scanner::class.simpleName,
-                )
+                trackFailure(reason = ErrorReason.Scanner)
                 _uiState.value = Error(reason = ErrorReason.Scanner, retryable = false)
             }
             CodeScannerStatus.NotFound -> Unit
@@ -112,7 +112,7 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     private fun failPayload(reason: ErrorReason) {
-        trackScanFailure(step = "payload", errorContext = null, errorType = reason::class.simpleName)
+        trackFailure(reason = reason)
         _uiState.value = Error(reason = reason, retryable = false)
     }
 
@@ -123,7 +123,7 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     private fun handleHandoff(pending: PendingHandoff) {
         if (accountRepository.isUserLoggedIn()) {
-            analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_WARNING_SHOWN)
+            unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_SESSION_REPLACE_WARNING)
             _uiState.value = WarningSessionReplace(pending)
         } else {
             resumePending(pending)
@@ -137,12 +137,11 @@ class QrLoginScannerViewModel @Inject constructor(
                 // Hand the URL off to a Custom Tab; wp.com 3xx-redirects to
                 // woocommerce://magic-login and MagicLinkInterceptActivity finishes sign-in.
                 terminalEventDispatched = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+                unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.MAGIC_LINK_REQUESTED)
                 triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = pending.url))
             }
             is PendingHandoff.SiteUrlPrefill -> {
                 terminalEventDispatched = true
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_SITE_URL_PREFILL)
                 triggerEvent(Dispatch.RouteToSiteAddressEntry(siteUrl = pending.siteUrl))
             }
             is PendingHandoff.AppLoginCredentials -> {
@@ -183,22 +182,28 @@ class QrLoginScannerViewModel @Inject constructor(
     private fun applyFlowState(state: FlowState) {
         when (state) {
             FlowState.Initial -> Unit // ignore — VM owns its own pre/post-flow Idle transitions.
-            is FlowState.Authenticating -> _uiState.value = Authenticating(phase = state.phase)
-            is FlowState.WaitingForApproval -> _uiState.value = WaitingForApproval(
-                sessionId = state.sessionId,
-                realNumber = state.realNumber,
-                subtitleLabelRes = state.subtitleLabelRes,
-                subtitle = state.subtitle,
-                expiresAtEpochMs = state.expiresAtEpochMs,
-            )
+            is FlowState.Authenticating -> {
+                _uiState.value = Authenticating(phase = state.phase)
+                // The three AuthPhase transitions (Scan → Exchange → Complete) all map to the
+                // same funnel step, so emit one event when we first enter the phase and skip
+                // the back-to-back duplicates.
+                if (unifiedLoginTracker.currentStep != Step.QR_AUTHENTICATING) {
+                    unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_AUTHENTICATING)
+                }
+            }
+            is FlowState.WaitingForApproval -> {
+                _uiState.value = WaitingForApproval(
+                    sessionId = state.sessionId,
+                    realNumber = state.realNumber,
+                    subtitleLabelRes = state.subtitleLabelRes,
+                    subtitle = state.subtitle,
+                    expiresAtEpochMs = state.expiresAtEpochMs,
+                )
+                unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_NUMBER_MATCH)
+            }
             is FlowState.Failed -> {
                 _uiState.value = Error(reason = state.reason, retryable = state.retryable)
-                trackScanFailure(
-                    step = state.failedAt.toAnalyticsKey(),
-                    errorContext = null,
-                    errorType = state.reason::class.simpleName,
-                    extras = state.extras,
-                )
+                trackFailure(reason = state.reason, failedAt = state.failedAt.name)
             }
             is FlowState.Completed -> handleCompletion(state.completion)
         }
@@ -207,25 +212,23 @@ class QrLoginScannerViewModel @Inject constructor(
     private fun handleCompletion(completion: FlowCompletion) {
         terminalEventDispatched = true
         when (completion) {
-            is FlowCompletion.LoggedIn -> {
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SUCCESS)
-                triggerEvent(Dispatch.LoggedIn(localSiteId = completion.localSiteId))
-            }
+            // Successful site login — SitePickerViewModel will fire UNIFIED_LOGIN_STEP(SUCCESS)
+            // once the merchant lands on the epilogue, so no extra event here.
+            is FlowCompletion.LoggedIn -> triggerEvent(Dispatch.LoggedIn(localSiteId = completion.localSiteId))
+            // Hand off to the magic-link funnel — the next observed events come from
+            // MagicLinkInterceptActivity, forming a continuous trail.
             is FlowCompletion.OpenMagicLink -> {
-                analyticsTracker.track(AnalyticsEvent.LOGIN_QR_HANDED_OFF_WP_COM_MAGIC_LINK)
+                unifiedLoginTracker.track(Flow.LOGIN_MAGIC_LINK, Step.MAGIC_LINK_REQUESTED)
                 triggerEvent(Dispatch.OpenWpComMagicLinkUrl(url = completion.url))
             }
         }
     }
 
-    private fun FailureStep.toAnalyticsKey(): String = when (this) {
-        FailureStep.Scan -> "scan"
-        FailureStep.Poll -> "poll"
-        FailureStep.Approve -> "approve"
-        FailureStep.Exchange -> "exchange"
-        FailureStep.Auth -> "auth"
-    }
-
+    /**
+     * `LOGIN_APP_LOGIN_LINK_SUCCESS` is the original deeplink-era event (in production since 2023)
+     * — keep firing it with `source=qr` so the existing dashboards capture QR-originated app-login
+     * scans alongside browser deeplinks.
+     */
     private fun trackAppLoginHandoff(flowValue: String) {
         analyticsTracker.track(
             AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
@@ -236,19 +239,11 @@ class QrLoginScannerViewModel @Inject constructor(
         )
     }
 
-    private fun trackScanFailure(
-        step: String,
-        errorContext: String?,
-        errorType: String?,
-        extras: Map<String, Any> = emptyMap(),
-    ) {
-        analyticsTracker.track(
-            AnalyticsEvent.LOGIN_QR_SCAN_FAILED,
-            mapOf(AnalyticsTracker.KEY_STEP to step) + extras,
-            errorContext = errorContext,
-            errorType = errorType,
-            errorDescription = null
-        )
+    private fun trackFailure(reason: ErrorReason, failedAt: String? = null) {
+        unifiedLoginTracker.setStep(Step.QR_ERROR)
+        val description = reason::class.simpleName.orEmpty()
+            .let { simpleName -> if (failedAt != null) "$simpleName:$failedAt" else simpleName }
+        unifiedLoginTracker.trackFailure(description)
     }
 
     /**
@@ -274,6 +269,7 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     fun onCancelNumberMatch() {
         if (_uiState.value !is WaitingForApproval) return
+        unifiedLoginTracker.trackClick(Click.QR_CANCEL_NUMBER_MATCH)
         endActiveFlow()
         _uiState.value = Idle
     }
@@ -284,6 +280,7 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     fun onStartOver() {
         if (terminalEventDispatched) return
+        unifiedLoginTracker.trackClick(Click.QR_START_OVER)
         endActiveFlow()
         _uiState.value = Idle
     }
@@ -293,6 +290,7 @@ class QrLoginScannerViewModel @Inject constructor(
      * (ticket / token / grant) so the VM just forwards the call.
      */
     fun onRetryExchange() {
+        unifiedLoginTracker.trackClick(Click.QR_RETRY)
         currentFlow?.retry()
     }
 
@@ -324,17 +322,13 @@ class QrLoginScannerViewModel @Inject constructor(
      */
     fun onConfirmSessionReplace() {
         val pending = (_uiState.value as? WarningSessionReplace)?.pending ?: return
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_CONFIRMED)
+        unifiedLoginTracker.trackClick(Click.SUBMIT)
         _uiState.value = Authenticating(AuthPhase.Scan)
         launch {
             if (accountRepository.logout()) {
                 resumePending(pending)
             } else {
-                trackScanFailure(
-                    step = "exchange",
-                    errorContext = null,
-                    errorType = SESSION_REPLACE_LOGOUT_FAILED,
-                )
+                trackFailure(reason = ErrorReason.Network, failedAt = SESSION_REPLACE_LOGOUT_FAILED)
                 _uiState.value = Error(reason = ErrorReason.Network, retryable = false)
             }
         }
@@ -342,7 +336,7 @@ class QrLoginScannerViewModel @Inject constructor(
 
     fun onCancelSessionReplace() {
         if (_uiState.value !is WarningSessionReplace) return
-        analyticsTracker.track(AnalyticsEvent.LOGIN_QR_SESSION_REPLACE_DISMISSED)
+        unifiedLoginTracker.trackClick(Click.DISMISS)
         _uiState.value = Idle
     }
 

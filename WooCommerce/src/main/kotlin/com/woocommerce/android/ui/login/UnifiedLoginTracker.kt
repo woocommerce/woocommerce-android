@@ -171,7 +171,11 @@ class UnifiedLoginTracker
         NO_WPCOM_ACCOUNT_FOUND("no_wpcom_account_found"),
         NOT_WORDPRESS_SITE("not_wordpress_site"),
         QR_PROLOGUE("qr_prologue"),
-        QR_SCAN("qr_scan");
+        QR_SCAN("qr_scan"),
+        QR_NUMBER_MATCH("qr_number_match"),
+        QR_AUTHENTICATING("qr_authenticating"),
+        QR_SESSION_REPLACE_WARNING("qr_session_replace_warning"),
+        QR_ERROR("qr_error");
 
         companion object {
             private val valueMap = values().associateBy(Step::value)
@@ -185,6 +189,7 @@ class UnifiedLoginTracker
         DISMISS("dismiss"),
         CONTINUE_WITH_WORDPRESS_COM("continue_with_wordpress_com"),
         LOGIN_WITH_SITE_ADDRESS("login_with_site_address"),
+        LOGIN_WITH_QR("login_with_qr"),
         LOGIN_WITH_GOOGLE("login_with_google"),
         FORGOTTEN_PASSWORD("forgotten_password"),
         OPEN_EMAIL_CLIENT("open_email_client"),
@@ -209,7 +214,13 @@ class UnifiedLoginTracker
         WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN("what_is_wordpress_com_on_invalid_email_screen"),
         CREATE_ACCOUNT("create_account"),
         LOGIN_QR_SCAN("login_qr_scan"),
-        LOGIN_QR_FALLBACK("login_qr_fallback")
+        LOGIN_QR_FALLBACK("login_qr_fallback"),
+        QR_CAMERA_PERMISSION_DIALOG_SHOWN("qr_camera_permission_dialog_shown"),
+        QR_CAMERA_PERMISSION_GRANTED("qr_camera_permission_granted"),
+        QR_CAMERA_PERMISSION_DENIED("qr_camera_permission_denied"),
+        QR_RETRY("qr_retry"),
+        QR_START_OVER("qr_start_over"),
+        QR_CANCEL_NUMBER_MATCH("qr_cancel_number_match")
     }
 
     companion object {

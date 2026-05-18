@@ -20,6 +20,7 @@ import java.io.IOException
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
+import org.wordpress.android.login.LoginAnalyticsListener
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class QrLoginAuthenticatorTest : BaseUnitTest() {
@@ -44,8 +45,10 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
     private val siteStore: SiteStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val accountRepository: AccountRepository = mock()
+    private val loginAnalyticsListener: LoginAnalyticsListener = mock()
 
-    private val authenticator = QrLoginAuthenticator(repo, siteStore, selectedSite, accountRepository)
+    private val authenticator =
+        QrLoginAuthenticator(repo, siteStore, selectedSite, accountRepository, loginAnalyticsListener)
 
     @Before
     fun setUp() = testBlocking {
@@ -66,6 +69,22 @@ class QrLoginAuthenticatorTest : BaseUnitTest() {
             password = credentials.applicationPassword
         )
         verify(selectedSite).set(site)
+    }
+
+    @Test
+    fun `given happy path, when completeLogin, then track signed in as self-hosted`() = testBlocking {
+        authenticator.completeLogin(ticket, credentials)
+
+        verify(loginAnalyticsListener).trackAnalyticsSignIn(false)
+    }
+
+    @Test
+    fun `given user is not eligible, when completeLogin, then signed in is not tracked`() = testBlocking {
+        whenever(repo.checkIfUserIsEligible(site)).thenReturn(Result.success(false))
+
+        authenticator.completeLogin(ticket, credentials)
+
+        verifyNoInteractions(loginAnalyticsListener)
     }
 
     @Test
