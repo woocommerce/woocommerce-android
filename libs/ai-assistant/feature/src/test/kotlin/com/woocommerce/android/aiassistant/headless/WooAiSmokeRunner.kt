@@ -14,8 +14,13 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineRegressionStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckEvaluator
+import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
+import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessSampleClassification
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleSummary
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSpec
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
@@ -57,10 +62,10 @@ internal class WooAiSmokeRunner(
             selectedSiteId = selectedSiteId,
             resourceName = config.scenarioResourceName,
         )
-        val scenarioSpecs = scenarioMapper.loadScenarioSpecs()
+        val scenarioSpecs = filterScenarioSpecs(scenarioMapper.loadScenarioSpecs())
         val suite = runSuite(scenarioSpecs, scenarioMapper)
         val baseline = loadApprovedBaselineOrNull()
-        val comparison = baselineComparisonOrNull(suite, baseline)
+        val comparison = baselineComparisonOrNull(suite, baseline?.filteredForCurrentRun())
         val approvedBaseline = if (config.baseline?.mode == WooAiSmokeBaselineMode.APPROVE) {
             WooAiSmokeBaselineApproval.approvedBaselineOrNull(
                 current = suite,
@@ -96,23 +101,23 @@ internal class WooAiSmokeRunner(
         scenarioSpecs: List<HeadlessScenarioSpec>,
         scenarioMapper: WooAiSmokeScenarioMapper,
     ): HeadlessSuiteRunResult {
-        val harness = createHarness()
         val scenarioResults = scenarioSpecs.map { spec ->
-            val result = harness.runScenario(scenarioMapper.toHeadlessScenario(spec))
-            val hardCheckResults = HeadlessHardCheckEvaluator.evaluate(
-                result = result,
-                scenario = spec,
-            )
+            val samples = (1..config.sampleCount).map { sampleIndex ->
+                runSample(
+                    sampleIndex = sampleIndex,
+                    spec = spec,
+                    scenarioMapper = scenarioMapper,
+                )
+            }
+            val primarySample = samples.first()
             HeadlessScenarioRunResult(
                 scenarioId = spec.id,
                 category = spec.category,
-                result = result,
-                hardCheckResults = hardCheckResults,
-                status = if (hardCheckResults.all { it.passed }) {
-                    HeadlessScenarioStatus.PASS
-                } else {
-                    HeadlessScenarioStatus.FAIL
-                },
+                result = primarySample.result,
+                hardCheckResults = primarySample.hardCheckResults,
+                status = primarySample.status,
+                sampleResults = samples.takeIf { config.sampleCount > 1 }.orEmpty(),
+                sampleSummary = samples.summaryOrNull(),
             )
         }
         return HeadlessSuiteRunResult(
@@ -148,6 +153,8 @@ internal class WooAiSmokeRunner(
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = storeLabel,
             credentialSource = credentialSource,
+            sampleCount = config.sampleCount,
+            scenarioFilter = config.scenarioIds.toList(),
         )
 
     private fun loadApprovedBaselineOrNull(): HeadlessApprovedBaseline? =
@@ -216,5 +223,71 @@ internal class WooAiSmokeRunner(
                 }
             }
         }
+    }
+
+    private fun filterScenarioSpecs(scenarioSpecs: List<HeadlessScenarioSpec>): List<HeadlessScenarioSpec> {
+        if (config.scenarioIds.isEmpty()) return scenarioSpecs
+
+        val specsById = scenarioSpecs.associateBy { it.id }
+        val missingIds = config.scenarioIds.filterNot { it in specsById }
+        require(missingIds.isEmpty()) {
+            "Unknown Woo AI smoke scenario id(s): ${missingIds.joinToString()}"
+        }
+        return config.scenarioIds.map { requireNotNull(specsById[it]) }
+    }
+
+    private fun HeadlessApprovedBaseline.filteredForCurrentRun(): HeadlessApprovedBaseline {
+        if (config.scenarioIds.isEmpty()) return this
+
+        val selectedIds = config.scenarioIds
+        return copy(
+            scenarios = scenarios.filter { it.scenarioId in selectedIds },
+        )
+    }
+
+    private fun evaluateHardChecks(
+        result: HeadlessRunResult,
+        spec: HeadlessScenarioSpec,
+    ): List<HeadlessHardCheckResult> =
+        HeadlessHardCheckEvaluator.evaluate(result, spec) +
+            HeadlessHardCheckEvaluator.evaluateGlobalGuards(result)
+
+    private suspend fun runSample(
+        sampleIndex: Int,
+        spec: HeadlessScenarioSpec,
+        scenarioMapper: WooAiSmokeScenarioMapper,
+    ): HeadlessScenarioSampleRunResult {
+        val result = createHarness().runScenario(scenarioMapper.toHeadlessScenario(spec))
+        val hardCheckResults = evaluateHardChecks(result, spec)
+        return HeadlessScenarioSampleRunResult(
+            sampleIndex = sampleIndex,
+            result = result,
+            hardCheckResults = hardCheckResults,
+            status = hardCheckResults.status(),
+        )
+    }
+
+    private fun List<HeadlessHardCheckResult>.status(): HeadlessScenarioStatus =
+        if (all { it.passed }) {
+            HeadlessScenarioStatus.PASS
+        } else {
+            HeadlessScenarioStatus.FAIL
+        }
+
+    private fun List<HeadlessScenarioSampleRunResult>.summaryOrNull(): HeadlessScenarioSampleSummary? {
+        if (config.sampleCount == 1) return null
+
+        val passCount = count { it.status == HeadlessScenarioStatus.PASS }
+        val failCount = count { it.status == HeadlessScenarioStatus.FAIL }
+        return HeadlessScenarioSampleSummary(
+            requestedSamples = config.sampleCount,
+            passCount = passCount,
+            failCount = failCount,
+            classification = when {
+                passCount == config.sampleCount -> HeadlessSampleClassification.PASS
+                failCount == config.sampleCount -> HeadlessSampleClassification.FAIL
+                else -> HeadlessSampleClassification.FLAKY
+            },
+        )
     }
 }

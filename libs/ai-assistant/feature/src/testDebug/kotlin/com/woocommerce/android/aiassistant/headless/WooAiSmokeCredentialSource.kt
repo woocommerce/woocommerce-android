@@ -31,10 +31,13 @@ object WooAiSmokeCredentialSource {
 
         val siteUrl = environment.getValue("WOO_SITE_URL").trim().trimEnd('/')
         val siteId = environment.getValue("WOO_SITE_ID").toLongOrNull()
-        val outputDirectory = environment["WOO_AI_SMOKE_OUTPUT_DIR"]
-            ?.ifBlank { null }
-            ?.let(::File)
-            ?: defaultOutputDirectory
+        val sampleCount = parseSampleCount(environment["WOO_AI_SMOKE_SAMPLES"]).getOrElse { error ->
+            return WooAiSmokeCredentialParseResult.Invalid(error.message ?: "Invalid WOO_AI_SMOKE_SAMPLES.")
+        }
+        val scenarioIds = parseScenarioIds(environment["WOO_AI_SMOKE_SCENARIO_ID"]).getOrElse { error ->
+            return WooAiSmokeCredentialParseResult.Invalid(error.message ?: "Invalid WOO_AI_SMOKE_SCENARIO_ID.")
+        }
+        val outputDirectory = defaultOutputDirectory
 
         return when {
             siteId == null || siteId <= 0L -> WooAiSmokeCredentialParseResult.Invalid(
@@ -53,6 +56,8 @@ object WooAiSmokeCredentialSource {
                         storeLabel = environment["WOO_AI_SMOKE_STORE_LABEL"]?.ifBlank { null } ?: "redacted-store",
                         outputDirectory = outputDirectory,
                         credentialSource = "environment",
+                        sampleCount = sampleCount,
+                        scenarioIds = scenarioIds,
                     )
                 )
             }.getOrElse { error ->
@@ -63,6 +68,27 @@ object WooAiSmokeCredentialSource {
 
     private fun String.isHttpsUrl(): Boolean =
         runCatching { URI(this) }.getOrNull()?.scheme.equals("https", ignoreCase = true)
+
+    private fun parseSampleCount(rawValue: String?): Result<Int> = runCatching {
+        val value = rawValue?.ifBlank { null } ?: return@runCatching 1
+        val sampleCount = value.toIntOrNull()
+            ?: error("WOO_AI_SMOKE_SAMPLES must be a number between 1 and $MAX_SAMPLE_COUNT.")
+        require(sampleCount in 1..MAX_SAMPLE_COUNT) {
+            "WOO_AI_SMOKE_SAMPLES must be a number between 1 and $MAX_SAMPLE_COUNT."
+        }
+        sampleCount
+    }
+
+    private fun parseScenarioIds(rawValue: String?): Result<Set<String>> = runCatching {
+        val value = rawValue?.ifBlank { null } ?: return@runCatching emptySet<String>()
+        val ids = value.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        require(ids.isNotEmpty()) {
+            "WOO_AI_SMOKE_SCENARIO_ID must contain at least one scenario id."
+        }
+        ids.toCollection(LinkedHashSet())
+    }
+
+    private const val MAX_SAMPLE_COUNT = 3
 }
 
 sealed interface WooAiSmokeCredentialParseResult {

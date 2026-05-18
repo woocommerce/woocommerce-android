@@ -58,6 +58,7 @@ internal object WooAiSmokeDeterministicSupportFixtures {
         outputDirectory: File,
         chatService: ChatService,
         toolRegistry: ToolRegistry,
+        config: WooAiSmokeConfig = deterministicConfig(),
     ) = WooAiSmokeRunner(
         chatService = chatService,
         toolRegistry = toolRegistry,
@@ -69,11 +70,7 @@ internal object WooAiSmokeDeterministicSupportFixtures {
         systemPromptProvider = StaticSystemPromptProvider,
         json = json,
         timeSource = TimeSource.Monotonic,
-        config = WooAiSmokeConfig(
-            scenarioResourceName = "deterministic-scenarios.json",
-            baseline = null,
-            usePerRunDirectory = false,
-        ),
+        config = config,
         selectedSiteId = SITE_ID,
         outputDirectory = outputDirectory,
         jwtProviderClass = "none",
@@ -84,6 +81,19 @@ internal object WooAiSmokeDeterministicSupportFixtures {
             username = "",
             appPassword = "",
         ),
+    )
+
+    fun deterministicConfig(
+        scenarioResourceName: String = "deterministic-scenarios.json",
+        sampleCount: Int = 1,
+        scenarioIds: Set<String> = emptySet(),
+        baseline: WooAiSmokeBaselineConfig? = null,
+    ) = WooAiSmokeConfig(
+        scenarioResourceName = scenarioResourceName,
+        baseline = baseline,
+        usePerRunDirectory = false,
+        sampleCount = sampleCount,
+        scenarioIds = scenarioIds,
     )
 
     private object StaticSystemPromptProvider : AssistantSystemPromptProvider {

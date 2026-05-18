@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.core.headless.HeadlessApprovedBaseline
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineComparison
+import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessToolCallTrace
 import kotlinx.serialization.Serializable
@@ -57,16 +58,22 @@ internal class WooAiSmokeRunWriter(
 
     private fun turnRecords(suite: HeadlessSuiteRunResult): List<WooAiSmokeTurnRecord> =
         suite.scenarios.flatMap { scenario ->
-            scenario.result.turns.map { turn ->
-                WooAiSmokeTurnRecord(
-                    scenarioId = scenario.scenarioId,
-                    turnIndex = turn.turnIndex,
-                    userMessage = turn.userMessage,
-                    assistantText = turn.assistantText,
-                    outcome = turn.outcome.name,
-                    toolCalls = turn.toolCalls,
-                    errors = turn.errors,
-                )
+            val sampleRuns = scenario.sampleResults
+                .map { SampleRun(sampleIndex = it.sampleIndex, result = it.result) }
+                .ifEmpty { listOf(SampleRun(sampleIndex = null, result = scenario.result)) }
+            sampleRuns.flatMap { sample ->
+                sample.result.turns.map { turn ->
+                    WooAiSmokeTurnRecord(
+                        scenarioId = scenario.scenarioId,
+                        sampleIndex = sample.sampleIndex,
+                        turnIndex = turn.turnIndex,
+                        userMessage = turn.userMessage,
+                        assistantText = turn.assistantText,
+                        outcome = turn.outcome.name,
+                        toolCalls = turn.toolCalls,
+                        errors = turn.errors,
+                    )
+                }
             }
         }
 
@@ -99,9 +106,15 @@ internal data class WooAiSmokeArtifacts(
         .distinctBy { it.absolutePath }
 }
 
+private data class SampleRun(
+    val sampleIndex: Int?,
+    val result: HeadlessRunResult,
+)
+
 @Serializable
 private data class WooAiSmokeTurnRecord(
     val scenarioId: String,
+    val sampleIndex: Int? = null,
     val turnIndex: Int,
     val userMessage: String,
     val assistantText: String,

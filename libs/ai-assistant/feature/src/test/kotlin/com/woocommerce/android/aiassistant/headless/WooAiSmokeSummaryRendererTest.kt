@@ -10,7 +10,9 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessSampleClassification
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleSummary
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessToolCallTrace
@@ -46,7 +48,35 @@ class WooAiSmokeSummaryRendererTest {
         assertThat(summary).contains("- Failed OUTCOME_EQUALS for COMPLETED")
     }
 
-    private fun suite() = HeadlessSuiteRunResult(
+    @Test
+    fun `given sampled summary, when rendering summary, then sampled classification is separate from primary status`() {
+        val summary = WooAiSmokeSummaryRenderer.render(
+            suite = suite(sampled = true),
+            comparison = comparison(),
+        )
+
+        assertThat(summary).contains("Sample count: 3")
+        assertThat(summary).contains("Sampled mode: primary scenario status uses sample 1")
+        assertThat(summary).contains("SAMPLED_FLAKY=1")
+        assertThat(summary).contains("Status: FAIL")
+        assertThat(summary).contains("Sampled classification: FLAKY (PASS=2 FAIL=1)")
+        assertThat(summary).doesNotContain("Status: FLAKY")
+    }
+
+    @Test
+    fun `given errored turn, when rendering summary, then errors are visible`() {
+        val summary = WooAiSmokeSummaryRenderer.render(
+            suite = suite(errors = listOf("RATE_LIMIT")),
+            comparison = comparison(),
+        )
+
+        assertThat(summary).contains("Errors: RATE_LIMIT")
+    }
+
+    private fun suite(
+        sampled: Boolean = false,
+        errors: List<String> = emptyList(),
+    ) = HeadlessSuiteRunResult(
         metadata = HeadlessRunMetadata(
             modelId = "gpt-4o",
             promptVersion = "1.0.0",
@@ -58,6 +88,7 @@ class WooAiSmokeSummaryRendererTest {
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = "store",
             credentialSource = "test",
+            sampleCount = if (sampled) 3 else 1,
         ),
         scenarios = listOf(
             HeadlessScenarioRunResult(
@@ -80,6 +111,7 @@ class WooAiSmokeSummaryRendererTest {
                                     resultKind = HeadlessToolResultKind.REJECTED_BY_SAFETY,
                                 )
                             ),
+                            errors = errors,
                         )
                     ),
                 ),
@@ -91,6 +123,16 @@ class WooAiSmokeSummaryRendererTest {
                     )
                 ),
                 status = HeadlessScenarioStatus.FAIL,
+                sampleSummary = if (sampled) {
+                    HeadlessScenarioSampleSummary(
+                        requestedSamples = 3,
+                        passCount = 2,
+                        failCount = 1,
+                        classification = HeadlessSampleClassification.FLAKY,
+                    )
+                } else {
+                    null
+                },
             )
         ),
     )

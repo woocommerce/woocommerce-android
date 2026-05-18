@@ -58,7 +58,7 @@ object WooAiSmokeDebugBridge {
             require(entryPoint.toolRegistry() is WooCommerceToolRegistry) {
                 "Expected WooCommerceToolRegistry"
             }
-            val exit = runPhase("live_scenarios", LIVE_SCENARIOS_TIMEOUT) {
+            val exit = runPhase("live_scenarios", LIVE_SCENARIOS_TIMEOUT * credentials.sampleCount) {
                 WooAiSmokeRunner(
                     chatService = entryPoint.liveChatServiceFactory().create(credentials, redactor),
                     toolRegistry = entryPoint.toolRegistry(),
@@ -76,6 +76,8 @@ object WooAiSmokeDebugBridge {
                             approvedFileName = "approved-live-baseline.json",
                         ),
                         usePerRunDirectory = true,
+                        sampleCount = credentials.sampleCount,
+                        scenarioIds = credentials.scenarioIds,
                     ),
                     selectedSiteId = bootstrap.site.siteId,
                     outputDirectory = outputDirectory,
