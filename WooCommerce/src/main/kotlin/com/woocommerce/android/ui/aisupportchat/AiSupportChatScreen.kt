@@ -9,6 +9,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -179,9 +181,8 @@ private fun MessageBubble(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    Row(
+    BoxWithConstraints(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -192,7 +193,9 @@ private fun MessageBubble(
             },
             border = if (isUser) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             shadowElevation = if (isUser) 0.dp else 1.dp,
-            modifier = Modifier.fillMaxWidth(0.88f)
+            modifier = Modifier
+                .widthIn(max = maxWidth * MAX_BUBBLE_WIDTH_FRACTION)
+                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
         ) {
             MessageContent(
                 content = message.content,
@@ -400,17 +403,15 @@ private fun TestStatus.title(): String =
 @Composable
 private fun TypingIndicator(modifier: Modifier = Modifier) {
     val typingDescription = stringResource(R.string.ai_support_chat_typing)
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start
-    ) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             shadowElevation = 1.dp,
             modifier = Modifier
-                .fillMaxWidth(0.88f)
+                .widthIn(max = maxWidth * MAX_BUBBLE_WIDTH_FRACTION)
+                .align(Alignment.CenterStart)
                 .semantics(mergeDescendants = true) {
                     liveRegion = LiveRegionMode.Polite
                     contentDescription = typingDescription
@@ -556,3 +557,5 @@ private fun AiSupportChatScreenPreview() {
         )
     }
 }
+
+private const val MAX_BUBBLE_WIDTH_FRACTION = 0.88f

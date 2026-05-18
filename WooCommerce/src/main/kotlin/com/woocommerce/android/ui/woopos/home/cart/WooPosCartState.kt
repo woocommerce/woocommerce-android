@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 @Parcelize
 data class WooPosCartState(
@@ -103,6 +104,15 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             data object Unknown : CouponValidationState()
         }
     }
+
+    @Parcelize
+    data class CustomAmount(
+        override val itemNumber: Int,
+        override val name: String,
+        val amount: BigDecimal,
+        val formattedAmount: String,
+        val isTaxable: Boolean,
+    ) : WooPosCartItemViewState(itemNumber, name)
 
     @Parcelize
     data class Loading(

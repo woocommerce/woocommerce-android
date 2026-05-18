@@ -338,6 +338,23 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
+    fun `when custom amount entry row clicked, then dialog request event sent and tracked`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.CustomAmountEntryRowClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.CustomAmountDialogRequested())
+        )
+        verify(analyticsTracker).track(
+            eq(WooPosAnalyticsEvent.Event.CustomAmountEntryRowTapped)
+        )
+    }
+
+    @Test
     fun `when pull to refresh, then should track event`() = runTest {
         // GIVEN
         whenever(productsDataSource.refreshProducts()).thenReturn(

@@ -2411,12 +2411,12 @@
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
 
-    <string name="ai_support_chat_help_row_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
-    <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_screen_title">Chat with support</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
-    <string name="ai_support_chat_greeting">Hi! Tell me what\'s happening with your store, and I\'ll help troubleshoot it.</string>
-    <string name="ai_support_chat_input_hint">Message AI Troubleshooting</string>
+    <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
+    <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
@@ -3734,6 +3734,23 @@
     <string name="woopos_add_variable_product_to_cart_accessibility_label">Open list of variations</string>
     <string name="woopos_add_coupon_to_cart_accessibility_label">Add coupon to cart</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Custom amount %1$s, %2$s</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">Edit %s</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
+    <string name="woopos_custom_amount_entry_title">Custom amount</string>
+    <string name="woopos_custom_amount_entry_subtitle">Add a one-off charge</string>
+    <string name="woopos_custom_amount_dialog_title_add">Add custom amount</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Edit custom amount</string>
+    <string name="woopos_custom_amount_form_title">Custom amount</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Amount</string>
+    <string name="woopos_custom_amount_dialog_name_label">Name</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Custom amount</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Charge taxes</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Add custom amount</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Update custom amount</string>
+    <string name="woopos_custom_amount_dialog_cancel">Cancel</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
@@ -3877,6 +3894,7 @@
     <string name="woopos_coupons_loading_error_coupons_disabled_message">Enable coupon codes in WooCommerce settings to start creating them for your customers.</string>
     <string name="woopos_coupons_empty_list_message">Coupons can be effective way to drive business. Would you like to create one?</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">Create coupon</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Add coupon</string>
     <string name="woopos_coupons_loading_error_title">Unable to load coupons</string>
     <string name="woopos_coupons_loading_error_message">Please check your internet connection and try again.</string>
 

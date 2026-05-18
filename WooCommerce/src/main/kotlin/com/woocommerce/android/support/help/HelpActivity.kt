@@ -243,13 +243,23 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun isAiSupportChatAvailable(): Boolean =
-        userIsLoggedIn() &&
-            featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT) &&
-            selectedSite.getIfExists()?.isJetpackConnected == true
+        HelpAiSupportChatEntryPoint.isAvailable(
+            featureFlagEnabled = featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)
+        )
 
     private fun showAiSupportChat() {
-        startActivity(AiSupportChatActivity.createIntent(this))
+        startActivity(
+            AiSupportChatActivity.createIntent(
+                context = this,
+                preLogin = shouldUsePreLoginAiSupportChat()
+            )
+        )
     }
+
+    private fun shouldUsePreLoginAiSupportChat(): Boolean =
+        HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
+            isUserLoggedIn = userIsLoggedIn()
+        )
 
     private fun showFeatureFlagsOverride() {
         startActivity(DevFeatureFlagsActivity.createIntent(this, skipRemoteLoad = true))
