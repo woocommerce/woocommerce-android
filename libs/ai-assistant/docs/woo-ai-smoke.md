@@ -140,6 +140,21 @@ scenarios in `live-scenarios.json` (plus their hard checks) against the checked-
 `live-baseline.json`. This is the only level whose green status is accepted regression evidence
 for merge.
 
+PR4 parity controls:
+- `WOO_AI_SMOKE_SCENARIO_ID=orders_with_email` runs a focused subset in check mode. Multiple ids
+  can be comma-separated. Filtered check runs compare only the selected scenarios against the
+  checked-in baseline so they are useful for debugging; approval mode rejects filters because a
+  baseline refresh must cover the full suite.
+- `WOO_AI_SMOKE_SAMPLES=3` repeats each selected scenario. Valid values are `1..3`. In check mode,
+  primary scenario status and JUnit failure use sample 1; baseline comparison also uses sample 1
+  unless the checked-in baseline contains an approved sample expectation. Approval mode accepts
+  sampled runs and can intentionally approve `PASS` or `FLAKY` sample classifications.
+- Every scenario now gets global hard guards in addition to its JSON hard checks: no `FAILED`
+  outcome, no turn errors, and non-blank assistant text. This prevents empty/error responses from
+  passing scenarios that mostly contain negative checks.
+- The operator skill adds an iOS-style rubric report after artifacts exist. Those scores read the
+  already-redacted traces and stay separate from the deterministic baseline gate.
+
 What it does not prove: anything UI-side. The chat fragment, screen state, scroll behavior, and
 Compose rendering are not exercised. It also does not stand in for any device-backed coverage of
 the host app surface — `:WooCommerce` no longer owns a device-backed smoke adapter; the live
@@ -155,10 +170,10 @@ libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/runs/<yyyyMMdd-HHmmss>
 | File | What to inspect |
 | --- | --- |
 | `preflight.json` | Did SelectedSite, app password, JWT, and the read-only preflight tools bootstrap? `safeToolResults` lists every preflight call with its result kind. |
-| `run.json` | Per-scenario status and hard-check outcomes. |
+| `run.json` | Per-scenario status and hard-check outcomes. Sampled check runs include `sampleResults` and `sampleSummary` while keeping primary fields based on sample 1. |
 | `baseline-comparison.json` | Per-scenario diff against `live-baseline.json`. `PASS`, `KNOWN_FAILURE`, and `KNOWN_FAILURE_FIXED` are non-blocking; `REGRESSION`, `NEW`, and `MISSING` need triage. |
-| `turns.jsonl` | Redacted turn-by-turn trace of chat and tool calls. Inspect when you need to see exactly which tool was called and what came back. |
-| `summary.md` | Human-readable summary of the run. |
+| `turns.jsonl` | Redacted turn-by-turn trace of chat and tool calls. Sampled check runs include `sampleIndex`; one-sample runs keep the current shape. |
+| `summary.md` | Human-readable summary of the run, including selected scenario filters and sampled classification. |
 
 How to read common failures:
 
@@ -184,7 +199,7 @@ while IFS='=' read -r key value; do
     WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve \
+WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve WOO_AI_SMOKE_SAMPLES=3 \
   ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
 ```
@@ -208,8 +223,26 @@ baseline. If a scenario cannot reliably pass yet, keep the scenario in the basel
 `knownFailure` block containing a reason and the exact hard checks expected to fail.
 Do not add undocumented failures.
 
+Sampled approval writes `sampleExpectation` into `approved-live-baseline.json`: all-pass samples
+record `PASS`, mixed pass/fail samples record `FLAKY`, and all-fail samples are rejected unless an
+existing `knownFailure` is deliberately preserved. Flaky approval is separate from `knownFailure`;
+use it when the live behavior is acceptable but not stable across repeated samples.
+
 Check and approval are wired to **two separate test classes** so a normal Level 3 run cannot
 accidentally produce a candidate baseline.
+
+## Skill-wrapper judge mode
+
+The Android Robolectric live test remains the deterministic trace producer and baseline gate.
+Gradle and CI do not call an LLM judge. After artifacts exist, the `woo-ai-smoke` operator skill
+adds an iOS-style rubric report from the redacted `run.json`, `turns.jsonl`, and
+`baseline-comparison.json`. Rubric scores are reviewer guidance and stay separate from deterministic
+status.
+
+For the `spanish` scenario, Android keeps the same deterministic marker floor as iOS: turn 1 must
+contain `pedido|pedidos`, and turn 2 must contain `ayer`. Full "Spanish throughout" enforcement is
+handled by rubric review: mixed English/Spanish user-facing replies should be flagged as a
+correctness issue in the rubric notes, not encoded as brittle deterministic substring bans.
 
 ## Credentials
 

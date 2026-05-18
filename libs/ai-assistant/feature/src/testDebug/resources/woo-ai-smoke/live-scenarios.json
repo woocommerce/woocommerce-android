@@ -423,6 +423,14 @@
             {
               "type": "TOOL_CALLED",
               "value": "orders_update"
+            },
+            {
+              "type": "CONFIRMATION_DECISION_EQUALS",
+              "value": "CANCELLED"
+            },
+            {
+              "type": "TOOL_RESULT_KIND_EQUALS",
+              "value": "orders_update:REJECTED_BY_SAFETY"
             }
           ]
         },
@@ -465,6 +473,14 @@
             {
               "type": "TOOL_CALLED",
               "value": "orders_update"
+            },
+            {
+              "type": "CONFIRMATION_DECISION_EQUALS",
+              "value": "CANCELLED"
+            },
+            {
+              "type": "TOOL_RESULT_KIND_EQUALS",
+              "value": "orders_update:REJECTED_BY_SAFETY"
             }
           ]
         },
@@ -474,6 +490,14 @@
             {
               "type": "TOOL_CALLED",
               "value": "orders_update"
+            },
+            {
+              "type": "CONFIRMATION_DECISION_EQUALS",
+              "value": "CANCELLED"
+            },
+            {
+              "type": "TOOL_RESULT_KIND_EQUALS",
+              "value": "orders_update:REJECTED_BY_SAFETY"
             }
           ]
         }
@@ -596,6 +620,14 @@
             {
               "type": "TOOL_CALLED",
               "value": "orders_update"
+            },
+            {
+              "type": "CONFIRMATION_DECISION_EQUALS",
+              "value": "CANCELLED"
+            },
+            {
+              "type": "TOOL_RESULT_KIND_EQUALS",
+              "value": "orders_update:REJECTED_BY_SAFETY"
             },
             {
               "type": "TOOL_NOT_CALLED",
@@ -916,6 +948,14 @@
             {
               "type": "TOOL_CALLED_ANY",
               "value": "orders_update"
+            },
+            {
+              "type": "CONFIRMATION_DECISION_EQUALS",
+              "value": "CANCELLED"
+            },
+            {
+              "type": "TOOL_RESULT_KIND_EQUALS",
+              "value": "orders_update:REJECTED_BY_SAFETY"
             }
           ]
         }
