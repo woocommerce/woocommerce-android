@@ -149,6 +149,11 @@
             android:theme="@style/Theme.Woo.DayNight"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.aisupportchat.AiSupportChatActivity"
+            android:label="@string/ai_support_chat_screen_title"
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.prefs.developer.DevFeatureFlagsActivity"
             android:label="@string/dev_feature_flags"
             android:theme="@style/Theme.Woo.DayNight" />
@@ -157,6 +162,10 @@
             android:theme="@style/Theme.Woo.DayNight"
             android:windowSoftInputMode="adjustResize" />
         <!--        Make sure portrait screen orientation is not required for the installation of the app -->
+        <activity
+            android:name=".ui.payments.cardreader.readermode.CardReaderModeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Woo.DayNight" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
             android:exported="false"

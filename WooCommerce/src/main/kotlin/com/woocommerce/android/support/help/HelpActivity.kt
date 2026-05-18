@@ -32,6 +32,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatActivity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.prefs.developer.DevFeatureFlagsActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -107,6 +108,11 @@ class HelpActivity : AppCompatActivity() {
         if (userIsLoggedIn() && selectedSite.exists()) {
             binding.ssrContainer.show()
             binding.ssrContainer.setOnClickListener { showSSR() }
+        }
+
+        if (isAiSupportChatAvailable()) {
+            binding.aiSupportChatContainer.show()
+            binding.aiSupportChatContainer.setOnClickListener { showAiSupportChat() }
         }
 
         if (!userIsLoggedIn() && featureFlagRepository.isEnabled(FeatureFlag.LOGGED_OUT_FF_PANEL)) {
@@ -235,6 +241,25 @@ class HelpActivity : AppCompatActivity() {
     private fun showSSR() {
         startActivity(Intent(this, SSRActivity::class.java))
     }
+
+    private fun isAiSupportChatAvailable(): Boolean =
+        HelpAiSupportChatEntryPoint.isAvailable(
+            featureFlagEnabled = featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)
+        )
+
+    private fun showAiSupportChat() {
+        startActivity(
+            AiSupportChatActivity.createIntent(
+                context = this,
+                preLogin = shouldUsePreLoginAiSupportChat()
+            )
+        )
+    }
+
+    private fun shouldUsePreLoginAiSupportChat(): Boolean =
+        HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
+            isUserLoggedIn = userIsLoggedIn()
+        )
 
     private fun showFeatureFlagsOverride() {
         startActivity(DevFeatureFlagsActivity.createIntent(this, skipRemoteLoad = true))

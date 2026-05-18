@@ -15,6 +15,8 @@ Android library. The implementation home for the assistant:
 
 - Chat UI and screen-level state (Compose)
 - ViewModel and agentic loop orchestration
+- `AssistantConfig` (pinned model / prompt / tool-catalog version triple)
+- `AssistantSystemPromptProvider` (Android system prompt construction and Hilt binding)
 - `ChatService` implementation (`JetpackAiChatService` over OkHttp SSE)
 - JWT token provider (WP.com Jetpack AI)
 - Tool adapters and assistant-specific repository/wiring
@@ -29,7 +31,6 @@ Pure Kotlin/JVM library. The contract layer consumed by `:feature`:
 - `ChatService` and completion-facing interfaces
 - `AssistantEvent`, `AssistantMessage`, `ChatRequest`, `AssistantErrorKind`
 - `JwtTokenProvider`
-- `AssistantConfig` (pinned model / prompt / tool-catalog version triple)
 
 No Android, Compose, Hilt, or OkHttp dependencies. Tests run as plain JVM tests.
 

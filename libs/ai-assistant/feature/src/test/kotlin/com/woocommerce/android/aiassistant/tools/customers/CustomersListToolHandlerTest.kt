@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.tools.handlers.StubToolHandler
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -19,6 +20,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -39,7 +41,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 
 class CustomersListToolHandlerTest {
     private val dataSource: AICustomersDataSource = mock()
-    private val handler = CustomersListToolHandler(dataSource)
+    private val handler = CustomersListToolHandler(dataSource, testToolFailureDiagnosticsFactory())
 
     @Test
     fun `when descriptor is inspected, then it exposes iOS-compatible schema and is safe`() {
@@ -50,9 +52,10 @@ class CustomersListToolHandlerTest {
         assertThat(descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.SAFE)
         assertThat(handler).isInstanceOf(AssistantToolHandler::class.java)
         assertThat(handler).isNotInstanceOf(StubToolHandler::class.java)
-        assertThat(descriptor.description).contains("include")
-        assertThat(descriptor.description).contains("known customer IDs")
-        assertThat(descriptor.description).contains("id", "first_name", "last_name", "email")
+        assertThat(descriptor.description).contains("optionally filtered by keyword")
+        assertThat(descriptor.description).contains("Use `include=[id]` to look up one customer by ID")
+        assertThat(descriptor.description).contains("After calling, pass results to `show_cards`")
+        assertThat(descriptor.description).contains("do not retry with")
         assertThat(properties.keys).containsExactlyInAnyOrder(
             "search",
             "email",
@@ -63,6 +66,12 @@ class CustomersListToolHandlerTest {
             "per_page",
         )
         assertThat(descriptor.inputSchema.getValue("additionalProperties").jsonPrimitive.content).isEqualTo("false")
+        assertThat(properties.getValue("search").jsonObject.getValue("description").jsonPrimitive.content)
+            .isEqualTo("Free-text search across name, email, username.")
+        assertThat(properties.getValue("email").jsonObject.getValue("description").jsonPrimitive.content)
+            .isEqualTo("Exact email lookup.")
+        assertThat(properties.getValue("include").jsonObject.getValue("description").jsonPrimitive.content)
+            .isEqualTo("Specific customer IDs to include.")
         assertThat(properties.getValue("orderby").jsonObject.getValue("enum").jsonArray.stringValues())
             .containsExactly("registered_date", "name", "id", "email")
         assertThat(properties.getValue("order").jsonObject.getValue("enum").jsonArray.stringValues())
@@ -136,8 +145,14 @@ class CustomersListToolHandlerTest {
         whenever(dataSource.fetchCustomers()).thenReturn(
             Result.success(
                 listOf(
-                    customer(id = 42, firstName = "Jane", lastName = "Doe", email = "jane@example.com"),
-                    customer(id = 73, firstName = "", lastName = "", email = ""),
+                    customer(
+                        id = 42,
+                        firstName = "Jane",
+                        lastName = "Doe",
+                        email = "jane@example.com",
+                        billingPhone = "",
+                    ),
+                    customer(id = 73, firstName = "", lastName = "", email = "", billingPhone = ""),
                 )
             )
         )
@@ -157,22 +172,89 @@ class CustomersListToolHandlerTest {
         assertThat(matches[0].jsonObject.getValue("first_name").jsonPrimitive.content).isEqualTo("Jane")
         assertThat(matches[0].jsonObject.getValue("last_name").jsonPrimitive.content).isEqualTo("Doe")
         assertThat(matches[0].jsonObject.getValue("email").jsonPrimitive.content).isEqualTo("jane@example.com")
-        assertThat(matches[1].jsonObject.keys).containsExactly("id")
-        assertThat(result.structured.toString()).doesNotContain("phone", "billing", "shipping", "analytics")
+        assertThat(matches[0].jsonObject.keys).containsExactlyInAnyOrder("id", "first_name", "last_name", "email")
+        assertThat(matches[1].jsonObject.keys).containsExactlyInAnyOrder("id")
     }
 
     @Test
-    fun `given no selected site, when executed, then validation error is returned`() = runTest {
+    fun `given fetched customers, when executed, then available default fields are returned and order totals are not fabricated`() =
+        runTest {
+            whenever(dataSource.fetchCustomers()).thenReturn(
+                Result.success(
+                    listOf(
+                        customer(
+                            id = 42,
+                            firstName = "Jane",
+                            lastName = "Doe",
+                            email = "jane@example.com",
+                            username = "jane",
+                            dateCreated = "2026-05-01T10:00:00Z",
+                            billingPhone = "",
+                        )
+                    )
+                )
+            )
+
+            val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+            val match = (result as ToolResult.Success).structured.jsonObject
+                .getValue("matches").jsonArray.single().jsonObject
+            assertThat(match.getValue("username").jsonPrimitive.content).isEqualTo("jane")
+            assertThat(match.getValue("date_created").jsonPrimitive.content).isEqualTo("2026-05-01T10:00:00Z")
+            assertThat(match.keys).containsExactlyInAnyOrder(
+                "id",
+                "first_name",
+                "last_name",
+                "email",
+                "username",
+                "date_created",
+            )
+        }
+
+    @Test
+    fun `given customer expanded fields, when executed, then every customer field is returned`() = runTest {
+        whenever(dataSource.fetchCustomers()).thenReturn(
+            Result.success(
+                listOf(
+                    customer(
+                        id = 42,
+                        role = "customer",
+                        avatarUrl = "https://example.com/avatar.jpg",
+                        billingPhone = "555-1234",
+                        billingCity = "Portland",
+                        billingCountry = "US",
+                        shippingCity = "Seattle",
+                        shippingCountry = "US",
+                    )
+                )
+            )
+        )
+
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        val match = (result as ToolResult.Success).structured.jsonObject
+            .getValue("matches").jsonArray.single().jsonObject
+        val billing = match.getValue("billing").jsonObject
+        assertThat(billing.getValue("phone").jsonPrimitive.content).isEqualTo("555-1234")
+        assertThat(billing.getValue("city").jsonPrimitive.content).isEqualTo("Portland")
+        assertThat(billing.getValue("country").jsonPrimitive.content).isEqualTo("US")
+        assertThat(match.getValue("shipping").jsonObject.getValue("city").jsonPrimitive.content).isEqualTo("Seattle")
+        assertThat(match.getValue("role").jsonPrimitive.content).isEqualTo("customer")
+        assertThat(match.getValue("avatar_url").jsonPrimitive.content).isEqualTo("https://example.com/avatar.jpg")
+    }
+
+    @Test
+    fun `given data source failure, when executed, then retryable transport error is returned`() = runTest {
         // given
         whenever(dataSource.fetchCustomers()).thenReturn(
-            Result.failure(AICustomersDataSource.NoSelectedSiteException)
+            Result.failure(IllegalStateException("No selected site"))
         )
 
         // when
         val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
         // then
-        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        assertCustomerTransportError(result, retryable = true)
     }
 
     @Test
@@ -185,6 +267,34 @@ class CustomersListToolHandlerTest {
             toolCall(
                 arguments = buildJsonObject {
                     put("unexpected", "value")
+                }
+            )
+        )
+
+        // then
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        verify(dataSource, never()).fetchCustomers(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+        )
+    }
+
+    @Test
+    fun `given unsupported date args, when executed, then validation error is returned`() = runTest {
+        // given
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.success(emptyList()))
+
+        // when
+        val result = handler.execute(
+            toolCall(
+                arguments = buildJsonObject {
+                    put("after", "2026-05-01")
+                    put("before", "2026-05-07")
                 }
             )
         )
@@ -266,8 +376,63 @@ class CustomersListToolHandlerTest {
             val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
             // then
-            assertThat(result).isEqualTo(ToolResult.TransportError(toolCallId = TOOL_CALL_ID, retryable = true))
+            assertCustomerTransportError(result, retryable = true)
         }
+    }
+
+    @Test
+    fun `given woo error with numeric status, when executed, then status diagnostics are returned`() = runTest {
+        // given
+        val error = WooError(
+            type = WooErrorType.TIMEOUT,
+            original = TIMEOUT,
+            message = "Timed out",
+            errorData = wooErrorData(hasStatus = true, status = 503),
+        )
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.failure(OnChangedException(error)))
+
+        // when
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        // then
+        assertCustomerTransportError(result, retryable = true, httpStatus = 503)
+        assertThat((result as ToolResult.TransportError).diagnostics.transport?.bodySnippet).isNull()
+    }
+
+    @Test
+    fun `given woo error without status, when executed, then transport diagnostics are absent`() = runTest {
+        // given
+        val error = WooError(
+            type = WooErrorType.API_ERROR,
+            original = SERVER_ERROR,
+            message = "Server error",
+            errorData = wooErrorData(hasStatus = false),
+        )
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.failure(OnChangedException(error)))
+
+        // when
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        // then
+        assertCustomerTransportError(result, retryable = false)
+    }
+
+    @Test
+    fun `given woo error with non numeric status, when executed, then transport diagnostics are absent`() = runTest {
+        // given
+        val error = WooError(
+            type = WooErrorType.API_ERROR,
+            original = SERVER_ERROR,
+            message = "Server error",
+            errorData = wooErrorData(hasStatus = true, status = "503"),
+        )
+        whenever(dataSource.fetchCustomers()).thenReturn(Result.failure(OnChangedException(error)))
+
+        // when
+        val result = handler.execute(toolCall(arguments = buildJsonObject { }))
+
+        // then
+        assertCustomerTransportError(result, retryable = false)
     }
 
     @Test
@@ -280,7 +445,7 @@ class CustomersListToolHandlerTest {
             val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
             // then
-            assertThat(result).isEqualTo(ToolResult.TransportError(toolCallId = TOOL_CALL_ID, retryable = false))
+            assertCustomerTransportError(result, retryable = false)
         }
     }
 
@@ -293,7 +458,7 @@ class CustomersListToolHandlerTest {
         val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
         // then
-        assertThat(result).isEqualTo(ToolResult.TransportError(toolCallId = TOOL_CALL_ID, retryable = false))
+        assertCustomerTransportError(result, retryable = false)
     }
 
     private fun toolCall(arguments: JsonObject) = ToolCall(
@@ -304,22 +469,64 @@ class CustomersListToolHandlerTest {
 
     private fun customer(
         id: Long,
-        firstName: String,
-        lastName: String,
-        email: String,
+        firstName: String = "",
+        lastName: String = "",
+        email: String = "",
+        username: String = "",
+        dateCreated: String = "",
+        role: String = "",
+        avatarUrl: String = "",
+        billingPhone: String = "555-1234",
+        billingCity: String = "",
+        billingCountry: String = "",
+        shippingCity: String = "",
+        shippingCountry: String = "",
     ) = WCCustomerModel(
         localSiteId = LocalId(DEFAULT_SITE.id),
         remoteCustomerId = RemoteId(id),
+        avatarUrl = avatarUrl,
+        dateCreated = dateCreated,
         firstName = firstName,
         lastName = lastName,
         email = email,
-        billingPhone = "555-1234",
+        role = role,
+        username = username,
+        billingPhone = billingPhone,
         billingAddress1 = "123 Main St",
+        billingCity = billingCity,
+        billingCountry = billingCountry,
         shippingAddress1 = "123 Main St",
+        shippingCity = shippingCity,
+        shippingCountry = shippingCountry,
         analyticsCustomerId = 999,
     )
 
     private fun JsonArray.stringValues() = map { it.jsonPrimitive.contentOrNull }
+
+    private fun assertCustomerTransportError(
+        result: ToolResult,
+        retryable: Boolean,
+        httpStatus: Int? = null,
+    ) {
+        assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
+        result as ToolResult.TransportError
+        assertThat(result.toolCallId).isEqualTo(TOOL_CALL_ID)
+        assertThat(result.retryable).isEqualTo(retryable)
+        assertThat(result.diagnostics.tool?.toolName).isEqualTo("customers_list")
+        if (httpStatus == null) {
+            assertThat(result.diagnostics.transport).isNull()
+        } else {
+            assertThat(result.diagnostics.transport?.httpStatus).isEqualTo(httpStatus)
+        }
+    }
+
+    private fun wooErrorData(
+        hasStatus: Boolean,
+        status: Any? = null,
+    ) = mock<JSONObject>().apply {
+        whenever(has("status")).thenReturn(hasStatus)
+        whenever(opt("status")).thenReturn(status)
+    }
 
     private companion object {
         const val TOOL_CALL_ID = "call_1"

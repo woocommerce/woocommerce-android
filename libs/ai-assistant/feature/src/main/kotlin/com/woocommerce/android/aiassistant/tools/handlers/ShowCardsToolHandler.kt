@@ -5,11 +5,12 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.tools.handlers.cards.DefaultShowCardsResolver
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MAX_SHOW_CARDS_REFS
 import com.woocommerce.android.aiassistant.tools.handlers.cards.MissingRef
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ResolvedRef
-import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardFamily
+import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsArguments
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsReferenceValidator
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsRejectionReason
@@ -18,10 +19,10 @@ import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsResolve
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ValidatedRef
+import com.woocommerce.android.aiassistant.tools.handlers.cards.toJsonObject
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -31,16 +32,33 @@ import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import javax.inject.Inject
 
-class ShowCardsToolHandler internal constructor(
+internal class ShowCardsToolHandler internal constructor(
     private val resolver: ShowCardsResolver,
+    private val json: Json,
 ) : AssistantToolHandler {
     private val referenceValidator = ShowCardsReferenceValidator()
 
-    @Inject constructor() : this(DefaultShowCardsResolver())
+    @Inject constructor(
+        resolver: DefaultShowCardsResolver,
+        @AiAssistantJson json: Json,
+    ) : this(resolver as ShowCardsResolver, json)
+
+    internal constructor(resolver: ShowCardsResolver) : this(
+        resolver = resolver,
+        json = Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = false
+            explicitNulls = false
+        },
+    )
 
     override val descriptor = ToolDescriptor(
-        name = "show_cards",
-        description = "Show entity cards in the UI for orders or products selected by the assistant.",
+        name = SHOW_CARDS_TOOL_NAME,
+        description = "Show rich cards in the Android UI for order/product/variation/customer entity references " +
+            "or an analytics_stats ID produced after a successful analytics_orders result. Variation references " +
+            "use strict {parentProductId}/{variationId} ids and should be used only for explicit " +
+            "variation-level questions about sizes, colors, options, or known variation IDs. For broad product " +
+            "inventory lists, render product references.",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("additionalProperties", false)
@@ -57,10 +75,19 @@ class ShowCardsToolHandler internal constructor(
                                 putJsonArray("enum") {
                                     add("order")
                                     add("product")
+                                    add("variation")
+                                    add("analytics_stats")
+                                    add("customer")
                                 }
                             }
                             putJsonObject("id") {
                                 put("type", "string")
+                                put(
+                                    "description",
+                                    "Entity id. For variation, use strict {parentProductId}/{variationId}. " +
+                                        "For analytics_stats, pass the exact card_id returned by " +
+                                        "analytics_orders; do not construct it manually.",
+                                )
                             }
                         }
                         putJsonArray("required") {
@@ -114,7 +141,7 @@ class ShowCardsToolHandler internal constructor(
             resolver.resolve(validRefs)
         } catch (exception: CancellationException) {
             throw exception
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             validRefs.map { ref ->
                 ShowCardsResolution.Missing(
                     ref = ref,
@@ -127,7 +154,7 @@ class ShowCardsToolHandler internal constructor(
         ResolvedRef(
             family = ref.family.serializedName,
             id = ref.id,
-            summary = summary.filterAllowedKeysFor(ref.family),
+            summary = summary.toJsonObject(json),
         )
 
     private fun ShowCardsResolution.Missing.toMissingRef(): MissingRef =
@@ -136,21 +163,4 @@ class ShowCardsToolHandler internal constructor(
             id = ref.id,
             reason = reason,
         )
-
-    private fun JsonObject.filterAllowedKeysFor(family: ShowCardFamily): JsonObject {
-        val allowedKeys = when (family) {
-            ShowCardFamily.Order -> ORDER_SUMMARY_KEYS
-            ShowCardFamily.Product -> PRODUCT_SUMMARY_KEYS
-        }
-        return JsonObject(filterKeys { it in allowedKeys })
-    }
-
-    private companion object {
-        val ORDER_SUMMARY_KEYS = setOf("id", "number", "status", "total", "currency", "date_created")
-        val PRODUCT_SUMMARY_KEYS = setOf("id", "name", "sku", "price", "stock_status")
-
-        val json = Json {
-            explicitNulls = false
-        }
-    }
 }

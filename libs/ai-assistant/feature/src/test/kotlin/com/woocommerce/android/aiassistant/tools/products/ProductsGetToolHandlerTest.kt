@@ -1,7 +1,9 @@
 package com.woocommerce.android.aiassistant.tools.products
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -16,6 +18,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.store.WCProductStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductsGetToolHandlerTest {
@@ -28,6 +31,7 @@ class ProductsGetToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun toolCall(arguments: JsonObject): ToolCall =
@@ -49,6 +53,16 @@ class ProductsGetToolHandlerTest {
     )
 
     @Test
+    fun `given descriptor, when inspected, then variation and card-rendering guidance is aligned`() {
+        val description = handler.descriptor.description
+
+        assertThat(description).contains("use product_variations_list only when")
+        assertThat(description).contains("explicitly asks about variations, sizes, colors, options")
+        assertThat(description).contains("Do NOT call this tool to render a card after products_list")
+        assertThat(description).contains("`show_cards` re-fetches product detail")
+    }
+
+    @Test
     fun `given a valid id, when execute is called, then structured JSON contains expected fields`() = runTest {
         val product = makeProduct()
         whenever(dataSource.getProduct(42L)).thenReturn(Result.success(product))
@@ -67,6 +81,37 @@ class ProductsGetToolHandlerTest {
     }
 
     @Test
+    fun `given widened product detail field, when execute is called, then structured JSON includes it`() =
+        runTest {
+            val product = WCProductModel(
+                remoteId = RemoteId(42L),
+                name = "Hoodie",
+                type = "simple",
+                description = "Long description",
+            )
+            whenever(dataSource.getProduct(productId = 42L)).thenReturn(Result.success(product))
+
+            val result = handler.execute(toolCall(buildJsonObject { put("id", 42) }))
+
+            val json = (result as ToolResult.Success).structured.jsonObject
+            assertThat(json.getValue("description").jsonPrimitive.content).isEqualTo("Long description")
+        }
+
+    @Test
+    fun `given unknown argument, when execute is called, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("id", 42)
+                    put("unexpected", true)
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+    }
+
+    @Test
     fun `given missing id, when execute is called, then ValidationError is returned`() = runTest {
         val result = handler.execute(toolCall(buildJsonObject {}))
 
@@ -74,12 +119,16 @@ class ProductsGetToolHandlerTest {
     }
 
     @Test
-    fun `given data source fails, when execute is called, then retryable TransportError is returned`() = runTest {
-        whenever(dataSource.getProduct(99L)).thenReturn(Result.failure(RuntimeException("not found")))
+    fun `given data source fails, when execute is called, then lossy diagnostics are returned`() = runTest {
+        val error = OnChangedException(WCProductStore.ProductError(message = "not found"))
+        whenever(dataSource.getProduct(99L)).thenReturn(Result.failure(error))
 
         val result = handler.execute(toolCall(buildJsonObject { put("id", 99) }))
 
         assertThat(result).isInstanceOf(ToolResult.TransportError::class.java)
-        assertThat((result as ToolResult.TransportError).retryable).isTrue
+        result as ToolResult.TransportError
+        assertThat(result.retryable).isTrue
+        assertThat(result.diagnostics.tool?.toolName).isEqualTo("products_get")
+        assertThat(result.diagnostics.transport).isNull()
     }
 }

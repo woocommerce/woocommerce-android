@@ -161,7 +161,8 @@ class WPComGsonRequestBuilder
         body: Map<String, Any>?,
         clazz: Class<T>,
         retryPolicy: RetryPolicy? = null,
-        headers: Map<String, String> = emptyMap()
+        headers: Map<String, String> = emptyMap(),
+        authenticatedRequest: Boolean = true
     ) = suspendCancellableCoroutine<Response<T>> { cont ->
         val request = WPComGsonRequest.buildPostRequest(url, params, body, clazz, { responseData, headers ->
             cont.resume(Success(responseData, headers))
@@ -174,7 +175,11 @@ class WPComGsonRequestBuilder
             request.retryPolicy = retryPolicy
         }
         cont.invokeOnCancellation { request.cancel() }
-        restClient.add(request)
+        if (authenticatedRequest) {
+            restClient.add(request)
+        } else {
+            restClient.addUnauthedRequest(request)
+        }
     }
 
     sealed class Response<T> {

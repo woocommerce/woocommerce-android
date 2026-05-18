@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.hub
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.Gravity
@@ -24,6 +25,8 @@ import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
+import com.woocommerce.android.ui.payments.cardreader.readermode.CardReaderModeActivity
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderMode
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -129,6 +132,9 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                             TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
                         )
                     )
+                }
+                is NavigateToCardReaderMode -> {
+                    startActivity(Intent(requireContext(), CardReaderModeActivity::class.java))
                 }
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()

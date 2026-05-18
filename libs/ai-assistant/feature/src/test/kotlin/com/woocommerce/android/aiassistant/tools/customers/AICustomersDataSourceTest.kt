@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -25,23 +24,10 @@ class AICustomersDataSourceTest {
     private val dataSource = AICustomersDataSource(selectedSite, customerStore)
 
     @Test
-    fun `given no selected site, when customers are fetched, then selected-site failure is returned`() = runTest {
-        // given
-        whenever(selectedSite.getOrNull()).thenReturn(null)
-
-        // when
-        val result = dataSource.fetchCustomers()
-
-        // then
-        assertThat(result.exceptionOrNull()).isInstanceOf(AICustomersDataSource.NoSelectedSiteException::class.java)
-        verifyNoInteractions(customerStore)
-    }
-
-    @Test
     fun `given customer store succeeds, when customers are fetched, then store result is returned`() = runTest {
         // given
         val customer = customer(42)
-        whenever(selectedSite.getOrNull()).thenReturn(DEFAULT_SITE)
+        whenever(selectedSite.get()).thenReturn(DEFAULT_SITE)
         doReturn(WooResult(listOf(customer)))
             .whenever(customerStore)
             .fetchCustomers(
@@ -73,7 +59,7 @@ class AICustomersDataSourceTest {
     @Test
     fun `given customer store fails, when customers are fetched, then OnChangedException is returned`() = runTest {
         // given
-        whenever(selectedSite.getOrNull()).thenReturn(DEFAULT_SITE)
+        whenever(selectedSite.get()).thenReturn(DEFAULT_SITE)
         whenever(customerStore.fetchCustomers(DEFAULT_SITE)).thenReturn(WooResult(TEST_ERROR))
 
         // when

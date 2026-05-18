@@ -44,6 +44,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
 
+    var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 
@@ -155,6 +157,14 @@ open class AppPrefsWrapper @Inject constructor() {
     fun setCardReaderWelcomeDialogShown() = AppPrefs.setCardReaderWelcomeDialogShown()
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
+
+    fun setLastConnectedPhoneDeviceId(deviceId: String) = AppPrefs.setLastConnectedPhoneDeviceId(deviceId)
+
+    fun getLastConnectedPhoneDeviceId() = AppPrefs.getLastConnectedPhoneDeviceId()
+
+    fun removeLastConnectedPhoneDeviceId() = AppPrefs.removeLastConnectedPhoneDeviceId()
+
+    var wooPosRemoteReaderDeviceUUID by AppPrefs::wooPosRemoteReaderDeviceUUID
 
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()

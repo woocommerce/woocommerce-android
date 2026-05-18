@@ -67,7 +67,7 @@ class DashboardViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
-    dashboardRepository: DashboardRepository,
+    private val dashboardRepository: DashboardRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
@@ -148,6 +148,13 @@ class DashboardViewModel @Inject constructor(
         }
 
         updateShareStoreButtonVisibility()
+        insertAIAssistantWidgetByDefault()
+    }
+
+    private fun insertAIAssistantWidgetByDefault() {
+        launch {
+            dashboardRepository.insertAIAssistantWidgetAtTopIfMissing()
+        }
     }
 
     private fun updateShareStoreButtonVisibility() {
@@ -290,6 +297,11 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
+    fun onAiAssistantCardClicked() {
+        trackCardInteracted(DashboardWidget.Type.AI_ASSISTANT.trackingIdentifier)
+        triggerEvent(DashboardEvent.OpenAiAssistant)
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -363,6 +375,8 @@ class DashboardViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : DashboardEvent()
 
         data object OpenEditWidgets : DashboardEvent()
+
+        data object OpenAiAssistant : DashboardEvent()
 
         data class OpenRangePicker(
             val start: Long,

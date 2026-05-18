@@ -8,6 +8,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -18,13 +20,16 @@ import javax.inject.Inject
 internal class ProductVariationsUpdateToolHandler @Inject constructor(
     private val dataSource: AIProductVariationsDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
         name = "product_variations_update",
         description = "Update one product variation. Requires parent product_id and variation id. " +
             "Accepts only regular_price, sale_price, stock_quantity, stock_status, sku, and status. " +
-            "Setting stock_quantity also enables stock management. At most one write is executed per turn.",
+            "Setting stock_quantity also enables stock management. At most one write is executed per turn. " +
+            "After a successful update, call show_cards with family variation and the strict " +
+            "{parentProductId}/{variationId} id so the merchant sees the new state.",
         inputSchema = inputSchema {
             integer("product_id", description = "The parent product ID. Required.", required = true)
             integer("id", description = "The variation ID. Required.", required = true)
@@ -47,6 +52,10 @@ internal class ProductVariationsUpdateToolHandler @Inject constructor(
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, PRODUCT_VARIATIONS_UPDATE_ALLOWED_ARGS, descriptor.name)
+            .exceptionOrNull()?.let {
+                return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+            }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -74,7 +83,14 @@ internal class ProductVariationsUpdateToolHandler @Inject constructor(
                     ) as JsonObject,
                 )
             },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
+            },
         )
     }
 
@@ -112,3 +128,14 @@ internal class ProductVariationsUpdateToolHandler @Inject constructor(
         val ALLOWED_STATUSES = setOf("draft", "pending", "private", "publish")
     }
 }
+
+private val PRODUCT_VARIATIONS_UPDATE_ALLOWED_ARGS = setOf(
+    "product_id",
+    "id",
+    "regular_price",
+    "sale_price",
+    "stock_quantity",
+    "stock_status",
+    "sku",
+    "status",
+)

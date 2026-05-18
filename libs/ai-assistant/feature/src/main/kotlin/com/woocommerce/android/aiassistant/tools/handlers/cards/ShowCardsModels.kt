@@ -1,11 +1,14 @@
 package com.woocommerce.android.aiassistant.tools.handlers.cards
 
+import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 internal const val MAX_SHOW_CARDS_REFS = 10
+internal const val SHOW_CARDS_TOOL_NAME = "show_cards"
 
 @Serializable
 internal data class ShowCardsArguments(
@@ -14,7 +17,10 @@ internal data class ShowCardsArguments(
 
 internal enum class ShowCardFamily(val serializedName: String) {
     Order("order"),
-    Product("product");
+    Product("product"),
+    Variation("variation"),
+    AnalyticsStats("analytics_stats"),
+    Customer("customer");
 
     companion object {
         fun from(value: String): ShowCardFamily? =
@@ -53,6 +59,11 @@ internal data class OrderSummary(
     val total: String? = null,
     val currency: String? = null,
     @SerialName("date_created") val dateCreated: String? = null,
+    @SerialName("customer_name") val customerName: String? = null,
+    @SerialName("payment_method_title") val paymentMethodTitle: String? = null,
+    @SerialName("customer_id") val customerId: Long? = null,
+    @SerialName("line_items_count") val lineItemsCount: Int? = null,
+    @SerialName("line_items") val lineItems: List<CompactOrderLineItem> = emptyList(),
 )
 
 @Serializable
@@ -61,7 +72,41 @@ internal data class ProductSummary(
     val name: String? = null,
     val sku: String? = null,
     val price: String? = null,
+    val type: String? = null,
     @SerialName("stock_status") val stockStatus: String? = null,
+    @SerialName("manage_stock") val manageStock: Boolean? = null,
+    @SerialName("on_sale") val onSale: Boolean? = null,
+    @SerialName("stock_quantity") val stockQuantity: Double? = null,
+)
+
+@Serializable
+internal data class VariationSummary(
+    val id: String,
+    @SerialName("product_id") val productId: Long,
+    @SerialName("variation_id") val variationId: Long,
+    val name: String? = null,
+    val sku: String? = null,
+    val price: String? = null,
+    @SerialName("stock_status") val stockStatus: String? = null,
+    val status: String? = null,
+    val attributes: List<CompactVariationAttribute> = emptyList(),
+)
+
+@Serializable
+internal data class CustomerSummary(
+    val id: String,
+    val name: String? = null,
+    val email: String? = null,
+)
+
+@Serializable
+internal data class AnalyticsStatsSummary(
+    val id: String,
+    val after: String,
+    val before: String,
+    val currency: String? = null,
+    val totals: JsonObject,
+    @SerialName("interval_subtotals") val intervalSubtotals: List<JsonObject> = emptyList(),
 )
 
 @Serializable
@@ -119,7 +164,58 @@ internal data class ShowCardPayload(
     val family: String,
     val id: String,
     val title: String,
-    val subtitle: String? = null,
-    val badges: List<String> = emptyList(),
-    val attributes: Map<String, String> = emptyMap(),
+    val details: ShowCardDetails,
 )
+
+@Serializable
+internal sealed interface ShowCardDetails {
+    @Serializable
+    @SerialName("order")
+    data class Order(
+        val status: String? = null,
+        val total: String? = null,
+        val currency: String? = null,
+        @SerialName("date_created") val dateCreated: String? = null,
+        @SerialName("customer_name") val customerName: String? = null,
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("product")
+    data class Product(
+        val sku: String? = null,
+        val price: String? = null,
+        @SerialName("stock_status") val stockStatus: String? = null,
+        val status: String? = null,
+        @SerialName("image_url") val imageUrl: String? = null,
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("variation")
+    data class Variation(
+        @SerialName("product_id") val productId: Long,
+        @SerialName("variation_id") val variationId: Long,
+        val name: String? = null,
+        val sku: String? = null,
+        val price: String? = null,
+        @SerialName("stock_status") val stockStatus: String? = null,
+        val status: String? = null,
+        @SerialName("image_url") val imageUrl: String? = null,
+        val attributes: List<CompactVariationAttribute> = emptyList(),
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("analytics_stats")
+    data class AnalyticsStats(
+        val after: String,
+        val before: String,
+        val currency: String? = null,
+        val totals: JsonObject,
+        @SerialName("interval_subtotals") val intervalSubtotals: List<JsonObject> = emptyList(),
+    ) : ShowCardDetails
+
+    @Serializable
+    @SerialName("customer")
+    data class Customer(
+        val email: String? = null,
+    ) : ShowCardDetails
+}

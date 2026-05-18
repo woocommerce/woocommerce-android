@@ -68,6 +68,7 @@ import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelCreationEligibilityDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.persistence.dao.TaxClassDao
 import org.wordpress.android.fluxc.persistence.dao.TaxRateDao
@@ -75,6 +76,7 @@ import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
+import org.wordpress.android.fluxc.persistence.dao.WooPushNotificationPreferencesDao
 import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
@@ -95,6 +97,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
+import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
@@ -102,6 +105,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.fluxc.persistence.entity.WooPushNotificationPreferencesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
@@ -139,7 +143,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 82
+const val WC_DATABASE_VERSION = 85
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -200,6 +204,8 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCRevenueStatsModel::class,
         WCShippingLabelModel::class,
         WCShippingLabelCreationEligibility::class,
+        WooPushNotificationPreferencesEntity::class,
+        SupportChatBookmarkEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -261,6 +267,9 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 78, to = 79),
         AutoMigration(from = 80, to = 81),
         AutoMigration(from = 81, to = 82),
+        AutoMigration(from = 82, to = 83),
+        AutoMigration(from = 83, to = 84),
+        AutoMigration(from = 84, to = 85),
     ]
 )
 @TypeConverters(
@@ -317,6 +326,8 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val revenueStatsDao: RevenueStatsDao
     internal abstract val shippingLabelDao: ShippingLabelDao
     internal abstract val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
+    internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
+    abstract val supportChatBookmarkDao: SupportChatBookmarkDao
 
     companion object {
         fun buildDb(

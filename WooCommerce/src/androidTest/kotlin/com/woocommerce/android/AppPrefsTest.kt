@@ -46,6 +46,15 @@ class AppPrefsTest {
     }
 
     @Test
+    fun whenAiAssistantEarlyAccessNoticeIsDismissedThenSitePreferencesResetClearsDismissal() {
+        AppPrefs.isAiAssistantEarlyAccessNoticeDismissed = true
+
+        AppPrefs.resetSitePreferences()
+
+        assertThat(AppPrefs.isAiAssistantEarlyAccessNoticeDismissed).isFalse()
+    }
+
+    @Test
     fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusIsStored() {
         AppPrefs.setCardReaderOnboardingData(
             localSiteId = 0,

@@ -15,8 +15,6 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -101,10 +99,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { isFeatureSupported(any()) } doReturn true
     }
 
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.AI_ASSISTANT) } doReturn false
-    }
-
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
 
@@ -127,7 +121,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             observeBookingsVisibility = observeBookingsVisibility,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             ciabSiteGateKeeper = ciabSiteGateKeeper,
-            featureFlagRepository = featureFlagRepository,
         )
     }
 
@@ -565,56 +558,18 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `given ai assistant flag is enabled, when building state, then ai assistant button is displayed`() =
-        testBlocking {
-            // GIVEN
-            setup {
-                whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_ASSISTANT)).thenReturn(true)
-            }
+    fun `when building state, then ai assistant entry point is not part of more menu`() = testBlocking {
+        // GIVEN
+        setup()
 
-            // WHEN
-            val state = viewModel.moreMenuViewState.captureValues().last()
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
 
-            // THEN
-            val button = state.menuSections.flatMap { it.items }
-                .first { it.title == R.string.more_menu_button_ai_assistant }
-            assertThat(button.description).isEqualTo(R.string.more_menu_button_ai_assistant_description)
-            assertThat(button.icon).isEqualTo(R.drawable.ic_more_menu_ai_assistant)
-        }
-
-    @Test
-    fun `given ai assistant flag is disabled, when building state, then ai assistant button is hidden`() =
-        testBlocking {
-            // GIVEN
-            setup {
-                whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_ASSISTANT)).thenReturn(false)
-            }
-
-            // WHEN
-            val state = viewModel.moreMenuViewState.captureValues().last()
-
-            // THEN
-            val items = state.menuSections.flatMap { it.items }
-            assertThat(items.none { it.title == R.string.more_menu_button_ai_assistant }).isTrue()
-        }
-
-    @Test
-    fun `given ai assistant flag is enabled, when ai assistant button clicked, then navigate to assistant`() =
-        testBlocking {
-            // GIVEN
-            setup {
-                whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_ASSISTANT)).thenReturn(true)
-            }
-            val state = viewModel.moreMenuViewState.captureValues().last()
-            val button = state.menuSections.flatMap { it.items }
-                .first { it.title == R.string.more_menu_button_ai_assistant }
-
-            // WHEN
-            val event = viewModel.event.runAndCaptureValues {
-                button.onClick()
-            }.last()
-
-            // THEN
-            assertThat(event).isEqualTo(MoreMenuEvent.ViewAiAssistantEvent)
-        }
+        // THEN
+        val items = state.menuSections.flatMap { it.items }
+        assertThat(MoreMenuItemButton.Type.entries.map { it.name }).doesNotContain("AiAssistant")
+        assertThat(items.map { it.title }).doesNotContain(R.string.more_menu_button_ai_assistant)
+        assertThat(items.map { it.description }).doesNotContain(R.string.more_menu_button_ai_assistant_description)
+        assertThat(items.map { it.icon }).doesNotContain(R.drawable.ic_more_menu_ai_assistant)
+    }
 }

@@ -6,6 +6,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -25,19 +27,23 @@ import javax.inject.Inject
 
 internal class CustomersListToolHandler @Inject constructor(
     private val dataSource: AICustomersDataSource,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
     override val descriptor = ToolDescriptor(
         name = "customers_list",
-        description = "List customers or look up known customer IDs by passing include as an array of IDs. " +
-            "Returns compact matches with id, first_name, last_name, and email only.",
+        description = "List customers, optionally filtered by keyword (matches name, email, username) or email. " +
+            "Use `include=[id]` to look up one customer by ID; the per-id customer endpoint requires " +
+            "manage_woocommerce so include is the universal path. After calling, pass results to `show_cards` " +
+            "to render. If a search returns no matches, do not retry with synonyms, capitalization variants, " +
+            "or broader terms - say no match was found.",
         inputSchema = buildJsonObject {
             put("type", "object")
             putJsonObject("properties") {
-                stringProperty("search", "Search customers by name, username, or similar customer text.")
-                stringProperty("email", "Filter customers by email address.")
+                stringProperty("search", "Free-text search across name, email, username.")
+                stringProperty("email", "Exact email lookup.")
                 putJsonObject("include") {
                     put("type", "array")
-                    put("description", "Customer IDs to return from the list endpoint.")
+                    put("description", "Specific customer IDs to include.")
                     putJsonObject("items") {
                         put("type", "integer")
                         put("minimum", 1)
@@ -45,7 +51,7 @@ internal class CustomersListToolHandler @Inject constructor(
                 }
                 putJsonObject("orderby") {
                     put("type", "string")
-                    put("description", "Customer sort field.")
+                    put("description", "Sort key; default 'registered_date'.")
                     putJsonArray("enum") {
                         add("registered_date")
                         add("name")
@@ -55,7 +61,7 @@ internal class CustomersListToolHandler @Inject constructor(
                 }
                 putJsonObject("order") {
                     put("type", "string")
-                    put("description", "Sort direction.")
+                    put("description", "Sort direction; default 'desc'.")
                     putJsonArray("enum") {
                         add("asc")
                         add("desc")
@@ -64,13 +70,13 @@ internal class CustomersListToolHandler @Inject constructor(
                 putJsonObject("page") {
                     put("type", "integer")
                     put("minimum", 1)
-                    put("description", "Results page. Only sent to WooCommerce when greater than 1.")
+                    put("description", "1-based page number; default 1.")
                 }
                 putJsonObject("per_page") {
                     put("type", "integer")
                     put("minimum", 1)
                     put("maximum", MAX_PER_PAGE)
-                    put("description", "Results per page. Values are clamped to 1..50.")
+                    put("description", "Max items; clamped 1-50, default 20.")
                 }
             }
             put("additionalProperties", false)
@@ -104,12 +110,12 @@ internal class CustomersListToolHandler @Inject constructor(
                 )
             },
             onFailure = { error ->
-                when (error) {
-                    AICustomersDataSource.NoSelectedSiteException -> {
-                        ToolResult.ValidationError(call.id, "No selected site")
-                    }
-                    else -> ToolResult.TransportError(call.id, retryable = error.isRetryableStoreError())
-                }
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = error.isRetryableStoreError(),
+                )
             }
         )
     }
@@ -122,10 +128,7 @@ internal class CustomersListToolHandler @Inject constructor(
     }
 
     private fun JsonObject.toCustomerListArgs(): CustomerListArgs {
-        val unknownKeys = keys - ALLOWED_KEYS
-        require(unknownKeys.isEmpty()) {
-            "Unsupported customers_list argument(s): ${unknownKeys.joinToString(", ")}"
-        }
+        validateAllowedArguments(this, ALLOWED_KEYS, "customers_list").getOrThrow()
 
         val orderby = stringArg("orderby") ?: DEFAULT_ORDERBY
         require(orderby in ALLOWED_ORDERBY) {
@@ -205,6 +208,25 @@ internal class CustomersListToolHandler @Inject constructor(
                         putOptionalString("first_name", customer.firstName)
                         putOptionalString("last_name", customer.lastName)
                         putOptionalString("email", customer.email)
+                        putOptionalString("username", customer.username)
+                        putOptionalString("date_created", customer.dateCreated)
+                        val billing = buildJsonObject {
+                            putOptionalString("phone", customer.billingPhone)
+                            putOptionalString("city", customer.billingCity)
+                            putOptionalString("country", customer.billingCountry)
+                        }
+                        if (billing.isNotEmpty()) {
+                            put("billing", billing)
+                        }
+                        val shipping = buildJsonObject {
+                            putOptionalString("city", customer.shippingCity)
+                            putOptionalString("country", customer.shippingCountry)
+                        }
+                        if (shipping.isNotEmpty()) {
+                            put("shipping", shipping)
+                        }
+                        putOptionalString("role", customer.role)
+                        putOptionalString("avatar_url", customer.avatarUrl)
                     }
                 )
             }
@@ -218,8 +240,8 @@ internal class CustomersListToolHandler @Inject constructor(
         }
     }
 
-    private fun JsonObjectBuilder.putOptionalString(name: String, value: String) {
-        if (value.isNotBlank()) {
+    private fun JsonObjectBuilder.putOptionalString(name: String, value: String?) {
+        if (!value.isNullOrBlank()) {
             put(name, value)
         }
     }
@@ -241,7 +263,15 @@ internal class CustomersListToolHandler @Inject constructor(
         const val MIN_PER_PAGE = 1
         const val MAX_PER_PAGE = 50
 
-        val ALLOWED_KEYS = setOf("search", "email", "include", "orderby", "order", "page", "per_page")
+        val ALLOWED_KEYS = setOf(
+            "search",
+            "email",
+            "include",
+            "orderby",
+            "order",
+            "page",
+            "per_page",
+        )
         val ALLOWED_ORDERBY = setOf("registered_date", "name", "id", "email")
         val ALLOWED_ORDER = setOf("asc", "desc")
         val RETRYABLE_WOO_ERROR_TYPES = setOf(

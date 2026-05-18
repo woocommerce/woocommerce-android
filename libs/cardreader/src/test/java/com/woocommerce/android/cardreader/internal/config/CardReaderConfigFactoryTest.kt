@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader.internal.config
 
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForAT
+import com.woocommerce.android.cardreader.config.CardReaderConfigForAustralia
 import com.woocommerce.android.cardreader.config.CardReaderConfigForBE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForDE
@@ -170,8 +171,8 @@ class CardReaderConfigFactoryTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given country code AU, when getCardReaderConfigFor is called, then unsupported config returned`() {
+    fun `given country code AU, when getCardReaderConfigFor is called, then Australia card reader config returned`() {
         assertThat(cardReaderConfigFactory.getCardReaderConfigFor("AU"))
-            .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
+            .isInstanceOf(CardReaderConfigForAustralia::class.java)
     }
 }

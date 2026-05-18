@@ -19,6 +19,11 @@ sealed interface WooNotificationType : Parcelable {
     }
 
     @Parcelize
+    data object Stock : WooNotificationType {
+        @IgnoredOnParcel override val trackingValue: String = "STOCK"
+    }
+
+    @Parcelize
     data object LocalReminder : WooNotificationType {
         @IgnoredOnParcel override val trackingValue: String = "LOCAL_REMINDER"
     }
@@ -51,6 +56,7 @@ fun NotificationModel.getWooType(): WooNotificationType {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> WooNotificationType.NewOrder
         NotificationModel.Kind.COMMENT -> WooNotificationType.ProductReview
+        NotificationModel.Kind.STORE_STOCK -> WooNotificationType.Stock
         NotificationModel.Kind.BLAZE_APPROVED_NOTE -> WooNotificationType.BlazeStatusUpdate.BlazeApprovedNote
         NotificationModel.Kind.BLAZE_REJECTED_NOTE -> WooNotificationType.BlazeStatusUpdate.BlazeRejectedNote
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE -> WooNotificationType.BlazeStatusUpdate.BlazeCancelledNote

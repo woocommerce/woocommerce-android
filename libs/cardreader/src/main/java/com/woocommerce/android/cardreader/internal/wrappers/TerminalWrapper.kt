@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.annotation.RequiresPermission
 import com.stripe.stripeterminal.Terminal
 import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
+import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
@@ -21,7 +22,10 @@ import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
 import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
+import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
+import com.stripe.stripeterminal.ktx.collectPaymentMethod
+import com.stripe.stripeterminal.ktx.confirmPaymentIntent
 import com.stripe.stripeterminal.ktx.connectReader
 import com.stripe.stripeterminal.ktx.createPaymentIntent
 import com.stripe.stripeterminal.ktx.disconnectReader
@@ -33,6 +37,9 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * Injectable wrapper for Stripe's Terminal object.
@@ -75,10 +82,40 @@ internal class TerminalWrapper {
     suspend fun createPaymentIntent(params: PaymentIntentParameters): PaymentIntent =
         Terminal.getInstance().createPaymentIntent(params, null)
 
+    suspend fun retrievePaymentIntent(clientSecret: String): PaymentIntent =
+        suspendCancellableCoroutine { cont ->
+            Terminal.getInstance().retrievePaymentIntent(
+                clientSecret,
+                object : PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        cont.resume(paymentIntent)
+                    }
+
+                    override fun onFailure(e: TerminalException) {
+                        cont.resumeWithException(e)
+                    }
+                }
+            )
+        }
+
     suspend fun processPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
         Terminal.getInstance().processPaymentIntent(
             paymentIntent,
             CollectPaymentIntentConfiguration.Builder().build(),
+            ConfirmPaymentIntentConfiguration.Builder().build()
+        )
+
+    suspend fun collectPaymentMethod(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().collectPaymentMethod(
+            paymentIntent,
+            CollectPaymentIntentConfiguration.Builder()
+                .updatePaymentIntent(true)
+                .build()
+        )
+
+    suspend fun confirmPaymentIntent(paymentIntent: PaymentIntent): PaymentIntent =
+        Terminal.getInstance().confirmPaymentIntent(
+            paymentIntent,
             ConfirmPaymentIntentConfiguration.Builder().build()
         )
 
@@ -94,10 +131,20 @@ internal class TerminalWrapper {
 
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
-    fun setupSimulator(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {
+    fun setupSimulator(
+        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
+        useInterac: Boolean,
+        useEftpos: Boolean,
+    ) {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
             update = mapFrequencyOptions(updateFrequency),
-            simulatedCard = SimulatedCard(if (useInterac) SimulatedCardType.INTERAC else SimulatedCardType.VISA)
+            simulatedCard = SimulatedCard(
+                when {
+                    useEftpos -> SimulatedCardType.EFTPOS_AU_DEBIT
+                    useInterac -> SimulatedCardType.INTERAC
+                    else -> SimulatedCardType.VISA
+                }
+            )
         )
     }
 

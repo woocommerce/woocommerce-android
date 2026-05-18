@@ -8,6 +8,9 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.RestDateBounds
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -18,13 +21,15 @@ import javax.inject.Inject
 internal class OrdersListToolHandler @Inject constructor(
     private val dataSource: AIOrdersDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
         name = "orders_list",
         description = "List orders, optionally filtered by status, date range, or customer. Use to find " +
-            "specific orders, list pending fulfilment, or pull the most recent N. For aggregate sales " +
-            "numbers prefer analytics_orders / analytics_revenue. For prose questions about a specific " +
+            "specific orders, list pending fulfilment, or pull the most recent N. For aggregate sales, revenue, " +
+            "order count, or average order value numbers prefer analytics_orders. For prose questions about " +
+            "a specific " +
             "order's payment method, customer email, etc., call orders_get with the ID.",
         inputSchema = inputSchema {
             enum(
@@ -38,8 +43,8 @@ internal class OrdersListToolHandler @Inject constructor(
             string("search", description = "Free-text search across order content.")
             integer("customer", description = "Customer ID; resolve via customers_list first.")
             array("include", itemType = "integer", description = "Specific order IDs to include.")
-            string("after", description = "ISO-8601 lower bound on date_created.")
-            string("before", description = "ISO-8601 upper bound on date_created.")
+            string("after", description = "YYYY-MM-DD lower bound on date_created.")
+            string("before", description = "YYYY-MM-DD upper bound on date_created.")
             enum(
                 "orderby",
                 values = listOf("date", "id", "modified", "title"),
@@ -52,10 +57,16 @@ internal class OrdersListToolHandler @Inject constructor(
         safetyLevel = ToolSafetyLevel.SAFE,
     )
 
+    @Suppress("ReturnCount")
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, ORDERS_LIST_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
+        val dateRange = args.toRestDateRange(call.id)
+        dateRange.validationError?.let { return it }
         return dataSource.fetchOrders(
             search = args.search,
             status = args.status,
@@ -63,8 +74,8 @@ internal class OrdersListToolHandler @Inject constructor(
             perPage = args.perPage,
             customer = args.customer,
             include = args.include,
-            after = args.after,
-            before = args.before,
+            after = dateRange.after,
+            before = dateRange.before,
             orderby = args.orderby,
             order = args.order,
         ).fold(
@@ -82,14 +93,19 @@ internal class OrdersListToolHandler @Inject constructor(
                 val response = OrderListResponse(
                     count = orders.size,
                     ids = orders.map { it.orderId },
+                    orders = orders.map { it.toOrderListRowResponse() },
                     statusCounts = statusCounts,
                     totalRange = totalRange,
                 )
                 ToolResult.Success(toolCallId = call.id, structured = json.encodeToJsonElement(response) as JsonObject)
             },
-            onFailure = {
-                // TODO Improve retryable detection logic to avoid unnecessary retries.
-                ToolResult.TransportError(toolCallId = call.id, retryable = true)
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
             },
         )
     }
@@ -108,6 +124,28 @@ internal class OrdersListToolHandler @Inject constructor(
         @SerialName("per_page") val perPage: Int = 20,
     )
 
+    private fun Args.toRestDateRange(toolCallId: String): RestDateRange {
+        val after = after?.let {
+            RestDateBounds.lowerBound(it)
+                ?: return RestDateRange(
+                    validationError = ToolResult.ValidationError(toolCallId, "after must be YYYY-MM-DD")
+                )
+        }
+        val before = before?.let {
+            RestDateBounds.upperBound(it)
+                ?: return RestDateRange(
+                    validationError = ToolResult.ValidationError(toolCallId, "before must be YYYY-MM-DD")
+                )
+        }
+        return RestDateRange(after = after, before = before)
+    }
+
+    private data class RestDateRange(
+        val after: String? = null,
+        val before: String? = null,
+        val validationError: ToolResult.ValidationError? = null,
+    )
+
     @Serializable
     private data class TotalRange(val min: String, val max: String, val currency: String)
 
@@ -115,7 +153,21 @@ internal class OrdersListToolHandler @Inject constructor(
     private data class OrderListResponse(
         val count: Int,
         val ids: List<Long>,
+        val orders: List<OrderListRowResponse>,
         @SerialName("status_counts") val statusCounts: Map<String, Int>,
         @SerialName("total_range") val totalRange: TotalRange?,
     )
 }
+
+private val ORDERS_LIST_ALLOWED_ARGS = setOf(
+    "status",
+    "search",
+    "customer",
+    "include",
+    "after",
+    "before",
+    "orderby",
+    "order",
+    "page",
+    "per_page",
+)

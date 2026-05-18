@@ -17,9 +17,6 @@ object WooPosOrdersState {
     }
 
     @Immutable
-    data class OrderActionsState(val actions: List<OrderAction>)
-
-    @Immutable
     sealed class OrderDetailsViewState {
         abstract val orderId: Long
 
@@ -42,7 +39,7 @@ object WooPosOrdersState {
                 val total: String,
                 val totalPaid: String,
                 val paymentMethodTitle: String?,
-                val actionsState: OrderActionsState
+                val actions: List<OrderAction> = emptyList()
             ) {
                 @Immutable
                 sealed interface LineItemsState {
@@ -74,6 +71,8 @@ object WooPosOrdersState {
                     val lineTotal: String,
                     val imageUrl: String?,
                     val bookingInfo: BookingInfo? = null,
+                    val isLumpSum: Boolean = false,
+                    val includesTax: Boolean = false,
                 )
 
                 @Immutable

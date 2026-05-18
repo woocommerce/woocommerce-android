@@ -41,6 +41,8 @@ object AppUrls {
 
     const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-production"
 
+    const val CROWDSIGNAL_AI_ASSISTANT_SURVEY = "https://automattic.survey.fm/woo-mobile-ai-assistant"
+
     const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
 
     const val CROWDSIGNAL_STORE_SETUP_SURVEY =

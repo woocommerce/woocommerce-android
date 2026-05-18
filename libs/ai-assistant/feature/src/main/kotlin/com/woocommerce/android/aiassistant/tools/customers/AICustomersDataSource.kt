@@ -19,8 +19,7 @@ internal class AICustomersDataSource @Inject constructor(
         page: Int? = null,
         perPage: Int = PAGE_SIZE,
     ): Result<List<WCCustomerModel>> {
-        val site = selectedSite.getOrNull()
-            ?: return Result.failure(NoSelectedSiteException)
+        val site = selectedSite.get()
 
         val result = customerStore.fetchCustomers(
             site = site,
@@ -39,8 +38,6 @@ internal class AICustomersDataSource @Inject constructor(
             Result.success(result.model.orEmpty())
         }
     }
-
-    object NoSelectedSiteException : IllegalStateException("No selected site")
 
     private companion object {
         const val DEFAULT_ORDERBY = "registered_date"

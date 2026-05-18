@@ -194,6 +194,15 @@ class NotificationMapperTest {
     }
 
     @Test
+    fun `given entity with store_stock type, when toDomainModel, then maps to STORE_STOCK kind`() {
+        val entity = notificationEntity(type = "store_stock")
+
+        val model = mapper.toDomainModel(entity)
+
+        assertThat(model.type).isEqualTo(Kind.STORE_STOCK)
+    }
+
+    @Test
     fun `given entity with unknown type, when toDomainModel, then maps to UNKNOWN kind`() {
         val entity = notificationEntity(type = "some_unknown_type")
 

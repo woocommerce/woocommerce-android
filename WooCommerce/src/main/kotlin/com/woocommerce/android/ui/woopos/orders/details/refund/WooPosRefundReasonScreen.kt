@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -41,6 +42,7 @@ fun WooPosRefundReasonScreen(
     }
 
     WooPosFullScreenInputLayout(
+        modifier = Modifier.navigationBarsPadding(),
         titleText = stringResource(R.string.woopos_orders_refund_reason),
         onBackClicked = {
             onNavigationEvent(WooPosNavigationEvent.GoBack)
@@ -55,8 +57,9 @@ fun WooPosRefundReasonScreen(
                     onValueChange = { refundReason = it },
                     label = stringResource(R.string.woopos_orders_refund_reason_placeholder),
                     contentAlignment = Alignment.Center,
-                    textStyle = WooPosTypography.Heading,
+                    textStyle = WooPosTypography.BodyLarge,
                     textColor = MaterialTheme.colorScheme.onSurface,
+                    labelMaxLines = 2,
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .padding(horizontal = WooPosSpacing.Medium.value)

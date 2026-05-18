@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.tools.products
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.tools.testToolFailureDiagnosticsFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -36,11 +37,13 @@ class ProductVariationsUpdateToolHandlerTest {
             encodeDefaults = false
             explicitNulls = false
         },
+        diagnosticsFactory = testToolFailureDiagnosticsFactory(),
     )
 
     private fun variation(
         productId: Long = 100L,
         variationId: Long = 10L,
+        attributes: String = "",
     ) = WCProductVariationModel(
         localSiteId = LocalId(1),
         remoteProductId = RemoteId(productId),
@@ -54,6 +57,7 @@ class ProductVariationsUpdateToolHandlerTest {
         stockQuantity = 7.0,
         stockStatus = "onbackorder",
         price = "24.99",
+        attributes = attributes,
     )
 
     private fun toolCall(arguments: JsonObject): ToolCall =
@@ -73,6 +77,9 @@ class ProductVariationsUpdateToolHandlerTest {
         assertThat(handler.descriptor.safetyLevel).isEqualTo(ToolSafetyLevel.UNSAFE)
         assertThat(handler.descriptor.description).contains("product_id")
         assertThat(handler.descriptor.description).contains("stock_quantity")
+        assertThat(handler.descriptor.description).contains("After a successful update")
+        assertThat(handler.descriptor.description).contains("show_cards")
+        assertThat(handler.descriptor.description).contains("strict {parentProductId}/{variationId}")
         assertThat(requireNotNull(schema["additionalProperties"]).jsonPrimitive.boolean).isFalse
         assertThat(properties.keys).containsExactlyInAnyOrder(
             "product_id",
@@ -147,6 +154,55 @@ class ProductVariationsUpdateToolHandlerTest {
                 ),
             )
         }
+
+    @Test
+    fun `given variation update succeeds, when execute is called, then widened variation detail is returned`() =
+        runTest {
+            val variation = variation(
+                productId = 100L,
+                variationId = 10L,
+                attributes = """[{"name":"Size","option":"M"}]""",
+            )
+            whenever(
+                dataSource.updateVariation(
+                    productId = 100L,
+                    variationId = 10L,
+                    update = AIProductVariationsDataSource.VariationUpdate(sku = "SKU-M")
+                )
+            ).thenReturn(Result.success(variation))
+
+            val result = handler.execute(
+                toolCall(
+                    buildJsonObject {
+                        put("product_id", 100)
+                        put("id", 10)
+                        put("sku", "SKU-M")
+                    }
+                )
+            )
+
+            val json = (result as ToolResult.Success).structured.jsonObject
+            assertThat(json.getValue("id").jsonPrimitive.long).isEqualTo(10L)
+            assertThat(json.getValue("attributes").jsonArray.single().jsonObject.getValue("name").jsonPrimitive.content)
+                .isEqualTo("Size")
+        }
+
+    @Test
+    fun `given unknown argument, when variation update executes, then ValidationError is returned`() = runTest {
+        val result = handler.execute(
+            toolCall(
+                buildJsonObject {
+                    put("product_id", 100)
+                    put("id", 10)
+                    put("sku", "SKU-M")
+                    put("unexpected", true)
+                }
+            )
+        )
+
+        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        verify(dataSource, never()).updateVariation(any(), any(), any())
+    }
 
     @Test
     fun `given missing product id, when execute is called, then ValidationError is returned before datasource access`() =

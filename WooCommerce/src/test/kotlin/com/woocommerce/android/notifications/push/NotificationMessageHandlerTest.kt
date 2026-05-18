@@ -197,6 +197,28 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
+    fun `given notification type is unknown, when message received, then silently discard`() = runTest {
+        val unknownNotificationModel = NotificationModel(
+            remoteNoteId = 0L,
+            remoteSiteId = orderNotification.remoteSiteId,
+            type = NotificationModel.Kind.UNKNOWN
+        )
+        val mockParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn unknownNotificationModel
+        }
+        createNotificationMessageHandler(mockParser)
+
+        notificationMessageHandler.onNewMessageReceived(mapOf("type" to "unknown_future_type"))
+
+        verify(wooLog).d(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Discarding push notification with unknown type")
+        )
+        verifyNoInteractions(dispatcher)
+        verifyNoInteractions(notificationBuilder)
+    }
+
+    @Test
     fun `when the user id does not match, then do not process the notification`() = runTest {
         val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(userId = 67890)
 
@@ -251,6 +273,44 @@ class NotificationMessageHandlerTest {
                     "${orderNotification.remoteSiteId}:${NotificationModel.Kind.STORE_ORDER.name}:$wooDrivenOrderId"
                 ),
                 noteTypeTrackingValue = eq(WooNotificationType.NewOrder.trackingValue),
+                source = eq(NotificationSource.WOO_DRIVEN)
+            )
+        }
+
+    @Test
+    fun `given store stock notification, when notification received, then process it as stock`() =
+        runTest {
+            val payload = mapOf("type" to "store_stock")
+            val productId = 32L
+            val stockModel = NotificationModel(
+                remoteNoteId = 0L,
+                remoteSiteId = orderNotification.remoteSiteId,
+                type = NotificationModel.Kind.STORE_STOCK,
+                meta = FormattableMeta(
+                    ids = FormattableMeta.Ids(site = orderNotification.remoteSiteId, product = productId)
+                )
+            )
+            val mockParser: NotificationsParser = mock {
+                on { buildNotificationModelFromPayloadMap(any()) } doReturn stockModel
+            }
+            createNotificationMessageHandler(mockParser)
+
+            notificationMessageHandler.onNewMessageReceived(payload)
+
+            val stockNotification = stockModel.toAppModel(resourceProvider)
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+            verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
+                pushId = any(),
+                notification = eq(stockNotification),
+                source = eq(NotificationSource.WOO_DRIVEN),
+                analyticsId = eq("${orderNotification.remoteSiteId}:STORE_STOCK:$productId"),
+                isGroupNotification = eq(false)
+            )
+            verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
+                stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED),
+                siteId = eq(orderNotification.remoteSiteId),
+                notificationId = eq("${orderNotification.remoteSiteId}:STORE_STOCK:$productId"),
+                noteTypeTrackingValue = eq(WooNotificationType.Stock.trackingValue),
                 source = eq(NotificationSource.WOO_DRIVEN)
             )
         }

@@ -78,6 +78,8 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.PhoneBackFromCheckoutClicked -> handleSystemBackClicked()
+
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
                     dialogState = DialogState.Hidden
@@ -279,6 +281,23 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.ShowCardReaderConnectionDialog -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.CardReaderConnectionDialog
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountDialogRequested -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.ShowCustomAmountForm(editing = event.editing)
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountSubmitted -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.CustomAmountSubmitted(
+                                name = event.name,
+                                amount = event.amount,
+                                isTaxable = event.isTaxable,
+                                editingItemNumber = event.editingItemNumber,
+                            )
                         )
                     }
 

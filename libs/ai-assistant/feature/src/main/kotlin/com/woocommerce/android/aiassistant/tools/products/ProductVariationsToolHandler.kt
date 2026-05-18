@@ -8,6 +8,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.inputSchema
 import com.woocommerce.android.aiassistant.core.chat.parseArgs
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -23,11 +25,17 @@ import javax.inject.Inject
 internal class ProductVariationsToolHandler @Inject constructor(
     private val dataSource: AIProductVariationsDataSource,
     @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
 ) : AssistantToolHandler {
 
     override val descriptor = ToolDescriptor(
         name = "product_variations_list",
-        description = "List variations for a variable product, or fetch one variation by variation_id.",
+        description = "List variations for one variable product, or fetch a single variation with full detail " +
+            "when variation_id is provided. Use when the merchant explicitly asks about variations, sizes, " +
+            "colors, options, or a known variation ID. Required: product_id (the parent). Page and per_page " +
+            "are ignored when variation_id is set. Do not use this for broad product-level inventory " +
+            "questions such as out-of-stock products; product stock and variation stock are separate " +
+            "WooCommerce concepts.",
         inputSchema = inputSchema {
             integer("product_id", description = "The parent product ID. Required.", required = true)
             integer("variation_id", description = "Variation ID; omit to list variations or provide to fetch one.")
@@ -38,6 +46,10 @@ internal class ProductVariationsToolHandler @Inject constructor(
     )
 
     override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, PRODUCT_VARIATIONS_ALLOWED_ARGS, descriptor.name).exceptionOrNull()
+            ?.let {
+                return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+            }
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
@@ -52,7 +64,14 @@ internal class ProductVariationsToolHandler @Inject constructor(
 
         return result.fold(
             onSuccess = { ToolResult.Success(toolCallId = call.id, structured = it) },
-            onFailure = { ToolResult.TransportError(toolCallId = call.id, retryable = true) },
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
+            },
         )
     }
 
@@ -75,6 +94,7 @@ internal class ProductVariationsToolHandler @Inject constructor(
         @SerialName("product_id") val productId: Long,
         val count: Int,
         val ids: List<Long>,
+        val variations: List<ProductVariationDetailResponse>,
         @SerialName("stock_status_counts") val stockStatusCounts: Map<String, Int>,
         @SerialName("price_range") val priceRange: PriceRange?,
     )
@@ -87,6 +107,7 @@ internal class ProductVariationsToolHandler @Inject constructor(
             productId = productId,
             count = size,
             ids = map { it.remoteVariationId.value },
+            variations = map { it.toProductVariationDetailResponse() },
             stockStatusCounts = groupingBy { it.stockStatus }.eachCount(),
             priceRange = priceRange(),
         )
@@ -115,3 +136,5 @@ internal class ProductVariationsToolHandler @Inject constructor(
     private fun String.toBigDecimalOrNull(): BigDecimal? =
         takeIf { it.isNotBlank() }?.let { runCatching { it.toBigDecimal() }.getOrNull() }
 }
+
+private val PRODUCT_VARIATIONS_ALLOWED_ARGS = setOf("product_id", "variation_id", "page", "per_page")

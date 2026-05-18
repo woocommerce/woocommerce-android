@@ -73,6 +73,64 @@ class WooPosGetPaymentMethodTest {
         }
 
     @Test
+    fun `given eftpos card details, when invoke, then returns lower case eftpos`() =
+        runTest {
+            // GIVEN
+            val gateway = PaymentGateway(
+                title = "WooPayments",
+                description = "",
+                isEnabled = true,
+                methodTitle = "WooPayments",
+                methodDescription = "",
+                supportsRefunds = true
+            )
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_test123")).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "eftpos_au",
+                    cardLast4 = "0978",
+                    paymentMethodType = "card_present"
+                )
+            )
+
+            // WHEN
+            val result = sut(testOrder)
+
+            // THEN
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrThrow()).isEqualTo("WooPayments (eftpos **** 0978)")
+        }
+
+    @Test
+    fun `given cartes bancaires card details, when invoke, then returns display name`() =
+        runTest {
+            // GIVEN
+            val gateway = PaymentGateway(
+                title = "WooPayments",
+                description = "",
+                isEnabled = true,
+                methodTitle = "WooPayments",
+                methodDescription = "",
+                supportsRefunds = true
+            )
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gateway))
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_test123")).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "cartes_bancaires",
+                    cardLast4 = "1234",
+                    paymentMethodType = "card_present"
+                )
+            )
+
+            // WHEN
+            val result = sut(testOrder)
+
+            // THEN
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrThrow()).isEqualTo("WooPayments (Cartes Bancaires **** 1234)")
+        }
+
+    @Test
     fun `given disabled gateway, when invoke, then returns manual refund with gateway title`() = runTest {
         // GIVEN
         val gateway = PaymentGateway(

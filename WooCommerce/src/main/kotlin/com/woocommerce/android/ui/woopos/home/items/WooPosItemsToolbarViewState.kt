@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 
 sealed class WooPosItemsToolbarViewState(
@@ -27,6 +28,15 @@ sealed class WooPosItemsToolbarViewState(
     data class VariationList(
         override val tabs: List<Tab>,
         val variableProductData: WooPosVariationsNavigationData,
+    ) : WooPosItemsToolbarViewState(
+        tabs = tabs,
+        search = SearchState.Hidden,
+        backNavigation = true,
+    )
+
+    data class CustomAmountForm(
+        override val tabs: List<Tab>,
+        val editing: WooPosCartItemViewState.CustomAmount? = null,
     ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = SearchState.Hidden,

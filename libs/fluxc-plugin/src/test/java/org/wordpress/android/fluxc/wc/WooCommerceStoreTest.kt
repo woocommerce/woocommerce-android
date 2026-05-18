@@ -249,6 +249,7 @@ class WooCommerceStoreTest {
             assertThat(result.model?.localSiteId).isEqualTo(expectedModel.localSiteId)
             assertThat(result.model?.weightUnit).isEqualTo(expectedModel.weightUnit)
             assertThat(result.model?.dimensionUnit).isEqualTo(expectedModel.dimensionUnit)
+            assertThat(result.model?.defaultLowStockThreshold).isEqualTo(expectedModel.defaultLowStockThreshold)
         }
     }
 

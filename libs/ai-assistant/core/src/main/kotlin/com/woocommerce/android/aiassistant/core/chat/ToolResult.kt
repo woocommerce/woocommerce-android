@@ -23,5 +23,12 @@ sealed interface ToolResult {
     data class TransportError(
         override val toolCallId: String,
         val retryable: Boolean,
+        val kind: ToolFailureKind = ToolFailureKind.OUTCOME_UNKNOWN,
+        val diagnostics: Diagnostics = Diagnostics(),
     ) : ToolResult
+}
+
+enum class ToolFailureKind {
+    OUTCOME_UNKNOWN,
+    DETERMINISTIC_FAILURE,
 }

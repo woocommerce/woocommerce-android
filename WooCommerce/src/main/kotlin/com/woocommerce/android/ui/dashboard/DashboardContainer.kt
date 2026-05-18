@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUi
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget
+import com.woocommerce.android.ui.dashboard.aiassistant.DashboardAIAssistantCard
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsCard
@@ -242,6 +243,11 @@ private fun ConfigurableWidgetCard(
     modifier: Modifier
 ) {
     when (widgetUiModel.widget.type) {
+        DashboardWidget.Type.AI_ASSISTANT -> DashboardAIAssistantCard(
+            onClick = dashboardViewModel::onAiAssistantCardClicked,
+            modifier = modifier
+        )
+
         DashboardWidget.Type.PUSH_NOTIFICATIONS -> DashboardPushNotificationsCard(
             onClick = {
                 dashboardViewModel.trackCardInteracted(DashboardWidget.Type.PUSH_NOTIFICATIONS.trackingIdentifier)

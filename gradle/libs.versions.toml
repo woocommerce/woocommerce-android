@@ -89,12 +89,13 @@ lottie = '6.7.1'
 kotlin = '2.3.21'
 kotlinx-coroutines = '1.10.2'
 kotlinx-serialization = '1.11.0'
-ksp = '2.3.7'
-mockito-kotlin = '6.2.3'
+ksp = '2.3.8'
+mockito-kotlin = '6.3.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.16.1"
-sentry = '6.2.0'
+sentry = '6.4.0'
+screenshot = '0.0.1-alpha14'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.3.2"
@@ -189,7 +190,7 @@ apache-commons-text = { group = "org.apache.commons", name = "commons-text", ver
 apache-http-client-android = { group = "org.apache.httpcomponents", name = "httpclient-android", version.ref = "apache-http-client-android" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 automattic-about = { group = "com.automattic", name = "about", version.ref = "automattic-about" }
-automattic-eventhorizon = "com.automattic:eventhorizon:woocommerce-2026-04-09_13-30-41"
+automattic-eventhorizon = "com.automattic:eventhorizon:woocommerce-2026-05-13_15-16-11"
 automattic-encryptedlogging = { group = "com.automattic", name = "encryptedlogging", version.ref = "automattic-encryptedlogging" }
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
@@ -207,6 +208,7 @@ eventbus-android = { module = "org.greenrobot:eventbus", version.ref = "eventbus
 eventbus-java = {group = "org.greenrobot", name = "eventbus-java", version.ref = "eventbus" }
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
 fastlane-screengrab = { group = "tools.fastlane", name = "screengrab", version.ref = "fastlane-screengrab" }
+google-screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 glassfish-javax-annotation = { module = "org.glassfish:javax.annotation", version.ref = "glassfish-javax-annotation" }
 google-autoService = { module = "com.google.auto.service:auto-service", version.ref = "google-autoService" }
 google-dagger = { module = "com.google.dagger:dagger", version.ref = "google-dagger" }
@@ -293,6 +295,7 @@ fladle = { id = "com.osacky.fladle", version.ref = "fladle" }
 google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }

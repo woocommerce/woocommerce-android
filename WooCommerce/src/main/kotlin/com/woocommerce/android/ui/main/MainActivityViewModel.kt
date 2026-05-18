@@ -186,6 +186,7 @@ class MainActivityViewModel @Inject constructor(
         when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
+            NotificationChannelType.STOCK -> triggerEvent(ViewMyStoreStats)
             NotificationChannelType.OTHER -> if (notification.isBlazeNotification) {
                 triggerEvent(ViewBlazeCampaignList)
             } else {
@@ -206,6 +207,8 @@ class MainActivityViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(REVIEW_OPEN)
                 triggerEvent(ViewReviewDetail(notification.uniqueId))
             }
+
+            is WooNotificationType.Stock -> triggerEvent(ViewMyStoreStats)
 
             is WooNotificationType.BlazeStatusUpdate -> triggerEvent(
                 ViewBlazeCampaignDetail(campaignId = notification.uniqueId.toString())

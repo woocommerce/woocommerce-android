@@ -1,7 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.external.models.CardPresentParameters
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.PaymentMethodOptionsParameters
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
@@ -14,6 +16,7 @@ import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymen
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.stripe.stripeterminal.external.models.CardPresentCaptureMethod as StripeCardPresentCaptureMethod
 
 internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
@@ -56,9 +59,24 @@ internal class CreatePaymentAction(
                 if (!isPluginCanSendReceipt) builder.setReceiptEmail(it)
             }
             feeAmount?.let { builder.setApplicationFeeAmount(it) }
+            cardPresentCaptureMethod?.let { builder.setPaymentMethodOptionsParameters(createPaymentMethodOptions(it)) }
             statementDescriptor.value?.takeIf { it.isNotEmpty() }?.let { builder.setStatementDescriptor(it) }
         }
         return builder.build()
+    }
+
+    private fun createPaymentMethodOptions(
+        captureMethod: PaymentInfo.CardPresentCaptureMethod
+    ): PaymentMethodOptionsParameters {
+        val stripeCaptureMethod = when (captureMethod) {
+            PaymentInfo.CardPresentCaptureMethod.MANUAL_PREFERRED -> StripeCardPresentCaptureMethod.ManualPreferred
+        }
+        val cardPresentParameters = CardPresentParameters.Builder()
+            .setCaptureMethod(stripeCaptureMethod)
+            .build()
+        return PaymentMethodOptionsParameters.Builder()
+            .setCardPresentParameters(cardPresentParameters)
+            .build()
     }
 
     private fun createMetaData(paymentInfo: PaymentInfo): Map<String, String> {
