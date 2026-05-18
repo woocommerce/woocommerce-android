@@ -15,6 +15,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
@@ -24,6 +25,7 @@ import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPr
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreOrderPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreReviewPreferences
 import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences.StoreStockPreferences
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -69,6 +71,14 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         )
     )
     val notificationTypeItems = _notificationTypeItems.asLiveData()
+    private val displayedOrderThresholdAmount = MutableStateFlow(BigDecimal(DEFAULT_ORDER_THRESHOLD_AMOUNT))
+    val newOrderNotificationSettingsViewState = combine(
+        wooPushNotificationPreferences,
+        displayedOrderThresholdAmount
+    ) { preferences, thresholdAmount ->
+        preferences?.toNewOrderNotificationSettingsViewState(thresholdAmount)
+            ?: NewOrderNotificationSettingsViewState(thresholdAmount = thresholdAmount)
+    }.asLiveData()
 
     init {
         observeWooPushNotificationPreferences()
@@ -92,12 +102,45 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             )
         }
 
-        applyDisplayedWooPushNotificationPreferences(updatedPreferences)
-        saveNotificationPreferencesTrigger.tryEmit(NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS)
+        updateDisplayedWooPushNotificationPreferences(updatedPreferences)
     }
 
     fun savePendingNotificationPreferences() {
         saveNotificationPreferencesTrigger.tryEmit(0L)
+    }
+
+    fun onNewOrderNotificationsEnabledChanged(isEnabled: Boolean) {
+        onNotificationTypeEnabledChanged(NotificationType.NEW_ORDERS, isEnabled)
+    }
+
+    fun onNewOrderNotificationPreferenceChanged(preference: NewOrderNotificationPreference) {
+        val preferences = wooPushNotificationPreferences.value ?: return
+        val minAmount = when (preference) {
+            NewOrderNotificationPreference.AllOrders -> null
+            NewOrderNotificationPreference.HighValueOrders -> displayedOrderThresholdAmount.value
+        }
+        updateDisplayedWooPushNotificationPreferences(
+            preferences.copy(
+                storeOrder = StoreOrderPreferences(
+                    enabled = preferences.storeOrder?.enabled ?: true,
+                    minAmount = minAmount
+                )
+            )
+        )
+    }
+
+    fun onNewOrderThresholdAmountChanged(amount: BigDecimal) {
+        val preferences = wooPushNotificationPreferences.value ?: return
+        val thresholdAmount = amount.coerceAtLeast(MIN_ORDER_THRESHOLD_AMOUNT)
+        displayedOrderThresholdAmount.value = thresholdAmount
+        updateDisplayedWooPushNotificationPreferences(
+            preferences.copy(
+                storeOrder = StoreOrderPreferences(
+                    enabled = preferences.storeOrder?.enabled ?: true,
+                    minAmount = preferences.storeOrder?.minAmount?.let { thresholdAmount }
+                )
+            )
+        )
     }
 
     fun onNotificationTypeClicked(type: NotificationType) {
@@ -206,9 +249,15 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         applyDisplayedWooPushNotificationPreferences(preferences)
     }
 
+    private fun updateDisplayedWooPushNotificationPreferences(preferences: WooPushNotificationPreferences) {
+        applyDisplayedWooPushNotificationPreferences(preferences)
+        saveNotificationPreferencesTrigger.tryEmit(NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS)
+    }
+
     private fun applyDisplayedWooPushNotificationPreferences(preferences: WooPushNotificationPreferences) {
         wooPushNotificationPreferences.value = preferences
         _isNotificationTypeSelectionEnabled.value = true
+        preferences.storeOrder?.minAmount?.let { displayedOrderThresholdAmount.value = it }
         _notificationTypeItems.update { items ->
             items.map { item ->
                 item.copy(isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled)
@@ -239,6 +288,18 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     private fun WooPushNotificationPreferences.isEmpty(): Boolean =
         storeOrder == null && storeReview == null && storeStock == null
 
+    private fun WooPushNotificationPreferences.toNewOrderNotificationSettingsViewState(
+        displayedThresholdAmount: BigDecimal
+    ) = NewOrderNotificationSettingsViewState(
+        notificationsEnabled = storeOrder?.enabled ?: true,
+        notificationPreference = if (storeOrder?.minAmount == null) {
+            NewOrderNotificationPreference.AllOrders
+        } else {
+            NewOrderNotificationPreference.HighValueOrders
+        },
+        thresholdAmount = storeOrder?.minAmount ?: displayedThresholdAmount
+    )
+
     private fun WooPushNotificationPreferences.isEnabled(type: NotificationType): Boolean? =
         when (type) {
             NotificationType.NEW_ORDERS -> storeOrder?.enabled
@@ -257,6 +318,17 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         val isEnabled: Boolean
     )
 
+    data class NewOrderNotificationSettingsViewState(
+        val notificationsEnabled: Boolean = true,
+        val notificationPreference: NewOrderNotificationPreference = NewOrderNotificationPreference.AllOrders,
+        val thresholdAmount: BigDecimal = BigDecimal(DEFAULT_ORDER_THRESHOLD_AMOUNT)
+    )
+
+    enum class NewOrderNotificationPreference {
+        AllOrders,
+        HighValueOrders
+    }
+
     enum class NotificationType {
         NEW_ORDERS,
         STOCK,
@@ -264,6 +336,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     companion object {
+        private const val DEFAULT_ORDER_THRESHOLD_AMOUNT = 100
+        private val MIN_ORDER_THRESHOLD_AMOUNT = BigDecimal.ONE
         private const val NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS = 1000L
     }
 }
