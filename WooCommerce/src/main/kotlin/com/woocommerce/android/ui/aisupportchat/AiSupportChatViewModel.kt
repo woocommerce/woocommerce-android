@@ -305,9 +305,7 @@ class AiSupportChatViewModel @Inject constructor(
                         showLoadHistoryError = false
                     )
                 }
-                runCatching {
-                    repository.markChatAsUpdated(response.chatId, response.sessionId)
-                }
+                markChatAsUpdated(response.chatId, response.sessionId)
             }.onFailure { error ->
                 WooLog.e(WooLog.T.AI, "Fetching AI support chat history failed", error)
                 _viewState.update {
@@ -430,18 +428,30 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         if (_viewState.value.canPersistChatHistory) {
-            runCatching {
-                if (wasInitialMessage) {
+            if (wasInitialMessage) {
+                runCatching {
                     repository.registerChat(
                         chatId = response.chatId,
                         botSlug = response.botSlug,
                         sessionId = response.sessionId,
                         firstUserMessage = sentMessage
                     )
-                } else {
-                    repository.markChatAsUpdated(response.chatId, response.sessionId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Registering AI support chat failed", error)
                 }
+            } else {
+                markChatAsUpdated(response.chatId, response.sessionId)
             }
+        }
+    }
+
+    private suspend fun markChatAsUpdated(chatId: Long, sessionId: String?) {
+        runCatching {
+            repository.markChatAsUpdated(chatId, sessionId)
+        }.onFailure { error ->
+            if (error is CancellationException) throw error
+            WooLog.e(WooLog.T.AI, "Marking AI support chat as updated failed", error)
         }
     }
 

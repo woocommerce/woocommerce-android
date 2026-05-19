@@ -1031,6 +1031,36 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given resume mark updated fails, when loaded, then saved chat is shown without error`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+        whenever(repository.markChatAsUpdated(CHAT_ID, SESSION_ID)).thenThrow(RuntimeException("Bookmark update failed"))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.showLoadHistoryError).isFalse()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Text(ISSUE_DETAILS),
+            AiSupportChatMessageContent.Text(BOT_RESPONSE)
+        )
+        verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
+    }
+
+    @Test
     fun `given resume fetch fails, when loaded, then load history error is shown`() = testBlocking {
         whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.failure(Exception()))
 
