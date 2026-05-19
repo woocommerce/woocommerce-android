@@ -3,6 +3,7 @@ package com.woocommerce.android.aiassistant.safety
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.serialization.json.JsonObject
+import org.wordpress.android.fluxc.model.WCProductModel
 import javax.inject.Inject
 
 internal class ProductsConfirmationPreviewProvider @Inject constructor(
@@ -82,6 +83,9 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
         val currentValues: Map<String, String>,
         val displayName: String?,
     )
+
+    private fun WCProductModel.confirmationDisplayName(): String? =
+        name.trim().takeIf { it.isNotEmpty() }
 
     private companion object {
         const val PRODUCTS_UPDATE = "products_update"

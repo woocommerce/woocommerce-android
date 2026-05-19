@@ -2,7 +2,10 @@ package com.woocommerce.android.aiassistant.safety
 
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import javax.inject.Inject
 
 internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
@@ -77,8 +80,25 @@ internal class ProductVariationsConfirmationPreviewProvider @Inject constructor(
         val displayName: String?,
     )
 
+    private fun WCProductVariationModel.confirmationDisplayName(): String? =
+        variationAttributeOptions().takeIf { it.isNotEmpty() }
+            ?: sku.trim().takeIf { it.isNotEmpty() }
+
+    private fun WCProductVariationModel.variationAttributeOptions(): String =
+        runCatching {
+            displayNameJson.decodeFromString<List<VariationAttribute>>(attributes)
+                .mapNotNull { it.option?.trim()?.takeIf(String::isNotEmpty) }
+                .joinToString(", ")
+        }.getOrDefault("")
+
+    @Serializable
+    private data class VariationAttribute(
+        val option: String? = null,
+    )
+
     private companion object {
         const val PRODUCT_VARIATIONS_UPDATE = "product_variations_update"
+        val displayNameJson = Json { ignoreUnknownKeys = true }
         val SUPPORTED_TOOL_NAMES = setOf(PRODUCT_VARIATIONS_UPDATE)
     }
 }

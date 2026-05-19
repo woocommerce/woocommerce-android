@@ -5,6 +5,7 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.JsonObject
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
 internal class OrdersConfirmationPreviewProvider @Inject constructor(
@@ -81,7 +82,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         val displayNameById = ordersDataSource.getOrders(ids)
             .getOrNull()
             ?.items
-            ?.associate { it.orderId to it.confirmationDisplayName(::guestDisplayName, ::customerDisplayName) }
+            ?.associate { it.orderId to it.confirmationDisplayName() }
             .orEmpty()
         val fields = buildList {
             patch.stringValue("status")?.let { status ->
@@ -134,7 +135,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
                 "customer_note" to order.customerNote,
                 "billing_email" to order.billingEmail,
             ),
-            displayName = order.confirmationDisplayName(::guestDisplayName, ::customerDisplayName),
+            displayName = order.confirmationDisplayName(),
         )
     }
 
@@ -186,10 +187,30 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         val displayName: String?,
     )
 
+    private fun OrderEntity.confirmationDisplayName(): String? =
+        billingName()
+            ?: when {
+                customerId == GUEST_CUSTOMER_ID -> guestDisplayName()
+                customerId > GUEST_CUSTOMER_ID -> registeredCustomerDisplayName()
+                else -> null
+            }
+
+    private fun OrderEntity.billingName(): String? =
+        listOf(billingFirstName, billingLastName)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
+            .takeIf { it.isNotEmpty() }
+
+    private fun OrderEntity.registeredCustomerDisplayName(): String =
+        billingEmail.trim().takeIf { it.isNotEmpty() }
+            ?: customerDisplayName(customerId)
+
     private companion object {
         const val ORDERS_UPDATE = "orders_update"
         const val ORDERS_BULK_UPDATE = "orders_bulk_update"
         const val CUSTOMER_NOTE_PREVIEW_LIMIT = 160
+        const val GUEST_CUSTOMER_ID = 0L
         val SUPPORTED_TOOL_NAMES = setOf(ORDERS_UPDATE, ORDERS_BULK_UPDATE)
         val CUSTOMER_NOTIFYING_STATUSES = setOf(
             "processing",
