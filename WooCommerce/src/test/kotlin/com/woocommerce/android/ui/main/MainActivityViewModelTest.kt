@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignLi
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewProductDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
@@ -70,6 +71,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         private const val TEST_NEW_REVIEW_ID_1 = 4418L
         private const val TEST_NEW_REVIEW_ID_2 = 4418L
 
+        private const val TEST_STOCK_REMOTE_NOTE_ID = 5604993865
+        private const val TEST_STOCK_PRODUCT_ID = 1234L
+
         private const val TEST_BLAZE_REMOTE_NOTE_ID = 5604993864
         private const val TEST_BLAZE_CAMPAIGN_ID_1 = 4418L
     }
@@ -102,6 +106,14 @@ class MainActivityViewModelTest : BaseUnitTest() {
         uniqueId = TEST_NEW_REVIEW_ID_1,
         channelType = NotificationChannelType.REVIEW,
         noteType = WooNotificationType.ProductReview
+    )
+
+    private val testStockNotification = NotificationTestUtils.generateTestNotification(
+        remoteNoteId = TEST_STOCK_REMOTE_NOTE_ID,
+        remoteSiteId = siteModel.siteId,
+        uniqueId = TEST_STOCK_PRODUCT_ID,
+        channelType = NotificationChannelType.STOCK,
+        noteType = WooNotificationType.Stock
     )
 
     private val testBlazeNotification = NotificationTestUtils.generateTestNotification(
@@ -227,6 +239,22 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(analyticsTrackerWrapper).track(REVIEW_OPEN)
+    }
+
+    @Test
+    fun `when a stock notification is clicked, then the product detail screen is opened`() {
+        val localPushId = 1002
+        var event: ViewProductDetail? = null
+        viewModel.event.observeForever {
+            if (it is ViewProductDetail) event = it
+        }
+
+        viewModel.onPushNotificationTapped(localPushId, testStockNotification)
+
+        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeTappedNotificationAndSummaryIfNeeded(eq(localPushId), eq(testStockNotification))
+        assertThat(event).isEqualTo(ViewProductDetail(testStockNotification.uniqueId))
     }
 
     @Test
