@@ -69,8 +69,6 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
     }
 
     private companion object {
-        // WooCommerce backend identifier for the manual "other" payment method; intentionally
-        // not localised — matches iOS and is what WC admin / customer emails will display.
         const val MANUAL_PAYMENT_METHOD_ID = "other"
         const val MANUAL_PAYMENT_METHOD_TITLE = "Other"
     }

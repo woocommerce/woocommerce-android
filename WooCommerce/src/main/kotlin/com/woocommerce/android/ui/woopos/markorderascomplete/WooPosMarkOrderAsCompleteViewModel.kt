@@ -49,10 +49,7 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
         viewModelScope.launch {
             // If we were killed mid-confirm the button can come back as LOADING with no
             // running coroutine to flip it. Reset it so the user can retry instead of
-            // staring at a permanently spinning button. The WC API is idempotent for
-            // status transitions to Completed, so re-completing an already-completed
-            // order is a no-op server-side; a duplicate non-customer note is the worst
-            // outcome and is acceptable here.
+            // staring at a permanently spinning button.
             val current = _state.value
             if (current is WooPosMarkOrderAsCompleteState.Confirming &&
                 current.button.status == WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING
