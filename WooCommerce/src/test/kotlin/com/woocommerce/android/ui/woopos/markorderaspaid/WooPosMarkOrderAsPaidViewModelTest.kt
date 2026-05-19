@@ -56,12 +56,8 @@ class WooPosMarkOrderAsPaidViewModelTest {
         val testOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
         whenever(repository.getOrderById(orderId)).thenReturn(testOrder)
         whenever(priceFormat(BigDecimal("42.00"))).thenReturn("$42.00")
-        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_total, "$42.00"))
-            .thenReturn("Order total: $42.00")
-        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button))
-            .thenReturn("Mark order as complete")
-        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message))
-            .thenReturn("Something went wrong. Please try again.")
+        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_error_message))
+            .thenReturn("Couldn't update the order. Try again.")
     }
 
     private fun createViewModel() = WooPosMarkOrderAsPaidViewModel(
@@ -74,11 +70,11 @@ class WooPosMarkOrderAsPaidViewModelTest {
     )
 
     @Test
-    fun `given order id not found, when VM initializes, then state is Confirming with error and disabled button`() =
+    fun `given order id not found, when VM initializes, then state is Confirming with error and canConfirm false`() =
         runTest {
             // GIVEN
             whenever(repository.getOrderById(orderId)).thenReturn(null)
-            whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_order_not_found))
+            whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_order_not_found))
                 .thenReturn("Order could not be loaded. Go back and try again.")
 
             // WHEN
@@ -87,12 +83,13 @@ class WooPosMarkOrderAsPaidViewModelTest {
             // THEN
             val state = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
             assertThat(state.errorMessage).isEqualTo("Order could not be loaded. Go back and try again.")
-            assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.DISABLED)
-            assertThat(state.totalText).isEmpty()
+            assertThat(state.canConfirm).isFalse()
+            assertThat(state.isProcessing).isFalse()
+            assertThat(state.formattedTotal).isEmpty()
         }
 
     @Test
-    fun `given order loads, when VM initializes, then state is Confirming with order total`() = runTest {
+    fun `given order loads, when VM initializes, then state is Confirming with formatted total`() = runTest {
         // WHEN
         val viewModel = createViewModel()
 
@@ -100,10 +97,11 @@ class WooPosMarkOrderAsPaidViewModelTest {
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosMarkOrderAsPaidState.Confirming::class.java)
         val confirming = state as WooPosMarkOrderAsPaidState.Confirming
-        assertThat(confirming.totalText).isEqualTo("Order total: $42.00")
+        assertThat(confirming.formattedTotal).isEqualTo("$42.00")
         assertThat(confirming.note).isEmpty()
         assertThat(confirming.errorMessage).isNull()
-        assertThat(confirming.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED)
+        assertThat(confirming.canConfirm).isTrue()
+        assertThat(confirming.isProcessing).isFalse()
     }
 
     @Test
@@ -157,7 +155,7 @@ class WooPosMarkOrderAsPaidViewModelTest {
     }
 
     @Test
-    fun `given repo fails, when confirm clicked, then state has error message and button re-enabled`() = runTest {
+    fun `given repo fails, when confirm clicked, then state has error message and isProcessing false`() = runTest {
         // GIVEN
         whenever(repository.markOrderAsPaid(eq(orderId), anyOrNull()))
             .thenReturn(MarkOrderAsPaidOutcome.Failure)
@@ -168,8 +166,9 @@ class WooPosMarkOrderAsPaidViewModelTest {
 
         // THEN
         val finalState = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
-        assertThat(finalState.errorMessage).isEqualTo("Something went wrong. Please try again.")
-        assertThat(finalState.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED)
+        assertThat(finalState.errorMessage).isEqualTo("Couldn't update the order. Try again.")
+        assertThat(finalState.isProcessing).isFalse()
+        assertThat(finalState.canConfirm).isTrue()
         verify(tracker).track(MarkAsPaidFailed)
     }
 
@@ -219,19 +218,17 @@ class WooPosMarkOrderAsPaidViewModelTest {
         }
 
     @Test
-    fun `given saved state has LOADING button, when VM restored, then button is reset to ENABLED`() = runTest {
+    fun `given saved state has isProcessing true, when VM restored, then isProcessing is reset to false`() = runTest {
         // GIVEN: saved state simulates process death mid-confirm
         val savedState = SavedStateHandle(
             mapOf(
                 MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY to orderId,
-                "woo_pos_mark_order_as_complete_state" to WooPosMarkOrderAsPaidState.Confirming(
-                    totalText = "Order total: $42.00",
+                "woo_pos_mark_order_as_paid_state" to WooPosMarkOrderAsPaidState.Confirming(
+                    formattedTotal = "$42.00",
                     note = "Bank transfer",
                     errorMessage = null,
-                    button = WooPosMarkOrderAsPaidState.Confirming.Button(
-                        text = "Mark order as complete",
-                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING,
-                    ),
+                    isProcessing = true,
+                    canConfirm = true,
                 ),
             )
         )
@@ -248,7 +245,7 @@ class WooPosMarkOrderAsPaidViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
-        assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED)
+        assertThat(state.isProcessing).isFalse()
         assertThat(state.note).isEqualTo("Bank transfer")
     }
 }
