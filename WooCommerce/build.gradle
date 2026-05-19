@@ -124,7 +124,8 @@ android {
         }
 
         resConfigs(
-                "en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko", "nl", "pt-rBR", "ru", "sv", "tr", "zh-rCN", "zh-rTW"
+                "en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko", "nl", "pt-rBR", "ru", "sv", "tr", "zh-rCN", "zh-rTW",
+                "pl", "pt-rPT", "cs", "da", "nb", "fi", "el", "hu", "ro", "uk", "bg", "th", "vi", "hi", "ms"
         )
     }
 
