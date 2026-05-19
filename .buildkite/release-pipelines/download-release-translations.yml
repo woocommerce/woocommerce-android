@@ -1,8 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
+# GlotPress is retired. `download_release_translations` now runs the AI
+# code-freeze reconciliation sweep (every key x every locale -- the safety net
+# for anything the PR-time job missed) plus metadata incl. per-release notes.
+# Requires ANTHROPIC_API_KEY in the agent environment (same secret used by
+# Claude Build Analysis).
 steps:
-  - label: "Download Release Translations"
+  - label: "AI Release Translations (code-freeze sweep)"
     plugins: [$CI_TOOLKIT]
     command: |
       echo '--- :robot_face: Use bot for git operations'
@@ -13,7 +18,7 @@ steps:
       echo '--- :ruby: Setup Ruby Tools'
       install_gems
 
-      echo '--- :globe_with_meridians: Download Release Translations'
+      echo '--- :globe_with_meridians: AI Release Translations (sweep + metadata)'
       bundle exec fastlane download_release_translations skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:
         queue: "mac-metal"
