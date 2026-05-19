@@ -128,28 +128,33 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
                 errorMessage = null,
             )
 
-            val result = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
-            val outcome = result.getOrNull()
-            if (outcome != null) {
-                if (outcome == MarkOrderAsCompleteOutcome.SUCCESS_WITH_FAILED_NOTE) {
+            val outcome = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
+            when (outcome) {
+                MarkOrderAsCompleteOutcome.SuccessWithFailedNote -> {
                     analyticsTracker.track(MarkAsPaidNotePostFailed)
+                    onMarkAsPaidSucceeded()
                 }
-                analyticsTracker.track(MarkAsPaidSuccess)
-                // Hand off to the home VM so it both flips the layout to full-screen totals
-                // (hiding the cart pane) AND broadcasts OrderSuccessfullyPaid to the totals VM,
-                // matching the card/cash success flows.
-                childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidExternally)
-                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            } else {
-                analyticsTracker.track(MarkAsPaidFailed)
-                _state.value = current.copy(
-                    errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
-                    button = current.button.copy(
-                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
-                    ),
-                )
+                MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded()
+                MarkOrderAsCompleteOutcome.Failure -> {
+                    analyticsTracker.track(MarkAsPaidFailed)
+                    _state.value = current.copy(
+                        errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
+                        button = current.button.copy(
+                            status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                        ),
+                    )
+                }
             }
         }
+    }
+
+    private suspend fun onMarkAsPaidSucceeded() {
+        analyticsTracker.track(MarkAsPaidSuccess)
+        // Hand off to the home VM so it both flips the layout to full-screen totals
+        // (hiding the cart pane) AND broadcasts OrderSuccessfullyPaid to the totals VM,
+        // matching the card/cash success flows.
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidExternally)
+        _navigationEvent.emit(WooPosNavigationEvent.GoBack)
     }
 
     private companion object {

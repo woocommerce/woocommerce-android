@@ -127,7 +127,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         runTest {
             // GIVEN
             whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-                .thenReturn(Result.success(MarkOrderAsCompleteOutcome.SUCCESS))
+                .thenReturn(MarkOrderAsCompleteOutcome.Success)
             val viewModel = createViewModel()
 
             // WHEN / THEN
@@ -146,7 +146,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     fun `given repo succeeds with note, when confirm clicked, then note forwarded to repository`() = runTest {
         // GIVEN
         whenever(repository.markOrderAsComplete(eq(orderId), eq("Bank transfer")))
-            .thenReturn(Result.success(MarkOrderAsCompleteOutcome.SUCCESS))
+            .thenReturn(MarkOrderAsCompleteOutcome.Success)
         val viewModel = createViewModel()
         viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.NoteChanged("Bank transfer"))
 
@@ -161,7 +161,8 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     @Test
     fun `given repo fails, when confirm clicked, then state has error message and button re-enabled`() = runTest {
         // GIVEN
-        whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull())).thenReturn(Result.failure(Exception("boom")))
+        whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
+            .thenReturn(MarkOrderAsCompleteOutcome.Failure)
         val viewModel = createViewModel()
 
         // WHEN
@@ -191,7 +192,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     fun `given repo succeeds with failed note, when confirm clicked, then MarkAsPaidNotePostFailed tracked`() = runTest {
         // GIVEN
         whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-            .thenReturn(Result.success(MarkOrderAsCompleteOutcome.SUCCESS_WITH_FAILED_NOTE))
+            .thenReturn(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
         val viewModel = createViewModel()
 
         // WHEN / THEN
@@ -208,7 +209,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         runTest {
             // GIVEN
             whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-                .thenReturn(Result.success(MarkOrderAsCompleteOutcome.SUCCESS))
+                .thenReturn(MarkOrderAsCompleteOutcome.Success)
             val viewModel = createViewModel()
 
             // WHEN / THEN
