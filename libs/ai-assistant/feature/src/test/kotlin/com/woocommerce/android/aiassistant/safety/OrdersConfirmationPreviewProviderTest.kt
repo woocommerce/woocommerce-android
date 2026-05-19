@@ -291,6 +291,48 @@ class OrdersConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given bulk order update, when names are resolved, then one batch lookup is used for all ids`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(dataSource.getOrders(listOf(1L, 2L, 3L))).thenReturn(
+                Result.success(cachedOrderLookup(order(orderId = 1L), order(orderId = 2L), order(orderId = 3L)))
+            )
+
+            preview(
+                toolName = "orders_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(1), JsonPrimitive(2), JsonPrimitive(3))))
+                    put("patch", buildJsonObject { put("status", "completed") })
+                },
+                dataSource = dataSource,
+            )
+
+            verify(dataSource).getOrders(listOf(1L, 2L, 3L))
+            verify(dataSource, never()).getOrder(1L)
+            verify(dataSource, never()).getOrder(2L)
+            verify(dataSource, never()).getOrder(3L)
+        }
+
+    @Test
+    fun `given single order update, when name is resolved, then single-id cache-first lookup is used`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(dataSource.getOrders(listOf(42L))).thenReturn(Result.success(cachedOrderLookup(order())))
+
+            preview(
+                toolName = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "pending")
+                },
+                dataSource = dataSource,
+            )
+
+            verify(dataSource).getOrders(listOf(42L))
+            verify(dataSource, never()).getOrder(42L)
+        }
+
+    @Test
     fun `given one order bulk status update emails customer, when preview is built, then singular summary is used`() =
         runTest {
             val preview = preview(

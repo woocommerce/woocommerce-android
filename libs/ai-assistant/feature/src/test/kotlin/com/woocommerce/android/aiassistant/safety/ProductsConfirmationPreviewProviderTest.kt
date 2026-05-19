@@ -16,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -150,6 +151,31 @@ class ProductsConfirmationPreviewProviderTest {
                 "#8",
                 "#9  Beanie",
             )
+        }
+
+    @Test
+    fun `given bulk product update, when names are resolved, then one batch lookup is used for all ids`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProducts(listOf(7L, 8L, 9L))).thenReturn(
+                Result.success(
+                    cachedProductLookup(product(remoteId = 7L), product(remoteId = 8L), product(remoteId = 9L))
+                )
+            )
+
+            preview(
+                toolName = "products_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(7), JsonPrimitive(8), JsonPrimitive(9))))
+                    put("patch", buildJsonObject { put("status", "draft") })
+                },
+                dataSource = dataSource,
+            )
+
+            verify(dataSource).getProducts(listOf(7L, 8L, 9L))
+            verify(dataSource, never()).getProduct(7L)
+            verify(dataSource, never()).getProduct(8L)
+            verify(dataSource, never()).getProduct(9L)
         }
 
     @Test
