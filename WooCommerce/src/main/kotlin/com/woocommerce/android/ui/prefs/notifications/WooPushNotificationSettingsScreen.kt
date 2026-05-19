@@ -49,7 +49,9 @@ fun WooPushNotificationSettingsScreen(
     val isAppNotificationsEnabled = viewModel.isAppNotificationsEnabled.observeAsState().value ?: return
     val isNotificationSettingsLoading = sharedViewModel.isNotificationSettingsLoading.observeAsState().value ?: return
     val isNotificationTypeSelectionEnabled =
-        sharedViewModel.isNotificationTypeSelectionEnabled.observeAsState().value ?: return
+        sharedViewModel.isNotificationTypeSelectionEnabled.observeAsState().value
+            ?.let { it && isAppNotificationsEnabled }
+            ?: return
 
     WooPushNotificationSettingsScreen(
         items = notificationTypeItems,
@@ -166,6 +168,9 @@ private fun NotificationTypeRow(
             .clickable(enabled = enabled) { onClick(item.type) },
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val contentAlpha = if (enabled) 1f else 0.38f
+        val titleColor = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha)
+        val subtitleColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = contentAlpha)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -174,12 +179,12 @@ private fun NotificationTypeRow(
             Text(
                 text = stringResource(id = item.title),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = titleColor
             )
             Text(
                 text = stringResource(id = item.subtitle),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = subtitleColor,
                 modifier = Modifier.padding(top = 2.dp)
             )
         }
@@ -193,7 +198,7 @@ private fun NotificationTypeRow(
         Icon(
             painter = painterResource(id = R.drawable.ic_chevron_right_24dp),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = subtitleColor,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
