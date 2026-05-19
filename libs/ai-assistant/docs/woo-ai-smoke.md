@@ -95,7 +95,7 @@ directory).
 How to read a failure:
 - A failed scenario or hard check → the failure message names the failing scenario id. The specific
   failed hard checks are in `summary.md`; walk back from there to `deterministic-scenarios.json`
-  (under `feature/src/debug/resources/woo-ai-smoke`) and the scripted response in
+  (under `feature/src/test/resources/woo-ai-smoke`) and the scripted response in
   `WooAiSmokeDeterministicSupportFixtures.kt`.
 - A missing artifact → the runner threw before the writer reached it; the JUnit failure message
   names the phase.
@@ -124,14 +124,14 @@ while IFS='=' read -r key value; do
     WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
+./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricTest"
 ```
 
-Without `WOO_AI_SMOKE_RUN_LIVE=true`, `WooAiSmokeLiveEnvRule` skips the test by JUnit assumption —
-the Hilt graph is never built and no live network calls happen. This is intentional: in CI without
-secrets, this test must skip rather than fail.
+Without `-PwooAiSmokeRunLive=true`, `WooAiSmokeLiveEnvRule` skips the test by JUnit assumption —
+the Hilt graph is never built and no live network calls happen. The opt-in is a Gradle property on
+the current command, not a sticky shell environment variable. If the property is present but
+credentials are missing or malformed, the test fails loudly rather than skipping.
 
 What it proves: the Android AI Assistant runtime can, without a device or UI, mint a smoke-only
 Jetpack AI JWT, bootstrap `SelectedSite` and application-password state under Robolectric, drive
@@ -141,10 +141,10 @@ scenarios in `live-scenarios.json` (plus their hard checks) against the checked-
 for merge.
 
 Focused and sampled controls:
-- `WOO_AI_SMOKE_SCENARIO_ID=orders_with_email` runs a focused subset in check mode. Multiple ids
+- `WOO_AI_SMOKE_SCENARIO_ID=orders_with_email` runs a focused subset in the check test entrypoint. Multiple ids
   can be comma-separated. Filtered check runs compare only the selected scenarios against the
-  checked-in baseline so they are useful for debugging; approval mode rejects filters because a
-  baseline refresh must cover the full suite.
+  checked-in baseline so they are useful for debugging; the approval test entrypoint rejects filters
+  because a baseline refresh must cover the full suite.
 - `WOO_AI_SMOKE_SAMPLES=3` repeats each selected scenario. Valid values are `1..3`. In check mode,
   primary scenario status and JUnit failure use sample 1. Baseline comparison also uses sample 1
   unless the checked-in baseline contains an approved `sampleExpectation` or `knownFailure`.
@@ -184,7 +184,7 @@ How to read common failures:
 
 | Failure message | Most likely cause | First place to look |
 | --- | --- | --- |
-| `Live baseline approval required: missing woo-ai-smoke/live-baseline.json` | Checked-in baseline was deleted or renamed. | `feature/src/debug/resources/woo-ai-smoke/live-baseline.json`. Do not work around with approval mode; find out why the baseline went missing. |
+| `Live baseline approval required: missing woo-ai-smoke/live-baseline.json` | Checked-in baseline was deleted or renamed. | `feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json`. Do not work around with approval mode; find out why the baseline went missing. |
 | `Woo AI smoke baseline check failed: ...` | A blocking diff (`REGRESSION`, `NEW`, or `MISSING`). Hard-check failures surface here as `REGRESSION`. | `baseline-comparison.json` first, then `run.json` or `summary.md` for failed hard checks. |
 | `PHASE_TIMEOUT: <phase>` (one of `jwt_mint`, `selected_site_and_tool_preflight`, `live_scenarios`) | The named phase exceeded its timeout (`jwt_mint`: 30s, `selected_site_and_tool_preflight`: 3min, `live_scenarios`: 5min multiplied by `WOO_AI_SMOKE_SAMPLES`). | `preflight.json` first — that tells you whether bootstrap finished. |
 | `PREFLIGHT_FAILED: <tool> returned <kind>` | A read-only preflight tool returned anything other than `Success`. Scenarios never ran. | The named tool, plus credentials/site setup. |
@@ -204,8 +204,8 @@ while IFS='=' read -r key value; do
     WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve WOO_AI_SMOKE_SAMPLES=3 \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
+WOO_AI_SMOKE_SAMPLES=3 \
+  ./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
 ```
 
@@ -219,7 +219,7 @@ new shape is what you intend to accept, copy it manually:
 ```bash
 cp \
   libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
-  libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
+  libs/ai-assistant/feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json
 ```
 
 The accepted live baseline must come from `JetpackAiChatService`,

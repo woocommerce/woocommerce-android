@@ -31,6 +31,10 @@ object WooAiSmokeDebugBridge {
         )
         val outputDirectory = credentials.outputDirectory
         return runCatching {
+            validateLiveRequest(
+                credentials = credentials,
+                mode = mode,
+            )
             runPhase("jwt_mint", JWT_MINT_TIMEOUT) {
                 entryPoint.liveChatServiceFactory()
                     .createTokenProvider(credentials, redactor)
@@ -94,6 +98,15 @@ object WooAiSmokeDebugBridge {
             exit
         }.getOrElse { error ->
             redactedFailureExit(credentials, error)
+        }
+    }
+
+    internal fun validateLiveRequest(
+        credentials: WooAiSmokeCredentialConfig,
+        mode: WooAiSmokeBaselineMode,
+    ) {
+        require(mode != WooAiSmokeBaselineMode.APPROVE || credentials.scenarioIds.isEmpty()) {
+            "WOO_AI_SMOKE_SCENARIO_ID cannot be used with approval; baseline approval must run the full suite."
         }
     }
 

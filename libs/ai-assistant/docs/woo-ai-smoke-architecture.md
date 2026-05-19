@@ -18,8 +18,10 @@ A short orientation before any of the details:
 - The accepted **primary path** is a live no-device Robolectric test in `:libs:ai-assistant:feature`.
   `:WooCommerce` does not own a device-backed smoke adapter anymore — the live headless path lives
   entirely in the feature module.
-- Live runs opt in with `WOO_AI_SMOKE_RUN_LIVE=true`. Without that opt-in, live tests skip via
-  JUnit assumption — the Hilt graph is never built and no live network calls happen.
+- Live runs opt in with the per-command Gradle property `-PwooAiSmokeRunLive=true`. Without that
+  opt-in, live tests skip via JUnit assumption — the Hilt graph is never built and no live network
+  calls happen. If the property is present but credentials are missing or malformed, the test fails
+  loudly instead of skipping.
 - A second test class runs in approval mode. Approval is the **only** path that produces a new
   baseline candidate.
 - Live store credentials come from a file outside the repo (`~/.woo-ai-smoke/store.env`).
@@ -27,7 +29,7 @@ A short orientation before any of the details:
   then runs a small set of read-only "preflight" tools so basic setup failures show up early.
 - Every run writes JSON/Markdown artifacts under `build/outputs`. These are **generated**; they are
   never committed.
-- The only checked-in expectation is `live-baseline.json` under `src/debug/resources`. A developer
+- The only checked-in expectation is `live-baseline.json` under `src/testDebug/resources`. A developer
   updates it by hand after reviewing an approval run's `approved-live-baseline.json`.
 
 ## Why this layout
@@ -52,7 +54,7 @@ A live run, in order:
 
 ```mermaid
 flowchart LR
-    Env["WOO_AI_SMOKE_RUN_LIVE=true\n+ store.env"] --> Test[":feature Robolectric test"]
+    Env["-PwooAiSmokeRunLive=true\n+ store.env"] --> Test[":feature Robolectric test"]
     Test --> Boot["Bootstrap: site, app password,\nSelectedSite, preflight tools"]
     Boot --> Scen["Live scenarios:\nreal chat + tool registry\n(via WooAssistantHeadless)"]
     Scen --> Out["build/outputs/...\npreflight.json, run.json,\nturns.jsonl, summary.md"]
@@ -68,11 +70,9 @@ opt-in env, no bootstrap, no baseline comparison, and a stable
 Lives in `:libs:ai-assistant:core` `testFixtures` so it can be consumed by:
 
 - `:core` test sources (Level 1), built-in to the same module.
-- `:feature` debug source set, via `debugImplementation(testFixtures(project(":libs:ai-assistant:core")))`
-  so `WooAiSmokeRunner` — which lives under `feature/src/debug/kotlin/` — can use it at runtime.
 - `:feature` test sources, via `testImplementation(testFixtures(project(":libs:ai-assistant:core")))`
   so Level 2 tests (`WooAiSmokeDeterministicSupportTest`, `JetpackAiChatServiceHeadlessHarnessTest`)
-  can use it directly. Both lines are required; one is not enough.
+  and the Level 3/4 Robolectric tests can use it directly.
 
 Given a `HeadlessScenario` and a `SessionContext`, the harness constructs an `AgenticLoopImpl` per
 turn, drives it via the injected `ChatService`, lets the injected `ToolRegistry` answer tool calls,
@@ -81,7 +81,7 @@ results, errors). The harness exists so that every level executes the *same* loo
 trace shape — so a scenario diff between Level 2 and Level 3 reflects real chat/tool behavior, not
 plumbing drift.
 
-`WooAiSmokeRunner` (in `feature/src/debug/kotlin/.../headless`) is the entry point Levels 2–4 call
+`WooAiSmokeRunner` (in `feature/src/test/kotlin/.../headless`) is the entry point Levels 2–4 call
 via `run()`. Internally it constructs a fresh `WooAssistantHeadless` and injects whichever
 `ChatService` and `ToolRegistry` the level selects, plus a
 `ScriptedHeadlessSafetyOrchestrator(default = CANCELLED)` so unsafe writes that the model attempts
@@ -102,9 +102,10 @@ honest from the side.
 | `WooAiSmokeLiveRobolectricTest` | `:libs:ai-assistant:feature` | `src/testDebug` | Level 3. Default. Live run, compares to checked-in `live-baseline.json`. |
 | `WooAiSmokeLiveRobolectricApprovalTest` | `:libs:ai-assistant:feature` | `src/testDebug` | Level 4. Live run that writes `approved-live-baseline.json`. Used only when intentionally refreshing. |
 
-Both live Robolectric tests check `WOO_AI_SMOKE_RUN_LIVE=true` via `WooAiSmokeLiveEnvRule` *before*
+Both live Robolectric tests check `-PwooAiSmokeRunLive=true` via `WooAiSmokeLiveEnvRule` *before*
 Hilt injection. Without it, they skip by JUnit assumption, so the live Hilt graph is never built
-and no live network calls happen.
+and no live network calls happen. With the property present, missing or malformed credentials are a
+loud failure.
 
 Splitting check and approval into two separate test classes prevents a normal run from accidentally
 rewriting the accepted baseline.
@@ -183,7 +184,7 @@ Because bootstrap throws on the first non-success, every `safeToolResults` entry
 ## 6. Scenarios
 
 `WooAiSmokeRunner` reads scenarios from a JSON file under
-`feature/src/debug/resources/woo-ai-smoke/`:
+`feature/src/testDebug/resources/woo-ai-smoke/`:
 
 - Level 2 uses `deterministic-scenarios.json`.
 - Levels 3–4 use `live-scenarios.json` (paired with `live-baseline.json`).
@@ -223,7 +224,7 @@ committed.**
 The only checked-in baseline expectation is:
 
 ```text
-libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
+libs/ai-assistant/feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json
 ```
 
 A developer updates `live-baseline.json` by hand after reviewing an approval run's
@@ -232,7 +233,7 @@ A developer updates `live-baseline.json` by hand after reviewing an approval run
 ```bash
 cp \
   libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
-  libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
+  libs/ai-assistant/feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json
 ```
 
 Level 2 intentionally has no baseline or approval mode. It is deterministic fake-chat/fake-tool
@@ -243,13 +244,13 @@ Tests never write into `src/`.
 
 ## 8. Check mode vs approval mode
 
-- **Check mode** (`WOO_AI_SMOKE_MODE=check`, the default): runs the live scenarios and compares
+- **Check mode** (`WooAiSmokeLiveRobolectricTest`): runs the live scenarios and compares
   results to `live-baseline.json`. Fails on undocumented mismatches. A documented `knownFailure`
   is non-blocking only when the same hard checks still fail and every other approved check passes.
   If a known failure starts passing, the comparison marks it fixed so the exception can be removed.
   A missing baseline fails with "Live baseline approval required"; stale baseline metadata fails as
   a normal blocking baseline check failure.
-- **Approval mode** (`WOO_AI_SMOKE_MODE=approve`): runs the live scenarios and writes
+- **Approval mode** (`WooAiSmokeLiveRobolectricApprovalTest`): runs the live scenarios and writes
   `approved-live-baseline.json` under `build/outputs`. Does not touch the checked-in baseline.
   Existing `knownFailure` metadata is preserved only while every failing sample has a failed
   hard-check set that exactly matches `knownFailure.expectedFailedHardChecks`, and dropped once the

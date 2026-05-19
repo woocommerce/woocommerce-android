@@ -30,22 +30,21 @@ while IFS='=' read -r key value; do
     WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
+./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricTest"
 ```
 
 Optional focused/debug controls:
 
 ```bash
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=check \
 WOO_AI_SMOKE_SCENARIO_ID=orders_with_email WOO_AI_SMOKE_SAMPLES=3 \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
+  ./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricTest"
 ```
 
-`WOO_AI_SMOKE_SCENARIO_ID` supports a comma-separated list in check mode. Approval mode must run the
-full suite and rejects scenario filters. `WOO_AI_SMOKE_SAMPLES` supports `1..3`. In check mode,
+`WOO_AI_SMOKE_SCENARIO_ID` supports a comma-separated list for the check test entrypoint.
+Approval uses the separate `WooAiSmokeLiveRobolectricApprovalTest` entrypoint, must run the full
+suite, and rejects scenario filters. `WOO_AI_SMOKE_SAMPLES` supports `1..3`. In check runs,
 primary scenario status and JUnit failure use sample 1. Baseline comparison also uses sample 1
 unless the checked-in baseline contains an approved `sampleExpectation` or `knownFailure`.
 `sampleExpectation` checks compare the sampled classification and requested sample count; approved
@@ -115,8 +114,8 @@ while IFS='=' read -r key value; do
     WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
-WOO_AI_SMOKE_RUN_LIVE=true WOO_AI_SMOKE_MODE=approve WOO_AI_SMOKE_SAMPLES=3 \
-  ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
+WOO_AI_SMOKE_SAMPLES=3 \
+  ./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
     --tests "*.WooAiSmokeLiveRobolectricApprovalTest"
 ```
 
@@ -132,7 +131,7 @@ After reviewer inspection:
 ```bash
 cp \
   libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest/approved-live-baseline.json \
-  libs/ai-assistant/feature/src/debug/resources/woo-ai-smoke/live-baseline.json
+  libs/ai-assistant/feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json
 ```
 
 After an approval run, print the same scenario recap table from
