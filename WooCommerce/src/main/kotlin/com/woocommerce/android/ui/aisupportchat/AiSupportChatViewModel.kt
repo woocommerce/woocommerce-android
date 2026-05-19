@@ -815,7 +815,7 @@ data class AiSupportChatViewState(
         }
 
     private companion object {
-        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 2
+        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 1
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
 }

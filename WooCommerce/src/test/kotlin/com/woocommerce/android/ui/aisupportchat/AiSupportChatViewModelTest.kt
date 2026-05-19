@@ -358,14 +358,14 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.showHumanSupportPrompt).isTrue
             assertThat(state.latestSupportArea).isEqualTo(supportArea)
-            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue
             assertThat(state.showInputBar).isFalse
             assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
             assertThat(state.messages.map { it.content }).doesNotContain(AiSupportChatMessageContent.Text(BOT_RESPONSE))
         }
 
     @Test
-    fun `given first user message has bot response, when chat updates, then toolbar support is unavailable`() =
+    fun `given first user message has bot response, when chat updates, then toolbar support is available`() =
         testBlocking {
             val result = createSuccessDiagnosticResult()
             val response = createResponse(
@@ -386,7 +386,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.hasSentChatMessage).isTrue
             assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
-            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue
         }
 
     @Test
@@ -599,7 +599,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given second user message has bot response, when chat updates, then toolbar support is available`() =
+    fun `given second user message has bot response, when chat updates, then toolbar support remains available`() =
         testBlocking {
             val result = createSuccessDiagnosticResult()
             whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
