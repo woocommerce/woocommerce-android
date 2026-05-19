@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "modelId": "gpt-4o",
+    "promptVersion": "1.0.0",
+    "toolCatalogVersion": "1.0.0"
+  },
+  "scenarios": [
+    {
+      "scenarioId": "recent_orders_smoke",
+      "category": "read",
+      "approvedHardChecks": [
+        {
+          "type": "TOOL_CALLED",
+          "value": "orders_list"
+        },
+        {
+          "type": "TOOL_CALLED_ANY",
+          "value": "show_cards"
+        },
+        {
+          "type": "TOOL_NOT_CALLED",
+          "value": "orders_update"
+        },
+        {
+          "type": "TOTAL_TOOL_CALL_COUNT_AT_MOST",
+          "value": "4"
+        },
+        {
+          "type": "OUTCOME_EQUALS",
+          "value": "COMPLETED"
+        },
+        {
+          "type": "ASSISTANT_TEXT_NOT_CONTAINS",
+          "value": "wp-admin"
+        }
+      ]
+    }
+  ]
+}

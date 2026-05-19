@@ -14,11 +14,5 @@ data class WooAiSmokeBaselineConfig(
 
 enum class WooAiSmokeBaselineMode {
     CHECK,
-    APPROVE;
-
-    companion object {
-        fun from(value: String): WooAiSmokeBaselineMode =
-            entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
-                ?: error("Unsupported WOO_AI_SMOKE_MODE: $value")
-    }
+    APPROVE,
 }

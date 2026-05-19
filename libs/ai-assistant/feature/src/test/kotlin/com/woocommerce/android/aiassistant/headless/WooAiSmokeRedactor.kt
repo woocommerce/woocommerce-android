@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.headless
 
 import okio.ByteString.Companion.encodeUtf8
+import java.net.URI
 
 class WooAiSmokeRedactor(
     private val siteUrl: String,
@@ -8,9 +9,10 @@ class WooAiSmokeRedactor(
     private val appPassword: String,
 ) {
     fun redact(value: String): String {
-        val explicitSecrets = listOf(
+        val explicitSecrets = listOfNotNull(
             siteUrl,
             siteUrl.trimEnd('/'),
+            siteUrl.hostOrNull(),
             username,
             appPassword,
             "$username:$appPassword".encodeUtf8().base64(),
@@ -67,4 +69,7 @@ class WooAiSmokeRedactor(
                 "${matchResult.groupValues[1]}\"$REDACTED\""
             }
     }
+
+    private fun String.hostOrNull(): String? =
+        runCatching { URI(this).host }.getOrNull()?.takeIf { it.isNotBlank() }
 }

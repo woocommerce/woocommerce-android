@@ -35,6 +35,16 @@ android {
     testOptions {
         unitTests.includeAndroidResources = true
     }
+
+    tasks.withType(Test).configureEach {
+        systemProperty "wooAiSmokeRunLive", project.findProperty("wooAiSmokeRunLive")?.toString() ?: "false"
+    }
+
+    sourceSets {
+        test.resources.srcDirs += 'src/test/resources'
+        testDebug.java.srcDirs += 'src/testDebug/kotlin'
+        testDebug.resources.srcDirs += 'src/testDebug/resources'
+    }
 }
 
 dependencies {
@@ -63,8 +73,6 @@ dependencies {
     ksp(libs.google.dagger.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling.main)
-    // Debug smoke runner code uses core headless contracts at runtime; keep this out of release variants.
-    debugImplementation(testFixtures(project(":libs:ai-assistant:core")))
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
@@ -73,7 +81,12 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
+    testImplementation(libs.google.dagger.hilt.android.testing)
+    testImplementation(libs.squareup.okhttp3.urlconnection)
+    testImplementation(libs.apache.http.client.android)
+    testImplementation(libs.apache.http.core)
     testImplementation(testFixtures(project(":libs:ai-assistant:core")))
+    kspTest(libs.google.dagger.hilt.compiler)
 }
 
 dependencyAnalysis {
