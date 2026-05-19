@@ -26,13 +26,13 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusP
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsCompleteEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsPaidEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsScanToPayEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsComplete
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
@@ -85,7 +85,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable,
     private val isScanToPayEnabled: WooPosIsScanToPayEnabled,
-    private val isMarkOrderAsCompleteEnabled: WooPosIsMarkOrderAsCompleteEnabled,
+    private val isMarkOrderAsPaidEnabled: WooPosIsMarkOrderAsPaidEnabled,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
@@ -246,7 +246,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
 
-            WooPosTotalsUIEvent.OnMarkOrderAsCompleteClicked -> handleMarkOrderAsCompleteClicked()
+            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked -> handleMarkOrderAsPaidClicked()
 
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
@@ -292,14 +292,14 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun handleMarkOrderAsCompleteClicked() = viewModelScope.launch {
+    private fun handleMarkOrderAsPaidClicked() = viewModelScope.launch {
         val orderId = dataState.value.orderId
         if (orderId == EMPTY_ORDER_ID) {
             wooPosLogWrapper.e("Mark order as complete tapped before order draft was created")
             return@launch
         }
         totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
-        childrenToParentEventSender.sendToParent(ToMarkOrderAsComplete(orderId))
+        childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
@@ -1118,7 +1118,7 @@ class WooPosTotalsViewModel @Inject constructor(
             readerStatus = readerStatus,
             isTapToPayAvailable = isTapToPayAvailable(),
             isScanToPayEnabled = isScanToPayEnabled(),
-            isMarkOrderAsCompleteEnabled = isMarkOrderAsCompleteEnabled(),
+            isMarkOrderAsPaidEnabled = isMarkOrderAsPaidEnabled(),
         )
     }
 

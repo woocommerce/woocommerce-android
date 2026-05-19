@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.markorderascomplete
+package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -25,76 +25,76 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
-    private val repository: WooPosMarkOrderAsCompleteRepository,
+class WooPosMarkOrderAsPaidViewModel @Inject constructor(
+    private val repository: WooPosMarkOrderAsPaidRepository,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val priceFormat: WooPosFormatPrice,
     savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val orderId: Long = requireNotNull(savedState[MARK_ORDER_AS_COMPLETE_ROUTE_ORDER_ID_KEY])
+    private val orderId: Long = requireNotNull(savedState[MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY])
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
-    private val _state = savedState.getStateFlow<WooPosMarkOrderAsCompleteState>(
+    private val _state = savedState.getStateFlow<WooPosMarkOrderAsPaidState>(
         scope = viewModelScope,
-        initialValue = WooPosMarkOrderAsCompleteState.Initiating,
+        initialValue = WooPosMarkOrderAsPaidState.Initiating,
         key = STATE_KEY,
     )
-    val state: StateFlow<WooPosMarkOrderAsCompleteState> = _state
+    val state: StateFlow<WooPosMarkOrderAsPaidState> = _state
 
     init {
         viewModelScope.launch {
             val current = _state.value
-            if (current is WooPosMarkOrderAsCompleteState.Confirming &&
-                current.button.status == WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING
+            if (current is WooPosMarkOrderAsPaidState.Confirming &&
+                current.button.status == WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING
             ) {
                 _state.value = current.copy(
                     button = current.button.copy(
-                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
                     ),
                 )
                 return@launch
             }
-            if (current !is WooPosMarkOrderAsCompleteState.Initiating) return@launch
+            if (current !is WooPosMarkOrderAsPaidState.Initiating) return@launch
 
             val order = repository.getOrderById(orderId)
             val buttonText = resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button)
             _state.value = if (order != null) {
-                WooPosMarkOrderAsCompleteState.Confirming(
+                WooPosMarkOrderAsPaidState.Confirming(
                     totalText = resourceProvider.getString(
                         R.string.woopos_mark_order_as_complete_total,
                         priceFormat(order.total),
                     ),
                     note = "",
                     errorMessage = null,
-                    button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                    button = WooPosMarkOrderAsPaidState.Confirming.Button(
                         text = buttonText,
-                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
                     ),
                 )
             } else {
-                WooPosMarkOrderAsCompleteState.Confirming(
+                WooPosMarkOrderAsPaidState.Confirming(
                     totalText = "",
                     note = "",
                     errorMessage = resourceProvider.getString(
                         R.string.woopos_mark_order_as_complete_order_not_found,
                     ),
-                    button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                    button = WooPosMarkOrderAsPaidState.Confirming.Button(
                         text = buttonText,
-                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.DISABLED,
+                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.DISABLED,
                     ),
                 )
             }
         }
     }
 
-    fun onUIEvent(event: WooPosMarkOrderAsCompleteUIEvent) {
+    fun onUIEvent(event: WooPosMarkOrderAsPaidUIEvent) {
         when (event) {
-            is WooPosMarkOrderAsCompleteUIEvent.NoteChanged -> handleNoteChanged(event.newNote)
-            WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked -> handleConfirm()
+            is WooPosMarkOrderAsPaidUIEvent.NoteChanged -> handleNoteChanged(event.newNote)
+            WooPosMarkOrderAsPaidUIEvent.ConfirmClicked -> handleConfirm()
         }
     }
 
@@ -106,35 +106,35 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
     }
 
     private fun handleNoteChanged(newNote: String) {
-        val current = _state.value as? WooPosMarkOrderAsCompleteState.Confirming ?: return
+        val current = _state.value as? WooPosMarkOrderAsPaidState.Confirming ?: return
         _state.value = current.copy(note = newNote, errorMessage = null)
     }
 
     private fun handleConfirm() {
         viewModelScope.launch {
-            val current = _state.value as? WooPosMarkOrderAsCompleteState.Confirming ?: return@launch
-            if (current.button.status != WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED) return@launch
+            val current = _state.value as? WooPosMarkOrderAsPaidState.Confirming ?: return@launch
+            if (current.button.status != WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED) return@launch
             analyticsTracker.track(MarkAsPaidConfirmed)
             _state.value = current.copy(
                 button = current.button.copy(
-                    status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING,
+                    status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING,
                 ),
                 errorMessage = null,
             )
 
-            val outcome = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
+            val outcome = repository.markOrderAsPaid(orderId, current.note.takeIf { it.isNotBlank() })
             when (outcome) {
-                MarkOrderAsCompleteOutcome.SuccessWithFailedNote -> {
+                MarkOrderAsPaidOutcome.SuccessWithFailedNote -> {
                     analyticsTracker.track(MarkAsPaidNotePostFailed)
                     onMarkAsPaidSucceeded()
                 }
-                MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded()
-                MarkOrderAsCompleteOutcome.Failure -> {
+                MarkOrderAsPaidOutcome.Success -> onMarkAsPaidSucceeded()
+                MarkOrderAsPaidOutcome.Failure -> {
                     analyticsTracker.track(MarkAsPaidFailed)
                     _state.value = current.copy(
                         errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
                         button = current.button.copy(
-                            status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                            status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
                         ),
                     )
                 }

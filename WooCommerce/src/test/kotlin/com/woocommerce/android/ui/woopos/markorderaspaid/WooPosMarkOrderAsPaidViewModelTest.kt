@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.markorderascomplete
+package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
@@ -33,7 +33,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosMarkOrderAsCompleteViewModelTest {
+class WooPosMarkOrderAsPaidViewModelTest {
 
     @Rule
     @JvmField
@@ -43,7 +43,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
 
-    private val repository: WooPosMarkOrderAsCompleteRepository = mock()
+    private val repository: WooPosMarkOrderAsPaidRepository = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
     private val resourceProvider: ResourceProvider = mock()
@@ -64,13 +64,13 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             .thenReturn("Something went wrong. Please try again.")
     }
 
-    private fun createViewModel() = WooPosMarkOrderAsCompleteViewModel(
+    private fun createViewModel() = WooPosMarkOrderAsPaidViewModel(
         repository = repository,
         childrenToParentEventSender = childrenToParentEventSender,
         analyticsTracker = tracker,
         resourceProvider = resourceProvider,
         priceFormat = priceFormat,
-        savedState = SavedStateHandle(mapOf(MARK_ORDER_AS_COMPLETE_ROUTE_ORDER_ID_KEY to orderId)),
+        savedState = SavedStateHandle(mapOf(MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY to orderId)),
     )
 
     @Test
@@ -85,9 +85,9 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             val viewModel = createViewModel()
 
             // THEN
-            val state = viewModel.state.value as WooPosMarkOrderAsCompleteState.Confirming
+            val state = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
             assertThat(state.errorMessage).isEqualTo("Order could not be loaded. Go back and try again.")
-            assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsCompleteState.Confirming.Button.Status.DISABLED)
+            assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.DISABLED)
             assertThat(state.totalText).isEmpty()
         }
 
@@ -98,12 +98,12 @@ class WooPosMarkOrderAsCompleteViewModelTest {
 
         // THEN
         val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosMarkOrderAsCompleteState.Confirming::class.java)
-        val confirming = state as WooPosMarkOrderAsCompleteState.Confirming
+        assertThat(state).isInstanceOf(WooPosMarkOrderAsPaidState.Confirming::class.java)
+        val confirming = state as WooPosMarkOrderAsPaidState.Confirming
         assertThat(confirming.totalText).isEqualTo("Order total: $42.00")
         assertThat(confirming.note).isEmpty()
         assertThat(confirming.errorMessage).isNull()
-        assertThat(confirming.button.status).isEqualTo(WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED)
+        assertThat(confirming.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED)
     }
 
     @Test
@@ -112,10 +112,10 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.NoteChanged("Bank transfer"))
+        viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.NoteChanged("Bank transfer"))
 
         // THEN
-        val updated = viewModel.state.value as WooPosMarkOrderAsCompleteState.Confirming
+        val updated = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
         assertThat(updated.note).isEqualTo("Bank transfer")
         assertThat(updated.errorMessage).isNull()
     }
@@ -124,13 +124,13 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     fun `given repo succeeds, when confirm clicked, then analytics tracked, parent event sent, GoBack emitted`() =
         runTest {
             // GIVEN
-            whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-                .thenReturn(MarkOrderAsCompleteOutcome.Success)
+            whenever(repository.markOrderAsPaid(eq(orderId), anyOrNull()))
+                .thenReturn(MarkOrderAsPaidOutcome.Success)
             val viewModel = createViewModel()
 
             // WHEN / THEN
             viewModel.navigationEvent.test {
-                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+                viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked)
                 assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
             }
             verify(tracker).track(MarkAsPaidConfirmed)
@@ -143,33 +143,33 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     @Test
     fun `given repo succeeds with note, when confirm clicked, then note forwarded to repository`() = runTest {
         // GIVEN
-        whenever(repository.markOrderAsComplete(eq(orderId), eq("Bank transfer")))
-            .thenReturn(MarkOrderAsCompleteOutcome.Success)
+        whenever(repository.markOrderAsPaid(eq(orderId), eq("Bank transfer")))
+            .thenReturn(MarkOrderAsPaidOutcome.Success)
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.NoteChanged("Bank transfer"))
+        viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.NoteChanged("Bank transfer"))
 
         // WHEN / THEN
         viewModel.navigationEvent.test {
-            viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+            viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked)
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
-        verify(repository).markOrderAsComplete(orderId, "Bank transfer")
+        verify(repository).markOrderAsPaid(orderId, "Bank transfer")
     }
 
     @Test
     fun `given repo fails, when confirm clicked, then state has error message and button re-enabled`() = runTest {
         // GIVEN
-        whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-            .thenReturn(MarkOrderAsCompleteOutcome.Failure)
+        whenever(repository.markOrderAsPaid(eq(orderId), anyOrNull()))
+            .thenReturn(MarkOrderAsPaidOutcome.Failure)
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+        viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked)
 
         // THEN
-        val finalState = viewModel.state.value as WooPosMarkOrderAsCompleteState.Confirming
+        val finalState = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
         assertThat(finalState.errorMessage).isEqualTo("Something went wrong. Please try again.")
-        assertThat(finalState.button.status).isEqualTo(WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED)
+        assertThat(finalState.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED)
         verify(tracker).track(MarkAsPaidFailed)
     }
 
@@ -189,13 +189,13 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     @Test
     fun `given repo succeeds with failed note, when confirm clicked, then MarkAsPaidNotePostFailed tracked`() = runTest {
         // GIVEN
-        whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-            .thenReturn(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
+        whenever(repository.markOrderAsPaid(eq(orderId), anyOrNull()))
+            .thenReturn(MarkOrderAsPaidOutcome.SuccessWithFailedNote)
         val viewModel = createViewModel()
 
         // WHEN / THEN
         viewModel.navigationEvent.test {
-            viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+            viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked)
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
         verify(tracker).track(MarkAsPaidNotePostFailed)
@@ -206,13 +206,13 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     fun `given repo succeeds without failed note, when confirm clicked, then MarkAsPaidNotePostFailed not tracked`() =
         runTest {
             // GIVEN
-            whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-                .thenReturn(MarkOrderAsCompleteOutcome.Success)
+            whenever(repository.markOrderAsPaid(eq(orderId), anyOrNull()))
+                .thenReturn(MarkOrderAsPaidOutcome.Success)
             val viewModel = createViewModel()
 
             // WHEN / THEN
             viewModel.navigationEvent.test {
-                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+                viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked)
                 assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
             }
             verify(tracker, never()).track(MarkAsPaidNotePostFailed)
@@ -223,21 +223,21 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         // GIVEN: saved state simulates process death mid-confirm
         val savedState = SavedStateHandle(
             mapOf(
-                MARK_ORDER_AS_COMPLETE_ROUTE_ORDER_ID_KEY to orderId,
-                "woo_pos_mark_order_as_complete_state" to WooPosMarkOrderAsCompleteState.Confirming(
+                MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY to orderId,
+                "woo_pos_mark_order_as_complete_state" to WooPosMarkOrderAsPaidState.Confirming(
                     totalText = "Order total: $42.00",
                     note = "Bank transfer",
                     errorMessage = null,
-                    button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                    button = WooPosMarkOrderAsPaidState.Confirming.Button(
                         text = "Mark order as complete",
-                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING,
+                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING,
                     ),
                 ),
             )
         )
 
         // WHEN
-        val viewModel = WooPosMarkOrderAsCompleteViewModel(
+        val viewModel = WooPosMarkOrderAsPaidViewModel(
             repository = repository,
             childrenToParentEventSender = childrenToParentEventSender,
             analyticsTracker = tracker,
@@ -247,8 +247,8 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosMarkOrderAsCompleteState.Confirming
-        assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED)
+        val state = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
+        assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED)
         assertThat(state.note).isEqualTo("Bank transfer")
     }
 }

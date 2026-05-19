@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.markorderascomplete
+package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +39,8 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosMarkOrderAsCompleteScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
-    val viewModel = hiltViewModel<WooPosMarkOrderAsCompleteViewModel>()
+fun WooPosMarkOrderAsPaidScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
+    val viewModel = hiltViewModel<WooPosMarkOrderAsPaidViewModel>()
     val state = viewModel.state.collectAsState().value
 
     val onBackClicked = { viewModel.onBackClicked() }
@@ -49,18 +49,18 @@ fun WooPosMarkOrderAsCompleteScreen(onNavigationEvent: (WooPosNavigationEvent) -
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
     }
 
-    WooPosMarkOrderAsCompleteScreen(
+    WooPosMarkOrderAsPaidScreen(
         state = state,
-        onNoteChanged = { viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.NoteChanged(it)) },
-        onConfirmClicked = { viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked) },
+        onNoteChanged = { viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.NoteChanged(it)) },
+        onConfirmClicked = { viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked) },
         onBackClicked = onBackClicked,
     )
     BackHandler { onBackClicked() }
 }
 
 @Composable
-private fun WooPosMarkOrderAsCompleteScreen(
-    state: WooPosMarkOrderAsCompleteState,
+private fun WooPosMarkOrderAsPaidScreen(
+    state: WooPosMarkOrderAsPaidState,
     onNoteChanged: (String) -> Unit,
     onConfirmClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -71,13 +71,13 @@ private fun WooPosMarkOrderAsCompleteScreen(
             onBackClicked = onBackClicked,
         )
         when (state) {
-            is WooPosMarkOrderAsCompleteState.Confirming -> Confirming(
+            is WooPosMarkOrderAsPaidState.Confirming -> Confirming(
                 state = state,
                 onNoteChanged = onNoteChanged,
                 onConfirmClicked = onConfirmClicked,
             )
 
-            WooPosMarkOrderAsCompleteState.Initiating -> Box(
+            WooPosMarkOrderAsPaidState.Initiating -> Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
@@ -89,7 +89,7 @@ private fun WooPosMarkOrderAsCompleteScreen(
 
 @Composable
 private fun Confirming(
-    state: WooPosMarkOrderAsCompleteState.Confirming,
+    state: WooPosMarkOrderAsPaidState.Confirming,
     onNoteChanged: (String) -> Unit,
     onConfirmClicked: () -> Unit,
 ) {
@@ -149,9 +149,9 @@ private fun Confirming(
             text = state.button.text,
             onClick = onConfirmClicked,
             state = when (state.button.status) {
-                WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED -> WooPosButtonState.ENABLED
-                WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING -> WooPosButtonState.LOADING
-                WooPosMarkOrderAsCompleteState.Confirming.Button.Status.DISABLED -> WooPosButtonState.DISABLED
+                WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED -> WooPosButtonState.ENABLED
+                WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING -> WooPosButtonState.LOADING
+                WooPosMarkOrderAsPaidState.Confirming.Button.Status.DISABLED -> WooPosButtonState.DISABLED
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,16 +162,16 @@ private fun Confirming(
 
 @WooPosPreview
 @Composable
-private fun WooPosMarkOrderAsCompleteScreenPreview() {
+private fun WooPosMarkOrderAsPaidScreenPreview() {
     WooPosTheme {
-        WooPosMarkOrderAsCompleteScreen(
-            state = WooPosMarkOrderAsCompleteState.Confirming(
+        WooPosMarkOrderAsPaidScreen(
+            state = WooPosMarkOrderAsPaidState.Confirming(
                 totalText = "Order total: $42.00",
                 note = "",
                 errorMessage = null,
-                button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                button = WooPosMarkOrderAsPaidState.Confirming.Button(
                     text = "Mark order as complete",
-                    status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                    status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
                 ),
             ),
             onNoteChanged = {},
@@ -183,16 +183,16 @@ private fun WooPosMarkOrderAsCompleteScreenPreview() {
 
 @WooPosPreview
 @Composable
-private fun WooPosMarkOrderAsCompleteScreenErrorPreview() {
+private fun WooPosMarkOrderAsPaidScreenErrorPreview() {
     WooPosTheme {
-        WooPosMarkOrderAsCompleteScreen(
-            state = WooPosMarkOrderAsCompleteState.Confirming(
+        WooPosMarkOrderAsPaidScreen(
+            state = WooPosMarkOrderAsPaidState.Confirming(
                 totalText = "Order total: $42.00",
                 note = "Bank transfer",
                 errorMessage = "Something went wrong. Please try again.",
-                button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                button = WooPosMarkOrderAsPaidState.Confirming.Button(
                     text = "Mark order as complete",
-                    status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                    status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
                 ),
             ),
             onNoteChanged = {},

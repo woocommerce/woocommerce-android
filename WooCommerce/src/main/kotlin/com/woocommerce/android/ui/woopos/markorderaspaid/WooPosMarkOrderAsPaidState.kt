@@ -1,14 +1,14 @@
-package com.woocommerce.android.ui.woopos.markorderascomplete
+package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-const val MARK_ORDER_AS_COMPLETE_ROUTE_ORDER_ID_KEY = "orderId"
+const val MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY = "orderId"
 
 @Parcelize
-sealed class WooPosMarkOrderAsCompleteState : Parcelable {
+sealed class WooPosMarkOrderAsPaidState : Parcelable {
     @Parcelize
-    data object Initiating : WooPosMarkOrderAsCompleteState()
+    data object Initiating : WooPosMarkOrderAsPaidState()
 
     @Parcelize
     data class Confirming(
@@ -16,7 +16,7 @@ sealed class WooPosMarkOrderAsCompleteState : Parcelable {
         val note: String,
         val errorMessage: String?,
         val button: Button,
-    ) : WooPosMarkOrderAsCompleteState() {
+    ) : WooPosMarkOrderAsPaidState() {
         @Parcelize
         data class Button(
             val text: String,

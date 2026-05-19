@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsCompleteEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsPaidEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsScanToPayEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
@@ -174,7 +174,7 @@ class WooPosTotalsViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
     private val isScanToPayEnabled: WooPosIsScanToPayEnabled = mock()
-    private val isMarkOrderAsCompleteEnabled: WooPosIsMarkOrderAsCompleteEnabled = mock()
+    private val isMarkOrderAsPaidEnabled: WooPosIsMarkOrderAsPaidEnabled = mock()
     private val builtInReaderConnector: WooPosBuiltInReaderConnector = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
@@ -744,26 +744,26 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given order draft created, when OnMarkOrderAsCompleteClicked, then track analytic and emit ToMarkOrderAsComplete`() =
+    fun `given order draft created, when OnMarkOrderAsPaidClicked, then track analytic and emit ToMarkOrderAsPaid`() =
         runTest {
             // GIVEN
             val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
             assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
 
             // WHEN
-            viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsCompleteClicked)
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
 
             // THEN
             verify(analyticsTracker).track(
                 com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped,
             )
             verify(childrenToParentEventSender).sendToParent(
-                isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsComplete>(),
+                isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
             )
         }
 
     @Test
-    fun `given no order draft, when OnMarkOrderAsCompleteClicked, then do not emit navigation event`() = runTest {
+    fun `given no order draft, when OnMarkOrderAsPaidClicked, then do not emit navigation event`() = runTest {
         // GIVEN
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
@@ -771,11 +771,11 @@ class WooPosTotalsViewModelTest {
         val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
 
         // WHEN
-        viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsCompleteClicked)
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
 
         // THEN
         verify(childrenToParentEventSender, never()).sendToParent(
-            isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsComplete>(),
+            isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
         )
     }
 
@@ -2642,7 +2642,7 @@ class WooPosTotalsViewModelTest {
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
         isTapToPayAvailable = isTapToPayAvailable,
         isScanToPayEnabled = isScanToPayEnabled,
-        isMarkOrderAsCompleteEnabled = isMarkOrderAsCompleteEnabled,
+        isMarkOrderAsPaidEnabled = isMarkOrderAsPaidEnabled,
         tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
         paymentsFlowTracker = tracker,
         builtInReaderConnector = builtInReaderConnector,

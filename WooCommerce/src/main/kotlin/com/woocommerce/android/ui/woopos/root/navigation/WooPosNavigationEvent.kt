@@ -14,7 +14,7 @@ sealed class WooPosNavigationEvent {
         val orderId: Long,
         val source: CashPaymentSource = CashPaymentSource.CHECKOUT,
     ) : WooPosNavigationEvent()
-    data class OpenMarkOrderAsComplete(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenMarkOrderAsPaid(val orderId: Long) : WooPosNavigationEvent()
     data class OpenCardPayment(
         val orderId: Long,
         val source: CardPaymentSource = CardPaymentSource.CHECKOUT,
