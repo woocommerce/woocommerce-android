@@ -1194,13 +1194,15 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
-                text = card.name,
+                text = card.attributes.toVariationTitle()
+                    ?: card.sku.takeIf { it.isNotBlank() }
+                    ?: "Variation ${card.variationId}",
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = listOf(card.stockStatus, card.price)
+                text = listOf(card.parentProductName, card.stockStatus, card.price)
                     .filter { it.isNotBlank() }
                     .joinToString(" - "),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1208,6 +1210,15 @@ private object PreviewAssistantCardRenderer : AssistantCardRenderer {
             )
         }
     }
+
+    private fun List<AssistantCard.Variation.Attribute>.toVariationTitle(): String? =
+        mapNotNull { attribute ->
+            val option = attribute.option.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val name = attribute.name.takeIf { it.isNotBlank() }
+            if (name != null) "$name: $option" else option
+        }
+            .takeIf { it.isNotEmpty() }
+            ?.joinToString(separator = " \u2022 ")
 
     @Composable
     private fun PreviewStatsCard(

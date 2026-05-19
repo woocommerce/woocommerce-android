@@ -145,7 +145,7 @@ class AssistantCardPayloadParserTest {
                         details = ShowCardDetails.Variation(
                             productId = 100L,
                             variationId = 10L,
-                            name = "Blue socks",
+                            parentProductName = "Woo socks",
                             sku = "woo-socks-blue",
                             price = "12.99",
                             stockStatus = "instock",
@@ -165,7 +165,7 @@ class AssistantCardPayloadParserTest {
             AssistantCard.Variation(
                 parentProductId = 100L,
                 variationId = 10L,
-                name = "Blue socks",
+                parentProductName = "Woo socks",
                 sku = "woo-socks-blue",
                 price = "12.99",
                 stockStatus = "instock",
@@ -191,7 +191,7 @@ class AssistantCardPayloadParserTest {
             AssistantCard.Variation(
                 parentProductId = 100L,
                 variationId = 10L,
-                name = "Blue socks",
+                parentProductName = "Woo socks",
                 sku = "woo-socks-blue",
                 price = "12.99",
                 stockStatus = "instock",
@@ -237,7 +237,7 @@ class AssistantCardPayloadParserTest {
                         details = ShowCardDetails.Variation(
                             productId = 100L,
                             variationId = 10L,
-                            name = null,
+                            parentProductName = null,
                             sku = null,
                             price = null,
                             stockStatus = null,
@@ -258,13 +258,14 @@ class AssistantCardPayloadParserTest {
             AssistantCard.Variation(
                 parentProductId = 100L,
                 variationId = 10L,
-                name = "",
+                parentProductName = "",
                 sku = "",
                 price = "",
                 stockStatus = "",
                 status = "",
                 imageUrl = "",
                 attributes = listOf(
+                    AssistantCard.Variation.Attribute(name = "", option = "Blue"),
                     AssistantCard.Variation.Attribute(name = "Color", option = "Blue"),
                 ),
             )
@@ -670,7 +671,7 @@ class AssistantCardPayloadParserTest {
         details = ShowCardDetails.Variation(
             productId = productId,
             variationId = variationId,
-            name = "Blue socks",
+            parentProductName = "Woo socks",
             sku = "woo-socks-blue",
             price = "12.99",
             stockStatus = "instock",
