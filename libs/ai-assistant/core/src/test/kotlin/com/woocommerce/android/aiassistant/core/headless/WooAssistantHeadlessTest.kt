@@ -1,6 +1,7 @@
 package com.woocommerce.android.aiassistant.core.headless
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
+import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
@@ -67,6 +68,66 @@ class WooAssistantHeadlessTest {
                 )
             )
             assertThat(registry.calls.map(ToolCall::name)).containsExactly("orders_list")
+        }
+
+    @Test
+    fun `given completed tool turn, when running next headless turn, then model request replays exchange`() =
+        runTest {
+            val toolDescriptor = toolDescriptor("orders_list", ToolSafetyLevel.SAFE)
+            val registry = RecordingHeadlessToolRegistry(
+                descriptors = listOf(toolDescriptor),
+                results = mapOf(
+                    "orders_list" to ToolResult.Success(
+                        toolCallId = "call_1",
+                        structured = buildJsonObject { put("count", 2) },
+                    )
+                ),
+            )
+            val chatService = ScriptedHeadlessChatService(
+                responses = orderListResponses() + listOf(
+                    listOf(
+                        AssistantEvent.TextDelta("Use the prior order context."),
+                        AssistantEvent.Finish(FinishReason.STOP),
+                    )
+                )
+            )
+            val harness = WooAssistantHeadless(
+                chatService = chatService,
+                toolRegistry = registry,
+                retryPolicy = ConservativeRetryPolicy,
+                historyBudgeter = passThroughBudgeter(),
+                json = json,
+                timeSource = TimeSource.Monotonic,
+            )
+
+            harness.runScenario(
+                scenario = scenario(
+                    id = "orders-processing",
+                    userMessages = listOf(
+                        "How many processing orders do I have?",
+                        "What should I do next?",
+                    ),
+                    toolDescriptor = toolDescriptor,
+                )
+            )
+
+            assertThat(chatService.requests.last().messages).containsExactly(
+                AssistantMessage.System("You are a helpful commerce assistant."),
+                AssistantMessage.User("How many processing orders do I have?"),
+                AssistantMessage.Assistant(
+                    content = "Checking orders.",
+                    toolCalls = listOf(
+                        ToolCall(
+                            id = "call_1",
+                            name = "orders_list",
+                            arguments = buildJsonObject { put("status", "processing") },
+                        )
+                    ),
+                ),
+                AssistantMessage.Tool(toolCallId = "call_1", content = """{"count":2}"""),
+                AssistantMessage.Assistant("There are 2 processing orders."),
+                AssistantMessage.User("What should I do next?"),
+            )
         }
 
     @Test
@@ -257,14 +318,24 @@ class WooAssistantHeadlessTest {
         id: String,
         userMessage: String,
         toolDescriptor: ToolDescriptor,
+    ) = scenario(
+        id = id,
+        userMessages = listOf(userMessage),
+        toolDescriptor = toolDescriptor,
+    )
+
+    private fun scenario(
+        id: String,
+        userMessages: List<String>,
+        toolDescriptor: ToolDescriptor,
     ) = HeadlessScenario(
         id = id,
-        turns = listOf(
+        turns = userMessages.map { userMessage ->
             HeadlessTurnSpec(
                 userMessage = userMessage,
                 hardChecks = emptyList(),
             )
-        ),
+        },
         systemPrompt = "You are a helpful commerce assistant.",
         initialSessionHistory = AssistantSessionHistory.Empty,
         context = SessionContext(

@@ -149,6 +149,70 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
+    fun `given two completed tool turns, when third turn starts, then prior exchanges replay in wire order`() =
+        runTest {
+            val firstCall = toolCall(id = "call-1", name = "orders_list")
+            val secondCall = toolCall(id = "call-2", name = "analytics_orders")
+            val fakeLoop = SequencedCapturingAgenticLoop(
+                eventBatches = listOf(
+                    listOf(
+                        completedToolTurn(
+                            userMessage = "Show orders",
+                            toolCall = firstCall,
+                            toolContent = """{"orders":[1]}""",
+                            assistantContent = null,
+                            finalContent = "Here are the orders",
+                        )
+                    ),
+                    listOf(
+                        completedToolTurn(
+                            userMessage = "Show analytics",
+                            toolCall = secondCall,
+                            toolContent = """{"total_sales":"10.00"}""",
+                            assistantContent = "I can check analytics.",
+                            finalContent = "Sales are 10.00",
+                        )
+                    ),
+                    emptyList(),
+                )
+            )
+            val runtime = runtime(agenticLoop = fakeLoop, systemPrompt = "fresh prompt")
+
+            val firstFinished = runtime.finishedFor(givenTurnRequest(userMessage = "Show orders"))
+            val secondFinished = runtime.finishedFor(
+                givenTurnRequest(
+                    userMessage = "Show analytics",
+                    sessionHistory = firstFinished.updatedSessionHistory,
+                )
+            )
+            runtime.startTurn(
+                givenTurnRequest(
+                    userMessage = "What should I do next?",
+                    sessionHistory = secondFinished.updatedSessionHistory,
+                )
+            ).toList()
+
+            assertThat(fakeLoop.receivedModelHistories.last().messages).containsExactly(
+                AssistantMessage.System("fresh prompt"),
+                AssistantMessage.User("Show orders"),
+                AssistantMessage.Assistant(content = null, toolCalls = listOf(firstCall)),
+                AssistantMessage.Tool(toolCallId = firstCall.id, content = """{"orders":[1]}"""),
+                AssistantMessage.Assistant(content = "Here are the orders"),
+                AssistantMessage.User("Show analytics"),
+                AssistantMessage.Assistant(
+                    content = "I can check analytics.",
+                    toolCalls = listOf(secondCall),
+                ),
+                AssistantMessage.Tool(
+                    toolCallId = secondCall.id,
+                    content = """{"total_sales":"10.00"}""",
+                ),
+                AssistantMessage.Assistant(content = "Sales are 10.00"),
+                AssistantMessage.User("What should I do next?"),
+            )
+        }
+
+    @Test
     fun `when agentic loop finishes with max iterations, then runtime preserves outcome`() = runTest {
         val modelTurnMessages = listOf(AssistantMessage.User("Hello"))
         val runtime = runtime(
@@ -421,6 +485,62 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantMessage.User("What happened?"),
         )
     }
+
+    @Test
+    fun `given outcome unknown with assistant content, when next turn starts, then only safe text replays`() =
+        runTest {
+            val toolCall = toolCall(
+                id = "call-1",
+                name = "orders_update",
+                arguments = buildJsonObject { put("id", 123) },
+            )
+            val fakeLoop = SequencedCapturingAgenticLoop(
+                eventBatches = listOf(
+                    listOf(
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.FAILED,
+                            modelTurnMessages = listOf(
+                                AssistantMessage.User("Update order"),
+                                AssistantMessage.Assistant(
+                                    content = "I can update that.",
+                                    toolCalls = listOf(toolCall),
+                                ),
+                                AssistantMessage.Tool(
+                                    toolCallId = toolCall.id,
+                                    content = """{"error":"Tool execution failed"}""",
+                                ),
+                            ),
+                            error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                        )
+                    ),
+                    emptyList(),
+                )
+            )
+            val runtime = runtime(agenticLoop = fakeLoop)
+
+            val firstFinished = runtime.startTurn(
+                givenTurnRequest(userMessage = "Update order")
+            ).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+            runtime.startTurn(
+                givenTurnRequest(
+                    userMessage = "What happened?",
+                    sessionHistory = firstFinished.updatedSessionHistory,
+                )
+            ).toList()
+
+            val nextTurnMessages = fakeLoop.receivedModelHistories.last().messages
+            assertThat(nextTurnMessages.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
+            assertThat(
+                nextTurnMessages
+                    .filterIsInstance<AssistantMessage.Assistant>()
+                    .flatMap { it.toolCalls },
+            ).isEmpty()
+            assertThat(nextTurnMessages).contains(
+                AssistantMessage.User("Update order"),
+                AssistantMessage.Assistant("I can update that."),
+                AssistantMessage.User("What happened?"),
+            )
+        }
 
     @Test
     fun `when loop emits rejected safety decision, then runtime emits failed tool telemetry event`() = runTest {
@@ -883,6 +1003,25 @@ class AgenticLoopAssistantRuntimeTest {
         json = json,
     )
 
+    private suspend fun AssistantRuntime.finishedFor(request: AssistantTurnRequest) =
+        startTurn(request).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+
+    private fun completedToolTurn(
+        userMessage: String,
+        toolCall: ToolCall,
+        toolContent: String,
+        assistantContent: String?,
+        finalContent: String,
+    ) = LoopEvent.Finished(
+        outcome = LoopOutcome.COMPLETED,
+        modelTurnMessages = listOf(
+            AssistantMessage.User(userMessage),
+            AssistantMessage.Assistant(content = assistantContent, toolCalls = listOf(toolCall)),
+            AssistantMessage.Tool(toolCallId = toolCall.id, content = toolContent),
+            AssistantMessage.Assistant(content = finalContent),
+        ),
+    )
+
     private fun givenTurnRequest(
         telemetryContext: AssistantTelemetryContext = AssistantTelemetryContext(
             conversationId = "conversation-1",
@@ -922,6 +1061,16 @@ class AgenticLoopAssistantRuntimeTest {
         id = id,
         name = "show_cards",
         arguments = buildJsonObject {},
+    )
+
+    private fun toolCall(
+        id: String,
+        name: String,
+        arguments: kotlinx.serialization.json.JsonObject = buildJsonObject {},
+    ) = ToolCall(
+        id = id,
+        name = name,
+        arguments = arguments,
     )
 
     private fun loopToolCallFinished(

@@ -107,6 +107,14 @@ class FeatureModuleBoundaryTest {
             )
             addAll(viewModel.forbiddenMatches(Regex("""AssistantSessionMessage\.User\(""")))
             addAll(viewModel.forbiddenMatches(Regex("""AssistantSessionMessage\.Assistant\(""")))
+            addAll(viewModel.forbiddenMatches(Regex("""AssistantSessionMessage\.ToolExchange\(""")))
+            addAll(viewModel.forbiddenMatches(Regex("""\bis\s+AssistantSessionMessage\.ToolExchange\b""")))
+            addAll(viewModel.forbiddenMatches(Regex("""\.(toolResults|toolCalls)\b""")))
+            addAll(
+                viewModel.forbiddenMatches(
+                    Regex("""import\s+com\.woocommerce\.android\.aiassistant\.core\.chat\.AssistantMessage\.Tool\b""")
+                )
+            )
         }
 
         assertThat(violations).isEmpty()

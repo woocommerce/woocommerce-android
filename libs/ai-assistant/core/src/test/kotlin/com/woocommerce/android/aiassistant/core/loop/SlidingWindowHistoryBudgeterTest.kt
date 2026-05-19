@@ -118,8 +118,109 @@ class SlidingWindowHistoryBudgeterTest {
     }
 
     @Test
+    fun `given complete tool exchange fits window, when building, then exchange is retained whole`() {
+        val toolCall = toolCall()
+        val assistantWithToolCall = AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall))
+        val toolResult = AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"orders":[]}""")
+        val assistantFinal = AssistantMessage.Assistant(content = "Here are your orders.")
+        val transcript = listOf(assistantWithToolCall, toolResult, assistantFinal)
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 3)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).containsExactly(
+            system,
+            assistantWithToolCall,
+            toolResult,
+            assistantFinal,
+            user,
+        )
+    }
+
+    @Test
+    fun `given assistant tool call missing a result, when building, then protocol is dropped`() {
+        val firstCall = toolCall(id = "call_1")
+        val secondCall = toolCall(id = "call_2")
+        val assistantWithToolCalls = AssistantMessage.Assistant(
+            content = null,
+            toolCalls = listOf(firstCall, secondCall),
+        )
+        val transcript = listOf(
+            AssistantMessage.User("show orders"),
+            assistantWithToolCalls,
+            AssistantMessage.Tool(toolCallId = firstCall.id, content = """{"orders":[]}"""),
+            AssistantMessage.Assistant(content = "Done"),
+        )
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).containsExactly(
+            system,
+            AssistantMessage.User("show orders"),
+            AssistantMessage.Assistant(content = "Done"),
+            user,
+        )
+    }
+
+    @Test
+    fun `given leading tool result, when building, then orphan tool result is dropped`() {
+        val toolResult = AssistantMessage.Tool(toolCallId = "call_1", content = """{"orders":[]}""")
+        val assistantFinal = AssistantMessage.Assistant(content = "Done")
+        val transcript = listOf(toolResult, assistantFinal)
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).containsExactly(system, assistantFinal, user)
+    }
+
+    @Test
+    fun `given multi call exchange, when building, then all results are retained in call order`() {
+        val firstCall = toolCall(id = "call_1")
+        val secondCall = toolCall(id = "call_2")
+        val assistantWithToolCalls = AssistantMessage.Assistant(
+            content = null,
+            toolCalls = listOf(firstCall, secondCall),
+        )
+        val firstResult = AssistantMessage.Tool(toolCallId = firstCall.id, content = """{"first":true}""")
+        val secondResult = AssistantMessage.Tool(toolCallId = secondCall.id, content = """{"second":true}""")
+        val transcript = listOf(assistantWithToolCalls, firstResult, secondResult)
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 3)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).containsExactly(system, assistantWithToolCalls, firstResult, secondResult, user)
+    }
+
+    @Test
+    fun `given multi call exchange with out of order results, when building, then whole exchange is dropped`() {
+        val firstCall = toolCall(id = "call_1")
+        val secondCall = toolCall(id = "call_2")
+        val assistantWithToolCalls = AssistantMessage.Assistant(
+            content = null,
+            toolCalls = listOf(firstCall, secondCall),
+        )
+        val transcript = listOf(
+            assistantWithToolCalls,
+            AssistantMessage.Tool(toolCallId = secondCall.id, content = """{"second":true}"""),
+            AssistantMessage.Tool(toolCallId = firstCall.id, content = """{"first":true}"""),
+            AssistantMessage.Assistant(content = "Final"),
+        )
+        val budgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+
+        val result = budgeter.build(system, transcript, user)
+
+        assertThat(result.messages).containsExactly(system, AssistantMessage.Assistant("Final"), user)
+    }
+
+    @Test
     fun `given negative window size, when constructing, then throws IllegalArgumentException`() {
         assertThatThrownBy { SlidingWindowHistoryBudgeter(windowSize = -1) }
             .isInstanceOf(IllegalArgumentException::class.java)
     }
+
+    private fun toolCall(
+        id: String = "call_1",
+    ) = ToolCall(id = id, name = "orders_list", arguments = buildJsonObject { })
 }

@@ -10,8 +10,10 @@ class ScriptedHeadlessChatService(
     private val responses: List<List<AssistantEvent>>,
 ) : ChatService {
     private var calls = 0
+    val requests = mutableListOf<ChatRequest>()
 
     override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
+        requests += request
         val response = responses[minOf(calls, responses.lastIndex)]
         calls++
         response.forEach { emit(it) }

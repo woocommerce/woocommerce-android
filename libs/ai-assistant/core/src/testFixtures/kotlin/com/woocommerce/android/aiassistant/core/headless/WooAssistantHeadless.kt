@@ -59,6 +59,8 @@ class WooAssistantHeadless(
                 sessionHistory = sessionHistoryMapper.appendTurn(
                     baseHistory = sessionHistory,
                     modelTurnMessages = finished.modelTurnMessages,
+                    outcome = finished.outcome,
+                    error = finished.error,
                 )
             }
             HeadlessTurnResult(

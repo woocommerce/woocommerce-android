@@ -1,7 +1,9 @@
 package com.woocommerce.android.aiassistant.core.history
 
+import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -10,21 +12,55 @@ internal class AssistantSessionHistoryMapperTest {
     private val mapper = AssistantSessionHistoryMapper()
 
     @Test
-    fun `given completed tool turn, when mapping, then only session safe text is appended`() {
+    fun `given completed tool turn, when mapping, then matched exchange and final text are appended`() {
         val toolCall = toolCall()
+        val toolResult = toolResult(toolCall.id)
 
         val result = mapper.appendTurn(
             baseHistory = AssistantSessionHistory.Empty,
             modelTurnMessages = listOf(
                 AssistantMessage.User("Show orders"),
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
-                AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"orders":[]}"""),
+                toolResult,
                 AssistantMessage.Assistant(content = "Here are the orders"),
             ),
+            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
             AssistantSessionMessage.User("Show orders"),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = null,
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
+            AssistantSessionMessage.Assistant("Here are the orders"),
+        )
+    }
+
+    @Test
+    fun `given assistant tool call has content, when completed mapping, then content is stored only in exchange`() {
+        val toolCall = toolCall()
+        val toolResult = toolResult(toolCall.id)
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Show orders"),
+                AssistantMessage.Assistant(content = "I can check that.", toolCalls = listOf(toolCall)),
+                toolResult,
+                AssistantMessage.Assistant(content = "Here are the orders"),
+            ),
+            outcome = LoopOutcome.COMPLETED,
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Show orders"),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = "I can check that.",
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
             AssistantSessionMessage.Assistant("Here are the orders"),
         )
     }
@@ -37,6 +73,7 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.User("Update product"),
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall())),
             ),
+            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -45,7 +82,7 @@ internal class AssistantSessionHistoryMapperTest {
     }
 
     @Test
-    fun `given unsafe outcome unknown, when mapping, then tool protocol is not reusable session history`() {
+    fun `given outcome unknown, when mapping, then tool protocol is not reusable session history`() {
         val toolCall = toolCall(name = "orders_update")
 
         val result = mapper.appendTurn(
@@ -55,6 +92,8 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"error":"Tool execution failed"}"""),
             ),
+            outcome = LoopOutcome.FAILED,
+            error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
         )
 
         assertThat(result.messages).containsExactly(
@@ -73,6 +112,7 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = "I can do that.", toolCalls = listOf(toolCall)),
                 AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"error":"Action was cancelled"}"""),
             ),
+            outcome = LoopOutcome.STOPPED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -89,6 +129,7 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.User("Explain analytics"),
                 AssistantMessage.Assistant(content = "Partial answer"),
             ),
+            outcome = LoopOutcome.STOPPED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -108,6 +149,8 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"error":"Malformed arguments"}"""),
             ),
+            outcome = LoopOutcome.FAILED,
+            error = AssistantError.InvalidToolCall(toolName = toolCall.name),
         )
 
         assertThat(result.messages).containsExactly(
@@ -145,6 +188,7 @@ internal class AssistantSessionHistoryMapperTest {
     @Test
     fun `given model turn contains system and tool messages, when mapping, then they are never stored`() {
         val toolCall = toolCall()
+        val toolResult = toolResult(toolCall.id)
 
         val result = mapper.appendTurn(
             baseHistory = AssistantSessionHistory.Empty,
@@ -152,14 +196,104 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.System("system prompt"),
                 AssistantMessage.User("Run tool"),
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
-                AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"ok":true}"""),
+                toolResult,
                 AssistantMessage.Assistant(content = "Done"),
             ),
+            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
             AssistantSessionMessage.User("Run tool"),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = null,
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
             AssistantSessionMessage.Assistant("Done"),
+        )
+    }
+
+    @Test
+    fun `given duplicate tool results, when mapping completed turn, then protocol is stripped`() {
+        val toolCall = toolCall()
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Run tool"),
+                AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
+                toolResult(toolCall.id, content = """{"ok":true}"""),
+                toolResult(toolCall.id, content = """{"ok":true}"""),
+            ),
+            outcome = LoopOutcome.COMPLETED,
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Run tool"),
+        )
+    }
+
+    @Test
+    fun `given out of order multi tool results, when mapping completed turn, then protocol is stripped`() {
+        val firstCall = toolCall(id = "call_1")
+        val secondCall = toolCall(id = "call_2")
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Run tools"),
+                AssistantMessage.Assistant(content = null, toolCalls = listOf(firstCall, secondCall)),
+                toolResult(secondCall.id),
+                toolResult(firstCall.id),
+            ),
+            outcome = LoopOutcome.COMPLETED,
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Run tools"),
+        )
+    }
+
+    @Test
+    fun `given terminal outcomes, when mapping valid protocol, then no exchange is stored`() {
+        val outcomes = listOf(LoopOutcome.FAILED, LoopOutcome.STOPPED, LoopOutcome.MAX_ITERATIONS)
+        val toolCall = toolCall()
+
+        outcomes.forEach { outcome ->
+            val result = mapper.appendTurn(
+                baseHistory = AssistantSessionHistory.Empty,
+                modelTurnMessages = listOf(
+                    AssistantMessage.User("Run tool"),
+                    AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
+                    toolResult(toolCall.id),
+                ),
+                outcome = outcome,
+            )
+
+            assertThat(result.messages)
+                .describedAs("outcome $outcome")
+                .containsExactly(AssistantSessionMessage.User("Run tool"))
+        }
+    }
+
+    @Test
+    fun `given failed assistant message has content and tool calls, when mapping, then content is preserved as text`() {
+        val toolCall = toolCall()
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Run tool"),
+                AssistantMessage.Assistant(content = "I can check that.", toolCalls = listOf(toolCall)),
+                toolResult(toolCall.id),
+            ),
+            outcome = LoopOutcome.FAILED,
+            error = AssistantError.OutcomeUnknown(toolName = toolCall.name),
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Run tool"),
+            AssistantSessionMessage.Assistant("I can check that."),
         )
     }
 
@@ -171,4 +305,9 @@ internal class AssistantSessionHistoryMapperTest {
         name = name,
         arguments = buildJsonObject { },
     )
+
+    private fun toolResult(
+        toolCallId: String,
+        content: String = """{"orders":[]}""",
+    ) = AssistantMessage.Tool(toolCallId = toolCallId, content = content)
 }

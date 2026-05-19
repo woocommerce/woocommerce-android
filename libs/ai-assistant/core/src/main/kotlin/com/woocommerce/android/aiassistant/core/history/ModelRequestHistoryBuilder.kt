@@ -12,10 +12,16 @@ class ModelRequestHistoryBuilder(
         currentUserMessage: String,
     ): ModelRequestHistory {
         val currentUserTurn = AssistantMessage.User(currentUserMessage)
-        val rawTranscript = sessionHistory.messages.map { sessionMessage ->
+        val rawTranscript = sessionHistory.messages.flatMap { sessionMessage ->
             when (sessionMessage) {
-                is AssistantSessionMessage.User -> AssistantMessage.User(sessionMessage.content)
-                is AssistantSessionMessage.Assistant -> AssistantMessage.Assistant(sessionMessage.content)
+                is AssistantSessionMessage.User -> listOf(AssistantMessage.User(sessionMessage.content))
+                is AssistantSessionMessage.Assistant -> listOf(AssistantMessage.Assistant(sessionMessage.content))
+                is AssistantSessionMessage.ToolExchange -> listOf(
+                    AssistantMessage.Assistant(
+                        content = sessionMessage.assistantContent,
+                        toolCalls = sessionMessage.toolCalls,
+                    )
+                ) + sessionMessage.toolResults
             }
         }
         val budgeted = historyBudgeter.build(
