@@ -148,6 +148,56 @@ class SupportChatRestClientTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given thumbs up feedback, when submitFeedback, then posts to feedback URL with positive rating`() =
+        testBlocking {
+            stubFeedbackPostResponse()
+
+            restClient.submitFeedback(
+                botSlug = BOT_SLUG,
+                chatId = CHAT_ID,
+                messageId = MESSAGE_ID,
+                sessionId = SESSION_ID,
+                upvoted = true
+            )
+
+            assertThat(urlCaptor.firstValue)
+                .isEqualTo(
+                    "https://public-api.wordpress.com/wpcom/v2/odie/chat/" +
+                        "$BOT_SLUG/$CHAT_ID/$MESSAGE_ID/feedback"
+                )
+            assertThat(bodyCaptor.firstValue).containsOnlyKeys("session_id", "rating_value")
+            assertThat(bodyCaptor.firstValue["session_id"]).isEqualTo(SESSION_ID)
+            assertThat(bodyCaptor.firstValue["rating_value"]).isEqualTo(1)
+            assertThat(postAuthenticatedRequestCaptor.firstValue).isFalse()
+        }
+
+    @Test
+    fun `given thumbs down feedback, when submitFeedback, then posts negative rating`() =
+        testBlocking {
+            stubFeedbackPostResponse()
+
+            restClient.submitFeedback(
+                botSlug = BOT_SLUG,
+                chatId = CHAT_ID,
+                messageId = MESSAGE_ID,
+                sessionId = SESSION_ID,
+                upvoted = false
+            )
+
+            assertThat(bodyCaptor.firstValue["rating_value"]).isEqualTo(-1)
+        }
+
+    @Test
+    fun `given wpcom access token, when submitFeedback, then request is authenticated`() = testBlocking {
+        whenever(accessToken.exists()).thenReturn(true)
+        stubFeedbackPostResponse()
+
+        restClient.submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, true)
+
+        assertThat(postAuthenticatedRequestCaptor.firstValue).isTrue()
+    }
+
+    @Test
     fun `given successful response, when sendMessage, then Success is propagated`() = testBlocking {
         val data = supportChatResponse()
         stubPostResponse(data = data)
@@ -220,6 +270,21 @@ class SupportChatRestClientTest : BaseUnitTest() {
         ).thenReturn(response)
     }
 
+    private suspend fun stubFeedbackPostResponse() {
+        whenever(
+            wpComGsonRequestBuilder.syncPostRequest(
+                restClient = eq(restClient),
+                url = urlCaptor.capture(),
+                params = anyOrNull(),
+                body = bodyCaptor.capture(),
+                clazz = eq(Unit::class.java),
+                retryPolicy = anyOrNull(),
+                headers = any(),
+                authenticatedRequest = postAuthenticatedRequestCaptor.capture()
+            )
+        ).thenReturn(Response.Success(Unit, emptyList()))
+    }
+
     private suspend fun stubGetResponse(
         data: SupportChatResponse = supportChatResponse(),
         error: WPComGsonNetworkError? = null
@@ -254,6 +319,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
     private companion object {
         const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 4242L
+        const val MESSAGE_ID = 2424L
         const val SESSION_ID = "session-abc-123"
         const val MESSAGE = "I can't load my orders"
     }

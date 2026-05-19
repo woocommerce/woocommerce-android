@@ -49,6 +49,22 @@ class SupportChatRepository @Inject constructor(
         restClient.fetchChat(botSlug = botSlug, chatId = chatId).toResult()
     }
 
+    suspend fun submitFeedback(
+        botSlug: String,
+        chatId: Long,
+        messageId: Long,
+        sessionId: String,
+        upvoted: Boolean
+    ): Result<Unit> = withContext(dispatchers.io) {
+        restClient.submitFeedback(
+            botSlug = botSlug,
+            chatId = chatId,
+            messageId = messageId,
+            sessionId = sessionId,
+            upvoted = upvoted
+        ).toResult()
+    }
+
     suspend fun registerChat(
         chatId: Long,
         botSlug: String,
@@ -81,7 +97,7 @@ class SupportChatRepository @Inject constructor(
         bookmarkDao.delete(chatId)
     }
 
-    private fun Response<SupportChatResponse>.toResult(): Result<SupportChatResponse> =
+    private fun <T> Response<T>.toResult(): Result<T> =
         when (this) {
             is Response.Success -> Result.success(data)
             is Response.Error -> Result.failure(

@@ -77,6 +77,29 @@ class AiSupportChatViewModel @Inject constructor(
         _viewState.update { it.copy(showSendError = false) }
     }
 
+    fun onFeedbackClicked(messageId: Long, rating: AiSupportChatFeedbackRating) {
+        val state = _viewState.value
+        val chatId = state.chatId ?: return
+        val sessionId = state.sessionId ?: return
+        if (messageId in state.messageRatings) return
+
+        _viewState.update {
+            it.copy(messageRatings = it.messageRatings + (messageId to rating))
+        }
+
+        launch {
+            repository.submitFeedback(
+                botSlug = state.botSlug,
+                chatId = chatId,
+                messageId = messageId,
+                sessionId = sessionId,
+                upvoted = rating == AiSupportChatFeedbackRating.UP
+            ).onFailure { error ->
+                WooLog.e(WooLog.T.AI, "Submitting AI support chat feedback failed", error)
+            }
+        }
+    }
+
     fun onContactSupportClicked(source: HumanSupportContactSource, canCreateTicketDirectly: Boolean) {
         val state = _viewState.value
         if (state.hasCreatedTicket || state.isSending) return
@@ -364,6 +387,7 @@ class AiSupportChatViewModel @Inject constructor(
             .map { message ->
                 AiSupportChatMessage(
                     id = "${message.role.wireValue}-${message.messageId}",
+                    messageId = if (message.role == SupportChatRole.BOT) message.messageId else null,
                     role = message.role.toUiRole(),
                     content = AiSupportChatMessageContent.Text(message.content)
                 )
@@ -566,13 +590,17 @@ data class AiSupportChatViewState(
     val hasCreatedTicket: Boolean = false,
     val hasSentChatMessage: Boolean = false,
     val completedUserMessageResponseCount: Int = 0,
-    val latestSupportArea: SupportChatSupportArea? = null
+    val latestSupportArea: SupportChatSupportArea? = null,
+    val messageRatings: Map<Long, AiSupportChatFeedbackRating> = emptyMap()
 ) {
     val canUseDiagnosticActions: Boolean
         get() = !hasProceededToChat && !isSending
 
     val canSendMessages: Boolean
         get() = hasProceededToChat && !hasCreatedTicket
+
+    val showInputBar: Boolean
+        get() = canSendMessages && !showHumanSupportPrompt
 
     val showDiagnosticActions: Boolean
         get() {
@@ -594,6 +622,11 @@ enum class HumanSupportContactSource {
     ERROR_DIALOG
 }
 
+enum class AiSupportChatFeedbackRating {
+    UP,
+    DOWN
+}
+
 enum class HumanSupportContactMode {
     DIRECT_CREATE,
     OPEN_FORM
@@ -611,6 +644,7 @@ data class ContactHumanSupport(
 
 data class AiSupportChatMessage(
     val id: String,
+    val messageId: Long? = null,
     val role: AiSupportChatMessageRole,
     val content: AiSupportChatMessageContent
 )
