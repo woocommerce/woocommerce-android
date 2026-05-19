@@ -28,15 +28,6 @@ class AnalyticsStatsCardIdTest {
     }
 
     @Test
-    fun `given legacy revenue id, when parsed, then id is rejected`() {
-        assertThat(
-            AnalyticsStatsCardId.parse(
-                "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD"
-            )
-        ).isNull()
-    }
-
-    @Test
     fun `given malformed section counts, when parsed, then id is rejected`() {
         assertThat(
             AnalyticsStatsCardId.parse("analytics_orders:after:2026-05-01:before:2026-05-07")

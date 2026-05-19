@@ -59,4 +59,27 @@ class WooAiSmokeDebugBridgeTest {
             .doesNotContain("app password")
             .contains("[REDACTED]")
     }
+
+    @Test
+    fun `given approval mode with scenario filter, when validating live request, then request is rejected`() {
+        val credentials = WooAiSmokeCredentialConfig(
+            siteUrl = "https://store.example",
+            siteId = 2922L,
+            username = "merchant@example.com",
+            appPassword = "app password",
+            storeLabel = "store",
+            outputDirectory = temporaryFolder.newFolder("live-output"),
+            credentialSource = "test",
+            scenarioIds = setOf("orders_with_email"),
+        )
+
+        org.assertj.core.api.Assertions.assertThatThrownBy {
+            WooAiSmokeDebugBridge.validateLiveRequest(
+                credentials = credentials,
+                mode = WooAiSmokeBaselineMode.APPROVE,
+            )
+        }.hasMessageContaining("WOO_AI_SMOKE_SCENARIO_ID")
+            .hasMessageContaining("approval")
+            .hasMessageContaining("full")
+    }
 }

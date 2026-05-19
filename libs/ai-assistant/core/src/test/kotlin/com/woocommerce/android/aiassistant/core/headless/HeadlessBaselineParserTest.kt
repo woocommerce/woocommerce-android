@@ -115,6 +115,10 @@ class HeadlessBaselineParserTest {
                     { "type": "CONFIRMATION_DECISION_EQUALS", "value": "CANCELLED" },
                     { "type": "TOOL_RESULT_KIND_EQUALS", "value": "orders_update:REJECTED_BY_SAFETY" }
                   ],
+                  "sampleExpectation": {
+                    "sampleCount": 3,
+                    "acceptedClassification": "FLAKY"
+                  },
                   "knownFailure": {
                     "reason": "Model currently asks for confirmation after safety cancellation.",
                     "expectedFailedHardChecks": [
@@ -133,5 +137,8 @@ class HeadlessBaselineParserTest {
             .isEqualTo("STOPPED")
         assertThat(baseline.scenarios.single().approvedHardChecks.map { it.value })
             .contains("STOPPED", "CANCELLED", "orders_update:REJECTED_BY_SAFETY")
+        assertThat(baseline.scenarios.single().sampleExpectation?.sampleCount).isEqualTo(3)
+        assertThat(baseline.scenarios.single().sampleExpectation?.acceptedClassification)
+            .isEqualTo(HeadlessSampleClassification.FLAKY)
     }
 }

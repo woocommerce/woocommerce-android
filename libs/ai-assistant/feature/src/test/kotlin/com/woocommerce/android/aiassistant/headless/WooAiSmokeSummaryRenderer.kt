@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineComparison
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineRegressionStatus
+import com.woocommerce.android.aiassistant.core.headless.HeadlessSampleClassification
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 
@@ -20,12 +21,32 @@ internal object WooAiSmokeSummaryRenderer {
         appendLine("Safety: ${suite.metadata.safetyPolicy}")
         appendLine("Store label: ${suite.metadata.smokeStoreLabel}")
         appendLine("Credential source: ${suite.metadata.credentialSource}")
+        if (suite.metadata.sampleCount > 1) {
+            appendLine("Sample count: ${suite.metadata.sampleCount}")
+            appendLine(
+                "Sampled mode: primary scenario status uses sample 1. Baselines may approve sampled PASS/FLAKY " +
+                    "expectations."
+            )
+        }
+        if (suite.metadata.scenarioFilter.isNotEmpty()) {
+            appendLine("Scenario filter: ${suite.metadata.scenarioFilter.joinToString()}")
+        }
         appendLine(statusCounts(suite, comparison))
         suite.scenarios.forEach { scenario ->
             appendLine()
             appendLine("## ${scenario.scenarioId}")
             appendLine("Status: ${scenario.status}")
+            scenario.sampleSummary?.let { summary ->
+                appendLine(
+                    "Sampled classification: ${summary.classification} " +
+                        "(PASS=${summary.passCount} FAIL=${summary.failCount})"
+                )
+            }
             appendLine("Tools: ${scenario.result.turns.flatMap { it.toolCalls }.toSummary()}")
+            scenario.result.turns.flatMap { it.errors }
+                .distinct()
+                .takeIf { it.isNotEmpty() }
+                ?.let { appendLine("Errors: ${it.joinToString()}") }
             appendLine("Assistant: ${scenario.result.turns.joinToString(" ") { it.assistantText }.snippet()}")
             val failedChecks = scenario.hardCheckResults.filterNot { it.passed }
             if (failedChecks.isNotEmpty()) {
@@ -41,7 +62,12 @@ internal object WooAiSmokeSummaryRenderer {
     ): String {
         val passCount = suite.scenarios.count { it.status == HeadlessScenarioStatus.PASS }
         val failCount = suite.scenarios.count { it.status == HeadlessScenarioStatus.FAIL }
-        if (comparison == null) return "Status counts: PASS=$passCount FAIL=$failCount"
+        val sampledCounts = suite.scenarios.mapNotNull { it.sampleSummary?.classification }
+            .groupingBy { it }
+            .eachCount()
+        if (comparison == null) {
+            return "Status counts: PASS=$passCount FAIL=$failCount" + sampledCounts.toSummarySuffix()
+        }
 
         val baselineCounts = comparison.scenarioStatuses.groupingBy { it.status }.eachCount()
         return "Status counts: PASS=$passCount FAIL=$failCount " +
@@ -49,8 +75,18 @@ internal object WooAiSmokeSummaryRenderer {
             "KNOWN_FAILURE_FIXED=${baselineCounts[HeadlessBaselineRegressionStatus.KNOWN_FAILURE_FIXED] ?: 0} " +
             "NEW=${baselineCounts[HeadlessBaselineRegressionStatus.NEW] ?: 0} " +
             "MISSING=${baselineCounts[HeadlessBaselineRegressionStatus.MISSING] ?: 0} " +
-            "REGRESSION=${baselineCounts[HeadlessBaselineRegressionStatus.REGRESSION] ?: 0}"
+            "REGRESSION=${baselineCounts[HeadlessBaselineRegressionStatus.REGRESSION] ?: 0}" +
+            sampledCounts.toSummarySuffix()
     }
+
+    private fun Map<HeadlessSampleClassification, Int>.toSummarySuffix(): String =
+        if (isEmpty()) {
+            ""
+        } else {
+            " SAMPLED_PASS=${this[HeadlessSampleClassification.PASS] ?: 0}" +
+                " SAMPLED_FLAKY=${this[HeadlessSampleClassification.FLAKY] ?: 0}" +
+                " SAMPLED_FAIL=${this[HeadlessSampleClassification.FAIL] ?: 0}"
+        }
 
     private fun List<com.woocommerce.android.aiassistant.core.headless.HeadlessToolCallTrace>.toSummary(): String =
         if (isEmpty()) {

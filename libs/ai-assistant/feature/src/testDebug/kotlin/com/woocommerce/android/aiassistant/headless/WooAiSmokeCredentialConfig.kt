@@ -10,4 +10,6 @@ data class WooAiSmokeCredentialConfig(
     val storeLabel: String,
     val outputDirectory: File,
     val credentialSource: String,
+    val sampleCount: Int = 1,
+    val scenarioIds: Set<String> = emptySet(),
 )

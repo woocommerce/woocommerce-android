@@ -4,6 +4,8 @@ data class WooAiSmokeConfig(
     val scenarioResourceName: String,
     val baseline: WooAiSmokeBaselineConfig?,
     val usePerRunDirectory: Boolean,
+    val sampleCount: Int = 1,
+    val scenarioIds: Set<String> = emptySet(),
 )
 
 data class WooAiSmokeBaselineConfig(

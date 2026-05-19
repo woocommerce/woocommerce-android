@@ -9,7 +9,10 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessKnownFailure
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessSampleClassification
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleSummary
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessTurnResult
@@ -149,8 +152,171 @@ class WooAiSmokeBaselineApprovalTest {
         assertThat(scenario.knownFailure).isNull()
     }
 
+    @Test
+    fun `given all-pass sampled run, when generating approval, then pass sample expectation is written`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            suite(
+                scenario(
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.PASS),
+                ),
+                sampleCount = 3,
+            )
+        )
+
+        requireNotNull(approval)
+        assertThat(approval.scenarios.single().sampleExpectation?.sampleCount).isEqualTo(3)
+        assertThat(approval.scenarios.single().sampleExpectation?.acceptedClassification)
+            .isEqualTo(HeadlessSampleClassification.PASS)
+    }
+
+    @Test
+    fun `given mixed sampled run, when generating approval, then flaky sample expectation is written`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            suite(
+                scenario(
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FLAKY),
+                ),
+                sampleCount = 3,
+            )
+        )
+
+        requireNotNull(approval)
+        assertThat(approval.scenarios.single().sampleExpectation?.sampleCount).isEqualTo(3)
+        assertThat(approval.scenarios.single().sampleExpectation?.acceptedClassification)
+            .isEqualTo(HeadlessSampleClassification.FLAKY)
+    }
+
+    @Test
+    fun `given all-fail sampled run, when generating approval, then null is returned`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            suite(
+                scenario(
+                    status = HeadlessScenarioStatus.FAIL,
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FAIL),
+                ),
+                sampleCount = 3,
+            )
+        )
+
+        assertThat(approval).isNull()
+    }
+
+    @Test
+    fun `given sampled approval without sample summary, when generating approval, then null is returned`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            suite(
+                scenario(),
+                sampleCount = 3,
+            )
+        )
+
+        assertThat(approval).isNull()
+    }
+
+    @Test
+    fun `given all-fail sampled known failure, when generating approval, then known failure is preserved`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.FAIL,
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FAIL),
+                ),
+                sampleCount = 3,
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        requireNotNull(approval)
+        val scenario = approval.scenarios.single()
+        assertThat(scenario.knownFailure?.reason)
+            .isEqualTo("Model does not consistently mention where to find customer email.")
+        assertThat(scenario.sampleExpectation).isNull()
+    }
+
+    @Test
+    fun `given sampled known failure has later changed failure shape, when generating approval, then null is returned`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.FAIL,
+                    hardCheckResults = expectedFailureHardCheckResults(),
+                    sampleResults = listOf(
+                        sampleResult(
+                            sampleIndex = 1,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 2,
+                            hardCheckResults = expectedFailureHardCheckResults() + hardCheckResult(
+                                check = HeadlessHardCheck(
+                                    HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                                    "orders_search:SUCCESS",
+                                ),
+                                passed = false,
+                            ),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 3,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                    ),
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FAIL),
+                ),
+                sampleCount = 3,
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        assertThat(approval).isNull()
+    }
+
+    @Test
+    fun `given sampled known failure has matching failing samples, when generating approval, then known failure is preserved`() {
+        val approval = WooAiSmokeBaselineApproval.approvedBaselineOrNull(
+            current = suite(
+                scenario(
+                    scenarioId = "orders-with-email",
+                    status = HeadlessScenarioStatus.FAIL,
+                    hardCheckResults = expectedFailureHardCheckResults(),
+                    sampleResults = listOf(
+                        sampleResult(
+                            sampleIndex = 1,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 2,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                        sampleResult(
+                            sampleIndex = 3,
+                            hardCheckResults = expectedFailureHardCheckResults(),
+                            status = HeadlessScenarioStatus.FAIL,
+                        ),
+                    ),
+                    sampleSummary = sampleSummary(HeadlessSampleClassification.FAIL),
+                ),
+                sampleCount = 3,
+            ),
+            previousBaseline = previousBaselineWithKnownFailure(),
+        )
+
+        requireNotNull(approval)
+        val scenario = approval.scenarios.single()
+        assertThat(scenario.knownFailure?.reason)
+            .isEqualTo("Model does not consistently mention where to find customer email.")
+        assertThat(scenario.sampleExpectation).isNull()
+    }
+
     private fun suite(
         vararg scenarios: HeadlessScenarioRunResult,
+        sampleCount: Int = 1,
     ) = HeadlessSuiteRunResult(
         metadata = HeadlessRunMetadata(
             modelId = "gpt-4o",
@@ -163,6 +329,7 @@ class WooAiSmokeBaselineApprovalTest {
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = "store",
             credentialSource = "test",
+            sampleCount = sampleCount,
         ),
         scenarios = scenarios.toList(),
     )
@@ -178,23 +345,59 @@ class WooAiSmokeBaselineApprovalTest {
                 passed = status == HeadlessScenarioStatus.PASS,
             )
         ),
+        sampleResults: List<HeadlessScenarioSampleRunResult> = emptyList(),
+        sampleSummary: HeadlessScenarioSampleSummary? = null,
     ) = HeadlessScenarioRunResult(
         scenarioId = scenarioId,
         category = category,
-        result = HeadlessRunResult(
-            scenarioId = scenarioId,
-            turns = listOf(
-                HeadlessTurnResult(
-                    turnIndex = 0,
-                    userMessage = "User",
-                    assistantText = "Assistant",
-                    outcome = LoopOutcome.COMPLETED,
-                    toolCalls = emptyList(),
-                )
-            ),
-        ),
+        result = runResult(scenarioId),
         hardCheckResults = hardCheckResults,
         status = status,
+        sampleResults = sampleResults,
+        sampleSummary = sampleSummary,
+    )
+
+    private fun sampleResult(
+        sampleIndex: Int,
+        hardCheckResults: List<HeadlessHardCheckResult>,
+        status: HeadlessScenarioStatus,
+    ) = HeadlessScenarioSampleRunResult(
+        sampleIndex = sampleIndex,
+        result = runResult("scenario"),
+        hardCheckResults = hardCheckResults,
+        status = status,
+    )
+
+    private fun runResult(
+        scenarioId: String,
+    ) = HeadlessRunResult(
+        scenarioId = scenarioId,
+        turns = listOf(
+            HeadlessTurnResult(
+                turnIndex = 0,
+                userMessage = "User",
+                assistantText = "Assistant",
+                outcome = LoopOutcome.COMPLETED,
+                toolCalls = emptyList(),
+            )
+        ),
+    )
+
+    private fun sampleSummary(
+        classification: HeadlessSampleClassification,
+    ) = HeadlessScenarioSampleSummary(
+        requestedSamples = 3,
+        passCount = when (classification) {
+            HeadlessSampleClassification.PASS -> 3
+            HeadlessSampleClassification.FLAKY -> 2
+            HeadlessSampleClassification.FAIL -> 0
+        },
+        failCount = when (classification) {
+            HeadlessSampleClassification.PASS -> 0
+            HeadlessSampleClassification.FLAKY -> 1
+            HeadlessSampleClassification.FAIL -> 3
+        },
+        classification = classification,
     )
 
     private fun hardCheckResult(
@@ -204,6 +407,13 @@ class WooAiSmokeBaselineApprovalTest {
         check = check,
         passed = passed,
         message = "check",
+    )
+
+    private fun expectedFailureHardCheckResults() = listOf(
+        hardCheckResult(
+            check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+            passed = false,
+        )
     )
 
     private fun previousBaselineWithKnownFailure() = HeadlessApprovedBaseline(

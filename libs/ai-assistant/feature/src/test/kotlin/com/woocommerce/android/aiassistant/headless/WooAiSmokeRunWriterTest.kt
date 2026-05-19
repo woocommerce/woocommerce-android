@@ -13,7 +13,10 @@ import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessHardCheckType
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunMetadata
 import com.woocommerce.android.aiassistant.core.headless.HeadlessRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessSampleClassification
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleRunResult
+import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSampleSummary
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioStatus
 import com.woocommerce.android.aiassistant.core.headless.HeadlessSuiteRunResult
 import com.woocommerce.android.aiassistant.core.headless.HeadlessToolCallTrace
@@ -48,7 +51,23 @@ class WooAiSmokeRunWriterTest {
         assertThat(outputDirectory.resolve("baseline-comparison.json")).exists()
         assertThat(outputDirectory.resolve("approved-baseline.json")).exists()
         assertThat(outputDirectory.resolve("turns.jsonl").readLines()).hasSize(1)
+        assertThat(outputDirectory.resolve("turns.jsonl").readText()).doesNotContain("sampleIndex")
         assertThat(outputDirectory.resolve("summary.md").readText()).contains("orders_list(SUCCESS)")
+    }
+
+    @Test
+    fun `given sampled run, when writing turns, then sample indexes are included`() {
+        val outputDirectory = temporaryFolder.newFolder("latest")
+
+        writer(outputDirectory).write(
+            suite = suite(sampled = true),
+            comparison = comparison(),
+            approvedBaseline = null,
+        )
+
+        val turns = outputDirectory.resolve("turns.jsonl").readText()
+        assertThat(turns).contains(""""sampleIndex":1""")
+        assertThat(turns).contains(""""sampleIndex":2""")
     }
 
     @Test
@@ -99,6 +118,7 @@ class WooAiSmokeRunWriterTest {
 
     private fun suite(
         assistantText: String = "Here are your recent orders.",
+        sampled: Boolean = false,
     ) = HeadlessSuiteRunResult(
         metadata = HeadlessRunMetadata(
             modelId = "gpt-4o",
@@ -111,31 +131,13 @@ class WooAiSmokeRunWriterTest {
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = "store",
             credentialSource = "test",
+            sampleCount = if (sampled) 2 else 1,
         ),
         scenarios = listOf(
             HeadlessScenarioRunResult(
                 scenarioId = "orders-read-recent",
                 category = "read",
-                result = HeadlessRunResult(
-                    scenarioId = "orders-read-recent",
-                    turns = listOf(
-                        HeadlessTurnResult(
-                            turnIndex = 0,
-                            userMessage = "Show orders",
-                            assistantText = assistantText,
-                            outcome = LoopOutcome.COMPLETED,
-                            toolCalls = listOf(
-                                HeadlessToolCallTrace(
-                                    id = "call_1",
-                                    name = "orders_list",
-                                    arguments = buildJsonObject { },
-                                    safetyLevel = ToolSafetyLevel.SAFE,
-                                    resultKind = HeadlessToolResultKind.SUCCESS,
-                                )
-                            ),
-                        )
-                    ),
-                ),
+                result = runResult(assistantText),
                 hardCheckResults = listOf(
                     HeadlessHardCheckResult(
                         check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
@@ -144,6 +146,63 @@ class WooAiSmokeRunWriterTest {
                     )
                 ),
                 status = HeadlessScenarioStatus.PASS,
+                sampleResults = if (sampled) {
+                    listOf(
+                        sampleResult(1, "Sample one orders."),
+                        sampleResult(2, "Sample two orders."),
+                    )
+                } else {
+                    emptyList()
+                },
+                sampleSummary = if (sampled) {
+                    HeadlessScenarioSampleSummary(
+                        requestedSamples = 2,
+                        passCount = 2,
+                        failCount = 0,
+                        classification = HeadlessSampleClassification.PASS,
+                    )
+                } else {
+                    null
+                },
+            )
+        ),
+    )
+
+    private fun sampleResult(
+        sampleIndex: Int,
+        assistantText: String,
+    ) = HeadlessScenarioSampleRunResult(
+        sampleIndex = sampleIndex,
+        result = runResult(assistantText),
+        hardCheckResults = listOf(
+            HeadlessHardCheckResult(
+                check = HeadlessHardCheck(HeadlessHardCheckType.OUTCOME_EQUALS, "COMPLETED"),
+                passed = true,
+                message = "Passed",
+            )
+        ),
+        status = HeadlessScenarioStatus.PASS,
+    )
+
+    private fun runResult(
+        assistantText: String,
+    ) = HeadlessRunResult(
+        scenarioId = "orders-read-recent",
+        turns = listOf(
+            HeadlessTurnResult(
+                turnIndex = 0,
+                userMessage = "Show orders",
+                assistantText = assistantText,
+                outcome = LoopOutcome.COMPLETED,
+                toolCalls = listOf(
+                    HeadlessToolCallTrace(
+                        id = "call_1",
+                        name = "orders_list",
+                        arguments = buildJsonObject { },
+                        safetyLevel = ToolSafetyLevel.SAFE,
+                        resultKind = HeadlessToolResultKind.SUCCESS,
+                    )
+                ),
             )
         ),
     )
