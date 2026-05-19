@@ -12,9 +12,13 @@ import java.io.File
 
 class WooAiSmokeLiveEnvRuleTest {
     @Test
-    fun `given no live opt in, when rule evaluates, then inner statement is not evaluated`() {
+    fun `given no Gradle live opt in, when rule evaluates, then inner statement is not evaluated`() {
         var evaluated = false
-        val rule = WooAiSmokeLiveEnvRule(emptyMap(), File("build/outputs/woo-ai-smoke/live/latest"))
+        val rule = WooAiSmokeLiveEnvRule(
+            environment = validEnvironment(),
+            defaultOutputDirectory = File("build/outputs/woo-ai-smoke/live/latest"),
+            runLiveEnabled = false,
+        )
 
         assertThatThrownBy {
             rule.apply(
@@ -33,8 +37,9 @@ class WooAiSmokeLiveEnvRuleTest {
     @Test
     fun `given live env missing credentials, when rule evaluates, then only missing names are reported`() {
         val rule = WooAiSmokeLiveEnvRule(
-            mapOf("WOO_AI_SMOKE_RUN_LIVE" to "true"),
-            File("build/outputs/woo-ai-smoke/live/latest"),
+            environment = emptyMap(),
+            defaultOutputDirectory = File("build/outputs/woo-ai-smoke/live/latest"),
+            runLiveEnabled = true,
         )
 
         assertThatThrownBy {
@@ -48,8 +53,9 @@ class WooAiSmokeLiveEnvRuleTest {
     @Test
     fun `given invalid site id, when rule evaluates, then validation fails`() {
         val rule = WooAiSmokeLiveEnvRule(
-            validEnvironment() + ("WOO_SITE_ID" to "-1"),
-            File("build/outputs/woo-ai-smoke/live/latest"),
+            environment = validEnvironment() + ("WOO_SITE_ID" to "-1"),
+            defaultOutputDirectory = File("build/outputs/woo-ai-smoke/live/latest"),
+            runLiveEnabled = true,
         )
 
         assertThatThrownBy {
@@ -60,8 +66,9 @@ class WooAiSmokeLiveEnvRuleTest {
     @Test
     fun `given valid live env, when rule evaluates, then credentials are available`() {
         val rule = WooAiSmokeLiveEnvRule(
-            validEnvironment(),
-            File("build/outputs/woo-ai-smoke/live/latest"),
+            environment = validEnvironment(),
+            defaultOutputDirectory = File("build/outputs/woo-ai-smoke/live/latest"),
+            runLiveEnabled = true,
         )
 
         rule.apply(noOpStatement(), Description.EMPTY).evaluate()
@@ -74,7 +81,6 @@ class WooAiSmokeLiveEnvRuleTest {
     }
 
     private fun validEnvironment() = mapOf(
-        "WOO_AI_SMOKE_RUN_LIVE" to "true",
         "WOO_SITE_URL" to "https://store.example",
         "WOO_SITE_ID" to SITE_ID.toString(),
         "WOO_USERNAME" to "merchant@example.com",

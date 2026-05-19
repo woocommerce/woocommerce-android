@@ -20,8 +20,8 @@ object WooAiSmokeDebugBridge {
         credentials: WooAiSmokeCredentialConfig,
         mode: WooAiSmokeBaselineMode,
     ): WooAiSmokeRunExit {
-        require(System.getenv("WOO_AI_SMOKE_RUN_LIVE") == "true") {
-            "Set WOO_AI_SMOKE_RUN_LIVE=true to run live Woo AI smoke tests."
+        require(WooAiSmokeLiveRunGate.isEnabled()) {
+            WooAiSmokeLiveRunGate.DISABLED_REASON
         }
         val entryPoint = EntryPoints.get(application, WooAiSmokeDebugEntryPoint::class.java)
         val redactor = WooAiSmokeRedactor(

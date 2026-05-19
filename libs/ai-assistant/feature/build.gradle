@@ -36,6 +36,10 @@ android {
         unitTests.includeAndroidResources = true
     }
 
+    tasks.withType(Test).configureEach {
+        systemProperty "wooAiSmokeRunLive", project.findProperty("wooAiSmokeRunLive")?.toString() ?: "false"
+    }
+
     sourceSets {
         test.resources.srcDirs += 'src/test/resources'
         testDebug.java.srcDirs += 'src/testDebug/kotlin'

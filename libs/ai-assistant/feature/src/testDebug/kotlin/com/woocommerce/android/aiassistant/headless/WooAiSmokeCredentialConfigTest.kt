@@ -8,10 +8,11 @@ import java.io.File
 
 class WooAiSmokeCredentialConfigTest {
     @Test
-    fun `given no live env, when parsing credentials, then result is skipped`() {
+    fun `given no Gradle live opt in, when parsing credentials, then result is skipped`() {
         val result = WooAiSmokeCredentialSource.fromEnvironment(
-            environment = emptyMap(),
+            environment = validEnvironment(),
             defaultOutputDirectory = File("build/woo-ai-smoke/live/latest"),
+            runLiveEnabled = false,
         )
 
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Skipped::class.java)
@@ -20,8 +21,9 @@ class WooAiSmokeCredentialConfigTest {
     @Test
     fun `given live env missing credentials, when parsing credentials, then only key names are reported`() {
         val result = WooAiSmokeCredentialSource.fromEnvironment(
-            environment = mapOf("WOO_AI_SMOKE_RUN_LIVE" to "true"),
+            environment = emptyMap(),
             defaultOutputDirectory = File("build/woo-ai-smoke/live/latest"),
+            runLiveEnabled = true,
         )
 
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Invalid::class.java)
@@ -39,6 +41,7 @@ class WooAiSmokeCredentialConfigTest {
         val result = WooAiSmokeCredentialSource.fromEnvironment(
             environment = validEnvironment() + ("WOO_SITE_ID" to "not-a-number"),
             defaultOutputDirectory = File("build/woo-ai-smoke/live/latest"),
+            runLiveEnabled = true,
         )
 
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Invalid::class.java)
@@ -52,6 +55,7 @@ class WooAiSmokeCredentialConfigTest {
         val result = WooAiSmokeCredentialSource.fromEnvironment(
             environment = validEnvironment(),
             defaultOutputDirectory = outputDirectory,
+            runLiveEnabled = true,
         )
 
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Valid::class.java)
@@ -65,7 +69,6 @@ class WooAiSmokeCredentialConfigTest {
     }
 
     private fun validEnvironment() = mapOf(
-        "WOO_AI_SMOKE_RUN_LIVE" to "true",
         "WOO_SITE_URL" to "https://store.example",
         "WOO_SITE_ID" to "2922",
         "WOO_USERNAME" to "merchant@example.com",

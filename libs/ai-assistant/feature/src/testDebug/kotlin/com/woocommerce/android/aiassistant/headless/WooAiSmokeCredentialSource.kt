@@ -14,10 +14,11 @@ object WooAiSmokeCredentialSource {
     fun fromEnvironment(
         environment: Map<String, String>,
         defaultOutputDirectory: File,
+        runLiveEnabled: Boolean,
     ): WooAiSmokeCredentialParseResult {
-        if (environment["WOO_AI_SMOKE_RUN_LIVE"] != "true") {
+        if (!runLiveEnabled) {
             return WooAiSmokeCredentialParseResult.Skipped(
-                "Set WOO_AI_SMOKE_RUN_LIVE=true to run live Woo AI smoke tests."
+                WooAiSmokeLiveRunGate.DISABLED_REASON
             )
         }
 

@@ -9,6 +9,7 @@ import java.io.File
 class WooAiSmokeLiveEnvRule(
     private val environment: Map<String, String>,
     private val defaultOutputDirectory: File,
+    private val runLiveEnabled: Boolean = WooAiSmokeLiveRunGate.isEnabled(),
 ) : TestRule {
     private var credentials: WooAiSmokeCredentialConfig? = null
 
@@ -17,7 +18,13 @@ class WooAiSmokeLiveEnvRule(
         description: Description,
     ): Statement = object : Statement() {
         override fun evaluate() {
-            when (val result = WooAiSmokeCredentialSource.fromEnvironment(environment, defaultOutputDirectory)) {
+            when (
+                val result = WooAiSmokeCredentialSource.fromEnvironment(
+                    environment = environment,
+                    defaultOutputDirectory = defaultOutputDirectory,
+                    runLiveEnabled = runLiveEnabled,
+                )
+            ) {
                 is WooAiSmokeCredentialParseResult.Skipped -> assumeTrue(result.reason, false)
                 is WooAiSmokeCredentialParseResult.Invalid -> error(result.message)
                 is WooAiSmokeCredentialParseResult.Valid -> {
