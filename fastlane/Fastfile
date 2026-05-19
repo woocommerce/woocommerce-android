@@ -537,6 +537,49 @@ platform :android do
     sh('ruby', tool, *args)
   end
 
+  #####################################################################################
+  # ai_translate_backfill
+  # -----------------------------------------------------------------------------------
+  # ONE-TIME baseline (rollout step 2). For the existing locales it imports the
+  # human translations already committed in values-*/strings.xml as-is (origin
+  # `glotpress-import`, no re-translation, near-zero cost) and AI-fills only the
+  # keys GlotPress never translated. For the 15 new locales it is a full AI
+  # backfill. Run outside the PR path; land as a dedicated PR.
+  #
+  # NOTE: requires a funded ANTHROPIC_API_KEY + budget sign-off (largest cost).
+  # Use `mode:import` for a no-spend dry run that only seeds the manifest from
+  # the existing files.
+  #
+  # Usage:
+  # bundle exec fastlane ai_translate_backfill
+  # bundle exec fastlane ai_translate_backfill mode:import   # no spend
+  #####################################################################################
+  desc 'One-time baseline: import existing + AI-fill gaps + backfill new locales'
+  lane :ai_translate_backfill do |mode: 'backfill', strict: false|
+    ai_translate(mode: mode, strict: strict)
+  end
+
+  #####################################################################################
+  # ai_translate_shadow
+  # -----------------------------------------------------------------------------------
+  # Rollout step 3: generate AI translations into a throwaway dir and diff them
+  # against the committed (human) values-*/strings.xml WITHOUT touching the
+  # repo. Emits fastlane/ai_translation/shadow-diff.md for review before cutover.
+  #####################################################################################
+  desc 'Shadow-mode diff: AI vs committed translations (no repo changes)'
+  lane :ai_translate_shadow do |locales: nil|
+    target_locales = locales || SUPPORTED_LOCALES.map { |h| h[:android] }.join(',')
+    tool = File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'bin', 'woo-ai-translate')
+    sh('ruby', tool,
+       '--mode', 'shadow-diff',
+       '--source', MAIN_STRINGS_PATH,
+       '--res-dir', File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH),
+       '--manifest', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'translation-manifest.json'),
+       '--context', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'context', 'strings_context.json'),
+       '--report', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'shadow-diff.md'),
+       '--locales', target_locales)
+  end
+
   # This lane downloads the latest translations and commits them
   #
   # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
