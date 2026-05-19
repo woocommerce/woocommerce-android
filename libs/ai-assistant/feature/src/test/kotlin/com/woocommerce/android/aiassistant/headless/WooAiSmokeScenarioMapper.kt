@@ -1,11 +1,11 @@
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.headless.HeadlessBaselineParser
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenario
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenarioSpec
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import kotlinx.serialization.json.Json
@@ -29,7 +29,8 @@ internal class WooAiSmokeScenarioMapper(
         HeadlessScenario(
             id = spec.id,
             turns = spec.turns,
-            initialHistory = listOf(AssistantMessage.System(systemPromptProvider.systemPrompt())),
+            systemPrompt = systemPromptProvider.systemPrompt(),
+            initialSessionHistory = AssistantSessionHistory.Empty,
             context = SessionContext(
                 siteId = selectedSiteId,
                 catalogSnapshot = toolCatalogSelector.select(spec.scope, toolRegistry.descriptors()),
