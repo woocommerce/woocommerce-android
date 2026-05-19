@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -63,6 +64,17 @@ class AiSupportChatHistoryViewModelTest : BaseUnitTest() {
         assertThat(state.isLoading).isFalse()
         assertThat(state.bookmarks).isEmpty()
         assertThat(state.showError).isTrue()
+    }
+
+    @Test
+    fun `given history load is cancelled, when history loads, then error state is not shown`() = testBlocking {
+        whenever(repository.loadChatHistory()).thenThrow(CancellationException("Cancelled"))
+
+        viewModel.loadHistory()
+
+        val state = viewModel.viewState.value
+        assertThat(state.showError).isFalse()
+        assertThat(state.bookmarks).isEmpty()
     }
 
     private fun createBookmark() = SupportChatBookmark(

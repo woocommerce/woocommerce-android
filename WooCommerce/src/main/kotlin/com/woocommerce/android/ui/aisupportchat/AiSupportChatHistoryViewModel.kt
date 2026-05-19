@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -34,6 +35,7 @@ class AiSupportChatHistoryViewModel @Inject constructor(
                     }
                 }
                 .onFailure { error ->
+                    if (error is CancellationException) throw error
                     WooLog.e(WooLog.T.AI, "Loading AI support chat history failed", error)
                     _viewState.update {
                         it.copy(
