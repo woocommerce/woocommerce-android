@@ -14,6 +14,7 @@ sealed interface AiSupportChatLaunchMode {
     data class Resume(
         val chatId: Long,
         val botSlug: String,
-        val sessionId: String?
+        val sessionId: String?,
+        val isResolved: Boolean = false
     ) : AiSupportChatLaunchMode
 }

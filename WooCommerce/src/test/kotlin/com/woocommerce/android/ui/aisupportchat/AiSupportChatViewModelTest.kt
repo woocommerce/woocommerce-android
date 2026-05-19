@@ -702,6 +702,34 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showInputBar).isFalse
             assertThat(state.shouldShowResolvedButton).isFalse
             assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            verify(repository).markChatAsResolved(CHAT_ID)
+        }
+
+    @Test
+    fun `given chat id is missing, when mark resolved confirmed, then resolved state is not persisted`() =
+        testBlocking {
+            viewModel.onMarkResolvedClicked()
+            viewModel.onMarkResolvedConfirmed()
+
+            val state = viewModel.viewState.value
+            assertThat(state.isChatResolved).isTrue
+            assertThat(state.showMarkResolvedConfirmation).isFalse
+            verify(repository, never()).markChatAsResolved(any())
+        }
+
+    @Test
+    fun `given persisting resolved state fails, when mark resolved confirmed, then chat remains resolved`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.markChatAsResolved(CHAT_ID)).thenThrow(RuntimeException("Bookmark update failed"))
+
+            viewModel.onMarkResolvedClicked()
+            viewModel.onMarkResolvedConfirmed()
+
+            val state = viewModel.viewState.value
+            assertThat(state.isChatResolved).isTrue
+            assertThat(state.showMarkResolvedConfirmation).isFalse
+            verify(repository).markChatAsResolved(CHAT_ID)
         }
 
     @Test
@@ -1044,6 +1072,32 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(botMessage.shouldShowFeedback).isFalse()
         verify(repository).fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)
         verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
+    }
+
+    @Test
+    fun `given resumed chat is resolved, when loaded, then resolved state is restored`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID,
+                isResolved = true
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.isChatResolved).isTrue
+        assertThat(state.canSendMessages).isFalse
+        assertThat(state.showInputBar).isFalse
+        assertThat(state.shouldShowResolvedButton).isFalse
     }
 
     @Test

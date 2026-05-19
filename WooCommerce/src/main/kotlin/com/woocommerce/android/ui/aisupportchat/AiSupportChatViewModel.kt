@@ -127,6 +127,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onMarkResolvedConfirmed() {
+        val chatId = _viewState.value.chatId
         _viewState.update {
             it.copy(
                 isChatResolved = true,
@@ -135,6 +136,17 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false,
                 input = ""
             )
+        }
+
+        if (chatId != null) {
+            launch {
+                runCatching {
+                    repository.markChatAsResolved(chatId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Marking AI support chat as resolved failed", error)
+                }
+            }
         }
     }
 
@@ -265,6 +277,7 @@ class AiSupportChatViewModel @Inject constructor(
                 botSlug = launchMode.botSlug,
                 hasProceededToChat = true,
                 hasStartedChat = true,
+                isChatResolved = launchMode.isResolved,
                 isLoadingHistory = true,
                 showSendError = false,
                 showLoadHistoryError = false
