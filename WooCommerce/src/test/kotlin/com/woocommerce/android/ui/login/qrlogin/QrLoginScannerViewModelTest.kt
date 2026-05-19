@@ -215,6 +215,12 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
         viewModel.onScanResult(CodeScannerStatus.Failure(error = "bad", type = CodeScanningErrorType.Other(null)))
         advanceUntilIdle()
 
+        assertThat(viewModel.uiState.value).isEqualTo(
+            UiState.Error(
+                reason = ErrorReason.Scanner,
+                retryable = false,
+            )
+        )
         verify(unifiedLoginTracker).setStep(Step.QR_ERROR)
         verify(unifiedLoginTracker).trackFailure("Scanner")
     }
@@ -457,6 +463,66 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
             verify(unifiedLoginTracker).trackClick(Click.DISMISS)
         }
+
+    // endregion
+
+    // region resume recovery
+
+    @Test
+    fun `given OpenMagicLink dispatched, when screen resumes, then state returns to Idle and flow is cancelled`() =
+        testBlocking {
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+            fakeFlow.emit(FlowState.Authenticating(AuthPhase.Exchange))
+            advanceUntilIdle()
+            fakeFlow.emit(FlowState.Completed(FlowCompletion.OpenMagicLink(url = WP_COM_URL)))
+            advanceUntilIdle()
+            assertThat(viewModel.uiState.value).isEqualTo(UiState.Authenticating(AuthPhase.Exchange))
+            val cancelCountBefore = fakeFlow.cancelCount
+
+            viewModel.onScreenResumed()
+
+            assertThat(viewModel.uiState.value).isEqualTo(UiState.Idle)
+            assertThat(fakeFlow.cancelCount).isEqualTo(cancelCountBefore + 1)
+        }
+
+    @Test
+    fun `given WpComMagicLink handoff dispatched, when screen resumes and user scans again, then handoff fires again`() =
+        testBlocking {
+            whenever(parser.parse(RAW_SCAN)).thenReturn(QrLoginPayload.WpComMagicLinkUrl(WP_COM_URL))
+            val events = viewModel.event.captureValues()
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+            val eventCountAfterFirstHandoff = events.size
+
+            viewModel.onScreenResumed()
+            viewModel.onScanResult(successScan())
+            advanceUntilIdle()
+
+            assertThat(events.size).isGreaterThan(eventCountAfterFirstHandoff)
+            assertThat(events.last()).isEqualTo(Dispatch.OpenWpComMagicLinkUrl(WP_COM_URL))
+        }
+
+    @Test
+    fun `given no terminal event dispatched, when screen resumes, then state is unchanged`() = testBlocking {
+        viewModel.onScanResult(successScan())
+        advanceUntilIdle()
+        fakeFlow.emit(
+            FlowState.WaitingForApproval(
+                sessionId = "sess",
+                realNumber = "247",
+                subtitleLabelRes = R.string.login_qr_match_account_label,
+                subtitle = "user@example.com",
+                expiresAtEpochMs = 0L,
+            )
+        )
+        advanceUntilIdle()
+        val stateBefore = viewModel.uiState.value
+
+        viewModel.onScreenResumed()
+
+        assertThat(viewModel.uiState.value).isEqualTo(stateBefore)
+    }
 
     // endregion
 
