@@ -74,22 +74,16 @@ class AiSupportChatActivity : AppCompatActivity() {
         fun launchModeFrom(intent: Intent): AiSupportChatLaunchMode {
             val extras = intent.extras ?: return AiSupportChatLaunchMode.Help
             val checks = extras.parcelableArrayList<ConnectivityCheckCardData>(EXTRA_CONNECTIVITY_CHECKS)
-            if (!checks.isNullOrEmpty()) {
-                return AiSupportChatLaunchMode.ConnectivityTool(checks)
-            }
-            if (extras.getBoolean(EXTRA_PRE_LOGIN, false)) {
-                return AiSupportChatLaunchMode.PreLogin
-            }
-
-            if (extras.containsKey(EXTRA_CHAT_ID)) {
-                return AiSupportChatLaunchMode.Resume(
+            return when {
+                !checks.isNullOrEmpty() -> AiSupportChatLaunchMode.ConnectivityTool(checks)
+                extras.getBoolean(EXTRA_PRE_LOGIN, false) -> AiSupportChatLaunchMode.PreLogin
+                extras.containsKey(EXTRA_CHAT_ID) -> AiSupportChatLaunchMode.Resume(
                     chatId = extras.getLong(EXTRA_CHAT_ID),
                     botSlug = extras.getString(EXTRA_BOT_SLUG) ?: AiSupportChatViewModel.DEFAULT_BOT_SLUG,
                     sessionId = extras.getString(EXTRA_SESSION_ID)
                 )
+                else -> AiSupportChatLaunchMode.Help
             }
-
-            return AiSupportChatLaunchMode.Help
         }
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
