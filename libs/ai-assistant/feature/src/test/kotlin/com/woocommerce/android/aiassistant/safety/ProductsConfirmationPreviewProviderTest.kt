@@ -4,6 +4,7 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.products.AIProductsDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonArray
@@ -116,6 +117,40 @@ class ProductsConfirmationPreviewProviderTest {
             ConfirmationBulkEntry(8),
         )
     }
+
+    @Test
+    fun `given bulk product update has resolved and unresolved ids, when preview is built, then entries preserve order and include available names`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProducts(listOf(7L, 8L, 9L))).thenReturn(
+                Result.success(
+                    cachedProductLookup(
+                        product(remoteId = 9L, name = "Beanie"),
+                        product(remoteId = 7L, name = "Classic T-Shirt"),
+                    )
+                )
+            )
+
+            val preview = preview(
+                toolName = "products_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(7), JsonPrimitive(8), JsonPrimitive(9))))
+                    put("patch", buildJsonObject { put("status", "draft") })
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.bulkEntries).containsExactly(
+                ConfirmationBulkEntry(7, "Classic T-Shirt"),
+                ConfirmationBulkEntry(8),
+                ConfirmationBulkEntry(9, "Beanie"),
+            )
+            assertThat(preview.bulkEntries.map { it.displayText }).containsExactly(
+                "#7  Classic T-Shirt",
+                "#8",
+                "#9  Beanie",
+            )
+        }
 
     @Test
     fun `given product update and current product, when preview is built, then before and after values are included`() =
@@ -320,6 +355,9 @@ class ProductsConfirmationPreviewProviderTest {
         whenever(dataSource.getProduct(any())).thenReturn(
             Result.failure(IllegalStateException("No current product"))
         )
+        whenever(dataSource.getProducts(any())).thenReturn(
+            Result.failure(IllegalStateException("No current products"))
+        )
         return dataSource
     }
 
@@ -343,18 +381,27 @@ class ProductsConfirmationPreviewProviderTest {
     )
 
     private fun product(
+        remoteId: Long = 7L,
         name: String = "Current name",
         regularPrice: String = "19.99",
         salePrice: String = "",
         stockQuantity: Double = 5.5,
         status: String = "publish",
     ) = WCProductModel(
-        remoteId = RemoteId(7L),
+        remoteId = RemoteId(remoteId),
         regularPrice = regularPrice,
         salePrice = salePrice,
         stockQuantity = stockQuantity,
         status = status,
         name = name,
+    )
+
+    private fun cachedProductLookup(vararg products: WCProductModel) = CachedLookupResult(
+        items = products.toList(),
+        cacheHitCount = products.size,
+        cacheMissCount = 0,
+        fetchAttempted = false,
+        fetchFailed = false,
     )
 
     private fun label(id: Int) = string(id)

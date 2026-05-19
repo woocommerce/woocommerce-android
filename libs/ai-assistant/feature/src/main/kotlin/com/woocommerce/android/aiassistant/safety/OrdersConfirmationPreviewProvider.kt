@@ -70,11 +70,16 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         )
     }
 
-    private fun ordersBulkUpdatePreview(arguments: JsonObject): ConfirmationPreview {
+    private suspend fun ordersBulkUpdatePreview(arguments: JsonObject): ConfirmationPreview {
         val ids = arguments.longArrayValue("ids")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_orders_bulk_update_generic))
         val patch = arguments.objectValue("patch")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_orders_bulk_update_generic))
+        val displayNameById = ordersDataSource.getOrders(ids)
+            .getOrNull()
+            ?.items
+            ?.associate { it.orderId to it.confirmationDisplayName() }
+            .orEmpty()
         val fields = buildList {
             patch.stringValue("status")?.let { status ->
                 add(textField("status", status, R.string.ai_assistant_confirmation_field_status))
@@ -109,7 +114,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
             ),
             fields = fields,
             isBulk = true,
-            bulkEntries = ids.map { ConfirmationBulkEntry(it) },
+            bulkEntries = ids.map { id -> ConfirmationBulkEntry(id, displayNameById[id]) },
         )
     }
 

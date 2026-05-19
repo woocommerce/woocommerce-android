@@ -257,6 +257,40 @@ class OrdersConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given bulk order update has resolved and unresolved ids, when preview is built, then entries preserve order and include available names`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(dataSource.getOrders(listOf(1L, 2L, 3L))).thenReturn(
+                Result.success(
+                    cachedOrderLookup(
+                        order(orderId = 3L, billingFirstName = "Jane", billingLastName = "Doe"),
+                        order(orderId = 1L, billingFirstName = "Sam", billingLastName = "Rivera"),
+                    )
+                )
+            )
+
+            val preview = preview(
+                toolName = "orders_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(1), JsonPrimitive(2), JsonPrimitive(3))))
+                    put("patch", buildJsonObject { put("status", "completed") })
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.bulkEntries).containsExactly(
+                ConfirmationBulkEntry(1, "Sam Rivera"),
+                ConfirmationBulkEntry(2),
+                ConfirmationBulkEntry(3, "Jane Doe"),
+            )
+            assertThat(preview.bulkEntries.map { it.displayText }).containsExactly(
+                "#1  Sam Rivera",
+                "#2",
+                "#3  Jane Doe",
+            )
+        }
+
+    @Test
     fun `given one order bulk status update emails customer, when preview is built, then singular summary is used`() =
         runTest {
             val preview = preview(
@@ -488,6 +522,7 @@ class OrdersConfirmationPreviewProviderTest {
     )
 
     private fun order(
+        orderId: Long = 42L,
         status: String = "wc-pending",
         customerNote: String = "",
         billingEmail: String = "buyer@example.com",
@@ -495,7 +530,7 @@ class OrdersConfirmationPreviewProviderTest {
         billingLastName: String = "",
     ) = OrderEntity(
         localSiteId = LocalId(1),
-        orderId = 42L,
+        orderId = orderId,
         status = status,
         customerNote = customerNote,
         billingEmail = billingEmail,
