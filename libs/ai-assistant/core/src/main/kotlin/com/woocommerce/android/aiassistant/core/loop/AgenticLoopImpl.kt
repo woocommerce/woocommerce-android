@@ -303,23 +303,32 @@ class AgenticLoopImpl(
                     }
                     val startedAt = timeSource.markNow()
                     val result = executeToolIfAllowed(call, descriptor)
-                        ?: return ToolExecutionOutcome.Cancelled(completedTools)
-                    val durationMs = startedAt.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
-                    replayTracker.record(replayDecision.signature, result)
                     completedTools += CompletedToolCall(
                         historyToolCall = call,
                         result = result,
                         safetyLevel = descriptor.safetyLevel,
                         invalidToolCallError = descriptor.invalidToolCallErrorFor(call),
                     )
+
+                    val rejectedBySafety = result is ToolResult.RejectedBySafety
+
                     emit(
                         LoopEvent.ToolCallFinished(
                             result = result,
                             toolName = call.name,
                             decision = result.toToolDecision(descriptor),
-                            durationMs = durationMs,
+                            durationMs = if (rejectedBySafety) {
+                                null
+                            } else {
+                                startedAt.elapsedNow().inWholeMilliseconds.coerceAtLeast(0L)
+                            },
                         )
                     )
+                    if (rejectedBySafety) {
+                        return ToolExecutionOutcome.Cancelled(completedTools)
+                    } else {
+                        replayTracker.record(replayDecision.signature, result)
+                    }
                 }
             }
         }
@@ -329,7 +338,7 @@ class AgenticLoopImpl(
     private suspend fun FlowCollector<LoopEvent>.executeToolIfAllowed(
         call: ToolCall,
         descriptor: ToolDescriptor,
-    ): ToolResult? {
+    ): ToolResult {
         return when (val decision = safetyOrchestrator.evaluate(call, descriptor)) {
             SafetyDecision.Execute -> executeApprovedTool(call)
             is SafetyDecision.RequireConfirmation -> executeAfterConfirmation(call, decision)
@@ -339,7 +348,7 @@ class AgenticLoopImpl(
     private suspend fun FlowCollector<LoopEvent>.executeAfterConfirmation(
         call: ToolCall,
         decision: SafetyDecision.RequireConfirmation,
-    ): ToolResult? {
+    ): ToolResult {
         val requestId = decision.request.id
         return try {
             emit(LoopEvent.ConfirmationRequested(decision.request))
@@ -347,17 +356,7 @@ class AgenticLoopImpl(
             emit(LoopEvent.ConfirmationResolved(confirmationResult))
             when (confirmationResult.decision) {
                 ConfirmationDecision.CONFIRMED -> executeApprovedTool(call)
-                ConfirmationDecision.CANCELLED -> {
-                    emit(
-                        LoopEvent.ToolCallFinished(
-                            result = ToolResult.RejectedBySafety(call.id),
-                            toolName = call.name,
-                            decision = ToolDecision.REJECTED_BY_SAFETY,
-                            durationMs = null,
-                        )
-                    )
-                    null
-                }
+                ConfirmationDecision.CANCELLED -> ToolResult.RejectedBySafety(call.id)
             }
         } finally {
             safetyOrchestrator.cancelPending(requestId)
@@ -518,7 +517,7 @@ class AgenticLoopImpl(
     private fun ToolResult.toModelContent(): String = when (this) {
         is ToolResult.Success -> structured.toString()
         is ToolResult.ValidationError -> errorJson(reason)
-        is ToolResult.RejectedBySafety -> errorJson("Action was not approved")
+        is ToolResult.RejectedBySafety -> errorJson("Action was cancelled by the merchant")
         is ToolResult.TransportError -> errorJson("Tool execution failed")
     }
 

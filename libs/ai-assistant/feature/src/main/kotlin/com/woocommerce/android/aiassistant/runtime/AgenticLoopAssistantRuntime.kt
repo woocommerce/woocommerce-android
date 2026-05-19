@@ -6,6 +6,7 @@ import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
@@ -17,10 +18,9 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
-import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsTelemetryReducer
@@ -33,6 +33,7 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredPar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import javax.inject.Inject
 
@@ -41,9 +42,8 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val toolRegistry: ToolRegistry,
     private val toolCatalogSelector: ToolCatalogSelector,
     private val safetyOrchestrator: SafetyOrchestrator,
-    private val confirmationPreviewBuilder: WooCommerceConfirmationPreviewBuilder,
+    private val confirmationPreviewProviderRegistry: ConfirmationPreviewProviderRegistry,
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
-    private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
     private val cardParser: AssistantCardUiStructuredParser,
     private val systemPromptProvider: AssistantSystemPromptProvider,
     @AiAssistantJson private val json: Json,
@@ -83,10 +83,12 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     AssistantRuntimeEvent.AssistantTextDelta(event.text)
                 )
                 is LoopEvent.ConfirmationRequested -> {
-                    val snapshot = confirmationSnapshotResolver.resolve(event.request)
+                    val descriptor = context.catalogSnapshot.tools
+                        .firstOrNull { it.name == event.request.toolName }
+                        ?: event.request.toFallbackDescriptor()
                     emit(
                         AssistantRuntimeEvent.AwaitingConfirmation(
-                            event.request.toConfirmationCard(snapshot)
+                            event.request.toConfirmationCard(descriptor)
                         )
                     )
                 }
@@ -199,7 +201,15 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         }.getOrNull()
     }
 
-    private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?): AssistantConfirmationCard {
+    private suspend fun ConfirmationRequest.toConfirmationCard(
+        descriptor: ToolDescriptor,
+    ): AssistantConfirmationCard {
+        val preview = confirmationPreviewProviderRegistry.buildPreview(
+            ConfirmationPreviewContext(
+                request = this,
+                descriptor = descriptor,
+            )
+        )
         return AssistantConfirmationCard(
             confirmationId = id,
             toolCall = ToolCall(
@@ -208,7 +218,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 arguments = arguments,
             ),
             state = AssistantConfirmationCardState.PENDING,
-            preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this, snapshot)),
+            preview = confirmationPreviewRenderer.render(preview),
         )
     }
+
+    private fun ConfirmationRequest.toFallbackDescriptor(): ToolDescriptor = ToolDescriptor(
+        name = toolName,
+        description = "",
+        inputSchema = buildJsonObject {},
+        safetyLevel = safetyLevel,
+    )
 }

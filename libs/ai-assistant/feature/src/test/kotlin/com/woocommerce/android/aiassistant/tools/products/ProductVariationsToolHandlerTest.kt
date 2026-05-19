@@ -90,6 +90,11 @@ class ProductVariationsToolHandlerTest {
     fun `given descriptor, when inspected, then broad inventory questions are excluded`() {
         val description = handler.descriptor.description
 
+        assertThat(description).contains("fetch a single variation")
+        assertThat(description).contains("variation_id")
+        assertThat(description).contains("full detail")
+        assertThat(description).contains("Page and per_page")
+        assertThat(description).contains("ignored when variation_id is set")
         assertThat(description).contains("explicitly asks")
         assertThat(description).contains("variations, sizes, colors, options")
         assertThat(description).contains("broad product-level inventory questions")

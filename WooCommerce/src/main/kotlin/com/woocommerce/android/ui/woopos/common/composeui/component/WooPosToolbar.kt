@@ -8,13 +8,14 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
@@ -34,7 +35,7 @@ fun WooPosToolbar(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(WooPosComponentSize.XSmall.value),
+            .heightIn(min = WooPosComponentSize.XSmall.value),
     ) {
         val (backButton, title) = createRefs()
 
@@ -59,7 +60,8 @@ fun WooPosToolbar(
             style = titleStyle,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = titleFontWeight,
-            maxLines = 1,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .constrainAs(title) {
                     if (onBackClicked != null) {

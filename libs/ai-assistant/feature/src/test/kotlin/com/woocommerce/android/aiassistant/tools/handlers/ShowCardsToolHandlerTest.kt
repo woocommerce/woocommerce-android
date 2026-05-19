@@ -63,10 +63,10 @@ class ShowCardsToolHandlerTest {
         assertThat(descriptor.inputSchema.toString()).contains("analytics_stats")
         assertThat(descriptor.inputSchema.toString()).contains("customer")
         assertThat(descriptor.inputSchema.toString()).contains("{parentProductId}/{variationId}")
+        assertThat(descriptor.inputSchema.toString()).contains("pass the exact card_id")
+        assertThat(descriptor.inputSchema.toString()).contains("do not construct it")
         assertThat(descriptor.inputSchema.toString())
-            .contains("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
-        assertThat(descriptor.description).doesNotContain("analytics_revenue")
-        assertThat(descriptor.inputSchema.toString()).doesNotContain("analytics_revenue")
+            .doesNotContain("analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>")
         assertThat(descriptor.inputSchema.toString()).contains("card_id")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"totals\"")
         assertThat(descriptor.inputSchema.toString()).doesNotContain("\"interval_subtotals\"")
@@ -454,8 +454,6 @@ class ShowCardsToolHandlerTest {
             argumentsJson = """
             {
               "references": [
-                { "family": "analytics_stats", "id": "analytics_revenue:2026-05-01:2026-05-07" },
-                { "family": "analytics_stats", "id": "analytics_revenue:after:2026-05-01:before:2026-05-07:interval:day:currency:USD" },
                 { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-07:before:2026-05-01:interval:day" },
                 { "family": "analytics_stats", "id": "analytics_orders:after:2026-05-01:before:2026-05-07:interval:bad" }
               ]
@@ -464,11 +462,11 @@ class ShowCardsToolHandlerTest {
         )
 
         assertThat(validated(result)).isEqualTo(0)
-        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id", "invalid_id", "invalid_id")
+        assertThat(rejectedReasons(result)).containsExactly("invalid_id", "invalid_id")
     }
 
     @Test
-    fun `given unknown analytics stats prefixes, when executed, then refs are rejected as invalid id`() = runTest {
+    fun `given unknown analytics stats prefix or currency segment, when executed, then refs are rejected`() = runTest {
         val result = executeShowCards(
             handler = handlerWith(FakeResolver.empty()),
             argumentsJson = """

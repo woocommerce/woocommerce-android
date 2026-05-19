@@ -63,11 +63,17 @@ class WooAssistantHeadless(
                 confirmationResults = events.filterIsInstance<LoopEvent.ConfirmationResolved>().map {
                     it.result.toTrace()
                 },
-                errors = events.filterIsInstance<LoopEvent.Failed>().map { it.error.toTraceLabel() },
+                errors = events.toErrorTraces(finished),
             )
         }
         return HeadlessRunResult(scenarioId = scenario.id, turns = turns)
     }
+
+    private fun List<LoopEvent>.toErrorTraces(finished: LoopEvent.Finished?): List<String> =
+        (
+            filterIsInstance<LoopEvent.Failed>().map { it.error.toTraceLabel() } +
+                listOfNotNull(finished?.error?.toTraceLabel())
+            ).distinct()
 
     private fun List<LoopEvent>.toToolCallTraces(descriptors: List<ToolDescriptor>): List<HeadlessToolCallTrace> {
         val startedCalls = mutableMapOf<String, ToolCall>()

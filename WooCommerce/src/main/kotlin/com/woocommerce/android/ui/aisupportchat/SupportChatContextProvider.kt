@@ -6,18 +6,26 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.util.BuildConfigWrapper
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
 class SupportChatContextProvider @Inject constructor(
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val buildConfigWrapper: BuildConfigWrapper
 ) {
     fun buildInitialContext(diagnosticResult: DiagnosticResult? = null): JsonObject {
-        val site = selectedSite.get()
+        val site = selectedSite.getIfExists()
         return JsonObject().apply {
-            addProperty("selectedSiteId", site.siteId)
-            addProperty("site_url", site.url)
+            addProperty("platform", "android")
+            addProperty("app_version", buildConfigWrapper.versionName)
+            site?.let {
+                if (it.siteId > 0L) {
+                    addProperty("selectedSiteId", it.siteId)
+                }
+                addProperty("site_url", it.url)
+            }
             diagnosticResult?.toTroubleshootingResults()?.let { troubleshootingResults ->
                 addProperty("troubleshootingResults", troubleshootingResults)
             }

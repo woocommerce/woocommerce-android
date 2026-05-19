@@ -7,6 +7,9 @@ sealed class WooPosCartUIEvent {
     data class ItemRemovedFromCart(
         val item: WooPosCartItemViewState
     ) : WooPosCartUIEvent()
+    data class EditCustomAmountClicked(
+        val item: WooPosCartItemViewState.CustomAmount
+    ) : WooPosCartUIEvent()
     data object ClearAllClicked : WooPosCartUIEvent()
     data object BackClicked : WooPosCartUIEvent()
     data class OnBarcodeEvent(

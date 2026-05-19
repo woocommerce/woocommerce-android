@@ -49,7 +49,7 @@ class AiAssistantHostFragment : BaseFragment() {
     ): View {
         return composeView {
             var showEarlyAccessNotice by remember {
-                mutableStateOf(!appPrefsWrapper.isAiAssistantEarlyAccessNoticeDismissed)
+                mutableStateOf(true)
             }
 
             AssistantRoute(

@@ -682,7 +682,9 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.MissingVariationEvent,
-                    is ParentToChildrenEvent.SettingsEvent -> Unit
+                    is ParentToChildrenEvent.SettingsEvent,
+                    is ParentToChildrenEvent.CustomAmountSubmitted,
+                    is ParentToChildrenEvent.ShowCustomAmountForm -> Unit
                 }
             }
         }

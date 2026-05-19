@@ -23,6 +23,7 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
     private val developerOptionsRepository: DeveloperOptionsRepository = mock {
         on { observeSimulatedCardReaderEnabled() }.thenReturn(flowOf(false))
         on { observeInteracPaymentEnabled() }.thenReturn(flowOf(false))
+        on { observeEftposPaymentEnabled() }.thenReturn(flowOf(false))
         on { observeSavedPrivacyBannerSettings() }.thenReturn(flowOf(false))
     }
 
@@ -100,6 +101,18 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when simulated card reader btn toggled, then eftpos row displayed`() {
+        whenever(developerOptionsRepository.observeSimulatedCardReaderEnabled()).thenReturn(flowOf(true))
+
+        initViewModel()
+
+        assertThat(captureViewState()?.rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.enable_eftpos_payment)
+            }
+    }
+
+    @Test
     fun `given reader disabled, when dev options screen accessed, then update reader row not displayed`() {
         whenever(developerOptionsRepository.observeSimulatedCardReaderEnabled()).thenReturn(flowOf(false))
 
@@ -120,6 +133,18 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
         assertThat(captureViewState()?.rows)
             .noneMatch {
                 it.label == UiString.UiStringRes(R.string.enable_interac_payment)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then eftpos row not displayed`() {
+        whenever(developerOptionsRepository.observeSimulatedCardReaderEnabled()).thenReturn(flowOf(false))
+
+        initViewModel()
+
+        assertThat(captureViewState()?.rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.enable_eftpos_payment)
             }
     }
 

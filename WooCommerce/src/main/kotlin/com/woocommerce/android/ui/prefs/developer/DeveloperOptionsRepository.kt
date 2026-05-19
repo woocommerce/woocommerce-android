@@ -59,6 +59,23 @@ class DeveloperOptionsRepository @Inject constructor(
 
     fun changeEnableInteracPaymentState(isChecked: Boolean) {
         appPrefs.isInteracEnabled = isChecked
+        if (isChecked) {
+            appPrefs.isEftposEnabled = false
+        }
+        reinitializeSimulatedReaderIfNeeded()
+    }
+
+    fun isEftposPaymentEnabled(): Boolean = appPrefs.isEftposEnabled
+
+    fun observeEftposPaymentEnabled() = appPrefsTrigger
+        .map { appPrefs.isEftposEnabled }
+        .distinctUntilChanged()
+
+    fun changeEnableEftposPaymentState(isChecked: Boolean) {
+        appPrefs.isEftposEnabled = isChecked
+        if (isChecked) {
+            appPrefs.isInteracEnabled = false
+        }
         reinitializeSimulatedReaderIfNeeded()
     }
 
@@ -74,7 +91,8 @@ class DeveloperOptionsRepository @Inject constructor(
         if (cardReaderManager.initialized) {
             cardReaderManager.reinitializeSimulatedTerminal(
                 updateFrequency = getUpdateSimulatedReaderOption(),
-                useInterac = appPrefs.isInteracEnabled
+                useInterac = appPrefs.isInteracEnabled,
+                useEftpos = appPrefs.isEftposEnabled,
             )
         }
     }

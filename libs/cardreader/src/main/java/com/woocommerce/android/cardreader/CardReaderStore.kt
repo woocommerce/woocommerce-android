@@ -3,7 +3,14 @@ package com.woocommerce.android.cardreader
 interface CardReaderStore {
     suspend fun fetchConnectionToken(): String
 
+    suspend fun preparePaymentIntent(orderId: Long, paymentId: String): PreparePaymentResponse
+
     suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse
+
+    sealed class PreparePaymentResponse {
+        data object Success : PreparePaymentResponse()
+        data class Error(val message: String) : PreparePaymentResponse()
+    }
 
     sealed class CapturePaymentResponse {
         sealed class Successful : CapturePaymentResponse() {

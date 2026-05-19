@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonObject
+import com.woocommerce.android.R
+import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatViewModel.Companion.DEFAULT_BOT_SLUG
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
@@ -9,13 +11,19 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessage
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatMessageContext
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
@@ -36,16 +44,23 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val repository: SupportChatRepository = mock()
     private val contextProvider: SupportChatContextProvider = mock()
     private val diagnosticsService: SupportDiagnosticsService = mock()
+    private val accountRepository: AccountRepository = mock()
 
     private lateinit var viewModel: AiSupportChatViewModel
 
     @Before
     fun setUp() {
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        createViewModel()
+    }
+
+    private fun createViewModel() {
         viewModel = AiSupportChatViewModel(
             savedStateHandle = SavedStateHandle(),
             repository = repository,
             contextProvider = contextProvider,
-            diagnosticsService = diagnosticsService
+            diagnosticsService = diagnosticsService,
+            accountRepository = accountRepository
         )
     }
 
@@ -56,12 +71,71 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasProceededToChat).isFalse()
         assertThat(state.hasStartedChat).isFalse()
         assertThat(state.canUseDiagnosticActions).isTrue()
+        assertThat(state.showInputBar).isFalse()
         assertThat(state.showDiagnosticActions).isFalse()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
         )
     }
+
+    @Test
+    fun `given pre-login launch mode, when loaded, then chat starts without issue picker`() =
+        testBlocking {
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+
+            val state = viewModel.viewState.value
+            assertThat(state.input).isEmpty()
+            assertThat(state.hasStartedChat).isTrue()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting
+            )
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given pre-login launch mode, when message sent, then chat starts with generic context`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.chatId).isEqualTo(CHAT_ID)
+            assertThat(state.isSending).isFalse()
+            assertThat(state.showSendError).isFalse()
+            assertThat(state.selectedIssueType).isNull()
+            assertThat(state.diagnosticResult).isNull()
+            verify(contextProvider).buildInitialContext()
+            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any(), any())
+        }
+
+    @Test
+    fun `given pre-login chat exists, when follow up message sent, then bookmark is not touched`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(BOT_RESPONSE)
+            viewModel.onSendClicked()
+
+            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any(), any())
+        }
 
     @Test
     fun `given diagnostics pass, when issue selected, then success is shown and chat does not start`() =
@@ -100,6 +174,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasProceededToChat).isTrue()
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.canUseDiagnosticActions).isFalse()
+            assertThat(state.showInputBar).isTrue()
             assertThat(state.showDiagnosticActions).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
@@ -143,8 +218,34 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
                 AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS)
-            verify(repository, never()).markChatAsUpdated(any())
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
+            verify(repository, never()).markChatAsUpdated(any(), any())
+        }
+
+    @Test
+    fun `given unauthenticated user, when sending succeeds, then bookmark is not touched`() =
+        testBlocking {
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
+            createViewModel()
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            assertThat(viewModel.viewState.value.chatId).isEqualTo(CHAT_ID)
+            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
     @Test
@@ -161,7 +262,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
-            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, ISSUE_DETAILS))
+            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS))
                 .thenThrow(RuntimeException("Bookmark write failed"))
 
             continueToChatAfterSuccessfulDiagnostics(result)
@@ -219,8 +320,619 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE)
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID)
-            verify(repository).markChatAsUpdated(CHAT_ID)
+            verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
         }
+
+    @Test
+    fun `given bot forwards to human support, when message succeeds, then human support prompt is shown`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val supportArea = SupportChatSupportArea(
+                area = "card-reader",
+                topic = "woo_mobile_issue_card_reader",
+                confidence = "high"
+            )
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(
+                        messageId = 2L,
+                        role = SupportChatRole.BOT,
+                        content = BOT_RESPONSE,
+                        context = SupportChatMessageContext(
+                            flags = SupportChatFlags(forwardToHumanSupport = true),
+                            supportArea = supportArea
+                        )
+                    )
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.showHumanSupportPrompt).isTrue
+            assertThat(state.latestSupportArea).isEqualTo(supportArea)
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            assertThat(state.showInputBar).isFalse
+            assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
+            assertThat(state.messages.map { it.content }).doesNotContain(AiSupportChatMessageContent.Text(BOT_RESPONSE))
+        }
+
+    @Test
+    fun `given first user message has bot response, when chat updates, then toolbar support is unavailable`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasSentChatMessage).isTrue
+            assertThat(state.completedUserMessageResponseCount).isEqualTo(1)
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        }
+
+    @Test
+    fun `given bot response has server message id, when chat updates, then bot UI message keeps message id`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = BOT_MESSAGE_ID, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val botMessage = viewModel.viewState.value.messages.single {
+                it.content == AiSupportChatMessageContent.Text(BOT_RESPONSE)
+            }
+            assertThat(botMessage.messageId).isEqualTo(BOT_MESSAGE_ID)
+        }
+
+    @Test
+    fun `given unrated bot response, when thumbs up clicked, then rating is stored and submitted`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(
+                repository.submitFeedback(
+                    DEFAULT_BOT_SLUG,
+                    CHAT_ID,
+                    BOT_MESSAGE_ID,
+                    SESSION_ID,
+                    true
+                )
+            ).thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+
+            assertThat(viewModel.viewState.value.messageRatings)
+                .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true)
+        }
+
+    @Test
+    fun `given latest bot response is upvoted, when feedback clicked, then resolved prompt is appended`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+
+            assertThat(viewModel.viewState.value.shouldShowResolvedButton).isTrue
+            assertThat(viewModel.viewState.value.messages.map { it.content }).endsWith(
+                AiSupportChatMessageContent.Text(BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
+        }
+
+    @Test
+    fun `given unrated bot response, when thumbs down clicked, then rating is stored and submitted`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(
+                repository.submitFeedback(
+                    DEFAULT_BOT_SLUG,
+                    CHAT_ID,
+                    BOT_MESSAGE_ID,
+                    SESSION_ID,
+                    false
+                )
+            ).thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            assertThat(viewModel.viewState.value.messageRatings)
+                .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+            verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, false)
+        }
+
+    @Test
+    fun `given latest bot response is resolved, when message succeeds, then resolved prompt is appended`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(
+                        messageId = BOT_MESSAGE_ID,
+                        role = SupportChatRole.BOT,
+                        content = BOT_RESPONSE,
+                        isResolved = true
+                    )
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.shouldShowResolvedButton).isTrue
+            assertThat(state.messages.map { it.content }).endsWith(
+                AiSupportChatMessageContent.Text(BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
+            val botMessage = state.messages.single { it.content == AiSupportChatMessageContent.Text(BOT_RESPONSE) }
+            assertThat(botMessage.isResolved)
+                .isTrue
+        }
+
+    @Test
+    fun `given rated bot response, when feedback clicked again, then feedback is not submitted twice`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            assertThat(viewModel.viewState.value.messageRatings)
+                .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true)
+            verify(repository, never()).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, false)
+        }
+
+    @Test
+    fun `given resolved prompt exists, when latest bot response is upvoted again, then prompt is not duplicated`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            assertThat(
+                viewModel.viewState.value.messages.count { it.content == AiSupportChatMessageContent.ResolvedPrompt }
+            ).isEqualTo(1)
+        }
+
+    @Test
+    fun `given resolved prompt exists, when later bot response is upvoted, then prompt moves after latest response`() =
+        testBlocking {
+            val latestBotMessageId = 4L
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = latestBotMessageId,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, latestBotMessageId, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onFeedbackClicked(latestBotMessageId, AiSupportChatFeedbackRating.UP)
+
+            val contents = viewModel.viewState.value.messages.map { it.content }
+            assertThat(contents.count { it == AiSupportChatMessageContent.ResolvedPrompt }).isEqualTo(1)
+            assertThat(contents).endsWith(
+                AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
+        }
+
+    @Test
+    fun `given chat identifiers are missing, when feedback clicked, then feedback is not submitted`() =
+        testBlocking {
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+
+            assertThat(viewModel.viewState.value.messageRatings).isEmpty()
+            verify(repository, never()).submitFeedback(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given second user message has bot response, when chat updates, then toolbar support is available`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                            )
+                        )
+                    )
+                )
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = 4L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.completedUserMessageResponseCount).isEqualTo(2)
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue
+        }
+
+    @Test
+    fun `given two bot responses, when chat updates, then resolved button is available`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                            )
+                        )
+                    )
+                )
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = 4L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            assertThat(viewModel.viewState.value.shouldShowResolvedButton).isTrue
+        }
+
+    @Test
+    fun `given resolved button shown, when mark resolved confirmed, then chat actions are hidden`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onMarkResolvedClicked()
+            viewModel.onMarkResolvedConfirmed()
+
+            val state = viewModel.viewState.value
+            assertThat(state.isChatResolved).isTrue
+            assertThat(state.showMarkResolvedConfirmation).isFalse
+            assertThat(state.canSendMessages).isFalse
+            assertThat(state.showInputBar).isFalse
+            assertThat(state.shouldShowResolvedButton).isFalse
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        }
+
+    @Test
+    fun `given send fails, when contact support from error is clicked, then escalation event is emitted`() =
+        testBlocking {
+            val result = createFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.failure(Exception()))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+            viewModel.onContinueAfterDiagnosticsClicked()
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.ERROR_DIALOG,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.chatId).isNull()
+            assertThat(event.source).isEqualTo(HumanSupportContactSource.ERROR_DIALOG)
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.transcript).contains("User: $ISSUE_DETAILS")
+        }
+
+    @Test
+    fun `given bot response has multiple paragraphs, when contact support is clicked, then transcript keeps first paragraph`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                                createMessage(
+                                    messageId = 2L,
+                                    role = SupportChatRole.BOT,
+                                    content = "$BOT_RESPONSE\n\nSecond paragraph with extra details."
+                                )
+                            )
+                        )
+                    )
+                )
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.transcript).contains("Bot: $BOT_RESPONSE\n[AI response trimmed]")
+            assertThat(event.transcript).doesNotContain("Second paragraph with extra details.")
+        }
+
+    @Test
+    fun `given long chat history, when contact support is clicked, then transcript keeps recent messages`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = (1L..25L).map { messageId ->
+                    createMessage(
+                        messageId = messageId,
+                        role = if (messageId % 2 == 0L) SupportChatRole.BOT else SupportChatRole.USER,
+                        content = "message-$messageId"
+                    )
+                }
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.transcript).contains("[Earlier messages trimmed]")
+            assertThat(event.transcript.lines()).doesNotContain("User: message-1")
+            assertThat(event.transcript).contains("message-25")
+        }
+
+    @Test
+    fun `given high confidence support area and identity, when contact support is clicked, then direct event is emitted`() =
+        testBlocking {
+            val supportArea = createSupportArea(
+                area = "woopayments",
+                topic = "woo_mobile_issue_payments",
+                confidence = "high"
+            )
+            givenStartedChatWithSupportArea(supportArea)
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.DIRECT_CREATE)
+            assertThat(event.ticketType).isEqualTo(TicketType.Payments)
+            assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_woo_payments)
+            assertThat(event.extraTags).containsExactly(
+                "in_app_support_escalate",
+                "ai_skip",
+                "woo_mobile_issue_payments"
+            )
+        }
+
+    @Test
+    fun `given high confidence support area without identity, when contact support is clicked, then form event is emitted`() =
+        testBlocking {
+            givenStartedChatWithSupportArea(createSupportArea(area = "card-reader", confidence = "high"))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.ticketType).isEqualTo(TicketType.InPersonPayments)
+            assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_card_reader)
+        }
+
+    @Test
+    fun `given low confidence support area and identity, when contact support is clicked, then form event is emitted`() =
+        testBlocking {
+            givenStartedChatWithSupportArea(createSupportArea(area = "card-reader", confidence = "low"))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.ticketType).isEqualTo(TicketType.InPersonPayments)
+            assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_card_reader)
+        }
+
+    @Test
+    fun `given no support area and identity, when contact support is clicked, then form event has no preselected type`() =
+        testBlocking {
+            startChat(createSuccessDiagnosticResult())
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.ticketType).isNull()
+            assertThat(event.subjectResId).isNull()
+            assertThat(event.extraTags).containsExactly("in_app_support_escalate", "ai_skip")
+        }
+
+    @Test
+    fun `given support areas, when contact support is clicked, then ticket type and subject are mapped`() =
+        testBlocking {
+            listOf(
+                SupportAreaMapping(
+                    areaType = SupportAreaType.MOBILE_APP,
+                    ticketType = TicketType.MobileApp,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_mobile_app
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.CARD_READER,
+                    ticketType = TicketType.InPersonPayments,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_card_reader
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.WOO_PAYMENTS,
+                    ticketType = TicketType.Payments,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_woo_payments
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.WOO_COMMERCE_PLUGIN,
+                    ticketType = TicketType.WooPlugin,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_woo_plugin
+                ),
+                SupportAreaMapping(
+                    areaType = SupportAreaType.OTHER_EXTENSION_PLUGIN,
+                    ticketType = TicketType.OtherPlugins,
+                    subjectResId = R.string.ai_support_chat_support_request_subject_other_plugin
+                )
+            ).forEach { mapping ->
+                createViewModel()
+                givenStartedChatWithSupportArea(createSupportArea(area = mapping.areaType.wireValue))
+                val events = mutableListOf<MultiLiveEvent.Event>()
+                viewModel.event.observeForever { events.add(it) }
+
+                viewModel.onContactSupportClicked(
+                    source = HumanSupportContactSource.BANNER,
+                    canCreateTicketDirectly = true
+                )
+
+                val event = events.single() as ContactHumanSupport
+                assertThat(event.ticketType).isEqualTo(mapping.ticketType)
+                assertThat(event.subjectResId).isEqualTo(mapping.subjectResId)
+            }
+        }
+
+    @Test
+    fun `given ticket is created, when state updates, then escalation controls are hidden`() = testBlocking {
+        val result = createSuccessDiagnosticResult()
+        startChat(result)
+
+        viewModel.onSupportTicketCreated()
+
+        val state = viewModel.viewState.value
+        assertThat(state.hasCreatedTicket).isTrue
+        assertThat(state.canSendMessages).isFalse
+        assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        assertThat(state.shouldShowResolvedButton).isFalse
+        assertThat(state.showSendError).isFalse
+        assertThat(state.showHumanSupportPrompt).isFalse
+    }
 
     @Test
     fun `given connectivity launch mode, when loaded, then chat waits for user input with connectivity context`() =
@@ -247,8 +959,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DiagnosticTest.WPCOM_SERVERS
             )
             assertThat(state.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting,
-                AiSupportChatMessageContent.PostDiagnosticsGreeting
+                AiSupportChatMessageContent.Greeting
             )
             verify(contextProvider, never()).buildInitialContext(any())
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
@@ -266,6 +977,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 TestStatus.Failed()
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
         }
 
     @Test
@@ -279,11 +991,136 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
 
             assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting,
-                AiSupportChatMessageContent.PostDiagnosticsGreeting
+                AiSupportChatMessageContent.Greeting
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
         }
+
+    @Test
+    fun `given resume launch mode, when loaded, then saved chat is fetched with session id`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.chatId).isEqualTo(CHAT_ID)
+        assertThat(state.sessionId).isEqualTo(SESSION_ID)
+        assertThat(state.hasProceededToChat).isTrue()
+        assertThat(state.hasStartedChat).isTrue()
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.showLoadHistoryError).isFalse()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Text(ISSUE_DETAILS),
+            AiSupportChatMessageContent.Text(BOT_RESPONSE)
+        )
+        verify(repository).fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)
+        verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
+    }
+
+    @Test
+    fun `given resume mark updated fails, when loaded, then saved chat is shown without error`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+        whenever(repository.markChatAsUpdated(CHAT_ID, SESSION_ID)).thenThrow(
+            RuntimeException("Bookmark update failed")
+        )
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.showLoadHistoryError).isFalse()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Text(ISSUE_DETAILS),
+            AiSupportChatMessageContent.Text(BOT_RESPONSE)
+        )
+        verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
+    }
+
+    @Test
+    fun `given resume fetch fails, when loaded, then load history error is shown`() = testBlocking {
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.failure(Exception()))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.chatId).isEqualTo(CHAT_ID)
+        assertThat(state.sessionId).isEqualTo(SESSION_ID)
+        assertThat(state.hasProceededToChat).isTrue()
+        assertThat(state.hasStartedChat).isTrue()
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.showLoadHistoryError).isTrue()
+        assertThat(state.canSendMessages).isFalse()
+        assertThat(state.messages).isEmpty()
+        verify(repository, never()).markChatAsUpdated(any(), any())
+    }
+
+    @Test
+    fun `given resume fetch fails, when retry clicked, then saved chat is fetched again`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(
+            Result.failure(Exception()),
+            Result.success(response)
+        )
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+        viewModel.onRetryLoadHistoryClicked()
+
+        val state = viewModel.viewState.value
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showLoadHistoryError).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.canSendMessages).isTrue()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Text(ISSUE_DETAILS),
+            AiSupportChatMessageContent.Text(BOT_RESPONSE)
+        )
+        verify(repository, times(2)).fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)
+        verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
+    }
 
     @Test
     fun `given diagnostics fail, when issue selected, then failure is shown and chat does not start`() =
@@ -404,7 +1241,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isTrue()
-            verify(repository, never()).registerChat(any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any())
         }
 
     @Test
@@ -434,6 +1271,71 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onInputChanged(ISSUE_DETAILS)
         viewModel.onSendClicked()
     }
+
+    private suspend fun startChatWithBotResponse() {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+            .thenReturn(
+                Result.success(
+                    createResponse(
+                        messages = listOf(
+                            createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                            createMessage(
+                                messageId = BOT_MESSAGE_ID,
+                                role = SupportChatRole.BOT,
+                                content = BOT_RESPONSE
+                            )
+                        )
+                    )
+                )
+            )
+
+        continueToChatAfterSuccessfulDiagnostics(result)
+        viewModel.onInputChanged(ISSUE_DETAILS)
+        viewModel.onSendClicked()
+    }
+
+    private suspend fun givenStartedChatWithSupportArea(supportArea: SupportChatSupportArea) {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+            .thenReturn(
+                Result.success(
+                    createResponse(
+                        messages = listOf(
+                            createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                            createMessage(
+                                messageId = 2L,
+                                role = SupportChatRole.BOT,
+                                content = BOT_RESPONSE,
+                                context = SupportChatMessageContext(
+                                    flags = SupportChatFlags(forwardToHumanSupport = true),
+                                    supportArea = supportArea
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+        continueToChatAfterSuccessfulDiagnostics(result)
+        viewModel.onInputChanged(ISSUE_DETAILS)
+        viewModel.onSendClicked()
+    }
+
+    private fun createSupportArea(
+        area: String,
+        topic: String? = null,
+        confidence: String = "high"
+    ): SupportChatSupportArea =
+        SupportChatSupportArea(
+            area = area,
+            topic = topic,
+            confidence = confidence
+        )
 
     private fun createSuccessDiagnosticResult(issueType: SupportIssueType = SupportIssueType.LOADING_ORDERS) =
         DiagnosticResult(
@@ -472,11 +1374,20 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private fun createMessage(
         messageId: Long,
         role: SupportChatRole,
-        content: String = BOT_RESPONSE
+        content: String = BOT_RESPONSE,
+        context: SupportChatMessageContext? = null,
+        isResolved: Boolean = false
     ): SupportChatMessage = SupportChatMessage(
         messageId = messageId,
         role = role,
-        content = content
+        content = content,
+        context = context ?: if (isResolved) SupportChatMessageContext(isResolved = true) else null
+    )
+
+    private data class SupportAreaMapping(
+        val areaType: SupportAreaType,
+        val ticketType: TicketType,
+        val subjectResId: Int
     )
 
     private companion object {
@@ -485,6 +1396,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val ISSUE_LABEL = "I can't see my orders"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
+        const val BOT_MESSAGE_ID = 2L
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
 

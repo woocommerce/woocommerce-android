@@ -84,6 +84,7 @@ import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCa
 import com.woocommerce.android.aiassistant.ui.components.AssistantEmptyState
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
+import com.woocommerce.android.aiassistant.ui.markdown.AssistantMarkdownText
 import com.woocommerce.android.aiassistant.ui.scroll.AssistantScrollController
 import com.woocommerce.android.aiassistant.ui.scroll.rememberAssistantScrollController
 import kotlinx.coroutines.launch
@@ -498,9 +499,7 @@ private fun AssistantMessageThread(
         }
         if (showTypingIndicator) {
             item(key = TYPING_INDICATOR_ITEM_KEY) {
-                AssistantRevealOnFirstComposition(
-                    modifier = Modifier.animateItem(),
-                ) {
+                AssistantRevealOnFirstComposition {
                     AssistantTypingIndicator()
                 }
             }
@@ -657,11 +656,12 @@ private fun AssistantCardGroupSegment(
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
     if (!isUser) {
-        Text(
+        AssistantMarkdownText(
             text = text,
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyMedium,
+            linkColor = MaterialTheme.colorScheme.primary,
         )
         return
     }
