@@ -91,7 +91,7 @@ internal class WpComQrLoginFlow(
                         subtitle = scan.userEmail,
                         expiresAtEpochMs = expiresAt,
                     ).also { retainedWaitingForApproval = it }
-                    pollUntilApprovedOrTerminal(sessionId = scan.sessionId, token = payload.token)
+                    pollUntilApprovedOrTerminal(sessionId = scan.sessionId)
                 },
                 onFailure = { failure ->
                     failWith(step = FailureStep.Scan, reason = failure.toScanReason())
@@ -100,12 +100,12 @@ internal class WpComQrLoginFlow(
         }
     }
 
-    private suspend fun pollUntilApprovedOrTerminal(sessionId: String, token: String) {
+    private suspend fun pollUntilApprovedOrTerminal(sessionId: String) {
         WooLog.d(WooLog.T.LOGIN, "QR login wp.com poll: starting")
         val outcome = pollUntilTerminal(
             shouldContinue = { _state.value is FlowState.WaitingForApproval },
             poll = {
-                restClient.checkSessionStatus(sessionId, token).fold(
+                restClient.checkSessionStatus(sessionId, payload.token).fold(
                     onSuccess = { it.toPollOutcome() },
                     onFailure = { it.toPollErrorOutcome() }
                 )

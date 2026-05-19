@@ -262,7 +262,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
     fun `given retryable poll failure, when retry is called, then session status is polled again with same session id and scan is not re-invoked`() =
         testBlocking {
             whenever(restClient.scan(payload.token, payload.encrypted)).thenReturn(Result.success(scanResult))
-            whenever(restClient.checkSessionStatus(scanResult.sessionId))
+            whenever(restClient.checkSessionStatus(scanResult.sessionId, payload.token))
                 .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
                 .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
                 .thenReturn(Result.failure(WpComQrLoginSessionStatusException.Network))
@@ -281,7 +281,7 @@ class WpComQrLoginFlowTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(restClient, times(1)).scan(payload.token, payload.encrypted)
-            verify(restClient, atLeast(5)).checkSessionStatus(scanResult.sessionId)
+            verify(restClient, atLeast(5)).checkSessionStatus(scanResult.sessionId, payload.token)
             assertThat(flow.state.value)
                 .isEqualTo(FlowState.Completed(FlowCompletion.OpenMagicLink(url = "https://wordpress.com/magic")))
         }
