@@ -1021,6 +1021,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasStartedChat).isTrue()
         assertThat(state.isLoadingHistory).isFalse()
         assertThat(state.showSendError).isFalse()
+        assertThat(state.showLoadHistoryError).isFalse()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Text(ISSUE_DETAILS),
             AiSupportChatMessageContent.Text(BOT_RESPONSE)
@@ -1030,7 +1031,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given resume fetch fails, when loaded, then chat remains usable and error is shown`() = testBlocking {
+    fun `given resume fetch fails, when loaded, then load history error is shown`() = testBlocking {
         whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.failure(Exception()))
 
         viewModel.onLaunchModeLoaded(
@@ -1047,9 +1048,46 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasProceededToChat).isTrue()
         assertThat(state.hasStartedChat).isTrue()
         assertThat(state.isLoadingHistory).isFalse()
-        assertThat(state.showSendError).isTrue()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.showLoadHistoryError).isTrue()
+        assertThat(state.canSendMessages).isFalse()
         assertThat(state.messages).isEmpty()
         verify(repository, never()).markChatAsUpdated(any(), any())
+    }
+
+    @Test
+    fun `given resume fetch fails, when retry clicked, then saved chat is fetched again`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(
+            Result.failure(Exception()),
+            Result.success(response)
+        )
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+        viewModel.onRetryLoadHistoryClicked()
+
+        val state = viewModel.viewState.value
+        assertThat(state.isLoadingHistory).isFalse()
+        assertThat(state.showLoadHistoryError).isFalse()
+        assertThat(state.showSendError).isFalse()
+        assertThat(state.canSendMessages).isTrue()
+        assertThat(state.messages.map { it.content }).containsExactly(
+            AiSupportChatMessageContent.Text(ISSUE_DETAILS),
+            AiSupportChatMessageContent.Text(BOT_RESPONSE)
+        )
+        verify(repository, times(2)).fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)
+        verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
     }
 
     @Test

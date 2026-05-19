@@ -83,6 +83,7 @@ fun AiSupportChatScreen(
         onContactSupportClicked = { onContactSupportClicked(HumanSupportContactSource.BANNER) },
         onContactSupportFromErrorClicked = { onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
         onSendErrorDismissed = viewModel::onSendErrorDismissed,
+        onRetryLoadHistoryClicked = viewModel::onRetryLoadHistoryClicked,
         onMarkResolvedConfirmed = viewModel::onMarkResolvedConfirmed,
         onMarkResolvedDismissed = viewModel::onMarkResolvedDismissed,
         onFeedbackClicked = viewModel::onFeedbackClicked
@@ -99,6 +100,7 @@ fun AiSupportChatScreen(
     onContactSupportClicked: () -> Unit,
     onContactSupportFromErrorClicked: () -> Unit,
     onSendErrorDismissed: () -> Unit,
+    onRetryLoadHistoryClicked: () -> Unit,
     onMarkResolvedConfirmed: () -> Unit,
     onMarkResolvedDismissed: () -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
@@ -145,6 +147,10 @@ fun AiSupportChatScreen(
             onContactSupportClicked = onContactSupportFromErrorClicked,
             onDismiss = onSendErrorDismissed
         )
+    }
+
+    if (viewState.showLoadHistoryError) {
+        LoadHistoryErrorDialog(onRetry = onRetryLoadHistoryClicked)
     }
 
     if (viewState.showMarkResolvedConfirmation) {
@@ -662,6 +668,19 @@ private fun SendErrorDialog(
 }
 
 @Composable
+private fun LoadHistoryErrorDialog(onRetry: () -> Unit) {
+    DialogState(
+        title = R.string.ai_support_chat_error_title,
+        message = R.string.ai_support_chat_load_history_error,
+        positiveButton = DialogState.DialogButton(
+            text = R.string.retry,
+            onClick = onRetry
+        ),
+        isCancelable = false
+    ).Render()
+}
+
+@Composable
 private fun MarkResolvedConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -762,6 +781,7 @@ private fun AiSupportChatScreenPreview() {
             onContactSupportClicked = {},
             onContactSupportFromErrorClicked = {},
             onSendErrorDismissed = {},
+            onRetryLoadHistoryClicked = {},
             onMarkResolvedConfirmed = {},
             onMarkResolvedDismissed = {},
             onFeedbackClicked = { _, _ -> }

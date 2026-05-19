@@ -49,6 +49,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     private var localMessageId = 0L
     private var launchModeLoaded = false
+    private var resumeLaunchMode: AiSupportChatLaunchMode.Resume? = null
 
     fun onLaunchModeLoaded(launchMode: AiSupportChatLaunchMode) {
         if (launchModeLoaded) return
@@ -76,6 +77,10 @@ class AiSupportChatViewModel @Inject constructor(
 
     fun onSendErrorDismissed() {
         _viewState.update { it.copy(showSendError = false) }
+    }
+
+    fun onRetryLoadHistoryClicked() {
+        resumeLaunchMode?.let(::resumeChat)
     }
 
     fun onFeedbackClicked(messageId: Long, rating: AiSupportChatFeedbackRating) {
@@ -249,6 +254,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     private fun resumeChat(launchMode: AiSupportChatLaunchMode.Resume) {
+        resumeLaunchMode = launchMode
         _viewState.update {
             it.copy(
                 input = "",
@@ -259,7 +265,8 @@ class AiSupportChatViewModel @Inject constructor(
                 hasProceededToChat = true,
                 hasStartedChat = true,
                 isLoadingHistory = true,
-                showSendError = false
+                showSendError = false,
+                showLoadHistoryError = false
             )
         }
 
@@ -294,7 +301,8 @@ class AiSupportChatViewModel @Inject constructor(
                         showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
                         messages = messages,
                         isLoadingHistory = false,
-                        showSendError = false
+                        showSendError = false,
+                        showLoadHistoryError = false
                     )
                 }
                 runCatching {
@@ -305,7 +313,7 @@ class AiSupportChatViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         isLoadingHistory = false,
-                        showSendError = true
+                        showLoadHistoryError = true
                     )
                 }
             }
@@ -720,6 +728,7 @@ data class AiSupportChatViewState(
     val isSending: Boolean = false,
     val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false,
+    val showLoadHistoryError: Boolean = false,
     val showHumanSupportPrompt: Boolean = false,
     val hasCreatedTicket: Boolean = false,
     val isChatResolved: Boolean = false,
@@ -733,7 +742,11 @@ data class AiSupportChatViewState(
         get() = !hasProceededToChat && !isSending
 
     val canSendMessages: Boolean
-        get() = hasProceededToChat && !isLoadingHistory && !hasCreatedTicket && !isChatResolved
+        get() = hasProceededToChat &&
+            !isLoadingHistory &&
+            !showLoadHistoryError &&
+            !hasCreatedTicket &&
+            !isChatResolved
 
     val showInputBar: Boolean
         get() = canSendMessages && !showHumanSupportPrompt
