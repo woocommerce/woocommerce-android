@@ -151,6 +151,7 @@ private fun Confirming(
             state = when (state.button.status) {
                 WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED -> WooPosButtonState.ENABLED
                 WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING -> WooPosButtonState.LOADING
+                WooPosMarkOrderAsCompleteState.Confirming.Button.Status.DISABLED -> WooPosButtonState.DISABLED
             },
             modifier = Modifier
                 .fillMaxWidth()
