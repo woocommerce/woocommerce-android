@@ -77,12 +77,12 @@ object HeadlessHardCheckEvaluator {
                 toolCalls.size <= check.value.toInt()
             HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS -> {
                 val expectation = parseToolResultExpectation(check.value)
-                toolCalls.any {
-                    it.name == expectation.toolName && it.resultKind.name == expectation.resultKind
-                }
+                val namedToolCalls = toolCalls.filter { it.name == expectation.toolName }
+                namedToolCalls.isNotEmpty() &&
+                    namedToolCalls.all { it.resultKind.name == expectation.resultKind }
             }
             HeadlessHardCheckType.CONFIRMATION_DECISION_EQUALS ->
-                confirmationResults.any { it.decision == check.value }
+                confirmationResults.isNotEmpty() && confirmationResults.all { it.decision == check.value }
             HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS -> {
                 val expectation = parseToolArgumentExpectation(check.value, Json)
                 toolCalls.any {
@@ -151,10 +151,20 @@ object HeadlessHardCheckEvaluator {
             expected.all { (key, expectedValue) ->
                 this[key]?.containsSubset(expectedValue) == true
             }
-        this is JsonArray && expected is JsonArray ->
-            size == expected.size && zip(expected).all { (actualValue, expectedValue) ->
-                actualValue.containsSubset(expectedValue)
+        this is JsonArray && expected is JsonArray -> {
+            val unmatchedActualValues = toMutableList()
+            expected.all { expectedValue ->
+                val actualIndex = unmatchedActualValues.indexOfFirst { actualValue ->
+                    actualValue.containsSubset(expectedValue)
+                }
+                if (actualIndex == -1) {
+                    false
+                } else {
+                    unmatchedActualValues.removeAt(actualIndex)
+                    true
+                }
             }
+        }
         else -> this == expected
     }
 

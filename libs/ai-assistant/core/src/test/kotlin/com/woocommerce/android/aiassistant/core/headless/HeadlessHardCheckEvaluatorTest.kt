@@ -112,6 +112,37 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
+    fun `when tool result kind equals has mixed results for the same tool, then it fails`() {
+        val result = runResult(
+            toolCalls = listOf(
+                toolCall("orders_update", HeadlessToolResultKind.REJECTED_BY_SAFETY),
+                toolCall("orders_update", HeadlessToolResultKind.SUCCESS),
+                toolCall("orders_list", HeadlessToolResultKind.SUCCESS),
+            )
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                    "orders_update:REJECTED_BY_SAFETY",
+                ),
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                    "orders_list:SUCCESS",
+                ),
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_RESULT_KIND_EQUALS,
+                    "orders_missing:SUCCESS",
+                ),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(false, true, false)
+    }
+
+    @Test
     fun `when confirmation decision equals is evaluated, then it matches a recorded cancellation`() {
         val result = runResult(
             confirmationResults = listOf(
@@ -134,6 +165,32 @@ class HeadlessHardCheckEvaluatorTest {
     }
 
     @Test
+    fun `when confirmation decision equals has mixed decisions, then it fails`() {
+        val result = runResult(
+            confirmationResults = listOf(
+                HeadlessConfirmationResultTrace(
+                    requestId = "call_1-confirmation",
+                    decision = "CANCELLED",
+                ),
+                HeadlessConfirmationResultTrace(
+                    requestId = "call_2-confirmation",
+                    decision = "CONFIRMED",
+                )
+            )
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(HeadlessHardCheckType.CONFIRMATION_DECISION_EQUALS, "CANCELLED"),
+                HeadlessHardCheck(HeadlessHardCheckType.CONFIRMATION_DECISION_EQUALS, "CONFIRMED"),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(false, false)
+    }
+
+    @Test
     fun `when tool call count at most is evaluated, then it passes only under the configured maximum`() {
         val result = runResult(
             toolCalls = listOf(
@@ -148,6 +205,84 @@ class HeadlessHardCheckEvaluatorTest {
             listOf(
                 HeadlessHardCheck(HeadlessHardCheckType.TOOL_CALL_COUNT_AT_MOST, "orders_list:2"),
                 HeadlessHardCheck(HeadlessHardCheckType.TOOL_CALL_COUNT_AT_MOST, "orders_list:1"),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(true, false)
+    }
+
+    @Test
+    fun `when tool argument json contains is evaluated, then array subsets ignore order and allow extras`() {
+        val result = runResult(
+            toolCalls = listOf(
+                toolCall(
+                    name = "products_list",
+                    arguments = json.parseToJsonElement(
+                        """
+                        {
+                          "statuses": ["processing", "completed", "pending"],
+                          "filters": [
+                            {
+                              "status": "publish",
+                              "tags": ["coffee", "featured", "sale"]
+                            },
+                            {
+                              "status": "draft",
+                              "tags": ["archived"]
+                            }
+                          ]
+                        }
+                        """.trimIndent()
+                    ).jsonObject,
+                )
+            )
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS,
+                    """products_list:{"statuses":["completed","processing"]}""",
+                ),
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS,
+                    """products_list:{"filters":[{"tags":["sale","coffee"]}]}""",
+                ),
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS,
+                    """products_list:{"statuses":["refunded"]}""",
+                ),
+            )
+        )
+
+        assertThat(checks.map { it.passed }).containsExactly(true, true, false)
+    }
+
+    @Test
+    fun `when tool argument json contains is evaluated, then duplicate expected array values require matches`() {
+        val result = runResult(
+            toolCalls = listOf(
+                toolCall(
+                    name = "orders_list",
+                    arguments = json.parseToJsonElement(
+                        """{"statuses":["processing","processing","completed"]}"""
+                    ).jsonObject,
+                )
+            )
+        )
+
+        val checks = HeadlessHardCheckEvaluator.evaluate(
+            result,
+            listOf(
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS,
+                    """orders_list:{"statuses":["processing","processing"]}""",
+                ),
+                HeadlessHardCheck(
+                    HeadlessHardCheckType.TOOL_ARGUMENT_JSON_CONTAINS,
+                    """orders_list:{"statuses":["completed","completed"]}""",
+                ),
             )
         )
 
