@@ -16,11 +16,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -70,7 +74,6 @@ private fun WooPosMarkOrderAsPaidScreen(
         WooPosToolbar(
             titleText = stringResource(R.string.woopos_mark_order_as_paid_title),
             onBackClicked = onCloseClicked.takeUnless { isProcessing },
-            navigationIconRes = R.drawable.ic_close_24dp,
         )
         when (state) {
             is WooPosMarkOrderAsPaidState.Confirming -> Confirming(
@@ -95,48 +98,61 @@ private fun Confirming(
     onNoteChanged: (String) -> Unit,
     onConfirmClicked: () -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .imePadding()
-            .padding(horizontal = WooPosSpacing.Medium.value),
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        horizontalAlignment = Alignment.Start,
+            .imePadding(),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        Spacer(modifier = Modifier.weight(1f))
 
-        WooPosText(
-            text = stringResource(R.string.woopos_mark_order_as_paid_message, state.formattedTotal),
-            style = WooPosTypography.BodyLarge,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-        )
-
-        WooPosText(
-            text = stringResource(R.string.woopos_mark_order_as_paid_note_label),
-            style = WooPosTypography.BodySmall,
-            fontWeight = FontWeight.Bold,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-        )
-
-        WooPosInputField(
-            value = state.note,
-            onValueChange = onNoteChanged,
-            label = stringResource(R.string.woopos_mark_order_as_paid_note_hint),
-            textColor = MaterialTheme.colorScheme.onSurface,
-            textStyle = WooPosTypography.BodyLarge,
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_NOTE_FIELD),
-        )
-
-        if (state.errorMessage != null) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             WooPosText(
-                text = state.errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                style = WooPosTypography.BodySmall,
+                text = stringResource(R.string.woopos_mark_order_as_paid_message, state.formattedTotal),
+                style = WooPosTypography.BodyLarge,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosInputField(
+                value = state.note,
+                onValueChange = onNoteChanged,
+                label = stringResource(R.string.woopos_mark_order_as_paid_note_hint),
+                contentAlignment = Alignment.Center,
+                textStyle = WooPosTypography.Heading,
+                textColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .padding(horizontal = WooPosSpacing.Medium.value)
+                    .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_NOTE_FIELD),
+            )
+
+            if (state.errorMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                WooPosText(
+                    text = state.errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                )
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -144,7 +160,7 @@ private fun Confirming(
         WooPosButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = WooPosSpacing.Medium.value)
+                .padding(WooPosSpacing.Medium.value)
                 .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_CONFIRM_BUTTON),
             text = stringResource(R.string.woopos_mark_order_as_paid_confirm_button),
             onClick = onConfirmClicked,
@@ -154,6 +170,8 @@ private fun Confirming(
                 else -> WooPosButtonState.ENABLED
             },
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
 
