@@ -1039,7 +1039,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
         )
         whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
-        whenever(repository.markChatAsUpdated(CHAT_ID, SESSION_ID)).thenThrow(RuntimeException("Bookmark update failed"))
+        whenever(repository.markChatAsUpdated(CHAT_ID, SESSION_ID)).thenThrow(
+            RuntimeException("Bookmark update failed")
+        )
 
         viewModel.onLaunchModeLoaded(
             AiSupportChatLaunchMode.Resume(
