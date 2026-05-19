@@ -4,6 +4,7 @@ import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonArray
@@ -15,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -51,6 +53,62 @@ class OrdersConfirmationPreviewProviderTest {
                     label = label(R.string.ai_assistant_confirmation_field_status),
                 ),
             )
+        }
+
+    @Test
+    fun `given order update and current order has billing name, when preview is built, then title includes resolved name`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(
+                dataSource.getOrders(listOf(42L))
+            ).thenReturn(Result.success(cachedOrderLookup(order(billingFirstName = "Jane", billingLastName = "Doe"))))
+
+            val preview = preview(
+                toolName = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "pending")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_order_update_title_with_name,
+                    raw("42"),
+                    raw("Jane Doe"),
+                )
+            )
+            verify(dataSource).getOrders(listOf(42L))
+            verify(dataSource, never()).getOrder(42L)
+        }
+
+    @Test
+    fun `given notifying order update and current order has billing name, when preview is built, then summary includes name`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(
+                dataSource.getOrders(listOf(42L))
+            ).thenReturn(Result.success(cachedOrderLookup(order(billingFirstName = "Jane", billingLastName = "Doe"))))
+
+            val preview = preview(
+                toolName = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "processing")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_order_update_summary_with_name,
+                    raw("42"),
+                    raw("Jane Doe"),
+                )
+            )
+            verify(dataSource).getOrders(listOf(42L))
+            verify(dataSource, never()).getOrder(42L)
         }
 
     @Test
@@ -114,7 +172,7 @@ class OrdersConfirmationPreviewProviderTest {
         runTest {
             val order = order(billingEmail = "old@example.com")
             val dataSource: AIOrdersDataSource = mock()
-            whenever(dataSource.getOrder(42L)).thenReturn(Result.success(order))
+            whenever(dataSource.getOrders(listOf(42L))).thenReturn(Result.success(cachedOrderLookup(order)))
 
             val preview = preview(
                 toolName = "orders_update",
@@ -140,7 +198,9 @@ class OrdersConfirmationPreviewProviderTest {
         runTest {
             val longNote = "a".repeat(200)
             val dataSource: AIOrdersDataSource = mock()
-            whenever(dataSource.getOrder(42L)).thenReturn(Result.success(order(customerNote = "previous private note")))
+            whenever(
+                dataSource.getOrders(listOf(42L))
+            ).thenReturn(Result.success(cachedOrderLookup(order(customerNote = "previous private note"))))
 
             val preview = preview(
                 toolName = "orders_update",
@@ -254,7 +314,9 @@ class OrdersConfirmationPreviewProviderTest {
     fun `given order update and current order, when preview is built, then before and after values are included`() =
         runTest {
             val dataSource: AIOrdersDataSource = mock()
-            whenever(dataSource.getOrder(42L)).thenReturn(Result.success(order(status = "wc-pending")))
+            whenever(dataSource.getOrders(listOf(42L))).thenReturn(
+                Result.success(cachedOrderLookup(order(status = "wc-pending")))
+            )
 
             val preview = preview(
                 toolName = "orders_update",
@@ -279,7 +341,9 @@ class OrdersConfirmationPreviewProviderTest {
     @Test
     fun `given order update, when preview is built, then only order data source is fetched`() = runTest {
         val dataSource: AIOrdersDataSource = mock()
-        whenever(dataSource.getOrder(42L)).thenReturn(Result.success(order(status = "wc-pending")))
+        whenever(dataSource.getOrders(listOf(42L))).thenReturn(
+            Result.success(cachedOrderLookup(order(status = "wc-pending")))
+        )
 
         preview(
             toolName = "orders_update",
@@ -290,7 +354,8 @@ class OrdersConfirmationPreviewProviderTest {
             dataSource = dataSource,
         )
 
-        verify(dataSource).getOrder(42L)
+        verify(dataSource).getOrders(listOf(42L))
+        verify(dataSource, never()).getOrder(42L)
     }
 
     @Test
@@ -397,6 +462,9 @@ class OrdersConfirmationPreviewProviderTest {
     private suspend fun failingDataSource(): AIOrdersDataSource {
         val dataSource: AIOrdersDataSource = mock()
         whenever(dataSource.getOrder(any())).thenReturn(Result.failure(IllegalStateException("No current order")))
+        whenever(dataSource.getOrders(any())).thenReturn(
+            Result.failure(IllegalStateException("No current orders"))
+        )
         return dataSource
     }
 
@@ -423,12 +491,24 @@ class OrdersConfirmationPreviewProviderTest {
         status: String = "wc-pending",
         customerNote: String = "",
         billingEmail: String = "buyer@example.com",
+        billingFirstName: String = "",
+        billingLastName: String = "",
     ) = OrderEntity(
         localSiteId = LocalId(1),
         orderId = 42L,
         status = status,
         customerNote = customerNote,
         billingEmail = billingEmail,
+        billingFirstName = billingFirstName,
+        billingLastName = billingLastName,
+    )
+
+    private fun cachedOrderLookup(vararg orders: OrderEntity) = CachedLookupResult(
+        items = orders.toList(),
+        cacheHitCount = orders.size,
+        cacheMissCount = 0,
+        fetchAttempted = false,
+        fetchFailed = false,
     )
 
     private fun label(id: Int) = string(id)

@@ -18,7 +18,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         when (context.descriptor.name) {
             ORDERS_UPDATE -> orderUpdatePreview(
                 arguments = context.request.arguments,
-                currentValues = currentOrderValues(context.request.arguments),
+                snapshot = currentOrderSnapshot(context.request.arguments),
             )
             ORDERS_BULK_UPDATE -> ordersBulkUpdatePreview(context.request.arguments)
             else -> error("Unsupported order confirmation preview: ${context.descriptor.name}")
@@ -26,11 +26,12 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
 
     private fun orderUpdatePreview(
         arguments: JsonObject,
-        currentValues: Map<String, String>?,
+        snapshot: OrderConfirmationSnapshot?,
     ): ConfirmationPreview {
         val id = arguments.longValue("id")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_order_update_generic))
         val status = arguments.stringValue("status")
+        val currentValues = snapshot?.currentValues
         val fields = buildList {
             status?.let {
                 add(
@@ -64,14 +65,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         }
 
         return ConfirmationPreview(
-            message = string(
-                if (status.emailsCustomer()) {
-                    R.string.ai_assistant_confirmation_order_update_summary
-                } else {
-                    R.string.ai_assistant_confirmation_order_update_title
-                },
-                raw(id.toString()),
-            ),
+            message = orderUpdateTitle(id, snapshot?.displayName, status.emailsCustomer()),
             fields = fields,
         )
     }
@@ -119,16 +113,46 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         )
     }
 
-    private suspend fun currentOrderValues(arguments: JsonObject): Map<String, String>? =
-        arguments.longValue("id")
-            ?.let { orderId -> ordersDataSource.getOrder(orderId).getOrNull() }
-            ?.let { order ->
-                mapOf(
-                    "status" to order.status.removePrefix("wc-"),
-                    "customer_note" to order.customerNote,
-                    "billing_email" to order.billingEmail,
-                )
-            }
+    private suspend fun currentOrderSnapshot(arguments: JsonObject): OrderConfirmationSnapshot? {
+        val orderId = arguments.longValue("id") ?: return null
+        val order = ordersDataSource.getOrders(listOf(orderId))
+            .getOrNull()
+            ?.items
+            ?.firstOrNull { it.orderId == orderId }
+            ?: return null
+        return OrderConfirmationSnapshot(
+            currentValues = mapOf(
+                "status" to order.status.removePrefix("wc-"),
+                "customer_note" to order.customerNote,
+                "billing_email" to order.billingEmail,
+            ),
+            displayName = order.confirmationDisplayName(),
+        )
+    }
+
+    private fun orderUpdateTitle(
+        id: Long,
+        displayName: String?,
+        emailsCustomer: Boolean,
+    ): ConfirmationPreviewText =
+        displayName?.let { name ->
+            string(
+                if (emailsCustomer) {
+                    R.string.ai_assistant_confirmation_order_update_summary_with_name
+                } else {
+                    R.string.ai_assistant_confirmation_order_update_title_with_name
+                },
+                raw(id.toString()),
+                raw(name),
+            )
+        } ?: string(
+            if (emailsCustomer) {
+                R.string.ai_assistant_confirmation_order_update_summary
+            } else {
+                R.string.ai_assistant_confirmation_order_update_title
+            },
+            raw(id.toString()),
+        )
 
     private fun String.customerNotePreviewValue(): String =
         if (length > CUSTOMER_NOTE_PREVIEW_LIMIT) {
@@ -139,6 +163,11 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
 
     private fun String?.emailsCustomer(): Boolean =
         this?.let { it in CUSTOMER_NOTIFYING_STATUSES } == true
+
+    private data class OrderConfirmationSnapshot(
+        val currentValues: Map<String, String>,
+        val displayName: String?,
+    )
 
     private companion object {
         const val ORDERS_UPDATE = "orders_update"

@@ -72,6 +72,62 @@ class ProductVariationsConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given variation update and current variation has attributes, when preview is built, then title includes options`() =
+        runTest {
+            val dataSource: AIProductVariationsDataSource = mock()
+            whenever(dataSource.getVariation(7L, 8L)).thenReturn(
+                Result.success(
+                    variation(attributes = """[{"name":"Size","option":"M"},{"name":"Color","option":"Red"}]""")
+                )
+            )
+
+            val preview = preview(
+                arguments = buildJsonObject {
+                    put("product_id", 7)
+                    put("id", 8)
+                    put("regular_price", "19.99")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_product_variation_update_title_with_name,
+                    raw("M, Red"),
+                    raw("8"),
+                    raw("7"),
+                )
+            )
+        }
+
+    @Test
+    fun `given variation update and current variation has sku but no attributes, when preview is built, then title includes sku`() =
+        runTest {
+            val dataSource: AIProductVariationsDataSource = mock()
+            whenever(dataSource.getVariation(7L, 8L)).thenReturn(
+                Result.success(variation(sku = "VAR-8", attributes = "[]"))
+            )
+
+            val preview = preview(
+                arguments = buildJsonObject {
+                    put("product_id", 7)
+                    put("id", 8)
+                    put("regular_price", "19.99")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_product_variation_update_title_with_name,
+                    raw("VAR-8"),
+                    raw("8"),
+                    raw("7"),
+                )
+            )
+        }
+
+    @Test
     fun `given variation update, when preview is built, then only variation data source is fetched`() = runTest {
         val dataSource: AIProductVariationsDataSource = mock()
         whenever(dataSource.getVariation(7L, 8L)).thenReturn(Result.success(variation()))
@@ -161,6 +217,7 @@ class ProductVariationsConfirmationPreviewProviderTest {
         stockQuantity: Double = 3.5,
         stockStatus: String = "instock",
         status: String = "publish",
+        attributes: String = "",
     ) = WCProductVariationModel(
         remoteProductId = RemoteId(7L),
         remoteVariationId = RemoteId(8L),
@@ -170,6 +227,7 @@ class ProductVariationsConfirmationPreviewProviderTest {
         stockQuantity = stockQuantity,
         stockStatus = stockStatus,
         status = status,
+        attributes = attributes,
     )
 
     private fun label(id: Int) = string(id)

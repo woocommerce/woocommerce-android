@@ -18,7 +18,7 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
         when (context.descriptor.name) {
             PRODUCTS_UPDATE -> productUpdatePreview(
                 arguments = context.request.arguments,
-                currentValues = currentProductValues(context.request.arguments),
+                snapshot = currentProductSnapshot(context.request.arguments),
             )
             PRODUCTS_BULK_UPDATE -> productsBulkUpdatePreview(context.request.arguments)
             else -> error("Unsupported product confirmation preview: ${context.descriptor.name}")
@@ -26,13 +26,14 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
 
     private fun productUpdatePreview(
         arguments: JsonObject,
-        currentValues: Map<String, String>?,
+        snapshot: ProductConfirmationSnapshot?,
     ): ConfirmationPreview {
         val id = arguments.longValue("id")
             ?: return ConfirmationPreview(string(R.string.ai_assistant_confirmation_product_update_generic))
+        val currentValues = snapshot?.currentValues
         val fields = productFields(arguments, currentValues)
         return ConfirmationPreview(
-            message = productUpdateTitle(id, currentValues),
+            message = productUpdateTitle(id, snapshot?.displayName),
             fields = fields,
         )
     }
@@ -55,18 +56,27 @@ internal class ProductsConfirmationPreviewProvider @Inject constructor(
         )
     }
 
-    private suspend fun currentProductValues(arguments: JsonObject): Map<String, String>? =
+    private suspend fun currentProductSnapshot(arguments: JsonObject): ProductConfirmationSnapshot? =
         arguments.longValue("id")
             ?.let { productId -> productsDataSource.getProduct(productId).getOrNull() }
             ?.let { product ->
-                buildMap {
-                    put("name", product.name)
-                    put("regular_price", product.regularPrice)
-                    put("sale_price", product.salePrice)
-                    put("stock_quantity", product.stockQuantity.formatStockQuantity())
-                    put("status", product.status)
-                }
+                val displayName = product.confirmationDisplayName()
+                ProductConfirmationSnapshot(
+                    currentValues = buildMap {
+                        put("name", displayName.orEmpty())
+                        put("regular_price", product.regularPrice)
+                        put("sale_price", product.salePrice)
+                        put("stock_quantity", product.stockQuantity.formatStockQuantity())
+                        put("status", product.status)
+                    },
+                    displayName = displayName,
+                )
             }
+
+    private data class ProductConfirmationSnapshot(
+        val currentValues: Map<String, String>,
+        val displayName: String?,
+    )
 
     private companion object {
         const val PRODUCTS_UPDATE = "products_update"

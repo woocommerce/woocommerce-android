@@ -157,6 +157,30 @@ class ProductsConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given product update and current product has padded name, when preview is built, then title trims name`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProduct(7L)).thenReturn(Result.success(product(name = "  Classic T-Shirt  ")))
+
+            val preview = preview(
+                toolName = "products_update",
+                arguments = buildJsonObject {
+                    put("id", 7)
+                    put("regular_price", "24.99")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_product_update_title_with_name,
+                    raw("Classic T-Shirt"),
+                    raw("7"),
+                )
+            )
+        }
+
+    @Test
     fun `given product update, when preview is built, then only product data source is fetched`() = runTest {
         val dataSource: AIProductsDataSource = mock()
         whenever(dataSource.getProduct(7L)).thenReturn(Result.success(product()))
