@@ -95,8 +95,9 @@ private fun WooPushNotificationSettingsScreen(
                 NotificationTypeRow(
                     item = item,
                     onEnabledChanged = onNotificationTypeEnabledChanged,
-                    onClick = onNotificationTypeClicked,
-                    enabled = isNotificationTypeSelectionEnabled,
+                    onClick = { onNotificationTypeClicked(item.type) },
+                    isNotificationTypeSelectionEnabled = isNotificationTypeSelectionEnabled,
+                    isNotificationChannelEnabled = item.isNotificationChannelEnabled,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -156,16 +157,19 @@ private fun SystemNotificationsDisabledWarning(
 private fun NotificationTypeRow(
     item: NotificationTypeItem,
     onEnabledChanged: (NotificationType, Boolean) -> Unit,
-    onClick: (NotificationType) -> Unit,
-    enabled: Boolean,
+    onClick: () -> Unit,
+    isNotificationTypeSelectionEnabled: Boolean,
+    isNotificationChannelEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val enabled = isNotificationTypeSelectionEnabled && isNotificationChannelEnabled
+    val isChannelDisabledStateVisible = isNotificationTypeSelectionEnabled && !isNotificationChannelEnabled
     Row(
         modifier = modifier
             .height(IntrinsicSize.Min)
             .padding(top = 8.dp)
             .fillMaxWidth()
-            .clickable(enabled = enabled) { onClick(item.type) },
+            .clickable(enabled = isNotificationTypeSelectionEnabled, onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val contentAlpha = if (enabled) 1f else 0.38f
@@ -181,17 +185,38 @@ private fun NotificationTypeRow(
                 style = MaterialTheme.typography.titleMedium,
                 color = titleColor
             )
-            Text(
-                text = stringResource(id = item.subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = subtitleColor,
-                modifier = Modifier.padding(top = 2.dp)
-            )
+            if (!isChannelDisabledStateVisible) {
+                Text(
+                    text = stringResource(id = item.subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = subtitleColor,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            } else {
+                Row(
+                    modifier = Modifier.padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_warning_filled_24dp),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.settings_notifs_channel_disabled_subtitle),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
         Spacer(modifier = Modifier.width(16.dp))
         WCSwitch(
             checked = item.isEnabled,
             onCheckedChange = { onEnabledChanged(item.type, it) },
+            modifier = Modifier.clickable(enabled = isChannelDisabledStateVisible, onClick = onClick),
             enabled = enabled
         )
         Spacer(modifier = Modifier.width(16.dp))
