@@ -17,6 +17,9 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -85,6 +88,7 @@ class AssistantViewModelTest {
             assistantTelemetryTracker = assistantTelemetryTracker,
             assistantTelemetryTimeSource = timeSource,
             assistantIdGenerator = assistantIdGenerator,
+            sessionHistoryMapper = AssistantSessionHistoryMapper(),
         )
     }
 
@@ -567,7 +571,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Hello")
 
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Hello"),
@@ -589,7 +593,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Find order 123")
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Find order 123"),
@@ -611,7 +615,7 @@ class AssistantViewModelTest {
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(givenToolCallFinished(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Find order 123"),
@@ -638,7 +642,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Find order 123")
         runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Find order 123")),
                 retryAffordance = RetryAffordance.Manual,
@@ -657,7 +661,7 @@ class AssistantViewModelTest {
     fun `when turn fails with retry available, then state exposes error and retry calls runtime`() = runTest {
         viewModel.onSendMessage("Hello")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("Hello")),
                 retryAffordance = RetryAffordance.Manual,
@@ -685,7 +689,7 @@ class AssistantViewModelTest {
             val activeAssistantId = viewModel.uiState.value.messages.last().id
 
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
                     retryAffordance = RetryAffordance.Manual,
@@ -723,7 +727,7 @@ class AssistantViewModelTest {
             val activeAssistantId = viewModel.uiState.value.messages.last().id
 
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(
                         AssistantMessage.User("Update order 42"),
@@ -762,7 +766,7 @@ class AssistantViewModelTest {
             val activeAssistantId = viewModel.uiState.value.messages.last().id
 
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
                     retryAffordance = RetryAffordance.Manual,
@@ -800,7 +804,7 @@ class AssistantViewModelTest {
             val activeAssistantId = viewModel.uiState.value.messages.last().id
 
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Hello")),
                     retryAffordance = RetryAffordance.None,
@@ -828,7 +832,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Hello")
 
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.MAX_ITERATIONS,
                 updatedHistory = listOf(AssistantMessage.User("Hello")),
             )
@@ -853,7 +857,7 @@ class AssistantViewModelTest {
         )
         viewModel.onSendMessage("Previous question")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = priorHistory,
             )
@@ -862,7 +866,7 @@ class AssistantViewModelTest {
 
         viewModel.onSendMessage("Current question")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = priorHistory + listOf(
                     AssistantMessage.User("Current question"),
@@ -895,7 +899,7 @@ class AssistantViewModelTest {
             )
             viewModel.onSendMessage("Previous question")
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.COMPLETED,
                     updatedHistory = completedHistory,
                 )
@@ -953,7 +957,7 @@ class AssistantViewModelTest {
         )
         viewModel.onSendMessage("Previous question")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = priorHistory,
             )
@@ -961,7 +965,7 @@ class AssistantViewModelTest {
         advanceUntilIdle()
         viewModel.onSendMessage("Current question")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = priorHistory + listOf(
                     AssistantMessage.User("Current question"),
@@ -975,7 +979,7 @@ class AssistantViewModelTest {
 
         viewModel.onRetry()
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = priorHistory + listOf(
                     AssistantMessage.User("Current question"),
@@ -989,14 +993,14 @@ class AssistantViewModelTest {
         viewModel.onRetry()
 
         assertThat(runtime.retryRequests).hasSize(2)
-        assertThat(runtime.retryRequests.map { it.history }).containsOnly(priorHistory)
+        assertThat(runtime.retryRequests.map { it.sessionHistory }).containsOnly(sessionHistoryFrom(priorHistory))
     }
 
     @Test
     fun `given retryable failed turn, when a new turn starts, then previous retry action is disabled`() = runTest {
         viewModel.onSendMessage("First")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("First")),
                 retryAffordance = RetryAffordance.Manual,
@@ -1018,7 +1022,7 @@ class AssistantViewModelTest {
     fun `given two retryable failed turns, when retry is requested, then latest failed turn is retried`() = runTest {
         viewModel.onSendMessage("First")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(AssistantMessage.User("First")),
                 retryAffordance = RetryAffordance.Manual,
@@ -1029,7 +1033,7 @@ class AssistantViewModelTest {
 
         viewModel.onSendMessage("Second")
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(
                     AssistantMessage.User("First"),
@@ -1127,7 +1131,7 @@ class AssistantViewModelTest {
             runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(orderCard)))
             runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Anything else?"))
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.COMPLETED,
                     updatedHistory = listOf(
                         AssistantMessage.User("Show order 123"),
@@ -1157,7 +1161,7 @@ class AssistantViewModelTest {
 
         runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("I could not find that order."))
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Show missing order"),
@@ -1291,7 +1295,7 @@ class AssistantViewModelTest {
             viewModel.onSendMessage("Show analytics")
 
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.COMPLETED,
                     updatedHistory = listOf(
                         AssistantMessage.User("Show analytics"),
@@ -1395,7 +1399,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Hello")
 
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Hello"),
@@ -1418,7 +1422,7 @@ class AssistantViewModelTest {
         viewModel.onSendMessage("Hello")
 
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.FAILED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Hello"),
@@ -1496,12 +1500,34 @@ class AssistantViewModelTest {
         }
 
     @Test
+    fun `given no assistant text, when cancelled and new message is sent, then next turn history includes only cancelled user`() =
+        runTest {
+            viewModel.onSendMessage("Summarize sales")
+            advanceUntilIdle()
+
+            viewModel.onCancelTurn()
+            advanceUntilIdle()
+            viewModel.onSendMessage("What changed?")
+
+            assertThat(runtime.startRequests.last()).isEqualTo(
+                expectedTurnRequest(
+                    requestId = "assistant-id-7",
+                    messageId = "assistant-id-6",
+                    userMessage = "What changed?",
+                    history = listOf(
+                        AssistantMessage.User("Summarize sales"),
+                    ),
+                )
+            )
+        }
+
+    @Test
     fun `given failed turn with tool activity, when retry starts, then old transient activity is not replayed`() =
         runTest {
             viewModel.onSendMessage("Find order 123")
             runtime.emit(AssistantRuntimeEvent.ToolCallStarted(toolCallId = "call-1", toolName = "orders_get"))
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.FAILED,
                     updatedHistory = listOf(AssistantMessage.User("Find order 123")),
                     retryAffordance = RetryAffordance.Manual,
@@ -1624,7 +1650,7 @@ class AssistantViewModelTest {
             )
         )
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.COMPLETED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Cancel order 123"),
@@ -1653,7 +1679,7 @@ class AssistantViewModelTest {
             )
         )
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = listOf(
                     AssistantMessage.User("Cancel order 123"),
@@ -1737,7 +1763,7 @@ class AssistantViewModelTest {
                 )
             )
             runtime.emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = LoopOutcome.STOPPED,
                     updatedHistory = listOf(
                         AssistantMessage.User("Cancel order 123"),
@@ -1768,7 +1794,7 @@ class AssistantViewModelTest {
             )
         )
         runtime.emit(
-            AssistantRuntimeEvent.Finished(
+            givenFinished(
                 outcome = LoopOutcome.STOPPED,
                 updatedHistory = listOf(AssistantMessage.User("Cancel order 123")),
             )
@@ -1858,7 +1884,7 @@ class AssistantViewModelTest {
         ),
     )
 
-    private class FakeAssistantRuntime : AssistantRuntime {
+    private inner class FakeAssistantRuntime : AssistantRuntime {
         val startRequests = mutableListOf<AssistantTurnRequest>()
         val retryRequests = mutableListOf<AssistantTurnRequest>()
         val cancelledConversationIds = mutableListOf<String>()
@@ -1900,15 +1926,28 @@ class AssistantViewModelTest {
             error: AssistantError? = null,
         ) {
             emit(
-                AssistantRuntimeEvent.Finished(
+                givenFinished(
                     outcome = outcome,
-                    updatedHistory = updatedHistory,
+                    updatedSessionHistory = sessionHistoryFrom(updatedHistory),
                     retryAffordance = retryAffordance,
                     error = error,
                 )
             )
         }
     }
+
+    private fun givenFinished(
+        outcome: LoopOutcome,
+        updatedHistory: List<AssistantMessage> = emptyList(),
+        updatedSessionHistory: AssistantSessionHistory? = null,
+        retryAffordance: RetryAffordance = RetryAffordance.None,
+        error: AssistantError? = null,
+    ) = AssistantRuntimeEvent.Finished(
+        outcome = outcome,
+        updatedSessionHistory = updatedSessionHistory ?: sessionHistoryFrom(updatedHistory),
+        retryAffordance = retryAffordance,
+        error = error,
+    )
 
     private fun sequentialAssistantIdGenerator(): AssistantIdGenerator {
         var count = 0
@@ -1936,7 +1975,18 @@ class AssistantViewModelTest {
         siteId = SITE_ID,
         toolScope = ToolScope.GLOBAL,
         userMessage = userMessage,
-        history = history,
+        sessionHistory = sessionHistoryFrom(history),
+    )
+
+    private fun sessionHistoryFrom(history: List<AssistantMessage>) = AssistantSessionHistory(
+        messages = history.mapNotNull { message ->
+            when (message) {
+                is AssistantMessage.User -> AssistantSessionMessage.User(message.content)
+                is AssistantMessage.Assistant -> message.content?.let(AssistantSessionMessage::Assistant)
+                is AssistantMessage.System,
+                is AssistantMessage.Tool -> null
+            }
+        }
     )
 
     private fun givenToolCallFinished(

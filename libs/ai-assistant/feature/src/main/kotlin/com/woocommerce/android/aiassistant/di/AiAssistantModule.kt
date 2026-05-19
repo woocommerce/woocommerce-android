@@ -2,6 +2,8 @@ package com.woocommerce.android.aiassistant.di
 
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoopImpl
 import com.woocommerce.android.aiassistant.core.loop.ConservativeRetryPolicy
@@ -39,7 +41,6 @@ internal object AiAssistantModule {
         chatService: ChatService,
         toolRegistry: ToolRegistry,
         retryPolicy: RetryPolicy,
-        historyBudgeter: HistoryBudgeter,
         safetyOrchestrator: SafetyOrchestrator,
         @AiAssistantJson json: Json,
         timeSource: TimeSource,
@@ -47,7 +48,6 @@ internal object AiAssistantModule {
         chatService,
         toolRegistry,
         retryPolicy,
-        historyBudgeter,
         safetyOrchestrator,
         json,
         timeSource,
@@ -64,6 +64,15 @@ internal object AiAssistantModule {
     @Provides
     @Singleton
     fun provideHistoryBudgeter(): HistoryBudgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+
+    @Provides
+    @Singleton
+    fun provideModelRequestHistoryBuilder(historyBudgeter: HistoryBudgeter): ModelRequestHistoryBuilder =
+        ModelRequestHistoryBuilder(historyBudgeter)
+
+    @Provides
+    @Singleton
+    fun provideAssistantSessionHistoryMapper(): AssistantSessionHistoryMapper = AssistantSessionHistoryMapper()
 
     @Provides
     @Singleton

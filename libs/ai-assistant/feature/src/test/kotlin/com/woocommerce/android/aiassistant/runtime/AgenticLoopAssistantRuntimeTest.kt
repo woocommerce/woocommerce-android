@@ -12,8 +12,15 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistory
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
+import com.woocommerce.android.aiassistant.core.loop.BudgetedHistory
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
+import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
@@ -76,41 +83,80 @@ class AgenticLoopAssistantRuntimeTest {
 
         runtime.startTurn(givenTurnRequest()).toList()
 
-        assertThat(fakeLoop.receivedHistory).containsExactly(
-            AssistantMessage.System("prompt from provider")
+        assertThat(fakeLoop.receivedModelHistory.messages).containsExactly(
+            AssistantMessage.System("prompt from provider"),
+            AssistantMessage.User("Hello"),
         )
     }
 
     @Test
-    fun `given stale system prompt in history, when turn starts, then runtime replaces it`() = runTest {
+    fun `given prior session history, when turn starts, then runtime builds model history with fresh prompt`() = runTest {
         val fakeLoop = CapturingAgenticLoop(events = emptyList())
         val runtime = runtime(agenticLoop = fakeLoop, systemPrompt = "fresh prompt")
         val request = givenTurnRequest().copy(
-            history = listOf(
-                AssistantMessage.System("stale prompt"),
-                AssistantMessage.User("previous"),
-                AssistantMessage.Assistant("answer"),
+            sessionHistory = AssistantSessionHistory(
+                listOf(
+                    AssistantSessionMessage.User("previous"),
+                    AssistantSessionMessage.Assistant("answer"),
+                )
             )
         )
 
         runtime.startTurn(request).toList()
 
-        assertThat(fakeLoop.receivedHistory).containsExactly(
+        assertThat(fakeLoop.receivedModelHistory.messages).containsExactly(
             AssistantMessage.System("fresh prompt"),
             AssistantMessage.User("previous"),
             AssistantMessage.Assistant("answer"),
+            AssistantMessage.User("Hello"),
+        )
+    }
+
+    @Test
+    fun `given runtime finishes, when next turn starts, then previous updated session history is used`() = runTest {
+        val fakeLoop = SequencedCapturingAgenticLoop(
+            eventBatches = listOf(
+                listOf(
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.COMPLETED,
+                        modelTurnMessages = listOf(
+                            AssistantMessage.User("Hello"),
+                            AssistantMessage.Assistant("Hi there"),
+                        ),
+                    )
+                ),
+                emptyList(),
+            )
+        )
+        val runtime = runtime(agenticLoop = fakeLoop, systemPrompt = "fresh prompt")
+
+        val firstFinished = runtime.startTurn(
+            givenTurnRequest(userMessage = "Hello")
+        ).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+        runtime.startTurn(
+            givenTurnRequest(
+                userMessage = "Next question",
+                sessionHistory = firstFinished.updatedSessionHistory,
+            )
+        ).toList()
+
+        assertThat(fakeLoop.receivedModelHistories.last().messages).containsExactly(
+            AssistantMessage.System("fresh prompt"),
+            AssistantMessage.User("Hello"),
+            AssistantMessage.Assistant("Hi there"),
+            AssistantMessage.User("Next question"),
         )
     }
 
     @Test
     fun `when agentic loop finishes with max iterations, then runtime preserves outcome`() = runTest {
-        val updatedHistory = listOf(AssistantMessage.User("Hello"))
+        val modelTurnMessages = listOf(AssistantMessage.User("Hello"))
         val runtime = runtime(
             agenticLoop = FakeAgenticLoop(
                 events = listOf(
                     LoopEvent.Finished(
                         outcome = LoopOutcome.MAX_ITERATIONS,
-                        updatedHistory = updatedHistory,
+                        modelTurnMessages = modelTurnMessages,
                     )
                 )
             ),
@@ -121,14 +167,14 @@ class AgenticLoopAssistantRuntimeTest {
         assertThat(events).containsExactly(
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.MAX_ITERATIONS,
-                updatedHistory = updatedHistory,
+                updatedSessionHistory = sessionHistoryFrom(modelTurnMessages),
             )
         )
     }
 
     @Test
     fun `when loop fails with cancelled before stopped finish, then runtime finish includes cancelled error`() = runTest {
-        val updatedHistory = listOf(
+        val modelTurnMessages = listOf(
             AssistantMessage.User("Hello"),
             AssistantMessage.Assistant("Partial"),
         )
@@ -138,7 +184,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.Failed(AssistantError.Cancelled),
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
-                        updatedHistory = updatedHistory,
+                        modelTurnMessages = modelTurnMessages,
                         retryAffordance = RetryAffordance.None,
                     )
                 )
@@ -150,7 +196,7 @@ class AgenticLoopAssistantRuntimeTest {
         assertThat(events).containsExactly(
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
-                updatedHistory = updatedHistory,
+                updatedSessionHistory = sessionHistoryFrom(modelTurnMessages),
                 retryAffordance = RetryAffordance.None,
                 error = AssistantError.Cancelled,
             )
@@ -298,7 +344,7 @@ class AgenticLoopAssistantRuntimeTest {
 
     @Test
     fun `when loop stops cleanly after confirmation cancel, then runtime finish has no cancelled error`() = runTest {
-        val updatedHistory = listOf(
+        val modelTurnMessages = listOf(
             AssistantMessage.User("Cancel order 123"),
             AssistantMessage.Assistant("I can do that"),
         )
@@ -309,7 +355,7 @@ class AgenticLoopAssistantRuntimeTest {
                     LoopEvent.ConfirmationResolved(resolved),
                     LoopEvent.Finished(
                         outcome = LoopOutcome.STOPPED,
-                        updatedHistory = updatedHistory,
+                        modelTurnMessages = modelTurnMessages,
                         retryAffordance = RetryAffordance.None,
                     )
                 )
@@ -322,10 +368,57 @@ class AgenticLoopAssistantRuntimeTest {
             AssistantRuntimeEvent.ConfirmationResolved(resolved),
             AssistantRuntimeEvent.Finished(
                 outcome = LoopOutcome.STOPPED,
-                updatedHistory = updatedHistory,
+                updatedSessionHistory = sessionHistoryFrom(modelTurnMessages),
                 retryAffordance = RetryAffordance.None,
                 error = null,
             )
+        )
+    }
+
+    @Test
+    fun `given poisoned tool finish, when next turn starts, then stale tool protocol is not sent`() = runTest {
+        val toolCall = ToolCall(
+            id = "call-1",
+            name = "orders_update",
+            arguments = buildJsonObject { put("id", 123) },
+        )
+        val fakeLoop = SequencedCapturingAgenticLoop(
+            eventBatches = listOf(
+                listOf(
+                    LoopEvent.Finished(
+                        outcome = LoopOutcome.FAILED,
+                        modelTurnMessages = listOf(
+                            AssistantMessage.User("Update order"),
+                            AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
+                            AssistantMessage.Tool(
+                                toolCallId = toolCall.id,
+                                content = """{"error":"Tool execution failed"}""",
+                            ),
+                        ),
+                        error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                    )
+                ),
+                emptyList(),
+            )
+        )
+        val runtime = runtime(agenticLoop = fakeLoop)
+
+        val firstFinished = runtime.startTurn(
+            givenTurnRequest(userMessage = "Update order")
+        ).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+        runtime.startTurn(
+            givenTurnRequest(
+                userMessage = "What happened?",
+                sessionHistory = firstFinished.updatedSessionHistory,
+            )
+        ).toList()
+
+        val nextTurnMessages = fakeLoop.receivedModelHistories.last().messages
+        assertThat(nextTurnMessages.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
+        assertThat(nextTurnMessages.filterIsInstance<AssistantMessage.Assistant>().flatMap { it.toolCalls }).isEmpty()
+        assertThat(nextTurnMessages).contains(
+            AssistantMessage.User("Update order"),
+            AssistantMessage.User("What happened?"),
         )
     }
 
@@ -587,7 +680,7 @@ class AgenticLoopAssistantRuntimeTest {
                         ),
                         LoopEvent.Finished(
                             outcome = LoopOutcome.COMPLETED,
-                            updatedHistory = listOf(AssistantMessage.User("Hello")),
+                            modelTurnMessages = listOf(AssistantMessage.User("Hello")),
                         ),
                     )
                 )
@@ -599,7 +692,7 @@ class AgenticLoopAssistantRuntimeTest {
             assertThat(events).contains(
                 AssistantRuntimeEvent.Finished(
                     outcome = LoopOutcome.COMPLETED,
-                    updatedHistory = listOf(AssistantMessage.User("Hello")),
+                    updatedSessionHistory = sessionHistoryFrom(listOf(AssistantMessage.User("Hello"))),
                 )
             )
         }
@@ -785,6 +878,8 @@ class AgenticLoopAssistantRuntimeTest {
         confirmationPreviewRenderer = ConfirmationPreviewRenderer(ApplicationProvider.getApplicationContext<Context>()),
         cardParser = AssistantCardUiStructuredParser(json),
         systemPromptProvider = FakeSystemPromptProvider(systemPrompt),
+        modelRequestHistoryBuilder = ModelRequestHistoryBuilder(passThroughBudgeter()),
+        sessionHistoryMapper = AssistantSessionHistoryMapper(),
         json = json,
     )
 
@@ -794,13 +889,33 @@ class AgenticLoopAssistantRuntimeTest {
             requestId = "request-1",
             messageId = "message-1",
         ),
+        userMessage: String = "Hello",
+        sessionHistory: AssistantSessionHistory = AssistantSessionHistory.Empty,
     ) = AssistantTurnRequest(
         conversationId = "conversation-1",
         telemetryContext = telemetryContext,
         siteId = 123L,
         toolScope = ToolScope.GLOBAL,
-        userMessage = "Hello",
-        history = emptyList(),
+        userMessage = userMessage,
+        sessionHistory = sessionHistory,
+    )
+
+    private fun passThroughBudgeter() = HistoryBudgeter { systemPrompt, rawTranscript, currentUserTurn ->
+        BudgetedHistory(
+            messages = listOf(systemPrompt) + rawTranscript + currentUserTurn,
+            retainedEntityRefs = emptyList(),
+        )
+    }
+
+    private fun sessionHistoryFrom(modelTurnMessages: List<AssistantMessage>) = AssistantSessionHistory(
+        messages = modelTurnMessages.mapNotNull { message ->
+            when (message) {
+                is AssistantMessage.User -> AssistantSessionMessage.User(message.content)
+                is AssistantMessage.Assistant -> message.content?.let(AssistantSessionMessage::Assistant)
+                is AssistantMessage.System,
+                is AssistantMessage.Tool -> null
+            }
+        }
     )
 
     private fun showCardsCall(id: String) = ToolCall(
@@ -1012,8 +1127,7 @@ class AgenticLoopAssistantRuntimeTest {
     ) : AgenticLoop {
         override fun runTurn(
             conversationId: String,
-            userMessage: String,
-            history: List<AssistantMessage>,
+            modelHistory: ModelRequestHistory,
             context: SessionContext,
         ): Flow<LoopEvent> = flowOf(*events.toTypedArray())
     }
@@ -1021,15 +1135,30 @@ class AgenticLoopAssistantRuntimeTest {
     private class CapturingAgenticLoop(
         private val events: List<LoopEvent>,
     ) : AgenticLoop {
-        lateinit var receivedHistory: List<AssistantMessage>
+        lateinit var receivedModelHistory: ModelRequestHistory
 
         override fun runTurn(
             conversationId: String,
-            userMessage: String,
-            history: List<AssistantMessage>,
+            modelHistory: ModelRequestHistory,
             context: SessionContext,
         ): Flow<LoopEvent> {
-            receivedHistory = history
+            receivedModelHistory = modelHistory
+            return flowOf(*events.toTypedArray())
+        }
+    }
+
+    private class SequencedCapturingAgenticLoop(
+        private val eventBatches: List<List<LoopEvent>>,
+    ) : AgenticLoop {
+        val receivedModelHistories = mutableListOf<ModelRequestHistory>()
+
+        override fun runTurn(
+            conversationId: String,
+            modelHistory: ModelRequestHistory,
+            context: SessionContext,
+        ): Flow<LoopEvent> {
+            receivedModelHistories += modelHistory
+            val events = eventBatches.getOrElse(receivedModelHistories.lastIndex) { emptyList() }
             return flowOf(*events.toTypedArray())
         }
     }

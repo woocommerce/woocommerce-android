@@ -6,7 +6,8 @@ import com.automattic.eventhorizon.AiAssistantErrorKindValue
 import com.automattic.eventhorizon.AiAssistantTurnOutcomeValue
 import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -50,6 +51,7 @@ class AssistantViewModel @AssistedInject internal constructor(
     private val assistantTelemetryTracker: AssistantTelemetryTracker,
     private val assistantTelemetryTimeSource: TimeSource,
     private val assistantIdGenerator: AssistantIdGenerator,
+    private val sessionHistoryMapper: AssistantSessionHistoryMapper,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
     val uiState: StateFlow<AssistantUiState> = _uiState.asStateFlow()
@@ -61,8 +63,8 @@ class AssistantViewModel @AssistedInject internal constructor(
     private var activeTurn: ActiveTurn? = null
     private var conversationId: String = assistantIdGenerator.nextId()
     private var conversationStartedTracked = false
-    private var history: List<AssistantMessage> = emptyList()
-    private var lastTurnBaseHistory: List<AssistantMessage> = emptyList()
+    private var committedSessionHistory: AssistantSessionHistory = AssistantSessionHistory.Empty
+    private var currentTurnBaseHistory: AssistantSessionHistory = AssistantSessionHistory.Empty
     private var lastUserMessage: String? = null
     private val activeCardKeys = linkedSetOf<AssistantCardKey>()
     private val messageTurnContext = linkedMapOf<String, AssistantTelemetryContext>()
@@ -160,8 +162,8 @@ class AssistantViewModel @AssistedInject internal constructor(
         activeAssistantMessageId = null
         conversationId = assistantIdGenerator.nextId()
         conversationStartedTracked = false
-        history = emptyList()
-        lastTurnBaseHistory = emptyList()
+        committedSessionHistory = AssistantSessionHistory.Empty
+        currentTurnBaseHistory = AssistantSessionHistory.Empty
         lastUserMessage = null
         activeCardKeys.clear()
         messageTurnContext.clear()
@@ -197,7 +199,7 @@ class AssistantViewModel @AssistedInject internal constructor(
         turnJob?.cancel()
         activeCardKeys.clear()
         if (!isRetry) {
-            lastTurnBaseHistory = history
+            currentTurnBaseHistory = committedSessionHistory
         }
         val userMessage = if (isRetry) {
             null
@@ -243,7 +245,7 @@ class AssistantViewModel @AssistedInject internal constructor(
             siteId = selectedSite.get().siteId,
             toolScope = ToolScope.GLOBAL,
             userMessage = message,
-            history = lastTurnBaseHistory,
+            sessionHistory = currentTurnBaseHistory,
         )
         val events = if (isRetry) runtime.retryTurn(request) else runtime.startTurn(request)
         turnJob = viewModelScope.launch {
@@ -317,7 +319,7 @@ class AssistantViewModel @AssistedInject internal constructor(
                 }
                 activeAssistantMessageId = null
                 activeCardKeys.clear()
-                history = event.updatedHistory
+                committedSessionHistory = event.updatedSessionHistory
                 _uiState.update {
                     it.copy(
                         messages = it.messages
@@ -408,14 +410,11 @@ class AssistantViewModel @AssistedInject internal constructor(
         val assistantText = _uiState.value.messages
             .firstOrNull { it.id == assistantMessageId }
             ?.text
-            .orEmpty()
-        val cancelledTurnHistory = buildList {
-            add(AssistantMessage.User(userMessage))
-            assistantText.takeIf { it.isNotEmpty() }?.let {
-                add(AssistantMessage.Assistant(content = it))
-            }
-        }
-        history = lastTurnBaseHistory + cancelledTurnHistory
+        committedSessionHistory = sessionHistoryMapper.appendCancelledTurn(
+            baseHistory = currentTurnBaseHistory,
+            userMessage = userMessage,
+            assistantText = assistantText,
+        )
     }
 
     private fun cancelOpenConfirmationSegments() {
