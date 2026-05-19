@@ -150,10 +150,11 @@ Focused and sampled controls:
   unless the checked-in baseline contains an approved `sampleExpectation` or `knownFailure`.
   `sampleExpectation` checks compare the sampled classification and requested sample count; approved
   `knownFailure` checks compare every failing sample's failed hard-check set against
-  `knownFailure.expectedFailedHardChecks`. A single-sample failure can match an approved `FLAKY`
-  expectation, but the baseline comparison message tells you to rerun a sampled check before
-  refreshing the baseline. Approval mode accepts sampled runs and can intentionally approve `PASS`
-  or `FLAKY` sample classifications.
+  `knownFailure.expectedFailedHardChecks`. Approved `FLAKY` is a sampled-run tolerance for
+  acceptable scenario-specific variability: sampled `FLAKY` remains non-blocking only while global
+  guards still pass, sampled `PASS` asks for a baseline refresh, and single-sample `FAIL` is
+  blocking because one sample cannot prove flakiness. Approval mode accepts sampled runs and can
+  intentionally approve `PASS` or `FLAKY` sample classifications.
 - Every scenario now gets global hard guards in addition to its JSON hard checks: no `FAILED`
   outcome, no turn errors, and non-blank assistant text. This prevents empty/error responses from
   passing scenarios that mostly contain negative checks.
@@ -233,7 +234,8 @@ mixed pass/fail scenarios: all-pass samples record `PASS`, mixed pass/fail sampl
 and all-fail samples are rejected unless an existing `knownFailure` is deliberately preserved
 because every failing sample has the same expected failed hard-check set. Preserved known-failure
 approvals do not write `sampleExpectation`. Flaky approval is separate from `knownFailure`; use it
-when the live behavior is acceptable but not stable across repeated samples.
+when the live behavior is acceptable but not stable across repeated samples. It does not accept
+failed outcomes, turn errors, or blank assistant responses.
 
 Check and approval are wired to **two separate test classes** so a normal Level 3 run cannot
 accidentally produce a candidate baseline.

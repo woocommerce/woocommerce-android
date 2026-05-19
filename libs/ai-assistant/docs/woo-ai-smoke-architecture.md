@@ -247,6 +247,8 @@ Tests never write into `src/`.
 - **Check mode** (`WooAiSmokeLiveRobolectricTest`): runs the live scenarios and compares
   results to `live-baseline.json`. Fails on undocumented mismatches. A documented `knownFailure`
   is non-blocking only when the same hard checks still fail and every other approved check passes.
+  A documented `FLAKY` sample expectation is non-blocking only for sampled runs that still pass the
+  global guards; a single-sample fail is blocking because it cannot prove flakiness.
   If a known failure starts passing, the comparison marks it fixed so the exception can be removed.
   A missing baseline fails with "Live baseline approval required"; stale baseline metadata fails as
   a normal blocking baseline check failure.
@@ -254,7 +256,8 @@ Tests never write into `src/`.
   `approved-live-baseline.json` under `build/outputs`. Does not touch the checked-in baseline.
   Existing `knownFailure` metadata is preserved only while every failing sample has a failed
   hard-check set that exactly matches `knownFailure.expectedFailedHardChecks`, and dropped once the
-  scenario passes. Extra or different failures block approval.
+  scenario passes. Sampled mixed pass/fail runs can approve `FLAKY`; all-fail runs still block unless
+  they preserve an existing `knownFailure`.
 
 The two modes are wired to different test classes so a normal run cannot accidentally produce an
 approved baseline.

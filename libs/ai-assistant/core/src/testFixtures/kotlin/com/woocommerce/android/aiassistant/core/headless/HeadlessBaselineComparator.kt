@@ -134,6 +134,18 @@ object HeadlessBaselineComparator {
         currentClassification: HeadlessSampleClassification,
     ): HeadlessBaselineScenarioStatus =
         when {
+            currentClassification == HeadlessSampleClassification.FLAKY && sampleResults.isEmpty() ->
+                HeadlessBaselineScenarioStatus(
+                    scenarioId = scenarioId,
+                    status = HeadlessBaselineRegressionStatus.REGRESSION,
+                    message = "Approved flaky sample expectation requires sampled run details.",
+                )
+            currentClassification == HeadlessSampleClassification.FLAKY && hasSampledGlobalGuardFailures() ->
+                HeadlessBaselineScenarioStatus(
+                    scenarioId = scenarioId,
+                    status = HeadlessBaselineRegressionStatus.REGRESSION,
+                    message = "Approved flaky sample expectation has global guard failures.",
+                )
             currentClassification == HeadlessSampleClassification.FLAKY -> HeadlessBaselineScenarioStatus(
                 scenarioId = scenarioId,
                 status = HeadlessBaselineRegressionStatus.PASS,
@@ -146,12 +158,13 @@ object HeadlessBaselineComparator {
                         status = HeadlessBaselineRegressionStatus.PASS,
                         message = "Approved flaky sample expectation now passes; refresh the baseline to accept PASS.",
                     )
-            currentSummary == null -> HeadlessBaselineScenarioStatus(
-                scenarioId = scenarioId,
-                status = HeadlessBaselineRegressionStatus.PASS,
-                message = "Single-sample FAIL accepted by approved flaky sample expectation; run sampled check " +
-                    "to confirm before refreshing the baseline.",
-            )
+            currentSummary == null && currentClassification == HeadlessSampleClassification.FAIL ->
+                HeadlessBaselineScenarioStatus(
+                    scenarioId = scenarioId,
+                    status = HeadlessBaselineRegressionStatus.REGRESSION,
+                    message = "Approved flaky sample expectation requires a sampled run; current single-sample " +
+                        "status is FAIL.",
+                )
             else -> sampleRegressionStatus(expectation, currentClassification)
         }
 
@@ -181,6 +194,13 @@ object HeadlessBaselineComparator {
             currentChecks[approvedCheck.type to approvedCheck.value]?.passed == true
         }
     }
+
+    private fun HeadlessScenarioRunResult.hasSampledGlobalGuardFailures(): Boolean =
+        sampleResults.any { sample ->
+            sample.hardCheckResults.any { hardCheckResult ->
+                hardCheckResult.check.type in GLOBAL_GUARD_TYPES && !hardCheckResult.passed
+            }
+        }
 
     private fun HeadlessScenarioRunResult.knownFailureStatus(
         approved: HeadlessApprovedScenarioBaseline,
@@ -237,6 +257,12 @@ object HeadlessBaselineComparator {
         }
     }
 }
+
+private val GLOBAL_GUARD_TYPES = setOf(
+    HeadlessHardCheckType.NO_FAILED_OUTCOME,
+    HeadlessHardCheckType.NO_TURN_ERRORS,
+    HeadlessHardCheckType.ASSISTANT_TEXT_NOT_BLANK,
+)
 
 @Serializable
 data class HeadlessBaselineComparison(

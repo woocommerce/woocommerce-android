@@ -332,11 +332,29 @@
       "turns": [
         {
           "userMessage": "avg order value last 30 days",
-          "hardChecks": []
+          "hardChecks": [
+            {
+              "type": "TOOL_CALLED",
+              "value": "analytics_orders"
+            },
+            {
+              "type": "ASSISTANT_TEXT_CONTAINS_ANY",
+              "value": "aov|average|order value"
+            }
+          ]
         },
         {
           "userMessage": "broken down by week",
-          "hardChecks": []
+          "hardChecks": [
+            {
+              "type": "TOOL_CALLED",
+              "value": "analytics_orders"
+            },
+            {
+              "type": "ASSISTANT_TEXT_CONTAINS_ANY",
+              "value": "week|weekly|breakdown|broken down"
+            }
+          ]
         }
       ],
       "hardChecks": [

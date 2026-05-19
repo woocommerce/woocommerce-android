@@ -105,6 +105,8 @@ object HeadlessHardCheckEvaluator {
                 result.turns.all { it.errors.isEmpty() }
             HeadlessHardCheckType.ASSISTANT_TEXT_NOT_BLANK ->
                 result.turns.all {
+                    // A declined unsafe tool call stops the loop through the safety confirmation result; no assistant
+                    // text is emitted for that turn, so the confirmation artifact is the expected response.
                     it.assistantText.isNotBlank() || it.errors.isNotEmpty() || it.isBlankSafetyCancellation()
                 }
         }

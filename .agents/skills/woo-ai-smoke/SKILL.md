@@ -49,9 +49,10 @@ primary scenario status and JUnit failure use sample 1. Baseline comparison also
 unless the checked-in baseline contains an approved `sampleExpectation` or `knownFailure`.
 `sampleExpectation` checks compare the sampled classification and requested sample count; approved
 `knownFailure` checks compare every failing sample's failed hard-check set against
-`knownFailure.expectedFailedHardChecks`. A single-sample failure can match an approved `FLAKY`
-expectation, but the baseline comparison message should tell you to rerun a sampled check before
-refreshing the baseline.
+`knownFailure.expectedFailedHardChecks`. Approved `FLAKY` is a sampled-run tolerance for acceptable
+scenario-specific variability: sampled `FLAKY` remains non-blocking only while global guards still
+pass, sampled `PASS` asks for a baseline refresh, and single-sample `FAIL` is blocking because one
+sample cannot prove flakiness.
 
 Artifacts are written to:
 
@@ -124,7 +125,8 @@ approval writes a `sampleExpectation` for all-pass and mixed pass/fail scenarios
 approve `PASS`, mixed pass/fail samples approve `FLAKY`, and all-fail samples are rejected unless
 an existing `knownFailure` is being preserved because every failing sample has the same expected
 failed hard-check set. Preserved known-failure approvals do not write `sampleExpectation`. Approved
-`FLAKY` is separate from `knownFailure`.
+`FLAKY` is separate from `knownFailure`; it does not accept failed outcomes, turn errors, or blank
+assistant responses.
 
 After reviewer inspection:
 

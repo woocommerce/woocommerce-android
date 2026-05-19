@@ -347,6 +347,22 @@
       "category": "analytics",
       "approvedHardChecks": [
         {
+          "type": "TOOL_CALLED",
+          "value": "analytics_orders"
+        },
+        {
+          "type": "ASSISTANT_TEXT_CONTAINS_ANY",
+          "value": "aov|average|order value"
+        },
+        {
+          "type": "TOOL_CALLED",
+          "value": "analytics_orders"
+        },
+        {
+          "type": "ASSISTANT_TEXT_CONTAINS_ANY",
+          "value": "week|weekly|breakdown|broken down"
+        },
+        {
           "type": "TOTAL_TOOL_CALL_COUNT_AT_MOST",
           "value": "12"
         },

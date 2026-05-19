@@ -226,7 +226,9 @@ class HeadlessBaselineComparatorTest {
         val comparison = HeadlessBaselineComparator.compare(
             current = suite(
                 modelId = "gpt-4o",
-                scenario = passingScenario("orders-read-recent").withSampleSummary(HeadlessSampleClassification.FLAKY),
+                scenario = passingScenario("orders-read-recent").withFlakySampleResults(
+                    failedHardCheckResults = expectedFailureHardCheckResults(),
+                ),
             ),
             baseline = approvedBaseline(
                 modelId = "gpt-4o",
@@ -239,6 +241,53 @@ class HeadlessBaselineComparatorTest {
         assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.PASS)
         assertThat(scenarioStatus.message).contains("Approved flaky sample expectation still matches")
         assertThat(comparison.hasBlockingFailure).isFalse
+    }
+
+    @Test
+    fun `given approved flaky sample expectation and current flaky global guard failure, when comparing, then regression`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = passingScenario("orders-read-recent").withFlakySampleResults(
+                    failedHardCheckResults = listOf(
+                        hardCheckResult(
+                            check = HeadlessHardCheck(HeadlessHardCheckType.NO_TURN_ERRORS, "required"),
+                            passed = false,
+                        )
+                    ),
+                ),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.FLAKY),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.REGRESSION)
+        assertThat(scenarioStatus.message).contains("global guard")
+        assertThat(comparison.hasBlockingFailure).isTrue
+    }
+
+    @Test
+    fun `given approved flaky sample expectation and current flaky without sample details, when comparing, then regression`() {
+        val comparison = HeadlessBaselineComparator.compare(
+            current = suite(
+                modelId = "gpt-4o",
+                scenario = passingScenario("orders-read-recent").withSampleSummary(HeadlessSampleClassification.FLAKY),
+            ),
+            baseline = approvedBaseline(
+                modelId = "gpt-4o",
+                scenarioId = "orders-read-recent",
+                sampleExpectation = sampleExpectation(HeadlessSampleClassification.FLAKY),
+            ),
+        )
+
+        val scenarioStatus = comparison.scenarioStatuses.single()
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.REGRESSION)
+        assertThat(scenarioStatus.message).contains("sampled run details")
+        assertThat(comparison.hasBlockingFailure).isTrue
     }
 
     @Test
@@ -278,7 +327,7 @@ class HeadlessBaselineComparatorTest {
     }
 
     @Test
-    fun `given approved flaky sample expectation and single-sample current fail, when comparing, then scenario is non blocking`() {
+    fun `given approved flaky sample expectation and single-sample current fail, when comparing, then regression`() {
         val comparison = HeadlessBaselineComparator.compare(
             current = suite(modelId = "gpt-4o", scenario = failingScenario("orders-read-recent")),
             baseline = approvedBaseline(
@@ -289,9 +338,9 @@ class HeadlessBaselineComparatorTest {
         )
 
         val scenarioStatus = comparison.scenarioStatuses.single()
-        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.PASS)
-        assertThat(scenarioStatus.message).contains("Single-sample FAIL accepted by approved flaky sample expectation")
-        assertThat(comparison.hasBlockingFailure).isFalse
+        assertThat(scenarioStatus.status).isEqualTo(HeadlessBaselineRegressionStatus.REGRESSION)
+        assertThat(scenarioStatus.message).contains("requires a sampled run")
+        assertThat(comparison.hasBlockingFailure).isTrue
     }
 
     private fun suite(
@@ -380,6 +429,29 @@ class HeadlessBaselineComparatorTest {
         classification: HeadlessSampleClassification,
     ) = copy(
         sampleSummary = sampleSummary(classification)
+    )
+
+    private fun HeadlessScenarioRunResult.withFlakySampleResults(
+        failedHardCheckResults: List<HeadlessHardCheckResult>,
+    ) = copy(
+        sampleResults = listOf(
+            sampleResult(
+                sampleIndex = 1,
+                hardCheckResults = expectedPassingHardCheckResults(),
+                status = HeadlessScenarioStatus.PASS,
+            ),
+            sampleResult(
+                sampleIndex = 2,
+                hardCheckResults = expectedPassingHardCheckResults(),
+                status = HeadlessScenarioStatus.PASS,
+            ),
+            sampleResult(
+                sampleIndex = 3,
+                hardCheckResults = failedHardCheckResults,
+                status = HeadlessScenarioStatus.FAIL,
+            ),
+        ),
+        sampleSummary = sampleSummary(HeadlessSampleClassification.FLAKY),
     )
 
     private fun sampleSummary(
