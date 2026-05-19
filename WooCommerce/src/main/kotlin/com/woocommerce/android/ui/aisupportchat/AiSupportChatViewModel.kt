@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @HiltViewModel
 class AiSupportChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -49,6 +50,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     private var localMessageId = 0L
     private var launchModeLoaded = false
+    private var resumeLaunchMode: AiSupportChatLaunchMode.Resume? = null
 
     fun onLaunchModeLoaded(launchMode: AiSupportChatLaunchMode) {
         if (launchModeLoaded) return
@@ -58,6 +60,7 @@ class AiSupportChatViewModel @Inject constructor(
             AiSupportChatLaunchMode.Help -> Unit
             AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
+            is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
     }
 
@@ -75,6 +78,10 @@ class AiSupportChatViewModel @Inject constructor(
 
     fun onSendErrorDismissed() {
         _viewState.update { it.copy(showSendError = false) }
+    }
+
+    fun onRetryLoadHistoryClicked() {
+        resumeLaunchMode?.let(::resumeChat)
     }
 
     fun onFeedbackClicked(messageId: Long, rating: AiSupportChatFeedbackRating) {
@@ -247,6 +254,65 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
+    private fun resumeChat(launchMode: AiSupportChatLaunchMode.Resume) {
+        resumeLaunchMode = launchMode
+        _viewState.update {
+            it.copy(
+                input = "",
+                messages = emptyList(),
+                chatId = launchMode.chatId,
+                sessionId = launchMode.sessionId,
+                botSlug = launchMode.botSlug,
+                hasProceededToChat = true,
+                hasStartedChat = true,
+                isLoadingHistory = true,
+                showSendError = false,
+                showLoadHistoryError = false
+            )
+        }
+
+        launch {
+            repository.fetchChat(
+                botSlug = launchMode.botSlug,
+                chatId = launchMode.chatId,
+                sessionId = launchMode.sessionId
+            ).onSuccess { response ->
+                handleResumeSuccess(response)
+            }.onFailure { error ->
+                WooLog.e(WooLog.T.AI, "Fetching AI support chat history failed", error)
+                _viewState.update {
+                    it.copy(
+                        isLoadingHistory = false,
+                        showLoadHistoryError = true
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun handleResumeSuccess(response: SupportChatResponse) {
+        _viewState.update {
+            val remoteMessages = response.messages.toUiMessages()
+            val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
+            it.copy(
+                chatId = response.chatId,
+                sessionId = response.sessionId,
+                botSlug = response.botSlug,
+                hasSentChatMessage = response.messages.any { message -> message.role == SupportChatRole.USER },
+                completedUserMessageResponseCount = response.messages.count { message ->
+                    message.role == SupportChatRole.BOT && !message.isBotEscalationPrompt()
+                },
+                latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea,
+                showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
+                messages = remoteMessages.toLoadedChatMessages(shouldPromptHumanSupport),
+                isLoadingHistory = false,
+                showSendError = false,
+                showLoadHistoryError = false
+            )
+        }
+        markChatAsUpdated(response.chatId, response.sessionId)
+    }
+
     private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
         val result = DiagnosticResult(
             issueType = issueType,
@@ -274,7 +340,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     private suspend fun sendMessage(message: String) {
         val state = _viewState.value
-        if (message.isBlank() || state.isSending) return
+        if (message.isBlank() || state.isSending || !state.canSendMessages) return
 
         val optimisticMessage = AiSupportChatMessage(
             id = nextLocalMessageId(),
@@ -357,18 +423,30 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         if (_viewState.value.canPersistChatHistory) {
-            runCatching {
-                if (wasInitialMessage) {
+            if (wasInitialMessage) {
+                runCatching {
                     repository.registerChat(
                         chatId = response.chatId,
                         botSlug = response.botSlug,
                         sessionId = response.sessionId,
                         firstUserMessage = sentMessage
                     )
-                } else {
-                    repository.markChatAsUpdated(response.chatId, response.sessionId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Registering AI support chat failed", error)
                 }
+            } else {
+                markChatAsUpdated(response.chatId, response.sessionId)
             }
+        }
+    }
+
+    private suspend fun markChatAsUpdated(chatId: Long, sessionId: String?) {
+        runCatching {
+            repository.markChatAsUpdated(chatId, sessionId)
+        }.onFailure { error ->
+            if (error is CancellationException) throw error
+            WooLog.e(WooLog.T.AI, "Marking AI support chat as updated failed", error)
         }
     }
 
@@ -474,6 +552,15 @@ class AiSupportChatViewModel @Inject constructor(
             add(latestBotResponseIndex + 1, resolvedPrompt)
         }
     }
+
+    private fun List<AiSupportChatMessage>.toLoadedChatMessages(
+        shouldPromptHumanSupport: Boolean
+    ): List<AiSupportChatMessage> =
+        if (!shouldPromptHumanSupport && latestBotResponse?.isResolved == true) {
+            appendResolvedPromptIfNeeded()
+        } else {
+            this
+        }
 
     private fun List<AiSupportChatMessage>.appendPostDiagnosticsGreeting(): List<AiSupportChatMessage> =
         if (any { it.id == POST_DIAGNOSTICS_GREETING_MESSAGE_ID }) {
@@ -651,9 +738,11 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val diagnosticResult: DiagnosticResult? = null,
     val isRunningDiagnostics: Boolean = false,
+    val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
     val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false,
+    val showLoadHistoryError: Boolean = false,
     val showHumanSupportPrompt: Boolean = false,
     val hasCreatedTicket: Boolean = false,
     val isChatResolved: Boolean = false,
@@ -667,7 +756,11 @@ data class AiSupportChatViewState(
         get() = !hasProceededToChat && !isSending
 
     val canSendMessages: Boolean
-        get() = hasProceededToChat && !hasCreatedTicket && !isChatResolved
+        get() = hasProceededToChat &&
+            !isLoadingHistory &&
+            !showLoadHistoryError &&
+            !hasCreatedTicket &&
+            !isChatResolved
 
     val showInputBar: Boolean
         get() = canSendMessages && !showHumanSupportPrompt

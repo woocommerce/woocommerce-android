@@ -53,6 +53,17 @@ class AiSupportChatActivity : AppCompatActivity() {
                 putExtra(EXTRA_PRE_LOGIN, preLogin)
             }
 
+        fun createResumeIntent(
+            context: Context,
+            chatId: Long,
+            botSlug: String,
+            sessionId: String?
+        ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
+            putExtra(EXTRA_CHAT_ID, chatId)
+            putExtra(EXTRA_BOT_SLUG, botSlug)
+            putExtra(EXTRA_SESSION_ID, sessionId)
+        }
+
         fun createConnectivityToolIntent(
             context: Context,
             checks: List<ConnectivityCheckCardData>
@@ -63,17 +74,22 @@ class AiSupportChatActivity : AppCompatActivity() {
         fun launchModeFrom(intent: Intent): AiSupportChatLaunchMode {
             val extras = intent.extras ?: return AiSupportChatLaunchMode.Help
             val checks = extras.parcelableArrayList<ConnectivityCheckCardData>(EXTRA_CONNECTIVITY_CHECKS)
-            if (!checks.isNullOrEmpty()) {
-                return AiSupportChatLaunchMode.ConnectivityTool(checks)
+            return when {
+                !checks.isNullOrEmpty() -> AiSupportChatLaunchMode.ConnectivityTool(checks)
+                extras.getBoolean(EXTRA_PRE_LOGIN, false) -> AiSupportChatLaunchMode.PreLogin
+                extras.containsKey(EXTRA_CHAT_ID) -> AiSupportChatLaunchMode.Resume(
+                    chatId = extras.getLong(EXTRA_CHAT_ID),
+                    botSlug = extras.getString(EXTRA_BOT_SLUG) ?: AiSupportChatViewModel.DEFAULT_BOT_SLUG,
+                    sessionId = extras.getString(EXTRA_SESSION_ID)
+                )
+                else -> AiSupportChatLaunchMode.Help
             }
-            if (extras.getBoolean(EXTRA_PRE_LOGIN, false)) {
-                return AiSupportChatLaunchMode.PreLogin
-            }
-
-            return AiSupportChatLaunchMode.Help
         }
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
         private const val EXTRA_PRE_LOGIN = "extra_pre_login"
+        private const val EXTRA_CHAT_ID = "extra_chat_id"
+        private const val EXTRA_BOT_SLUG = "extra_bot_slug"
+        private const val EXTRA_SESSION_ID = "extra_session_id"
     }
 }

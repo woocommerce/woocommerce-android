@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -82,6 +83,7 @@ fun AiSupportChatScreen(
         onContactSupportClicked = { onContactSupportClicked(HumanSupportContactSource.BANNER) },
         onContactSupportFromErrorClicked = { onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
         onSendErrorDismissed = viewModel::onSendErrorDismissed,
+        onRetryLoadHistoryClicked = viewModel::onRetryLoadHistoryClicked,
         onMarkResolvedConfirmed = viewModel::onMarkResolvedConfirmed,
         onMarkResolvedDismissed = viewModel::onMarkResolvedDismissed,
         onFeedbackClicked = viewModel::onFeedbackClicked
@@ -98,6 +100,7 @@ fun AiSupportChatScreen(
     onContactSupportClicked: () -> Unit,
     onContactSupportFromErrorClicked: () -> Unit,
     onSendErrorDismissed: () -> Unit,
+    onRetryLoadHistoryClicked: () -> Unit,
     onMarkResolvedConfirmed: () -> Unit,
     onMarkResolvedDismissed: () -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
@@ -112,6 +115,7 @@ fun AiSupportChatScreen(
             messages = viewState.messages,
             messageRatings = viewState.messageRatings,
             isSending = viewState.isSending,
+            isLoadingHistory = viewState.isLoadingHistory,
             showDiagnosticActions = viewState.showDiagnosticActions,
             onIssueSelected = onIssueSelected,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -145,6 +149,10 @@ fun AiSupportChatScreen(
         )
     }
 
+    if (viewState.showLoadHistoryError) {
+        LoadHistoryErrorDialog(onRetry = onRetryLoadHistoryClicked)
+    }
+
     if (viewState.showMarkResolvedConfirmation) {
         MarkResolvedConfirmationDialog(
             onConfirm = onMarkResolvedConfirmed,
@@ -158,6 +166,7 @@ private fun MessageList(
     messages: List<AiSupportChatMessage>,
     messageRatings: Map<Long, AiSupportChatFeedbackRating>,
     isSending: Boolean,
+    isLoadingHistory: Boolean,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -166,6 +175,16 @@ private fun MessageList(
 ) {
     val listState = rememberLazyListState()
     val itemCount = messages.size + (if (isSending) 1 else 0)
+
+    if (isLoadingHistory) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     LaunchedEffect(messages.size, isSending) {
         if (itemCount > 0) {
@@ -649,6 +668,19 @@ private fun SendErrorDialog(
 }
 
 @Composable
+private fun LoadHistoryErrorDialog(onRetry: () -> Unit) {
+    DialogState(
+        title = R.string.ai_support_chat_error_title,
+        message = R.string.ai_support_chat_load_history_error,
+        positiveButton = DialogState.DialogButton(
+            text = R.string.retry,
+            onClick = onRetry
+        ),
+        isCancelable = false
+    ).Render()
+}
+
+@Composable
 private fun MarkResolvedConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -749,6 +781,7 @@ private fun AiSupportChatScreenPreview() {
             onContactSupportClicked = {},
             onContactSupportFromErrorClicked = {},
             onSendErrorDismissed = {},
+            onRetryLoadHistoryClicked = {},
             onMarkResolvedConfirmed = {},
             onMarkResolvedDismissed = {},
             onFeedbackClicked = { _, _ -> }
