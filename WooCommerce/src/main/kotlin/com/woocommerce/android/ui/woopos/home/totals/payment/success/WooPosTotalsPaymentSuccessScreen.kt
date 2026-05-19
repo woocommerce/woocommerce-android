@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -28,11 +27,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
@@ -113,7 +113,6 @@ fun WooPosPaymentSuccessScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(WooPosComponentSize.Small.value)
                     .adaptiveContentWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value)
                     .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
@@ -121,6 +120,7 @@ fun WooPosPaymentSuccessScreen(
                 text = stringResource(R.string.woopos_new_order_button)
             )
 
+            val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
             WooPosOutlinedButton(
                 modifier = Modifier
                     .constrainAs(buttonEmailReceipts) {
@@ -128,11 +128,11 @@ fun WooPosPaymentSuccessScreen(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(WooPosComponentSize.Small.value)
                     .adaptiveContentWidth()
                     .padding(horizontal = WooPosSpacing.XLarge.value),
                 onClick = onReceiptClicked,
-                text = stringResource(R.string.woopos_receipt_button)
+                text = stringResource(R.string.woopos_receipt_button),
+                textStyle = if (isPhone) WooPosTypography.BodyMedium else WooPosTypography.BodyLarge,
             )
         }
     }

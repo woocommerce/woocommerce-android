@@ -52,6 +52,8 @@ class OrderRestClientTest {
         val expectedParams = mapOf(
             "per_page" to "60",
             "offset" to "0",
+            "orderby" to "date",
+            "order" to "desc",
             "_fields" to "id,date_created_gmt,date_modified_gmt",
             "created_via" to expectedCreatedVia
         )

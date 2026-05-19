@@ -34,6 +34,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountTileAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
@@ -297,14 +298,16 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             }
         )
 
-        OrderLineItemImage(
-            imageUrl = row.imageUrl,
-            modifier = Modifier.constrainAs(image) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-        )
+        val imageModifier = Modifier.constrainAs(image) {
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+        }
+        if (row.isLumpSum) {
+            WooPosCustomAmountTileAvatar(name = row.name, modifier = imageModifier)
+        } else {
+            OrderLineItemImage(imageUrl = row.imageUrl, modifier = imageModifier)
+        }
 
         val hasAttributes = !row.attributesDescription.isNullOrEmpty()
         if (hasAttributes) {
@@ -330,10 +333,19 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
         }
 
         val bookingInfo = row.bookingInfo
-        if (bookingInfo != null) {
-            BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
-        } else {
-            WooPosText(
+        when {
+            bookingInfo != null -> BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
+            row.isLumpSum -> {
+                if (row.includesTax) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
+                        style = WooPosTypography.BodyMedium,
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        modifier = subtitleModifier,
+                    )
+                }
+            }
+            else -> WooPosText(
                 text = row.qtyAndUnitPrice,
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
@@ -706,6 +718,16 @@ fun WooPosOrderDetailsPreview() {
                     bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
                         "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
                     )
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 901,
+                    name = "Gift wrap",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "",
+                    lineTotal = "$2.50",
+                    imageUrl = null,
+                    isLumpSum = true,
+                    includesTax = true,
                 )
             )
         ),
