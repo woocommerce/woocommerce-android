@@ -209,6 +209,59 @@ class EngineTest < Minitest::Test
     end
   end
 
+  def test_baseline_import_preserves_human_strings_and_ai_fills_gaps
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p(File.join(dir, 'values-fr'))
+      File.write(File.join(dir, 'values-fr', 'strings.xml'),
+                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resources>\n" \
+                 "    <string name=\"app_name\">Woo!</string>\n</resources>\n")
+      mpath = File.join(dir, 'm.json')
+
+      seed = Manifest.new
+      imp = Importer.new(source_path: FIXTURE, res_dir: dir,
+                         manifest: seed, context: ContextProvider.new({}))
+      rep = imp.import(locales: %w[fr pl]).find { |r| r.locale == 'fr' }
+      assert_equal 1, rep.imported
+      assert rep.gaps.positive?
+      assert_equal 'glotpress-import', seed.origin(name: 'app_name', locale: 'fr')
+      seed.save(mpath)
+
+      stub = StubClient.new
+      Engine.new(source_path: FIXTURE, res_dir: dir,
+                 manifest: Manifest.load(mpath), manifest_path: mpath,
+                 translator: Translator.new(client: stub),
+                 context: ContextProvider.new({})).run_strings(locales: %w[fr pl])
+
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-fr', 'strings.xml'))
+      assert_equal 'Woo!', doc.find('app_name').entries.first[:source], 'human string preserved, not re-translated'
+      assert_equal '[fr] Hello %1$s, you have %2$d items', doc.find('greeting').entries.first[:source]
+
+      final = Manifest.load(mpath)
+      assert_equal 'glotpress-import', final.origin(name: 'app_name', locale: 'fr')
+      assert_equal 'ai', final.origin(name: 'greeting', locale: 'fr')
+      assert stub.calls.positive?
+    end
+  end
+
+  def test_shadow_diff_reports_without_touching_repo
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p(File.join(dir, 'values-fr'))
+      committed = File.join(dir, 'values-fr', 'strings.xml')
+      File.write(committed,
+                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resources>\n" \
+                 "    <string name=\"app_name\">Woo humain</string>\n</resources>\n")
+      before = File.read(committed)
+
+      report = ShadowDiff.new(source_path: FIXTURE, res_dir: dir,
+                              translator: Translator.new(client: StubClient.new),
+                              context: ContextProvider.new({})).run(locales: %w[fr])
+
+      assert_includes report, '## fr'
+      assert_includes report, 'changed='
+      assert_equal before, File.read(committed), 'shadow diff must not modify committed files'
+    end
+  end
+
   def test_placeholder_failure_is_dropped_not_shipped
     Dir.mktmpdir do |dir|
       bad = StubClient.new { |loc, src| "[#{loc}] #{src.gsub('%2$d', '')}" }

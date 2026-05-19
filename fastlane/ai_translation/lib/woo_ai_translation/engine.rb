@@ -180,8 +180,7 @@ module WooAiTranslation
     end
 
     def model_for(unit)
-      escalate = ESCALATION_NAME_PATTERNS.any? { |re| unit.name =~ re }
-      escalate ? ESCALATION_MODEL : DEFAULT_MODEL
+      WooAiTranslation.model_for(unit.name)
     end
   end
 end

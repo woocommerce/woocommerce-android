@@ -35,4 +35,10 @@ module WooAiTranslation
     'full_description.txt' => 0,
     'changelogs/default.txt' => 500
   }.freeze
+
+  # Single source of truth for model selection, shared by the engine and the
+  # baseline importer so reuse/delta decisions never diverge.
+  def self.model_for(name)
+    ESCALATION_NAME_PATTERNS.any? { |re| name =~ re } ? ESCALATION_MODEL : DEFAULT_MODEL
+  end
 end
