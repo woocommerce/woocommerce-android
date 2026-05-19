@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.chat.assistantJsonForTests
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
+import com.woocommerce.android.aiassistant.core.chat.ChatService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
@@ -38,8 +39,40 @@ class WooAiSmokeLiveChatServiceFactoryTest {
     fun `when service streams turn, then jwt uses basic auth and chat uses bearer auth`() = runTest {
         server.enqueue(jsonResponse("""{"token":"jwt-token"}"""))
         server.enqueue(sseResponse(SAMPLE_SSE_BODY))
+
+        val events = service().streamTurn(ChatRequest(listOf(AssistantMessage.User("hi")))).toList()
+
+        val jwtRequest = server.takeRequest()
+        val chatRequest = server.takeRequest()
+        assertThat(events).contains(AssistantEvent.TextDelta("Hello"))
+        assertThat(jwtRequest.path).isEqualTo("/wp-json/jetpack/v4/jetpack-ai-jwt")
+        assertThat(jwtRequest.getHeader("Authorization")).startsWith("Basic ")
+        assertThat(chatRequest.path).isEqualTo("/wpcom/v2/jetpack-ai-query")
+        assertThat(chatRequest.getHeader("Authorization")).isEqualTo("Bearer jwt-token")
+    }
+
+    @Test
+    fun `given chat error echoes bearer token, when service streams turn, then diagnostics redact token`() = runTest {
+        server.enqueue(jsonResponse("""{"token":"jwt-token"}"""))
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(500)
+                .setHeader("Content-Type", "application/json")
+                .setBody("""{"error":"Authorization: Bearer jwt-token"}""")
+        )
+
+        val events = service().streamTurn(ChatRequest(listOf(AssistantMessage.User("hi")))).toList()
+
+        val failure = events.filterIsInstance<AssistantEvent.Failed>().single()
+        assertThat(failure.diagnostics.transport?.bodySnippet)
+            .contains("[REDACTED]")
+            .doesNotContain("jwt-token")
+            .doesNotContain("Bearer jwt-token")
+    }
+
+    private fun service(): ChatService {
         val json = assistantJsonForTests()
-        val service = WooAiSmokeLiveChatServiceFactory(
+        return WooAiSmokeLiveChatServiceFactory(
             httpClient = OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .callTimeout(5, TimeUnit.SECONDS)
@@ -64,16 +97,6 @@ class WooAiSmokeLiveChatServiceFactoryTest {
                 appPassword = "app password",
             ),
         )
-
-        val events = service.streamTurn(ChatRequest(listOf(AssistantMessage.User("hi")))).toList()
-
-        val jwtRequest = server.takeRequest()
-        val chatRequest = server.takeRequest()
-        assertThat(events).contains(AssistantEvent.TextDelta("Hello"))
-        assertThat(jwtRequest.path).isEqualTo("/wp-json/jetpack/v4/jetpack-ai-jwt")
-        assertThat(jwtRequest.getHeader("Authorization")).startsWith("Basic ")
-        assertThat(chatRequest.path).isEqualTo("/wpcom/v2/jetpack-ai-query")
-        assertThat(chatRequest.getHeader("Authorization")).isEqualTo("Bearer jwt-token")
     }
 
     private fun jsonResponse(body: String): MockResponse = MockResponse()

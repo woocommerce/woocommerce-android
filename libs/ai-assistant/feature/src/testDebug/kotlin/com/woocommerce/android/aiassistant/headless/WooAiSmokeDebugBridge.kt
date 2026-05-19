@@ -91,12 +91,24 @@ object WooAiSmokeDebugBridge {
             )
             exit
         }.getOrElse { error ->
-            WooAiSmokeRunExit(
-                artifactsDirectory = outputDirectory,
-                sourceArtifactsDirectory = outputDirectory,
-                failureMessage = redactor.redact(error.message ?: error::class.java.simpleName),
-            )
+            redactedFailureExit(credentials, error)
         }
+    }
+
+    internal fun redactedFailureExit(
+        credentials: WooAiSmokeCredentialConfig,
+        error: Throwable,
+    ): WooAiSmokeRunExit {
+        val redactor = WooAiSmokeRedactor(
+            siteUrl = credentials.siteUrl,
+            username = credentials.username,
+            appPassword = credentials.appPassword,
+        )
+        return WooAiSmokeRunExit(
+            artifactsDirectory = credentials.outputDirectory,
+            sourceArtifactsDirectory = credentials.outputDirectory,
+            failureMessage = redactor.redact(error.message ?: error::class.java.simpleName),
+        )
     }
 
     internal fun writePreflightArtifacts(

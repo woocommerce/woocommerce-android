@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class WooAiSmokeDirectJwtTokenProviderTest {
@@ -99,16 +100,40 @@ class WooAiSmokeDirectJwtTokenProviderTest {
             .hasMessageContaining("Jetpack AI JWT response did not include a token")
     }
 
-    private fun provider() = WooAiSmokeDirectJwtTokenProvider(
+    @Test
+    fun `given network failure, when provider supplies token, then host is redacted`() {
+        val host = "leaky-store.example"
+        val siteUrl = "https://$host"
+        val httpClient = OkHttpClient.Builder()
+            .addInterceptor { throw IOException("Failed to connect to $host") }
+            .build()
+
+        assertThatThrownBy {
+            runTest { provider(httpClient, siteUrl).provide() }
+        }.isInstanceOf(AssistantAuthException::class.java)
+            .hasMessageContaining("Jetpack AI JWT network failure")
+            .hasMessageNotContaining(host)
+            .hasMessageNotContaining(siteUrl)
+    }
+
+    private fun provider() = provider(
         httpClient = OkHttpClient.Builder()
             .callTimeout(5, TimeUnit.SECONDS)
             .build(),
-        json = Json { ignoreUnknownKeys = true },
         siteUrl = server.url("/").toString(),
+    )
+
+    private fun provider(
+        httpClient: OkHttpClient,
+        siteUrl: String,
+    ) = WooAiSmokeDirectJwtTokenProvider(
+        httpClient = httpClient,
+        json = Json { ignoreUnknownKeys = true },
+        siteUrl = siteUrl,
         username = "merchant@example.com",
         appPassword = "app password",
         redactor = WooAiSmokeRedactor(
-            siteUrl = server.url("/").toString(),
+            siteUrl = siteUrl,
             username = "merchant@example.com",
             appPassword = "app password",
         ),

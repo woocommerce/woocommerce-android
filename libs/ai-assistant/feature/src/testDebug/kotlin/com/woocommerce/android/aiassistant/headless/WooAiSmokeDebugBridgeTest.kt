@@ -31,4 +31,32 @@ class WooAiSmokeDebugBridgeTest {
         assertThat(runDirectory.resolve("preflight.json").readText())
             .isEqualTo(latestDirectory.resolve("preflight.json").readText())
     }
+
+    @Test
+    fun `given live bridge failure, when failure exit is built, then credentials are redacted`() {
+        val outputDirectory = temporaryFolder.newFolder("live-output")
+        val exit = WooAiSmokeDebugBridge.redactedFailureExit(
+            credentials = WooAiSmokeCredentialConfig(
+                siteUrl = "https://leaky-store.example",
+                siteId = 2922L,
+                username = "merchant@example.com",
+                appPassword = "app password",
+                storeLabel = "store",
+                outputDirectory = outputDirectory,
+                credentialSource = "test",
+            ),
+            error = IllegalStateException(
+                "Failed for https://leaky-store.example, leaky-store.example, merchant@example.com, app password"
+            ),
+        )
+
+        assertThat(exit.artifactsDirectory).isEqualTo(outputDirectory)
+        assertThat(exit.sourceArtifactsDirectory).isEqualTo(outputDirectory)
+        assertThat(exit.failureMessage)
+            .doesNotContain("https://leaky-store.example")
+            .doesNotContain("leaky-store.example")
+            .doesNotContain("merchant@example.com")
+            .doesNotContain("app password")
+            .contains("[REDACTED]")
+    }
 }
