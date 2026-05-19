@@ -33,6 +33,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     private val viewModel: AiSupportChatViewModel by viewModels()
     private var progressDialog: CustomProgressDialog? = null
     private var contactSupportMenuItem: MenuItem? = null
+    private var markResolvedMenuItem: MenuItem? = null
 
     @Inject lateinit var zendeskSettings: ZendeskSettings
 
@@ -66,6 +67,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     override fun onDestroyView() {
         super.onDestroyView()
         contactSupportMenuItem = null
+        markResolvedMenuItem = null
         hideProgressDialog()
     }
 
@@ -76,13 +78,21 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_ai_support_chat, menu)
         contactSupportMenuItem = menu.findItem(R.id.menu_contact_support)
+        markResolvedMenuItem = menu.findItem(R.id.menu_mark_resolved)
         contactSupportMenuItem?.isVisible = viewModel.viewState.value.canContactHumanSupportFromToolbar
+        markResolvedMenuItem?.isVisible = viewModel.viewState.value.shouldShowResolvedButton
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == R.id.menu_contact_support) {
-            onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
-            return true
+        when (menuItem.itemId) {
+            R.id.menu_contact_support -> {
+                onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+                return true
+            }
+            R.id.menu_mark_resolved -> {
+                viewModel.onMarkResolvedClicked()
+                return true
+            }
         }
 
         return false
@@ -101,6 +111,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.viewState.collect { state ->
                     contactSupportMenuItem?.isVisible = state.canContactHumanSupportFromToolbar
+                    markResolvedMenuItem?.isVisible = state.shouldShowResolvedButton
                 }
             }
         }

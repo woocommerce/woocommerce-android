@@ -436,6 +436,22 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given latest bot response is upvoted, when feedback clicked, then resolved prompt is appended`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+
+            assertThat(viewModel.viewState.value.shouldShowResolvedButton).isTrue
+            assertThat(viewModel.viewState.value.messages.map { it.content }).endsWith(
+                AiSupportChatMessageContent.Text(BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
+        }
+
+    @Test
     fun `given unrated bot response, when thumbs down clicked, then rating is stored and submitted`() =
         testBlocking {
             startChatWithBotResponse()
@@ -457,6 +473,41 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given latest bot response is resolved, when message succeeds, then resolved prompt is appended`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(
+                        messageId = BOT_MESSAGE_ID,
+                        role = SupportChatRole.BOT,
+                        content = BOT_RESPONSE,
+                        isResolved = true
+                    )
+                )
+            )
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(response))
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.shouldShowResolvedButton).isTrue
+            assertThat(state.messages.map { it.content }).endsWith(
+                AiSupportChatMessageContent.Text(BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
+            val botMessage = state.messages.single { it.content == AiSupportChatMessageContent.Text(BOT_RESPONSE) }
+            assertThat(botMessage.isResolved)
+                .isTrue
+        }
+
+    @Test
     fun `given rated bot response, when feedback clicked again, then feedback is not submitted twice`() =
         testBlocking {
             startChatWithBotResponse()
@@ -470,6 +521,59 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 .containsEntry(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
             verify(repository).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true)
             verify(repository, never()).submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, false)
+        }
+
+    @Test
+    fun `given resolved prompt exists, when latest bot response is upvoted again, then prompt is not duplicated`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            assertThat(
+                viewModel.viewState.value.messages.count { it.content == AiSupportChatMessageContent.ResolvedPrompt }
+            ).isEqualTo(1)
+        }
+
+    @Test
+    fun `given resolved prompt exists, when later bot response is upvoted, then prompt moves after latest response`() =
+        testBlocking {
+            val latestBotMessageId = 4L
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = latestBotMessageId,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, latestBotMessageId, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+            viewModel.onFeedbackClicked(latestBotMessageId, AiSupportChatFeedbackRating.UP)
+
+            val contents = viewModel.viewState.value.messages.map { it.content }
+            assertThat(contents.count { it == AiSupportChatMessageContent.ResolvedPrompt }).isEqualTo(1)
+            assertThat(contents).endsWith(
+                AiSupportChatMessageContent.Text(FOLLOW_UP_BOT_RESPONSE),
+                AiSupportChatMessageContent.ResolvedPrompt
+            )
         }
 
     @Test
@@ -523,6 +627,68 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.completedUserMessageResponseCount).isEqualTo(2)
             assertThat(state.canContactHumanSupportFromToolbar).isTrue
+        }
+
+    @Test
+    fun `given two bot responses, when chat updates, then resolved button is available`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                            )
+                        )
+                    )
+                )
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = 4L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+
+            continueToChatAfterSuccessfulDiagnostics(result)
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            assertThat(viewModel.viewState.value.shouldShowResolvedButton).isTrue
+        }
+
+    @Test
+    fun `given resolved button shown, when mark resolved confirmed, then chat actions are hidden`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onMarkResolvedClicked()
+            viewModel.onMarkResolvedConfirmed()
+
+            val state = viewModel.viewState.value
+            assertThat(state.isChatResolved).isTrue
+            assertThat(state.showMarkResolvedConfirmation).isFalse
+            assertThat(state.canSendMessages).isFalse
+            assertThat(state.showInputBar).isFalse
+            assertThat(state.shouldShowResolvedButton).isFalse
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
         }
 
     @Test
@@ -763,6 +929,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.hasCreatedTicket).isTrue
         assertThat(state.canSendMessages).isFalse
         assertThat(state.canContactHumanSupportFromToolbar).isFalse
+        assertThat(state.shouldShowResolvedButton).isFalse
         assertThat(state.showSendError).isFalse
         assertThat(state.showHumanSupportPrompt).isFalse
     }
@@ -1082,12 +1249,13 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         messageId: Long,
         role: SupportChatRole,
         content: String = BOT_RESPONSE,
-        context: SupportChatMessageContext? = null
+        context: SupportChatMessageContext? = null,
+        isResolved: Boolean = false
     ): SupportChatMessage = SupportChatMessage(
         messageId = messageId,
         role = role,
         content = content,
-        context = context
+        context = context ?: if (isResolved) SupportChatMessageContext(isResolved = true) else null
     )
 
     private data class SupportAreaMapping(

@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -37,7 +36,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,6 +60,8 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.ui.compose.DialogState
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -82,6 +82,8 @@ fun AiSupportChatScreen(
         onContactSupportClicked = { onContactSupportClicked(HumanSupportContactSource.BANNER) },
         onContactSupportFromErrorClicked = { onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
         onSendErrorDismissed = viewModel::onSendErrorDismissed,
+        onMarkResolvedConfirmed = viewModel::onMarkResolvedConfirmed,
+        onMarkResolvedDismissed = viewModel::onMarkResolvedDismissed,
         onFeedbackClicked = viewModel::onFeedbackClicked
     )
 }
@@ -96,6 +98,8 @@ fun AiSupportChatScreen(
     onContactSupportClicked: () -> Unit,
     onContactSupportFromErrorClicked: () -> Unit,
     onSendErrorDismissed: () -> Unit,
+    onMarkResolvedConfirmed: () -> Unit,
+    onMarkResolvedDismissed: () -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -118,6 +122,7 @@ fun AiSupportChatScreen(
         )
         when {
             viewState.hasCreatedTicket -> TicketCreatedBanner(modifier = Modifier.fillMaxWidth())
+            viewState.isChatResolved -> ChatResolvedBanner(modifier = Modifier.fillMaxWidth())
             viewState.showHumanSupportPrompt -> HumanSupportBanner(
                 onContactSupportClicked = onContactSupportClicked,
                 modifier = Modifier.fillMaxWidth()
@@ -137,6 +142,13 @@ fun AiSupportChatScreen(
         SendErrorDialog(
             onContactSupportClicked = onContactSupportFromErrorClicked,
             onDismiss = onSendErrorDismissed
+        )
+    }
+
+    if (viewState.showMarkResolvedConfirmation) {
+        MarkResolvedConfirmationDialog(
+            onConfirm = onMarkResolvedConfirmed,
+            onDismiss = onMarkResolvedDismissed
         )
     }
 }
@@ -252,6 +264,7 @@ private fun MessageBubble(
 private fun AiSupportChatMessage.canShowFeedback(): Boolean =
     role == AiSupportChatMessageRole.BOT &&
         messageId != null &&
+        !isResolved &&
         content is AiSupportChatMessageContent.Text
 
 @Composable
@@ -338,6 +351,10 @@ private fun MessageContent(
         )
         AiSupportChatMessageContent.PostDiagnosticsGreeting -> TextContent(
             text = stringResource(R.string.ai_support_chat_post_diagnostics_greeting),
+            color = textColor
+        )
+        AiSupportChatMessageContent.ResolvedPrompt -> TextContent(
+            text = stringResource(R.string.ai_support_chat_resolved_prompt),
             color = textColor
         )
         is AiSupportChatMessageContent.Text -> TextContent(
@@ -571,6 +588,22 @@ private fun TicketCreatedBanner(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun ChatResolvedBanner(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Text(
+            text = stringResource(R.string.ai_support_chat_resolved_message),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+        )
+    }
+}
+
+@Composable
 private fun HumanSupportBanner(
     onContactSupportClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -599,21 +632,41 @@ private fun SendErrorDialog(
     onContactSupportClicked: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.ai_support_chat_error_title)) },
-        text = { Text(text = stringResource(R.string.ai_support_chat_send_error)) },
-        confirmButton = {
-            TextButton(onClick = onContactSupportClicked) {
-                Text(text = stringResource(R.string.ai_support_chat_contact_support))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.ai_support_chat_error_dismiss))
-            }
-        }
-    )
+    DialogState(
+        title = R.string.ai_support_chat_error_title,
+        message = R.string.ai_support_chat_send_error,
+        positiveButton = DialogState.DialogButton(
+            text = R.string.ai_support_chat_contact_support,
+            onClick = onContactSupportClicked
+        ),
+        negativeButton = DialogState.DialogButton(
+            text = R.string.ai_support_chat_error_dismiss,
+            onClick = onDismiss
+        ),
+        isCancelable = false,
+        onDismiss = onDismiss
+    ).Render()
+}
+
+@Composable
+private fun MarkResolvedConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    DialogState(
+        title = R.string.ai_support_chat_mark_resolved_confirmation_title,
+        message = R.string.ai_support_chat_mark_resolved_confirmation_message,
+        positiveButton = DialogState.DialogButton(
+            text = R.string.ai_support_chat_mark_resolved,
+            onClick = onConfirm
+        ),
+        negativeButton = DialogState.DialogButton(
+            text = R.string.ai_support_chat_mark_resolved_cancel,
+            onClick = onDismiss
+        ),
+        isCancelable = false,
+        onDismiss = onDismiss
+    ).Render()
 }
 
 @Composable
@@ -696,6 +749,8 @@ private fun AiSupportChatScreenPreview() {
             onContactSupportClicked = {},
             onContactSupportFromErrorClicked = {},
             onSendErrorDismissed = {},
+            onMarkResolvedConfirmed = {},
+            onMarkResolvedDismissed = {},
             onFeedbackClicked = { _, _ -> }
         )
     }

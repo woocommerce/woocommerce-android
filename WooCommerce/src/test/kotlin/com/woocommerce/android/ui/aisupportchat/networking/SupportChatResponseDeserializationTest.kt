@@ -83,6 +83,30 @@ class SupportChatResponseDeserializationTest {
     }
 
     @Test
+    fun `given is resolved in response, when decoded, then context exposes resolved state`() {
+        val json = """
+            {
+              "chat_id": 1,
+              "messages": [
+                {
+                  "message_id": 1,
+                  "role": "bot",
+                  "content": "ok",
+                  "context": {
+                    "is_resolved": true
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = gson.fromJson(json, SupportChatResponse::class.java)
+        val context = requireNotNull(response.messages.single().context)
+
+        assertThat(context.isResolved).isTrue
+    }
+
+    @Test
     fun `given unknown support area values, when decoded, then defaults match iOS`() {
         val json = """
             {

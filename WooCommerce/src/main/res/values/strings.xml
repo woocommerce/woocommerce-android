@@ -2425,7 +2425,12 @@
     <string name="ai_support_chat_human_support_message">It looks like you might need additional help. Would you like to contact our support team?</string>
     <string name="ai_support_chat_contact_support">Contact Support</string>
     <string name="ai_support_chat_ticket_created_message">A support ticket has been created for this chat. We\'ll respond via email.</string>
+    <string name="ai_support_chat_resolved_message">This chat has been marked as resolved.</string>
     <string name="ai_support_chat_toolbar_contact_support">Contact Support</string>
+    <string name="ai_support_chat_mark_resolved">Mark Resolved</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Cancel</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">This will close the chat actions for this conversation.</string>
     <string name="ai_support_chat_escalation_transcript_header">Following is the transcript of an in-app AI support chat session:</string>
     <string name="ai_support_chat_support_request_subject_mobile_app">Mobile App Support Request</string>
     <string name="ai_support_chat_support_request_subject_card_reader">Card Reader Support Request</string>
@@ -2433,6 +2438,7 @@
     <string name="ai_support_chat_support_request_subject_woo_plugin">WooCommerce Plugin Support Request</string>
     <string name="ai_support_chat_support_request_subject_other_plugin">Plugin Support Request</string>
     <string name="ai_support_chat_post_diagnostics_greeting">Please describe your issue in more detail so I can help.</string>
+    <string name="ai_support_chat_resolved_prompt">Please mark the chat as resolved if your problem is resolved, or leave a message if you have other questions.</string>
     <string name="ai_support_chat_issue_picker_title">What would you like to troubleshoot?</string>
     <string name="ai_support_chat_issue_loading_orders">I can\'t see my orders</string>
     <string name="ai_support_chat_issue_loading_products">I can\'t see my products</string>

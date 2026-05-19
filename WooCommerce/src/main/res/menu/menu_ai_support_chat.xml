@@ -9,4 +9,12 @@
         android:title="@string/ai_support_chat_toolbar_contact_support"
         android:visible="false"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_mark_resolved"
+        android:contentDescription="@string/ai_support_chat_mark_resolved"
+        android:icon="@drawable/ic_check_24dp"
+        android:title="@string/ai_support_chat_mark_resolved"
+        android:visible="false"
+        app:showAsAction="always" />
 </menu>
