@@ -1,20 +1,47 @@
-package com.woocommerce.android.aiassistant.chat
+package com.woocommerce.android.aiassistant.chat.woomobileai
 
-import com.woocommerce.android.aiassistant.chat.woomobileai.WrapperErrorEnvelope
+import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
+import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseErrorMapper
+import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseHttpErrorContext
+import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseMappedError
+import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseStreamErrorContext
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-internal class WrapperStreamErrorMapper @Inject constructor(
+internal class WooMobileAiWrapperErrorMapper @Inject constructor(
     private val json: Json,
-) {
-    fun map(
+) : OpenAiSseErrorMapper {
+    override fun mapHttpError(
+        context: OpenAiSseHttpErrorContext,
+        diagnosticsFactory: TransportDiagnosticsFactory,
+    ): OpenAiSseMappedError? = mapEnvelope(
+        payload = context.body,
+        fallbackHttpStatus = context.statusCode,
+        headers = context.headers,
+        diagnosticsFactory = diagnosticsFactory,
+    )
+
+    override fun mapStreamPayload(
+        context: OpenAiSseStreamErrorContext,
+        diagnosticsFactory: TransportDiagnosticsFactory,
+    ): OpenAiSseMappedError? {
+        if (!context.isFirstPayload) return null
+        return mapEnvelope(
+            payload = context.payload,
+            fallbackHttpStatus = context.httpStatusCode,
+            headers = context.headers,
+            diagnosticsFactory = diagnosticsFactory,
+        )
+    }
+
+    private fun mapEnvelope(
         payload: String,
-        fallbackHttpStatus: Int? = null,
-        headers: Map<String, String> = emptyMap(),
-        transportDiagnosticsFactory: TransportDiagnosticsFactory,
-    ): MappedWrapperError? {
+        fallbackHttpStatus: Int?,
+        headers: Map<String, String>,
+        diagnosticsFactory: TransportDiagnosticsFactory,
+    ): OpenAiSseMappedError? {
         val envelope = runCatching {
             json.decodeFromString<WrapperErrorEnvelope>(payload)
         }.getOrNull() ?: return null
@@ -26,10 +53,10 @@ internal class WrapperStreamErrorMapper @Inject constructor(
             ?: status?.toHttpErrorKind()
             ?: return null
 
-        return MappedWrapperError(
+        return OpenAiSseMappedError(
             kind = kind,
             diagnostics = Diagnostics(
-                transport = transportDiagnosticsFactory.fromRawHttp(
+                transport = diagnosticsFactory.fromRawHttp(
                     statusCode = status ?: fallbackHttpStatus,
                     headers = headers,
                     bodyBytes = payload.encodeToByteArray(),
@@ -53,11 +80,6 @@ internal class WrapperStreamErrorMapper @Inject constructor(
         in HTTP_SERVER_ERROR_RANGE -> ChatStreamError.UPSTREAM_FAILURE
         else -> ChatStreamError.UNKNOWN
     }
-
-    data class MappedWrapperError(
-        val kind: ChatStreamError,
-        val diagnostics: Diagnostics,
-    )
 
     private companion object {
         private const val WOO_MOBILE_AI_USER_RATE_LIMIT = "woo_mobile_ai_user_rate_limit"

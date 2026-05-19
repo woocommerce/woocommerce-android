@@ -1,7 +1,7 @@
 package com.woocommerce.android.aiassistant.chat
 
 import com.woocommerce.android.aiassistant.auth.WpComOAuthTokenProvider
-import com.woocommerce.android.aiassistant.chat.woomobileai.WooMobileAiRequestBuilder
+import com.woocommerce.android.aiassistant.chat.woomobileai.WooMobileAiWrapperErrorMapper
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
@@ -14,6 +14,7 @@ import com.woocommerce.android.aiassistant.core.chat.toAssistantError
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -70,6 +71,20 @@ class WooMobileAiChatServiceTest {
         assertThat(recorded.getHeader("Authorization")).isEqualTo("Bearer wpcom-token")
         assertThat(recorded.getHeader("Accept")).isEqualTo("text/event-stream")
         assertThat(tokenProvider.provideCalls).isEqualTo(1)
+    }
+
+    @Test
+    fun `given a request, when sent, then body uses canonical open ai wrapper contract`() = runTest {
+        server.enqueue(sseResponse(SAMPLE_SSE_BODY))
+
+        newService().streamTurn(simpleRequest()).toList()
+
+        val body = Json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject
+        assertThat(body.getValue("model").jsonPrimitive.content).isEqualTo("gpt-5.1")
+        assertThat(body.getValue("stream").jsonPrimitive.boolean).isTrue()
+        assertThat(body.getValue("stream_options").jsonObject.getValue("include_usage").jsonPrimitive.boolean).isTrue()
+        assertThat(body).doesNotContainKey("feature")
+        assertThat(body).doesNotContainKey("tool_choice")
     }
 
     @Test
@@ -236,6 +251,28 @@ class WooMobileAiChatServiceTest {
     }
 
     @Test
+    fun `given stream wrapper envelope after first frame, when streaming, then parser owns it as invalid stream`() =
+        runTest {
+            val envelope = wrapperEnvelopeLine("woo_mobile_ai_user_rate_limit", status = 429)
+            server.enqueue(
+                sseResponse(
+                    """
+                    data: {"choices":[{"delta":{"content":"Hello"}}]}
+
+                    data: $envelope
+
+                    """.trimIndent()
+                )
+            )
+
+            val events = newService().streamTurn(simpleRequest()).toList()
+
+            assertThat(events.first()).isEqualTo(AssistantEvent.TextDelta("Hello"))
+            val failed = events.last() as AssistantEvent.Failed
+            assertThat(failed.kind).isEqualTo(ChatStreamError.INVALID_STREAM)
+        }
+
+    @Test
     fun `given a request with assistant tool replay, when sent, then existing open ai message helper shape is used`() =
         runTest {
             server.enqueue(sseResponse(SAMPLE_SSE_BODY))
@@ -274,8 +311,7 @@ class WooMobileAiChatServiceTest {
         json = assistantJson,
         baseUrl = server.url("/").toString().removeSuffix("/"),
         transportDiagnosticsFactory = TransportDiagnosticsFactory(),
-        requestBuilder = WooMobileAiRequestBuilder(),
-        wrapperStreamErrorMapper = WrapperStreamErrorMapper(assistantJson),
+        wrapperErrorMapper = WooMobileAiWrapperErrorMapper(assistantJson),
     )
 
     private fun simpleRequest(): ChatRequest = ChatRequest(

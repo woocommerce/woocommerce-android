@@ -1,11 +1,11 @@
-package com.woocommerce.android.aiassistant.chat.woomobileai
+package com.woocommerce.android.aiassistant.chat.jetpackai
 
 import com.woocommerce.android.aiassistant.chat.assistantJsonForTests
+import com.woocommerce.android.aiassistant.chat.openai.toOpenAiRequestBody
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
@@ -15,29 +15,31 @@ import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class WooMobileAiRequestEnvelopeTest {
+class JetpackAiQueryRequestBodyMapperTest {
     private val json = assistantJsonForTests()
-    private val builder = WooMobileAiRequestBuilder()
+    private val mapper = JetpackAiQueryRequestBodyMapper(featureName = "ai-assistant")
 
     @Test
-    fun `given a chat request, when built, then wrapper top level contract is serialized`() {
-        val envelope = builder.build(chatRequestWithMessagesAndTools())
+    fun `given canonical open ai body, when mapped, then legacy feature request shape is serialized`() {
+        val canonical = chatRequestWithMessagesAndTools()
+            .toOpenAiRequestBody(model = "gpt-legacy", includeUsage = true)
 
-        val encoded = json.encodeToString(envelope)
+        val encoded = mapper.mapToJson(canonical, json)
         val root = json.parseToJsonElement(encoded).jsonObject
 
-        assertThat(root.getValue("model").jsonPrimitive.content).isEqualTo("gpt-5.1")
+        assertThat(root.getValue("feature").jsonPrimitive.content).isEqualTo("ai-assistant")
+        assertThat(root.getValue("model").jsonPrimitive.content).isEqualTo("gpt-legacy")
         assertThat(root.getValue("stream").jsonPrimitive.boolean).isTrue()
-        assertThat(root.getValue("stream_options").jsonObject.getValue("include_usage").jsonPrimitive.boolean).isTrue()
-        assertThat(root).doesNotContainKey("feature")
+        assertThat(root).doesNotContainKey("stream_options")
         assertThat(root).doesNotContainKey("tool_choice")
     }
 
     @Test
-    fun `given messages and tools, when built, then existing open ai helper shapes are preserved`() {
-        val envelope = builder.build(chatRequestWithMessagesAndTools())
+    fun `given canonical messages and tools, when mapped, then open ai helper shapes are preserved`() {
+        val canonical = chatRequestWithMessagesAndTools()
+            .toOpenAiRequestBody(model = "gpt-legacy")
 
-        val encoded = json.encodeToString(envelope)
+        val encoded = mapper.mapToJson(canonical, json)
         val root = json.parseToJsonElement(encoded).jsonObject
         val messages = root.getValue("messages").jsonArray
         val assistantMessage = messages[2].jsonObject
