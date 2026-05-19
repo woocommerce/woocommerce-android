@@ -192,7 +192,7 @@ class ProductVariationsConfirmationPreviewProviderTest {
         val dataSource: AIProductVariationsDataSource = mock()
         whenever(dataSource.getVariation(7L, 8L)).thenReturn(Result.success(variation()))
 
-        preview(
+        val preview = preview(
             arguments = buildJsonObject {
                 put("product_id", 7)
                 put("id", 8)
@@ -201,6 +201,14 @@ class ProductVariationsConfirmationPreviewProviderTest {
             dataSource = dataSource,
         )
 
+        assertThat(preview.message).isEqualTo(
+            string(
+                R.string.ai_assistant_confirmation_product_variation_update_title_with_name,
+                raw("VAR-7"),
+                raw("8"),
+                raw("7"),
+            )
+        )
         verify(dataSource).getVariation(7L, 8L)
     }
 

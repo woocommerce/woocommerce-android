@@ -333,6 +333,65 @@ class OrdersConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given single order lookup returns a cache hit, when preview is built, then cached name is used`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(dataSource.getOrders(listOf(42L))).thenReturn(
+                Result.success(cachedOrderLookup(order(billingFirstName = "Jane", billingLastName = "Doe")))
+            )
+
+            val preview = preview(
+                toolName = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "pending")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_order_update_title_with_name,
+                    raw("42"),
+                    raw("Jane Doe"),
+                )
+            )
+            verify(dataSource).getOrders(listOf(42L))
+            verify(dataSource, never()).getOrder(42L)
+        }
+
+    @Test
+    fun `given bulk order lookup returns cache hits, when preview is built, then cached names are used`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(dataSource.getOrders(listOf(1L, 2L))).thenReturn(
+                Result.success(
+                    cachedOrderLookup(
+                        order(orderId = 1L, billingFirstName = "Jane", billingLastName = "Doe"),
+                        order(orderId = 2L, billingFirstName = "Sam", billingLastName = "Rivera"),
+                    )
+                )
+            )
+
+            val preview = preview(
+                toolName = "orders_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(1), JsonPrimitive(2))))
+                    put("patch", buildJsonObject { put("status", "completed") })
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.bulkEntries).containsExactly(
+                ConfirmationBulkEntry(1, "Jane Doe"),
+                ConfirmationBulkEntry(2, "Sam Rivera"),
+            )
+            verify(dataSource).getOrders(listOf(1L, 2L))
+            verify(dataSource, never()).getOrder(1L)
+            verify(dataSource, never()).getOrder(2L)
+        }
+
+    @Test
     fun `given one order bulk status update emails customer, when preview is built, then singular summary is used`() =
         runTest {
             val preview = preview(

@@ -179,6 +179,37 @@ class ProductsConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given bulk product lookup returns cache hits, when preview is built, then cached names are used`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProducts(listOf(7L, 8L))).thenReturn(
+                Result.success(
+                    cachedProductLookup(
+                        product(remoteId = 7L, name = "Classic T-Shirt"),
+                        product(remoteId = 8L, name = "Beanie"),
+                    )
+                )
+            )
+
+            val preview = preview(
+                toolName = "products_bulk_update",
+                arguments = buildJsonObject {
+                    put("ids", JsonArray(listOf(JsonPrimitive(7), JsonPrimitive(8))))
+                    put("patch", buildJsonObject { put("status", "draft") })
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.bulkEntries).containsExactly(
+                ConfirmationBulkEntry(7, "Classic T-Shirt"),
+                ConfirmationBulkEntry(8, "Beanie"),
+            )
+            verify(dataSource).getProducts(listOf(7L, 8L))
+            verify(dataSource, never()).getProduct(7L)
+            verify(dataSource, never()).getProduct(8L)
+        }
+
+    @Test
     fun `given product update and current product, when preview is built, then before and after values are included`() =
         runTest {
             val dataSource: AIProductsDataSource = mock()
