@@ -9,6 +9,8 @@ require_relative 'woo_ai_translation/translator'
 require_relative 'woo_ai_translation/validators'
 require_relative 'woo_ai_translation/engine'
 require_relative 'woo_ai_translation/metadata_engine'
+require_relative 'woo_ai_translation/importer'
+require_relative 'woo_ai_translation/shadow_diff'
 require_relative 'woo_ai_translation/cli'
 
 # Self-contained, cross-platform-extractable AI translation engine that replaces

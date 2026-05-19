@@ -20,7 +20,8 @@ module WooAiTranslation
       metadata_out: 'fastlane/metadata/android',
       gp_locales: [],
       include_release_notes: false,
-      version: nil
+      version: nil,
+      report: 'fastlane/ai_translation/shadow-diff.md'
     }.freeze
 
     module_function
@@ -28,34 +29,61 @@ module WooAiTranslation
     def run(argv)
       opts = parse(argv)
       logger = ->(m) { warn("[ai_translate] #{m}") }
+      context = ContextProvider.from_file(opts[:context])
+      manifest = Manifest.load(opts[:manifest])
+
+      # Baseline import needs no model/network: it only records the existing
+      # human translations already committed in values-*/strings.xml.
+      return run_import(opts, manifest, context, logger) if opts[:mode] == 'import'
 
       client = opts[:offline] ? StubClient.new : AnthropicClient.from_env
       unless client.available?
         warn('[ai_translate] ANTHROPIC_API_KEY not set and not --offline; nothing to do.')
         return 0
       end
-
       translator = Translator.new(client: client, batch_size: opts[:batch], logger: logger)
-      manifest = Manifest.load(opts[:manifest])
 
       return run_metadata(opts, translator, manifest, logger) if opts[:mode] == 'metadata'
+      return run_shadow(opts, translator, context, logger) if opts[:mode] == 'shadow-diff'
 
-      # The glotpress-import origin is produced by the separate baseline import
-      # tool (rollout phase), not by this AI path.
       engine = Engine.new(
-        source_path: opts[:source],
-        res_dir: opts[:res_dir],
-        manifest: manifest,
-        manifest_path: opts[:manifest],
-        translator: translator,
-        context: ContextProvider.from_file(opts[:context]),
-        logger: logger
+        source_path: opts[:source], res_dir: opts[:res_dir],
+        manifest: manifest, manifest_path: opts[:manifest],
+        translator: translator, context: context, logger: logger
       )
+
+      # backfill = seed the human baseline first (origin glotpress-import, no
+      # AI), then AI-fill only the gaps + the new locales.
+      if opts[:mode] == 'backfill'
+        Importer.new(source_path: opts[:source], res_dir: opts[:res_dir],
+                     manifest: manifest, context: context, logger: logger)
+                .import(locales: opts[:locales])
+      end
 
       reports = engine.run_strings(locales: opts[:locales], origin: 'ai')
       print_summary(reports, opts[:mode])
       problems = reports.sum { |r| r.failed.size + r.gate_errors.size }
       opts[:strict] && problems.positive? ? 1 : 0
+    end
+
+    def run_import(opts, manifest, context, logger)
+      reports = Importer.new(
+        source_path: opts[:source], res_dir: opts[:res_dir],
+        manifest: manifest, context: context, logger: logger
+      ).import(locales: opts[:locales])
+      manifest.save(opts[:manifest])
+      reports.each { |r| warn("[ai_translate] import #{r.locale}: imported=#{r.imported} gaps=#{r.gaps}") }
+      0
+    end
+
+    def run_shadow(opts, translator, context, logger)
+      report = ShadowDiff.new(
+        source_path: opts[:source], res_dir: opts[:res_dir],
+        translator: translator, context: context, logger: logger
+      ).run(locales: opts[:locales])
+      File.write(opts[:report], report)
+      warn("[ai_translate] shadow-diff written to #{opts[:report]}")
+      0
     end
 
     def run_metadata(opts, translator, manifest, logger)
@@ -87,7 +115,8 @@ module WooAiTranslation
         p.on('--context PATH') { |v| o[:context] = v }
         p.on('--locales LIST', 'Comma-separated Android locale qualifiers') { |v| o[:locales] = v }
         p.on('--locales-file PATH') { |v| o[:locales] = File.read(v).split }
-        p.on('--mode MODE', 'prtime|ondemand|sweep|backfill|metadata') { |v| o[:mode] = v }
+        p.on('--mode MODE', 'prtime|ondemand|sweep|backfill|metadata|import|shadow-diff') { |v| o[:mode] = v }
+        p.on('--report PATH', 'shadow-diff report output') { |v| o[:report] = v }
         p.on('--batch N', Integer) { |v| o[:batch] = v }
         p.on('--offline', 'Use the deterministic stub (no network/spend)') { o[:offline] = true }
         p.on('--strict', 'Exit non-zero if any key failed') { o[:strict] = true }
