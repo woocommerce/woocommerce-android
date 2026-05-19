@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
+import com.woocommerce.android.aiassistant.ui.markdown.AssistantMarkdownText
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
@@ -257,6 +258,7 @@ private fun MessageBubble(
                 MessageContent(
                     content = message.content,
                     textColor = textColor,
+                    shouldFormatMarkdown = message.role == AiSupportChatMessageRole.BOT,
                     showDiagnosticActions = showDiagnosticActions,
                     onIssueSelected = onIssueSelected,
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -355,6 +357,7 @@ private fun MessageFeedback(
 private fun MessageContent(
     content: AiSupportChatMessageContent,
     textColor: Color,
+    shouldFormatMarkdown: Boolean,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
@@ -362,7 +365,8 @@ private fun MessageContent(
     when (content) {
         AiSupportChatMessageContent.Greeting -> TextContent(
             text = stringResource(R.string.ai_support_chat_greeting),
-            color = textColor
+            color = textColor,
+            shouldFormatMarkdown = false
         )
         AiSupportChatMessageContent.IssuePicker -> IssuePickerContent(
             textColor = textColor,
@@ -370,15 +374,18 @@ private fun MessageContent(
         )
         AiSupportChatMessageContent.PostDiagnosticsGreeting -> TextContent(
             text = stringResource(R.string.ai_support_chat_post_diagnostics_greeting),
-            color = textColor
+            color = textColor,
+            shouldFormatMarkdown = false
         )
         AiSupportChatMessageContent.ResolvedPrompt -> TextContent(
             text = stringResource(R.string.ai_support_chat_resolved_prompt),
-            color = textColor
+            color = textColor,
+            shouldFormatMarkdown = false
         )
         is AiSupportChatMessageContent.Text -> TextContent(
             text = content.text,
-            color = textColor
+            color = textColor,
+            shouldFormatMarkdown = shouldFormatMarkdown
         )
         is AiSupportChatMessageContent.DiagnosticsProgress -> DiagnosticsContent(
             result = content.result,
@@ -396,16 +403,31 @@ private fun MessageContent(
 }
 
 @Composable
-private fun TextContent(text: String, color: Color) {
-    Text(
-        text = text,
-        color = color,
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.padding(
-            horizontal = dimensionResource(R.dimen.major_100),
-            vertical = dimensionResource(R.dimen.minor_100)
-        )
+private fun TextContent(
+    text: String,
+    color: Color,
+    shouldFormatMarkdown: Boolean
+) {
+    val modifier = Modifier.padding(
+        horizontal = dimensionResource(R.dimen.major_100),
+        vertical = dimensionResource(R.dimen.minor_100)
     )
+    if (shouldFormatMarkdown) {
+        AssistantMarkdownText(
+            text = text,
+            color = color,
+            style = MaterialTheme.typography.bodyMedium,
+            linkColor = MaterialTheme.colorScheme.primary,
+            modifier = modifier
+        )
+    } else {
+        Text(
+            text = text,
+            color = color,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
