@@ -182,6 +182,33 @@ class EngineTest < Minitest::Test
     end
   end
 
+  def test_metadata_engine_caps_release_notes_gating_and_reuse
+    Dir.mktmpdir do |dir|
+      src = File.join(dir, 'en-US')
+      FileUtils.mkdir_p(File.join(src, 'changelogs'))
+      File.write(File.join(src, 'title.txt'), 'X' * 60) # forces over-cap -> English fallback
+      File.write(File.join(src, 'short_description.txt'), 'Sell anywhere')
+      File.write(File.join(src, 'full_description.txt'), 'A long description.')
+      File.write(File.join(src, 'changelogs', 'default.txt'), 'Bug fixes')
+      out = File.join(dir, 'out')
+      mpath = File.join(dir, 'm.json')
+
+      eng = MetadataEngine.new(translator: Translator.new(client: StubClient.new),
+                               manifest: Manifest.load(mpath), manifest_path: mpath)
+      r = eng.run(source_dir: src, out_base: out, locales: %w[de-DE],
+                  include_release_notes: false).first
+
+      assert_equal 'X' * 60, File.read(File.join(out, 'de-DE', 'title.txt')), 'over-cap -> English fallback'
+      assert_includes r.fallback, 'title'
+      assert_equal '[de-DE] Sell anywhere', File.read(File.join(out, 'de-DE', 'short_description.txt'))
+      refute File.exist?(File.join(out, 'de-DE', 'changelogs', 'default.txt')), 'release notes not at PR-time'
+
+      r2 = eng.run(source_dir: src, out_base: out, locales: %w[de-DE], include_release_notes: false).first
+      assert_equal 0, r2.translated
+      assert r2.reused.positive?
+    end
+  end
+
   def test_placeholder_failure_is_dropped_not_shipped
     Dir.mktmpdir do |dir|
       bad = StubClient.new { |loc, src| "[#{loc}] #{src.gsub('%2$d', '')}" }

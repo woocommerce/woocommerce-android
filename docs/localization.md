@@ -2,7 +2,7 @@
 
 During development, adding a string in the [`values/strings.xml`](../WooCommerce/src/main/res/values/strings.xml) resource and using it in the code or layout file should be enough.
 
-**Important:** `plurals` are not supported at the moment. Use `StringUtils::getQuantityString` method.
+**Important:** keep using the manual `_single`/`_multiple` plural convention (see [Pluralization](#pluralization)) and the `StringUtils::getQuantityString` method. Real CLDR/ICU `<plurals>` are a deferred cross-platform follow-up.
 
 ```xml
 <!-- strings.xml -->
@@ -27,7 +27,13 @@ We also have string resources outside of `strings.xml` such as `key_strings`. Th
 
 To help ease the translation process we ask that you mark alias string resources - as well as other strings where appropriate - as not translatable. For example `<string name="foo" translatable="false">@string/bar</string>`
 
-You shouldn't need to touch the `strings.xml` for the other languages. During the release process, the `values/strings.xml` file is uploaded to [GlotPress](https://translate.wordpress.com/projects/woocommerce/woocommerce-android/) for translation. Before the release build is finalized, all the translations are grabbed from GlotPress and saved back to their appropriate `values-[lang_code]/strings.xml` file.
+You shouldn't need to touch the `strings.xml` for the other languages. **GlotPress is retired.** Translations are produced by the self-contained AI translation engine in [`fastlane/ai_translation`](../fastlane/ai_translation/README.md):
+
+- A **PR-time CI check** translates only the keys your PR adds/changes (delta vs `fastlane/ai_translation/translation-manifest.json`) for every supported locale, and a bot commits the resulting `values-[lang_code]/strings.xml` + manifest back to your PR branch so the change is reviewable inline and `trunk` stays fully translated.
+- A **code-freeze reconciliation sweep** re-checks every key × every locale (the safety net) and translates per-release Play Store notes.
+- AI ships by default; human review is sampled and **non-blocking**. Hard, blocking gates run on every translation: placeholder parity, XML well-formedness, key parity, and plural-pair output integrity.
+
+You normally don't run anything by hand. To translate locally: `bundle exec fastlane ai_translate mode:prtime` (needs `ANTHROPIC_API_KEY`), or a no-spend dry run: `ruby fastlane/ai_translation/bin/woo-ai-translate --offline --locales pl,cs ...`.
 
 ## Use Meaningful Names
 
@@ -84,7 +90,11 @@ Also consider adding information about what the placeholders are in the `name`.
 
 ## Pluralization
 
-GlotPress currently does not support pluralization using [Quantity strings](https://developer.android.com/guide/topics/resources/string-resource.html#Plurals). So, right now, you have to support plurals manually by creating separate strings.
+The project keeps a **manual** `_single`/`_multiple` plural convention rather than Android [`<plurals>`](https://developer.android.com/guide/topics/resources/string-resource.html#Plurals). The AI engine translates each variant independently and never collapses a pair. Migrating to real CLDR/ICU plurals (Android `<plurals>` + the Kotlin call-site migration) is an **explicitly deferred, separately-tracked cross-platform follow-up**.
+
+> **Known v1 limitation:** the 2-form `_single`/`_multiple` convention is linguistically incomplete for the new Slavic locales (`pl`, `cs`, `uk`, `bg`) and already imperfect for `ru`. This is accepted until the CLDR plural migration lands.
+
+Support plurals manually by creating separate strings:
 
 ```xml
 <string name="product_downloadable_files_value_multiple">%1$d files</string>
@@ -101,3 +111,9 @@ val message = if (downloadableFileCount == 1) {
     )
 }
 ```
+
+## Open questions
+
+- **Play Console locale codes for the 15 new locales** (`SUPPORTED_LOCALES` in `fastlane/Fastfile`) still need confirmation against the Play Console supported list — especially `ms`, `bg`, `uk`. A locale Play Console doesn't support still ships app strings; it just gets no localized store listing (English fallback). Adjust the `google_play` codes once confirmed.
+- **WPCOM import cron retirement.** `wpcom/bin/i18n/import-github-originals.php` imported the frozen `strings.xml` into GlotPress. With GlotPress gone it must be retired — an Apps Infra handoff, outside this repo.
+- **Screenshots stay English** for all locales (existing 16 included). Localized screenshots (assets + overlay text) are a separate content-ops follow-up; the AI pipeline never touches `promo_screenshot_*.txt`.
