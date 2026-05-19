@@ -19,5 +19,20 @@
     <item>tr</item>
     <item>zh_CN</item>
     <item>zh_TW</item>
+    <item>bg</item>
+    <item>cs</item>
+    <item>da</item>
+    <item>el</item>
+    <item>fi</item>
+    <item>hi</item>
+    <item>hu</item>
+    <item>ms</item>
+    <item>nb</item>
+    <item>pl</item>
+    <item>pt_PT</item>
+    <item>ro</item>
+    <item>th</item>
+    <item>uk</item>
+    <item>vi</item>
   </string-array>
 </resources>

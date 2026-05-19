@@ -19,4 +19,19 @@
     <locale android:name="tr"/> <!-- Turkish -->
     <locale android:name="zh-CN"/> <!-- Chinese (Simplified) -->
     <locale android:name="zh-TW"/> <!-- Chinese (Traditional) -->
+    <locale android:name="bg"/> <!-- Bulgarian -->
+    <locale android:name="cs"/> <!-- Czech -->
+    <locale android:name="da"/> <!-- Danish -->
+    <locale android:name="el"/> <!-- Greek -->
+    <locale android:name="fi"/> <!-- Finnish -->
+    <locale android:name="hi"/> <!-- Hindi -->
+    <locale android:name="hu"/> <!-- Hungarian -->
+    <locale android:name="ms"/> <!-- Malay -->
+    <locale android:name="nb"/> <!-- Norwegian Bokmål -->
+    <locale android:name="pl"/> <!-- Polish -->
+    <locale android:name="pt-PT"/> <!-- Portuguese (Portugal) -->
+    <locale android:name="ro"/> <!-- Romanian -->
+    <locale android:name="th"/> <!-- Thai -->
+    <locale android:name="uk"/> <!-- Ukrainian -->
+    <locale android:name="vi"/> <!-- Vietnamese -->
 </locale-config>
