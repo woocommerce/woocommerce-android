@@ -20,10 +20,9 @@ import kotlin.random.Random
  *
  * For the in-app entry point ([isAvailable]):
  *  - The device must have a camera — we don't gate on Google Play Services: we ship the bundled
- *    ML Kit barcode scanning variant, which works on GMS-less devices. If the scanner fails at
- *    runtime,
- *    [com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.onBindingException]
- *    surfaces a snackbar.
+ *    ML Kit barcode scanning variant, which works on GMS-less devices. If `bindToLifecycle` still
+ *    fails at runtime, [com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment] opens the
+ *    OS camera app so the merchant can scan the QR there and tap the resulting deep link.
  *  - Each install is assigned a number in [ROLLOUT_BUCKET_MIN]..[ROLLOUT_BUCKET_MAX] on first read
  *    and persisted, so the decision is stable across restarts. Only installs in
  *    [ROLLOUT_BUCKETS_ENABLED] get the entry point. A debug override bypasses the bucket check.

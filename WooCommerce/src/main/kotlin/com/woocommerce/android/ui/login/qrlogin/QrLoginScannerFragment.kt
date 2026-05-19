@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.login.qrlogin
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +18,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -101,7 +105,7 @@ class QrLoginScannerFragment : Fragment() {
             uiState = uiState,
             showCamera = !isDeepLinkEntry,
             onNewFrame = scannerViewModel::onNewFrame,
-            onBindingException = scannerViewModel::onBindingException,
+            onBindingException = ::onScannerBindingException,
             onPermissionResult = { granted ->
                 scannerViewModel.updatePermissionState(
                     granted,
@@ -190,6 +194,27 @@ class QrLoginScannerFragment : Fragment() {
                 is QrLoginScannerViewModel.Dispatch.RouteToAppLoginWpComEmail ->
                     routeToAppLoginWpComEmail(event.siteUrl, event.wpComEmail)
             }
+        }
+    }
+
+    /**
+     * Camera-bind failures are rare but they're terminal — we ship the bundled ML Kit variant
+     * so even GMS-less devices reach this Fragment, and once `bindToLifecycle` throws there is
+     * no in-app retry. Open the OS camera app instead: most stock cameras detect the QR and
+     * surface the `woocommerce://qr-login?...` URL, which deep-links straight back into this
+     * Fragment in the no-camera deep-link mode. We still fire the VM's failure path first so
+     * the Error overlay is in place when the user returns from the camera (or if no camera app
+     * resolves the intent).
+     */
+    private fun onScannerBindingException(exception: Exception) {
+        scannerViewModel.onBindingException(exception)
+        val cameraIntent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            startActivity(cameraIntent)
+        } catch (e: ActivityNotFoundException) {
+            WooLog.w(WooLog.T.LOGIN, "No camera app available for QR scanner fallback: ${e.message}")
         }
     }
 
