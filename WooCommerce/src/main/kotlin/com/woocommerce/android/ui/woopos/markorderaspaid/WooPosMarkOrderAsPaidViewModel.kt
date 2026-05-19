@@ -48,44 +48,30 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val current = _state.value
-            if (current is WooPosMarkOrderAsPaidState.Confirming &&
-                current.button.status == WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING
-            ) {
-                _state.value = current.copy(
-                    button = current.button.copy(
-                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
-                    ),
-                )
+            if (current is WooPosMarkOrderAsPaidState.Confirming && current.isProcessing) {
+                _state.value = current.copy(isProcessing = false)
                 return@launch
             }
             if (current !is WooPosMarkOrderAsPaidState.Initiating) return@launch
 
             val order = repository.getOrderById(orderId)
-            val buttonText = resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button)
             _state.value = if (order != null) {
                 WooPosMarkOrderAsPaidState.Confirming(
-                    totalText = resourceProvider.getString(
-                        R.string.woopos_mark_order_as_complete_total,
-                        priceFormat(order.total),
-                    ),
+                    formattedTotal = priceFormat(order.total),
                     note = "",
                     errorMessage = null,
-                    button = WooPosMarkOrderAsPaidState.Confirming.Button(
-                        text = buttonText,
-                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
-                    ),
+                    isProcessing = false,
+                    canConfirm = true,
                 )
             } else {
                 WooPosMarkOrderAsPaidState.Confirming(
-                    totalText = "",
+                    formattedTotal = "",
                     note = "",
                     errorMessage = resourceProvider.getString(
-                        R.string.woopos_mark_order_as_complete_order_not_found,
+                        R.string.woopos_mark_order_as_paid_order_not_found,
                     ),
-                    button = WooPosMarkOrderAsPaidState.Confirming.Button(
-                        text = buttonText,
-                        status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.DISABLED,
-                    ),
+                    isProcessing = false,
+                    canConfirm = false,
                 )
             }
         }
@@ -113,14 +99,9 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
     private fun handleConfirm() {
         viewModelScope.launch {
             val current = _state.value as? WooPosMarkOrderAsPaidState.Confirming ?: return@launch
-            if (current.button.status != WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED) return@launch
+            if (!current.canConfirm || current.isProcessing) return@launch
             analyticsTracker.track(MarkAsPaidConfirmed)
-            _state.value = current.copy(
-                button = current.button.copy(
-                    status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING,
-                ),
-                errorMessage = null,
-            )
+            _state.value = current.copy(isProcessing = true, errorMessage = null)
 
             val outcome = repository.markOrderAsPaid(orderId, current.note.takeIf { it.isNotBlank() })
             when (outcome) {
@@ -132,10 +113,8 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
                 MarkOrderAsPaidOutcome.Failure -> {
                     analyticsTracker.track(MarkAsPaidFailed)
                     _state.value = current.copy(
-                        errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
-                        button = current.button.copy(
-                            status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
-                        ),
+                        errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_paid_error_message),
+                        isProcessing = false,
                     )
                 }
             }
@@ -149,6 +128,6 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
     }
 
     private companion object {
-        const val STATE_KEY = "woo_pos_mark_order_as_complete_state"
+        const val STATE_KEY = "woo_pos_mark_order_as_paid_state"
     }
 }

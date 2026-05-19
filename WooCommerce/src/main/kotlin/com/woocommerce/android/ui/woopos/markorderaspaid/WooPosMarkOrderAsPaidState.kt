@@ -12,22 +12,10 @@ sealed class WooPosMarkOrderAsPaidState : Parcelable {
 
     @Parcelize
     data class Confirming(
-        val totalText: String,
+        val formattedTotal: String,
         val note: String,
         val errorMessage: String?,
-        val button: Button,
-    ) : WooPosMarkOrderAsPaidState() {
-        @Parcelize
-        data class Button(
-            val text: String,
-            val status: Status,
-        ) : Parcelable {
-            @Parcelize
-            enum class Status : Parcelable {
-                ENABLED,
-                LOADING,
-                DISABLED,
-            }
-        }
-    }
+        val isProcessing: Boolean,
+        val canConfirm: Boolean,
+    ) : WooPosMarkOrderAsPaidState()
 }

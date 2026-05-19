@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
@@ -20,23 +22,29 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
+
+private val MAX_CONTENT_WIDTH = 480.dp
+private val ICON_SIZE = 36.dp
 
 @Composable
 fun WooPosMarkOrderAsPaidScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
@@ -49,13 +57,15 @@ fun WooPosMarkOrderAsPaidScreen(onNavigationEvent: (WooPosNavigationEvent) -> Un
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
     }
 
+    val isProcessing = (state as? WooPosMarkOrderAsPaidState.Confirming)?.isProcessing == true
+    BackHandler(enabled = !isProcessing) { onBackClicked() }
+
     WooPosMarkOrderAsPaidScreen(
         state = state,
         onNoteChanged = { viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.NoteChanged(it)) },
         onConfirmClicked = { viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.ConfirmClicked) },
-        onBackClicked = onBackClicked,
+        onCancelClicked = onBackClicked,
     )
-    BackHandler { onBackClicked() }
 }
 
 @Composable
@@ -63,26 +73,21 @@ private fun WooPosMarkOrderAsPaidScreen(
     state: WooPosMarkOrderAsPaidState,
     onNoteChanged: (String) -> Unit,
     onConfirmClicked: () -> Unit,
-    onBackClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        WooPosToolbar(
-            titleText = stringResource(R.string.woopos_mark_order_as_complete_title),
-            onBackClicked = onBackClicked,
-        )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
         when (state) {
             is WooPosMarkOrderAsPaidState.Confirming -> Confirming(
                 state = state,
                 onNoteChanged = onNoteChanged,
                 onConfirmClicked = onConfirmClicked,
+                onCancelClicked = onCancelClicked,
             )
 
-            WooPosMarkOrderAsPaidState.Initiating -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                WooPosCircularLoadingIndicator()
-            }
+            WooPosMarkOrderAsPaidState.Initiating -> WooPosCircularLoadingIndicator()
         }
     }
 }
@@ -92,71 +97,103 @@ private fun Confirming(
     state: WooPosMarkOrderAsPaidState.Confirming,
     onNoteChanged: (String) -> Unit,
     onConfirmClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .widthIn(max = MAX_CONTENT_WIDTH)
             .verticalScroll(rememberScrollState())
             .imePadding()
             .padding(WooPosSpacing.Large.value),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_check_circle_24dp),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.height(ICON_SIZE),
+        )
+
         WooPosText(
-            text = state.totalText,
+            text = stringResource(R.string.woopos_mark_order_as_paid_title),
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
         WooPosText(
-            text = stringResource(R.string.woopos_mark_order_as_complete_body),
-            style = WooPosTypography.BodyLarge,
+            text = stringResource(R.string.woopos_mark_order_as_paid_message, state.formattedTotal),
+            style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantHighest,
+            textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_NOTE_FIELD),
-            value = state.note,
-            onValueChange = onNoteChanged,
-            label = {
-                WooPosText(
-                    text = stringResource(R.string.woopos_mark_order_as_complete_note_label),
-                    style = WooPosTypography.BodyLarge,
-                )
-            },
-            placeholder = {
-                WooPosText(
-                    text = stringResource(R.string.woopos_mark_order_as_complete_note_hint),
-                    style = WooPosTypography.BodyLarge,
-                )
-            },
-            singleLine = false,
-            maxLines = 3,
-        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+        ) {
+            WooPosText(
+                text = stringResource(R.string.woopos_mark_order_as_paid_note_label),
+                style = WooPosTypography.BodySmall,
+                fontWeight = FontWeight.Bold,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_NOTE_FIELD),
+                value = state.note,
+                onValueChange = onNoteChanged,
+                placeholder = {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_mark_order_as_paid_note_hint),
+                        style = WooPosTypography.BodyMedium,
+                    )
+                },
+                singleLine = false,
+                maxLines = 4,
+                minLines = 2,
+                enabled = !state.isProcessing,
+            )
+        }
+
         if (state.errorMessage != null) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
             WooPosText(
                 text = state.errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 style = WooPosTypography.BodySmall,
-                textAlign = TextAlign.Start,
+                textAlign = TextAlign.Center,
             )
         }
+
         Spacer(modifier = Modifier.weight(1f))
-        WooPosButton(
-            text = state.button.text,
-            onClick = onConfirmClicked,
-            state = when (state.button.status) {
-                WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED -> WooPosButtonState.ENABLED
-                WooPosMarkOrderAsPaidState.Confirming.Button.Status.LOADING -> WooPosButtonState.LOADING
-                WooPosMarkOrderAsPaidState.Confirming.Button.Status.DISABLED -> WooPosButtonState.DISABLED
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_CONFIRM_BUTTON),
-        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+        ) {
+            WooPosButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_CONFIRM_BUTTON),
+                text = stringResource(R.string.woopos_mark_order_as_paid_confirm_button),
+                onClick = onConfirmClicked,
+                state = when {
+                    state.isProcessing -> WooPosButtonState.LOADING
+                    !state.canConfirm -> WooPosButtonState.DISABLED
+                    else -> WooPosButtonState.ENABLED
+                },
+            )
+            WooPosOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.woopos_mark_order_as_paid_cancel_button),
+                onClick = onCancelClicked,
+            )
+        }
     }
 }
 
@@ -166,17 +203,34 @@ private fun WooPosMarkOrderAsPaidScreenPreview() {
     WooPosTheme {
         WooPosMarkOrderAsPaidScreen(
             state = WooPosMarkOrderAsPaidState.Confirming(
-                totalText = "Order total: $42.00",
+                formattedTotal = "$24.99",
                 note = "",
                 errorMessage = null,
-                button = WooPosMarkOrderAsPaidState.Confirming.Button(
-                    text = "Mark order as complete",
-                    status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
-                ),
+                isProcessing = false,
+                canConfirm = true,
             ),
             onNoteChanged = {},
             onConfirmClicked = {},
-            onBackClicked = {},
+            onCancelClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun WooPosMarkOrderAsPaidScreenProcessingPreview() {
+    WooPosTheme {
+        WooPosMarkOrderAsPaidScreen(
+            state = WooPosMarkOrderAsPaidState.Confirming(
+                formattedTotal = "$24.99",
+                note = "Bank transfer from Maria",
+                errorMessage = null,
+                isProcessing = true,
+                canConfirm = true,
+            ),
+            onNoteChanged = {},
+            onConfirmClicked = {},
+            onCancelClicked = {},
         )
     }
 }
@@ -187,17 +241,15 @@ private fun WooPosMarkOrderAsPaidScreenErrorPreview() {
     WooPosTheme {
         WooPosMarkOrderAsPaidScreen(
             state = WooPosMarkOrderAsPaidState.Confirming(
-                totalText = "Order total: $42.00",
+                formattedTotal = "$24.99",
                 note = "Bank transfer",
-                errorMessage = "Something went wrong. Please try again.",
-                button = WooPosMarkOrderAsPaidState.Confirming.Button(
-                    text = "Mark order as complete",
-                    status = WooPosMarkOrderAsPaidState.Confirming.Button.Status.ENABLED,
-                ),
+                errorMessage = "Couldn't update the order. Try again.",
+                isProcessing = false,
+                canConfirm = true,
             ),
             onNoteChanged = {},
             onConfirmClicked = {},
-            onBackClicked = {},
+            onCancelClicked = {},
         )
     }
 }
