@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @HiltViewModel
 class AiSupportChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -276,36 +277,7 @@ class AiSupportChatViewModel @Inject constructor(
                 chatId = launchMode.chatId,
                 sessionId = launchMode.sessionId
             ).onSuccess { response ->
-                _viewState.update {
-                    val remoteMessages = response.messages.toUiMessages()
-                    val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
-                    val messages = if (
-                        !shouldPromptHumanSupport &&
-                        remoteMessages.latestBotResponse?.isResolved == true
-                    ) {
-                        remoteMessages.appendResolvedPromptIfNeeded()
-                    } else {
-                        remoteMessages
-                    }
-                    it.copy(
-                        chatId = response.chatId,
-                        sessionId = response.sessionId,
-                        botSlug = response.botSlug,
-                        hasSentChatMessage = response.messages.any { message ->
-                            message.role == SupportChatRole.USER
-                        },
-                        completedUserMessageResponseCount = response.messages.count { message ->
-                            message.role == SupportChatRole.BOT && !message.isBotEscalationPrompt()
-                        },
-                        latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea,
-                        showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
-                        messages = messages,
-                        isLoadingHistory = false,
-                        showSendError = false,
-                        showLoadHistoryError = false
-                    )
-                }
-                markChatAsUpdated(response.chatId, response.sessionId)
+                handleResumeSuccess(response)
             }.onFailure { error ->
                 WooLog.e(WooLog.T.AI, "Fetching AI support chat history failed", error)
                 _viewState.update {
@@ -316,6 +288,29 @@ class AiSupportChatViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private suspend fun handleResumeSuccess(response: SupportChatResponse) {
+        _viewState.update {
+            val remoteMessages = response.messages.toUiMessages()
+            val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
+            it.copy(
+                chatId = response.chatId,
+                sessionId = response.sessionId,
+                botSlug = response.botSlug,
+                hasSentChatMessage = response.messages.any { message -> message.role == SupportChatRole.USER },
+                completedUserMessageResponseCount = response.messages.count { message ->
+                    message.role == SupportChatRole.BOT && !message.isBotEscalationPrompt()
+                },
+                latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea,
+                showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
+                messages = remoteMessages.toLoadedChatMessages(shouldPromptHumanSupport),
+                isLoadingHistory = false,
+                showSendError = false,
+                showLoadHistoryError = false
+            )
+        }
+        markChatAsUpdated(response.chatId, response.sessionId)
     }
 
     private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
@@ -557,6 +552,15 @@ class AiSupportChatViewModel @Inject constructor(
             add(latestBotResponseIndex + 1, resolvedPrompt)
         }
     }
+
+    private fun List<AiSupportChatMessage>.toLoadedChatMessages(
+        shouldPromptHumanSupport: Boolean
+    ): List<AiSupportChatMessage> =
+        if (!shouldPromptHumanSupport && latestBotResponse?.isResolved == true) {
+            appendResolvedPromptIfNeeded()
+        } else {
+            this
+        }
 
     private fun List<AiSupportChatMessage>.appendPostDiagnosticsGreeting(): List<AiSupportChatMessage> =
         if (any { it.id == POST_DIAGNOSTICS_GREETING_MESSAGE_ID }) {
