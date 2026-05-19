@@ -169,6 +169,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onSupportTicketCreated() {
+        val chatId = _viewState.value.chatId
         _viewState.update {
             it.copy(
                 input = "",
@@ -176,6 +177,17 @@ class AiSupportChatViewModel @Inject constructor(
                 showHumanSupportPrompt = false,
                 showSendError = false
             )
+        }
+
+        if (chatId != null) {
+            launch {
+                runCatching {
+                    repository.markChatAsTicketCreated(chatId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Marking AI support chat as ticket created failed", error)
+                }
+            }
         }
     }
 
@@ -277,6 +289,7 @@ class AiSupportChatViewModel @Inject constructor(
                 botSlug = launchMode.botSlug,
                 hasProceededToChat = true,
                 hasStartedChat = true,
+                hasCreatedTicket = launchMode.hasCreatedTicket,
                 isChatResolved = launchMode.isResolved,
                 isLoadingHistory = true,
                 showSendError = false,

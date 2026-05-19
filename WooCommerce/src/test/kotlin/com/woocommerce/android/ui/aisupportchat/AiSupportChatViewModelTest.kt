@@ -976,6 +976,43 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given ticket is created for chat, when state updates, then ticket created state is persisted`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            startChat(result)
+
+            viewModel.onSupportTicketCreated()
+
+            verify(repository).markChatAsTicketCreated(CHAT_ID)
+        }
+
+    @Test
+    fun `given chat id is missing, when ticket is created, then ticket created state is not persisted`() =
+        testBlocking {
+            viewModel.onSupportTicketCreated()
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasCreatedTicket).isTrue
+            verify(repository, never()).markChatAsTicketCreated(any())
+        }
+
+    @Test
+    fun `given persisting ticket created state fails, when ticket is created, then chat remains ticket created`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult()
+            startChat(result)
+            whenever(repository.markChatAsTicketCreated(CHAT_ID)).thenThrow(RuntimeException("Bookmark update failed"))
+
+            viewModel.onSupportTicketCreated()
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasCreatedTicket).isTrue
+            assertThat(state.canSendMessages).isFalse
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse
+            verify(repository).markChatAsTicketCreated(CHAT_ID)
+        }
+
+    @Test
     fun `given connectivity launch mode, when loaded, then chat waits for user input with connectivity context`() =
         testBlocking {
             val checks = listOf(
@@ -1097,6 +1134,32 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.isChatResolved).isTrue
         assertThat(state.canSendMessages).isFalse
         assertThat(state.showInputBar).isFalse
+        assertThat(state.shouldShowResolvedButton).isFalse
+    }
+
+    @Test
+    fun `given resumed chat has created ticket, when loaded, then ticket created state is restored`() = testBlocking {
+        val response = createResponse(
+            messages = listOf(
+                createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+            )
+        )
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID,
+                hasCreatedTicket = true
+            )
+        )
+
+        val state = viewModel.viewState.value
+        assertThat(state.hasCreatedTicket).isTrue
+        assertThat(state.canSendMessages).isFalse
+        assertThat(state.canContactHumanSupportFromToolbar).isFalse
         assertThat(state.shouldShowResolvedButton).isFalse
     }
 

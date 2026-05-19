@@ -15,6 +15,7 @@ sealed interface AiSupportChatLaunchMode {
         val chatId: Long,
         val botSlug: String,
         val sessionId: String?,
+        val hasCreatedTicket: Boolean = false,
         val isResolved: Boolean = false
     ) : AiSupportChatLaunchMode
 }

@@ -58,11 +58,13 @@ class AiSupportChatActivity : AppCompatActivity() {
             chatId: Long,
             botSlug: String,
             sessionId: String?,
+            hasCreatedTicket: Boolean = false,
             isResolved: Boolean = false
         ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
             putExtra(EXTRA_CHAT_ID, chatId)
             putExtra(EXTRA_BOT_SLUG, botSlug)
             putExtra(EXTRA_SESSION_ID, sessionId)
+            putExtra(EXTRA_HAS_CREATED_TICKET, hasCreatedTicket)
             putExtra(EXTRA_IS_RESOLVED, isResolved)
         }
 
@@ -83,6 +85,7 @@ class AiSupportChatActivity : AppCompatActivity() {
                     chatId = extras.getLong(EXTRA_CHAT_ID),
                     botSlug = extras.getString(EXTRA_BOT_SLUG) ?: AiSupportChatViewModel.DEFAULT_BOT_SLUG,
                     sessionId = extras.getString(EXTRA_SESSION_ID),
+                    hasCreatedTicket = extras.getBoolean(EXTRA_HAS_CREATED_TICKET, false),
                     isResolved = extras.getBoolean(EXTRA_IS_RESOLVED, false)
                 )
                 else -> AiSupportChatLaunchMode.Help
@@ -94,6 +97,7 @@ class AiSupportChatActivity : AppCompatActivity() {
         private const val EXTRA_CHAT_ID = "extra_chat_id"
         private const val EXTRA_BOT_SLUG = "extra_bot_slug"
         private const val EXTRA_SESSION_ID = "extra_session_id"
+        private const val EXTRA_HAS_CREATED_TICKET = "extra_has_created_ticket"
         private const val EXTRA_IS_RESOLVED = "extra_is_resolved"
     }
 }
