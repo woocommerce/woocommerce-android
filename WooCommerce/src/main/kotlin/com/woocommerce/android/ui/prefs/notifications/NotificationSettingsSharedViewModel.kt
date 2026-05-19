@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -35,6 +37,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val pushNotificationRepository: PushNotificationRepository,
     private val resourceProvider: ResourceProvider,
+    private val notificationChannelsHandler: NotificationChannelsHandler,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     private val wooPushNotificationPreferences = MutableStateFlow<WooPushNotificationPreferences?>(null)
@@ -55,19 +58,22 @@ class NotificationSettingsSharedViewModel @Inject constructor(
                 type = NotificationType.NEW_ORDERS,
                 title = R.string.settings_notifs_new_orders,
                 subtitle = R.string.settings_notifs_new_orders_subtitle,
-                isEnabled = true
+                isEnabled = true,
+                isNotificationChannelEnabled = NotificationType.NEW_ORDERS.isNotificationChannelEnabled()
             ),
             NotificationTypeItem(
                 type = NotificationType.NEW_REVIEWS,
                 title = R.string.settings_notifs_new_reviews,
                 subtitle = R.string.settings_notifs_new_reviews_subtitle,
-                isEnabled = true
+                isEnabled = true,
+                isNotificationChannelEnabled = NotificationType.NEW_REVIEWS.isNotificationChannelEnabled()
             ),
             NotificationTypeItem(
                 type = NotificationType.STOCK,
                 title = R.string.settings_notifs_stock,
                 subtitle = R.string.settings_notifs_stock_subtitle,
-                isEnabled = true
+                isEnabled = true,
+                isNotificationChannelEnabled = NotificationType.STOCK.isNotificationChannelEnabled()
             )
         )
     )
@@ -119,6 +125,14 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun savePendingNotificationPreferences() {
         saveNotificationPreferencesTrigger.tryEmit(0L)
+    }
+
+    fun refreshNotificationChannelSettings() {
+        _notificationTypeItems.update { items ->
+            items.map { item ->
+                item.copy(isNotificationChannelEnabled = item.type.isNotificationChannelEnabled())
+            }
+        }
     }
 
     fun onNewOrderNotificationsEnabledChanged(isEnabled: Boolean) {
@@ -204,6 +218,11 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     fun onNotificationTypeClicked(type: NotificationType) {
+        if (!type.isNotificationChannelEnabled()) {
+            triggerEvent(OpenNotificationChannelSettings(type.getNotificationChannelId()))
+            return
+        }
+
         when (type) {
             NotificationType.NEW_ORDERS -> triggerEvent(OpenNewOrderNotificationSettings)
             NotificationType.NEW_REVIEWS -> triggerEvent(OpenNewReviewNotificationSettings)
@@ -402,15 +421,31 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             NotificationType.STOCK -> storeStock?.enabled
         }
 
+    private fun NotificationType.isNotificationChannelEnabled(): Boolean {
+        return notificationChannelsHandler.isNotificationChannelEnabled(toNotificationChannelType())
+    }
+
+    private fun NotificationType.getNotificationChannelId(): String =
+        with(notificationChannelsHandler) { toNotificationChannelType().getChannelId() }
+
+    private fun NotificationType.toNotificationChannelType(): NotificationChannelType =
+        when (this) {
+            NotificationType.NEW_ORDERS -> NotificationChannelType.NEW_ORDER
+            NotificationType.NEW_REVIEWS -> NotificationChannelType.REVIEW
+            NotificationType.STOCK -> NotificationChannelType.STOCK
+        }
+
     object OpenNewOrderNotificationSettings : MultiLiveEvent.Event()
     object OpenNewReviewNotificationSettings : MultiLiveEvent.Event()
     object OpenStockNotificationSettings : MultiLiveEvent.Event()
+    data class OpenNotificationChannelSettings(val channelId: String) : MultiLiveEvent.Event()
 
     data class NotificationTypeItem(
         val type: NotificationType,
         @StringRes val title: Int,
         @StringRes val subtitle: Int,
-        val isEnabled: Boolean
+        val isEnabled: Boolean,
+        val isNotificationChannelEnabled: Boolean = true
     )
 
     data class NewOrderNotificationSettingsViewState(
