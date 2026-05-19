@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package com.woocommerce.android.aiassistant.headless
 
 import org.assertj.core.api.Assertions.assertThat

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming", "MagicNumber")
+
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.chat.ChatStreamParser
