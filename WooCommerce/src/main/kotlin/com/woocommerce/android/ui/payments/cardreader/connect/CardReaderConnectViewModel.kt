@@ -243,7 +243,8 @@ class CardReaderConnectViewModel @Inject constructor(
             cardReaderManager.initialize(
                 updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
-                BuildConfig.DEBUG,
+                useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
+                isDebug = BuildConfig.DEBUG,
             )
         }
         cardReaderManager.setupTapToPayUx(

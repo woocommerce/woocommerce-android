@@ -19,7 +19,7 @@ class SupportChatRestClient @Inject constructor(
     appContext: Context?,
     dispatcher: Dispatcher,
     @Named("regular") requestQueue: RequestQueue,
-    accessToken: AccessToken,
+    private val accessToken: AccessToken,
     userAgent: UserAgent
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
 
@@ -32,7 +32,8 @@ class SupportChatRestClient @Inject constructor(
         url = chatUrl(botSlug),
         params = null,
         body = mapOf(MESSAGE_KEY to message, CONTEXT_KEY to context),
-        clazz = SupportChatResponse::class.java
+        clazz = SupportChatResponse::class.java,
+        authenticatedRequest = isWpComAuthenticated()
     )
 
     suspend fun sendFollowUpMessage(
@@ -45,7 +46,8 @@ class SupportChatRestClient @Inject constructor(
         url = chatUrl(botSlug, chatId),
         params = null,
         body = mapOf(MESSAGE_KEY to message, SESSION_ID_KEY to sessionId.orEmpty()),
-        clazz = SupportChatResponse::class.java
+        clazz = SupportChatResponse::class.java,
+        authenticatedRequest = isWpComAuthenticated()
     )
 
     suspend fun fetchChat(
@@ -56,16 +58,40 @@ class SupportChatRestClient @Inject constructor(
         restClient = this,
         url = chatUrl(botSlug, chatId),
         params = sessionId?.let { mapOf(SESSION_ID_KEY to it) }.orEmpty(),
-        clazz = SupportChatResponse::class.java
+        clazz = SupportChatResponse::class.java,
+        authenticatedRequest = isWpComAuthenticated()
+    )
+
+    suspend fun submitFeedback(
+        botSlug: String,
+        chatId: Long,
+        messageId: Long,
+        sessionId: String,
+        upvoted: Boolean
+    ): Response<Unit> = wpComGsonRequestBuilder.syncPostRequest(
+        restClient = this,
+        url = "${chatUrl(botSlug, chatId)}$messageId/feedback",
+        params = null,
+        body = mapOf(
+            SESSION_ID_KEY to sessionId,
+            RATING_VALUE_KEY to if (upvoted) UPVOTE_RATING_VALUE else DOWNVOTE_RATING_VALUE
+        ),
+        clazz = Unit::class.java,
+        authenticatedRequest = isWpComAuthenticated()
     )
 
     private fun chatUrl(botSlug: String): String = WPCOMV2.odie.chat.bot_slug(botSlug).url
 
     private fun chatUrl(botSlug: String, chatId: Long): String = WPCOMV2.odie.chat.bot_slug(botSlug).chat(chatId).url
 
+    private fun isWpComAuthenticated(): Boolean = accessToken.exists()
+
     companion object {
         private const val MESSAGE_KEY = "message"
         private const val CONTEXT_KEY = "context"
         private const val SESSION_ID_KEY = "session_id"
+        private const val RATING_VALUE_KEY = "rating_value"
+        private const val UPVOTE_RATING_VALUE = 1
+        private const val DOWNVOTE_RATING_VALUE = -1
     }
 }

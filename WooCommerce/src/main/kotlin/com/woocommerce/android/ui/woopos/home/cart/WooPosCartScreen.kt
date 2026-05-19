@@ -77,9 +77,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackBu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -297,6 +300,13 @@ private fun CartBodyWithItems(
                 )
 
                 is WooPosCartItemViewState.Coupon -> CouponItem(
+                    modifier = Modifier.animateItem(),
+                    item = item,
+                    canRemoveItems = areItemsRemovable,
+                    onUIEvent = onUIEvent,
+                )
+
+                is WooPosCartItemViewState.CustomAmount -> CustomAmountItem(
                     modifier = Modifier.animateItem(),
                     item = item,
                     canRemoveItems = areItemsRemovable,
@@ -723,6 +733,110 @@ private fun CouponItem(
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
+}
+
+@Composable
+private fun CustomAmountItem(
+    modifier: Modifier = Modifier,
+    item: WooPosCartItemViewState.CustomAmount,
+    canRemoveItems: Boolean,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_custom_amount_content_description,
+        item.name,
+        item.formattedAmount,
+    )
+
+    WooPosCard(
+        modifier = modifier
+            .wrapContentHeight()
+            .semantics { contentDescription = itemContentDescription },
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+    ) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            WooPosCustomAmountInitialsAvatar(
+                name = item.name,
+                modifier = Modifier
+                    .width(WooPosComponentSize.Medium.value)
+                    .fillMaxHeight()
+                    .heightIn(min = WooPosComponentSize.Medium.value),
+            )
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .padding(vertical = WooPosSpacing.Medium.value),
+            ) {
+                WooPosText(
+                    text = item.name,
+                    maxLines = 1,
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clearAndSetSemantics { },
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosText(
+                    text = item.formattedAmount,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { },
+                )
+                if (item.isTaxable) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.onSurfaceVariantLowest,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clearAndSetSemantics { },
+                    )
+                }
+            }
+
+            // Edit lives inside the overflow menu, so this also gates the edit path during checkout
+            // — intentional: cart contents are locked once payment starts.
+            if (canRemoveItems) {
+                CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
+            }
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+        }
+    }
+}
+
+@Composable
+private fun CustomAmountOverflowMenu(
+    item: WooPosCartItemViewState.CustomAmount,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    WooPosOverflowMenu(
+        items = listOf(
+            WooPosOverflowMenuItem(
+                label = stringResource(R.string.woopos_cart_custom_amount_menu_edit),
+                onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
+            ),
+            WooPosOverflowMenuItem(
+                label = stringResource(R.string.woopos_cart_custom_amount_menu_remove),
+                color = MaterialTheme.colorScheme.error,
+                onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+            ),
+        )
+    )
 }
 
 @Composable

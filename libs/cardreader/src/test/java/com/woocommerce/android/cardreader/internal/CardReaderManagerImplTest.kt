@@ -59,6 +59,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val locationId = "locationId"
 
     private val useInterac = false
+    private val useEftpos = false
 
     @Before
     fun setUp() {
@@ -77,7 +78,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
+        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
@@ -100,7 +101,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
+        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -109,7 +110,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
+        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }

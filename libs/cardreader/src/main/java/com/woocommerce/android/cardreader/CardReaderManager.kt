@@ -37,10 +37,15 @@ interface CardReaderManager {
     fun initialize(
         updateFrequency: SimulatorUpdateFrequency,
         useInterac: Boolean,
+        useEftpos: Boolean,
         isDebug: Boolean,
     )
 
-    fun reinitializeSimulatedTerminal(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean)
+    fun reinitializeSimulatedTerminal(
+        updateFrequency: SimulatorUpdateFrequency,
+        useInterac: Boolean,
+        useEftpos: Boolean,
+    )
 
     fun discoverReaders(
         isSimulated: Boolean,
@@ -68,7 +73,7 @@ interface CardReaderManager {
      * Tap-to-Pay flow. The returned status is the PaymentIntent's status after processing —
      * typically `requires_capture`.
      */
-    suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult
+    suspend fun retrieveAndCollectPayment(clientSecret: String, paymentInfo: PaymentInfo): RetrieveAndCollectResult
 
     suspend fun refundInteracPayment(
         refundParams: RefundParams,

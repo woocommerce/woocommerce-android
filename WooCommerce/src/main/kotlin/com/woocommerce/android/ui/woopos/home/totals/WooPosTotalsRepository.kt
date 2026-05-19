@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
+import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
@@ -43,17 +44,19 @@ class WooPosTotalsRepository @Inject constructor(
 
         return withContext(IO) {
             check(itemClickedDataList.all { it.id >= 0 }) { "Invalid item ID" }
-            orderCreationJob = async {
+            val job = async {
                 val order = createOrder(itemClickedDataList)
                 orderCreateEditRepository.createOrUpdateOrder(order, source = OrderCreationSource.POINT_OF_SALE)
             }
-            orderCreationJob!!.await()
+            orderCreationJob = job
+            job.await()
         }
     }
 
     private suspend fun createOrder(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>): Order {
         val products = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
         val coupons = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
+        val customAmounts = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.CustomAmount>()
         return Order.getEmptyOrder(
             dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
             dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
@@ -61,7 +64,26 @@ class WooPosTotalsRepository @Inject constructor(
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
             items = createProductItems(products),
             couponLines = createCouponLines(coupons),
+            feesLines = createFeeLines(customAmounts),
         )
+    }
+
+    private fun createFeeLines(
+        customAmounts: List<WooPosItemsViewModel.ItemClickedData.CustomAmount>
+    ): List<Order.FeeLine> {
+        return customAmounts.map { customAmount ->
+            Order.FeeLine.EMPTY.copy(
+                name = customAmount.name,
+                total = customAmount.amount,
+                totalTax = BigDecimal.ZERO,
+                taxStatus = if (customAmount.isTaxable) {
+                    Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                } else {
+                    Order.FeeLine.FeeLineTaxStatus.NONE
+                },
+                taxes = emptyList(),
+            )
+        }
     }
 
     private suspend fun createProductItems(
@@ -71,7 +93,9 @@ class WooPosTotalsRepository @Inject constructor(
             .groupingBy { it.id }
             .eachCount()
             .mapNotNull { (id, quantity) ->
-                val itemData = itemClickedDataList.find { it.id == id }!!
+                val itemData = requireNotNull(itemClickedDataList.find { it.id == id }) {
+                    "Item with id $id missing from itemClickedDataList after grouping"
+                }
                 when (itemData) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> createSimpleProductOrderItem(
                         quantity,

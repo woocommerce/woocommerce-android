@@ -29,30 +29,36 @@ import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapp
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
-import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsViewModel.NotificationPreference
 import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsViewModel.ViewState
+import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NewOrderNotificationPreference
+import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NewOrderNotificationSettingsViewState
 import com.woocommerce.android.ui.prefs.notifications.compose.EnableNotificationsCard
 import com.woocommerce.android.ui.prefs.notifications.compose.NotificationPreferenceOption
 import java.math.BigDecimal
 
 @Composable
-fun NewOrderNotificationSettingsScreen(viewModel: NewOrderNotificationSettingsViewModel) {
-    viewModel.viewState.observeAsState().value?.let { viewState ->
-        NewOrderNotificationSettingsScreen(
-            viewState = viewState,
-            onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
-            onNotificationPreferenceChanged = viewModel::onNotificationPreferenceChanged,
-            onThresholdAmountChanged = viewModel::onThresholdAmountChanged,
-            onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
-        )
-    }
+fun NewOrderNotificationSettingsScreen(
+    viewModel: NewOrderNotificationSettingsViewModel,
+    sharedViewModel: NotificationSettingsSharedViewModel
+) {
+    val viewState = viewModel.viewState.observeAsState().value ?: return
+    val sharedViewState = sharedViewModel.newOrderNotificationSettingsViewState.observeAsState().value ?: return
+    NewOrderNotificationSettingsScreen(
+        viewState = viewState,
+        sharedViewState = sharedViewState,
+        onNotificationsEnabledChanged = sharedViewModel::onNewOrderNotificationsEnabledChanged,
+        onNotificationPreferenceChanged = sharedViewModel::onNewOrderNotificationPreferenceChanged,
+        onThresholdAmountChanged = sharedViewModel::onNewOrderThresholdAmountChanged,
+        onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
+    )
 }
 
 @Composable
 private fun NewOrderNotificationSettingsScreen(
     viewState: ViewState,
+    sharedViewState: NewOrderNotificationSettingsViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
-    onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
+    onNotificationPreferenceChanged: (NewOrderNotificationPreference) -> Unit,
     onThresholdAmountChanged: (BigDecimal) -> Unit,
     onEnableChaChingSoundClicked: () -> Unit
 ) {
@@ -69,7 +75,7 @@ private fun NewOrderNotificationSettingsScreen(
             EnableNotificationsCard(
                 title = stringResource(R.string.settings_notifs_enable_title),
                 description = stringResource(R.string.settings_notifs_new_orders_enable_description),
-                isEnabled = viewState.notificationsEnabled,
+                isEnabled = sharedViewState.notificationsEnabled,
                 onEnabledChanged = onNotificationsEnabledChanged
             )
             AnimatedVisibility(
@@ -95,24 +101,25 @@ private fun NewOrderNotificationSettingsScreen(
             NotificationPreferenceOption(
                 title = stringResource(R.string.settings_notifs_new_orders_all_title),
                 description = stringResource(R.string.settings_notifs_new_orders_all_description),
-                selected = viewState.notificationPreference == NotificationPreference.AllOrders,
-                enabled = viewState.notificationsEnabled,
-                onClick = { onNotificationPreferenceChanged(NotificationPreference.AllOrders) }
+                selected = sharedViewState.notificationPreference ==
+                    NewOrderNotificationPreference.AllOrders,
+                enabled = sharedViewState.notificationsEnabled,
+                onClick = { onNotificationPreferenceChanged(NewOrderNotificationPreference.AllOrders) }
             )
             val isHighValuePreferenceSelected =
-                viewState.notificationPreference == NotificationPreference.HighValueOrders
+                sharedViewState.notificationPreference == NewOrderNotificationPreference.HighValueOrders
             NotificationPreferenceOption(
                 title = stringResource(R.string.settings_notifs_new_orders_high_value_title),
                 description = stringResource(R.string.settings_notifs_new_orders_high_value_description),
                 selected = isHighValuePreferenceSelected,
-                enabled = viewState.notificationsEnabled,
-                onClick = { onNotificationPreferenceChanged(NotificationPreference.HighValueOrders) }
+                enabled = sharedViewState.notificationsEnabled,
+                onClick = { onNotificationPreferenceChanged(NewOrderNotificationPreference.HighValueOrders) }
             )
             AnimatedVisibility(visible = isHighValuePreferenceSelected) {
                 ThresholdAmountField(
-                    amount = viewState.thresholdAmount,
+                    amount = sharedViewState.thresholdAmount,
                     currencySymbol = viewState.currencySymbol,
-                    enabled = viewState.notificationsEnabled,
+                    enabled = sharedViewState.notificationsEnabled,
                     onAmountChanged = onThresholdAmountChanged
                 )
             }
@@ -181,9 +188,11 @@ private fun NewOrderNotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NewOrderNotificationSettingsScreen(
             viewState = ViewState(
-                notificationPreference = NotificationPreference.HighValueOrders,
                 currencySymbol = "$",
                 newOrderNotificationSoundStatus = NewOrderNotificationSoundStatus.SOUND_MODIFIED
+            ),
+            sharedViewState = NewOrderNotificationSettingsViewState(
+                notificationPreference = NewOrderNotificationPreference.HighValueOrders
             ),
             onNotificationsEnabledChanged = {},
             onNotificationPreferenceChanged = {},

@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-21 09:57:41+0000
+Translation-Revision-Date: 2026-05-04 13:57:45+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">רמת הטעינה של הסוללה בקורא נמוכה מדי להתקנה של עדכון זה. יש לטעון את הקורא ל-50% לפחות ולנסות שוב.</string>
+    <string name="woopos_card_reader_update_failed_title">העדכון נכשל</string>
+    <string name="woopos_card_reader_update_completed_title">התוכנה עודכנה</string>
+    <string name="woopos_card_reader_cancel_anyway_button">לבטל בכל זאת</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">לא מומלץ לבטל עדכון תוכנה בזמן פעולתו. הביטול יחסום את החיבור של קורא הכרטיסים.</string>
+    <string name="woopos_card_reader_update_optional_message">יש לעדכן את התוכנה של קורא הכרטיסים שלך כדי להבטיח פעילות תקינה</string>
+    <string name="woopos_card_reader_update_required_message">יש לעדכן את התוכנה של קורא הכרטיסים שלך כדי לגבות תשלומים. הביטול יחסום את החיבור של קורא הכרטיסים.</string>
+    <string name="woopos_card_reader_updating_optional_title">מעדכן את התוכנה של הקורא שלך</string>
+    <string name="woopos_card_reader_updating_title">מעדכן את התוכנה</string>
+    <string name="woopos_card_reader_cancel_button">ביטול</string>
+    <string name="woopos_card_reader_retry_button">לנסות שוב</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">המיקוד של החנות שלך חסר או לא חוקי. יש לעדכן את כתובת החנות שלך בהגדרות של WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">פורמט המיקוד לא תקף</string>
+    <string name="woopos_card_reader_invalid_address_message">כתובת החנות שלך חסרה או לא שלמה. יש לעדכן את כתובת החנות שלך בהגדרות של WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_address_title">כתובת סוחר לא תקפה</string>
+    <string name="woopos_card_reader_grant_permission_button">הענקת הרשאה</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">נדרשת ההרשאה \'Bluetooth\' כדי להתחבר לקורא כרטיסים.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">נדרשת ההרשאה \'Bluetooth\'</string>
+    <string name="woopos_card_reader_location_permission_message">נדרשת ההרשאה \'מיקום\' כדי להתחבר לקורא כרטיסים באמצעות Bluetooth.</string>
+    <string name="woopos_card_reader_location_permission_title">נדרשת ההרשאה \'מיקום\'</string>
+    <string name="woopos_card_reader_enable_location_button">אפשר \'מיקום\'</string>
+    <string name="woopos_card_reader_location_disabled_message">יש לאפשר \'מיקום\' כדי להתחבר אל קורא כרטיסים.</string>
+    <string name="woopos_card_reader_location_disabled_title">\'מיקום\' מושבת</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">הפעלת \'Bluetooth\'</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">יש להפעיל \'Bluetooth\' כדי להתחבר אל קורא כרטיסים.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">\'Bluetooth\' כבוי</string>
+    <string name="woopos_card_reader_battery_low_message">רמת הטעינה של הסוללה בקורא נמוכה באופן קריטי. יש לטעון את הקורא ולנסות שוב.</string>
+    <string name="woopos_card_reader_battery_low_title">רמת הטעינה של הסוללה נמוכה מדי</string>
+    <string name="woopos_card_reader_connected_title">מחובר</string>
+    <string name="woopos_card_reader_connecting_failed_title">החיבור נכשל</string>
+    <string name="woopos_card_reader_connecting_message">רק רגע, אנחנו מתחברים אל הקורא שלך</string>
+    <string name="woopos_card_reader_connecting_title">מתחבר</string>
+    <string name="woopos_card_reader_multiple_found_description">בחירת קורא</string>
+    <string name="woopos_card_reader_multiple_found_title">נמצאו מספר קוראים</string>
+    <string name="woopos_card_reader_keep_searching_button">המשך בחיפוש</string>
+    <string name="woopos_card_reader_connect_button">חיבור</string>
+    <string name="woopos_card_reader_found_description">האם ברצונך להתחבר אל הקורא הזה?</string>
+    <string name="woopos_card_reader_found_title">%s נמצא</string>
+    <string name="woopos_card_reader_scanning_failed_title">הסריקה נכשלה.</string>
+    <string name="woopos_card_reader_scanning_instruction">יש לוודא שהקורא שלך טעון ומופעל</string>
+    <string name="woopos_card_reader_scanning_title">המערכת סורקת לאיתור קורא</string>
+    <string name="woopos_card_reader_close_content_description">סגירה</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">דו-שיח לחיבור קורא כרטיסים</string>
+    <string name="woopos_orders_empty_list_message">הזמנות יופיעו כאן לאחר שתתחיל לעבד מכירות ב-POS.</string>
+    <string name="woopos_battery_critical">רמת הטעינה של הסוללה בקורא הכרטיסים נמוכה באופן קריטי</string>
+    <string name="woopos_battery_low">רמת הטעינה של הסוללה בקורא הכרטיסים נמוכה</string>
+    <string name="woopos_reader_reconnecting">מתחבר מחדש…</string>
+    <string name="more_menu_button_ai_assistant_description">שאלה לגבי החנות שלך</string>
+    <string name="more_menu_button_ai_assistant">סייען בינה מלאכותית</string>
+    <string name="settings_notifs_new_reviews_subtitle">כל הביקורות</string>
+    <string name="settings_notifs_new_reviews">ביקורות חדשות</string>
+    <string name="settings_notifs_stock_subtitle">כל התראות המלאי</string>
+    <string name="settings_notifs_stock">מלאי</string>
+    <string name="settings_notifs_new_orders_subtitle">כל ההזמנות</string>
+    <string name="settings_notifs_new_orders">הזמנות חדשות</string>
+    <string name="settings_push_notifications">הודעות בדחיפה</string>
+    <string name="settings_logout_dialog_message">מוציא אותך מהמערכת.</string>
+    <string name="card_reader_detail_reconnecting_cancel">ביטול התחברות מחדש</string>
+    <string name="card_reader_detail_reconnecting_header">מתחבר מחדש לקורא הכרטיסים…</string>
+    <string name="dashboard_stats_order_date_type_update_error">לא ניתן לעדכן את סוג ההזמנה. יש לנסות שוב.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">זו הגדרה עבור כל החנות, אשר גם שולטת באפשרות “סוג תאריך” בהגדרות ניתוח הנתונים בממשק הניהול של WooCommerce.</string>
+    <string name="dashboard_stats_completed_orders_description">ספירת הזמנות בתאריך שבו סומנו כהזמנות שהושלמו.</string>
+    <string name="dashboard_stats_placed_orders_description">ספירת הזמנות בתאריך שבו בוצעו או נוצרו.</string>
+    <string name="dashboard_stats_paid_orders_description">ספירת הזמנות בתאריך התשלום של ההזמנה.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">יש לבחור אילו הזמנות לכלול במדדי הביצועים עבור טווח הזמן שנבחר.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">סוג תאריך ההזמנה</string>
+    <string name="dashboard_stats_completed_orders">הזמנות שהושלמו</string>
+    <string name="dashboard_stats_placed_orders">הזמנות שבוצעו</string>
+    <string name="dashboard_stats_paid_orders">הזמנות ששולמו</string>
+    <string name="dashboard_stats_revenue_type_total">סכום כולל</string>
+    <string name="dashboard_stats_revenue_type_net">נטו</string>
+    <string name="dashboard_stats_revenue_type_gross">ברוטו</string>
     <string name="booking_reschedule_change_team_member">שינוי חבר צוות</string>
     <string name="booking_reschedule_screen_title">קביעת תאריך אחר להזמנה</string>
     <string name="booking_details_reschedule_button">קביעת תאריך אחר</string>
@@ -354,8 +426,7 @@ Language: he_IL
     <string name="woopos_orders_loading_error_message">יש לבדוק את החיבור ולנסות שוב.</string>
     <string name="woopos_orders_loading_error_title">לא ניתן לטעון את ההזמנות</string>
     <string name="woopos_orders_empty_list_image_description">אין הזמנות</string>
-    <string name="woopos_orders_empty_action_label">למידע נוסף</string>
-    <string name="woopos_orders_empty_list_message">כדאי לראות איך אפשר להגדיל את המכירות בחנות שלך.</string>
+    <string name="woopos_orders_empty_action_label">רענון</string>
     <string name="woopos_orders_empty_list_title">לא נמצאו הזמנות</string>
     <string name="woopos_date_yesterday_at">אתמול בשעה %s</string>
     <string name="woopos_date_today_at">היום בשעה %s</string>
@@ -530,6 +601,8 @@ Language: he_IL
     <string name="woopos_scanning_setup_device_selection_title">להגדיר סורק ברקוד</string>
     <string name="woopos_scanning_setup_barcode_content_description">ברקוד</string>
     <string name="woopos_scanning_setup_dialog_content_description">תיבת הדו-שיח להגדרת הסורק</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">בריטניה</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ארצות הברית</string>
     <string name="woopos_eligibility_screen_unable_to_load">לא ניתן לטעון</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">מערכת POS לא זמינה במטבע של החנות שלך. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">מערכת POS לא זמינה במטבע של החנות שלך. ב-⁦%1$s⁩, כרגע המערכת תומכת רק ב-⁦%2$s⁩. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>

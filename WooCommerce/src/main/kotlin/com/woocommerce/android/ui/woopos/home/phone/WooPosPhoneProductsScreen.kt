@@ -1,14 +1,22 @@
 package com.woocommerce.android.ui.woopos.home.phone
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +46,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.customamount.WooPosCustomAmountFormScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
@@ -100,6 +109,7 @@ private fun WooPosPhoneProductsContent(
                 } else {
                     { PhoneMenuButton(onMenuClicked) }
                 },
+                showAddCouponButton = false,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
@@ -131,8 +141,40 @@ private fun WooPosPhoneProductsContent(
                         },
                     )
                 },
+                customAmountFormContent = { editing ->
+                    WooPosCustomAmountFormScreen(
+                        editing = editing,
+                        onBackClick = {
+                            onItemsUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+                        },
+                    )
+                },
                 modifier = Modifier.weight(1f),
             )
+        }
+
+        AnimatedVisibility(
+            visible = itemsState is WooPosItemsToolbarViewState.CouponList,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .imePadding()
+                .padding(WooPosSpacing.Medium.value),
+        ) {
+            FloatingActionButton(
+                onClick = { onItemsUIEvent(WooPosItemsUIEvent.AddCouponIconClicked) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                    contentDescription = stringResource(
+                        id = R.string.woopos_phone_items_add_coupon_fab_accessibility_label,
+                    ),
+                )
+            }
         }
 
         WooPosBackgroundOverlay(

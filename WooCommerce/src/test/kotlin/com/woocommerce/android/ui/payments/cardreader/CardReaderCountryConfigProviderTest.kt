@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForAT
+import com.woocommerce.android.cardreader.config.CardReaderConfigForAustralia
 import com.woocommerce.android.cardreader.config.CardReaderConfigForBE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForDE
@@ -30,6 +31,7 @@ class CardReaderCountryConfigProviderTest {
     private val featureFlagRepository: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION) }.thenReturn(false)
         on { isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED) }.thenReturn(false)
+        on { isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS) }.thenReturn(false)
     }
 
     private val sut = CardReaderCountryConfigProvider(
@@ -63,15 +65,23 @@ class CardReaderCountryConfigProviderTest {
             .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
     }
 
-    // --- Australia stays unsupported with both flags on ---
+    // --- Australia: gated by its own WooPayments flag ---
 
     @Test
-    fun `given AU country code with both expansion flags enabled, when config provide, then unsupported returned`() {
+    fun `given AU country code with primary and EU extended flags enabled, when config provide, then unsupported returned`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
 
         assertThat(sut.provideCountryConfigFor("AU"))
             .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
+    }
+
+    @Test
+    fun `given AU country code and AU flag on, when config provide, then Australia returned`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)).thenReturn(true)
+
+        assertThat(sut.provideCountryConfigFor("AU"))
+            .isInstanceOf(CardReaderConfigForAustralia::class.java)
     }
 
     // --- Primary expansion group: gated by IPP_COUNTRY_EXPANSION ---

@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-20 21:56:58+0000
+Translation-Revision-Date: 2026-05-05 16:57:30+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">A bateria do leitor está em %d%%, o que é muito baixo para instalar esta atualização. Carregue seu leitor até chegar pelo menos em 50%% e tente novamente.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">A bateria do leitor está muito baixa para instalar esta atualização. Carregue seu leitor até chegar pelo menos em 50% e tente novamente.</string>
+    <string name="woopos_card_reader_update_failed_title">Falha na atualização</string>
+    <string name="woopos_card_reader_update_completed_title">Software atualizado</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Cancelar mesmo assim</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Não é recomendado cancelar uma atualização de software em andamento. Se você cancelar, bloqueará a conexão do leitor.</string>
+    <string name="woopos_card_reader_update_optional_message">O software do seu leitor de cartão precisa ser atualizado para continuar funcionando sem problemas</string>
+    <string name="woopos_card_reader_update_required_message">É necessário atualizar o software do seu leitor de cartão para receber pagamentos. Se você cancelar, bloqueará a conexão do leitor.</string>
+    <string name="woopos_card_reader_update_progress">%d%% concluído</string>
+    <string name="woopos_card_reader_updating_optional_title">Atualizando o software do seu leitor</string>
+    <string name="woopos_card_reader_updating_title">Atualizando software</string>
+    <string name="woopos_card_reader_cancel_button">Cancelar</string>
+    <string name="woopos_card_reader_retry_button">Tentar novamente</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">O CEP da sua loja está ausente ou é inválido. Atualize o endereço da sua loja nas configurações do WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Formato de CEP inválido</string>
+    <string name="woopos_card_reader_invalid_address_message">O endereço da sua loja está ausente ou incompleto. Atualize o endereço da sua loja nas configurações do WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_address_title">Endereço de comerciante inválido</string>
+    <string name="woopos_card_reader_grant_permission_button">Conceder permissão</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">É necessário acesso ao Bluetooth para conectar um leitor de cartão.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Permissão de Bluetooth obrigatória</string>
+    <string name="woopos_card_reader_location_permission_message">A permissão de localização é necessária para se conectar a um leitor de cartão via Bluetooth.</string>
+    <string name="woopos_card_reader_location_permission_title">Permissão de localização obrigatória</string>
+    <string name="woopos_card_reader_enable_location_button">Ativar localização</string>
+    <string name="woopos_card_reader_location_disabled_message">Ative a localização para se conectar a um leitor de cartão.</string>
+    <string name="woopos_card_reader_location_disabled_title">A localização está desativada</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Ativar Bluetooth</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Ative o Bluetooth para se conectar a um leitor de cartão.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">O Bluetooth está desativado</string>
+    <string name="woopos_card_reader_battery_low_message">A bateria do leitor está muito baixa. Carregue o leitor e tente de novo.</string>
+    <string name="woopos_card_reader_battery_low_title">Bateria muito baixa</string>
+    <string name="woopos_card_reader_connected_title">Conectado</string>
+    <string name="woopos_card_reader_connecting_failed_title">Falha na conexão</string>
+    <string name="woopos_card_reader_connecting_message">Aguarde enquanto conectamos seu leitor</string>
+    <string name="woopos_card_reader_connecting_title">Conectando</string>
+    <string name="woopos_card_reader_multiple_found_description">Escolha um leitor</string>
+    <string name="woopos_card_reader_multiple_found_title">Vários leitores encontrados</string>
+    <string name="woopos_card_reader_keep_searching_button">Continuar pesquisando</string>
+    <string name="woopos_card_reader_connect_button">Conectar</string>
+    <string name="woopos_card_reader_found_description">Deseja se conectar a este leitor?</string>
+    <string name="woopos_card_reader_found_title">%s encontrado(s)</string>
+    <string name="woopos_card_reader_scanning_failed_title">Falha na varredura</string>
+    <string name="woopos_card_reader_scanning_instruction">Verifique se o leitor está carregado e ligado</string>
+    <string name="woopos_card_reader_scanning_title">Procurando um leitor</string>
+    <string name="woopos_card_reader_close_content_description">Fechar</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Caixa de diálogo da conexão do leitor de cartão</string>
+    <string name="woopos_orders_empty_list_message">Os pedidos aparecerão aqui assim que você iniciar o processamento de vendas no POS.</string>
+    <string name="woopos_battery_critical">Bateria crítica do leitor de cartão</string>
+    <string name="woopos_battery_low">Bateria baixa do leitor de cartão</string>
+    <string name="woopos_reader_reconnecting">Reconectando…</string>
+    <string name="more_menu_button_ai_assistant_description">Pergunte sobre sua loja</string>
+    <string name="more_menu_button_ai_assistant">Assistente de IA</string>
+    <string name="settings_notifs_new_reviews_subtitle">Todas as avaliações</string>
+    <string name="settings_notifs_new_reviews">Novas avaliações</string>
+    <string name="settings_notifs_stock_subtitle">Todos os alertas de estoque</string>
+    <string name="settings_notifs_stock">Estoque</string>
+    <string name="settings_notifs_new_orders_subtitle">Todos os pedidos</string>
+    <string name="settings_notifs_new_orders">Novos pedidos</string>
+    <string name="settings_push_notifications">Notificações por push</string>
+    <string name="settings_logout_dialog_message">Fazendo logout.</string>
+    <string name="card_reader_detail_reconnecting_cancel">Cancelar reconexão</string>
+    <string name="card_reader_detail_reconnecting_header">Reconectando ao leitor de cartão…</string>
+    <string name="dashboard_stats_order_date_type_update_error">Não é possível atualizar o tipo de pedido. Tente novamente.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">Esta é uma configuração para toda a loja e controla a opção \"Tipo de data\" nas configurações de análise na administração do WooCommerce.</string>
+    <string name="dashboard_stats_completed_orders_description">Conte os pedidos na data em que foram marcados como concluídos.</string>
+    <string name="dashboard_stats_placed_orders_description">Conte os pedidos na data em que foram feitos ou criados.</string>
+    <string name="dashboard_stats_paid_orders_description">Conte os pedidos na data em que foram pagos.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Escolha quais pedidos serão incluídos nas suas métricas de desempenho para o intervalo selecionado.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Tipo de data de pedido</string>
+    <string name="dashboard_stats_completed_orders">Pedidos concluídos</string>
+    <string name="dashboard_stats_placed_orders">Pedidos feitos</string>
+    <string name="dashboard_stats_paid_orders">Pedidos pagos</string>
+    <string name="dashboard_stats_revenue_type_total">Total</string>
+    <string name="dashboard_stats_revenue_type_net">Líquido</string>
+    <string name="dashboard_stats_revenue_type_gross">Bruto</string>
     <string name="booking_reschedule_change_team_member">Alterar membro da equipe</string>
     <string name="booking_reschedule_screen_title">Reagendar reserva</string>
     <string name="booking_details_reschedule_button">Reagendar</string>
@@ -354,8 +428,7 @@ Language: pt_BR
     <string name="woopos_orders_loading_error_message">Verifique sua conexão e tente novamente.</string>
     <string name="woopos_orders_loading_error_title">Não foi possível carregar pedidos</string>
     <string name="woopos_orders_empty_list_image_description">Não há pedidos</string>
-    <string name="woopos_orders_empty_action_label">Saiba mais</string>
-    <string name="woopos_orders_empty_list_message">Veja como aumentar as vendas da sua loja.</string>
+    <string name="woopos_orders_empty_action_label">Atualizar</string>
     <string name="woopos_orders_empty_list_title">Nenhum pedido encontrado</string>
     <string name="woopos_date_yesterday_at">Ontem às %s</string>
     <string name="woopos_date_today_at">Hoje às %s</string>
@@ -530,6 +603,8 @@ Language: pt_BR
     <string name="woopos_scanning_setup_device_selection_title">Configurar um scanner de código de barras</string>
     <string name="woopos_scanning_setup_barcode_content_description">Código de barras</string>
     <string name="woopos_scanning_setup_dialog_content_description">Caixa de diálogo de configuração do scanner</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Reino Unido</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Estados Unidos</string>
     <string name="woopos_eligibility_screen_unable_to_load">Não foi possível carregar</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">O sistema PDV não está disponível para a moeda da sua loja. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">O sistema PDV não está disponível para a moeda da sua loja. No %1$s, ele só é compatível com %2$s. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>

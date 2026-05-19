@@ -321,6 +321,7 @@ class NotificationMessageHandler @Inject constructor(
         val wooTypeSegment = when (noteType) {
             is WooNotificationType.NewOrder -> NotificationModel.Kind.STORE_ORDER.name
             is WooNotificationType.ProductReview -> NotificationModel.Kind.COMMENT.name
+            is WooNotificationType.Stock -> NotificationModel.Kind.STORE_STOCK.name
             else -> null
         }
         return when {

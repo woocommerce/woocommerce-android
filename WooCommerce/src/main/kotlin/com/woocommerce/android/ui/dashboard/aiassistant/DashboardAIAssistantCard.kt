@@ -8,7 +8,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,15 +49,16 @@ fun DashboardAIAssistantCard(
     modifier: Modifier = Modifier,
 ) {
     val contentDescription = stringResource(R.string.dashboard_ai_assistant_entry_point_content_description)
+    val cardShape = RoundedCornerShape(20.dp)
     Surface(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .semantics {
                 this.contentDescription = contentDescription
                 this.role = Role.Button
-            }
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
+            },
+        shape = cardShape,
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(
             width = dimensionResource(R.dimen.minor_10),
