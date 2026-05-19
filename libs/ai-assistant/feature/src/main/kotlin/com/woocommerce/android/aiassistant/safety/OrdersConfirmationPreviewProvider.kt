@@ -1,11 +1,14 @@
 package com.woocommerce.android.aiassistant.safety
 
+import android.content.Context
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
 
 internal class OrdersConfirmationPreviewProvider @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val ordersDataSource: AIOrdersDataSource,
 ) : ConfirmationPreviewProvider {
     override val key: String = "woocommerce_orders"
@@ -78,7 +81,7 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
         val displayNameById = ordersDataSource.getOrders(ids)
             .getOrNull()
             ?.items
-            ?.associate { it.orderId to it.confirmationDisplayName() }
+            ?.associate { it.orderId to it.confirmationDisplayName(::guestDisplayName, ::customerDisplayName) }
             .orEmpty()
         val fields = buildList {
             patch.stringValue("status")?.let { status ->
@@ -131,9 +134,18 @@ internal class OrdersConfirmationPreviewProvider @Inject constructor(
                 "customer_note" to order.customerNote,
                 "billing_email" to order.billingEmail,
             ),
-            displayName = order.confirmationDisplayName(),
+            displayName = order.confirmationDisplayName(::guestDisplayName, ::customerDisplayName),
         )
     }
+
+    private fun guestDisplayName(): String =
+        context.getString(R.string.ai_assistant_confirmation_order_guest_display_name)
+
+    private fun customerDisplayName(customerId: Long): String =
+        context.getString(
+            R.string.ai_assistant_confirmation_order_registered_customer_display_name,
+            customerId.toString(),
+        )
 
     private fun orderUpdateTitle(
         id: Long,

@@ -5,6 +5,8 @@
     <string name="ai_assistant_confirmation_order_update_title_with_name">Update order #%1$s (%2$s)</string>
     <string name="ai_assistant_confirmation_order_update_summary">Update order #%1$s: emails the customer</string>
     <string name="ai_assistant_confirmation_order_update_summary_with_name">Update order #%1$s (%2$s): emails the customer</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name">Guest</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name">Customer #%1$s</string>
     <string name="ai_assistant_confirmation_orders_bulk_update_generic">Update many orders</string>
     <string name="ai_assistant_confirmation_orders_bulk_update_title_single">Update %1$d order</string>
     <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple">Update %1$d orders</string>

@@ -8,12 +8,27 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 private val displayNameJson = Json { ignoreUnknownKeys = true }
 
-internal fun OrderEntity.confirmationDisplayName(): String? =
+internal fun OrderEntity.confirmationDisplayName(
+    guestDisplayName: () -> String,
+    customerDisplayName: (Long) -> String,
+): String? =
+    billingName()
+        ?: when {
+            customerId == GUEST_CUSTOMER_ID -> guestDisplayName()
+            customerId > GUEST_CUSTOMER_ID -> registeredCustomerDisplayName(customerDisplayName)
+            else -> null
+        }
+
+private fun OrderEntity.billingName(): String? =
     listOf(billingFirstName, billingLastName)
         .map { it.trim() }
         .filter { it.isNotEmpty() }
         .joinToString(" ")
         .takeIf { it.isNotEmpty() }
+
+private fun OrderEntity.registeredCustomerDisplayName(customerDisplayName: (Long) -> String): String =
+    billingEmail.trim().takeIf { it.isNotEmpty() }
+        ?: customerDisplayName(customerId)
 
 internal fun WCProductModel.confirmationDisplayName(): String? =
     name.trim().takeIf { it.isNotEmpty() }
@@ -33,3 +48,5 @@ private fun WCProductVariationModel.variationAttributeOptions(): String =
 private data class VariationAttribute(
     val option: String? = null,
 )
+
+private const val GUEST_CUSTOMER_ID = 0L

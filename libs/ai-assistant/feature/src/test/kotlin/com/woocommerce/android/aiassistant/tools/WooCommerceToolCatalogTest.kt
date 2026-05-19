@@ -219,7 +219,7 @@ class WooCommerceToolCatalogTest {
 
     private fun previewRegistry() = ConfirmationPreviewProviderRegistryImpl(
         setOf(
-            OrdersConfirmationPreviewProvider(ordersDataSource),
+            OrdersConfirmationPreviewProvider(mock(), ordersDataSource),
             ProductsConfirmationPreviewProvider(productsDataSource),
             ProductVariationsConfirmationPreviewProvider(variationsDataSource),
             GenericSchemaConfirmationPreviewProvider(),

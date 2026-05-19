@@ -256,7 +256,7 @@ class AgenticLoopAssistantRuntimeTest {
                 agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
                 toolRegistry = FixedToolRegistry(listOf(orderUpdateDescriptor())),
                 confirmationPreviewProviderRegistry = ConfirmationPreviewProviderRegistryImpl(
-                    setOf(OrdersConfirmationPreviewProvider(ordersDataSource))
+                    setOf(OrdersConfirmationPreviewProvider(mock(), ordersDataSource))
                 ),
             )
 
