@@ -38,6 +38,7 @@ class AiSupportChatHistoryViewModel @Inject constructor(
                     _viewState.update {
                         it.copy(
                             isLoading = false,
+                            bookmarks = emptyList(),
                             showError = true
                         )
                     }

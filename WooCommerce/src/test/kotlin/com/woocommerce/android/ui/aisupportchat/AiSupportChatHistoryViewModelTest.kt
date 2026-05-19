@@ -49,6 +49,22 @@ class AiSupportChatHistoryViewModelTest : BaseUnitTest() {
         assertThat(state.showError).isTrue()
     }
 
+    @Test
+    fun `given history loaded, when refresh fails, then stale bookmarks are cleared`() = testBlocking {
+        val bookmark = createBookmark()
+        whenever(repository.loadChatHistory())
+            .thenReturn(listOf(bookmark))
+            .thenThrow(RuntimeException("DB unavailable"))
+
+        viewModel.loadHistory()
+        viewModel.loadHistory()
+
+        val state = viewModel.viewState.value
+        assertThat(state.isLoading).isFalse()
+        assertThat(state.bookmarks).isEmpty()
+        assertThat(state.showError).isTrue()
+    }
+
     private fun createBookmark() = SupportChatBookmark(
         chatId = 1234L,
         localSiteId = LocalId(10),
