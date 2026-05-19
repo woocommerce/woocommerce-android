@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -27,6 +29,7 @@ fun WooPosToolbar(
     modifier: Modifier = Modifier,
     titleText: String,
     onBackClicked: (() -> Unit)? = null,
+    @DrawableRes navigationIconRes: Int = R.drawable.ic_back_24dp,
     titleStyle: WooPosTypography = WooPosTypography.Heading,
     titleFontWeight: FontWeight = FontWeight.Bold
 ) {
@@ -49,7 +52,8 @@ fun WooPosToolbar(
             }
         ) {
             WooPosBackButton(
-                modifier = Modifier.padding(start = WooPosSpacing.Small.value)
+                modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                iconRes = navigationIconRes,
             ) { onBackClicked?.invoke() }
         }
 
