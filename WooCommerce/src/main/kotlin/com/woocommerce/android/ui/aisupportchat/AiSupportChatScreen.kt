@@ -264,7 +264,7 @@ private fun MessageBubble(
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
                 )
             }
-            if (message.canShowFeedback()) {
+            if (message.shouldShowFeedback) {
                 if (feedbackRating == null) {
                     MessageFeedbackActions(
                         messageId = requireNotNull(message.messageId),
@@ -281,12 +281,6 @@ private fun MessageBubble(
         }
     }
 }
-
-private fun AiSupportChatMessage.canShowFeedback(): Boolean =
-    role == AiSupportChatMessageRole.BOT &&
-        messageId != null &&
-        !isResolved &&
-        content is AiSupportChatMessageContent.Text
 
 @Composable
 private fun MessageFeedbackActions(

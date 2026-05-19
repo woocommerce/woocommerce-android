@@ -415,6 +415,19 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given bot response is received after sending message, when chat updates, then feedback can be shown`() =
+        testBlocking {
+            startChatWithBotResponse()
+
+            val botMessage = viewModel.viewState.value.messages.single {
+                it.content == AiSupportChatMessageContent.Text(BOT_RESPONSE)
+            }
+
+            assertThat(botMessage.isNewInSession).isTrue()
+            assertThat(botMessage.shouldShowFeedback).isTrue()
+        }
+
+    @Test
     fun `given unrated bot response, when thumbs up clicked, then rating is stored and submitted`() =
         testBlocking {
             startChatWithBotResponse()
@@ -1026,6 +1039,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             AiSupportChatMessageContent.Text(ISSUE_DETAILS),
             AiSupportChatMessageContent.Text(BOT_RESPONSE)
         )
+        val botMessage = state.messages.single { it.content == AiSupportChatMessageContent.Text(BOT_RESPONSE) }
+        assertThat(botMessage.isNewInSession).isFalse()
+        assertThat(botMessage.shouldShowFeedback).isFalse()
         verify(repository).fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)
         verify(repository).markChatAsUpdated(CHAT_ID, SESSION_ID)
     }

@@ -292,7 +292,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     private suspend fun handleResumeSuccess(response: SupportChatResponse) {
         _viewState.update {
-            val remoteMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages(isNewInSession = false)
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             it.copy(
                 chatId = response.chatId,
@@ -388,7 +388,7 @@ class AiSupportChatViewModel @Inject constructor(
         wasInitialMessage: Boolean
     ) {
         _viewState.update {
-            val remoteMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages(isNewInSession = true)
             val latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
@@ -499,7 +499,7 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
-    private fun List<SupportChatMessage>.toUiMessages(): List<AiSupportChatMessage> =
+    private fun List<SupportChatMessage>.toUiMessages(isNewInSession: Boolean): List<AiSupportChatMessage> =
         filterNot { it.isBotEscalationPrompt() }
             .map { message ->
                 AiSupportChatMessage(
@@ -507,6 +507,7 @@ class AiSupportChatViewModel @Inject constructor(
                     messageId = if (message.role == SupportChatRole.BOT) message.messageId else null,
                     role = message.role.toUiRole(),
                     isResolved = message.context?.isResolved == true,
+                    isNewInSession = isNewInSession,
                     content = AiSupportChatMessageContent.Text(message.content)
                 )
             }
@@ -824,8 +825,16 @@ data class AiSupportChatMessage(
     val messageId: Long? = null,
     val role: AiSupportChatMessageRole,
     val isResolved: Boolean = false,
+    val isNewInSession: Boolean = false,
     val content: AiSupportChatMessageContent
-)
+) {
+    val shouldShowFeedback: Boolean
+        get() = role == AiSupportChatMessageRole.BOT &&
+            isNewInSession &&
+            !isResolved &&
+            messageId != null &&
+            content is AiSupportChatMessageContent.Text
+}
 
 enum class AiSupportChatMessageRole {
     USER,
