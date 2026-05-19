@@ -69,7 +69,12 @@ class JetpackAiChatServiceHeadlessHarnessTest {
             val result = harness.runScenario(
                 HeadlessScenario(
                     id = "transport-smoke",
-                    turns = listOf(HeadlessTurnSpec("Say hi")),
+                    turns = listOf(
+                        HeadlessTurnSpec(
+                            userMessage = "Say hi",
+                            hardChecks = emptyList(),
+                        )
+                    ),
                     initialHistory = listOf(AssistantMessage.System("You are helpful.")),
                     context = SessionContext(
                         siteId = 1L,

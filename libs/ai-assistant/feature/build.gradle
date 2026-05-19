@@ -63,6 +63,8 @@ dependencies {
     ksp(libs.google.dagger.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling.main)
+    // Debug smoke runner code uses core headless contracts at runtime; keep this out of release variants.
+    debugImplementation(testFixtures(project(":libs:ai-assistant:core")))
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
