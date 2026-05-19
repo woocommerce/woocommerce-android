@@ -39,6 +39,8 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
+    // Required because savedState.getStateFlow bridges through SavedStateHandle's LiveData
+    // internals, which call ArchTaskExecutor.postToMainThread on writes.
     @Rule
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
