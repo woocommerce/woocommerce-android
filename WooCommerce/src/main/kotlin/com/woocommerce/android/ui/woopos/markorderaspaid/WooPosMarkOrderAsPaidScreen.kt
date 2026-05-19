@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -111,24 +110,27 @@ private fun Confirming(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .imePadding(),
-        verticalArrangement = Arrangement.SpaceBetween,
     ) {
+        WooPosText(
+            text = stringResource(R.string.woopos_mark_order_as_paid_message, state.formattedTotal),
+            style = WooPosTypography.BodyLarge,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = WooPosSpacing.Medium.value,
+                    end = WooPosSpacing.Medium.value,
+                    top = WooPosSpacing.Small.value,
+                ),
+        )
+
         Spacer(modifier = Modifier.weight(1f))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            WooPosText(
-                text = stringResource(R.string.woopos_mark_order_as_paid_message, state.formattedTotal),
-                style = WooPosTypography.BodyLarge,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
             WooPosInputField(
                 value = state.note,
                 onValueChange = onNoteChanged,
