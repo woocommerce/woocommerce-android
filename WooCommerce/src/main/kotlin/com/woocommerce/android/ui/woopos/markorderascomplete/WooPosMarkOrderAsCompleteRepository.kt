@@ -59,8 +59,6 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
             isCustomerNote = false,
         )
         if (noteResult.isError) {
-            // Don't fail the whole operation — the order is already completed.
-            // The VM surfaces a separate analytic so we can audit note-post regressions.
             WooLog.e(T.POS, "Mark order as complete note post failed - ${noteResult.error?.message}")
             MarkOrderAsCompleteOutcome.SuccessWithFailedNote
         } else {

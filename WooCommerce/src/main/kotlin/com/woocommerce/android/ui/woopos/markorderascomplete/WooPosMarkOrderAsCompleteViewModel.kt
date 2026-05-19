@@ -47,9 +47,6 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // If we were killed mid-confirm the button can come back as LOADING with no
-            // running coroutine to flip it. Reset it so the user can retry instead of
-            // staring at a permanently spinning button.
             val current = _state.value
             if (current is WooPosMarkOrderAsCompleteState.Confirming &&
                 current.button.status == WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING
@@ -147,9 +144,6 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
 
     private suspend fun onMarkAsPaidSucceeded() {
         analyticsTracker.track(MarkAsPaidSuccess)
-        // Hand off to the home VM so it both flips the layout to full-screen totals
-        // (hiding the cart pane) AND broadcasts OrderSuccessfullyPaid to the totals VM,
-        // matching the card/cash success flows.
         childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidExternally)
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
     }
