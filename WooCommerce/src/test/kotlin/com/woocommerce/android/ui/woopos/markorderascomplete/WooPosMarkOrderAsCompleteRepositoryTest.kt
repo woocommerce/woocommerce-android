@@ -65,7 +65,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             val result = repository.markOrderAsComplete(orderId, customerNote = null)
 
             // THEN
-            assertThat(result.getOrNull()).isEqualTo(MarkOrderAsCompleteOutcome.SUCCESS)
+            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Success)
             verify(orderStore).updateOrderStatusAndPaymentDetails(
                 orderId = eq(orderId),
                 site = eq(site),
@@ -122,7 +122,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             val result = repository.markOrderAsComplete(orderId, customerNote = note)
 
             // THEN
-            assertThat(result.getOrNull()).isEqualTo(MarkOrderAsCompleteOutcome.SUCCESS)
+            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Success)
             verify(orderStore).postOrderNote(
                 site = eq(site),
                 orderId = eq(orderId),
@@ -161,7 +161,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             val result = repository.markOrderAsComplete(orderId, customerNote = note)
 
             // THEN
-            assertThat(result.getOrNull()).isEqualTo(MarkOrderAsCompleteOutcome.SUCCESS_WITH_FAILED_NOTE)
+            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
         }
 
     @Test
@@ -192,8 +192,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         val result = repository.markOrderAsComplete(orderId, customerNote = "Bank transfer")
 
         // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()?.message).isEqualTo(errorMessage)
+        assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Failure)
         verify(orderStore, never()).postOrderNote(
             site = org.mockito.kotlin.any(),
             orderId = org.mockito.kotlin.any(),
@@ -227,6 +226,6 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             val result = repository.markOrderAsComplete(orderId, customerNote = null)
 
             // THEN
-            assertThat(result.getOrNull()).isEqualTo(MarkOrderAsCompleteOutcome.SUCCESS)
+            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Success)
         }
 }

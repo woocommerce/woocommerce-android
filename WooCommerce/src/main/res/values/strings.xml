@@ -3855,6 +3855,7 @@
     <string name="woopos_mark_order_as_complete_note_hint">e.g. Bank transfer, gift card</string>
     <string name="woopos_mark_order_as_complete_confirm_button">Mark order as complete</string>
     <string name="woopos_mark_order_as_complete_error_message">Something went wrong. Please try again.</string>
+    <string name="woopos_mark_order_as_complete_order_not_found">Order could not be loaded. Go back and try again.</string>
     <string name="woopos_payment_method_picker_dialog_title">Choose payment method</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>

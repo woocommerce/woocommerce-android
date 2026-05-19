@@ -47,9 +47,6 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // If we were killed mid-confirm the button can come back as LOADING with no
-            // running coroutine to flip it. Reset it so the user can retry instead of
-            // staring at a permanently spinning button.
             val current = _state.value
             if (current is WooPosMarkOrderAsCompleteState.Confirming &&
                 current.button.status == WooPosMarkOrderAsCompleteState.Confirming.Button.Status.LOADING
@@ -63,19 +60,34 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
             }
             if (current !is WooPosMarkOrderAsCompleteState.Initiating) return@launch
 
-            val order = repository.getOrderById(orderId) ?: return@launch
-            _state.value = WooPosMarkOrderAsCompleteState.Confirming(
-                totalText = resourceProvider.getString(
-                    R.string.woopos_mark_order_as_complete_total,
-                    priceFormat(order.total),
-                ),
-                note = "",
-                errorMessage = null,
-                button = WooPosMarkOrderAsCompleteState.Confirming.Button(
-                    text = resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button),
-                    status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
-                ),
-            )
+            val order = repository.getOrderById(orderId)
+            val buttonText = resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button)
+            _state.value = if (order != null) {
+                WooPosMarkOrderAsCompleteState.Confirming(
+                    totalText = resourceProvider.getString(
+                        R.string.woopos_mark_order_as_complete_total,
+                        priceFormat(order.total),
+                    ),
+                    note = "",
+                    errorMessage = null,
+                    button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                        text = buttonText,
+                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                    ),
+                )
+            } else {
+                WooPosMarkOrderAsCompleteState.Confirming(
+                    totalText = "",
+                    note = "",
+                    errorMessage = resourceProvider.getString(
+                        R.string.woopos_mark_order_as_complete_order_not_found,
+                    ),
+                    button = WooPosMarkOrderAsCompleteState.Confirming.Button(
+                        text = buttonText,
+                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.DISABLED,
+                    ),
+                )
+            }
         }
     }
 
@@ -101,6 +113,7 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
     private fun handleConfirm() {
         viewModelScope.launch {
             val current = _state.value as? WooPosMarkOrderAsCompleteState.Confirming ?: return@launch
+            if (current.button.status != WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED) return@launch
             analyticsTracker.track(MarkAsPaidConfirmed)
             _state.value = current.copy(
                 button = current.button.copy(
@@ -109,28 +122,30 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
                 errorMessage = null,
             )
 
-            val result = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
-            val outcome = result.getOrNull()
-            if (outcome != null) {
-                if (outcome == MarkOrderAsCompleteOutcome.SUCCESS_WITH_FAILED_NOTE) {
+            val outcome = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
+            when (outcome) {
+                MarkOrderAsCompleteOutcome.SuccessWithFailedNote -> {
                     analyticsTracker.track(MarkAsPaidNotePostFailed)
+                    onMarkAsPaidSucceeded()
                 }
-                analyticsTracker.track(MarkAsPaidSuccess)
-                // Hand off to the home VM so it both flips the layout to full-screen totals
-                // (hiding the cart pane) AND broadcasts OrderSuccessfullyPaid to the totals VM,
-                // matching the card/cash success flows.
-                childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidExternally)
-                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            } else {
-                analyticsTracker.track(MarkAsPaidFailed)
-                _state.value = current.copy(
-                    errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
-                    button = current.button.copy(
-                        status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
-                    ),
-                )
+                MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded()
+                MarkOrderAsCompleteOutcome.Failure -> {
+                    analyticsTracker.track(MarkAsPaidFailed)
+                    _state.value = current.copy(
+                        errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
+                        button = current.button.copy(
+                            status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
+                        ),
+                    )
+                }
             }
         }
+    }
+
+    private suspend fun onMarkAsPaidSucceeded() {
+        analyticsTracker.track(MarkAsPaidSuccess)
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidExternally)
+        _navigationEvent.emit(WooPosNavigationEvent.GoBack)
     }
 
     private companion object {
