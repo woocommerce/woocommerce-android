@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -417,9 +419,11 @@ private fun ReaderDisconnected(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
 ) {
     Column(
-        modifier = modifier.padding(WooPosSpacing.XLarge.value),
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(WooPosSpacing.XLarge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
@@ -431,11 +435,14 @@ private fun ReaderDisconnected(
             text = status.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         WooPosText(
             text = status.subtitle,
             style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
