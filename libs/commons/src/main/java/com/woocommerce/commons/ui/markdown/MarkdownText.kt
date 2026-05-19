@@ -1,4 +1,4 @@
-package com.woocommerce.android.aiassistant.ui.markdown
+package com.woocommerce.commons.ui.markdown
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun AssistantMarkdownText(
+fun MarkdownText(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onSurface,
@@ -37,7 +37,7 @@ fun AssistantMarkdownText(
         )
     )
     val annotatedText = remember(text, linkColor, linkInteractionListener) {
-        AssistantMarkdownParser.parse(
+        MarkdownParser.parse(
             markdown = text,
             linkStyles = linkStyles,
             linkInteractionListener = linkInteractionListener,
@@ -54,8 +54,8 @@ fun AssistantMarkdownText(
 
 @Preview(showBackground = true, widthDp = 390)
 @Composable
-private fun AssistantMarkdownTextPreview() {
-    AssistantMarkdownText(
+private fun MarkdownTextPreview() {
+    MarkdownText(
         text = "Read the [WooCommerce mobile documentation]" +
             "(https://woocommerce.com/documentation/woocommerce/mobile/) for **setup** and *support*.",
     )

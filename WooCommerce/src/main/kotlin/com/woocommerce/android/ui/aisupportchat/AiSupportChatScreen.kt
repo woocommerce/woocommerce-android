@@ -56,7 +56,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
-import com.woocommerce.android.aiassistant.ui.markdown.AssistantMarkdownText
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
@@ -68,6 +67,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.commons.ui.markdown.MarkdownText
 
 @Composable
 fun AiSupportChatScreen(
@@ -413,7 +413,7 @@ private fun TextContent(
         vertical = dimensionResource(R.dimen.minor_100)
     )
     if (shouldFormatMarkdown) {
-        AssistantMarkdownText(
+        MarkdownText(
             text = text,
             color = color,
             style = MaterialTheme.typography.bodyMedium,
