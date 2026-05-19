@@ -14,13 +14,8 @@ interface JwtTokenProvider {
     suspend fun invalidate() {}
 }
 
-/**
- * Raised by [JwtTokenProvider] implementations when a JWT cannot be obtained.
- * The chat service maps this to [com.woocommerce.android.aiassistant.core.chat.ChatStreamError.AUTH]
- * at the stream layer; [com.woocommerce.android.aiassistant.core.chat.toAssistantError] maps it to
- * [com.woocommerce.android.aiassistant.core.chat.AssistantError.Auth] at the loop layer.
- */
+/** Raised by chat auth providers when a transport credential cannot be obtained. */
 class AssistantAuthException(
-    message: String = "Failed to obtain Jetpack AI JWT",
+    message: String = "Failed to obtain assistant auth credential",
     cause: Throwable? = null,
 ) : RuntimeException(message, cause)
