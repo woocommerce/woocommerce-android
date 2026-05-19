@@ -1,13 +1,13 @@
 package com.woocommerce.android.aiassistant.core.headless
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.loop.BudgetedHistory
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
 import com.woocommerce.android.aiassistant.core.loop.ConservativeRetryPolicy
@@ -265,7 +265,8 @@ class WooAssistantHeadlessTest {
                 hardChecks = emptyList(),
             )
         ),
-        initialHistory = listOf(AssistantMessage.System("You are a helpful commerce assistant.")),
+        systemPrompt = "You are a helpful commerce assistant.",
+        initialSessionHistory = AssistantSessionHistory.Empty,
         context = SessionContext(
             siteId = 1L,
             catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, listOf(toolDescriptor)),

@@ -17,6 +17,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistory
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationDecision
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
@@ -48,14 +49,9 @@ class AgenticLoopImplTest {
     private val history = listOf<AssistantMessage>(AssistantMessage.System("You are a helpful assistant."))
     private val merchantCancelledError = """{"error":"Action was cancelled by the merchant"}"""
 
-    private fun passThroughBudgeter(): HistoryBudgeter = HistoryBudgeter { system, transcript, user ->
-        BudgetedHistory(messages = listOf(system) + transcript + user)
-    }
-
     private fun loopWith(
         vararg turnResponses: Flow<AssistantEvent>,
         registry: ToolRegistry = NoOpToolRegistry(),
-        budgeter: HistoryBudgeter = passThroughBudgeter(),
         safetyOrchestrator: SafetyOrchestrator = SafetyOrchestratorImpl(),
         timeSource: TestTimeSource = TestTimeSource(),
     ): AgenticLoopImpl {
@@ -68,10 +64,29 @@ class AgenticLoopImplTest {
             service,
             registry,
             ConservativeRetryPolicy,
-            budgeter,
             safetyOrchestrator,
             json,
             timeSource,
+        )
+    }
+
+    private fun AgenticLoopImpl.runTurn(
+        conversationId: String,
+        userMessage: String,
+        history: List<AssistantMessage>,
+        context: SessionContext,
+    ): Flow<LoopEvent> {
+        val currentUserTurn = AssistantMessage.User(userMessage)
+        val systemPrompt = history.filterIsInstance<AssistantMessage.System>().firstOrNull()
+            ?: AssistantMessage.System("")
+        val rawTranscript = history.filterNot { it is AssistantMessage.System }
+        return runTurn(
+            conversationId = conversationId,
+            modelHistory = ModelRequestHistory(
+                messages = listOf(systemPrompt) + rawTranscript + currentUserTurn,
+                currentUserTurn = currentUserTurn,
+            ),
+            context = context,
         )
     }
 
@@ -240,9 +255,9 @@ class AgenticLoopImplTest {
             .filterIsInstance<LoopEvent.Finished>()
             .last()
 
-        finished.updatedHistory.forEachIndexed { index, message ->
+        finished.modelTurnMessages.forEachIndexed { index, message ->
             if (message is AssistantMessage.Tool) {
-                val priorIds = finished.updatedHistory.subList(0, index)
+                val priorIds = finished.modelTurnMessages.subList(0, index)
                     .filterIsInstance<AssistantMessage.Assistant>()
                     .flatMap { assistant -> assistant.toolCalls.map(ToolCall::id) }
                 assertThat(priorIds).contains(message.toolCallId)
@@ -281,7 +296,6 @@ class AgenticLoopImplTest {
             service,
             registry,
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -426,7 +440,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -455,7 +468,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -481,7 +493,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -508,7 +519,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -534,7 +544,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -559,7 +568,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -568,7 +576,7 @@ class AgenticLoopImplTest {
         val events = loop.runTurn("conv", "hi", history, context).toList()
 
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
-        val partialMsg = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>().lastOrNull()
+        val partialMsg = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Assistant>().lastOrNull()
         assertThat(partialMsg).isNotNull
         assertThat(requireNotNull(partialMsg).content).isEqualTo("partial")
     }
@@ -588,8 +596,7 @@ class AgenticLoopImplTest {
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
             assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
-            assertThat(finished.updatedHistory).containsExactly(
-                AssistantMessage.System("You are a helpful assistant."),
+            assertThat(finished.modelTurnMessages).containsExactly(
                 AssistantMessage.User("hi"),
             )
         }
@@ -614,8 +621,7 @@ class AgenticLoopImplTest {
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
             assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isEqualTo(AssistantError.Cancelled)
-            assertThat(finished.updatedHistory).containsExactly(
-                AssistantMessage.System("You are a helpful assistant."),
+            assertThat(finished.modelTurnMessages).containsExactly(
                 AssistantMessage.User("hi"),
                 AssistantMessage.Assistant(content = "partial", toolCalls = emptyList()),
             )
@@ -788,7 +794,7 @@ class AgenticLoopImplTest {
         assertThat(events.filterIsInstance<LoopEvent.ConfirmationRequested>()).isEmpty()
         val finished = events.filterIsInstance<LoopEvent.Finished>().last()
         assertThat(finished.outcome).isEqualTo(LoopOutcome.COMPLETED)
-        val toolMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()
+        val toolMessages = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Tool>()
         assertThat(toolMessages).hasSize(1)
         assertThat(toolMessages[0].content).contains("echoed")
     }
@@ -978,7 +984,7 @@ class AgenticLoopImplTest {
             assertThat(error.diagnostics.transport?.bodySnippet).isEqualTo("raw backend payload")
             val toolResult = events.filterIsInstance<LoopEvent.ToolCallFinished>().single().result
             assertThat(toolResult).isInstanceOf(ToolResult.TransportError::class.java)
-            val toolMessage = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>().single()
+            val toolMessage = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Tool>().single()
             assertThat(toolMessage.toolCallId).isEqualTo("call_1")
             assertThat(toolMessage.content).isEqualTo("""{"error":"Tool execution failed"}""")
             assertThat(toolMessage.content).doesNotContain("raw backend payload")
@@ -1093,7 +1099,6 @@ class AgenticLoopImplTest {
                 service,
                 registry,
                 ConservativeRetryPolicy,
-                passThroughBudgeter(),
                 SafetyOrchestratorImpl(),
                 json,
                 TestTimeSource(),
@@ -1154,7 +1159,6 @@ class AgenticLoopImplTest {
                 service,
                 registry,
                 ConservativeRetryPolicy,
-                passThroughBudgeter(),
                 safetyOrchestrator,
                 json,
                 TestTimeSource(),
@@ -1191,9 +1195,9 @@ class AgenticLoopImplTest {
             assertThat(finished.outcome).isEqualTo(LoopOutcome.STOPPED)
             assertThat(finished.retryAffordance).isEqualTo(RetryAffordance.None)
             assertThat(finished.error).isNull()
-            val assistantMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
+            val assistantMessages = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Assistant>()
             assertThat(assistantMessages.flatMap { it.toolCalls }.map { it.id }).containsExactly("call_1")
-            val toolMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()
+            val toolMessages = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Tool>()
             assertThat(toolMessages.map { it.toolCallId }).containsExactly("call_1")
             assertThat(toolMessages.single().content).isEqualTo(merchantCancelledError)
             job.cancel()
@@ -1252,7 +1256,6 @@ class AgenticLoopImplTest {
                 service,
                 registry,
                 ConservativeRetryPolicy,
-                passThroughBudgeter(),
                 safetyOrchestrator,
                 json,
                 TestTimeSource(),
@@ -1286,11 +1289,11 @@ class AgenticLoopImplTest {
             assertThat(finished.error).isNull()
             assertThat(secondModelTurnRequested).isFalse
 
-            val assistantToolCalls = finished.updatedHistory.filterIsInstance<AssistantMessage.Assistant>()
+            val assistantToolCalls = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Assistant>()
                 .flatMap { it.toolCalls }
             assertThat(assistantToolCalls.map { it.id }).containsExactly("safe_1", "unsafe_1")
 
-            val toolMessages = finished.updatedHistory.filterIsInstance<AssistantMessage.Tool>()
+            val toolMessages = finished.modelTurnMessages.filterIsInstance<AssistantMessage.Tool>()
             assertThat(toolMessages.map { it.toolCallId }).containsExactly("safe_1", "unsafe_1")
             assertThat(toolMessages.first().content).contains("echoed")
             assertThat(toolMessages.last().content).isEqualTo(merchantCancelledError)
@@ -1298,17 +1301,14 @@ class AgenticLoopImplTest {
         }
 
     @Test
-    fun `given budgeter trims history, when running turn, then model receives only budgeted messages`() = runTest {
-        val bigHistory = listOf(
+    fun `given model history is prebuilt, when running turn, then model receives provided messages`() = runTest {
+        val prebuiltMessages = listOf(
             AssistantMessage.System("sys"),
-            AssistantMessage.User("turn 1"),
-            AssistantMessage.Assistant("response 1"),
             AssistantMessage.User("turn 2"),
             AssistantMessage.Assistant("response 2"),
+            AssistantMessage.User("hi"),
         )
-        val twoMessageBudgeter = HistoryBudgeter { system, _, user ->
-            BudgetedHistory(messages = listOf(system, user))
-        }
+        val currentUserTurn = AssistantMessage.User("hi")
         var capturedMessages: List<AssistantMessage>? = null
         val service = object : ChatService {
             override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> {
@@ -1320,52 +1320,57 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            twoMessageBudgeter,
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
         )
 
-        loop.runTurn("conv", "hi", bigHistory, context).toList()
+        loop.runTurn(
+            conversationId = "conv",
+            modelHistory = ModelRequestHistory(prebuiltMessages, currentUserTurn),
+            context = context,
+        ).toList()
 
-        assertThat(capturedMessages).hasSize(2)
-        assertThat(capturedMessages?.first()).isEqualTo(AssistantMessage.System("sys"))
-        assertThat(capturedMessages?.last()).isEqualTo(AssistantMessage.User("hi"))
+        assertThat(capturedMessages).isEqualTo(prebuiltMessages)
     }
 
     @Test
-    fun `given budgeter trims history, when running turn, then updatedHistory contains full prior history plus new turn messages`() = runTest {
-        val bigHistory = listOf(
-            AssistantMessage.System("sys"),
-            AssistantMessage.User("turn 1"),
-            AssistantMessage.Assistant("response 1"),
-        )
-        val droppingBudgeter = HistoryBudgeter { system, _, user ->
-            BudgetedHistory(messages = listOf(system, user))
-        }
-        val service = object : ChatService {
-            override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
-                flowOf(AssistantEvent.TextDelta("ok"), AssistantEvent.Finish(FinishReason.STOP))
-        }
-        val loop = AgenticLoopImpl(
-            service,
-            NoOpToolRegistry(),
-            ConservativeRetryPolicy,
-            droppingBudgeter,
-            SafetyOrchestratorImpl(),
-            json,
-            TestTimeSource(),
-        )
+    fun `given prebuilt model history, when running turn finishes, then modelTurnMessages contains current turn only`() =
+        runTest {
+            val priorModelHistory = listOf(
+                AssistantMessage.System("sys"),
+                AssistantMessage.User("turn 1"),
+                AssistantMessage.Assistant("response 1"),
+            )
+            val currentUserTurn = AssistantMessage.User("hi")
+            val service = object : ChatService {
+                override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
+                    flowOf(AssistantEvent.TextDelta("ok"), AssistantEvent.Finish(FinishReason.STOP))
+            }
+            val loop = AgenticLoopImpl(
+                service,
+                NoOpToolRegistry(),
+                ConservativeRetryPolicy,
+                SafetyOrchestratorImpl(),
+                json,
+                TestTimeSource(),
+            )
 
-        val events = loop.runTurn("conv", "hi", bigHistory, context).toList()
+            val events = loop.runTurn(
+                conversationId = "conv",
+                modelHistory = ModelRequestHistory(
+                    messages = priorModelHistory + currentUserTurn,
+                    currentUserTurn = currentUserTurn,
+                ),
+                context = context,
+            ).toList()
 
-        val finished = events.filterIsInstance<LoopEvent.Finished>().last()
-        assertThat(finished.updatedHistory).hasSize(bigHistory.size + 2)
-        assertThat(finished.updatedHistory.take(bigHistory.size)).isEqualTo(bigHistory)
-        assertThat(finished.updatedHistory[bigHistory.size]).isEqualTo(AssistantMessage.User("hi"))
-        assertThat(finished.updatedHistory[bigHistory.size + 1])
-            .isEqualTo(AssistantMessage.Assistant(content = "ok", toolCalls = emptyList()))
-    }
+            val finished = events.filterIsInstance<LoopEvent.Finished>().last()
+            assertThat(finished.modelTurnMessages).containsExactly(
+                currentUserTurn,
+                AssistantMessage.Assistant(content = "ok", toolCalls = emptyList()),
+            )
+        }
 
     @Test
     fun `given history with no system message, when running turn, then loop completes with empty system prompt`() = runTest {
@@ -1393,7 +1398,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
@@ -1418,7 +1422,6 @@ class AgenticLoopImplTest {
             service,
             NoOpToolRegistry(),
             ConservativeRetryPolicy,
-            passThroughBudgeter(),
             SafetyOrchestratorImpl(),
             json,
             TestTimeSource(),
