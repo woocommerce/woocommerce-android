@@ -218,6 +218,58 @@ class ProductsConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given product lookup fails, when single preview is built, then title is id only and fields remain`() =
+        runTest {
+            val dataSource: AIProductsDataSource = mock()
+            whenever(dataSource.getProduct(7L)).thenReturn(
+                Result.failure(IllegalStateException("No current product"))
+            )
+
+            val preview = preview(
+                toolName = "products_update",
+                arguments = buildJsonObject {
+                    put("id", 7)
+                    put("regular_price", "24.99")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(R.string.ai_assistant_confirmation_product_update_title, raw("7"))
+            )
+            assertThat(preview.fields).containsExactly(
+                ConfirmationPreviewField(
+                    name = "regular_price",
+                    value = raw("24.99"),
+                    label = label(R.string.ai_assistant_confirmation_field_regular_price),
+                ),
+            )
+        }
+
+    @Test
+    fun `given bulk product lookup fails, when preview is built, then all entries are id only`() = runTest {
+        val dataSource: AIProductsDataSource = mock()
+        whenever(dataSource.getProducts(listOf(7L, 8L))).thenReturn(
+            Result.failure(IllegalStateException("No current products"))
+        )
+
+        val preview = preview(
+            toolName = "products_bulk_update",
+            arguments = buildJsonObject {
+                put("ids", JsonArray(listOf(JsonPrimitive(7), JsonPrimitive(8))))
+                put("patch", buildJsonObject { put("status", "draft") })
+            },
+            dataSource = dataSource,
+        )
+
+        assertThat(preview.bulkEntries).containsExactly(
+            ConfirmationBulkEntry(7),
+            ConfirmationBulkEntry(8),
+        )
+        assertThat(preview.bulkEntries.map { it.displayText }).containsExactly("#7", "#8")
+    }
+
+    @Test
     fun `given product update and current product has padded name, when preview is built, then title trims name`() =
         runTest {
             val dataSource: AIProductsDataSource = mock()

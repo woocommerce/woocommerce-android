@@ -72,6 +72,66 @@ class ProductVariationsConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given variation lookup fails, when preview is built, then title is id only and fields remain`() =
+        runTest {
+            val dataSource: AIProductVariationsDataSource = mock()
+            whenever(dataSource.getVariation(7L, 8L)).thenReturn(
+                Result.failure(IllegalStateException("No current variation"))
+            )
+
+            val preview = preview(
+                arguments = buildJsonObject {
+                    put("product_id", 7)
+                    put("id", 8)
+                    put("regular_price", "19.99")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_product_variation_update_title,
+                    raw("8"),
+                    raw("7"),
+                )
+            )
+            assertThat(preview.fields).containsExactly(
+                ConfirmationPreviewField(
+                    name = "regular_price",
+                    value = raw("19.99"),
+                    label = label(R.string.ai_assistant_confirmation_field_regular_price),
+                )
+            )
+        }
+
+    @Test
+    fun `given variation attributes are malformed, when preview is built, then title falls back to sku`() =
+        runTest {
+            val dataSource: AIProductVariationsDataSource = mock()
+            whenever(dataSource.getVariation(7L, 8L)).thenReturn(
+                Result.success(variation(sku = "VAR-8", attributes = """{"bad":"shape"}"""))
+            )
+
+            val preview = preview(
+                arguments = buildJsonObject {
+                    put("product_id", 7)
+                    put("id", 8)
+                    put("regular_price", "19.99")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(
+                    R.string.ai_assistant_confirmation_product_variation_update_title_with_name,
+                    raw("VAR-8"),
+                    raw("8"),
+                    raw("7"),
+                )
+            )
+        }
+
+    @Test
     fun `given variation update and current variation has attributes, when preview is built, then title includes options`() =
         runTest {
             val dataSource: AIProductVariationsDataSource = mock()

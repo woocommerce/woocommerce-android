@@ -415,6 +415,58 @@ class OrdersConfirmationPreviewProviderTest {
         }
 
     @Test
+    fun `given cache-first order lookup fails, when single preview is built, then title is id only and fields remain`() =
+        runTest {
+            val dataSource: AIOrdersDataSource = mock()
+            whenever(dataSource.getOrders(listOf(42L))).thenReturn(
+                Result.failure(IllegalStateException("No current order"))
+            )
+
+            val preview = preview(
+                toolName = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 42)
+                    put("status", "pending")
+                },
+                dataSource = dataSource,
+            )
+
+            assertThat(preview.message).isEqualTo(
+                string(R.string.ai_assistant_confirmation_order_update_title, raw("42"))
+            )
+            assertThat(preview.fields).containsExactly(
+                ConfirmationPreviewField(
+                    name = "status",
+                    value = raw("pending"),
+                    label = label(R.string.ai_assistant_confirmation_field_status),
+                ),
+            )
+        }
+
+    @Test
+    fun `given bulk order lookup fails, when preview is built, then all entries are id only`() = runTest {
+        val dataSource: AIOrdersDataSource = mock()
+        whenever(dataSource.getOrders(listOf(1L, 2L))).thenReturn(
+            Result.failure(IllegalStateException("No current orders"))
+        )
+
+        val preview = preview(
+            toolName = "orders_bulk_update",
+            arguments = buildJsonObject {
+                put("ids", JsonArray(listOf(JsonPrimitive(1), JsonPrimitive(2))))
+                put("patch", buildJsonObject { put("status", "completed") })
+            },
+            dataSource = dataSource,
+        )
+
+        assertThat(preview.bulkEntries).containsExactly(
+            ConfirmationBulkEntry(1),
+            ConfirmationBulkEntry(2),
+        )
+        assertThat(preview.bulkEntries.map { it.displayText }).containsExactly("#1", "#2")
+    }
+
+    @Test
     fun `given order update, when preview is built, then only order data source is fetched`() = runTest {
         val dataSource: AIOrdersDataSource = mock()
         whenever(dataSource.getOrders(listOf(42L))).thenReturn(
