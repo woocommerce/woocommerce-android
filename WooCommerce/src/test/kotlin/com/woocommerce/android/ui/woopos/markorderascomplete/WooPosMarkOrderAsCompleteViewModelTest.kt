@@ -74,6 +74,24 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     )
 
     @Test
+    fun `given order id not found, when VM initializes, then state is Confirming with error and disabled button`() =
+        runTest {
+            // GIVEN
+            whenever(repository.getOrderById(orderId)).thenReturn(null)
+            whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_order_not_found))
+                .thenReturn("Order could not be loaded. Go back and try again.")
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            val state = viewModel.state.value as WooPosMarkOrderAsCompleteState.Confirming
+            assertThat(state.errorMessage).isEqualTo("Order could not be loaded. Go back and try again.")
+            assertThat(state.button.status).isEqualTo(WooPosMarkOrderAsCompleteState.Confirming.Button.Status.DISABLED)
+            assertThat(state.totalText).isEmpty()
+        }
+
+    @Test
     fun `given order loads, when VM initializes, then state is Confirming with order total`() = runTest {
         // WHEN
         val viewModel = createViewModel()

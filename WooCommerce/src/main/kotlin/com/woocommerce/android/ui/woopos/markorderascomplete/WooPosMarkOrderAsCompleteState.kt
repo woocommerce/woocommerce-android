@@ -26,6 +26,7 @@ sealed class WooPosMarkOrderAsCompleteState : Parcelable {
             enum class Status : Parcelable {
                 ENABLED,
                 LOADING,
+                DISABLED,
             }
         }
     }
