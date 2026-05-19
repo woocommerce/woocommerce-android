@@ -123,7 +123,7 @@ class ZendeskSettings @Inject constructor(
      * We should refresh the Zendesk identity when the email or the name has been updated. We also check whether
      * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
      */
-    private fun refreshIdentity() {
+    fun refreshIdentity() {
         instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
     }
 

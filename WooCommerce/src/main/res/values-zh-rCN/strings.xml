@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-21 11:54:49+0000
+Translation-Revision-Date: 2026-05-06 13:58:35+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">读卡器电量过低（为 %d%%），无法安装此更新。 请将您的读卡器充电至至少 50%%，然后重试。</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">读卡器电量过低，无法安装此更新。 请将您的读卡器充电至至少 50%，然后重试。</string>
+    <string name="woopos_card_reader_update_failed_title">更新失败</string>
+    <string name="woopos_card_reader_update_completed_title">软件已更新</string>
+    <string name="woopos_card_reader_cancel_anyway_button">仍然取消</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">不建议取消正在进行的软件更新。 取消将阻断您的读卡器连接。</string>
+    <string name="woopos_card_reader_update_optional_message">您的读卡器软件需要更新，然后才能顺畅运行</string>
+    <string name="woopos_card_reader_update_required_message">您需要更新读卡器软件才能进行收款。 取消将阻断您的读卡器连接。</string>
+    <string name="woopos_card_reader_update_progress">%d%% 完成</string>
+    <string name="woopos_card_reader_updating_optional_title">更新您的读卡器软件</string>
+    <string name="woopos_card_reader_updating_title">更新软件</string>
+    <string name="woopos_card_reader_cancel_button">取消</string>
+    <string name="woopos_card_reader_retry_button">重试</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">您的商店邮政编码缺失或无效。 请在 WooCommerce 设置中更新您的商店地址。</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">无效的邮政编码</string>
+    <string name="woopos_card_reader_invalid_address_message">您的商店地址缺失或不完整。 请在 WooCommerce 设置中更新您的商店地址。</string>
+    <string name="woopos_card_reader_invalid_address_title">无效的商家地址</string>
+    <string name="woopos_card_reader_grant_permission_button">授予权限</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">需要蓝牙权限才能连接读卡器。</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">需要蓝牙权限</string>
+    <string name="woopos_card_reader_location_permission_message">需要位置权限才能通过蓝牙连接读卡器。</string>
+    <string name="woopos_card_reader_location_permission_title">需要位置权限</string>
+    <string name="woopos_card_reader_enable_location_button">启用位置</string>
+    <string name="woopos_card_reader_location_disabled_message">启用位置以连接读卡器。</string>
+    <string name="woopos_card_reader_location_disabled_title">位置已关闭</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">启用蓝牙</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">启用蓝牙以连接读卡器。</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">蓝牙已关闭</string>
+    <string name="woopos_card_reader_battery_low_message">读卡器电量严重不足。 请为读卡器充电，然后重试。</string>
+    <string name="woopos_card_reader_battery_low_title">电量过低</string>
+    <string name="woopos_card_reader_connected_title">已连接</string>
+    <string name="woopos_card_reader_connecting_failed_title">连接失败</string>
+    <string name="woopos_card_reader_connecting_message">我们正在连接您的读卡器，请稍候</string>
+    <string name="woopos_card_reader_connecting_title">正在连接</string>
+    <string name="woopos_card_reader_multiple_found_description">选择读卡器</string>
+    <string name="woopos_card_reader_multiple_found_title">找到多个读卡器</string>
+    <string name="woopos_card_reader_keep_searching_button">继续搜索</string>
+    <string name="woopos_card_reader_connect_button">连接</string>
+    <string name="woopos_card_reader_found_description">是否要连接此读卡器？</string>
+    <string name="woopos_card_reader_found_title">找到 %s</string>
+    <string name="woopos_card_reader_scanning_failed_title">扫描失败</string>
+    <string name="woopos_card_reader_scanning_instruction">确保您的读卡器已充电并处于开启状态</string>
+    <string name="woopos_card_reader_scanning_title">正在扫描读卡器</string>
+    <string name="woopos_card_reader_close_content_description">关闭</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">读卡器连接对话框</string>
+    <string name="woopos_orders_empty_list_message">一旦您开始在 POS 上处理销售，订单就会显示在此处。</string>
+    <string name="woopos_battery_critical">读卡器电量告急</string>
+    <string name="woopos_battery_low">读卡器电量不足</string>
+    <string name="woopos_reader_reconnecting">正在重新连接…</string>
+    <string name="more_menu_button_ai_assistant_description">咨询关于您商店的情况</string>
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="settings_notifs_new_reviews_subtitle">所有评价</string>
+    <string name="settings_notifs_new_reviews">新评价</string>
+    <string name="settings_notifs_stock_subtitle">所有库存提醒</string>
+    <string name="settings_notifs_stock">库存</string>
+    <string name="settings_notifs_new_orders_subtitle">所有订单</string>
+    <string name="settings_notifs_new_orders">新订单</string>
+    <string name="settings_push_notifications">推送通知</string>
+    <string name="settings_logout_dialog_message">正在注销。</string>
+    <string name="card_reader_detail_reconnecting_cancel">取消重新连接</string>
+    <string name="card_reader_detail_reconnecting_header">正在重新连接读卡器…</string>
+    <string name="dashboard_stats_order_date_type_update_error">无法更新订单类型。 请重试。</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">这是一项全商店设置，它同时还控制着 WooCommerce 管理分析设置中的“日期类型”选项。</string>
+    <string name="dashboard_stats_completed_orders_description">按订单标记为已完成的日期进行统计。</string>
+    <string name="dashboard_stats_placed_orders_description">按订单下达或创建日期进行统计。</string>
+    <string name="dashboard_stats_paid_orders_description">按订单付款日期进行统计。</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">选择要纳入所选时间范围绩效指标中的订单。</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">订单日期类型</string>
+    <string name="dashboard_stats_completed_orders">已完成的订单</string>
+    <string name="dashboard_stats_placed_orders">已下达的订单</string>
+    <string name="dashboard_stats_paid_orders">已付款的订单</string>
+    <string name="dashboard_stats_revenue_type_total">总额</string>
+    <string name="dashboard_stats_revenue_type_net">净额</string>
+    <string name="dashboard_stats_revenue_type_gross">毛额</string>
     <string name="booking_reschedule_change_team_member">更改团队成员</string>
     <string name="booking_reschedule_screen_title">重新安排预订</string>
     <string name="booking_details_reschedule_button">重新安排</string>
@@ -354,8 +428,7 @@ Language: zh_CN
     <string name="woopos_orders_loading_error_message">请检查您的连接，然后重试。</string>
     <string name="woopos_orders_loading_error_title">无法加载订单</string>
     <string name="woopos_orders_empty_list_image_description">无订单</string>
-    <string name="woopos_orders_empty_action_label">了解更多</string>
-    <string name="woopos_orders_empty_list_message">探索如何提高您商店的销售额。</string>
+    <string name="woopos_orders_empty_action_label">刷新</string>
     <string name="woopos_orders_empty_list_title">未找到订单</string>
     <string name="woopos_date_yesterday_at">昨天 %s</string>
     <string name="woopos_date_today_at">今天 %s</string>
@@ -530,6 +603,8 @@ Language: zh_CN
     <string name="woopos_scanning_setup_device_selection_title">设置条形码扫描仪</string>
     <string name="woopos_scanning_setup_barcode_content_description">条形码</string>
     <string name="woopos_scanning_setup_dialog_content_description">扫描仪设置对话框</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">英国</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">美国</string>
     <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>

@@ -5,8 +5,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AIAssistantEligibilityChecker @Inject constructor(
@@ -15,10 +15,9 @@ class AIAssistantEligibilityChecker @Inject constructor(
 ) {
     fun observeEligibility(): Flow<Boolean> {
         return selectedSite.observe()
-            .map { site ->
-                featureFlagRepository.isEnabled(FeatureFlag.AI_ASSISTANT) &&
-                    site?.isEligibleForAI == true
-            }
+            .combine(
+                featureFlagRepository.observeIsEnabled(FeatureFlag.AI_ASSISTANT)
+            ) { site, isAssistantEnabled -> isAssistantEnabled && site?.isEligibleForAI == true }
             .distinctUntilChanged()
     }
 }

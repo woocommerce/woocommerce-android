@@ -225,6 +225,7 @@ private fun TotalsLoaded(
                 )
             }
         }
+        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -232,7 +233,7 @@ private fun TotalsLoaded(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(if (isPhone) 2f else 1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -377,8 +378,10 @@ private fun PreparingReader(title: String, subtitle: String) {
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
     WooPosText(
         text = subtitle,
-        style = WooPosTypography.Heading,
-        fontWeight = FontWeight.Bold
+        style = WooPosTypography.BodyLarge,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
     )
 }
 
@@ -400,7 +403,7 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
     WooPosText(
         text = readerStatus.subtitle,
-        style = WooPosTypography.Heading,
+        style = WooPosTypography.BodyLarge,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
@@ -440,7 +443,6 @@ private fun ReaderDisconnected(
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
                 .adaptiveContentWidth()
-                .height(WooPosComponentSize.Small.value)
                 .testTag(WooPosTestTags.CARD_READER_PAYMENT_BUTTON)
         )
     }
@@ -480,7 +482,6 @@ private fun TapToPayPromoted(
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
             modifier = Modifier
                 .adaptiveContentWidth()
-                .height(WooPosComponentSize.Small.value)
                 .testTag(WooPosTestTags.TAP_TO_PAY_PROMOTED_BUTTON)
         )
     }

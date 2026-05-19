@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCConnectionTokenResu
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentChargeApiResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
+import org.wordpress.android.fluxc.model.payments.inperson.WCPrepareTerminalPaymentResponsePayload
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationResult
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -49,6 +50,16 @@ class WCInPersonPaymentsStore @Inject constructor(
     ): WCCapturePaymentResponsePayload {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "capturePayment") {
             restClient.capturePayment(activePlugin, site, paymentId, orderId)
+        }
+    }
+
+    suspend fun preparePayment(
+        site: SiteModel,
+        paymentId: String,
+        orderId: Long
+    ): WCPrepareTerminalPaymentResponsePayload {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "preparePayment") {
+            restClient.preparePayment(site, paymentId, orderId)
         }
     }
 

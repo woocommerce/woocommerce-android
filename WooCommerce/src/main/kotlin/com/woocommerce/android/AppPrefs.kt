@@ -117,6 +117,7 @@ object AppPrefs {
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
+        ENABLE_SIMULATED_EFTPOS,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
@@ -283,6 +284,10 @@ object AppPrefs {
     var isInteracEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
+
+    var isEftposEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, false)
+        set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, value)
 
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateFrequencyUiModel.RANDOM.toString())

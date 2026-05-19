@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentRespo
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentChargeApiResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
+import org.wordpress.android.fluxc.model.payments.inperson.WCPrepareTerminalPaymentResponsePayload
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationError
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationErrorType
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationResult
@@ -26,6 +27,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
@@ -99,6 +101,32 @@ class InPersonPaymentsRestClient @Inject constructor(
                     orderId
                 )
             }
+        }
+    }
+
+    suspend fun preparePayment(
+        site: SiteModel,
+        paymentId: String,
+        orderId: Long
+    ): WCPrepareTerminalPaymentResponsePayload {
+        val body = mapOf(
+            "payment_intent_id" to paymentId
+        )
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.payments.orders.id(orderId).prepare_terminal_payment.pathV3,
+            body = body,
+            clazz = Any::class.java
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> WCPrepareTerminalPaymentResponsePayload(site, paymentId, orderId)
+            is WPAPIResponse.Error -> WCPrepareTerminalPaymentResponsePayload(
+                site = site,
+                paymentId = paymentId,
+                orderId = orderId,
+                error = response.error.toWooError()
+            )
         }
     }
 

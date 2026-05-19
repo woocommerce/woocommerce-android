@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.refunds.PaymentChargeRepository
+import com.woocommerce.android.ui.payments.toCardBrandDisplayName
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
@@ -49,7 +50,7 @@ class WooPosGetPaymentMethod @Inject constructor(
     private suspend fun loadCardDetails(chargeId: String, refundMethod: String): String {
         return when (val result = paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)) {
             is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
-                val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                val brand = result.cardBrand.toCardBrandDisplayName()
                 val last4 = result.cardLast4.orEmpty()
                 val creditCardRefundDefaultText =
                     resourceProvider.getString(R.string.order_refunds_credit_card_refund)

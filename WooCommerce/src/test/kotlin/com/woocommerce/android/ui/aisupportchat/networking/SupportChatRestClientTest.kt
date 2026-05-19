@@ -36,6 +36,8 @@ class SupportChatRestClientTest : BaseUnitTest() {
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var bodyCaptor: KArgumentCaptor<Map<String, Any>>
+    private lateinit var postAuthenticatedRequestCaptor: KArgumentCaptor<Boolean>
+    private lateinit var getAuthenticatedRequestCaptor: KArgumentCaptor<Boolean>
     private lateinit var restClient: SupportChatRestClient
 
     @Before
@@ -43,6 +45,8 @@ class SupportChatRestClientTest : BaseUnitTest() {
         urlCaptor = argumentCaptor()
         paramsCaptor = argumentCaptor()
         bodyCaptor = argumentCaptor()
+        postAuthenticatedRequestCaptor = argumentCaptor()
+        getAuthenticatedRequestCaptor = argumentCaptor()
         restClient = SupportChatRestClient(
             wpComGsonRequestBuilder = wpComGsonRequestBuilder,
             appContext = null,
@@ -71,6 +75,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
                 .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/")
             assertThat(bodyCaptor.firstValue).containsOnlyKeys("message", "context")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
+            assertThat(postAuthenticatedRequestCaptor.firstValue).isFalse()
             val sentContext = bodyCaptor.firstValue["context"] as JsonObject
             assertThat(sentContext["site_id"].asLong).isEqualTo(1L)
             assertThat(sentContext["app_version"].asString).isEqualTo("0.1")
@@ -93,6 +98,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
             assertThat(bodyCaptor.firstValue).containsOnlyKeys("message", "session_id")
             assertThat(bodyCaptor.firstValue["message"]).isEqualTo(MESSAGE)
             assertThat(bodyCaptor.firstValue["session_id"]).isEqualTo(SESSION_ID)
+            assertThat(postAuthenticatedRequestCaptor.firstValue).isFalse()
             assertThat(result).isInstanceOf(Response.Success::class.java)
             assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
         }
@@ -106,8 +112,89 @@ class SupportChatRestClientTest : BaseUnitTest() {
         assertThat(urlCaptor.firstValue)
             .isEqualTo("https://public-api.wordpress.com/wpcom/v2/odie/chat/$BOT_SLUG/$CHAT_ID/")
         assertThat(paramsCaptor.firstValue).containsEntry("session_id", SESSION_ID)
+        assertThat(getAuthenticatedRequestCaptor.firstValue).isFalse()
         assertThat(result).isInstanceOf(Response.Success::class.java)
         assertThat((result as Response.Success).data.chatId).isEqualTo(CHAT_ID)
+    }
+
+    @Test
+    fun `given wpcom access token, when sendMessage, then request is authenticated`() = testBlocking {
+        whenever(accessToken.exists()).thenReturn(true)
+        stubPostResponse()
+
+        restClient.sendMessage(BOT_SLUG, MESSAGE, JsonObject())
+
+        assertThat(postAuthenticatedRequestCaptor.firstValue).isTrue()
+    }
+
+    @Test
+    fun `given wpcom access token, when sendFollowUpMessage, then request is authenticated`() = testBlocking {
+        whenever(accessToken.exists()).thenReturn(true)
+        stubPostResponse()
+
+        restClient.sendFollowUpMessage(BOT_SLUG, CHAT_ID, SESSION_ID, MESSAGE)
+
+        assertThat(postAuthenticatedRequestCaptor.firstValue).isTrue()
+    }
+
+    @Test
+    fun `given wpcom access token, when fetchChat, then request is authenticated`() = testBlocking {
+        whenever(accessToken.exists()).thenReturn(true)
+        stubGetResponse()
+
+        restClient.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)
+
+        assertThat(getAuthenticatedRequestCaptor.firstValue).isTrue()
+    }
+
+    @Test
+    fun `given thumbs up feedback, when submitFeedback, then posts to feedback URL with positive rating`() =
+        testBlocking {
+            stubFeedbackPostResponse()
+
+            restClient.submitFeedback(
+                botSlug = BOT_SLUG,
+                chatId = CHAT_ID,
+                messageId = MESSAGE_ID,
+                sessionId = SESSION_ID,
+                upvoted = true
+            )
+
+            assertThat(urlCaptor.firstValue)
+                .isEqualTo(
+                    "https://public-api.wordpress.com/wpcom/v2/odie/chat/" +
+                        "$BOT_SLUG/$CHAT_ID/$MESSAGE_ID/feedback"
+                )
+            assertThat(bodyCaptor.firstValue).containsOnlyKeys("session_id", "rating_value")
+            assertThat(bodyCaptor.firstValue["session_id"]).isEqualTo(SESSION_ID)
+            assertThat(bodyCaptor.firstValue["rating_value"]).isEqualTo(1)
+            assertThat(postAuthenticatedRequestCaptor.firstValue).isFalse()
+        }
+
+    @Test
+    fun `given thumbs down feedback, when submitFeedback, then posts negative rating`() =
+        testBlocking {
+            stubFeedbackPostResponse()
+
+            restClient.submitFeedback(
+                botSlug = BOT_SLUG,
+                chatId = CHAT_ID,
+                messageId = MESSAGE_ID,
+                sessionId = SESSION_ID,
+                upvoted = false
+            )
+
+            assertThat(bodyCaptor.firstValue["rating_value"]).isEqualTo(-1)
+        }
+
+    @Test
+    fun `given wpcom access token, when submitFeedback, then request is authenticated`() = testBlocking {
+        whenever(accessToken.exists()).thenReturn(true)
+        stubFeedbackPostResponse()
+
+        restClient.submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, true)
+
+        assertThat(postAuthenticatedRequestCaptor.firstValue).isTrue()
     }
 
     @Test
@@ -177,9 +264,25 @@ class SupportChatRestClientTest : BaseUnitTest() {
                 body = bodyCaptor.capture(),
                 clazz = eq(SupportChatResponse::class.java),
                 retryPolicy = anyOrNull(),
-                headers = any()
+                headers = any(),
+                authenticatedRequest = postAuthenticatedRequestCaptor.capture()
             )
         ).thenReturn(response)
+    }
+
+    private suspend fun stubFeedbackPostResponse() {
+        whenever(
+            wpComGsonRequestBuilder.syncPostRequest(
+                restClient = eq(restClient),
+                url = urlCaptor.capture(),
+                params = anyOrNull(),
+                body = bodyCaptor.capture(),
+                clazz = eq(Unit::class.java),
+                retryPolicy = anyOrNull(),
+                headers = any(),
+                authenticatedRequest = postAuthenticatedRequestCaptor.capture()
+            )
+        ).thenReturn(Response.Success(Unit, emptyList()))
     }
 
     private suspend fun stubGetResponse(
@@ -201,7 +304,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
                 cacheTimeToLive = any(),
                 forced = any(),
                 customGsonBuilder = anyOrNull(),
-                authenticatedRequest = any()
+                authenticatedRequest = getAuthenticatedRequestCaptor.capture()
             )
         ).thenReturn(response)
     }
@@ -216,6 +319,7 @@ class SupportChatRestClientTest : BaseUnitTest() {
     private companion object {
         const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 4242L
+        const val MESSAGE_ID = 2424L
         const val SESSION_ID = "session-abc-123"
         const val MESSAGE = "I can't load my orders"
     }
