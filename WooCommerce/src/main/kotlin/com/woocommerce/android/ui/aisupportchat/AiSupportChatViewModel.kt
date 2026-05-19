@@ -362,10 +362,11 @@ class AiSupportChatViewModel @Inject constructor(
                     repository.registerChat(
                         chatId = response.chatId,
                         botSlug = response.botSlug,
+                        sessionId = response.sessionId,
                         firstUserMessage = sentMessage
                     )
                 } else {
-                    repository.markChatAsUpdated(response.chatId)
+                    repository.markChatAsUpdated(response.chatId, response.sessionId)
                 }
             }
         }
