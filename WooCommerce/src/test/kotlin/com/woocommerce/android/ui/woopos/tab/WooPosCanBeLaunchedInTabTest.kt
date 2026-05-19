@@ -312,22 +312,32 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given AU country and AUD currency and both flags on, when invoked, then return UnsupportedCurrency`() = testBlocking {
+    fun `given AU country and AUD currency and AU flag on, when invoked, then return Launchable`() = testBlocking {
         whenever(supportedCountries.supportedCountryCurrencyPairs())
             .thenReturn(
                 listOf(
-                    "us" to "usd", "gb" to "gbp",
-                    "fr" to "eur", "de" to "eur", "ie" to "eur", "nl" to "eur",
-                    "sg" to "sgd", "nz" to "nzd",
-                    "at" to "eur", "be" to "eur", "fi" to "eur", "it" to "eur",
-                    "lu" to "eur", "pt" to "eur", "es" to "eur",
+                    "us" to "usd",
+                    "gb" to "gbp",
+                    "fr" to "eur",
+                    "de" to "eur",
+                    "ie" to "eur",
+                    "nl" to "eur",
+                    "sg" to "sgd",
+                    "nz" to "nzd",
+                    "at" to "eur",
+                    "be" to "eur",
+                    "fi" to "eur",
+                    "it" to "eur",
+                    "lu" to "eur",
+                    "pt" to "eur",
+                    "es" to "eur",
+                    "au" to "aud",
                 )
             )
         val siteSettings = buildSiteSettings(countryCode = "AU", currencyCode = "AUD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
 
-        val result = sut()
-        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
+        assertEquals(Launchable, sut())
     }
 
     // ---

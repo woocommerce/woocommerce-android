@@ -64,6 +64,7 @@ internal class CardReaderManagerImpl(
     override fun initialize(
         updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
         useInterac: Boolean,
+        useEftpos: Boolean,
         isDebug: Boolean
     ) {
         if (!terminal.isInitialized()) {
@@ -73,7 +74,7 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator(updateFrequency, useInterac)
+            terminal.setupSimulator(updateFrequency, useInterac, useEftpos)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
@@ -81,9 +82,10 @@ internal class CardReaderManagerImpl(
 
     override fun reinitializeSimulatedTerminal(
         updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
-        useInterac: Boolean
+        useInterac: Boolean,
+        useEftpos: Boolean,
     ) {
-        terminal.setupSimulator(updateFrequency, useInterac)
+        terminal.setupSimulator(updateFrequency, useInterac, useEftpos)
     }
 
     override fun discoverReaders(
@@ -131,10 +133,13 @@ internal class CardReaderManagerImpl(
         return paymentManager.createPaymentIntentOnly(paymentInfo)
     }
 
-    override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult {
+    override suspend fun retrieveAndCollectPayment(
+        clientSecret: String,
+        paymentInfo: PaymentInfo
+    ): RetrieveAndCollectResult {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         resetBluetoothDisplayMessage()
-        return paymentManager.retrieveAndCollectPayment(clientSecret)
+        return paymentManager.retrieveAndCollectPayment(clientSecret, paymentInfo)
     }
 
     override suspend fun refundInteracPayment(

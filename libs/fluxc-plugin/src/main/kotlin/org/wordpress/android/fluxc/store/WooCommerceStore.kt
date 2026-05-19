@@ -308,6 +308,26 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchSiteRootApiRoutes(site: SiteModel): WooResult<List<String>> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteRootApiRoutes") {
+            val response = wcCoreRestClient.fetchSiteRootAPIRoutes(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Fetching WP API routes failed for site ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    WooResult(response.result.routes?.keys?.toList().orEmpty())
+                }
+
+                else -> {
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                }
+            }
+        }
+    }
+
     suspend fun enableCoupons(site: SiteModel): Boolean {
         return coroutineEngine.withDefaultContext(T.API, this, "enableCoupons") {
             val response = wcCoreRestClient.enableCoupons(site)

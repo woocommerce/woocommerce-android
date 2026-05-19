@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -53,6 +55,17 @@ sealed class ParentToChildrenEvent {
             CASH
         }
     }
+
+    data class CustomAmountSubmitted(
+        val name: String,
+        val amount: BigDecimal,
+        val isTaxable: Boolean,
+        val editingItemNumber: Int? = null,
+    ) : ParentToChildrenEvent()
+
+    data class ShowCustomAmountForm(
+        val editing: WooPosCartItemViewState.CustomAmount? = null,
+    ) : ParentToChildrenEvent()
 
     sealed class SearchEvent : ParentToChildrenEvent() {
         data class ChangedQuery(val query: String) : SearchEvent()

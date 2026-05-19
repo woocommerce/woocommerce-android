@@ -14,6 +14,7 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -47,13 +48,14 @@ class PushNotificationRepository @Inject constructor(
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker,
     private val localeProvider: LocaleProvider,
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val selectedSite: SelectedSite
 ) {
-    fun observeWooNotificationPreferences(site: SiteModel): Flow<WooPushNotificationPreferences?> =
-        wooPushNotificationsStore.observeNotificationPreferences(site)
+    fun observeWooNotificationPreferences(): Flow<WooPushNotificationPreferences?> =
+        wooPushNotificationsStore.observeNotificationPreferences(selectedSite.get())
 
-    suspend fun fetchWooNotificationPreferences(site: SiteModel): Result<WooPushNotificationPreferences> {
-        val result = wooPushNotificationsStore.fetchNotificationPreferences(site)
+    suspend fun fetchWooNotificationPreferences(): Result<WooPushNotificationPreferences> {
+        val result = wooPushNotificationsStore.fetchNotificationPreferences(selectedSite.get())
         return if (!result.isError) {
             result.model?.let {
                 Result.success(it)
@@ -64,10 +66,9 @@ class PushNotificationRepository @Inject constructor(
     }
 
     suspend fun updateWooNotificationPreferences(
-        site: SiteModel,
         preferences: WooPushNotificationPreferences
     ): Result<WooPushNotificationPreferences> {
-        val result = wooPushNotificationsStore.updateNotificationPreferences(site, preferences)
+        val result = wooPushNotificationsStore.updateNotificationPreferences(selectedSite.get(), preferences)
         return if (!result.isError) {
             result.model?.let {
                 Result.success(it)

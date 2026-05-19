@@ -24,6 +24,7 @@ class CardReaderConfigFactory {
             "LU" to CardReaderConfigForLU,
             "PT" to CardReaderConfigForPT,
             "ES" to CardReaderConfigForES,
+            "AU" to CardReaderConfigForAustralia,
         )
     }
 }

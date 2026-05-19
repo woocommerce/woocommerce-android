@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 
@@ -17,6 +18,7 @@ fun WooPosItemsContent(
     productsSearchContent: @Composable () -> Unit,
     couponsSearchContent: @Composable () -> Unit,
     variationsContent: @Composable (WooPosVariationsNavigationData) -> Unit,
+    customAmountFormContent: @Composable (WooPosCartItemViewState.CustomAmount?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Crossfade(
@@ -30,6 +32,7 @@ fun WooPosItemsContent(
             ItemsScreenState.ProductsSearch -> productsSearchContent()
             ItemsScreenState.CouponsSearch -> couponsSearchContent()
             is ItemsScreenState.Variations -> variationsContent(screenState.variableProductData)
+            is ItemsScreenState.CustomAmountForm -> customAmountFormContent(screenState.editing)
         }
     }
 }
@@ -40,6 +43,7 @@ internal sealed class ItemsScreenState {
     data object ProductsSearch : ItemsScreenState()
     data object CouponsSearch : ItemsScreenState()
     data class Variations(val variableProductData: WooPosVariationsNavigationData) : ItemsScreenState()
+    data class CustomAmountForm(val editing: WooPosCartItemViewState.CustomAmount?) : ItemsScreenState()
 }
 
 internal fun WooPosItemsToolbarViewState.toScreenState(): ItemsScreenState = when (this) {
@@ -58,4 +62,5 @@ internal fun WooPosItemsToolbarViewState.toScreenState(): ItemsScreenState = whe
             is WooPosSearchInputState.Open -> ItemsScreenState.CouponsSearch
         }
     }
+    is WooPosItemsToolbarViewState.CustomAmountForm -> ItemsScreenState.CustomAmountForm(editing)
 }

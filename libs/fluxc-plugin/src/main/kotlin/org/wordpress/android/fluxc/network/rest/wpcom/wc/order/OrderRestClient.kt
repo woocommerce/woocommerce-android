@@ -207,6 +207,8 @@ class OrderRestClient @Inject constructor(
             val params = mutableMapOf(
                 "per_page" to networkPageSize.toString(),
                 "offset" to offset.toString(),
+                "orderby" to OrderBy.DATE.value,
+                "order" to SortOrder.DESCENDING.value,
                 "_fields" to "id,date_created_gmt,date_modified_gmt"
             ).putIfNotEmpty(
                 "search" to listDescriptor.searchQuery,
@@ -266,6 +268,8 @@ class OrderRestClient @Inject constructor(
         val params = mutableMapOf(
             "per_page" to networkPageSize.toString(),
             "offset" to "0",
+            "orderby" to OrderBy.DATE.value,
+            "order" to SortOrder.DESCENDING.value,
             "_fields" to ORDER_FIELDS
         ).putIfNotEmpty(
             "search" to listDescriptor.searchQuery,

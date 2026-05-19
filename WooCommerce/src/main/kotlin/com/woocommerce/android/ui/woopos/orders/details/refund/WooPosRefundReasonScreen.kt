@@ -57,8 +57,9 @@ fun WooPosRefundReasonScreen(
                     onValueChange = { refundReason = it },
                     label = stringResource(R.string.woopos_orders_refund_reason_placeholder),
                     contentAlignment = Alignment.Center,
-                    textStyle = WooPosTypography.Heading,
+                    textStyle = WooPosTypography.BodyLarge,
                     textColor = MaterialTheme.colorScheme.onSurface,
+                    labelMaxLines = 2,
                     modifier = Modifier
                         .focusRequester(focusRequester)
                         .padding(horizontal = WooPosSpacing.Medium.value)

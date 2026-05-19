@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader.internal.payments.actions
 
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
+import com.stripe.stripeterminal.external.models.PaymentMethodOptionsParameters
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
@@ -28,6 +29,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import com.stripe.stripeterminal.external.models.CardPresentCaptureMethod as StripeCardPresentCaptureMethod
 
 @Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
@@ -55,6 +57,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setReceiptEmail(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setApplicationFeeAmount(any())).thenReturn(intentParametersBuilder)
+        whenever(intentParametersBuilder.setPaymentMethodOptionsParameters(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setStatementDescriptor(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
         whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(
@@ -186,6 +189,30 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
 
         verify(intentParametersBuilder).setApplicationFeeAmount(expected)
     }
+
+    @Test
+    fun `when card present capture method is manual preferred, then PaymentIntent card present options are set`() =
+        testBlocking {
+            val captor = argumentCaptor<PaymentMethodOptionsParameters>()
+
+            action.createPaymentIntent(
+                createPaymentInfo(
+                    cardPresentCaptureMethod = PaymentInfo.CardPresentCaptureMethod.MANUAL_PREFERRED
+                )
+            )
+
+            verify(intentParametersBuilder).setPaymentMethodOptionsParameters(captor.capture())
+            assertThat(captor.firstValue.cardPresentParameters?.captureMethod)
+                .isEqualTo(StripeCardPresentCaptureMethod.ManualPreferred)
+        }
+
+    @Test
+    fun `when card present capture method is null, then PaymentIntent payment method options are not set`() =
+        testBlocking {
+            action.createPaymentIntent(createPaymentInfo())
+
+            verify(intentParametersBuilder, never()).setPaymentMethodOptionsParameters(any())
+        }
 
     @Test
     fun `when creating payment intent, then store name set`() = testBlocking {
@@ -407,6 +434,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         statementDescriptor: String? = null,
         feeAmount: Long? = null,
         channel: PaymentInfo.PaymentChannel? = null,
+        cardPresentCaptureMethod: PaymentInfo.CardPresentCaptureMethod? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -423,5 +451,6 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             statementDescriptor = StatementDescriptor(statementDescriptor),
             feeAmount = feeAmount,
             channel = channel,
+            cardPresentCaptureMethod = cardPresentCaptureMethod,
         )
 }

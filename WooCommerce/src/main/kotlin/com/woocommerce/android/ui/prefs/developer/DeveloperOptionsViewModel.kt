@@ -67,6 +67,21 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     }
 
+    private val eftposPaymentEnabledFlow = combine(
+        isSimulatedReaderEnabled,
+        developerOptionsRepository.observeEftposPaymentEnabled()
+    ) { simulatedReader, useEftpos ->
+        if (!simulatedReader) return@combine null
+
+        ToggleableListItem(
+            icon = R.drawable.ic_credit_card_give,
+            label = UiStringRes(R.string.enable_eftpos_payment),
+            isEnabled = true,
+            isChecked = useEftpos,
+            onToggled = developerOptionsRepository::changeEnableEftposPaymentState
+        )
+    }
+
     private val savedPrivacySettingsOnDialogFlow = developerOptionsRepository
         .observeSavedPrivacyBannerSettings()
         .map { isChecked ->
@@ -126,6 +141,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
         interacPaymentEnabledFlow,
+        eftposPaymentEnabledFlow,
         savedPrivacySettingsOnDialogFlow,
         apiFakerFlow,
         sendSentryReportFlow,

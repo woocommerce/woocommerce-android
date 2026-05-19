@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
+import com.woocommerce.android.ui.payments.toCardBrandDisplayName
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -219,7 +220,7 @@ class RefundSummaryViewModel @Inject constructor(
                 is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
                     cardType = PaymentMethodType.fromValue(result.paymentMethodType ?: "card_present")
                     val refundMethodWithCard = result.run {
-                        val brand = result.cardBrand.orEmpty().replaceFirstChar { it.uppercase() }
+                        val brand = result.cardBrand.toCardBrandDisplayName()
                         val last4 = result.cardLast4.orEmpty()
                         val creditCardRefundDefaultText =
                             resourceProvider.getString(R.string.order_refunds_credit_card_refund)

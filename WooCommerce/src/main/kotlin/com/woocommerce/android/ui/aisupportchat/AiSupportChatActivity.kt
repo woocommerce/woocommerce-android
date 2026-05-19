@@ -38,16 +38,20 @@ class AiSupportChatActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressedDispatcher.onBackPressed()
-            return true
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     companion object {
-        fun createIntent(context: Context): Intent =
-            Intent(context, AiSupportChatActivity::class.java)
+        fun createIntent(context: Context, preLogin: Boolean = false): Intent =
+            Intent(context, AiSupportChatActivity::class.java).apply {
+                putExtra(EXTRA_PRE_LOGIN, preLogin)
+            }
 
         fun createResumeIntent(
             context: Context,
@@ -73,6 +77,9 @@ class AiSupportChatActivity : AppCompatActivity() {
             if (!checks.isNullOrEmpty()) {
                 return AiSupportChatLaunchMode.ConnectivityTool(checks)
             }
+            if (extras.getBoolean(EXTRA_PRE_LOGIN, false)) {
+                return AiSupportChatLaunchMode.PreLogin
+            }
 
             if (extras.containsKey(EXTRA_CHAT_ID)) {
                 return AiSupportChatLaunchMode.Resume(
@@ -86,6 +93,7 @@ class AiSupportChatActivity : AppCompatActivity() {
         }
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
+        private const val EXTRA_PRE_LOGIN = "extra_pre_login"
         private const val EXTRA_CHAT_ID = "extra_chat_id"
         private const val EXTRA_BOT_SLUG = "extra_bot_slug"
         private const val EXTRA_SESSION_ID = "extra_session_id"

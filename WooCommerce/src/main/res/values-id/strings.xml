@@ -1,11 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-21 09:58:19+0000
+Translation-Revision-Date: 2026-05-05 11:58:18+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">Daya baterai pembaca %d%%, terlalu rendah untuk menginstal pembaruan ini. Isi daya pembaca Anda hingga setidaknya 50%%, lalu coba lagi.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Daya baterai pembaca terlalu rendah untuk menginstal pembaruan ini. Isi daya pembaca Anda hingga setidaknya 50%, lalu coba lagi.</string>
+    <string name="woopos_card_reader_update_failed_title">Pembaruan gagal</string>
+    <string name="woopos_card_reader_update_completed_title">Perangkat lunak diperbarui</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Batalkan saja</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Membatalkan pembaruan perangkat lunak yang sedang berlangsung tidak dianjurkan. Pembatalan akan memblokir sambungan pembaca Anda.</string>
+    <string name="woopos_card_reader_update_optional_message">Perangkat lunak pembaca kartu Anda perlu diperbarui agar dapat berfungsi normal</string>
+    <string name="woopos_card_reader_update_required_message">Perangkat lunak pembaca kartu Anda perlu diperbarui untuk menerima pembayaran. Pembatalan akan memblokir sambungan pembaca Anda.</string>
+    <string name="woopos_card_reader_update_progress">%d%% selesai</string>
+    <string name="woopos_card_reader_updating_optional_title">Memperbarui perangkat lunak pembaca Anda</string>
+    <string name="woopos_card_reader_updating_title">Memperbarui perangkat lunak</string>
+    <string name="woopos_card_reader_cancel_button">Batalkan</string>
+    <string name="woopos_card_reader_retry_button">Coba lagi</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">Kode pos toko Anda tidak ada atau tidak valid. Harap perbarui alamat toko Anda di pengaturan WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Kode pos tidak valid</string>
+    <string name="woopos_card_reader_invalid_address_message">Alamat toko Anda tidak ada atau tidak lengkap. Harap perbarui alamat toko Anda di pengaturan WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_address_title">Alamat penjual tidak valid</string>
+    <string name="woopos_card_reader_grant_permission_button">Izinkan akses</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">Diperlukan izin Bluetooth untuk terhubung ke pembaca kartu.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Diperlukan izin Bluetooth</string>
+    <string name="woopos_card_reader_location_permission_message">Diperlukan izin lokasi untuk terhubung ke pembaca kartu melalui Bluetooth.</string>
+    <string name="woopos_card_reader_location_permission_title">Diperlukan izin lokasi</string>
+    <string name="woopos_card_reader_enable_location_button">Aktifkan lokasi</string>
+    <string name="woopos_card_reader_location_disabled_message">Aktifkan Lokasi untuk terhubung ke pembaca kartu.</string>
+    <string name="woopos_card_reader_location_disabled_title">Lokasi tidak aktif</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Aktifkan Bluetooth</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Aktifkan Bluetooth untuk terhubung ke pembaca kartu.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth tidak aktif</string>
+    <string name="woopos_card_reader_battery_low_message">Daya baterai pembaca sangat lemah. Isi daya pembaca lalu coba lagi.</string>
+    <string name="woopos_card_reader_battery_low_title">Daya baterai terlalu rendah</string>
+    <string name="woopos_card_reader_connected_title">Terhubung</string>
+    <string name="woopos_card_reader_connecting_failed_title">Koneksi gagal</string>
+    <string name="woopos_card_reader_connecting_message">Mohon tunggu sembari kami menghubungkan ke pembaca Anda</string>
+    <string name="woopos_card_reader_connecting_title">Menghubungkan</string>
+    <string name="woopos_card_reader_multiple_found_description">Pilih pembaca</string>
+    <string name="woopos_card_reader_multiple_found_title">Ditemukan beberapa pembaca</string>
+    <string name="woopos_card_reader_keep_searching_button">Terus mencari</string>
+    <string name="woopos_card_reader_connect_button">Hubungkan</string>
+    <string name="woopos_card_reader_found_description">Anda ingin terhubung ke pembaca ini?</string>
+    <string name="woopos_card_reader_found_title">%s ditemukan</string>
+    <string name="woopos_card_reader_scanning_failed_title">Pemindaian gagal</string>
+    <string name="woopos_card_reader_scanning_instruction">Pastikan pembaca Anda telah terisi daya dan diaktifkan</string>
+    <string name="woopos_card_reader_scanning_title">Memindai pembaca</string>
+    <string name="woopos_card_reader_close_content_description">Tutup</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Dialog koneksi pembaca kartu</string>
+    <string name="woopos_orders_empty_list_message">Pesanan akan muncul di sini setelah Anda mulai memproses penjualan melalui POS.</string>
+    <string name="woopos_battery_critical">Daya baterai pembaca kartu kritis</string>
+    <string name="woopos_battery_low">Daya baterai pembaca kartu rendah</string>
+    <string name="woopos_reader_reconnecting">Menghubungkan kembali …</string>
+    <string name="more_menu_button_ai_assistant_description">Tanyakan tentang toko Anda</string>
+    <string name="more_menu_button_ai_assistant">Asisten AI</string>
+    <string name="settings_notifs_new_reviews_subtitle">Semua ulasan</string>
+    <string name="settings_notifs_new_reviews">Ulasan baru</string>
+    <string name="settings_notifs_stock_subtitle">Semua pemberitahuan stok</string>
+    <string name="settings_notifs_stock">Stok</string>
+    <string name="settings_notifs_new_orders_subtitle">Semua pesanan</string>
+    <string name="settings_notifs_new_orders">Pesanan baru</string>
+    <string name="settings_push_notifications">Pemberitahuan push</string>
+    <string name="settings_logout_dialog_message">Mengeluarkan Anda.</string>
+    <string name="card_reader_detail_reconnecting_cancel">Batalkan koneksi ulang</string>
+    <string name="card_reader_detail_reconnecting_header">Menghubungkan kembali ke pembaca kartu …</string>
+    <string name="dashboard_stats_order_date_type_update_error">Tidak dapat memperbarui jenis pesanan. Coba lagi.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">Ini adalah pengaturan untuk seluruh toko, yang juga akan mengatur pilihan \"Jenis tanggal\" di pengaturan analitik admin WooCommerce.</string>
+    <string name="dashboard_stats_completed_orders_description">Hitung pesanan pada tanggal saat ditandai selesai.</string>
+    <string name="dashboard_stats_placed_orders_description">Hitung pesanan pada tanggal saat dipesan atau dibuat.</string>
+    <string name="dashboard_stats_paid_orders_description">Hitung pesanan pada tanggal saat dibayar.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Pilih pesanan yang akan disertakan dalam metrik performa untuk rentang waktu yang dipilih.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Jenis tanggal pesanan</string>
+    <string name="dashboard_stats_completed_orders">Pesanan selesai</string>
+    <string name="dashboard_stats_placed_orders">Pesanan dibuat</string>
+    <string name="dashboard_stats_paid_orders">Pesanan dibayar</string>
+    <string name="dashboard_stats_revenue_type_total">Total Pendapatan</string>
+    <string name="dashboard_stats_revenue_type_gross">Pendapatan Kotor</string>
     <string name="booking_reschedule_change_team_member">Ubah anggota tim</string>
     <string name="booking_reschedule_screen_title">Jadwalkan ulang pemesanan</string>
     <string name="booking_details_reschedule_button">Jadwalkan Ulang</string>
@@ -353,8 +426,6 @@ Language: id
     <string name="woopos_bookings_status_cancelled">Dibatalkan</string>
     <string name="woopos_orders_loading_error_title">Tidak dapat memuat pesanan</string>
     <string name="woopos_orders_empty_list_image_description">Tidak ada pesanan</string>
-    <string name="woopos_orders_empty_action_label">Baca selengkapnya</string>
-    <string name="woopos_orders_empty_list_message">Cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
     <string name="woopos_orders_empty_list_title">Pesanan tidak ditemukan</string>
     <string name="woopos_date_yesterday_at">Kemarin pukul %s</string>
     <string name="woopos_date_today_at">Hari ini pukul %s</string>
@@ -362,6 +433,7 @@ Language: id
     <string name="woopos_date_never">Tidak pernah</string>
     <string name="woopos_settings_local_catalog_refresh_button">Perbarui katalog</string>
     <string name="woopos_orders_loading_error_message">Periksa koneksi Anda dan coba lagi.</string>
+    <string name="woopos_orders_empty_action_label">Segarkan</string>
     <string name="woopos_settings_local_catalog_settings">Kelola Penggunaan Data</string>
     <string name="woopos_settings_local_catalog_status">Status Katalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Kelola pengaturan katalog</string>
@@ -530,6 +602,8 @@ Language: id
     <string name="woopos_scanning_setup_device_selection_title">Menyiapkan pemindai barcode</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_dialog_content_description">Dialog penyiapan pemindai</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Britania Raya</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Amerika Serikat</string>
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>

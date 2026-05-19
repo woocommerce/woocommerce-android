@@ -145,6 +145,41 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given successful feedback response, when submitting feedback, then success result is returned`() = testBlocking {
+        whenever(restClient.submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, true))
+            .thenReturn(Response.Success(Unit, emptyList()))
+
+        val result = repository.submitFeedback(
+            botSlug = BOT_SLUG,
+            chatId = CHAT_ID,
+            messageId = MESSAGE_ID,
+            sessionId = SESSION_ID,
+            upvoted = true
+        )
+
+        assertThat(result.isSuccess).isTrue
+        verify(restClient).submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, true)
+    }
+
+    @Test
+    fun `given failed feedback response, when submitting feedback, then failure result is returned`() = testBlocking {
+        whenever(restClient.submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, false))
+            .thenReturn(Response.Error(createNetworkError()))
+
+        val result = repository.submitFeedback(
+            botSlug = BOT_SLUG,
+            chatId = CHAT_ID,
+            messageId = MESSAGE_ID,
+            sessionId = SESSION_ID,
+            upvoted = false
+        )
+
+        val exception = requireNotNull(result.exceptionOrNull()) as SupportChatRepositoryException
+        assertThat(exception.message).isEqualTo(ERROR_MESSAGE)
+        assertThat(exception.type).isEqualTo(BaseRequest.GenericErrorType.NOT_FOUND.name)
+    }
+
+    @Test
     fun `given first message, when registering chat, then bookmark is created with metadata and clamped title`() =
         testBlocking {
             stubSelectedSite()
@@ -280,6 +315,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     private companion object {
         const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 1234L
+        const val MESSAGE_ID = 5678L
         const val SESSION_ID = "session-abc-123"
         const val LOCAL_SITE_ID = 10
         const val REMOTE_SITE_ID = 20L

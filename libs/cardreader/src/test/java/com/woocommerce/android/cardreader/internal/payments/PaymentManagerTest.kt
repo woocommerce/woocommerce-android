@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.stripe.stripeterminal.external.models.CardNetworks
 import com.stripe.stripeterminal.external.models.CardPresentDetails
 import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
@@ -9,9 +10,11 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CA
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.SUCCEEDED
+import com.stripe.stripeterminal.external.models.PaymentMethod
 import com.stripe.stripeterminal.external.models.PaymentMethodDetails
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.CardReaderStore.PreparePaymentResponse
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
@@ -113,6 +116,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
+        whenever(cardReaderStore.preparePaymentIntent(any(), anyString()))
+            .thenReturn(PreparePaymentResponse.Success)
         whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
@@ -259,6 +264,42 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given succeeded eftpos card present payment, when processing payment finishes successfully, then capture payment is emitted`() =
+        testBlocking {
+            val succeededCardPresentIntent = createPaymentIntent(
+                SUCCEEDED,
+                cardPresentDetails = createCardPresentDetails(brand = "eftpos_au")
+            )
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(succeededCardPresentIntent))
+
+            val result = manager
+                .acceptPayment(createPaymentInfo()).takeUntil(CapturingPayment::class).toList()
+
+            assertThat(result.last()).isInstanceOf(CapturingPayment::class.java)
+        }
+
+    @Test
+    fun `given succeeded non-eftpos card present payment, when processing payment finishes, then flow terminates`() =
+        testBlocking {
+            val succeededCardPresentIntent = createPaymentIntent(
+                SUCCEEDED,
+                cardPresentDetails = createCardPresentDetails(brand = "visa")
+            )
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(succeededCardPresentIntent))
+
+            val result = withTimeoutOrNull(TIMEOUT) {
+                manager
+                    .acceptPayment(createPaymentInfo())
+                    .toList()
+            }
+
+            assertThat(result).isNotNull
+            verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
+        }
+
+    @Test
     fun `given interac payment, when processing payment finishes with canceled status, then flow terminates`() =
         testBlocking {
             val canceledInteracIntent = createPaymentIntent(CANCELED, interacPresentDetails = mock())
@@ -327,6 +368,113 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
             assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN))
+        }
+
+    @Test
+    fun `given no terminal payment preparation, when payment is processed, then combined process call is used`() =
+        testBlocking {
+            val captureIntent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(captureIntent))
+
+            manager.acceptPayment(
+                createPaymentInfo(
+                    terminalPaymentPreparation = PaymentInfo.TerminalPaymentPreparation.NONE
+                )
+            ).toList()
+
+            verify(processPaymentIntentAction).processPaymentIntent(anyOrNull())
+            verify(processPaymentIntentAction, never()).collectPaymentMethod(anyOrNull())
+            verify(processPaymentIntentAction, never()).confirmPaymentIntent(anyOrNull())
+            verify(cardReaderStore, never()).preparePaymentIntent(any(), anyString())
+        }
+
+    @Test
+    fun `given AU terminal payment preparation, when payment method is collected, then payment is prepared before confirmation`() =
+        testBlocking {
+            val eftposDetails = createCardPresentDetails(availableNetworks = listOf("eftpos_au"))
+            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = eftposDetails)
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = mock())
+            whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
+            whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(confirmedIntent))
+
+            val result = manager.acceptPayment(
+                createPaymentInfo(
+                    terminalPaymentPreparation = PaymentInfo.TerminalPaymentPreparation.AUSTRALIA_CARD_PRESENT
+                )
+            ).toList()
+
+            verify(cardReaderStore).preparePaymentIntent(DUMMY_ORDER_ID, "dummyId")
+            verify(processPaymentIntentAction).confirmPaymentIntent(collectedIntent)
+            verify(processPaymentIntentAction, never()).processPaymentIntent(anyOrNull())
+            assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.CARD_PRESENT))
+        }
+
+    @Test
+    fun `given AU terminal payment preparation, when selected card network is eftpos, then payment is prepared`() =
+        testBlocking {
+            val eftposDetails = createCardPresentDetails(brand = "visa", network = "eftpos_au")
+            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = eftposDetails)
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = eftposDetails)
+            whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
+            whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(confirmedIntent))
+
+            manager.acceptPayment(
+                createPaymentInfo(
+                    terminalPaymentPreparation = PaymentInfo.TerminalPaymentPreparation.AUSTRALIA_CARD_PRESENT
+                )
+            ).toList()
+
+            verify(cardReaderStore).preparePaymentIntent(DUMMY_ORDER_ID, "dummyId")
+            verify(processPaymentIntentAction).confirmPaymentIntent(collectedIntent)
+        }
+
+    @Test
+    fun `given AU terminal payment preparation, when visa card present is collected, then prepare is skipped`() =
+        testBlocking {
+            val visaDetails = createCardPresentDetails(
+                brand = "visa",
+                availableNetworks = listOf("visa")
+            )
+            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = visaDetails)
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = visaDetails)
+            whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
+            whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(confirmedIntent))
+
+            manager.acceptPayment(
+                createPaymentInfo(
+                    terminalPaymentPreparation = PaymentInfo.TerminalPaymentPreparation.AUSTRALIA_CARD_PRESENT
+                )
+            ).toList()
+
+            verify(cardReaderStore, never()).preparePaymentIntent(any(), anyString())
+            verify(processPaymentIntentAction).confirmPaymentIntent(collectedIntent)
+        }
+
+    @Test
+    fun `given CA interac preparation, when card present is collected, then prepare is skipped`() =
+        testBlocking {
+            val collectedIntent = createPaymentIntent(REQUIRES_CONFIRMATION, cardPresentDetails = mock())
+            val confirmedIntent = createPaymentIntent(REQUIRES_CAPTURE, cardPresentDetails = mock())
+            whenever(processPaymentIntentAction.collectPaymentMethod(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(collectedIntent))
+            whenever(processPaymentIntentAction.confirmPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(confirmedIntent))
+
+            manager.acceptPayment(
+                createPaymentInfo(
+                    terminalPaymentPreparation = PaymentInfo.TerminalPaymentPreparation.CANADA_INTERAC
+                )
+            ).toList()
+
+            verify(cardReaderStore, never()).preparePaymentIntent(any(), anyString())
+            verify(processPaymentIntentAction).confirmPaymentIntent(collectedIntent)
         }
 
     @Test
@@ -545,17 +693,38 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
         receiptUrl: String? = "test url",
-        interacPresentDetails: CardPresentDetails? = null
+        interacPresentDetails: CardPresentDetails? = null,
+        cardPresentDetails: CardPresentDetails? = null,
     ): PaymentIntent =
         mock<PaymentIntent>().also {
             whenever(it.status).thenReturn(status)
             whenever(it.id).thenReturn("dummyId")
+            val paymentMethod = mock<PaymentMethod>()
+            whenever(paymentMethod.interacPresentDetails).thenReturn(interacPresentDetails)
+            whenever(paymentMethod.cardPresentDetails).thenReturn(cardPresentDetails)
+            whenever(it.paymentMethod).thenReturn(paymentMethod)
             val paymentMethodDetails = mock<PaymentMethodDetails>()
             whenever(paymentMethodDetails.interacPresentDetails).thenReturn(interacPresentDetails)
+            whenever(paymentMethodDetails.cardPresentDetails).thenReturn(cardPresentDetails)
             val charge = mock<Charge>()
             whenever(charge.receiptUrl).thenReturn(receiptUrl)
             whenever(charge.paymentMethodDetails).thenReturn(paymentMethodDetails)
             whenever(it.getCharges()).thenReturn(listOf(charge))
+        }
+
+    private fun createCardPresentDetails(
+        brand: String? = null,
+        network: String? = null,
+        availableNetworks: List<String>? = null,
+    ): CardPresentDetails =
+        mock<CardPresentDetails>().also {
+            brand?.let { brand -> whenever(it.brand).thenReturn(brand) }
+            network?.let { network -> whenever(it.network).thenReturn(network) }
+            availableNetworks?.let { networks ->
+                val cardNetworks = mock<CardNetworks>()
+                whenever(cardNetworks.available).thenReturn(networks)
+                whenever(it.networks).thenReturn(cardNetworks)
+            }
         }
 
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
@@ -585,6 +754,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         statementDescriptor: String? = null,
         countryCode: String = "US",
         feeAmount: Long? = null,
+        terminalPaymentPreparation: PaymentInfo.TerminalPaymentPreparation =
+            PaymentInfo.TerminalPaymentPreparation.NONE,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -600,6 +771,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             statementDescriptor = StatementDescriptor(statementDescriptor),
             countryCode = countryCode,
             feeAmount = feeAmount,
-            channel = PaymentInfo.PaymentChannel.StoreManager
+            channel = PaymentInfo.PaymentChannel.StoreManager,
+            terminalPaymentPreparation = terminalPaymentPreparation,
         )
 }

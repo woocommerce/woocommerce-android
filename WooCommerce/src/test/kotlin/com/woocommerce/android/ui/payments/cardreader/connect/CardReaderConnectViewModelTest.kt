@@ -112,6 +112,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val locationId = "location_id"
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
     private val useInterac = false
+    private val useEftpos = false
 
     @Before
     fun setUp() = testBlocking {
@@ -340,7 +341,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -353,7 +354,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onBluetoothRuntimePermissionsRequestResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -365,7 +366,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as RequestBluetoothRuntimePermissions)
                 .onBluetoothRuntimePermissionsRequestResult(false)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -379,7 +380,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
