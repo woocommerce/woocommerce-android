@@ -54,7 +54,6 @@ class WooAiSmokeLiveChatServiceFactoryTest {
                 siteId = 2922L,
                 username = "merchant@example.com",
                 appPassword = "app password",
-                mode = WooAiSmokeBaselineMode.CHECK,
                 storeLabel = "store",
                 outputDirectory = File("build/woo-ai-smoke"),
                 credentialSource = "test",

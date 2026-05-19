@@ -30,7 +30,6 @@ object WooAiSmokeCredentialSource {
 
         val siteUrl = environment.getValue("WOO_SITE_URL").trim().trimEnd('/')
         val siteId = environment.getValue("WOO_SITE_ID").toLongOrNull()
-        val mode = environment["WOO_AI_SMOKE_MODE"]?.ifBlank { null } ?: "check"
         val outputDirectory = environment["WOO_AI_SMOKE_OUTPUT_DIR"]
             ?.ifBlank { null }
             ?.let(::File)
@@ -50,7 +49,6 @@ object WooAiSmokeCredentialSource {
                         siteId = siteId,
                         username = environment.getValue("WOO_USERNAME"),
                         appPassword = environment.getValue("WOO_APP_PASSWORD"),
-                        mode = WooAiSmokeBaselineMode.from(mode),
                         storeLabel = environment["WOO_AI_SMOKE_STORE_LABEL"]?.ifBlank { null } ?: "redacted-store",
                         outputDirectory = outputDirectory,
                         credentialSource = "environment",

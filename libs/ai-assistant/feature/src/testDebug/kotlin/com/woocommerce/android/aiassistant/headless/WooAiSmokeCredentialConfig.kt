@@ -7,7 +7,6 @@ data class WooAiSmokeCredentialConfig(
     val siteId: Long,
     val username: String,
     val appPassword: String,
-    val mode: WooAiSmokeBaselineMode,
     val storeLabel: String,
     val outputDirectory: File,
     val credentialSource: String,

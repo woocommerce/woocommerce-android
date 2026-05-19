@@ -47,19 +47,6 @@ class WooAiSmokeCredentialConfigTest {
     }
 
     @Test
-    fun `given invalid smoke mode, when parsing credentials, then error points to WOO_AI_SMOKE_MODE`() {
-        val result = WooAiSmokeCredentialSource.fromEnvironment(
-            environment = validEnvironment() + ("WOO_AI_SMOKE_MODE" to "surprise"),
-            defaultOutputDirectory = File("build/woo-ai-smoke/live/latest"),
-        )
-
-        assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Invalid::class.java)
-        assertThat((result as WooAiSmokeCredentialParseResult.Invalid).message)
-            .contains("WOO_AI_SMOKE_MODE")
-            .contains("surprise")
-    }
-
-    @Test
     fun `given valid env, when parsing credentials, then parser applies non-secret defaults`() {
         val outputDirectory = File("build/woo-ai-smoke/live/latest")
         val result = WooAiSmokeCredentialSource.fromEnvironment(
@@ -73,7 +60,6 @@ class WooAiSmokeCredentialConfigTest {
         assertThat(config.siteId).isEqualTo(2922L)
         assertThat(config.username).isEqualTo("merchant@example.com")
         assertThat(config.appPassword).isEqualTo("app password")
-        assertThat(config.mode).isEqualTo(WooAiSmokeBaselineMode.CHECK)
         assertThat(config.storeLabel).isEqualTo("redacted-store")
         assertThat(config.outputDirectory).isEqualTo(outputDirectory)
     }

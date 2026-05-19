@@ -28,7 +28,7 @@ import java.io.File
 )
 class WooAiSmokeLiveRobolectricApprovalTest {
     private val liveEnvRule = WooAiSmokeLiveEnvRule(
-        System.getenv() + ("WOO_AI_SMOKE_MODE" to "approve"),
+        System.getenv(),
         defaultOutputDirectory(),
     )
     private val hiltRule = HiltAndroidRule(this)
@@ -48,6 +48,7 @@ class WooAiSmokeLiveRobolectricApprovalTest {
             val exit = WooAiSmokeDebugBridge.runLive(
                 application = application,
                 credentials = credentials,
+                mode = WooAiSmokeBaselineMode.APPROVE,
             )
 
             assertThat(exit.failureMessage).isNull()

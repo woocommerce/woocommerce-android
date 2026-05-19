@@ -18,6 +18,7 @@ object WooAiSmokeDebugBridge {
     suspend fun runLive(
         application: Application,
         credentials: WooAiSmokeCredentialConfig,
+        mode: WooAiSmokeBaselineMode,
     ): WooAiSmokeRunExit {
         require(System.getenv("WOO_AI_SMOKE_RUN_LIVE") == "true") {
             "Set WOO_AI_SMOKE_RUN_LIVE=true to run live Woo AI smoke tests."
@@ -70,7 +71,7 @@ object WooAiSmokeDebugBridge {
                     config = WooAiSmokeConfig(
                         scenarioResourceName = "live-scenarios.json",
                         baseline = WooAiSmokeBaselineConfig(
-                            mode = credentials.mode,
+                            mode = mode,
                             resourceName = "live-baseline.json",
                             approvedFileName = "approved-live-baseline.json",
                         ),

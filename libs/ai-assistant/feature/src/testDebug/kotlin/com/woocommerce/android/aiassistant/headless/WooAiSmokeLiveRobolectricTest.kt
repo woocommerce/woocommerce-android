@@ -48,6 +48,7 @@ class WooAiSmokeLiveRobolectricTest {
             val exit = WooAiSmokeDebugBridge.runLive(
                 application = application,
                 credentials = credentials,
+                mode = WooAiSmokeBaselineMode.CHECK,
             )
 
             assertThat(exit.failureMessage).isNull()
