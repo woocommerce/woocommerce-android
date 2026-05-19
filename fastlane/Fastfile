@@ -476,6 +476,39 @@ platform :android do
     )
   end
 
+  #####################################################################################
+  # ai_translate
+  # -----------------------------------------------------------------------------------
+  # Translates the app strings with the self-contained AI engine
+  # (fastlane/ai_translation), the GlotPress replacement. Additive for now:
+  # GlotPress still runs, so this can be exercised in shadow mode before cutover.
+  #
+  # Only missing/changed keys (vs translation-manifest.json) are sent to the
+  # model; a bot commits the resulting values-*/strings.xml + manifest.
+  #
+  # Modes: prtime | ondemand | sweep | backfill
+  #
+  # Usage:
+  # bundle exec fastlane ai_translate mode:prtime
+  # bundle exec fastlane ai_translate mode:sweep locales:"pl,cs,da" strict:true
+  #####################################################################################
+  desc 'Translate app strings with the AI engine (GlotPress replacement; shadow-capable)'
+  lane :ai_translate do |mode: 'prtime', locales: nil, strict: false|
+    target_locales = locales || SUPPORTED_LOCALES.map { |h| h[:android] }.join(',')
+    tool = File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'bin', 'woo-ai-translate')
+    args = [
+      '--source', MAIN_STRINGS_PATH,
+      '--res-dir', File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH),
+      '--manifest', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'translation-manifest.json'),
+      '--context', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'context', 'strings_context.json'),
+      '--locales', target_locales,
+      '--mode', mode
+    ]
+    args << '--strict' if strict
+    # The engine uses only the Ruby stdlib, so it runs outside fastlane's bundle.
+    sh('ruby', tool, *args)
+  end
+
   # This lane downloads the latest translations and commits them
   #
   # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane

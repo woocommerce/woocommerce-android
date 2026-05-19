@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Woo</string>
+    <string name="greeting">Hello %1$s, you have %2$d items</string>
+    <string name="raw_percent" formatted="false">50% off everything</string>
+    <string name="pref_key_storage" translatable="false">pref_key_storage</string>
+    <string name="html_note"><![CDATA[Please <a href="support">contact us</a> now.]]></string>
+    <string name="possessive">Your store's orders</string>
+    <string-array name="date_selectors">
+        <item>Today</item>
+        <item>This week</item>
+    </string-array>
+    <plurals name="cart_items">
+        <item quantity="one">%d item in cart</item>
+        <item quantity="other">%d items in cart</item>
+    </plurals>
+    <string name="files_value_single">1 file</string>
+    <string name="files_value_multiple">%1$d files</string>
+</resources>
