@@ -75,7 +75,6 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given promote succeeds and paymentUrl available, when VM initializes, then state ShowingQR`() = runTest {
-        // GIVEN
         val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
@@ -85,11 +84,9 @@ class WooPosScanToPayViewModelTest {
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(cached)
 
-        // WHEN
         val viewModel = createViewModel()
         runCurrent()
 
-        // THEN
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
         val showing = state as WooPosScanToPayState.ShowingQR
@@ -99,14 +96,11 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given promote fails, when VM initializes, then state Failed retryable`() = runTest {
-        // GIVEN
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.failure(Exception("boom")))
 
-        // WHEN
         val viewModel = createViewModel()
         runCurrent()
 
-        // THEN
         val state = viewModel.state.value as WooPosScanToPayState.Failed
         assertThat(state.retryable).isTrue()
         assertThat(state.message).isEqualTo("Something went wrong. Please try again.")
@@ -114,17 +108,14 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given paymentUrl blank after retry, when VM initializes, then state Failed retryable`() = runTest {
-        // GIVEN
         val blankOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, paymentUrl = "")
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(blankOrder)
 
-        // WHEN
         val viewModel = createViewModel()
         advanceTimeBy(2_000)
         runCurrent()
 
-        // THEN
         val state = viewModel.state.value as WooPosScanToPayState.Failed
         assertThat(state.retryable).isTrue()
     }
@@ -132,7 +123,6 @@ class WooPosScanToPayViewModelTest {
     @Test
     fun `given QR shown, when polling detects paid order, then analytics tracked, parent event sent and GoBack emitted`() =
         runTest {
-            // GIVEN
             val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
             val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
                 id = orderId,
@@ -143,22 +133,20 @@ class WooPosScanToPayViewModelTest {
             val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, datePaid = Date())
             whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
             whenever(repository.fetchOrderSnapshot(orderId))
-                .thenReturn(pendingOrder) // initial paymentUrl fetch
-                .thenReturn(paidOrder) // polling detects payment
+                .thenReturn(pendingOrder)
+                .thenReturn(paidOrder)
             whenever(repository.getCachedOrder(orderId)).thenReturn(cached)
             whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
 
-            // WHEN
             val viewModel = createViewModel()
             runCurrent()
 
             viewModel.navigationEvent.test {
-                advanceTimeBy(2_500) // poll once
+                advanceTimeBy(2_500)
                 runCurrent()
                 assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
             }
 
-            // THEN
             verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
             verify(tracker).track(ScanToPayCollectPaymentSuccess)
             verify(parentToChildrenEventSender).sendToChildren(
@@ -169,12 +157,10 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `when cancel clicked, then BackToCheckoutFromScanToPay tracked and GoBack emitted`() = runTest {
-        // GIVEN
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.failure(Exception("boom")))
         val viewModel = createViewModel()
         runCurrent()
 
-        // WHEN / THEN
         viewModel.navigationEvent.test {
             viewModel.onUIEvent(WooPosScanToPayUIEvent.CancelClicked)
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
@@ -184,7 +170,6 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given QR shown, when polling sees Processing status, then payment detected`() = runTest {
-        // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             paymentUrl = "https://example.com/pay/abc",
@@ -200,11 +185,9 @@ class WooPosScanToPayViewModelTest {
         whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
         whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
 
-        // WHEN
         val viewModel = createViewModel()
         runCurrent()
 
-        // THEN
         viewModel.navigationEvent.test {
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
@@ -213,7 +196,6 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given QR shown, when polling sees OnHold status, then payment not detected`() = runTest {
-        // GIVEN: OnHold means awaiting verification, not paid — we should keep waiting
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             paymentUrl = "https://example.com/pay/abc",
@@ -228,21 +210,17 @@ class WooPosScanToPayViewModelTest {
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, onHoldOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
 
-        // WHEN
         val viewModel = createViewModel()
         runCurrent()
-        // Allow at least one poll cycle
         advanceTimeBy(2_500)
         runCurrent()
 
-        // THEN
         verify(tracker, never()).track(ScanToPayPaymentDetectedViaPolling)
         assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
     }
 
     @Test
     fun `given non-paid order, when polling exhausts MAX_POLL_ATTEMPTS, then ScanToPayPaymentFailed tracked`() = runTest {
-        // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             paymentUrl = "https://example.com/pay/abc",
@@ -257,21 +235,17 @@ class WooPosScanToPayViewModelTest {
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, nonPaidOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
 
-        // WHEN
         val viewModel = createViewModel()
         runCurrent()
-        // Advance past the 5.5-min ceiling (15 × 2s + 60 × 5s = 330s)
         advanceTimeBy(340_000)
         runCurrent()
 
-        // THEN
         verify(tracker).track(ScanToPayPaymentFailed)
         assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.Failed::class.java)
     }
 
     @Test
     fun `given Failed state, when RetryClicked, then attempts to prepare again`() = runTest {
-        // GIVEN: first attempt fails, second succeeds
         val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
@@ -287,11 +261,9 @@ class WooPosScanToPayViewModelTest {
         runCurrent()
         assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.Failed::class.java)
 
-        // WHEN
         viewModel.onUIEvent(WooPosScanToPayUIEvent.RetryClicked)
         runCurrent()
 
-        // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
     }
 }

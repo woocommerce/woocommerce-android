@@ -28,7 +28,6 @@ fun WooPosQrCode(
         bitmap = bitmap.asImageBitmap(),
         contentDescription = contentDescription,
         modifier = modifier.size(size),
-        // QR codes are inherently pixelated; disable filtering so edges stay sharp.
         filterQuality = FilterQuality.None,
     )
 }
