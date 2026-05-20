@@ -132,6 +132,65 @@ class GlossaryAndStyleTest < Minitest::Test
   end
 end
 
+class ClaudeCliClientTest < Minitest::Test
+  def test_invokes_binary_strips_fences_and_handles_utf8
+    Dir.mktmpdir do |dir|
+      bin = File.join(dir, 'fake_claude')
+      File.write(bin, <<~SH)
+        #!/bin/bash
+        # Discard stdin (the prompt), emit fenced JSON with UTF-8 chars.
+        cat > /dev/null
+        printf '```json\\n{"k":"Cześć świecie"}\\n```\\n'
+      SH
+      File.chmod(0o755, bin)
+      client = WooAiTranslation::ClaudeCliClient.new(bin: bin)
+      assert client.available?
+      out = client.complete(model: 'm', system_blocks: ['rule'], user_content: 'translate')
+      assert_equal '{"k":"Cześć świecie"}', out
+      assert_equal 'UTF-8', out.encoding.to_s
+    end
+  end
+
+  def test_raises_when_binary_exits_non_zero
+    Dir.mktmpdir do |dir|
+      bin = File.join(dir, 'broken')
+      File.write(bin, "#!/bin/bash\necho 'kaboom' >&2\nexit 7\n")
+      File.chmod(0o755, bin)
+      client = WooAiTranslation::ClaudeCliClient.new(bin: bin)
+      err = assert_raises(WooAiTranslation::ClaudeCliClient::Error) do
+        client.complete(model: 'm', system_blocks: [], user_content: '?')
+      end
+      assert_includes err.message, 'exit 7'
+      assert_includes err.message, 'kaboom'
+    end
+  end
+end
+
+class FormattedFalsePlaceholderExemptionTest < Minitest::Test
+  include WooAiTranslation
+
+  def test_formatted_false_strings_are_not_placeholder_validated
+    Dir.mktmpdir do |dir|
+      # "50% off" with formatted="false" must translate freely — the placeholder
+      # regex would otherwise see "% o" as a printf-style specifier and reject
+      # any locale that does not contain the same literal characters.
+      stub = StubClient.new { |loc, src| "[#{loc}] #{src.sub('50%', '90%').sub('off', 'rabatu')}" }
+      Engine.new(
+        source_path: FIXTURE, res_dir: dir,
+        manifest: Manifest.load(File.join(dir, 'm.json')),
+        manifest_path: File.join(dir, 'm.json'),
+        translator: Translator.new(client: stub),
+        context: ContextProvider.new({})
+      ).run_strings(locales: %w[xx])
+
+      raw = AndroidResources::Parser.parse_file(File.join(dir, 'values-xx', 'strings.xml'))
+                                    .find('raw_percent')
+      refute_nil raw, 'raw_percent must ship (no false-positive placeholder failure)'
+      assert_includes raw.entries.first[:source], '90%'
+    end
+  end
+end
+
 class ManifestTest < Minitest::Test
   M = WooAiTranslation::Manifest
 

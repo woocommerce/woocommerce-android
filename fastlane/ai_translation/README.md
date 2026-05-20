@@ -19,6 +19,11 @@ ruby fastlane/ai_translation/bin/woo-ai-translate \
 # Automattic AI gateway):
 bundle exec fastlane ai_translate mode:prtime
 bundle exec fastlane ai_translate mode:sweep locales:"pl,cs,da" strict:true
+
+# Or, if you have a Claude Pro/Max account but no separate API key, shell out
+# to the local Claude Code CLI (same path the hack-week experiment used):
+ruby fastlane/ai_translation/bin/woo-ai-translate --claude-cli \
+  --locales pl,cs,da --mode backfill
 ```
 
 Modes (`prtime | ondemand | sweep | backfill`) select operational policy
