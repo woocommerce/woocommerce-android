@@ -224,7 +224,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     fun onSuggestedFixActionClicked(action: SuggestedFixAction) {
         val state = _viewState.value
-        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics || state.isExecutingFixAction) return
+        if (!state.canHandleDiagnosticAction) return
 
         when (action) {
             SuggestedFixAction.EnableAnalytics -> enableAnalytics()
@@ -233,7 +233,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     fun onContinueAfterDiagnosticsClicked() {
         val state = _viewState.value
-        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics || state.isExecutingFixAction) return
+        if (!state.canHandleDiagnosticAction) return
 
         _viewState.update {
             it.copy(
@@ -812,6 +812,9 @@ data class AiSupportChatViewState(
 ) {
     val canUseDiagnosticActions: Boolean
         get() = !hasProceededToChat && !isSending && !isExecutingFixAction
+
+    val canHandleDiagnosticAction: Boolean
+        get() = canUseDiagnosticActions && !isRunningDiagnostics
 
     val canSendMessages: Boolean
         get() = hasProceededToChat &&

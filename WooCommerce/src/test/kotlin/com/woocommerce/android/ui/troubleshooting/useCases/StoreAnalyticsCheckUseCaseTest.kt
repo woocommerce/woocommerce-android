@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.stats.GetStats
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
@@ -49,7 +48,7 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given analytics setting is enabled, when revenue stats load, then emit Success`() = testBlocking {
+    fun `given analytics setting is enabled, when revenue stats load, then emit success`() = testBlocking {
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(wooCommerceStore.fetchAnalyticsEnabled(site)).thenReturn(WooResult(true))
         whenever(getStats.invoke(any(), any(), anyOrNull())).thenReturn(
@@ -64,7 +63,7 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given analytics setting is disabled, when check runs, then emit plugin inactive Failure`() = testBlocking {
+    fun `given analytics setting is disabled, when check runs, then emit plugin inactive failure`() = testBlocking {
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(wooCommerceStore.fetchAnalyticsEnabled(site)).thenReturn(WooResult(false))
 
@@ -80,7 +79,7 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given analytics setting request fails, when check runs, then emit generic Failure`() = testBlocking {
+    fun `given analytics setting request fails, when check runs, then emit generic failure`() = testBlocking {
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(wooCommerceStore.fetchAnalyticsEnabled(site)).thenReturn(
             WooResult(WooError(GENERIC_ERROR, UNKNOWN, "Server error"))
@@ -97,7 +96,7 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given analytics setting is enabled and stats report plugin inactive, then emit plugin inactive Failure`() =
+    fun `given analytics setting is enabled, when stats report plugin inactive, then emit plugin inactive failure`() =
         testBlocking {
             val stateEvents = mutableListOf<ConnectivityCheckStatus>()
             whenever(wooCommerceStore.fetchAnalyticsEnabled(site)).thenReturn(WooResult(true))

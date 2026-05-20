@@ -209,8 +209,10 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     fun `given analytics enable action fails, when action clicked, then failure stays visible`() =
         testBlocking {
             val failedResult = createAnalyticsDisabledDiagnosticResult()
-            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS)).thenReturn(flowOf(failedResult))
-            whenever(diagnosticsService.enableAnalytics()).thenReturn(Result.failure(IllegalStateException("Failed")))
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS))
+                .thenReturn(flowOf(failedResult))
+            whenever(diagnosticsService.enableAnalytics())
+                .thenReturn(Result.failure(IllegalStateException("Failed")))
 
             viewModel.onIssueSelected(SupportIssueType.LOADING_ANALYTICS, ANALYTICS_ISSUE_LABEL)
             viewModel.onSuggestedFixActionClicked(SuggestedFixAction.EnableAnalytics)
@@ -1448,7 +1450,9 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Passed),
                 DiagnosticStatus(
                     DiagnosticTest.ANALYTICS_SETTING,
-                    TestStatus.Failed(technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE")
+                    TestStatus.Failed(
+                        technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE"
+                    )
                 )
             ),
             suggestedAction = SuggestedFixAction.EnableAnalytics
