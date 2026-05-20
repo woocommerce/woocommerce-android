@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_F
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -93,7 +94,12 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        val isAiSupportChatAvailable = isAiSupportChatAvailable()
+        if (HelpAiSupportChatEntryPoint.shouldShowContactSupport(isAiSupportChatAvailable)) {
+            binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        } else {
+            binding.contactContainer.hide()
+        }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.MobileApp) }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
@@ -111,7 +117,7 @@ class HelpActivity : AppCompatActivity() {
             binding.ssrContainer.setOnClickListener { showSSR() }
         }
 
-        if (isAiSupportChatAvailable()) {
+        if (isAiSupportChatAvailable) {
             binding.aiSupportChatContainer.show()
             binding.aiSupportChatContainer.setOnClickListener { showAiSupportChat() }
             binding.aiSupportChatHistoryContainer.show()
