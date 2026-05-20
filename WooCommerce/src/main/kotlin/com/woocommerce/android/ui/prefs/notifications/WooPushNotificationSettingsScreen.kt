@@ -177,7 +177,7 @@ private fun NotificationTypeRow(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = stringResource(id = item.subtitle),
+                text = item.subtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp)
@@ -209,19 +209,19 @@ private fun WooPushNotificationSettingsScreenPreview() {
                 NotificationTypeItem(
                     type = NotificationType.NEW_ORDERS,
                     title = R.string.settings_notifs_new_orders,
-                    subtitle = R.string.settings_notifs_new_orders_subtitle,
+                    subtitle = stringResource(id = R.string.settings_notifs_new_orders_subtitle),
                     isEnabled = true
                 ),
                 NotificationTypeItem(
                     type = NotificationType.NEW_REVIEWS,
                     title = R.string.settings_notifs_new_reviews,
-                    subtitle = R.string.settings_notifs_new_reviews_subtitle,
+                    subtitle = stringResource(id = R.string.settings_notifs_new_reviews_subtitle),
                     isEnabled = true
                 ),
                 NotificationTypeItem(
                     type = NotificationType.STOCK,
                     title = R.string.settings_notifs_stock,
-                    subtitle = R.string.settings_notifs_stock_subtitle,
+                    subtitle = stringResource(id = R.string.settings_notifs_stock_subtitle),
                     isEnabled = true
                 )
             ),
