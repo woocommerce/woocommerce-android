@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCa
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -271,6 +272,22 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
 
             assertThat(result.isSuccess).isTrue()
             verify(storeAnalyticsCheck, times(2)).enableAnalytics()
+        }
+
+    @Test
+    fun `given enabling analytics is cancelled, when enableAnalytics called, then cancellation is rethrown`() =
+        testBlocking {
+            val cancellation = CancellationException("Cancelled")
+            whenever(storeAnalyticsCheck.enableAnalytics()).thenReturn(Result.failure(cancellation))
+            var thrown: Throwable? = null
+
+            try {
+                service.enableAnalytics()
+            } catch (error: CancellationException) {
+                thrown = error
+            }
+
+            assertThat(thrown).isSameAs(cancellation)
         }
 
     private fun stubAll(success: Boolean) {

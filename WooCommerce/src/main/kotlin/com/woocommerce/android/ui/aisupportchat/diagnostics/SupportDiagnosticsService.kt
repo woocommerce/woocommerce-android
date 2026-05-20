@@ -89,8 +89,13 @@ class SupportDiagnosticsService @Inject constructor(
     }
 
     suspend fun enableAnalytics(): Result<Unit> =
-        runCatching {
+        try {
             enableAnalyticsWithRetry(retries = 0)
+            Result.success(Unit)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Throwable) {
+            Result.failure(error)
         }
 
     private suspend fun enableAnalyticsWithRetry(retries: Int) {
