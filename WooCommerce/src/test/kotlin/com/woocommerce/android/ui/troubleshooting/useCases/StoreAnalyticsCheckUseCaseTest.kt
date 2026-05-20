@@ -91,7 +91,9 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
         assertThat(stateEvents[0]).isEqualTo(InProgress)
         assertThat(stateEvents[1]).isInstanceOf(Failure::class.java)
         assertThat((stateEvents[1] as Failure).error).isEqualTo(FailureType.GENERIC)
-        assertThat((stateEvents[1] as Failure).technicalDetails).contains("Server error")
+        assertThat((stateEvents[1] as Failure).technicalDetails)
+            .contains(GENERIC_ERROR.name)
+            .contains("Server error")
         verify(getStats, never()).invoke(any(), any(), anyOrNull())
     }
 

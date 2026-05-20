@@ -36,7 +36,7 @@ class StoreAnalyticsCheckUseCase @Inject constructor(
                     error = FailureType.GENERIC,
                     technicalDetails = formatErrorDetails(
                         operation = OPERATION_NAME,
-                        errorType = FailureType.GENERIC.name,
+                        errorType = analyticsSetting.error.type.name,
                         message = analyticsSetting.error.message
                     )
                 )
