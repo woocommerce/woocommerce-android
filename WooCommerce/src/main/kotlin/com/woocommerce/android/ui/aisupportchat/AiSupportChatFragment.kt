@@ -122,7 +122,10 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ContactHumanSupport -> handleContactHumanSupport(event)
-                OpenAppNotificationSettings -> WooPermissionUtils.showAppSettings(requireContext())
+                OpenAppNotificationSettings -> WooPermissionUtils.showAppNotificationSettings(
+                    context = requireContext(),
+                    openInNewStack = false
+                )
             }
         }
     }
