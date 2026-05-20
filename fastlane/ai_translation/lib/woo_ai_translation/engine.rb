@@ -14,13 +14,18 @@ module WooAiTranslation
   class Engine
     Report = Struct.new(:locale, :translated, :reused, :failed, :written, :gate_errors, keyword_init: true)
 
-    def initialize(source_path:, res_dir:, manifest:, manifest_path:, translator:, context:, logger: nil)
+    def initialize(source_path:, res_dir:, manifest:, manifest_path:, translator:, context:, force_model: nil, logger: nil)
       @source_path = source_path
       @res_dir = res_dir
       @manifest = manifest
       @manifest_path = manifest_path
       @translator = translator
       @context = context
+      # When set, overrides per-unit model selection for keys that need to be
+      # (re)translated. Useful for quality retries: re-run with a stronger
+      # model only against the keys that previously failed validation; reused
+      # keys keep their original recorded model.
+      @force_model = force_model
       @logger = logger || ->(_m) {}
     end
 
@@ -88,16 +93,21 @@ module WooAiTranslation
       reused = []
 
       source_units.each do |u|
-        model = model_for(u)
+        default_model = model_for(u)
         ctx = context_for_unit(u)
-        ck = @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: model)
+        ck = @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: default_model)
         shell = u.dup_shell
         units[u.name] = shell
 
         if !@manifest.stale?(name: u.name, locale: locale, expected_cache_key: ck) && reuse(shell, existing)
           reused << u.name
         else
-          pending << { unit: shell, source: u, ck: ck, model: model }
+          # Force-model only affects NEW translations; reused units keep their
+          # originally recorded model. Cache key is recorded under the model
+          # that actually produced the translation, for auditability.
+          actual_model = @force_model || default_model
+          actual_ck = @force_model ? @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: actual_model) : ck
+          pending << { unit: shell, source: u, ck: actual_ck, model: actual_model }
         end
       end
 
