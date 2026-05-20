@@ -36,7 +36,6 @@ internal class WooMobileAiChatService @Inject constructor(
         transportDiagnosticsFactory = transportDiagnosticsFactory,
         config = OpenAiSseChatServiceConfig(
             path = WOO_MOBILE_AI_CHAT_COMPLETIONS_PATH,
-            model = WOO_MOBILE_AI_MODEL_ID,
             includeUsage = true,
             authProvider = WpComOpenAiSseAuthProvider(tokenProvider),
             errorMappers = listOf(wrapperErrorMapper),
@@ -48,6 +47,5 @@ internal class WooMobileAiChatService @Inject constructor(
 
     private companion object {
         private const val WOO_MOBILE_AI_CHAT_COMPLETIONS_PATH = "/wpcom/v2/woo-mobile-ai/chat/completions"
-        private const val WOO_MOBILE_AI_MODEL_ID = "gpt-5.1"
     }
 }

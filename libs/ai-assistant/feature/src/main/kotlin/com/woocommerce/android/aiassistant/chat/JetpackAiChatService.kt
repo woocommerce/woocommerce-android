@@ -42,7 +42,6 @@ internal class JetpackAiChatService @Inject constructor(
         transportDiagnosticsFactory = transportDiagnosticsFactory,
         config = OpenAiSseChatServiceConfig(
             path = JETPACK_AI_QUERY_PATH,
-            model = AssistantConfig.MODEL_ID,
             authProvider = JwtOpenAiSseAuthProvider(tokenProvider),
             requestBodyMapper = JetpackAiQueryRequestBodyMapper(AssistantConfig.FEATURE_NAME),
             errorMappers = listOf(JetpackAiQueryErrorMapper(json)),

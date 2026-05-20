@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.chat.openai
 
 import com.woocommerce.android.aiassistant.chat.ChatStreamParser
 import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
+import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.auth.AssistantAuthException
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -112,7 +113,7 @@ internal class OpenAiSseChatService(
             return@callbackFlow
         }
         val canonicalBody = request.toOpenAiRequestBody(
-            model = config.model,
+            model = AssistantConfig.MODEL_ID,
             includeUsage = config.includeUsage,
         )
         val httpRequest = Request.Builder()
