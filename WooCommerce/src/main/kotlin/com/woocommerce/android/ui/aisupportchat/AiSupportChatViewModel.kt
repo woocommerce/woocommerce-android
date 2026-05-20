@@ -176,9 +176,19 @@ class AiSupportChatViewModel @Inject constructor(
                 input = "",
                 selectedIssueType = issueType,
                 selectedIssueLabel = issueLabel,
-                isRunningDiagnostics = true,
+                isRunningDiagnostics = issueType != SupportIssueType.OTHER,
+                hasProceededToChat = issueType == SupportIssueType.OTHER,
                 showSendError = false
             )
+        }
+
+        if (issueType == SupportIssueType.OTHER) {
+            _viewState.update {
+                it.copy(
+                    messages = selectedIssueMessages(issueLabel).appendPostDiagnosticsGreeting()
+                )
+            }
+            return
         }
 
         launch {
@@ -197,7 +207,7 @@ class AiSupportChatViewModel @Inject constructor(
                             diagnosticResult = result,
                             isRunningDiagnostics = !result.isComplete && !hasFailure,
                             showSendError = false,
-                            messages = diagnosticsMessages(result)
+                            messages = diagnosticsMessages(result, issueLabel)
                         )
                     }
                 }
@@ -333,7 +343,7 @@ class AiSupportChatViewModel @Inject constructor(
                 diagnosticResult = result,
                 isRunningDiagnostics = false,
                 showSendError = false,
-                messages = diagnosticsMessages(result)
+                messages = diagnosticsMessages(result, issueLabel)
             )
         }
     }
@@ -522,14 +532,14 @@ class AiSupportChatViewModel @Inject constructor(
                 is AiSupportChatMessageContent.DiagnosticsFailure,
                 is AiSupportChatMessageContent.DiagnosticsProgress -> true
                 AiSupportChatMessageContent.IssuePicker,
-                AiSupportChatMessageContent.ResolvedPrompt,
-                is AiSupportChatMessageContent.Text -> false
+                AiSupportChatMessageContent.ResolvedPrompt -> false
+                is AiSupportChatMessageContent.Text -> message.id == SELECTED_ISSUE_MESSAGE_ID
             }
         }
 
     private fun List<AiSupportChatMessage>.threadMessages(): List<AiSupportChatMessage> =
         filter {
-            it.content is AiSupportChatMessageContent.Text ||
+            (it.content is AiSupportChatMessageContent.Text && it.id != SELECTED_ISSUE_MESSAGE_ID) ||
                 it.content == AiSupportChatMessageContent.ResolvedPrompt
         }
 
@@ -573,12 +583,22 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
 
-    private fun diagnosticsMessages(
-        result: DiagnosticResult,
-        showFailureActions: Boolean = true
-    ): List<AiSupportChatMessage> =
+    private fun selectedIssueMessages(issueLabel: String): List<AiSupportChatMessage> =
         listOf(
             greetingMessage(),
+            AiSupportChatMessage(
+                id = SELECTED_ISSUE_MESSAGE_ID,
+                role = AiSupportChatMessageRole.USER,
+                content = AiSupportChatMessageContent.Text(issueLabel)
+            )
+        )
+
+    private fun diagnosticsMessages(
+        result: DiagnosticResult,
+        issueLabel: String,
+        showFailureActions: Boolean = true
+    ): List<AiSupportChatMessage> =
+        selectedIssueMessages(issueLabel) + listOf(
             AiSupportChatMessage(
                 id = "diagnostics-${result.issueType.name}",
                 role = AiSupportChatMessageRole.BOT,
@@ -664,7 +684,17 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun List<DiagnosticStatus>.toTranscriptText(): String =
         joinToString(separator = ", ") { status ->
-            "${status.test.name}: ${status.status::class.java.simpleName}"
+            "${status.test.transcriptTitle}: ${status.status::class.java.simpleName}"
+        }
+
+    private val DiagnosticTest.transcriptTitle: String
+        get() = when (this) {
+            DiagnosticTest.INTERNET_CONNECTION -> "Internet Connection"
+            DiagnosticTest.WPCOM_SERVERS -> "Connecting to WordPress.com Servers"
+            DiagnosticTest.STORE_CONNECTION -> "Connecting to your site"
+            DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
+            DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
+            DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
         }
 
     private fun createContactHumanSupportEvent(
@@ -719,6 +749,7 @@ class AiSupportChatViewModel @Inject constructor(
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
 
         private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
+        private const val SELECTED_ISSUE_MESSAGE_ID = "selected-issue"
         private const val RESOLVED_PROMPT_MESSAGE_ID = "resolved-prompt"
         private const val MAX_TRANSCRIPT_MESSAGES = 20
         private const val SOURCE_TAG = "in_app_support_escalate"

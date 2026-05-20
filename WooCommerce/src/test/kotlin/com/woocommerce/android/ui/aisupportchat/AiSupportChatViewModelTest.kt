@@ -156,9 +156,47 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsProgress(result)
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given analytics issue selected, when diagnostics pass, then selected issue is shown as user message`() =
+        testBlocking {
+            val result = createSuccessDiagnosticResult(SupportIssueType.LOADING_ANALYTICS)
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS)).thenReturn(flowOf(result))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ANALYTICS, ANALYTICS_ISSUE_LABEL)
+
+            val state = viewModel.viewState.value
+            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.LOADING_ANALYTICS)
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ANALYTICS_ISSUE_LABEL),
+                AiSupportChatMessageContent.DiagnosticsProgress(result)
+            )
+            verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ANALYTICS)
+        }
+
+    @Test
+    fun `given other issue selected, when tapped, then diagnostics are skipped and chat input is shown`() =
+        testBlocking {
+            viewModel.onIssueSelected(SupportIssueType.OTHER, OTHER_ISSUE_LABEL)
+
+            val state = viewModel.viewState.value
+            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.OTHER)
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.isRunningDiagnostics).isFalse()
+            assertThat(state.showInputBar).isTrue()
+            assertThat(state.showDiagnosticActions).isFalse()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(OTHER_ISSUE_LABEL),
+                AiSupportChatMessageContent.PostDiagnosticsGreeting
+            )
+            verify(diagnosticsService, never()).runDiagnostics(any())
         }
 
     @Test
@@ -178,6 +216,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showDiagnosticActions).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting
             )
@@ -213,6 +252,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting,
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
@@ -276,6 +316,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting,
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
@@ -313,6 +354,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showSendError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsProgress(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting,
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
@@ -1138,6 +1180,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.showDiagnosticActions).isTrue()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsFailure(result)
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
@@ -1157,6 +1200,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.value.showSendError).isFalse()
             assertThat(viewModel.viewState.value.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsFailure(result),
                 AiSupportChatMessageContent.PostDiagnosticsGreeting
             )
@@ -1215,6 +1259,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         )
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
+            AiSupportChatMessageContent.Text(ISSUE_LABEL),
             AiSupportChatMessageContent.DiagnosticsFailure(diagnosticResult)
         )
         verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
@@ -1394,6 +1439,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val CHAT_ID = 1234L
         const val SESSION_ID = "session-id"
         const val ISSUE_LABEL = "I can't see my orders"
+        const val ANALYTICS_ISSUE_LABEL = "My analytics aren't loading"
+        const val OTHER_ISSUE_LABEL = "Something else"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
         const val BOT_MESSAGE_ID = 2L

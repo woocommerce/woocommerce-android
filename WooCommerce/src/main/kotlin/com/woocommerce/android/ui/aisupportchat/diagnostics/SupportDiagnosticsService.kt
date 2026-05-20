@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
@@ -31,7 +32,8 @@ class SupportDiagnosticsService @Inject constructor(
     private val wpComConnectionCheck: WPComConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
-    private val storeProductsCheck: StoreProductsCheckUseCase
+    private val storeProductsCheck: StoreProductsCheckUseCase,
+    private val storeAnalyticsCheck: StoreAnalyticsCheckUseCase
 ) {
     fun runDiagnostics(issueType: SupportIssueType): Flow<DiagnosticResult> = flow {
         val tests = testsFor(issueType)
@@ -69,7 +71,7 @@ class SupportDiagnosticsService @Inject constructor(
         SupportIssueType.LOADING_PRODUCTS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_PRODUCTS)
         SupportIssueType.LOADING_ANALYTICS ->
-            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
+            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, DiagnosticTest.ANALYTICS_SETTING)
         SupportIssueType.RECEIVING_NOTIFICATIONS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
         SupportIssueType.OTHER ->
@@ -82,6 +84,7 @@ class SupportDiagnosticsService @Inject constructor(
         STORE_CONNECTION -> storeConnectionCheck()
         STORE_ORDERS -> storeOrdersCheck()
         STORE_PRODUCTS -> storeProductsCheck()
+        DiagnosticTest.ANALYTICS_SETTING -> storeAnalyticsCheck()
     }
 
     private suspend fun runCheckSafely(test: DiagnosticTest): ConnectivityCheckStatus =

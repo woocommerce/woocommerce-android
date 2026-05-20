@@ -542,6 +542,7 @@ private fun DiagnosticTest.title(): String =
             DiagnosticTest.STORE_CONNECTION -> R.string.orderlist_connectivity_tool_store_check_title
             DiagnosticTest.STORE_ORDERS -> R.string.orderlist_connectivity_tool_store_orders_check_title
             DiagnosticTest.STORE_PRODUCTS -> R.string.orderlist_connectivity_tool_store_products_check_title
+            DiagnosticTest.ANALYTICS_SETTING -> R.string.ai_support_chat_diagnostics_analytics_setting_title
         }
     )
 

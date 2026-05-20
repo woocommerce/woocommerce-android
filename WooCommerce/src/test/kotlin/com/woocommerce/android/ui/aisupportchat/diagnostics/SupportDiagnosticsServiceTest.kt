@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
@@ -29,13 +30,15 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
     private val storeConnectionCheck: StoreConnectionCheckUseCase = mock()
     private val storeOrdersCheck: StoreOrdersCheckUseCase = mock()
     private val storeProductsCheck: StoreProductsCheckUseCase = mock()
+    private val storeAnalyticsCheck: StoreAnalyticsCheckUseCase = mock()
 
     private val service = SupportDiagnosticsService(
         internetConnectionCheck = internetCheck,
         wpComConnectionCheck = wpComCheck,
         storeConnectionCheck = storeConnectionCheck,
         storeOrdersCheck = storeOrdersCheck,
-        storeProductsCheck = storeProductsCheck
+        storeProductsCheck = storeProductsCheck,
+        storeAnalyticsCheck = storeAnalyticsCheck
     )
 
     @Test
@@ -169,13 +172,13 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given LOADING_ANALYTICS, when run, then only the three connectivity checks run`() = testBlocking {
+    fun `given LOADING_ANALYTICS, when run, then analytics setting check runs after connectivity checks`() = testBlocking {
         stubAll(success = true)
 
         val initial = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().first()
 
         assertThat(initial.statuses.map(DiagnosticStatus::test))
-            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, DiagnosticTest.ANALYTICS_SETTING)
     }
 
     @Test
@@ -188,6 +191,54 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
             .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
     }
 
+    @Test
+    fun `given analytics setting passes, when run for LOADING_ANALYTICS, then final status is passed`() = testBlocking {
+        stubAll(success = true)
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+        assertThat(final.statuses.last()).isEqualTo(
+            DiagnosticStatus(DiagnosticTest.ANALYTICS_SETTING, TestStatus.Passed)
+        )
+    }
+
+    @Test
+    fun `given analytics setting fails, when run for LOADING_ANALYTICS, then failure metadata is emitted`() =
+        testBlocking {
+            stubAnalyticsFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+            assertThat(final.firstFailure).isEqualTo(
+                DiagnosticStatus(
+                    test = DiagnosticTest.ANALYTICS_SETTING,
+                    status = TestStatus.Failed(
+                        failureType = FailureType.GENERIC,
+                        technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE",
+                        durationMs = 300L
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given analytics setting throws, when run for LOADING_ANALYTICS, then generic failure is emitted`() =
+        testBlocking {
+            stubAnalyticsThrows()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+            assertThat(final.firstFailure).isEqualTo(
+                DiagnosticStatus(
+                    test = DiagnosticTest.ANALYTICS_SETTING,
+                    status = TestStatus.Failed(
+                        failureType = FailureType.GENERIC,
+                        technicalDetails = "Analytics unavailable"
+                    )
+                )
+            )
+        }
+
     private fun stubAll(success: Boolean) {
         val outcome: ConnectivityCheckStatus = if (success) {
             ConnectivityCheckStatus.Success()
@@ -199,6 +250,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(outcome))
         whenever(storeOrdersCheck.invoke()).thenReturn(flowOf(outcome))
         whenever(storeProductsCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeAnalyticsCheck.invoke()).thenReturn(flowOf(outcome))
     }
 
     private fun stubWpComFailure() {
@@ -219,6 +271,33 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
             flow {
                 emit(ConnectivityCheckStatus.InProgress)
                 error("No selected site")
+            }
+        )
+    }
+
+    private fun stubAnalyticsFailure() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(wpComCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeAnalyticsCheck.invoke()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    error = FailureType.GENERIC,
+                    technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE",
+                    durationMs = 300L
+                )
+            )
+        )
+    }
+
+    private fun stubAnalyticsThrows() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(wpComCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeAnalyticsCheck.invoke()).thenReturn(
+            flow {
+                emit(ConnectivityCheckStatus.InProgress)
+                error("Analytics unavailable")
             }
         )
     }

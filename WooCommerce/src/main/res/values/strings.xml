@@ -2461,6 +2461,7 @@
     <string name="ai_support_chat_diagnostics_status_running">Running</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passed</string>
     <string name="ai_support_chat_diagnostics_status_failed">Failed</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Checking analytics setting</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
     <string name="ai_support_chat_connectivity_action">Chat with support</string>
     <string name="ai_support_chat_feedback_helpful">Helpful</string>
