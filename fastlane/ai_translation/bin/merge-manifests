@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Merge several translation-manifest.json files into one. Used when a backfill
+# was sharded across parallel processes (each writing its own manifest path);
+# the resulting locales are disjoint so the merge is a clean union.
+#
+# Usage: bin/merge-manifests OUT.json IN1.json IN2.json [IN3.json ...]
+
+require 'json'
+
+abort "Usage: #{$PROGRAM_NAME} OUT IN1 IN2 [IN3 ...]" if ARGV.size < 3
+
+out_path, *in_paths = ARGV
+merged = nil
+
+in_paths.each do |path|
+  unless File.exist?(path)
+    warn "skip (missing): #{path}"
+    next
+  end
+  data = JSON.parse(File.read(path))
+  if merged.nil?
+    merged = data
+    next
+  end
+
+  data.fetch('keys', {}).each do |name, entry|
+    if merged['keys'].key?(name)
+      entry.fetch('locales', {}).each { |loc, rec| merged['keys'][name]['locales'][loc] = rec }
+      # source_sha is identical (same source), keep merged's value.
+    else
+      merged['keys'][name] = entry
+    end
+  end
+  data.fetch('metadata', {}).each { |k, v| merged['metadata'][k] = v }
+end
+
+abort 'no input manifests found' if merged.nil?
+
+File.write(out_path, "#{JSON.pretty_generate(merged)}\n")
+warn "merged #{in_paths.size} manifest(s) -> #{out_path} (#{merged['keys'].size} keys)"
