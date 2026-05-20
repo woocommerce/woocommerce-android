@@ -256,6 +256,8 @@ class AiSupportChatViewModel @Inject constructor(
 
         when (action) {
             SuggestedFixAction.EnableAnalytics -> enableAnalytics()
+            SuggestedFixAction.OpenNotificationSettings -> triggerEvent(OpenAppNotificationSettings)
+            SuggestedFixAction.RegisterPushNotifications -> registerPushNotifications()
         }
     }
 
@@ -296,6 +298,22 @@ class AiSupportChatViewModel @Inject constructor(
                             showSuggestedFixActionError = true
                         )
                     }
+                }
+        }
+    }
+
+    private fun registerPushNotifications() {
+        launch {
+            _viewState.update { it.copy(isExecutingFixAction = true) }
+
+            diagnosticsService.registerPushNotifications()
+                .onSuccess {
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    rerunDiagnostics()
+                }
+                .onFailure { error ->
+                    WooLog.e(WooLog.T.AI, "Registering push notifications failed", error)
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
                 }
         }
     }
@@ -762,6 +780,11 @@ class AiSupportChatViewModel @Inject constructor(
             DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
             DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
             DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
+            DiagnosticTest.NOTIFICATION_PERMISSION -> "Checking notification permission"
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED -> "Checking app notification settings"
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED -> "Checking notification channels"
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "Checking push notification token"
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "Checking push registration"
         }
 
     private fun createContactHumanSupportEvent(
@@ -922,6 +945,8 @@ data class ContactHumanSupport(
     val subjectResId: Int?,
     val extraTags: List<String>
 ) : Event()
+
+data object OpenAppNotificationSettings : Event()
 
 data class AiSupportChatMessage(
     val id: String,

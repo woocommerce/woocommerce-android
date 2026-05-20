@@ -71,5 +71,10 @@ class SupportChatContextProvider @Inject constructor(
             DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
             DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
             DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
+            DiagnosticTest.NOTIFICATION_PERMISSION -> "Checking notification permission"
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED -> "Checking app notification settings"
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED -> "Checking notification channels"
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "Checking push notification token"
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "Checking push registration"
         }
 }

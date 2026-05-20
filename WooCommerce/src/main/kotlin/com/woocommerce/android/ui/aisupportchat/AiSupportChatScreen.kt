@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreNotificationsCheckUseCase
 import com.woocommerce.commons.ui.markdown.MarkdownText
 
 @Composable
@@ -641,6 +642,14 @@ private fun DiagnosticTest.title(): String =
             DiagnosticTest.STORE_ORDERS -> R.string.orderlist_connectivity_tool_store_orders_check_title
             DiagnosticTest.STORE_PRODUCTS -> R.string.orderlist_connectivity_tool_store_products_check_title
             DiagnosticTest.ANALYTICS_SETTING -> R.string.ai_support_chat_diagnostics_analytics_setting_title
+            DiagnosticTest.NOTIFICATION_PERMISSION -> R.string.ai_support_chat_diagnostics_notification_permission_title
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED ->
+                R.string.ai_support_chat_diagnostics_app_notifications_enabled_title
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED ->
+                R.string.ai_support_chat_diagnostics_notification_channels_enabled_title
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> R.string.ai_support_chat_diagnostics_push_token_title
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION ->
+                R.string.ai_support_chat_diagnostics_push_registration_title
         }
     )
 
@@ -649,6 +658,10 @@ private fun SuggestedFixAction.title(): String =
     stringResource(
         when (this) {
             SuggestedFixAction.EnableAnalytics -> R.string.ai_support_chat_diagnostics_enable_analytics
+            SuggestedFixAction.OpenNotificationSettings ->
+                R.string.ai_support_chat_diagnostics_open_notification_settings
+            SuggestedFixAction.RegisterPushNotifications ->
+                R.string.ai_support_chat_diagnostics_register_push_notifications
         }
     )
 
@@ -668,9 +681,25 @@ private fun DiagnosticResult.failureMessage(): String {
             stringResource(R.string.ai_support_chat_diagnostics_analytics_disabled_failure)
         failedTest.test == DiagnosticTest.ANALYTICS_SETTING ->
             stringResource(R.string.ai_support_chat_diagnostics_analytics_check_failure)
+        failedTest.test in notificationSettingsTests ->
+            stringResource(R.string.ai_support_chat_diagnostics_notification_settings_failure)
+        failedTest.test == DiagnosticTest.PUSH_NOTIFICATION_TOKEN ->
+            stringResource(R.string.ai_support_chat_diagnostics_push_token_failure)
+        failedTest.test == DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION &&
+            failedStatus.technicalDetails
+                ?.contains(StoreNotificationsCheckUseCase.ERROR_PUSH_NOTIFICATIONS_UNREGISTERED) == true ->
+            stringResource(R.string.ai_support_chat_diagnostics_push_registration_failure)
+        failedTest.test == DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION ->
+            stringResource(R.string.ai_support_chat_diagnostics_push_check_failure)
         else -> failedStatus.failureMessage()
     }
 }
+
+private val notificationSettingsTests = setOf(
+    DiagnosticTest.NOTIFICATION_PERMISSION,
+    DiagnosticTest.APP_NOTIFICATIONS_ENABLED,
+    DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED
+)
 
 @Composable
 private fun TestStatus.Failed.failureMessage(): String =

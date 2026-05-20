@@ -5,4 +5,6 @@ package com.woocommerce.android.ui.aisupportchat.diagnostics
  */
 sealed interface SuggestedFixAction {
     data object EnableAnalytics : SuggestedFixAction
+    data object OpenNotificationSettings : SuggestedFixAction
+    data object RegisterPushNotifications : SuggestedFixAction
 }
