@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.stats.GetStats
@@ -65,11 +66,11 @@ class StoreAnalyticsCheckUseCase @Inject constructor(
     }
 
     suspend fun enableAnalytics(): Result<Unit> = runCatching {
-        val enabled = wooCommerceStore.enableAnalytics(selectedSite.get())
-        if (enabled) {
-            Unit
-        } else {
-            error("Failed to enable analytics setting")
+        val result = wooCommerceStore.enableAnalytics(selectedSite.get())
+        when {
+            result.isError -> throw WooException(result.error)
+            result.model == true -> Unit
+            else -> error("Failed to enable analytics setting")
         }
     }
 

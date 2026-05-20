@@ -137,7 +137,7 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `given analytics setting is enabled successfully, when enableAnalytics is called, then result is success`() =
         testBlocking {
-            whenever(wooCommerceStore.enableAnalytics(site)).thenReturn(true)
+            whenever(wooCommerceStore.enableAnalytics(site)).thenReturn(WooResult(true))
 
             val result = sut.enableAnalytics()
 
@@ -147,10 +147,22 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `given analytics setting is not enabled, when enableAnalytics is called, then result is failure`() =
         testBlocking {
-            whenever(wooCommerceStore.enableAnalytics(site)).thenReturn(false)
+            whenever(wooCommerceStore.enableAnalytics(site)).thenReturn(WooResult(false))
 
             val result = sut.enableAnalytics()
 
             assertThat(result.isFailure).isTrue()
+        }
+
+    @Test
+    fun `given analytics setting request fails, when enableAnalytics is called, then error is propagated`() =
+        testBlocking {
+            val error = WooError(GENERIC_ERROR, UNKNOWN, "Server error")
+            whenever(wooCommerceStore.enableAnalytics(site)).thenReturn(WooResult(error))
+
+            val result = sut.enableAnalytics()
+
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).hasMessage("Server error")
         }
 }

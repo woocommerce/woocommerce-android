@@ -347,16 +347,17 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
-    suspend fun enableAnalytics(site: SiteModel): Boolean {
+    suspend fun enableAnalytics(site: SiteModel): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(T.API, this, "enableAnalytics") {
             val response = wcCoreRestClient.enableAnalytics(site)
             return@withDefaultContext when {
                 response.isError -> {
                     AppLog.w(T.API, "Failed to enable analytics for ${site.siteId}")
-                    false
+                    WooResult(response.error)
                 }
 
-                else -> response.result ?: false
+                response.result != null -> WooResult(response.result)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
     }

@@ -443,7 +443,8 @@ class WooCommerceStoreTest {
         runBlocking {
             whenever(wcrestClient.enableAnalytics(site)).thenReturn(WooPayload(true))
             val result = wooCommerceStore.enableAnalytics(site)
-            assertThat(result).isTrue
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isTrue
         }
     }
 
@@ -452,7 +453,18 @@ class WooCommerceStoreTest {
         runBlocking {
             whenever(wcrestClient.enableAnalytics(site)).thenReturn(WooPayload(false))
             val result = wooCommerceStore.enableAnalytics(site)
-            assertThat(result).isFalse
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isFalse
+        }
+    }
+
+    @Test
+    fun `when enabling analytics returns error, then error is returned`() {
+        runBlocking {
+            whenever(wcrestClient.enableAnalytics(site)).thenReturn(WooPayload(error))
+            val result = wooCommerceStore.enableAnalytics(site)
+            assertThat(result.isError).isTrue
+            assertThat(result.error).isEqualTo(error)
         }
     }
 
