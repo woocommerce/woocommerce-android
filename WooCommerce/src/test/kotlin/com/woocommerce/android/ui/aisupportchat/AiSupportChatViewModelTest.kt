@@ -25,15 +25,18 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -204,6 +207,30 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             verify(diagnosticsService).enableAnalytics()
             verify(diagnosticsService, times(2)).runDiagnostics(SupportIssueType.LOADING_ANALYTICS)
+        }
+
+    @Test
+    fun `given analytics enable action is running, when action clicked, then diagnostic actions stay visible`() =
+        testBlocking {
+            val failedResult = createAnalyticsDisabledDiagnosticResult()
+            val successResult = createSuccessDiagnosticResult(SupportIssueType.LOADING_ANALYTICS)
+            val enableResult = CompletableDeferred<Result<Unit>>()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS))
+                .thenReturn(flowOf(failedResult), flowOf(successResult))
+            whenever(diagnosticsService.enableAnalytics()).doSuspendableAnswer {
+                enableResult.await()
+            }
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ANALYTICS, ANALYTICS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.EnableAnalytics)
+            runCurrent()
+
+            val loadingState = viewModel.viewState.value
+            assertThat(loadingState.isExecutingFixAction).isTrue()
+            assertThat(loadingState.showDiagnosticActions).isTrue()
+
+            enableResult.complete(Result.success(Unit))
+            runCurrent()
         }
 
     @Test

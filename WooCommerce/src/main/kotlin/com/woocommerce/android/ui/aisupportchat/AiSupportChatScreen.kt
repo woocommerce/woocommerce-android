@@ -125,6 +125,7 @@ fun AiSupportChatScreen(
             isSending = viewState.isSending,
             isLoadingHistory = viewState.isLoadingHistory,
             showDiagnosticActions = viewState.showDiagnosticActions,
+            isExecutingFixAction = viewState.isExecutingFixAction,
             onIssueSelected = onIssueSelected,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked,
@@ -181,6 +182,7 @@ private fun MessageList(
     isSending: Boolean,
     isLoadingHistory: Boolean,
     showDiagnosticActions: Boolean,
+    isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
@@ -220,6 +222,7 @@ private fun MessageList(
                 message = message,
                 feedbackRating = message.messageId?.let { messageRatings[it] },
                 showDiagnosticActions = showDiagnosticActions,
+                isExecutingFixAction = isExecutingFixAction,
                 onIssueSelected = onIssueSelected,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
                 onSuggestedFixActionClicked = onSuggestedFixActionClicked,
@@ -240,6 +243,7 @@ private fun MessageBubble(
     message: AiSupportChatMessage,
     feedbackRating: AiSupportChatFeedbackRating?,
     showDiagnosticActions: Boolean,
+    isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
@@ -275,6 +279,7 @@ private fun MessageBubble(
                     textColor = textColor,
                     shouldFormatMarkdown = message.role == AiSupportChatMessageRole.BOT,
                     showDiagnosticActions = showDiagnosticActions,
+                    isExecutingFixAction = isExecutingFixAction,
                     onIssueSelected = onIssueSelected,
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
                     onSuggestedFixActionClicked = onSuggestedFixActionClicked
@@ -369,6 +374,7 @@ private fun MessageContent(
     textColor: Color,
     shouldFormatMarkdown: Boolean,
     showDiagnosticActions: Boolean,
+    isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit
@@ -402,6 +408,7 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
+            isExecutingFixAction = isExecutingFixAction,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked
         )
@@ -409,6 +416,7 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
+            isExecutingFixAction = isExecutingFixAction,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked
         )
@@ -474,6 +482,7 @@ private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
     showDiagnosticActions: Boolean,
+    isExecutingFixAction: Boolean,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit
 ) {
@@ -507,6 +516,7 @@ private fun DiagnosticsContent(
             }
             DiagnosticActions(
                 suggestedAction = result.suggestedAction,
+                isExecutingFixAction = isExecutingFixAction,
                 onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
             )
@@ -517,6 +527,7 @@ private fun DiagnosticsContent(
 @Composable
 private fun DiagnosticActions(
     suggestedAction: SuggestedFixAction?,
+    isExecutingFixAction: Boolean,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit
 ) {
@@ -529,12 +540,14 @@ private fun DiagnosticActions(
                 suggestedAction?.let { action ->
                     SuggestedFixActionButton(
                         action = action,
+                        loading = isExecutingFixAction,
                         onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
                 ContinueAfterDiagnosticsButton(
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+                    enabled = isExecutingFixAction.not(),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -543,12 +556,14 @@ private fun DiagnosticActions(
                 suggestedAction?.let { action ->
                     SuggestedFixActionButton(
                         action = action,
+                        loading = isExecutingFixAction,
                         onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                         modifier = Modifier.weight(1f)
                     )
                 }
                 ContinueAfterDiagnosticsButton(
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+                    enabled = isExecutingFixAction.not(),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -559,25 +574,28 @@ private fun DiagnosticActions(
 @Composable
 private fun SuggestedFixActionButton(
     action: SuggestedFixAction,
+    loading: Boolean,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     WCOutlinedButton(
         onClick = { onSuggestedFixActionClicked(action) },
+        text = action.title(),
+        loading = loading,
         modifier = modifier
-    ) {
-        Text(text = action.title())
-    }
+    )
 }
 
 @Composable
 private fun ContinueAfterDiagnosticsButton(
     onContinueAfterDiagnosticsClicked: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     WCColoredButton(
         onClick = onContinueAfterDiagnosticsClicked,
         text = stringResource(R.string.ai_support_chat_diagnostics_continue),
+        enabled = enabled,
         modifier = modifier
     )
 }
