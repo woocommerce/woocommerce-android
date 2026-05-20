@@ -1469,7 +1469,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given resolved button is available, when mark resolved is clicked, then resolution analytics are tracked`() =
+    fun `given resolved button is available, when mark resolved is clicked, then confirmation is shown`() =
         testBlocking {
             startChatWithBotResponse()
             whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
@@ -1483,6 +1483,21 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 supportArea = null,
                 userMessageCount = 1
             )
+            verify(analyticsTracker, never()).trackMarkResolvedTapped()
+            assertThat(viewModel.viewState.value.showMarkResolvedConfirmation).isTrue
+        }
+
+    @Test
+    fun `given resolved button confirmation is shown, when mark resolved is confirmed, then resolution analytics are tracked`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onMarkResolvedClicked()
+            viewModel.onMarkResolvedConfirmed()
+
             verify(analyticsTracker).trackMarkResolvedTapped()
         }
 

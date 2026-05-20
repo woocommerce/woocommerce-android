@@ -137,7 +137,6 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onMarkResolvedClicked() {
-        analyticsTracker.trackMarkResolvedTapped()
         _viewState.update { it.copy(showMarkResolvedConfirmation = true) }
     }
 
@@ -146,6 +145,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onMarkResolvedConfirmed() {
+        analyticsTracker.trackMarkResolvedTapped()
         _viewState.update {
             it.copy(
                 isChatResolved = true,
