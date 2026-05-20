@@ -2428,6 +2428,7 @@
     <string name="ai_support_chat_error_dismiss">Dismiss</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_load_history_error">Unable to load this chat. Check your connection and try again.</string>
+    <string name="ai_support_chat_suggested_fix_error">Unable to apply this fix. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
     <string name="ai_support_chat_human_support_message">It looks like you might need additional help. Would you like to contact our support team?</string>
     <string name="ai_support_chat_contact_support">Contact Support</string>

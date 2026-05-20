@@ -81,6 +81,10 @@ class AiSupportChatViewModel @Inject constructor(
         _viewState.update { it.copy(showSendError = false) }
     }
 
+    fun onSuggestedFixActionErrorDismissed() {
+        _viewState.update { it.copy(showSuggestedFixActionError = false) }
+    }
+
     fun onRetryLoadHistoryClicked() {
         resumeLaunchMode?.let(::resumeChat)
     }
@@ -272,7 +276,12 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun enableAnalytics() {
         launch {
-            _viewState.update { it.copy(isExecutingFixAction = true) }
+            _viewState.update {
+                it.copy(
+                    isExecutingFixAction = true,
+                    showSuggestedFixActionError = false
+                )
+            }
 
             diagnosticsService.enableAnalytics()
                 .onSuccess {
@@ -281,7 +290,12 @@ class AiSupportChatViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     WooLog.e(WooLog.T.AI, "Enabling WooCommerce Analytics failed", error)
-                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    _viewState.update {
+                        it.copy(
+                            isExecutingFixAction = false,
+                            showSuggestedFixActionError = true
+                        )
+                    }
                 }
         }
     }
@@ -828,6 +842,7 @@ data class AiSupportChatViewState(
     val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false,
     val showLoadHistoryError: Boolean = false,
+    val showSuggestedFixActionError: Boolean = false,
     val showHumanSupportPrompt: Boolean = false,
     val hasCreatedTicket: Boolean = false,
     val isChatResolved: Boolean = false,

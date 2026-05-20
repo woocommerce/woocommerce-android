@@ -196,6 +196,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.isExecutingFixAction).isFalse()
             assertThat(state.diagnosticResult).isEqualTo(successResult)
+            assertThat(state.showSuggestedFixActionError).isFalse()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.Text(ANALYTICS_ISSUE_LABEL),
@@ -220,6 +221,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.value
             assertThat(state.isExecutingFixAction).isFalse()
             assertThat(state.diagnosticResult).isEqualTo(failedResult)
+            assertThat(state.showSuggestedFixActionError).isTrue()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting,
                 AiSupportChatMessageContent.Text(ANALYTICS_ISSUE_LABEL),
@@ -227,6 +229,22 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             verify(diagnosticsService).enableAnalytics()
             verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ANALYTICS)
+        }
+
+    @Test
+    fun `given analytics enable action fails, when error dismissed, then action error is hidden`() =
+        testBlocking {
+            val failedResult = createAnalyticsDisabledDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS))
+                .thenReturn(flowOf(failedResult))
+            whenever(diagnosticsService.enableAnalytics())
+                .thenReturn(Result.failure(IllegalStateException("Failed")))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ANALYTICS, ANALYTICS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.EnableAnalytics)
+            viewModel.onSuggestedFixActionErrorDismissed()
+
+            assertThat(viewModel.viewState.value.showSuggestedFixActionError).isFalse()
         }
 
     @Test

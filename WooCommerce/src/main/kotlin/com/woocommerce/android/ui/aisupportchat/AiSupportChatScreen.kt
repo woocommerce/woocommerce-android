@@ -88,6 +88,7 @@ fun AiSupportChatScreen(
         onContactSupportClicked = { onContactSupportClicked(HumanSupportContactSource.BANNER) },
         onContactSupportFromErrorClicked = { onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
         onSendErrorDismissed = viewModel::onSendErrorDismissed,
+        onSuggestedFixActionErrorDismissed = viewModel::onSuggestedFixActionErrorDismissed,
         onRetryLoadHistoryClicked = viewModel::onRetryLoadHistoryClicked,
         onMarkResolvedConfirmed = viewModel::onMarkResolvedConfirmed,
         onMarkResolvedDismissed = viewModel::onMarkResolvedDismissed,
@@ -106,6 +107,7 @@ fun AiSupportChatScreen(
     onContactSupportClicked: () -> Unit,
     onContactSupportFromErrorClicked: () -> Unit,
     onSendErrorDismissed: () -> Unit,
+    onSuggestedFixActionErrorDismissed: () -> Unit,
     onRetryLoadHistoryClicked: () -> Unit,
     onMarkResolvedConfirmed: () -> Unit,
     onMarkResolvedDismissed: () -> Unit,
@@ -158,6 +160,10 @@ fun AiSupportChatScreen(
 
     if (viewState.showLoadHistoryError) {
         LoadHistoryErrorDialog(onRetry = onRetryLoadHistoryClicked)
+    }
+
+    if (viewState.showSuggestedFixActionError) {
+        SuggestedFixActionErrorDialog(onDismiss = onSuggestedFixActionErrorDismissed)
     }
 
     if (viewState.showMarkResolvedConfirmation) {
@@ -817,6 +823,20 @@ private fun LoadHistoryErrorDialog(onRetry: () -> Unit) {
 }
 
 @Composable
+private fun SuggestedFixActionErrorDialog(onDismiss: () -> Unit) {
+    DialogState(
+        title = R.string.ai_support_chat_error_title,
+        message = R.string.ai_support_chat_suggested_fix_error,
+        positiveButton = DialogState.DialogButton(
+            text = R.string.ai_support_chat_error_dismiss,
+            onClick = onDismiss
+        ),
+        isCancelable = false,
+        onDismiss = onDismiss
+    ).Render()
+}
+
+@Composable
 private fun MarkResolvedConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -918,6 +938,7 @@ private fun AiSupportChatScreenPreview() {
             onContactSupportClicked = {},
             onContactSupportFromErrorClicked = {},
             onSendErrorDismissed = {},
+            onSuggestedFixActionErrorDismissed = {},
             onRetryLoadHistoryClicked = {},
             onMarkResolvedConfirmed = {},
             onMarkResolvedDismissed = {},
