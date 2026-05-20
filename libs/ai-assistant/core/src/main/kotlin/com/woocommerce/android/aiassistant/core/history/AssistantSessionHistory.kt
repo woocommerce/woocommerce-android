@@ -3,6 +3,9 @@ package com.woocommerce.android.aiassistant.core.history
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 
+/**
+ * Opaque session history DTOs for the AI Assistant feature; not a supported public API.
+ */
 data class AssistantSessionHistory(
     val messages: List<AssistantSessionMessage> = emptyList(),
 ) {

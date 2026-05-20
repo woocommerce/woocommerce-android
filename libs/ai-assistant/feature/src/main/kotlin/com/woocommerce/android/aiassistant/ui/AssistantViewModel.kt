@@ -7,7 +7,6 @@ import com.automattic.eventhorizon.AiAssistantTurnOutcomeValue
 import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -51,7 +50,6 @@ class AssistantViewModel @AssistedInject internal constructor(
     private val assistantTelemetryTracker: AssistantTelemetryTracker,
     private val assistantTelemetryTimeSource: TimeSource,
     private val assistantIdGenerator: AssistantIdGenerator,
-    private val sessionHistoryMapper: AssistantSessionHistoryMapper,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AssistantUiState())
     val uiState: StateFlow<AssistantUiState> = _uiState.asStateFlow()
@@ -410,10 +408,10 @@ class AssistantViewModel @AssistedInject internal constructor(
         val assistantText = _uiState.value.messages
             .firstOrNull { it.id == assistantMessageId }
             ?.text
-        committedSessionHistory = sessionHistoryMapper.appendCancelledTurn(
-            baseHistory = currentTurnBaseHistory,
-            userMessage = userMessage,
-            assistantText = assistantText,
+        committedSessionHistory = runtime.buildCancelledTurnHistory(
+            baseSessionHistory = currentTurnBaseHistory,
+            pendingUserMessage = userMessage,
+            partialAssistantText = assistantText,
         )
     }
 

@@ -18,7 +18,6 @@ import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.TransportDiagnostics
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
@@ -88,7 +87,6 @@ class AssistantViewModelTest {
             assistantTelemetryTracker = assistantTelemetryTracker,
             assistantTelemetryTimeSource = timeSource,
             assistantIdGenerator = assistantIdGenerator,
-            sessionHistoryMapper = AssistantSessionHistoryMapper(),
         )
     }
 
@@ -1486,6 +1484,13 @@ class AssistantViewModelTest {
             advanceUntilIdle()
             viewModel.onSendMessage("What changed?")
 
+            assertThat(runtime.cancelledTurnHistoryRequests).containsExactly(
+                CancelledTurnHistoryRequest(
+                    baseSessionHistory = AssistantSessionHistory.Empty,
+                    pendingUserMessage = "Summarize sales",
+                    partialAssistantText = "Sales are up today",
+                )
+            )
             assertThat(runtime.startRequests.last()).isEqualTo(
                 expectedTurnRequest(
                     requestId = "assistant-id-7",
@@ -1509,6 +1514,13 @@ class AssistantViewModelTest {
             advanceUntilIdle()
             viewModel.onSendMessage("What changed?")
 
+            assertThat(runtime.cancelledTurnHistoryRequests).containsExactly(
+                CancelledTurnHistoryRequest(
+                    baseSessionHistory = AssistantSessionHistory.Empty,
+                    pendingUserMessage = "Summarize sales",
+                    partialAssistantText = "",
+                )
+            )
             assertThat(runtime.startRequests.last()).isEqualTo(
                 expectedTurnRequest(
                     requestId = "assistant-id-7",
@@ -1519,6 +1531,27 @@ class AssistantViewModelTest {
                     ),
                 )
             )
+        }
+
+    @Test
+    fun `given runtime returns cancelled history, when new message is sent, then next turn uses returned history`() =
+        runTest {
+            val returnedHistory = sessionHistoryFrom(
+                listOf(
+                    AssistantMessage.User("Runtime persisted user"),
+                    AssistantMessage.Assistant("Runtime persisted text"),
+                )
+            )
+            runtime.cancelledTurnHistory = returnedHistory
+            viewModel.onSendMessage("Summarize sales")
+            runtime.emit(AssistantRuntimeEvent.AssistantTextDelta("Sales are up today"))
+            advanceUntilIdle()
+
+            viewModel.onCancelTurn()
+            advanceUntilIdle()
+            viewModel.onSendMessage("What changed?")
+
+            assertThat(runtime.startRequests.last().sessionHistory).isEqualTo(returnedHistory)
         }
 
     @Test
@@ -1884,11 +1917,19 @@ class AssistantViewModelTest {
         ),
     )
 
+    private data class CancelledTurnHistoryRequest(
+        val baseSessionHistory: AssistantSessionHistory,
+        val pendingUserMessage: String,
+        val partialAssistantText: String?,
+    )
+
     private inner class FakeAssistantRuntime : AssistantRuntime {
         val startRequests = mutableListOf<AssistantTurnRequest>()
         val retryRequests = mutableListOf<AssistantTurnRequest>()
         val cancelledConversationIds = mutableListOf<String>()
+        val cancelledTurnHistoryRequests = mutableListOf<CancelledTurnHistoryRequest>()
         val results = mutableListOf<ConfirmationResult>()
+        var cancelledTurnHistory: AssistantSessionHistory? = null
         var confirmationResult: AssistantRuntimeConfirmationDispatchResult =
             AssistantRuntimeConfirmationDispatchResult.Accepted
 
@@ -1902,6 +1943,26 @@ class AssistantViewModelTest {
         override fun retryTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> {
             retryRequests += request
             return events
+        }
+
+        override fun buildCancelledTurnHistory(
+            baseSessionHistory: AssistantSessionHistory,
+            pendingUserMessage: String,
+            partialAssistantText: String?,
+        ): AssistantSessionHistory {
+            cancelledTurnHistoryRequests += CancelledTurnHistoryRequest(
+                baseSessionHistory = baseSessionHistory,
+                pendingUserMessage = pendingUserMessage,
+                partialAssistantText = partialAssistantText,
+            )
+            return cancelledTurnHistory ?: baseSessionHistory.append(
+                buildList {
+                    add(AssistantSessionMessage.User(pendingUserMessage))
+                    partialAssistantText
+                        ?.takeIf { text -> text.isNotBlank() }
+                        ?.let { text -> add(AssistantSessionMessage.Assistant(text)) }
+                }
+            )
         }
 
         override suspend fun cancelTurn(conversationId: String) {

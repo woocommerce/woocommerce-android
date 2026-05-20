@@ -19,6 +19,12 @@ internal interface AssistantRuntime {
 
     fun retryTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent>
 
+    fun buildCancelledTurnHistory(
+        baseSessionHistory: AssistantSessionHistory,
+        pendingUserMessage: String,
+        partialAssistantText: String?,
+    ): AssistantSessionHistory
+
     suspend fun cancelTurn(conversationId: String)
 
     suspend fun resolveConfirmation(result: ConfirmationResult): AssistantRuntimeConfirmationDispatchResult

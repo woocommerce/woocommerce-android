@@ -8,8 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
-import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
@@ -55,6 +54,16 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
 
     override fun retryTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
+
+    override fun buildCancelledTurnHistory(
+        baseSessionHistory: AssistantSessionHistory,
+        pendingUserMessage: String,
+        partialAssistantText: String?,
+    ): AssistantSessionHistory = sessionHistoryMapper.appendCancelledTurn(
+        baseHistory = baseSessionHistory,
+        userMessage = pendingUserMessage,
+        assistantText = partialAssistantText,
+    )
 
     override suspend fun cancelTurn(conversationId: String) = Unit
 

@@ -105,6 +105,14 @@ class FeatureModuleBoundaryTest {
                     )
                 )
             )
+            addAll(
+                viewModel.forbiddenMatches(
+                    Regex(
+                        """import\s+com\.woocommerce\.android\.aiassistant\.(runtime|core\.history)""" +
+                            """\.AssistantSessionHistoryMapper\b"""
+                    )
+                )
+            )
             addAll(viewModel.forbiddenMatches(Regex("""AssistantSessionMessage\.User\(""")))
             addAll(viewModel.forbiddenMatches(Regex("""AssistantSessionMessage\.Assistant\(""")))
             addAll(viewModel.forbiddenMatches(Regex("""AssistantSessionMessage\.ToolExchange\(""")))

@@ -1,7 +1,9 @@
-package com.woocommerce.android.aiassistant.core.history
+package com.woocommerce.android.aiassistant.runtime
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgeter
 import kotlinx.serialization.json.buildJsonObject

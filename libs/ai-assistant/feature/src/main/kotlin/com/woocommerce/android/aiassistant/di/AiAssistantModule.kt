@@ -2,8 +2,6 @@ package com.woocommerce.android.aiassistant.di
 
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
-import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoopImpl
 import com.woocommerce.android.aiassistant.core.loop.ConservativeRetryPolicy
@@ -13,6 +11,8 @@ import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgete
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
+import com.woocommerce.android.aiassistant.runtime.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.runtime.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import dagger.Module
 import dagger.Provides
@@ -63,7 +63,7 @@ internal object AiAssistantModule {
 
     @Provides
     @Singleton
-    fun provideHistoryBudgeter(): HistoryBudgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+    fun provideHistoryBudgeter(): HistoryBudgeter = SlidingWindowHistoryBudgeter()
 
     @Provides
     @Singleton

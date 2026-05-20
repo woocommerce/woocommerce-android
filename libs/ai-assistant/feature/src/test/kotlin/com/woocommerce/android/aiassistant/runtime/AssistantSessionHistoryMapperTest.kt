@@ -1,8 +1,10 @@
-package com.woocommerce.android.aiassistant.core.history
+package com.woocommerce.android.aiassistant.runtime
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
@@ -82,15 +84,19 @@ internal class AssistantSessionHistoryMapperTest {
     }
 
     @Test
-    fun `given outcome unknown, when mapping, then tool protocol is not reusable session history`() {
+    fun `given outcome unknown with matched pair, when mapping, then exchange is preserved`() {
         val toolCall = toolCall(name = "orders_update")
+        val toolResult = AssistantMessage.Tool(
+            toolCallId = toolCall.id,
+            content = """{"error":"Tool execution failed"}""",
+        )
 
         val result = mapper.appendTurn(
             baseHistory = AssistantSessionHistory.Empty,
             modelTurnMessages = listOf(
                 AssistantMessage.User("Cancel order"),
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
-                AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"error":"Tool execution failed"}"""),
+                toolResult,
             ),
             outcome = LoopOutcome.FAILED,
             error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
@@ -98,26 +104,39 @@ internal class AssistantSessionHistoryMapperTest {
 
         assertThat(result.messages).containsExactly(
             AssistantSessionMessage.User("Cancel order"),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = null,
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
         )
     }
 
     @Test
-    fun `given confirmation cancellation, when mapping, then cancelled tool protocol is stripped`() {
+    fun `given confirmation cancellation, when mapping, then cancelled tool exchange is preserved`() {
         val toolCall = toolCall(name = "orders_update")
+        val toolResult = AssistantMessage.Tool(
+            toolCallId = toolCall.id,
+            content = """{"error":"Action was cancelled"}""",
+        )
 
         val result = mapper.appendTurn(
             baseHistory = AssistantSessionHistory.Empty,
             modelTurnMessages = listOf(
                 AssistantMessage.User("Cancel order"),
                 AssistantMessage.Assistant(content = "I can do that.", toolCalls = listOf(toolCall)),
-                AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"error":"Action was cancelled"}"""),
+                toolResult,
             ),
             outcome = LoopOutcome.STOPPED,
         )
 
         assertThat(result.messages).containsExactly(
             AssistantSessionMessage.User("Cancel order"),
-            AssistantSessionMessage.Assistant("I can do that."),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = "I can do that.",
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
         )
     }
 
@@ -139,15 +158,19 @@ internal class AssistantSessionHistoryMapperTest {
     }
 
     @Test
-    fun `given malformed failed or rejected tool results, when mapping, then no tool messages are persisted`() {
+    fun `given invalid tool call, when mapping with matched pair, then exchange is preserved`() {
         val toolCall = toolCall()
+        val toolResult = AssistantMessage.Tool(
+            toolCallId = toolCall.id,
+            content = """{"error":"Malformed arguments"}""",
+        )
 
         val result = mapper.appendTurn(
             baseHistory = AssistantSessionHistory.Empty,
             modelTurnMessages = listOf(
                 AssistantMessage.User("Run tool"),
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
-                AssistantMessage.Tool(toolCallId = toolCall.id, content = """{"error":"Malformed arguments"}"""),
+                toolResult,
             ),
             outcome = LoopOutcome.FAILED,
             error = AssistantError.InvalidToolCall(toolName = toolCall.name),
@@ -155,6 +178,11 @@ internal class AssistantSessionHistoryMapperTest {
 
         assertThat(result.messages).containsExactly(
             AssistantSessionMessage.User("Run tool"),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = null,
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
         )
     }
 
@@ -255,37 +283,59 @@ internal class AssistantSessionHistoryMapperTest {
     }
 
     @Test
-    fun `given terminal outcomes, when mapping valid protocol, then no exchange is stored`() {
-        val outcomes = listOf(LoopOutcome.FAILED, LoopOutcome.STOPPED, LoopOutcome.MAX_ITERATIONS)
-        val toolCall = toolCall()
-
-        outcomes.forEach { outcome ->
-            val result = mapper.appendTurn(
-                baseHistory = AssistantSessionHistory.Empty,
-                modelTurnMessages = listOf(
-                    AssistantMessage.User("Run tool"),
-                    AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
-                    toolResult(toolCall.id),
-                ),
-                outcome = outcome,
-            )
-
-            assertThat(result.messages)
-                .describedAs("outcome $outcome")
-                .containsExactly(AssistantSessionMessage.User("Run tool"))
-        }
-    }
-
-    @Test
-    fun `given failed assistant message has content and tool calls, when mapping, then content is preserved as text`() {
+    fun `given STOPPED with Cancelled error and matched pair, when mapping, then exchange is stripped`() {
         val toolCall = toolCall()
 
         val result = mapper.appendTurn(
             baseHistory = AssistantSessionHistory.Empty,
             modelTurnMessages = listOf(
                 AssistantMessage.User("Run tool"),
-                AssistantMessage.Assistant(content = "I can check that.", toolCalls = listOf(toolCall)),
+                AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 toolResult(toolCall.id),
+            ),
+            outcome = LoopOutcome.STOPPED,
+            error = AssistantError.Cancelled,
+        )
+
+        assertThat(result.messages).containsExactly(AssistantSessionMessage.User("Run tool"))
+    }
+
+    @Test
+    fun `given MAX_ITERATIONS with matched pair, when mapping, then exchange is preserved`() {
+        val toolCall = toolCall()
+        val toolResult = toolResult(toolCall.id)
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Run tool"),
+                AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
+                toolResult,
+            ),
+            outcome = LoopOutcome.MAX_ITERATIONS,
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Run tool"),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = null,
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
+        )
+    }
+
+    @Test
+    fun `given failed assistant message has content and tool calls, when mapping with matched pair, then exchange retains assistant content`() {
+        val toolCall = toolCall()
+        val toolResult = toolResult(toolCall.id)
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Run tool"),
+                AssistantMessage.Assistant(content = "I can check that.", toolCalls = listOf(toolCall)),
+                toolResult,
             ),
             outcome = LoopOutcome.FAILED,
             error = AssistantError.OutcomeUnknown(toolName = toolCall.name),
@@ -293,7 +343,11 @@ internal class AssistantSessionHistoryMapperTest {
 
         assertThat(result.messages).containsExactly(
             AssistantSessionMessage.User("Run tool"),
-            AssistantSessionMessage.Assistant("I can check that."),
+            AssistantSessionMessage.ToolExchange(
+                assistantContent = "I can check that.",
+                toolCalls = listOf(toolCall),
+                toolResults = listOf(toolResult),
+            ),
         )
     }
 

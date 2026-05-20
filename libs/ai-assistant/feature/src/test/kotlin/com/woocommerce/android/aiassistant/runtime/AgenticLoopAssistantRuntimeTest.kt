@@ -13,10 +13,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.history.ModelRequestHistory
-import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.BudgetedHistory
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
@@ -440,11 +438,15 @@ class AgenticLoopAssistantRuntimeTest {
     }
 
     @Test
-    fun `given poisoned tool finish, when next turn starts, then stale tool protocol is not sent`() = runTest {
+    fun `given outcome unknown with matched tool result, when next turn starts, then exchange replays so model can recover`() = runTest {
         val toolCall = ToolCall(
             id = "call-1",
             name = "orders_update",
             arguments = buildJsonObject { put("id", 123) },
+        )
+        val toolResult = AssistantMessage.Tool(
+            toolCallId = toolCall.id,
+            content = """{"error":"Tool execution failed"}""",
         )
         val fakeLoop = SequencedCapturingAgenticLoop(
             eventBatches = listOf(
@@ -454,10 +456,7 @@ class AgenticLoopAssistantRuntimeTest {
                         modelTurnMessages = listOf(
                             AssistantMessage.User("Update order"),
                             AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
-                            AssistantMessage.Tool(
-                                toolCallId = toolCall.id,
-                                content = """{"error":"Tool execution failed"}""",
-                            ),
+                            toolResult,
                         ),
                         error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
                     )
@@ -478,21 +477,26 @@ class AgenticLoopAssistantRuntimeTest {
         ).toList()
 
         val nextTurnMessages = fakeLoop.receivedModelHistories.last().messages
-        assertThat(nextTurnMessages.filterIsInstance<AssistantMessage.Tool>()).isEmpty()
-        assertThat(nextTurnMessages.filterIsInstance<AssistantMessage.Assistant>().flatMap { it.toolCalls }).isEmpty()
-        assertThat(nextTurnMessages).contains(
+        assertThat(nextTurnMessages).containsExactly(
+            AssistantMessage.System("system prompt v1"),
             AssistantMessage.User("Update order"),
+            AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
+            toolResult,
             AssistantMessage.User("What happened?"),
         )
     }
 
     @Test
-    fun `given outcome unknown with assistant content, when next turn starts, then only safe text replays`() =
+    fun `given outcome unknown with assistant content, when next turn starts, then exchange replays so model can recover`() =
         runTest {
             val toolCall = toolCall(
                 id = "call-1",
                 name = "orders_update",
                 arguments = buildJsonObject { put("id", 123) },
+            )
+            val toolResult = AssistantMessage.Tool(
+                toolCallId = toolCall.id,
+                content = """{"error":"Tool execution failed"}""",
             )
             val fakeLoop = SequencedCapturingAgenticLoop(
                 eventBatches = listOf(
@@ -505,12 +509,172 @@ class AgenticLoopAssistantRuntimeTest {
                                     content = "I can update that.",
                                     toolCalls = listOf(toolCall),
                                 ),
-                                AssistantMessage.Tool(
-                                    toolCallId = toolCall.id,
-                                    content = """{"error":"Tool execution failed"}""",
-                                ),
+                                toolResult,
                             ),
                             error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
+                        )
+                    ),
+                    emptyList(),
+                )
+            )
+            val runtime = runtime(agenticLoop = fakeLoop)
+
+            val firstFinished = runtime.startTurn(
+                givenTurnRequest(userMessage = "Update order")
+            ).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+            runtime.startTurn(
+                givenTurnRequest(
+                    userMessage = "What happened?",
+                    sessionHistory = firstFinished.updatedSessionHistory,
+                )
+            ).toList()
+
+            val nextTurnMessages = fakeLoop.receivedModelHistories.last().messages
+            assertThat(nextTurnMessages).containsExactly(
+                AssistantMessage.System("system prompt v1"),
+                AssistantMessage.User("Update order"),
+                AssistantMessage.Assistant(
+                    content = "I can update that.",
+                    toolCalls = listOf(toolCall),
+                ),
+                toolResult,
+                AssistantMessage.User("What happened?"),
+            )
+        }
+
+    @Test
+    fun `given MAX_ITERATIONS with matched tool exchange, when next turn starts, then exchange replays`() =
+        runTest {
+            val toolCall = toolCall(
+                id = "call-1",
+                name = "orders_update",
+                arguments = buildJsonObject { put("id", 123) },
+            )
+            val toolResult = AssistantMessage.Tool(
+                toolCallId = toolCall.id,
+                content = """{"error":"Malformed arguments"}""",
+            )
+            val fakeLoop = SequencedCapturingAgenticLoop(
+                eventBatches = listOf(
+                    listOf(
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.MAX_ITERATIONS,
+                            modelTurnMessages = listOf(
+                                AssistantMessage.User("Update order"),
+                                AssistantMessage.Assistant(
+                                    content = "I can update that.",
+                                    toolCalls = listOf(toolCall),
+                                ),
+                                toolResult,
+                            ),
+                        )
+                    ),
+                    emptyList(),
+                )
+            )
+            val runtime = runtime(agenticLoop = fakeLoop)
+
+            val firstFinished = runtime.startTurn(
+                givenTurnRequest(userMessage = "Update order")
+            ).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+            runtime.startTurn(
+                givenTurnRequest(
+                    userMessage = "What happened?",
+                    sessionHistory = firstFinished.updatedSessionHistory,
+                )
+            ).toList()
+
+            assertThat(fakeLoop.receivedModelHistories.last().messages).containsExactly(
+                AssistantMessage.System("system prompt v1"),
+                AssistantMessage.User("Update order"),
+                AssistantMessage.Assistant(
+                    content = "I can update that.",
+                    toolCalls = listOf(toolCall),
+                ),
+                toolResult,
+                AssistantMessage.User("What happened?"),
+            )
+        }
+
+    @Test
+    fun `given STOPPED after denied confirmation, when next turn starts, then exchange replays so model can acknowledge denial`() =
+        runTest {
+            val toolCall = toolCall(
+                id = "call-1",
+                name = "orders_update",
+                arguments = buildJsonObject { put("id", 123) },
+            )
+            val toolResult = AssistantMessage.Tool(
+                toolCallId = toolCall.id,
+                content = """{"error":"Action was cancelled"}""",
+            )
+            val fakeLoop = SequencedCapturingAgenticLoop(
+                eventBatches = listOf(
+                    listOf(
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.STOPPED,
+                            modelTurnMessages = listOf(
+                                AssistantMessage.User("Cancel order"),
+                                AssistantMessage.Assistant(
+                                    content = "I can cancel that.",
+                                    toolCalls = listOf(toolCall),
+                                ),
+                                toolResult,
+                            ),
+                        )
+                    ),
+                    emptyList(),
+                )
+            )
+            val runtime = runtime(agenticLoop = fakeLoop)
+
+            val firstFinished = runtime.startTurn(
+                givenTurnRequest(userMessage = "Cancel order")
+            ).toList().filterIsInstance<AssistantRuntimeEvent.Finished>().single()
+            runtime.startTurn(
+                givenTurnRequest(
+                    userMessage = "What happened?",
+                    sessionHistory = firstFinished.updatedSessionHistory,
+                )
+            ).toList()
+
+            assertThat(fakeLoop.receivedModelHistories.last().messages).containsExactly(
+                AssistantMessage.System("system prompt v1"),
+                AssistantMessage.User("Cancel order"),
+                AssistantMessage.Assistant(
+                    content = "I can cancel that.",
+                    toolCalls = listOf(toolCall),
+                ),
+                toolResult,
+                AssistantMessage.User("What happened?"),
+            )
+        }
+
+    @Test
+    fun `given STOPPED with Cancelled error, when next turn starts, then no stale tool protocol is replayed`() =
+        runTest {
+            val toolCall = toolCall(
+                id = "call-1",
+                name = "orders_update",
+                arguments = buildJsonObject { put("id", 123) },
+            )
+            val fakeLoop = SequencedCapturingAgenticLoop(
+                eventBatches = listOf(
+                    listOf(
+                        LoopEvent.Finished(
+                            outcome = LoopOutcome.STOPPED,
+                            modelTurnMessages = listOf(
+                                AssistantMessage.User("Update order"),
+                                AssistantMessage.Assistant(
+                                    content = "I can update that.",
+                                    toolCalls = listOf(toolCall),
+                                ),
+                                AssistantMessage.Tool(
+                                    toolCallId = toolCall.id,
+                                    content = """{"error":"Action was cancelled"}""",
+                                ),
+                            ),
+                            error = AssistantError.Cancelled,
                         )
                     ),
                     emptyList(),
@@ -533,14 +697,39 @@ class AgenticLoopAssistantRuntimeTest {
             assertThat(
                 nextTurnMessages
                     .filterIsInstance<AssistantMessage.Assistant>()
-                    .flatMap { it.toolCalls },
+                    .flatMap { it.toolCalls }
             ).isEmpty()
-            assertThat(nextTurnMessages).contains(
+            assertThat(nextTurnMessages).containsExactly(
+                AssistantMessage.System("system prompt v1"),
                 AssistantMessage.User("Update order"),
                 AssistantMessage.Assistant("I can update that."),
                 AssistantMessage.User("What happened?"),
             )
         }
+
+    @Test
+    fun `when ViewModel asks runtime to build cancelled-turn history, then mapper is invoked through the runtime`() {
+        val runtime = runtime()
+        val baseHistory = AssistantSessionHistory(
+            listOf(
+                AssistantSessionMessage.User("Earlier"),
+                AssistantSessionMessage.Assistant("Answer"),
+            )
+        )
+
+        val result = runtime.buildCancelledTurnHistory(
+            baseSessionHistory = baseHistory,
+            pendingUserMessage = "Summarize sales",
+            partialAssistantText = "Sales are up",
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Earlier"),
+            AssistantSessionMessage.Assistant("Answer"),
+            AssistantSessionMessage.User("Summarize sales"),
+            AssistantSessionMessage.Assistant("Sales are up"),
+        )
+    }
 
     @Test
     fun `when loop emits rejected safety decision, then runtime emits failed tool telemetry event`() = runTest {
