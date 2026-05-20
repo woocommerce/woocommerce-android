@@ -1,0 +1,65 @@
+# Config for Automattic/i18n-context-generator
+# (https://github.com/Automattic/i18n-context-generator).
+#
+# Runs against the canonical Android strings file and the Kotlin/Java/layout
+# sources where keys are referenced. Output is written back into strings.xml as
+# `<!-- Context: ... -->` comments above each translatable key; our engine's
+# parser (Phase 6 sticky-comment logic) picks these up as per-string context
+# automatically -- no JSON shuttling needed.
+#
+# Run (after `export ANTHROPIC_API_KEY=...`):
+#   BUNDLE_GEMFILE=/tmp/i18n-context-generator/Gemfile \
+#     bundle exec /tmp/i18n-context-generator/exe/i18n-context-generator extract \
+#       --config .i18n-context-generator.yml
+
+translations:
+  - path: WooCommerce/src/main/res/values/strings.xml
+
+source:
+  paths:
+    - WooCommerce/src/main/kotlin
+    - WooCommerce/src/main/java
+    - WooCommerce/src/main/res/layout
+    - WooCommerce/src/main/res/menu
+    - WooCommerce/src/main/res/navigation
+    - WooCommerce/src/main/res/xml
+    - libs/login/src/main
+    - libs/pos/src/main
+    - libs/cardreader/src/main
+  ignore:
+    - "**/build/**"
+    - "**/test/**"
+    - "**/androidTest/**"
+    - "**/*Test.kt"
+    - "**/*Tests.kt"
+
+llm:
+  # Haiku is plenty for context extraction (and ~5x cheaper than Sonnet).
+  provider: anthropic
+  model: claude-haiku-4-5
+
+processing:
+  # Parallelism is bounded by the Anthropic API rate limit on the user's account.
+  concurrency: 5
+  context_lines: 15
+  max_matches_per_key: 3
+
+output:
+  # Also dump a JSON record as an audit trail.
+  format: json
+  path: /tmp/woo-context-extract.json
+  # Modify strings.xml in place. `append` preserves existing section-header
+  # comments so the section structure stays readable; the tool adds a
+  # per-string `<!-- Context: ... -->` comment that becomes the
+  # immediately-preceding (sticky) comment our parser feeds to the engine.
+  write_back: true
+  context_prefix: "Context: "
+  context_mode: append
+
+privacy:
+  # Don't include file paths in prompts; minor PII-shape leak otherwise.
+  include_file_paths: false
+  # The existing XML comments (mostly section headers) are useful to the LLM
+  # for inferring per-string context.
+  include_translation_comments: true
+  redact_prompts: true
