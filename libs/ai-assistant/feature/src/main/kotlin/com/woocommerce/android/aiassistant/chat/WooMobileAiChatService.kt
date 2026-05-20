@@ -17,10 +17,7 @@ import okhttp3.OkHttpClient
 import javax.inject.Inject
 
 /**
- * Inactive wrapper chat service for `woo-mobile-ai`.
- *
- * This class is intentionally not bound as [ChatService] yet; production traffic
- * stays on [JetpackAiChatService] until the wrapper endpoint is ready to enable.
+ * Wrapper chat service for the `woo-mobile-ai` endpoint.
  */
 internal class WooMobileAiChatService @Inject constructor(
     @AssistantOkHttpClient httpClient: OkHttpClient,

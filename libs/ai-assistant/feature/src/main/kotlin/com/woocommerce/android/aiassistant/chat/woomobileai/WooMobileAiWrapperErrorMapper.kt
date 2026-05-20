@@ -7,11 +7,12 @@ import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseMappedError
 import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseStreamErrorContext
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 internal class WooMobileAiWrapperErrorMapper @Inject constructor(
-    private val json: Json,
+    @AiAssistantJson private val json: Json,
 ) : OpenAiSseErrorMapper {
     override fun mapHttpError(
         context: OpenAiSseHttpErrorContext,
