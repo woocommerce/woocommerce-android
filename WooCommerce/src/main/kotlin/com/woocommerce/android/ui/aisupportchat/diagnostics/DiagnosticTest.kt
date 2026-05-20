@@ -9,5 +9,6 @@ enum class DiagnosticTest {
     WPCOM_SERVERS,
     STORE_CONNECTION,
     STORE_ORDERS,
-    STORE_PRODUCTS
+    STORE_PRODUCTS,
+    ANALYTICS_SETTING
 }
