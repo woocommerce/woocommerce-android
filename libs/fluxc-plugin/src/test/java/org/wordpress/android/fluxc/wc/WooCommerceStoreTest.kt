@@ -438,6 +438,42 @@ class WooCommerceStoreTest {
         }
     }
 
+    @Test
+    fun `when enabling analytics succeeds, then true is returned`() {
+        runBlocking {
+            whenever(wcrestClient.enableAnalytics(site)).thenReturn(WooPayload(true))
+            val result = wooCommerceStore.enableAnalytics(site)
+            assertThat(result).isTrue
+        }
+    }
+
+    @Test
+    fun `when enabling analytics fails, then false is returned`() {
+        runBlocking {
+            whenever(wcrestClient.enableAnalytics(site)).thenReturn(WooPayload(false))
+            val result = wooCommerceStore.enableAnalytics(site)
+            assertThat(result).isFalse
+        }
+    }
+
+    @Test
+    fun `when fetching analytics setting succeeds, then setting value is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsEnabled(site)).thenReturn(WooPayload(true))
+            val result = wooCommerceStore.fetchAnalyticsEnabled(site)
+            assertThat(result.model).isTrue
+        }
+    }
+
+    @Test
+    fun `when fetching analytics setting fails, then error is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsEnabled(site)).thenReturn(WooPayload(error))
+            val result = wooCommerceStore.fetchAnalyticsEnabled(site)
+            assertThat(result.isError).isTrue
+        }
+    }
+
     private suspend fun getPlugin(isError: Boolean = false): WooResult<List<SitePluginModel>> {
         val payload = WooPayload(response)
         if (isError) {

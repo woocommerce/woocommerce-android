@@ -59,6 +59,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SuggestedFixAction
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
 import com.woocommerce.android.ui.compose.DialogState
@@ -67,6 +68,8 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.troubleshooting.FailureType
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
 import com.woocommerce.commons.ui.markdown.MarkdownText
 
 @Composable
@@ -81,6 +84,7 @@ fun AiSupportChatScreen(
         onSendClicked = viewModel::onSendClicked,
         onIssueSelected = viewModel::onIssueSelected,
         onContinueAfterDiagnosticsClicked = viewModel::onContinueAfterDiagnosticsClicked,
+        onSuggestedFixActionClicked = viewModel::onSuggestedFixActionClicked,
         onContactSupportClicked = { onContactSupportClicked(HumanSupportContactSource.BANNER) },
         onContactSupportFromErrorClicked = { onContactSupportClicked(HumanSupportContactSource.ERROR_DIALOG) },
         onSendErrorDismissed = viewModel::onSendErrorDismissed,
@@ -98,6 +102,7 @@ fun AiSupportChatScreen(
     onSendClicked: () -> Unit,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
     onContactSupportClicked: () -> Unit,
     onContactSupportFromErrorClicked: () -> Unit,
     onSendErrorDismissed: () -> Unit,
@@ -120,6 +125,7 @@ fun AiSupportChatScreen(
             showDiagnosticActions = viewState.showDiagnosticActions,
             onIssueSelected = onIssueSelected,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+            onSuggestedFixActionClicked = onSuggestedFixActionClicked,
             onFeedbackClicked = onFeedbackClicked,
             modifier = Modifier
                 .weight(1f)
@@ -171,6 +177,7 @@ private fun MessageList(
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -209,6 +216,7 @@ private fun MessageList(
                 showDiagnosticActions = showDiagnosticActions,
                 onIssueSelected = onIssueSelected,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+                onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                 onFeedbackClicked = onFeedbackClicked
             )
         }
@@ -228,6 +236,7 @@ private fun MessageBubble(
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
     onFeedbackClicked: (Long, AiSupportChatFeedbackRating) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -261,7 +270,8 @@ private fun MessageBubble(
                     shouldFormatMarkdown = message.role == AiSupportChatMessageRole.BOT,
                     showDiagnosticActions = showDiagnosticActions,
                     onIssueSelected = onIssueSelected,
-                    onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
+                    onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+                    onSuggestedFixActionClicked = onSuggestedFixActionClicked
                 )
             }
             if (message.canShowFeedback()) {
@@ -360,7 +370,8 @@ private fun MessageContent(
     shouldFormatMarkdown: Boolean,
     showDiagnosticActions: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
-    onContinueAfterDiagnosticsClicked: () -> Unit
+    onContinueAfterDiagnosticsClicked: () -> Unit,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit
 ) {
     when (content) {
         AiSupportChatMessageContent.Greeting -> TextContent(
@@ -391,13 +402,15 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
-            onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
+            onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+            onSuggestedFixActionClicked = onSuggestedFixActionClicked
         )
         is AiSupportChatMessageContent.DiagnosticsFailure -> DiagnosticsContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
-            onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
+            onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+            onSuggestedFixActionClicked = onSuggestedFixActionClicked
         )
     }
 }
@@ -461,7 +474,8 @@ private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
     showDiagnosticActions: Boolean,
-    onContinueAfterDiagnosticsClicked: () -> Unit
+    onContinueAfterDiagnosticsClicked: () -> Unit,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit
 ) {
     val hasFailure = result.firstFailure != null
 
@@ -486,20 +500,86 @@ private fun DiagnosticsContent(
         if (showDiagnosticActions) {
             if (hasFailure) {
                 Text(
-                    text = stringResource(R.string.ai_support_chat_diagnostics_failure),
+                    text = result.failureMessage(),
                     color = textColor,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))) {
-                WCColoredButton(
-                    onClick = onContinueAfterDiagnosticsClicked,
-                    text = stringResource(R.string.ai_support_chat_diagnostics_continue),
+            DiagnosticActions(
+                suggestedAction = result.suggestedAction,
+                onSuggestedFixActionClicked = onSuggestedFixActionClicked,
+                onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
+            )
+        }
+    }
+}
+
+@Composable
+private fun DiagnosticActions(
+    suggestedAction: SuggestedFixAction?,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
+    onContinueAfterDiagnosticsClicked: () -> Unit
+) {
+    BoxWithConstraints {
+        val spacing = dimensionResource(R.dimen.minor_100)
+        val useVerticalActions = maxWidth < MIN_HORIZONTAL_DIAGNOSTIC_ACTIONS_WIDTH
+
+        if (useVerticalActions) {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing)) {
+                suggestedAction?.let { action ->
+                    SuggestedFixActionButton(
+                        action = action,
+                        onSuggestedFixActionClicked = onSuggestedFixActionClicked,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                ContinueAfterDiagnosticsButton(
+                    onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
+                suggestedAction?.let { action ->
+                    SuggestedFixActionButton(
+                        action = action,
+                        onSuggestedFixActionClicked = onSuggestedFixActionClicked,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                ContinueAfterDiagnosticsButton(
+                    onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
                     modifier = Modifier.weight(1f)
                 )
             }
         }
     }
+}
+
+@Composable
+private fun SuggestedFixActionButton(
+    action: SuggestedFixAction,
+    onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    WCOutlinedButton(
+        onClick = { onSuggestedFixActionClicked(action) },
+        modifier = modifier
+    ) {
+        Text(text = action.title())
+    }
+}
+
+@Composable
+private fun ContinueAfterDiagnosticsButton(
+    onContinueAfterDiagnosticsClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    WCColoredButton(
+        onClick = onContinueAfterDiagnosticsClicked,
+        text = stringResource(R.string.ai_support_chat_diagnostics_continue),
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -543,6 +623,45 @@ private fun DiagnosticTest.title(): String =
             DiagnosticTest.STORE_ORDERS -> R.string.orderlist_connectivity_tool_store_orders_check_title
             DiagnosticTest.STORE_PRODUCTS -> R.string.orderlist_connectivity_tool_store_products_check_title
             DiagnosticTest.ANALYTICS_SETTING -> R.string.ai_support_chat_diagnostics_analytics_setting_title
+        }
+    )
+
+@Composable
+private fun SuggestedFixAction.title(): String =
+    stringResource(
+        when (this) {
+            SuggestedFixAction.EnableAnalytics -> R.string.ai_support_chat_diagnostics_enable_analytics
+        }
+    )
+
+@Composable
+private fun DiagnosticResult.failureMessage(): String {
+    val failedTest = firstFailure ?: return ""
+    val failedStatus = failedTest.status as? TestStatus.Failed ?: return ""
+
+    return when {
+        failedTest.test == DiagnosticTest.INTERNET_CONNECTION ->
+            stringResource(R.string.orderlist_connectivity_tool_internet_check_suggestion)
+        failedTest.test == DiagnosticTest.WPCOM_SERVERS ->
+            stringResource(R.string.ai_support_chat_diagnostics_wpcom_connection_failure)
+        failedTest.test == DiagnosticTest.ANALYTICS_SETTING &&
+            failedStatus.technicalDetails
+                ?.contains(StoreAnalyticsCheckUseCase.PLUGIN_NOT_ACTIVE_ERROR_TYPE) == true ->
+            stringResource(R.string.ai_support_chat_diagnostics_analytics_disabled_failure)
+        failedTest.test == DiagnosticTest.ANALYTICS_SETTING ->
+            stringResource(R.string.ai_support_chat_diagnostics_analytics_check_failure)
+        else -> failedStatus.failureMessage()
+    }
+}
+
+@Composable
+private fun TestStatus.Failed.failureMessage(): String =
+    stringResource(
+        when (failureType) {
+            FailureType.TIMEOUT -> R.string.orderlist_connectivity_tool_timeout_error_suggestion
+            FailureType.PARSE -> R.string.ai_support_chat_diagnostics_parse_failure
+            FailureType.JETPACK -> R.string.ai_support_chat_diagnostics_jetpack_failure
+            FailureType.GENERIC, null -> R.string.orderlist_connectivity_tool_generic_error_suggestion
         }
     )
 
@@ -801,6 +920,7 @@ private fun AiSupportChatScreenPreview() {
             onSendClicked = {},
             onIssueSelected = { _, _ -> },
             onContinueAfterDiagnosticsClicked = {},
+            onSuggestedFixActionClicked = {},
             onContactSupportClicked = {},
             onContactSupportFromErrorClicked = {},
             onSendErrorDismissed = {},
@@ -813,6 +933,7 @@ private fun AiSupportChatScreenPreview() {
 }
 
 private const val MAX_BUBBLE_WIDTH_FRACTION = 0.88f
+private val MIN_HORIZONTAL_DIAGNOSTIC_ACTIONS_WIDTH = 360.dp
 private val MESSAGE_BUBBLE_CORNER_RADIUS = 16.dp
 private val FEEDBACK_BUTTON_SIZE = 48.dp
 private val RATED_FEEDBACK_ICON_SIZE = 18.dp

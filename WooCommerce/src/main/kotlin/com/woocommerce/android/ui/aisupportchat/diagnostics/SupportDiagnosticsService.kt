@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.aisupportchat.diagnostics
 
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.ANALYTICS_SETTING
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.INTERNET_CONNECTION
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_CONNECTION
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_ORDERS
@@ -55,7 +56,7 @@ class SupportDiagnosticsService @Inject constructor(
                     DiagnosticResult(
                         issueType = issueType,
                         statuses = statuses,
-                        suggestedAction = SuggestedFixAction.RetryDiagnostics
+                        suggestedAction = suggestedActionFor(test, newStatus)
                     )
                 )
                 return@flow
@@ -71,7 +72,7 @@ class SupportDiagnosticsService @Inject constructor(
         SupportIssueType.LOADING_PRODUCTS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_PRODUCTS)
         SupportIssueType.LOADING_ANALYTICS ->
-            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, DiagnosticTest.ANALYTICS_SETTING)
+            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, ANALYTICS_SETTING)
         SupportIssueType.RECEIVING_NOTIFICATIONS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
         SupportIssueType.OTHER ->
@@ -84,7 +85,24 @@ class SupportDiagnosticsService @Inject constructor(
         STORE_CONNECTION -> storeConnectionCheck()
         STORE_ORDERS -> storeOrdersCheck()
         STORE_PRODUCTS -> storeProductsCheck()
-        DiagnosticTest.ANALYTICS_SETTING -> storeAnalyticsCheck()
+        ANALYTICS_SETTING -> storeAnalyticsCheck()
+    }
+
+    suspend fun enableAnalytics(): Result<Unit> =
+        runCatching {
+            enableAnalyticsWithRetry(retries = 0)
+        }
+
+    private suspend fun enableAnalyticsWithRetry(retries: Int) {
+        storeAnalyticsCheck.enableAnalytics()
+            .getOrElse { error ->
+                if (error is CancellationException) throw error
+                if (retries < ENABLE_ANALYTICS_MAX_RETRIES) {
+                    enableAnalyticsWithRetry(retries = retries + 1)
+                } else {
+                    throw error
+                }
+            }
     }
 
     private suspend fun runCheckSafely(test: DiagnosticTest): ConnectivityCheckStatus =
@@ -109,6 +127,20 @@ class SupportDiagnosticsService @Inject constructor(
             TestStatus.Failed(technicalDetails = "Diagnostic did not complete")
     }
 
+    private fun suggestedActionFor(test: DiagnosticTest, status: TestStatus.Failed): SuggestedFixAction? =
+        if (
+            test == ANALYTICS_SETTING &&
+            status.technicalDetails?.contains(StoreAnalyticsCheckUseCase.PLUGIN_NOT_ACTIVE_ERROR_TYPE) == true
+        ) {
+            SuggestedFixAction.EnableAnalytics
+        } else {
+            null
+        }
+
     private fun <T> List<T>.replaceAt(index: Int, value: T): List<T> =
         toMutableList().apply { this[index] = value }
+
+    private companion object {
+        const val ENABLE_ANALYTICS_MAX_RETRIES = 1
+    }
 }

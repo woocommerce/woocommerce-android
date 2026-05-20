@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -84,13 +86,13 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then retry is suggested`() =
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then no action is suggested`() =
         testBlocking {
             stubWpComFailure()
 
             val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
 
-            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RetryDiagnostics)
+            assertThat(final.suggestedAction).isNull()
         }
 
     @Test
@@ -126,12 +128,12 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given check throws, when run, then retry is suggested`() = testBlocking {
+    fun `given check throws, when run, then no action is suggested`() = testBlocking {
         stubInternetThrows()
 
         val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
 
-        assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RetryDiagnostics)
+        assertThat(final.suggestedAction).isNull()
     }
 
     @Test
@@ -222,6 +224,16 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given analytics setting is inactive, when run for LOADING_ANALYTICS, then enable action is suggested`() =
+        testBlocking {
+            stubAnalyticsFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.EnableAnalytics)
+        }
+
+    @Test
     fun `given analytics setting throws, when run for LOADING_ANALYTICS, then generic failure is emitted`() =
         testBlocking {
             stubAnalyticsThrows()
@@ -237,6 +249,28 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
                     )
                 )
             )
+        }
+
+    @Test
+    fun `given enabling analytics succeeds, when enableAnalytics called, then result is success`() = testBlocking {
+        whenever(storeAnalyticsCheck.enableAnalytics()).thenReturn(Result.success(Unit))
+
+        val result = service.enableAnalytics()
+
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given enabling analytics fails once then succeeds, when enableAnalytics called, then it retries`() =
+        testBlocking {
+            whenever(storeAnalyticsCheck.enableAnalytics())
+                .thenReturn(Result.failure(IllegalStateException("Failed")))
+                .thenReturn(Result.success(Unit))
+
+            val result = service.enableAnalytics()
+
+            assertThat(result.isSuccess).isTrue()
+            verify(storeAnalyticsCheck, times(2)).enableAnalytics()
         }
 
     private fun stubAll(success: Boolean) {

@@ -5,7 +5,8 @@ package com.woocommerce.android.ui.aisupportchat.diagnostics
  *
  * `statuses` is the ordered list of all tests that will run for the issue type;
  * statuses transition pending → running → passed/failed in place as the run
- * progresses. After a failure the run halts and `suggestedAction` is populated.
+ * progresses. After a failure the run halts and `suggestedAction` is populated
+ * only when there is a concrete fix action available.
  */
 data class DiagnosticResult(
     val issueType: SupportIssueType,

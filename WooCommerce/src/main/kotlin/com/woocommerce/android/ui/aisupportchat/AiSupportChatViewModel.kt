@@ -7,6 +7,7 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SuggestedFixAction
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
@@ -214,16 +215,25 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
-    fun onRetryDiagnosticsClicked() {
+    private fun rerunDiagnostics() {
         val state = _viewState.value
         val issueType = state.selectedIssueType ?: return
         val issueLabel = state.selectedIssueLabel ?: return
         onIssueSelected(issueType, issueLabel)
     }
 
+    fun onSuggestedFixActionClicked(action: SuggestedFixAction) {
+        val state = _viewState.value
+        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics || state.isExecutingFixAction) return
+
+        when (action) {
+            SuggestedFixAction.EnableAnalytics -> enableAnalytics()
+        }
+    }
+
     fun onContinueAfterDiagnosticsClicked() {
         val state = _viewState.value
-        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
+        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics || state.isExecutingFixAction) return
 
         _viewState.update {
             it.copy(
@@ -233,6 +243,22 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false,
                 messages = it.messages.appendPostDiagnosticsGreeting()
             )
+        }
+    }
+
+    private fun enableAnalytics() {
+        launch {
+            _viewState.update { it.copy(isExecutingFixAction = true) }
+
+            diagnosticsService.enableAnalytics()
+                .onSuccess {
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    rerunDiagnostics()
+                }
+                .onFailure { error ->
+                    WooLog.e(WooLog.T.AI, "Enabling WooCommerce Analytics failed", error)
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                }
         }
     }
 
@@ -771,6 +797,7 @@ data class AiSupportChatViewState(
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
+    val isExecutingFixAction: Boolean = false,
     val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false,
     val showLoadHistoryError: Boolean = false,
@@ -784,7 +811,7 @@ data class AiSupportChatViewState(
     val messageRatings: Map<Long, AiSupportChatFeedbackRating> = emptyMap()
 ) {
     val canUseDiagnosticActions: Boolean
-        get() = !hasProceededToChat && !isSending
+        get() = !hasProceededToChat && !isSending && !isExecutingFixAction
 
     val canSendMessages: Boolean
         get() = hasProceededToChat &&

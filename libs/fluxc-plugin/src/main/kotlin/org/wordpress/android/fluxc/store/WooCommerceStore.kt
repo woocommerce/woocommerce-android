@@ -347,6 +347,35 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun enableAnalytics(site: SiteModel): Boolean {
+        return coroutineEngine.withDefaultContext(T.API, this, "enableAnalytics") {
+            val response = wcCoreRestClient.enableAnalytics(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to enable analytics for ${site.siteId}")
+                    false
+                }
+
+                else -> response.result ?: false
+            }
+        }
+    }
+
+    suspend fun fetchAnalyticsEnabled(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsEnabled") {
+            val response = wcCoreRestClient.fetchAnalyticsEnabled(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to fetch analytics setting for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> WooResult(response.result)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<Settings> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteGeneralSettings") {
             val response = wcCoreRestClient.fetchSiteSettingsGeneral(site)

@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.aisupportchat.AiSupportChatViewModel.Companion
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SuggestedFixAction
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
@@ -177,6 +178,52 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(ANALYTICS_ISSUE_LABEL),
                 AiSupportChatMessageContent.DiagnosticsProgress(result)
             )
+            verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ANALYTICS)
+        }
+
+    @Test
+    fun `given analytics enable action succeeds, when action clicked, then analytics is enabled and diagnostics rerun`() =
+        testBlocking {
+            val failedResult = createAnalyticsDisabledDiagnosticResult()
+            val successResult = createSuccessDiagnosticResult(SupportIssueType.LOADING_ANALYTICS)
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS))
+                .thenReturn(flowOf(failedResult), flowOf(successResult))
+            whenever(diagnosticsService.enableAnalytics()).thenReturn(Result.success(Unit))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ANALYTICS, ANALYTICS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.EnableAnalytics)
+
+            val state = viewModel.viewState.value
+            assertThat(state.isExecutingFixAction).isFalse()
+            assertThat(state.diagnosticResult).isEqualTo(successResult)
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ANALYTICS_ISSUE_LABEL),
+                AiSupportChatMessageContent.DiagnosticsProgress(successResult)
+            )
+            verify(diagnosticsService).enableAnalytics()
+            verify(diagnosticsService, times(2)).runDiagnostics(SupportIssueType.LOADING_ANALYTICS)
+        }
+
+    @Test
+    fun `given analytics enable action fails, when action clicked, then failure stays visible`() =
+        testBlocking {
+            val failedResult = createAnalyticsDisabledDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ANALYTICS)).thenReturn(flowOf(failedResult))
+            whenever(diagnosticsService.enableAnalytics()).thenReturn(Result.failure(IllegalStateException("Failed")))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ANALYTICS, ANALYTICS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.EnableAnalytics)
+
+            val state = viewModel.viewState.value
+            assertThat(state.isExecutingFixAction).isFalse()
+            assertThat(state.diagnosticResult).isEqualTo(failedResult)
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.Text(ANALYTICS_ISSUE_LABEL),
+                AiSupportChatMessageContent.DiagnosticsFailure(failedResult)
+            )
+            verify(diagnosticsService).enableAnalytics()
             verify(diagnosticsService).runDiagnostics(SupportIssueType.LOADING_ANALYTICS)
         }
 
@@ -1208,18 +1255,6 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given diagnostics fail, when retry tapped, then diagnostics run again`() = testBlocking {
-        val result = createFailedDiagnosticResult()
-        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS))
-            .thenReturn(flowOf(result), flowOf(result))
-
-        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
-        viewModel.onRetryDiagnosticsClicked()
-
-        verify(diagnosticsService, times(2)).runDiagnostics(SupportIssueType.LOADING_ORDERS)
-    }
-
-    @Test
     fun `given diagnostics are running, when issue tapped again, then diagnostics do not run twice`() = testBlocking {
         whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(emptyFlow())
 
@@ -1402,6 +1437,21 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 ),
                 DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Pending)
             )
+        )
+
+    private fun createAnalyticsDisabledDiagnosticResult() =
+        DiagnosticResult(
+            issueType = SupportIssueType.LOADING_ANALYTICS,
+            statuses = listOf(
+                DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.WPCOM_SERVERS, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Passed),
+                DiagnosticStatus(
+                    DiagnosticTest.ANALYTICS_SETTING,
+                    TestStatus.Failed(technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE")
+                )
+            ),
+            suggestedAction = SuggestedFixAction.EnableAnalytics
         )
 
     private fun createResponse(
