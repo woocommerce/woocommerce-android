@@ -177,7 +177,6 @@ class AiSupportChatViewModel @Inject constructor(
                 transcript = state.messages.toTranscript(draftUserMessage = state.input.takeIf { state.showSendError }),
                 source = source,
                 supportArea = state.latestSupportArea,
-                entryPoint = state.entryPoint,
                 canCreateTicketDirectly = canCreateTicketDirectly
             )
         )
@@ -483,15 +482,7 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false
             )
         }
-        analyticsTracker.trackResponseReceived(
-            entryPoint = _viewState.value.entryPoint,
-            supportArea = _viewState.value.latestSupportArea,
-            forwardToHumanSupport = shouldPromptHumanSupport
-        )
-        if (shouldPromptHumanSupport) {
-            trackEscalationButtonShownIfNeeded(AiSupportChatEscalationTrigger.BOT_FORWARDED_TO_HUMAN_SUPPORT)
-        }
-        trackVisibleActionsIfNeeded()
+        trackSendSuccessAnalytics(shouldPromptHumanSupport)
 
         if (_viewState.value.canPersistChatHistory) {
             if (wasInitialMessage) {
@@ -749,7 +740,6 @@ class AiSupportChatViewModel @Inject constructor(
         transcript: String,
         source: HumanSupportContactSource,
         supportArea: SupportChatSupportArea?,
-        entryPoint: AiSupportChatEntryPoint,
         canCreateTicketDirectly: Boolean
     ): ContactHumanSupport {
         val mode = if (supportArea != null && supportArea.isHighConfidence && canCreateTicketDirectly) {
@@ -765,8 +755,20 @@ class AiSupportChatViewModel @Inject constructor(
             ticketType = supportArea?.ticketType,
             subjectResId = supportArea?.subjectResId,
             extraTags = supportArea.extraTags(),
-            ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(entryPoint)
+            ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint)
         )
+    }
+
+    private fun trackSendSuccessAnalytics(shouldPromptHumanSupport: Boolean) {
+        analyticsTracker.trackResponseReceived(
+            entryPoint = _viewState.value.entryPoint,
+            supportArea = _viewState.value.latestSupportArea,
+            forwardToHumanSupport = shouldPromptHumanSupport
+        )
+        if (shouldPromptHumanSupport) {
+            trackEscalationButtonShownIfNeeded(AiSupportChatEscalationTrigger.BOT_FORWARDED_TO_HUMAN_SUPPORT)
+        }
+        trackVisibleActionsIfNeeded()
     }
 
     private fun trackVisibleActionsIfNeeded() {
