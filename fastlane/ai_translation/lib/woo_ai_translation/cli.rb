@@ -12,6 +12,8 @@ module WooAiTranslation
       res_dir: 'WooCommerce/src/main/res',
       manifest: 'fastlane/ai_translation/translation-manifest.json',
       context: 'fastlane/ai_translation/context/strings_context.json',
+      glossary: 'fastlane/ai_translation/context/glossary.json',
+      style_dir: 'fastlane/ai_translation/context/style',
       mode: 'prtime',
       batch: Translator::DEFAULT_BATCH,
       offline: false,
@@ -29,7 +31,7 @@ module WooAiTranslation
     def run(argv)
       opts = parse(argv)
       logger = ->(m) { warn("[ai_translate] #{m}") }
-      context = ContextProvider.from_file(opts[:context])
+      context = ContextProvider.from_file(opts[:context], glossary_path: opts[:glossary], style_dir: opts[:style_dir])
       manifest = Manifest.load(opts[:manifest])
 
       # Baseline import needs no model/network: it only records the existing
@@ -41,7 +43,7 @@ module WooAiTranslation
         warn('[ai_translate] ANTHROPIC_API_KEY not set and not --offline; nothing to do.')
         return 0
       end
-      translator = Translator.new(client: client, batch_size: opts[:batch], logger: logger)
+      translator = Translator.new(client: client, glossary: context.glossary_text, batch_size: opts[:batch], logger: logger)
 
       return run_metadata(opts, translator, manifest, logger) if opts[:mode] == 'metadata'
       return run_shadow(opts, translator, context, logger) if opts[:mode] == 'shadow-diff'
@@ -113,6 +115,8 @@ module WooAiTranslation
         p.on('--res-dir PATH') { |v| o[:res_dir] = v }
         p.on('--manifest PATH') { |v| o[:manifest] = v }
         p.on('--context PATH') { |v| o[:context] = v }
+        p.on('--glossary PATH', 'JSON brand/domain glossary (cached prompt prefix)') { |v| o[:glossary] = v }
+        p.on('--style-dir PATH', 'Directory of per-locale style notes: <locale>.md') { |v| o[:style_dir] = v }
         p.on('--locales LIST', 'Comma-separated Android locale qualifiers') { |v| o[:locales] = v }
         p.on('--locales-file PATH') { |v| o[:locales] = File.read(v).split }
         p.on('--mode MODE', 'prtime|ondemand|sweep|backfill|metadata|import|shadow-diff') { |v| o[:mode] = v }
