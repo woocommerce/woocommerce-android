@@ -217,6 +217,7 @@ private fun WooPosScanToPayFailedPreview() {
         WooPosScanToPayScreen(
             state = WooPosScanToPayState.Failed(
                 message = "Something went wrong. Please try again.",
+                retryable = true,
             ),
             onCancelClicked = {},
             onRetryClicked = {},
