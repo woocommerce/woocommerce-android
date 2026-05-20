@@ -7,4 +7,5 @@ sealed interface SuggestedFixAction {
     data object EnableAnalytics : SuggestedFixAction
     data object OpenNotificationSettings : SuggestedFixAction
     data object RegisterPushNotifications : SuggestedFixAction
+    data object RerunDiagnostics : SuggestedFixAction
 }

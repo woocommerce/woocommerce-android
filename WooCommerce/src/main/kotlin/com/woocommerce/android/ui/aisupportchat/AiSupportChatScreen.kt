@@ -127,6 +127,7 @@ fun AiSupportChatScreen(
             isSending = viewState.isSending,
             isLoadingHistory = viewState.isLoadingHistory,
             showDiagnosticActions = viewState.showDiagnosticActions,
+            diagnosticSuggestedAction = viewState.currentDiagnosticSuggestedAction,
             isExecutingFixAction = viewState.isExecutingFixAction,
             onIssueSelected = onIssueSelected,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -184,6 +185,7 @@ private fun MessageList(
     isSending: Boolean,
     isLoadingHistory: Boolean,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -224,6 +226,7 @@ private fun MessageList(
                 message = message,
                 feedbackRating = message.messageId?.let { messageRatings[it] },
                 showDiagnosticActions = showDiagnosticActions,
+                diagnosticSuggestedAction = diagnosticSuggestedAction,
                 isExecutingFixAction = isExecutingFixAction,
                 onIssueSelected = onIssueSelected,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -245,6 +248,7 @@ private fun MessageBubble(
     message: AiSupportChatMessage,
     feedbackRating: AiSupportChatFeedbackRating?,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -281,6 +285,7 @@ private fun MessageBubble(
                     textColor = textColor,
                     shouldFormatMarkdown = message.role == AiSupportChatMessageRole.BOT,
                     showDiagnosticActions = showDiagnosticActions,
+                    diagnosticSuggestedAction = diagnosticSuggestedAction,
                     isExecutingFixAction = isExecutingFixAction,
                     onIssueSelected = onIssueSelected,
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -376,6 +381,7 @@ private fun MessageContent(
     textColor: Color,
     shouldFormatMarkdown: Boolean,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -410,6 +416,7 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
+            diagnosticSuggestedAction = diagnosticSuggestedAction,
             isExecutingFixAction = isExecutingFixAction,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked
@@ -418,6 +425,7 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
+            diagnosticSuggestedAction = diagnosticSuggestedAction,
             isExecutingFixAction = isExecutingFixAction,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked
@@ -484,6 +492,7 @@ private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit
@@ -511,7 +520,7 @@ private fun DiagnosticsContent(
                 )
             }
             DiagnosticActions(
-                suggestedAction = result.suggestedAction,
+                suggestedAction = diagnosticSuggestedAction,
                 isExecutingFixAction = isExecutingFixAction,
                 onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
@@ -698,6 +707,7 @@ private fun SuggestedFixAction.title(): String =
                 R.string.ai_support_chat_diagnostics_open_notification_settings
             SuggestedFixAction.RegisterPushNotifications ->
                 R.string.ai_support_chat_diagnostics_register_push_notifications
+            SuggestedFixAction.RerunDiagnostics -> R.string.ai_support_chat_diagnostics_rerun_checks
         }
     )
 

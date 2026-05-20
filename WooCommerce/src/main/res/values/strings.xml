@@ -2457,6 +2457,7 @@
     <string name="ai_support_chat_diagnostics_enable_analytics">Enable Analytics</string>
     <string name="ai_support_chat_diagnostics_open_notification_settings">Open Notification Settings</string>
     <string name="ai_support_chat_diagnostics_register_push_notifications">Register Notifications</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Run Checks Again</string>
     <string name="ai_support_chat_diagnostics_continue">Continue to Chat</string>
     <string name="ai_support_chat_diagnostics_status_pending">Pending</string>
     <string name="ai_support_chat_diagnostics_status_running">Running</string>

@@ -234,6 +234,7 @@ class AiSupportChatViewModel @Inject constructor(
                             selectedIssueType = issueType,
                             selectedIssueLabel = issueLabel,
                             diagnosticResult = result,
+                            diagnosticSuggestedActionOverride = null,
                             isRunningDiagnostics = !result.isComplete && !hasFailure,
                             showSendError = false,
                             messages = diagnosticsMessages(result, issueLabel)
@@ -256,9 +257,17 @@ class AiSupportChatViewModel @Inject constructor(
 
         when (action) {
             SuggestedFixAction.EnableAnalytics -> enableAnalytics()
-            SuggestedFixAction.OpenNotificationSettings -> triggerEvent(OpenAppNotificationSettings)
+            SuggestedFixAction.OpenNotificationSettings -> openNotificationSettings()
             SuggestedFixAction.RegisterPushNotifications -> registerPushNotifications()
+            SuggestedFixAction.RerunDiagnostics -> rerunDiagnostics()
         }
+    }
+
+    private fun openNotificationSettings() {
+        _viewState.update {
+            it.copy(diagnosticSuggestedActionOverride = SuggestedFixAction.RerunDiagnostics)
+        }
+        triggerEvent(OpenAppNotificationSettings)
     }
 
     fun onContinueAfterDiagnosticsClicked() {
@@ -858,6 +867,7 @@ data class AiSupportChatViewState(
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
     val diagnosticResult: DiagnosticResult? = null,
+    val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
@@ -897,6 +907,9 @@ data class AiSupportChatViewState(
             return (canUseDiagnosticActions || isExecutingFixAction) &&
                 (result.firstFailure != null || result.isComplete)
         }
+
+    val currentDiagnosticSuggestedAction: SuggestedFixAction?
+        get() = diagnosticSuggestedActionOverride ?: diagnosticResult?.suggestedAction
 
     val canContactHumanSupportFromToolbar: Boolean
         get() = canSendMessages && completedUserMessageResponseCount >= MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR
