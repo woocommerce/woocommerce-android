@@ -264,9 +264,7 @@ private val HumanSupportContactSource.analyticsValue: String
     }
 
 private val SupportChatSupportArea.analyticsArea: String
-    get() = area?.lowercase().takeIf {
-        it in setOf("mobile-app", "card-reader", "woopayments", "woocommerce-plugin", "other-extension-plugin")
-    }.orUnknown()
+    get() = area?.lowercase().orUnknown()
 
 private val SupportChatSupportArea.analyticsConfidence: String
     get() = confidence?.lowercase().takeIf { it in setOf("high", "medium", "low") }.orUnknown()
