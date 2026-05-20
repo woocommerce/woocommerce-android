@@ -126,7 +126,6 @@ private fun ShowingQR(
             data = state.paymentUrl,
             size = 320.dp,
             modifier = Modifier.testTag(WooPosTestTags.SCAN_TO_PAY_QR_CODE),
-            centerLogoResId = R.drawable.ic_woo,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosOutlinedButton(
