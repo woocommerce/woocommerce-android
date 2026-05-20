@@ -153,14 +153,12 @@ private fun Failed(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        if (state.retryable) {
-            WooPosButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.woopos_scan_to_pay_retry),
-                onClick = onRetryClicked,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        }
+        WooPosButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.woopos_scan_to_pay_retry),
+            onClick = onRetryClicked,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         WooPosOutlinedButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.woopos_scan_to_pay_cancel),
@@ -219,7 +217,6 @@ private fun WooPosScanToPayFailedPreview() {
         WooPosScanToPayScreen(
             state = WooPosScanToPayState.Failed(
                 message = "Something went wrong. Please try again.",
-                retryable = true,
             ),
             onCancelClicked = {},
             onRetryClicked = {},
