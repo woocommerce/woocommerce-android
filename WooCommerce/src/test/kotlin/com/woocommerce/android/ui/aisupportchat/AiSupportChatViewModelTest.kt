@@ -45,6 +45,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val contextProvider: SupportChatContextProvider = mock()
     private val diagnosticsService: SupportDiagnosticsService = mock()
     private val accountRepository: AccountRepository = mock()
+    private val analyticsTracker: AiSupportChatAnalyticsTracker = mock()
 
     private lateinit var viewModel: AiSupportChatViewModel
 
@@ -60,7 +61,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             repository = repository,
             contextProvider = contextProvider,
             diagnosticsService = diagnosticsService,
-            accountRepository = accountRepository
+            accountRepository = accountRepository,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -1255,6 +1257,234 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         )
         verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
     }
+
+    @Test
+    fun `given pre-login launch mode, when loaded, then entry point analytics are tracked`() = testBlocking {
+        viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+
+        verify(analyticsTracker).trackEntryPointTapped(
+            entryPoint = AiSupportChatEntryPoint.PRE_LOGIN,
+            isAuthenticated = true,
+            isResumedChat = false
+        )
+    }
+
+    @Test
+    fun `given resume launch mode, when loaded, then resumed entry point analytics are tracked`() = testBlocking {
+        whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID))
+            .thenReturn(Result.success(createResponse()))
+
+        viewModel.onLaunchModeLoaded(
+            AiSupportChatLaunchMode.Resume(
+                chatId = CHAT_ID,
+                botSlug = DEFAULT_BOT_SLUG,
+                sessionId = SESSION_ID
+            )
+        )
+
+        verify(analyticsTracker).trackEntryPointTapped(
+            entryPoint = AiSupportChatEntryPoint.CHAT_HISTORY,
+            isAuthenticated = true,
+            isResumedChat = true
+        )
+    }
+
+    @Test
+    fun `given diagnostics pass, when issue selected, then diagnostics analytics are tracked`() = testBlocking {
+        val result = createSuccessDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+        verify(analyticsTracker).trackIssueSelected(
+            issueType = SupportIssueType.LOADING_ORDERS,
+            entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT
+        )
+        verify(analyticsTracker).trackTroubleshootingCompleted(
+            issueType = SupportIssueType.LOADING_ORDERS,
+            result = TroubleshootingResult.PASSED,
+            failedTest = null
+        )
+    }
+
+    @Test
+    fun `given diagnostics fail, when issue selected, then failed diagnostics analytics are tracked`() = testBlocking {
+        val result = createFailedDiagnosticResult()
+        whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+
+        viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+        verify(analyticsTracker).trackTroubleshootingCompleted(
+            issueType = SupportIssueType.LOADING_ORDERS,
+            result = TroubleshootingResult.FAILED,
+            failedTest = DiagnosticTest.WPCOM_SERVERS
+        )
+    }
+
+    @Test
+    fun `given first message succeeds, when sent, then message and response analytics are tracked`() = testBlocking {
+        val result = createSuccessDiagnosticResult()
+        startChat(result)
+
+        verify(analyticsTracker).trackMessageSent(
+            entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+            isFirstMessage = true,
+            hasDiagnosticsContext = true
+        )
+        verify(analyticsTracker).trackResponseReceived(
+            entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+            supportArea = null,
+            forwardToHumanSupport = false
+        )
+    }
+
+    @Test
+    fun `given bot forwards to human support, when message succeeds, then banner analytics are tracked`() =
+        testBlocking {
+            val supportArea = createSupportArea(
+                area = "card-reader",
+                topic = "woo_mobile_issue_card_reader",
+                confidence = "high"
+            )
+            givenStartedChatWithSupportArea(supportArea)
+
+            verify(analyticsTracker).trackEscalationButtonShown(
+                trigger = AiSupportChatEscalationTrigger.BOT_FORWARDED_TO_HUMAN_SUPPORT,
+                entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                supportArea = supportArea,
+                userMessageCount = 1
+            )
+        }
+
+    @Test
+    fun `given rated bot response, when feedback clicked again, then feedback analytics are not tracked twice`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.DOWN)
+
+            verify(analyticsTracker).trackFeedbackSubmitted(
+                rating = AiSupportChatFeedbackRating.UP,
+                entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                supportArea = null,
+                userMessageCount = 1
+            )
+            verify(analyticsTracker, never()).trackFeedbackSubmitted(
+                AiSupportChatFeedbackRating.DOWN,
+                AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                null,
+                1
+            )
+        }
+
+    @Test
+    fun `given send fails, when error dialog is shown and tapped, then escalation analytics are tracked`() =
+        testBlocking {
+            val result = createFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.failure(Exception()))
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+            viewModel.onContinueAfterDiagnosticsClicked()
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.ERROR_DIALOG,
+                canCreateTicketDirectly = false
+            )
+
+            verify(analyticsTracker).trackEscalationButtonShown(
+                trigger = AiSupportChatEscalationTrigger.ERROR_DIALOG,
+                entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                supportArea = null,
+                userMessageCount = null
+            )
+            verify(analyticsTracker).trackEscalationTapped(
+                source = HumanSupportContactSource.ERROR_DIALOG,
+                entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                supportArea = null,
+                userMessageCount = 1
+            )
+        }
+
+    @Test
+    fun `given high confidence support area, when contact support is clicked, then ticket analytics context is emitted`() =
+        testBlocking {
+            givenStartedChatWithSupportArea(
+                createSupportArea(
+                    area = "woopayments",
+                    topic = "woo_mobile_issue_payments",
+                    confidence = "high"
+                )
+            )
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.ticketAnalyticsContext.entryPoint).isEqualTo("help_and_support")
+            assertThat(event.ticketAnalyticsContext.supportArea).isEqualTo("woopayments")
+            assertThat(event.ticketAnalyticsContext.supportAreaConfidence).isEqualTo("high")
+            assertThat(event.ticketAnalyticsContext.chatTopic).isEqualTo("woo_mobile_issue_payments")
+        }
+
+    @Test
+    fun `given second bot response, when toolbar becomes available, then toolbar analytics are tracked once`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
+                .thenReturn(
+                    Result.success(
+                        createResponse(
+                            messages = listOf(
+                                createMessage(messageId = 3L, role = SupportChatRole.USER, content = FOLLOW_UP_MESSAGE),
+                                createMessage(
+                                    messageId = 4L,
+                                    role = SupportChatRole.BOT,
+                                    content = FOLLOW_UP_BOT_RESPONSE
+                                )
+                            )
+                        )
+                    )
+                )
+
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            verify(analyticsTracker).trackEscalationButtonShown(
+                trigger = AiSupportChatEscalationTrigger.MANUAL_TOOLBAR,
+                entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                supportArea = null,
+                userMessageCount = 2
+            )
+        }
+
+    @Test
+    fun `given resolved button is available, when mark resolved is clicked, then resolution analytics are tracked`() =
+        testBlocking {
+            startChatWithBotResponse()
+            whenever(repository.submitFeedback(DEFAULT_BOT_SLUG, CHAT_ID, BOT_MESSAGE_ID, SESSION_ID, true))
+                .thenReturn(Result.success(Unit))
+
+            viewModel.onFeedbackClicked(BOT_MESSAGE_ID, AiSupportChatFeedbackRating.UP)
+            viewModel.onMarkResolvedClicked()
+
+            verify(analyticsTracker).trackResolutionButtonShown(
+                entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+                supportArea = null,
+                userMessageCount = 1
+            )
+            verify(analyticsTracker).trackMarkResolvedTapped()
+        }
 
     private suspend fun continueToChatAfterSuccessfulDiagnostics(result: DiagnosticResult) {
         viewModel.onIssueSelected(result.issueType, ISSUE_LABEL)

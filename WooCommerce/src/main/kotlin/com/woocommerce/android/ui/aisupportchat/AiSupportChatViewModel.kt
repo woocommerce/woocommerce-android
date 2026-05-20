@@ -38,7 +38,8 @@ class AiSupportChatViewModel @Inject constructor(
     private val repository: SupportChatRepository,
     private val contextProvider: SupportChatContextProvider,
     private val diagnosticsService: SupportDiagnosticsService,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val analyticsTracker: AiSupportChatAnalyticsTracker
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(
         AiSupportChatViewState(
@@ -51,10 +52,19 @@ class AiSupportChatViewModel @Inject constructor(
     private var localMessageId = 0L
     private var launchModeLoaded = false
     private var resumeLaunchMode: AiSupportChatLaunchMode.Resume? = null
+    private val trackedEscalationButtonTriggers = mutableSetOf<AiSupportChatEscalationTrigger>()
+    private var didTrackResolutionButtonShown = false
 
     fun onLaunchModeLoaded(launchMode: AiSupportChatLaunchMode) {
         if (launchModeLoaded) return
         launchModeLoaded = true
+        val entryPoint = launchMode.entryPoint
+        _viewState.update { it.copy(entryPoint = entryPoint) }
+        analyticsTracker.trackEntryPointTapped(
+            entryPoint = entryPoint,
+            isAuthenticated = accountRepository.isUserLoggedIn(),
+            isResumedChat = launchMode is AiSupportChatLaunchMode.Resume
+        )
 
         when (launchMode) {
             AiSupportChatLaunchMode.Help -> Unit
@@ -90,6 +100,13 @@ class AiSupportChatViewModel @Inject constructor(
         val sessionId = state.sessionId ?: return
         if (messageId in state.messageRatings) return
 
+        analyticsTracker.trackFeedbackSubmitted(
+            rating = rating,
+            entryPoint = state.entryPoint,
+            supportArea = state.latestSupportArea,
+            userMessageCount = state.userMessageCount
+        )
+
         _viewState.update {
             val updatedRatings = it.messageRatings + (messageId to rating)
             it.copy(
@@ -104,6 +121,7 @@ class AiSupportChatViewModel @Inject constructor(
                 }
             )
         }
+        trackResolutionButtonShownIfNeeded()
 
         launch {
             repository.submitFeedback(
@@ -119,6 +137,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onMarkResolvedClicked() {
+        analyticsTracker.trackMarkResolvedTapped()
         _viewState.update { it.copy(showMarkResolvedConfirmation = true) }
     }
 
@@ -142,6 +161,13 @@ class AiSupportChatViewModel @Inject constructor(
         val state = _viewState.value
         if (state.hasCreatedTicket || state.isSending) return
 
+        analyticsTracker.trackEscalationTapped(
+            source = source,
+            entryPoint = state.entryPoint,
+            supportArea = state.latestSupportArea,
+            userMessageCount = state.userMessageCount
+        )
+
         if (source == HumanSupportContactSource.ERROR_DIALOG) {
             _viewState.update { it.copy(showSendError = false) }
         }
@@ -151,6 +177,7 @@ class AiSupportChatViewModel @Inject constructor(
                 transcript = state.messages.toTranscript(draftUserMessage = state.input.takeIf { state.showSendError }),
                 source = source,
                 supportArea = state.latestSupportArea,
+                entryPoint = state.entryPoint,
                 canCreateTicketDirectly = canCreateTicketDirectly
             )
         )
@@ -168,8 +195,19 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onIssueSelected(issueType: SupportIssueType, issueLabel: String) {
+        runDiagnostics(issueType, issueLabel, shouldTrackIssueSelection = true)
+    }
+
+    private fun runDiagnostics(
+        issueType: SupportIssueType,
+        issueLabel: String,
+        shouldTrackIssueSelection: Boolean
+    ) {
         val state = _viewState.value
         if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
+        if (shouldTrackIssueSelection) {
+            analyticsTracker.trackIssueSelected(issueType = issueType, entryPoint = state.entryPoint)
+        }
 
         _viewState.update {
             it.copy(
@@ -200,6 +238,13 @@ class AiSupportChatViewModel @Inject constructor(
                             messages = diagnosticsMessages(result)
                         )
                     }
+                    if (result.isComplete || hasFailure) {
+                        analyticsTracker.trackTroubleshootingCompleted(
+                            issueType = issueType,
+                            result = result.toTroubleshootingResult(),
+                            failedTest = result.firstFailure?.test
+                        )
+                    }
                 }
         }
     }
@@ -208,7 +253,7 @@ class AiSupportChatViewModel @Inject constructor(
         val state = _viewState.value
         val issueType = state.selectedIssueType ?: return
         val issueLabel = state.selectedIssueLabel ?: return
-        onIssueSelected(issueType, issueLabel)
+        runDiagnostics(issueType, issueLabel, shouldTrackIssueSelection = false)
     }
 
     fun onContinueAfterDiagnosticsClicked() {
@@ -299,6 +344,7 @@ class AiSupportChatViewModel @Inject constructor(
                 sessionId = response.sessionId,
                 botSlug = response.botSlug,
                 hasSentChatMessage = response.messages.any { message -> message.role == SupportChatRole.USER },
+                userMessageCount = response.messages.count { message -> message.role == SupportChatRole.USER },
                 completedUserMessageResponseCount = response.messages.count { message ->
                     message.role == SupportChatRole.BOT && !message.isBotEscalationPrompt()
                 },
@@ -311,6 +357,10 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
         markChatAsUpdated(response.chatId, response.sessionId)
+        if (_viewState.value.showHumanSupportPrompt) {
+            trackEscalationButtonShownIfNeeded(AiSupportChatEscalationTrigger.BOT_FORWARDED_TO_HUMAN_SUPPORT)
+        }
+        trackVisibleActionsIfNeeded()
     }
 
     private fun handleDiagnosticsFailure(issueType: SupportIssueType, issueLabel: String, error: Throwable) {
@@ -336,11 +386,23 @@ class AiSupportChatViewModel @Inject constructor(
                 messages = diagnosticsMessages(result)
             )
         }
+        analyticsTracker.trackTroubleshootingCompleted(
+            issueType = issueType,
+            result = TroubleshootingResult.FAILED,
+            failedTest = result.firstFailure?.test
+        )
     }
 
     private suspend fun sendMessage(message: String) {
         val state = _viewState.value
         if (message.isBlank() || state.isSending || !state.canSendMessages) return
+        val chatId = state.chatId
+        val hasDiagnosticsContext = chatId == null && state.diagnosticResult != null
+        analyticsTracker.trackMessageSent(
+            entryPoint = state.entryPoint,
+            isFirstMessage = chatId == null,
+            hasDiagnosticsContext = hasDiagnosticsContext
+        )
 
         val optimisticMessage = AiSupportChatMessage(
             id = nextLocalMessageId(),
@@ -351,12 +413,12 @@ class AiSupportChatViewModel @Inject constructor(
             it.copy(
                 input = "",
                 messages = it.messages + optimisticMessage,
+                userMessageCount = it.userMessageCount + 1,
                 isSending = true,
                 showSendError = false
             )
         }
 
-        val chatId = state.chatId
         val context = if (chatId == null) {
             contextProvider.buildInitialContext(diagnosticResult = state.diagnosticResult)
         } else {
@@ -387,10 +449,10 @@ class AiSupportChatViewModel @Inject constructor(
         optimisticMessage: AiSupportChatMessage,
         wasInitialMessage: Boolean
     ) {
+        val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
         _viewState.update {
             val remoteMessages = response.messages.toUiMessages()
             val latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea
-            val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
                 if (response.messages.hasBotResponse()) 1 else 0
             val messages = if (remoteMessages.isEmpty()) {
@@ -421,6 +483,15 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false
             )
         }
+        analyticsTracker.trackResponseReceived(
+            entryPoint = _viewState.value.entryPoint,
+            supportArea = _viewState.value.latestSupportArea,
+            forwardToHumanSupport = shouldPromptHumanSupport
+        )
+        if (shouldPromptHumanSupport) {
+            trackEscalationButtonShownIfNeeded(AiSupportChatEscalationTrigger.BOT_FORWARDED_TO_HUMAN_SUPPORT)
+        }
+        trackVisibleActionsIfNeeded()
 
         if (_viewState.value.canPersistChatHistory) {
             if (wasInitialMessage) {
@@ -497,6 +568,12 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = true
             )
         }
+        trackEscalationButtonShownIfNeeded(
+            trigger = AiSupportChatEscalationTrigger.ERROR_DIALOG,
+            userMessageCount = _viewState.value.userMessageCount.takeIf {
+                _viewState.value.completedUserMessageResponseCount > 0
+            }
+        )
     }
 
     private fun List<SupportChatMessage>.toUiMessages(): List<AiSupportChatMessage> =
@@ -672,6 +749,7 @@ class AiSupportChatViewModel @Inject constructor(
         transcript: String,
         source: HumanSupportContactSource,
         supportArea: SupportChatSupportArea?,
+        entryPoint: AiSupportChatEntryPoint,
         canCreateTicketDirectly: Boolean
     ): ContactHumanSupport {
         val mode = if (supportArea != null && supportArea.isHighConfidence && canCreateTicketDirectly) {
@@ -686,7 +764,43 @@ class AiSupportChatViewModel @Inject constructor(
             mode = mode,
             ticketType = supportArea?.ticketType,
             subjectResId = supportArea?.subjectResId,
-            extraTags = supportArea.extraTags()
+            extraTags = supportArea.extraTags(),
+            ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(entryPoint)
+        )
+    }
+
+    private fun trackVisibleActionsIfNeeded() {
+        val state = _viewState.value
+        if (state.canContactHumanSupportFromToolbar) {
+            trackEscalationButtonShownIfNeeded(AiSupportChatEscalationTrigger.MANUAL_TOOLBAR)
+        }
+        trackResolutionButtonShownIfNeeded()
+    }
+
+    private fun trackEscalationButtonShownIfNeeded(
+        trigger: AiSupportChatEscalationTrigger,
+        userMessageCount: Int? = _viewState.value.userMessageCount
+    ) {
+        if (!trackedEscalationButtonTriggers.add(trigger)) return
+        val state = _viewState.value
+        analyticsTracker.trackEscalationButtonShown(
+            trigger = trigger,
+            entryPoint = state.entryPoint,
+            supportArea = state.latestSupportArea,
+            userMessageCount = userMessageCount
+        )
+    }
+
+    private fun trackResolutionButtonShownIfNeeded() {
+        if (didTrackResolutionButtonShown) return
+        val state = _viewState.value
+        if (!state.shouldShowResolvedButton) return
+
+        didTrackResolutionButtonShown = true
+        analyticsTracker.trackResolutionButtonShown(
+            entryPoint = state.entryPoint,
+            supportArea = state.latestSupportArea,
+            userMessageCount = state.userMessageCount
         )
     }
 
@@ -727,6 +841,7 @@ class AiSupportChatViewModel @Inject constructor(
 }
 
 data class AiSupportChatViewState(
+    val entryPoint: AiSupportChatEntryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
     val input: String = "",
     val messages: List<AiSupportChatMessage> = emptyList(),
     val chatId: Long? = null,
@@ -748,6 +863,7 @@ data class AiSupportChatViewState(
     val isChatResolved: Boolean = false,
     val showMarkResolvedConfirmation: Boolean = false,
     val hasSentChatMessage: Boolean = false,
+    val userMessageCount: Int = 0,
     val completedUserMessageResponseCount: Int = 0,
     val latestSupportArea: SupportChatSupportArea? = null,
     val messageRatings: Map<Long, AiSupportChatFeedbackRating> = emptyMap()
@@ -816,7 +932,8 @@ data class ContactHumanSupport(
     val mode: HumanSupportContactMode,
     val ticketType: TicketType?,
     val subjectResId: Int?,
-    val extraTags: List<String>
+    val extraTags: List<String>,
+    val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext
 ) : Event()
 
 data class AiSupportChatMessage(
@@ -858,6 +975,21 @@ private fun greetingMessage(): AiSupportChatMessage =
         role = AiSupportChatMessageRole.BOT,
         content = AiSupportChatMessageContent.Greeting
     )
+
+private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
+    get() = when (this) {
+        AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
+        AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
+        is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
+        is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
+    }
+
+private fun DiagnosticResult.toTroubleshootingResult(): TroubleshootingResult =
+    when {
+        statuses.isEmpty() -> TroubleshootingResult.SKIPPED
+        firstFailure != null -> TroubleshootingResult.FAILED
+        else -> TroubleshootingResult.PASSED
+    }
 
 private fun List<ConnectivityCheckCardData>.toDiagnosticResult(): DiagnosticResult =
     DiagnosticResult(
