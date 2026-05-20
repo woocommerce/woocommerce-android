@@ -7,6 +7,7 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SuggestedFixAction
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportDiagnosticsService
 import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
@@ -80,6 +81,10 @@ class AiSupportChatViewModel @Inject constructor(
         _viewState.update { it.copy(showSendError = false) }
     }
 
+    fun onSuggestedFixActionErrorDismissed() {
+        _viewState.update { it.copy(showSuggestedFixActionError = false) }
+    }
+
     fun onRetryLoadHistoryClicked() {
         resumeLaunchMode?.let(::resumeChat)
     }
@@ -127,6 +132,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onMarkResolvedConfirmed() {
+        val chatId = _viewState.value.chatId
         _viewState.update {
             it.copy(
                 isChatResolved = true,
@@ -135,6 +141,17 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false,
                 input = ""
             )
+        }
+
+        if (chatId != null) {
+            launch {
+                runCatching {
+                    repository.markChatAsResolved(chatId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Marking AI support chat as resolved failed", error)
+                }
+            }
         }
     }
 
@@ -157,6 +174,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onSupportTicketCreated() {
+        val chatId = _viewState.value.chatId
         _viewState.update {
             it.copy(
                 input = "",
@@ -164,6 +182,17 @@ class AiSupportChatViewModel @Inject constructor(
                 showHumanSupportPrompt = false,
                 showSendError = false
             )
+        }
+
+        if (chatId != null) {
+            launch {
+                runCatching {
+                    repository.markChatAsTicketCreated(chatId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Marking AI support chat as ticket created failed", error)
+                }
+            }
         }
     }
 
@@ -176,9 +205,19 @@ class AiSupportChatViewModel @Inject constructor(
                 input = "",
                 selectedIssueType = issueType,
                 selectedIssueLabel = issueLabel,
-                isRunningDiagnostics = true,
+                isRunningDiagnostics = issueType != SupportIssueType.OTHER,
+                hasProceededToChat = issueType == SupportIssueType.OTHER,
                 showSendError = false
             )
+        }
+
+        if (issueType == SupportIssueType.OTHER) {
+            _viewState.update {
+                it.copy(
+                    messages = selectedIssueMessages(issueLabel).appendPostDiagnosticsGreeting()
+                )
+            }
+            return
         }
 
         launch {
@@ -197,23 +236,32 @@ class AiSupportChatViewModel @Inject constructor(
                             diagnosticResult = result,
                             isRunningDiagnostics = !result.isComplete && !hasFailure,
                             showSendError = false,
-                            messages = diagnosticsMessages(result)
+                            messages = diagnosticsMessages(result, issueLabel)
                         )
                     }
                 }
         }
     }
 
-    fun onRetryDiagnosticsClicked() {
+    private fun rerunDiagnostics() {
         val state = _viewState.value
         val issueType = state.selectedIssueType ?: return
         val issueLabel = state.selectedIssueLabel ?: return
         onIssueSelected(issueType, issueLabel)
     }
 
+    fun onSuggestedFixActionClicked(action: SuggestedFixAction) {
+        val state = _viewState.value
+        if (!state.canHandleDiagnosticAction) return
+
+        when (action) {
+            SuggestedFixAction.EnableAnalytics -> enableAnalytics()
+        }
+    }
+
     fun onContinueAfterDiagnosticsClicked() {
         val state = _viewState.value
-        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
+        if (!state.canHandleDiagnosticAction) return
 
         _viewState.update {
             it.copy(
@@ -223,6 +271,32 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false,
                 messages = it.messages.appendPostDiagnosticsGreeting()
             )
+        }
+    }
+
+    private fun enableAnalytics() {
+        launch {
+            _viewState.update {
+                it.copy(
+                    isExecutingFixAction = true,
+                    showSuggestedFixActionError = false
+                )
+            }
+
+            diagnosticsService.enableAnalytics()
+                .onSuccess {
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    rerunDiagnostics()
+                }
+                .onFailure { error ->
+                    WooLog.e(WooLog.T.AI, "Enabling WooCommerce Analytics failed", error)
+                    _viewState.update {
+                        it.copy(
+                            isExecutingFixAction = false,
+                            showSuggestedFixActionError = true
+                        )
+                    }
+                }
         }
     }
 
@@ -265,6 +339,8 @@ class AiSupportChatViewModel @Inject constructor(
                 botSlug = launchMode.botSlug,
                 hasProceededToChat = true,
                 hasStartedChat = true,
+                hasCreatedTicket = launchMode.hasCreatedTicket,
+                isChatResolved = launchMode.isResolved,
                 isLoadingHistory = true,
                 showSendError = false,
                 showLoadHistoryError = false
@@ -292,7 +368,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     private suspend fun handleResumeSuccess(response: SupportChatResponse) {
         _viewState.update {
-            val remoteMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages(isNewInSession = false)
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             it.copy(
                 chatId = response.chatId,
@@ -333,7 +409,7 @@ class AiSupportChatViewModel @Inject constructor(
                 diagnosticResult = result,
                 isRunningDiagnostics = false,
                 showSendError = false,
-                messages = diagnosticsMessages(result)
+                messages = diagnosticsMessages(result, issueLabel)
             )
         }
     }
@@ -388,7 +464,7 @@ class AiSupportChatViewModel @Inject constructor(
         wasInitialMessage: Boolean
     ) {
         _viewState.update {
-            val remoteMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages(isNewInSession = true)
             val latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
@@ -499,7 +575,7 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
-    private fun List<SupportChatMessage>.toUiMessages(): List<AiSupportChatMessage> =
+    private fun List<SupportChatMessage>.toUiMessages(isNewInSession: Boolean): List<AiSupportChatMessage> =
         filterNot { it.isBotEscalationPrompt() }
             .map { message ->
                 AiSupportChatMessage(
@@ -507,6 +583,7 @@ class AiSupportChatViewModel @Inject constructor(
                     messageId = if (message.role == SupportChatRole.BOT) message.messageId else null,
                     role = message.role.toUiRole(),
                     isResolved = message.context?.isResolved == true,
+                    isNewInSession = isNewInSession,
                     content = AiSupportChatMessageContent.Text(message.content)
                 )
             }
@@ -522,14 +599,14 @@ class AiSupportChatViewModel @Inject constructor(
                 is AiSupportChatMessageContent.DiagnosticsFailure,
                 is AiSupportChatMessageContent.DiagnosticsProgress -> true
                 AiSupportChatMessageContent.IssuePicker,
-                AiSupportChatMessageContent.ResolvedPrompt,
-                is AiSupportChatMessageContent.Text -> false
+                AiSupportChatMessageContent.ResolvedPrompt -> false
+                is AiSupportChatMessageContent.Text -> message.id == SELECTED_ISSUE_MESSAGE_ID
             }
         }
 
     private fun List<AiSupportChatMessage>.threadMessages(): List<AiSupportChatMessage> =
         filter {
-            it.content is AiSupportChatMessageContent.Text ||
+            (it.content is AiSupportChatMessageContent.Text && it.id != SELECTED_ISSUE_MESSAGE_ID) ||
                 it.content == AiSupportChatMessageContent.ResolvedPrompt
         }
 
@@ -573,12 +650,22 @@ class AiSupportChatViewModel @Inject constructor(
             )
         }
 
-    private fun diagnosticsMessages(
-        result: DiagnosticResult,
-        showFailureActions: Boolean = true
-    ): List<AiSupportChatMessage> =
+    private fun selectedIssueMessages(issueLabel: String): List<AiSupportChatMessage> =
         listOf(
             greetingMessage(),
+            AiSupportChatMessage(
+                id = SELECTED_ISSUE_MESSAGE_ID,
+                role = AiSupportChatMessageRole.USER,
+                content = AiSupportChatMessageContent.Text(issueLabel)
+            )
+        )
+
+    private fun diagnosticsMessages(
+        result: DiagnosticResult,
+        issueLabel: String,
+        showFailureActions: Boolean = true
+    ): List<AiSupportChatMessage> =
+        selectedIssueMessages(issueLabel) + listOf(
             AiSupportChatMessage(
                 id = "diagnostics-${result.issueType.name}",
                 role = AiSupportChatMessageRole.BOT,
@@ -664,7 +751,17 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun List<DiagnosticStatus>.toTranscriptText(): String =
         joinToString(separator = ", ") { status ->
-            "${status.test.name}: ${status.status::class.java.simpleName}"
+            "${status.test.transcriptTitle}: ${status.status::class.java.simpleName}"
+        }
+
+    private val DiagnosticTest.transcriptTitle: String
+        get() = when (this) {
+            DiagnosticTest.INTERNET_CONNECTION -> "Internet Connection"
+            DiagnosticTest.WPCOM_SERVERS -> "Connecting to WordPress.com Servers"
+            DiagnosticTest.STORE_CONNECTION -> "Connecting to your site"
+            DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
+            DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
+            DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
         }
 
     private fun createContactHumanSupportEvent(
@@ -719,6 +816,7 @@ class AiSupportChatViewModel @Inject constructor(
         const val DEFAULT_BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
 
         private const val POST_DIAGNOSTICS_GREETING_MESSAGE_ID = "post-diagnostics-greeting"
+        private const val SELECTED_ISSUE_MESSAGE_ID = "selected-issue"
         private const val RESOLVED_PROMPT_MESSAGE_ID = "resolved-prompt"
         private const val MAX_TRANSCRIPT_MESSAGES = 20
         private const val SOURCE_TAG = "in_app_support_escalate"
@@ -740,9 +838,11 @@ data class AiSupportChatViewState(
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
+    val isExecutingFixAction: Boolean = false,
     val canPersistChatHistory: Boolean = true,
     val showSendError: Boolean = false,
     val showLoadHistoryError: Boolean = false,
+    val showSuggestedFixActionError: Boolean = false,
     val showHumanSupportPrompt: Boolean = false,
     val hasCreatedTicket: Boolean = false,
     val isChatResolved: Boolean = false,
@@ -753,7 +853,10 @@ data class AiSupportChatViewState(
     val messageRatings: Map<Long, AiSupportChatFeedbackRating> = emptyMap()
 ) {
     val canUseDiagnosticActions: Boolean
-        get() = !hasProceededToChat && !isSending
+        get() = !hasProceededToChat && !isSending && !isExecutingFixAction
+
+    val canHandleDiagnosticAction: Boolean
+        get() = canUseDiagnosticActions && !isRunningDiagnostics
 
     val canSendMessages: Boolean
         get() = hasProceededToChat &&
@@ -768,7 +871,8 @@ data class AiSupportChatViewState(
     val showDiagnosticActions: Boolean
         get() {
             val result = diagnosticResult ?: return false
-            return canUseDiagnosticActions && (result.firstFailure != null || result.isComplete)
+            return (canUseDiagnosticActions || isExecutingFixAction) &&
+                (result.firstFailure != null || result.isComplete)
         }
 
     val canContactHumanSupportFromToolbar: Boolean
@@ -788,7 +892,7 @@ data class AiSupportChatViewState(
         }
 
     private companion object {
-        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 2
+        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 1
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
 }
@@ -824,8 +928,16 @@ data class AiSupportChatMessage(
     val messageId: Long? = null,
     val role: AiSupportChatMessageRole,
     val isResolved: Boolean = false,
+    val isNewInSession: Boolean = false,
     val content: AiSupportChatMessageContent
-)
+) {
+    val shouldShowFeedback: Boolean
+        get() = role == AiSupportChatMessageRole.BOT &&
+            isNewInSession &&
+            !isResolved &&
+            messageId != null &&
+            content is AiSupportChatMessageContent.Text
+}
 
 enum class AiSupportChatMessageRole {
     USER,

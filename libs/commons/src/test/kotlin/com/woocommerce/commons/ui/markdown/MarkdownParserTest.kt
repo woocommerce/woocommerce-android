@@ -1,4 +1,4 @@
-package com.woocommerce.android.aiassistant.ui.markdown
+package com.woocommerce.commons.ui.markdown
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkAnnotation
@@ -10,11 +10,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class AssistantMarkdownParserTest {
+class MarkdownParserTest {
     @Test
     fun `given markdown link, when parsed, then label text and url annotation are emitted`() {
         // WHEN
-        val parsed = AssistantMarkdownParser.parse(
+        val parsed = MarkdownParser.parse(
             "Read [docs](https://woocommerce.com/documentation/woocommerce/mobile/) today."
         )
 
@@ -27,7 +27,7 @@ class AssistantMarkdownParserTest {
     @Test
     fun `given markdown link with unsupported scheme, when parsed, then source text is preserved`() {
         // WHEN
-        val parsed = AssistantMarkdownParser.parse("Open [docs](javascript:alert) today.")
+        val parsed = MarkdownParser.parse("Open [docs](javascript:alert) today.")
 
         // THEN
         assertThat(parsed.text).isEqualTo("Open [docs](javascript:alert) today.")
@@ -37,7 +37,7 @@ class AssistantMarkdownParserTest {
     @Test
     fun `given bold and italic markdown, when parsed, then markers are removed and styles are applied`() {
         // WHEN
-        val parsed = AssistantMarkdownParser.parse("This is ***bold italic***, **bold**, and *italic*.")
+        val parsed = MarkdownParser.parse("This is ***bold italic***, **bold**, and *italic*.")
 
         // THEN
         assertThat(parsed.text).isEqualTo("This is bold italic, bold, and italic.")
@@ -56,7 +56,7 @@ class AssistantMarkdownParserTest {
     @Test
     fun `given malformed markdown, when parsed, then source text is preserved`() {
         // WHEN
-        val parsed = AssistantMarkdownParser.parse("Broken [docs]( and **bold")
+        val parsed = MarkdownParser.parse("Broken [docs]( and **bold")
 
         // THEN
         assertThat(parsed.text).isEqualTo("Broken [docs]( and **bold")
@@ -75,7 +75,7 @@ class AssistantMarkdownParserTest {
         )
 
         // WHEN
-        val parsed = AssistantMarkdownParser.parse("[docs](https://example.com)", linkStyles = linkStyles)
+        val parsed = MarkdownParser.parse("[docs](https://example.com)", linkStyles = linkStyles)
 
         // THEN
         val link = parsed.getLinkAnnotations(0, parsed.length).single().item as LinkAnnotation.Url
@@ -85,7 +85,7 @@ class AssistantMarkdownParserTest {
     @Test
     fun `given bold and italic markdown in link label, when parsed, then label markers are removed`() {
         // WHEN
-        val parsed = AssistantMarkdownParser.parse("[***docs***](https://example.com)")
+        val parsed = MarkdownParser.parse("[***docs***](https://example.com)")
 
         // THEN
         assertThat(parsed.text).isEqualTo("docs")

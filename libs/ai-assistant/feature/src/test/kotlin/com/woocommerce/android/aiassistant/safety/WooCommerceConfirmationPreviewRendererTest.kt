@@ -100,7 +100,7 @@ class WooCommerceConfirmationPreviewRendererTest {
             ),
             isBulk = true,
             bulkEntries = listOf(
-                ConfirmationBulkEntry(7),
+                ConfirmationBulkEntry(7, "Classic T-Shirt"),
                 ConfirmationBulkEntry(8),
             ),
         )
@@ -111,9 +111,10 @@ class WooCommerceConfirmationPreviewRendererTest {
         assertThat(rendered.rows.single().beforeValue).isNull()
         assertThat(rendered.rows.single().afterValue).isEqualTo("draft")
         assertThat(rendered.bulkEntries).containsExactly(
-            ConfirmationBulkEntry(7),
+            ConfirmationBulkEntry(7, "Classic T-Shirt"),
             ConfirmationBulkEntry(8),
         )
+        assertThat(rendered.bulkEntries.first().displayText).isEqualTo("#7  Classic T-Shirt")
     }
 
     @Test
