@@ -871,7 +871,8 @@ data class AiSupportChatViewState(
     val showDiagnosticActions: Boolean
         get() {
             val result = diagnosticResult ?: return false
-            return (canUseDiagnosticActions || isExecutingFixAction) && (result.firstFailure != null || result.isComplete)
+            return (canUseDiagnosticActions || isExecutingFixAction) &&
+                (result.firstFailure != null || result.isComplete)
         }
 
     val canContactHumanSupportFromToolbar: Boolean

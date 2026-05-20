@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.aisupportchat.diagnostics
 
+import com.woocommerce.android.extensions.rethrow
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.ANALYTICS_SETTING
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.INTERNET_CONNECTION
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_CONNECTION
@@ -89,14 +90,9 @@ class SupportDiagnosticsService @Inject constructor(
     }
 
     suspend fun enableAnalytics(): Result<Unit> =
-        try {
+        runCatching {
             enableAnalyticsWithRetry(retries = 0)
-            Result.success(Unit)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Throwable) {
-            Result.failure(error)
-        }
+        }.rethrow<CancellationException, Unit>()
 
     private suspend fun enableAnalyticsWithRetry(retries: Int) {
         storeAnalyticsCheck.enableAnalytics()
