@@ -70,5 +70,6 @@ class SupportChatContextProvider @Inject constructor(
             DiagnosticTest.STORE_CONNECTION -> "Connecting to your site"
             DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
             DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
+            DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
         }
 }

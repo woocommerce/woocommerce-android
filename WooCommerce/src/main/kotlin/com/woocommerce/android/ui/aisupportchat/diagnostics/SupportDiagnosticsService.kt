@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.aisupportchat.diagnostics
 
+import com.woocommerce.android.extensions.rethrow
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.ANALYTICS_SETTING
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.INTERNET_CONNECTION
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_CONNECTION
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_ORDERS
@@ -8,6 +10,7 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
@@ -31,7 +34,8 @@ class SupportDiagnosticsService @Inject constructor(
     private val wpComConnectionCheck: WPComConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
-    private val storeProductsCheck: StoreProductsCheckUseCase
+    private val storeProductsCheck: StoreProductsCheckUseCase,
+    private val storeAnalyticsCheck: StoreAnalyticsCheckUseCase
 ) {
     fun runDiagnostics(issueType: SupportIssueType): Flow<DiagnosticResult> = flow {
         val tests = testsFor(issueType)
@@ -53,7 +57,7 @@ class SupportDiagnosticsService @Inject constructor(
                     DiagnosticResult(
                         issueType = issueType,
                         statuses = statuses,
-                        suggestedAction = SuggestedFixAction.RetryDiagnostics
+                        suggestedAction = suggestedActionFor(test, newStatus)
                     )
                 )
                 return@flow
@@ -69,7 +73,7 @@ class SupportDiagnosticsService @Inject constructor(
         SupportIssueType.LOADING_PRODUCTS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_PRODUCTS)
         SupportIssueType.LOADING_ANALYTICS ->
-            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
+            listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, ANALYTICS_SETTING)
         SupportIssueType.RECEIVING_NOTIFICATIONS ->
             listOf(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
         SupportIssueType.OTHER ->
@@ -82,6 +86,24 @@ class SupportDiagnosticsService @Inject constructor(
         STORE_CONNECTION -> storeConnectionCheck()
         STORE_ORDERS -> storeOrdersCheck()
         STORE_PRODUCTS -> storeProductsCheck()
+        ANALYTICS_SETTING -> storeAnalyticsCheck()
+    }
+
+    suspend fun enableAnalytics(): Result<Unit> =
+        runCatching {
+            enableAnalyticsWithRetry(retries = 0)
+        }.rethrow<CancellationException, Unit>()
+
+    private suspend fun enableAnalyticsWithRetry(retries: Int) {
+        storeAnalyticsCheck.enableAnalytics()
+            .getOrElse { error ->
+                if (error is CancellationException) throw error
+                if (retries < ENABLE_ANALYTICS_MAX_RETRIES) {
+                    enableAnalyticsWithRetry(retries = retries + 1)
+                } else {
+                    throw error
+                }
+            }
     }
 
     private suspend fun runCheckSafely(test: DiagnosticTest): ConnectivityCheckStatus =
@@ -106,6 +128,20 @@ class SupportDiagnosticsService @Inject constructor(
             TestStatus.Failed(technicalDetails = "Diagnostic did not complete")
     }
 
+    private fun suggestedActionFor(test: DiagnosticTest, status: TestStatus.Failed): SuggestedFixAction? =
+        if (
+            test == ANALYTICS_SETTING &&
+            status.technicalDetails?.contains(StoreAnalyticsCheckUseCase.PLUGIN_NOT_ACTIVE_ERROR_TYPE) == true
+        ) {
+            SuggestedFixAction.EnableAnalytics
+        } else {
+            null
+        }
+
     private fun <T> List<T>.replaceAt(index: Int, value: T): List<T> =
         toMutableList().apply { this[index] = value }
+
+    private companion object {
+        const val ENABLE_ANALYTICS_MAX_RETRIES = 1
+    }
 }
