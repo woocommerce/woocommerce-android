@@ -1698,7 +1698,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given second bot response, when toolbar becomes available, then toolbar analytics are tracked once`() =
+    fun `given bot response, when toolbar becomes available, then toolbar analytics are tracked once`() =
         testBlocking {
             startChatWithBotResponse()
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, JsonObject(), CHAT_ID, SESSION_ID))
@@ -1724,7 +1724,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 trigger = AiSupportChatEscalationTrigger.MANUAL_TOOLBAR,
                 entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
                 supportArea = null,
-                userMessageCount = 2
+                userMessageCount = 1
             )
         }
 

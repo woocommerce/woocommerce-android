@@ -248,6 +248,7 @@ private val DiagnosticTest.analyticsValue: String
         DiagnosticTest.STORE_CONNECTION -> "site"
         DiagnosticTest.STORE_ORDERS -> "site_orders"
         DiagnosticTest.STORE_PRODUCTS -> "loading_products"
+        DiagnosticTest.ANALYTICS_SETTING -> "analytics_setting"
     }
 
 private val AiSupportChatFeedbackRating.analyticsValue: String
