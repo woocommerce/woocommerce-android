@@ -42,6 +42,7 @@ class WooPosScanToPayRepositoryTest {
 
     @Test
     fun `given remote update succeeds, when promoteOrderToPending, then status is set to pending`() = runTest {
+        // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
         val statusModel = WCOrderStatusModel(statusKey = Order.Status.Pending.value)
@@ -52,14 +53,17 @@ class WooPosScanToPayRepositoryTest {
         whenever(orderStore.updateOrderStatus(orderId = orderId, site = site, newStatus = statusModel))
             .thenReturn(flowOf(updateResult))
 
+        // WHEN
         val result = repository.promoteOrderToPending(orderId)
 
+        // THEN
         assertThat(result.isSuccess).isTrue()
         verify(orderStore).updateOrderStatus(orderId = eq(orderId), site = eq(site), newStatus = eq(statusModel))
     }
 
     @Test
     fun `given remote update fails, when promoteOrderToPending, then result is failure`() = runTest {
+        // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
         val statusModel = WCOrderStatusModel(statusKey = Order.Status.Pending.value)
@@ -72,14 +76,17 @@ class WooPosScanToPayRepositoryTest {
         whenever(orderStore.updateOrderStatus(orderId = orderId, site = site, newStatus = statusModel))
             .thenReturn(flowOf(updateResult))
 
+        // WHEN
         val result = repository.promoteOrderToPending(orderId)
 
+        // THEN
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()?.message).isEqualTo("boom")
     }
 
     @Test
     fun `given fetch succeeds, when fetchOrderSnapshot, then mapped Order returned`() = runTest {
+        // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
         val entity = OrderEntity(localSiteId = LocalId(1), orderId = orderId)
@@ -89,13 +96,16 @@ class WooPosScanToPayRepositoryTest {
         whenever(orderStore.fetchSingleOrderSync(site, orderId)).thenReturn(WooResult(entity))
         whenever(orderMapper.toAppModel(entity)).thenReturn(order)
 
+        // WHEN
         val result = repository.fetchOrderSnapshot(orderId)
 
+        // THEN
         assertThat(result).isEqualTo(order)
     }
 
     @Test
     fun `given fetch errors, when fetchOrderSnapshot, then null returned`() = runTest {
+        // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
         whenever(selectedSite.get()).thenReturn(site)
@@ -103,13 +113,16 @@ class WooPosScanToPayRepositoryTest {
             WooResult(WooError(WooErrorType.GENERIC_ERROR, original = mock())),
         )
 
+        // WHEN
         val result = repository.fetchOrderSnapshot(orderId)
 
+        // THEN
         assertThat(result).isNull()
     }
 
     @Test
     fun `given postOrderNote succeeds, when addOrderNote, then success`() = runTest {
+        // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
         whenever(selectedSite.get()).thenReturn(site)
@@ -128,8 +141,10 @@ class WooPosScanToPayRepositoryTest {
                 )
             )
 
+        // WHEN
         val result = repository.addOrderNote(orderId, "Customer paid via Scan to Pay")
 
+        // THEN
         assertThat(result.isSuccess).isTrue()
         verify(orderStore).postOrderNote(
             site = eq(site),
@@ -141,6 +156,7 @@ class WooPosScanToPayRepositoryTest {
 
     @Test
     fun `given postOrderNote fails, when addOrderNote, then failure with message`() = runTest {
+        // GIVEN
         val orderId = 123L
         val site: SiteModel = mock()
         whenever(selectedSite.get()).thenReturn(site)
@@ -149,8 +165,10 @@ class WooPosScanToPayRepositoryTest {
         )
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, original = mock(), message = "no note")))
 
+        // WHEN
         val result = repository.addOrderNote(orderId, "Customer paid via Scan to Pay")
 
+        // THEN
         assertThat(result.isFailure).isTrue()
     }
 }
