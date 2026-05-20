@@ -4,14 +4,11 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
-import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 
 internal class HeadlessSessionHistoryMapper {
-    @Suppress("UNUSED_PARAMETER")
     fun appendTurn(
         baseHistory: AssistantSessionHistory,
         modelTurnMessages: List<AssistantMessage>,
-        outcome: LoopOutcome,
         error: AssistantError? = null,
     ): AssistantSessionHistory {
         val preserveToolExchanges = error != AssistantError.Cancelled

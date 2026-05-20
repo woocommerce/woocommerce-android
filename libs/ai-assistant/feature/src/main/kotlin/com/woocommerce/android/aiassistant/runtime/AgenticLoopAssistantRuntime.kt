@@ -114,7 +114,6 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     val updatedSessionHistory = sessionHistoryMapper.appendTurn(
                         baseHistory = request.sessionHistory,
                         modelTurnMessages = event.modelTurnMessages,
-                        outcome = event.outcome,
                         error = error,
                     )
                     emit(

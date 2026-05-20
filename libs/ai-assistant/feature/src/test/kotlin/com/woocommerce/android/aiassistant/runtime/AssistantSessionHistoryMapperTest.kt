@@ -5,7 +5,6 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
-import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -26,7 +25,6 @@ internal class AssistantSessionHistoryMapperTest {
                 toolResult,
                 AssistantMessage.Assistant(content = "Here are the orders"),
             ),
-            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -53,7 +51,6 @@ internal class AssistantSessionHistoryMapperTest {
                 toolResult,
                 AssistantMessage.Assistant(content = "Here are the orders"),
             ),
-            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -75,7 +72,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.User("Update product"),
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall())),
             ),
-            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -98,7 +94,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 toolResult,
             ),
-            outcome = LoopOutcome.FAILED,
             error = AssistantError.OutcomeUnknown(toolName = "orders_update"),
         )
 
@@ -127,7 +122,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = "I can do that.", toolCalls = listOf(toolCall)),
                 toolResult,
             ),
-            outcome = LoopOutcome.STOPPED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -148,7 +142,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.User("Explain analytics"),
                 AssistantMessage.Assistant(content = "Partial answer"),
             ),
-            outcome = LoopOutcome.STOPPED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -172,7 +165,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 toolResult,
             ),
-            outcome = LoopOutcome.FAILED,
             error = AssistantError.InvalidToolCall(toolName = toolCall.name),
         )
 
@@ -227,7 +219,6 @@ internal class AssistantSessionHistoryMapperTest {
                 toolResult,
                 AssistantMessage.Assistant(content = "Done"),
             ),
-            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -253,7 +244,6 @@ internal class AssistantSessionHistoryMapperTest {
                 toolResult(toolCall.id, content = """{"ok":true}"""),
                 toolResult(toolCall.id, content = """{"ok":true}"""),
             ),
-            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -274,7 +264,6 @@ internal class AssistantSessionHistoryMapperTest {
                 toolResult(secondCall.id),
                 toolResult(firstCall.id),
             ),
-            outcome = LoopOutcome.COMPLETED,
         )
 
         assertThat(result.messages).containsExactly(
@@ -293,11 +282,30 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 toolResult(toolCall.id),
             ),
-            outcome = LoopOutcome.STOPPED,
             error = AssistantError.Cancelled,
         )
 
         assertThat(result.messages).containsExactly(AssistantSessionMessage.User("Run tool"))
+    }
+
+    @Test
+    fun `given Cancelled error with assistant content and matched pair, when mapping, then content is kept as text`() {
+        val toolCall = toolCall()
+
+        val result = mapper.appendTurn(
+            baseHistory = AssistantSessionHistory.Empty,
+            modelTurnMessages = listOf(
+                AssistantMessage.User("Run tool"),
+                AssistantMessage.Assistant(content = "I can update that.", toolCalls = listOf(toolCall)),
+                toolResult(toolCall.id),
+            ),
+            error = AssistantError.Cancelled,
+        )
+
+        assertThat(result.messages).containsExactly(
+            AssistantSessionMessage.User("Run tool"),
+            AssistantSessionMessage.Assistant("I can update that."),
+        )
     }
 
     @Test
@@ -312,7 +320,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = null, toolCalls = listOf(toolCall)),
                 toolResult,
             ),
-            outcome = LoopOutcome.MAX_ITERATIONS,
         )
 
         assertThat(result.messages).containsExactly(
@@ -337,7 +344,6 @@ internal class AssistantSessionHistoryMapperTest {
                 AssistantMessage.Assistant(content = "I can check that.", toolCalls = listOf(toolCall)),
                 toolResult,
             ),
-            outcome = LoopOutcome.FAILED,
             error = AssistantError.OutcomeUnknown(toolName = toolCall.name),
         )
 

@@ -4,17 +4,14 @@ import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
-import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 
 internal class AssistantSessionHistoryMapper {
-    @Suppress("UNUSED_PARAMETER")
     fun appendTurn(
         baseHistory: AssistantSessionHistory,
         modelTurnMessages: List<AssistantMessage>,
-        outcome: LoopOutcome,
         error: AssistantError? = null,
     ): AssistantSessionHistory {
-        // AssistantError.Cancelled is the full-run cancellation sentinel; other matched tool exchanges are reusable.
+        // AssistantError.Cancelled is the full-run cancellation sentinel; otherwise matched exchanges are replayable.
         val preserveToolExchanges = error != AssistantError.Cancelled
         val sessionMessages = buildList {
             var index = 0

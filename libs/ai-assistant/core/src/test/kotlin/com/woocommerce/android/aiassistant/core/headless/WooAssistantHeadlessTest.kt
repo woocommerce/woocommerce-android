@@ -131,6 +131,73 @@ class WooAssistantHeadlessTest {
         }
 
     @Test
+    fun `given denied unsafe tool turn, when running next headless turn, then model request replays rejection`() =
+        runTest {
+            val toolDescriptor = toolDescriptor("orders_update", ToolSafetyLevel.UNSAFE)
+            val registry = RecordingHeadlessToolRegistry(
+                descriptors = listOf(toolDescriptor),
+                results = mapOf(
+                    "orders_update" to ToolResult.Success(
+                        toolCallId = "call_1",
+                        structured = buildJsonObject { put("ok", true) },
+                    )
+                ),
+            )
+            val chatService = ScriptedHeadlessChatService(
+                responses = orderUpdateResponses(includeFinalAnswer = false) + listOf(
+                    listOf(
+                        AssistantEvent.TextDelta("You declined that update."),
+                        AssistantEvent.Finish(FinishReason.STOP),
+                    )
+                )
+            )
+            val harness = WooAssistantHeadless(
+                chatService = chatService,
+                toolRegistry = registry,
+                retryPolicy = ConservativeRetryPolicy,
+                historyBudgeter = passThroughBudgeter(),
+                json = json,
+                timeSource = TimeSource.Monotonic,
+            )
+
+            val result = harness.runScenario(
+                scenario = scenario(
+                    id = "cancel-order-update",
+                    userMessages = listOf(
+                        "Complete order 42",
+                        "What happened?",
+                    ),
+                    toolDescriptor = toolDescriptor,
+                )
+            )
+
+            assertThat(result.turns.map { it.outcome }).containsExactly(LoopOutcome.STOPPED, LoopOutcome.COMPLETED)
+            assertThat(registry.calls).isEmpty()
+            assertThat(chatService.requests.last().messages).containsExactly(
+                AssistantMessage.System("You are a helpful commerce assistant."),
+                AssistantMessage.User("Complete order 42"),
+                AssistantMessage.Assistant(
+                    content = null,
+                    toolCalls = listOf(
+                        ToolCall(
+                            id = "call_1",
+                            name = "orders_update",
+                            arguments = buildJsonObject {
+                                put("id", 42)
+                                put("status", "completed")
+                            },
+                        )
+                    ),
+                ),
+                AssistantMessage.Tool(
+                    toolCallId = "call_1",
+                    content = """{"error":"Action was cancelled by the merchant"}""",
+                ),
+                AssistantMessage.User("What happened?"),
+            )
+        }
+
+    @Test
     fun `given unsafe tool and confirming safety, when running scenario, then result captures confirmation handoff`() =
         runTest {
             val toolDescriptor = toolDescriptor("orders_update", ToolSafetyLevel.UNSAFE)
