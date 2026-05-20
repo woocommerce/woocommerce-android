@@ -10,11 +10,15 @@ module WooAiTranslation
 
   ANTHROPIC_VERSION = '2023-06-01'
 
-  # Pinned model versions. Sonnet handles the bulk of context-rich UI strings at
-  # the best quality/cost balance; Opus is escalated for marketing/store metadata
-  # and validator-flagged low-confidence strings. Haiku is intentionally not used
-  # for production copy. Overridable via the manifest or CLI.
-  DEFAULT_MODEL = 'claude-sonnet-4-6'
+  # Pinned model versions. Haiku is the default for UI strings: the Peacock P2
+  # hack-week experiment ran a blind A/B over 16 locales × 300 strings and AI
+  # translations from Haiku 4.5 (and GPT-5.4) were preferred over the existing
+  # human translations 2-3x more often than the reverse, with backfill costs in
+  # cents per locale -- using a stronger model for the bulk of strings is not
+  # cost-effective. Opus is reserved for marketing / store-metadata copy and any
+  # validator-flagged low-confidence retries. CI should override with a
+  # date-pinned variant (e.g. claude-haiku-4-5-20251001) for full determinism.
+  DEFAULT_MODEL = 'claude-haiku-4-5'
   ESCALATION_MODEL = 'claude-opus-4-7'
 
   # Resource names matching these are marketing/store copy -> escalate to Opus.

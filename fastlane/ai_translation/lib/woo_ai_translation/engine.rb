@@ -84,10 +84,8 @@ module WooAiTranslation
 
       source_units.each do |u|
         model = model_for(u)
-        ck = @manifest.cache_key(
-          source: u.source_signature, context: @context.context_for(u.name),
-          locale: locale, model: model
-        )
+        ctx = context_for_unit(u)
+        ck = @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: model)
         shell = u.dup_shell
         units[u.name] = shell
 
@@ -103,18 +101,28 @@ module WooAiTranslation
 
     def run_translation(locale, pending)
       results = {}
+      style = @context.respond_to?(:style_for) ? @context.style_for(locale) : ''
       pending.group_by { |st| st[:model] }.each do |model, group|
         items = group.flat_map do |st|
+          ctx = context_for_unit(st[:source])
           st[:source].translation_requests.map do |r|
-            { id: "#{st[:source].name}::#{r[:id]}", source: r[:source],
-              context: @context.context_for(st[:source].name) }
+            { id: "#{st[:source].name}::#{r[:id]}", source: r[:source], context: ctx }
           end
         end
         next if items.empty?
 
-        results.merge!(@translator.translate(locale: locale, items: items, model: model))
+        results.merge!(@translator.translate(locale: locale, items: items, model: model, style: style))
       end
       results
+    end
+
+    # Combined per-key context: the immediately-preceding XML comment in the
+    # source file (sticky to the section) plus any AINFRA-1707 entry. Both are
+    # dev-authored and cheap; included in both the cache key and the prompt so
+    # the manifest and the model see the same input.
+    def context_for_unit(unit)
+      [unit.respond_to?(:comment) ? unit.comment.to_s : '',
+       @context.context_for(unit.name).to_s].reject(&:empty?).join("\n").strip
     end
 
     def apply_and_validate(state, results, locale, origin, translated, failed)
