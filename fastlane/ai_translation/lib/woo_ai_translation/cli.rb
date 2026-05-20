@@ -18,6 +18,7 @@ module WooAiTranslation
       batch: Translator::DEFAULT_BATCH,
       offline: false,
       claude_cli: false,
+      force_model: nil,
       strict: false,
       metadata_source: 'fastlane/metadata/android/en-US',
       metadata_out: 'fastlane/metadata/android',
@@ -58,7 +59,8 @@ module WooAiTranslation
       engine = Engine.new(
         source_path: opts[:source], res_dir: opts[:res_dir],
         manifest: manifest, manifest_path: opts[:manifest],
-        translator: translator, context: context, logger: logger
+        translator: translator, context: context,
+        force_model: opts[:force_model], logger: logger
       )
 
       # backfill = seed the human baseline first (origin glotpress-import, no
@@ -131,6 +133,7 @@ module WooAiTranslation
         p.on('--batch N', Integer) { |v| o[:batch] = v }
         p.on('--offline', 'Use the deterministic stub (no network/spend)') { o[:offline] = true }
         p.on('--claude-cli', 'Shell out to the local `claude` CLI (uses your Claude Code account)') { o[:claude_cli] = true }
+        p.on('--force-model NAME', 'Override per-unit model for NEW translations (reused keys unaffected)') { |v| o[:force_model] = v }
         p.on('--strict', 'Exit non-zero if any key failed') { o[:strict] = true }
         # Metadata mode (workstream 3c)
         p.on('--metadata-source DIR') { |v| o[:metadata_source] = v }
