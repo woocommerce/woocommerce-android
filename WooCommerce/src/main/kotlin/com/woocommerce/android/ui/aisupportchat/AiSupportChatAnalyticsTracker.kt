@@ -267,7 +267,7 @@ private val SupportChatSupportArea.analyticsArea: String
     get() = area?.lowercase().orUnknown()
 
 private val SupportChatSupportArea.analyticsConfidence: String
-    get() = confidence?.lowercase().takeIf { it in setOf("high", "medium", "low") }.orUnknown()
+    get() = confidence?.lowercase().orUnknown()
 
 private fun String?.orUnknown(): String = this ?: "unknown"
 
