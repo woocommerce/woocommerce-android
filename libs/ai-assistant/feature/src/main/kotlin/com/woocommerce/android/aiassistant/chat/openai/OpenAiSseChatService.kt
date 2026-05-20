@@ -30,6 +30,14 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
+/**
+ * Shared OpenAI-compatible streaming chat client.
+ *
+ * This class owns the transport-level concerns that should be identical across OpenAI-style endpoints:
+ * request execution, SSE framing, parser wiring, cancellation, diagnostics, and generic HTTP/network errors.
+ * Endpoint differences stay in [OpenAiSseChatServiceConfig], where each service provides its path, auth,
+ * request-body adapter, and optional error mappers.
+ */
 internal class OpenAiSseChatService(
     private val httpClient: OkHttpClient,
     private val streamParser: ChatStreamParser,

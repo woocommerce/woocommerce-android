@@ -4,6 +4,12 @@ import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 
+/**
+ * Endpoint-specific error mapping hook for the shared SSE client.
+ *
+ * Generic HTTP/network failures are handled by [OpenAiSseChatService]. Mappers only translate backend-specific
+ * HTTP bodies or SSE payloads, such as legacy Jetpack AI errors or WPCOM REST envelopes.
+ */
 internal interface OpenAiSseErrorMapper {
     fun mapHttpError(
         context: OpenAiSseHttpErrorContext,
