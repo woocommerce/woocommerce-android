@@ -2309,8 +2309,9 @@
     <string name="settings_notifs_new_orders_all_title">All new orders</string>
     <string name="settings_notifs_new_orders_all_description">Ping for every order, regardless of value.</string>
     <string name="settings_notifs_new_orders_high_value_title">Only high-value orders</string>
-    <string name="settings_notifs_new_orders_high_value_description">Filter to orders above your threshold.</string>
-    <string name="settings_notifs_new_orders_threshold">Threshold (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Orders over %1$s</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filter to orders above your minimum value.</string>
+    <string name="settings_notifs_new_orders_threshold">Minimum value (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_stock_enable_title">Enable stock notifications</string>
@@ -2326,15 +2327,13 @@
     <string name="settings_notifs_stock_backorder_description">When a customer orders an item that\'s currently out of stock.</string>
     <string name="settings_notifs_new_reviews">New reviews</string>
     <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
-    <string name="settings_notifs_new_reviews_enable_description">Get notified when someone leaves a review on one of your products.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Get notified when a review is left for your store.</string>
     <string name="settings_notifs_new_reviews_all_title">All new reviews</string>
-    <string name="settings_notifs_new_reviews_all_description">Ping for every review, regardless of rating.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Reviews up to a rating</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Choose the highest rating that should send a notification.</string>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d star or below</item>
-        <item quantity="other">%1$d stars or below</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_all_description">Ping for every review.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Only low-rated reviews</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Filter to reviews at or below your chosen rating.</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d stars and below</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d star and below</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
