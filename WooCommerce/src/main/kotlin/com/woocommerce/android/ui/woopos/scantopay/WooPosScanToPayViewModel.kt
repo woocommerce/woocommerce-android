@@ -38,7 +38,7 @@ class WooPosScanToPayViewModel @Inject constructor(
 ) : ViewModel() {
     private val orderId: Long = requireNotNull(savedState[SCAN_TO_PAY_ROUTE_ORDER_ID_KEY])
 
-    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(replay = 1)
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private val _state = savedState.getStateFlow<WooPosScanToPayState>(

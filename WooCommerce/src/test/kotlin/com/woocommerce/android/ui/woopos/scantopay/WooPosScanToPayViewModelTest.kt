@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.scantopay
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
@@ -39,6 +40,10 @@ class WooPosScanToPayViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    @Rule
+    @JvmField
+    val instantTaskRule = InstantTaskExecutorRule()
 
     private val repository: WooPosScanToPayRepository = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
