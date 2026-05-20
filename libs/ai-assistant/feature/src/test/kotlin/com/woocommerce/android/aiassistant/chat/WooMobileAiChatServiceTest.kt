@@ -83,7 +83,7 @@ class WooMobileAiChatServiceTest {
         val body = Json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject
         assertThat(body.getValue("model").jsonPrimitive.content).isEqualTo(AssistantConfig.MODEL_ID)
         assertThat(body.getValue("stream").jsonPrimitive.boolean).isTrue()
-        assertThat(body.getValue("stream_options").jsonObject.getValue("include_usage").jsonPrimitive.boolean).isTrue()
+        assertThat(body).doesNotContainKey("stream_options")
         assertThat(body).doesNotContainKey("feature")
         assertThat(body).doesNotContainKey("tool_choice")
     }

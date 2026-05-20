@@ -36,7 +36,6 @@ internal class WooMobileAiChatService @Inject constructor(
         transportDiagnosticsFactory = transportDiagnosticsFactory,
         config = OpenAiSseChatServiceConfig(
             path = WOO_MOBILE_AI_CHAT_COMPLETIONS_PATH,
-            includeUsage = true,
             authProvider = WpComOpenAiSseAuthProvider(tokenProvider),
             errorMappers = listOf(wrapperErrorMapper),
         ),
