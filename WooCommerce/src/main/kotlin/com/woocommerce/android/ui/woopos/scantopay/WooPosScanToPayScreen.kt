@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlin
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosQrCode
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -76,7 +78,10 @@ private fun WooPosScanToPayScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             when (state) {
                 WooPosScanToPayState.Loading,
-                WooPosScanToPayState.PaymentDetected -> WooPosCircularLoadingIndicator()
+                WooPosScanToPayState.PaymentDetected ->
+                    WooPosCircularLoadingIndicator(
+                        modifier = Modifier.size(WooPosComponentSize.XLarge.value),
+                    )
 
                 is WooPosScanToPayState.ShowingQR -> ShowingQR(state = state, onCancelClicked = onCancelClicked)
 
@@ -102,25 +107,26 @@ private fun ShowingQR(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
-        if (state.totalText.isNotBlank()) {
-            WooPosText(
-                text = state.totalText,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-        }
         WooPosText(
             text = stringResource(R.string.woopos_scan_to_pay_subtitle),
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
         )
+        if (state.totalText.isNotBlank()) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            WooPosText(
+                text = state.totalText,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+            )
+        }
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         @Suppress("WooPosDesignSystemComponentSizeUsageRule")
         WooPosQrCode(
             data = state.paymentUrl,
             size = 320.dp,
             modifier = Modifier.testTag(WooPosTestTags.SCAN_TO_PAY_QR_CODE),
+            centerLogoResId = R.drawable.ic_woo,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosOutlinedButton(
@@ -193,6 +199,18 @@ private fun Context.findActivity(): Activity? {
         ctx = ctx.baseContext
     }
     return null
+}
+
+@WooPosPreview
+@Composable
+private fun WooPosScanToPayLoadingPreview() {
+    WooPosTheme {
+        WooPosScanToPayScreen(
+            state = WooPosScanToPayState.Loading,
+            onCancelClicked = {},
+            onRetryClicked = {},
+        )
+    }
 }
 
 @WooPosPreview
