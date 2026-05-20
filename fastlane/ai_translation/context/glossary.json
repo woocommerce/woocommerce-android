@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "_note": "Starter glossary. Add terms incrementally as native-speaker spot-checks surface them. Loaded as a cached prompt prefix (zero per-call cost after first request).",
+  "terms": [
+    { "term": "WooCommerce", "rule": "Brand name; never translate." },
+    { "term": "Woo",         "rule": "Brand short form; never translate." },
+    { "term": "WordPress.com", "rule": "Brand; never translate." },
+    { "term": "Jetpack",     "rule": "Brand; never translate." },
+    { "term": "Point of Sale", "rule": "Name of the WooCommerce POS feature. Prefer keeping it in English (or the locale's industry-standard English term) rather than a literal calque; Russian translations of this term as 'point where goods are given' have caused confusion." },
+    { "term": "Coupon",      "rule": "Use the locale's established commerce term where one exists (e.g. de: Gutschein, fr: Code promo). Do not keep in English by default." },
+    { "term": "HAZMAT",      "rule": "Shipping label flag for hazardous materials. Use the locale's regulated term (e.g. de: Gefahrgut)." },
+    { "term": "SKU",         "rule": "Stock keeping unit. Keep as 'SKU' in all locales." },
+    { "term": "Stripe",      "rule": "Payment provider brand; never translate." }
+  ]
+}

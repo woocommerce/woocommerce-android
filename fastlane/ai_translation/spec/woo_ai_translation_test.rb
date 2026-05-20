@@ -64,6 +64,74 @@ class AndroidResourcesTest < Minitest::Test
   end
 end
 
+class XmlCommentContextTest < Minitest::Test
+  P = WooAiTranslation::AndroidResources::Parser
+
+  def test_preceding_comment_is_attached_sticky_until_next_comment
+    doc = P.parse_file(FIXTURE)
+    # First comment "Greetings on the main dashboard." applies to every string
+    # up to (but not including) the next comment.
+    assert_equal 'Greetings on the main dashboard.', doc.find('app_name').comment
+    assert_equal 'Greetings on the main dashboard.', doc.find('greeting').comment
+    assert_equal 'Greetings on the main dashboard.', doc.find('raw_percent').comment
+    # New comment switches the context for everything below.
+    assert_equal 'Help & support strings.', doc.find('html_note').comment
+    assert_equal 'Help & support strings.', doc.find('possessive').comment
+    assert_equal 'Help & support strings.', doc.find('cart_items').comment
+    assert_equal 'Help & support strings.', doc.find('files_value_multiple').comment
+  end
+end
+
+class GlossaryAndStyleTest < Minitest::Test
+  def test_glossary_text_renders_when_file_present
+    Dir.mktmpdir do |dir|
+      g = File.join(dir, 'glossary.json')
+      File.write(g, JSON.generate('terms' => [
+                                    { 'term' => 'Woo', 'rule' => 'Brand; never translate.' },
+                                    { 'term' => 'SKU', 'rule' => 'Keep as SKU.' }
+                                  ]))
+      ctx = WooAiTranslation::ContextProvider.from_file(nil, glossary_path: g)
+      text = ctx.glossary_text
+      assert_includes text, 'Brand & domain glossary'
+      assert_includes text, '- Woo: Brand; never translate.'
+      assert_includes text, '- SKU: Keep as SKU.'
+    end
+  end
+
+  def test_glossary_text_is_empty_when_absent
+    assert_equal '', WooAiTranslation::ContextProvider.new({}).glossary_text
+  end
+
+  def test_style_for_reads_locale_markdown
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, 'de.md'), 'Use informal Du.')
+      ctx = WooAiTranslation::ContextProvider.new({}, style_dir: dir)
+      assert_equal 'Use informal Du.', ctx.style_for('de')
+      assert_equal '', ctx.style_for('xx')
+    end
+  end
+
+  def test_translator_includes_glossary_as_cached_system_block
+    captured = []
+    client = Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) do |model:, system_blocks:, user_content:, max_tokens: 8192|
+        captured << system_blocks.dup
+        '{}'
+      end
+    end.new
+
+    t = WooAiTranslation::Translator.new(client: client, glossary: 'Brand & domain glossary (applies to every locale):\n- Woo: Brand; never translate.')
+    t.translate(locale: 'fr', items: [{ id: 'k', source: 's', context: '' }], model: WooAiTranslation::DEFAULT_MODEL, style: 'fr style.')
+
+    blocks = captured.first
+    assert_equal 3, blocks.size, 'rules + glossary + per-locale style'
+    assert_includes blocks[0], 'professional software localizer'
+    assert_includes blocks[1], 'Brand & domain glossary'
+    assert_includes blocks[2], 'fr style.'
+  end
+end
+
 class ManifestTest < Minitest::Test
   M = WooAiTranslation::Manifest
 
@@ -259,6 +327,30 @@ class EngineTest < Minitest::Test
       assert_includes report, '## fr'
       assert_includes report, 'changed='
       assert_equal before, File.read(committed), 'shadow diff must not modify committed files'
+    end
+  end
+
+  def test_changing_an_xml_comment_only_retranslates_its_section
+    Dir.mktmpdir do |dir|
+      mpath = File.join(dir, 'm.json')
+
+      # Initial run seeds everything.
+      c1 = StubClient.new
+      build(dir, client: c1).run_strings(locales: %w[fr])
+
+      # Rewrite the source: change ONLY the first comment ("Greetings ...").
+      # Sticky propagation means the 3 strings in that section invalidate;
+      # the 6 strings under the second comment must reuse.
+      modified = File.join(dir, 'modified.xml')
+      File.write(modified, File.read(FIXTURE).sub('Greetings on the main dashboard.',
+                                                  'Dashboard greetings, shown above the order list.'))
+
+      c2 = StubClient.new
+      report = build(dir, source: modified, client: c2).run_strings(locales: %w[fr]).first
+
+      assert_equal 3, report.translated, 'only the section above the changed comment retranslates'
+      assert_equal 6, report.reused
+      assert_equal 1, c2.calls
     end
   end
 
