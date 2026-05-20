@@ -63,6 +63,25 @@ class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given cached analytics stats load first, when revenue stats refresh, then emit refreshed result`() =
+        testBlocking {
+            val stateEvents = mutableListOf<ConnectivityCheckStatus>()
+            whenever(wooCommerceStore.fetchAnalyticsEnabled(site)).thenReturn(WooResult(true))
+            whenever(getStats.invoke(any(), any(), anyOrNull())).thenReturn(
+                flowOf(
+                    GetStats.LoadStatsResult.RevenueStatsSuccess(null, isOutdated = true),
+                    GetStats.LoadStatsResult.RevenueStatsSuccess(null)
+                )
+            )
+
+            sut().onEach { stateEvents.add(it) }.launchIn(this)
+
+            assertThat(stateEvents).hasSize(2)
+            assertThat(stateEvents[0]).isEqualTo(InProgress)
+            assertThat(stateEvents[1]).isInstanceOf(Success::class.java)
+        }
+
+    @Test
     fun `given analytics setting is disabled, when check runs, then emit plugin inactive failure`() = testBlocking {
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(wooCommerceStore.fetchAnalyticsEnabled(site)).thenReturn(WooResult(false))

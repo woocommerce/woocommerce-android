@@ -75,7 +75,7 @@ class StoreAnalyticsCheckUseCase @Inject constructor(
 
     private val LoadStatsResult.isRevenueCheckResult: Boolean
         get() = when (this) {
-            is LoadStatsResult.RevenueStatsSuccess,
+            is LoadStatsResult.RevenueStatsSuccess -> isOutdated.not()
             is LoadStatsResult.RevenueStatsError,
             LoadStatsResult.PluginNotActive -> true
             LoadStatsResult.RevenueStatsLoading,
