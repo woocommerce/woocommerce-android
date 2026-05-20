@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -493,18 +494,12 @@ private fun DiagnosticsContent(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
     ) {
-        Text(
-            text = if (result.firstFailure == null && result.isComplete) {
-                stringResource(R.string.ai_support_chat_diagnostics_success)
-            } else {
-                stringResource(R.string.ai_support_chat_diagnostics_title)
-            },
-            color = textColor,
-            style = MaterialTheme.typography.titleSmall
-        )
-
-        result.statuses.forEach { status ->
-            DiagnosticStatusRow(status = status, textColor = textColor)
+        if (result.firstFailure == null && result.isComplete) {
+            DiagnosticSuccessRow()
+        } else {
+            result.visibleStatus?.let { status ->
+                DiagnosticStatusRow(status = status, textColor = textColor)
+            }
         }
 
         if (showDiagnosticActions) {
@@ -524,6 +519,9 @@ private fun DiagnosticsContent(
         }
     }
 }
+
+private val DiagnosticResult.visibleStatus: DiagnosticStatus?
+    get() = statuses.lastOrNull { it.status !is TestStatus.Pending } ?: statuses.firstOrNull()
 
 @Composable
 private fun DiagnosticActions(
@@ -605,31 +603,69 @@ private fun ContinueAfterDiagnosticsButton(
 private fun DiagnosticStatusRow(status: DiagnosticStatus, textColor: Color) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = status.test.title(),
-            color = textColor,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(1f)
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (status.status is TestStatus.Running) {
-                CircularProgressIndicator(
-                    strokeWidth = 2.dp,
-                    modifier = Modifier
-                        .padding(end = dimensionResource(R.dimen.minor_100))
-                        .size(14.dp)
-                )
-            }
-            Text(
-                text = status.status.title(),
-                color = textColor,
-                style = MaterialTheme.typography.bodySmall
+        when (status.status) {
+            is TestStatus.Failed -> DiagnosticStatusIcon(
+                icon = R.drawable.ic_gridicons_cross_24dp,
+                tint = MaterialTheme.colorScheme.error,
+                contentDescription = status.status.title()
+            )
+            TestStatus.Running -> CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.minor_100))
+                    .size(DIAGNOSTIC_STATUS_ICON_SIZE)
+            )
+            else -> Spacer(
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.minor_100))
+                    .size(DIAGNOSTIC_STATUS_ICON_SIZE)
             )
         }
+        Text(
+            text = status.test.title(),
+            color = if (status.status is TestStatus.Failed) MaterialTheme.colorScheme.error else textColor,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
+}
+
+@Composable
+private fun DiagnosticSuccessRow() {
+    val successColor = colorResource(R.color.woo_green_50)
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        DiagnosticStatusIcon(
+            icon = R.drawable.ic_check_circle_filled_24dp,
+            tint = successColor,
+            contentDescription = stringResource(R.string.ai_support_chat_diagnostics_status_passed)
+        )
+        Text(
+            text = stringResource(R.string.ai_support_chat_diagnostics_success),
+            color = successColor,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+@Composable
+private fun DiagnosticStatusIcon(
+    icon: Int,
+    tint: Color,
+    contentDescription: String
+) {
+    Icon(
+        painter = painterResource(icon),
+        contentDescription = contentDescription,
+        tint = tint,
+        modifier = Modifier
+            .padding(end = dimensionResource(R.dimen.minor_100))
+            .size(DIAGNOSTIC_STATUS_ICON_SIZE)
+    )
 }
 
 @Composable
@@ -1000,3 +1036,4 @@ private val MESSAGE_BUBBLE_CORNER_RADIUS = 16.dp
 private val FEEDBACK_BUTTON_SIZE = 48.dp
 private val RATED_FEEDBACK_ICON_SIZE = 18.dp
 private val TYPING_INDICATOR_SIZE = 16.dp
+private val DIAGNOSTIC_STATUS_ICON_SIZE = 16.dp
