@@ -33,14 +33,10 @@ class NotificationSystemStatusProvider @Inject constructor(
         wooNotificationBuilder.isNotificationsEnabled()
 
     fun disabledWooNotificationChannels(): List<NotificationChannelType> =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            emptyList()
-        } else {
-            NotificationChannelType.entries.filter { channelType ->
-                val channel = notificationManagerCompat.getNotificationChannel(
-                    with(notificationChannelsHandler) { channelType.getChannelId() }
-                )
-                channel?.importance == NotificationManager.IMPORTANCE_NONE
-            }
+        NotificationChannelType.entries.filter { channelType ->
+            val channel = notificationManagerCompat.getNotificationChannel(
+                with(notificationChannelsHandler) { channelType.getChannelId() }
+            )
+            channel?.importance == NotificationManager.IMPORTANCE_NONE
         }
 }
