@@ -525,6 +525,9 @@ private fun DiagnosticsContent(
                 onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
             )
+            if (isExecutingFixAction && diagnosticSuggestedAction != null) {
+                DiagnosticActionProgressText(action = diagnosticSuggestedAction, textColor = textColor)
+            }
         }
     }
 }
@@ -591,6 +594,18 @@ private fun SuggestedFixActionButton(
         text = action.title(),
         loading = loading,
         modifier = modifier
+    )
+}
+
+@Composable
+private fun DiagnosticActionProgressText(
+    action: SuggestedFixAction,
+    textColor: Color
+) {
+    Text(
+        text = action.progressMessage(),
+        color = textColor,
+        style = MaterialTheme.typography.bodySmall
     )
 }
 
@@ -708,6 +723,18 @@ private fun SuggestedFixAction.title(): String =
             SuggestedFixAction.RegisterPushNotifications ->
                 R.string.ai_support_chat_diagnostics_register_push_notifications
             SuggestedFixAction.RerunDiagnostics -> R.string.ai_support_chat_diagnostics_rerun_checks
+        }
+    )
+
+@Composable
+private fun SuggestedFixAction.progressMessage(): String =
+    stringResource(
+        when (this) {
+            SuggestedFixAction.EnableAnalytics -> R.string.ai_support_chat_diagnostics_enabling_analytics
+            SuggestedFixAction.RegisterPushNotifications ->
+                R.string.ai_support_chat_diagnostics_registering_push_notifications
+            SuggestedFixAction.OpenNotificationSettings,
+            SuggestedFixAction.RerunDiagnostics -> R.string.loading
         }
     )
 

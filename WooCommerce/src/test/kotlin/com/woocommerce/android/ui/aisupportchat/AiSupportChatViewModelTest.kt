@@ -317,6 +317,69 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given push registration action succeeds, when action clicked, then diagnostics rerun`() =
+        testBlocking {
+            val failedResult = createPushRegistrationFailedDiagnosticResult()
+            val successResult = createSuccessDiagnosticResult(SupportIssueType.RECEIVING_NOTIFICATIONS)
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS))
+                .thenReturn(flowOf(failedResult), flowOf(successResult))
+            whenever(diagnosticsService.registerPushNotifications()).thenReturn(Result.success(Unit))
+
+            viewModel.onIssueSelected(SupportIssueType.RECEIVING_NOTIFICATIONS, NOTIFICATIONS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.RegisterPushNotifications)
+
+            val state = viewModel.viewState.value
+            assertThat(state.isExecutingFixAction).isFalse()
+            assertThat(state.diagnosticResult).isEqualTo(successResult)
+            assertThat(state.showSuggestedFixActionError).isFalse()
+            verify(diagnosticsService).registerPushNotifications()
+            verify(diagnosticsService, times(2)).runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS)
+        }
+
+    @Test
+    fun `given push registration action is running, when action clicked, then diagnostic actions stay visible`() =
+        testBlocking {
+            val failedResult = createPushRegistrationFailedDiagnosticResult()
+            val registrationResult = CompletableDeferred<Result<Unit>>()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS))
+                .thenReturn(flowOf(failedResult))
+            whenever(diagnosticsService.registerPushNotifications()).doSuspendableAnswer {
+                registrationResult.await()
+            }
+
+            viewModel.onIssueSelected(SupportIssueType.RECEIVING_NOTIFICATIONS, NOTIFICATIONS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.RegisterPushNotifications)
+            runCurrent()
+
+            val state = viewModel.viewState.value
+            assertThat(state.isExecutingFixAction).isTrue()
+            assertThat(state.showDiagnosticActions).isTrue()
+
+            registrationResult.complete(Result.success(Unit))
+            runCurrent()
+        }
+
+    @Test
+    fun `given push registration action fails, when action clicked, then action error is shown`() =
+        testBlocking {
+            val failedResult = createPushRegistrationFailedDiagnosticResult()
+            whenever(diagnosticsService.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS))
+                .thenReturn(flowOf(failedResult))
+            whenever(diagnosticsService.registerPushNotifications())
+                .thenReturn(Result.failure(IllegalStateException("Push registration failed")))
+
+            viewModel.onIssueSelected(SupportIssueType.RECEIVING_NOTIFICATIONS, NOTIFICATIONS_ISSUE_LABEL)
+            viewModel.onSuggestedFixActionClicked(SuggestedFixAction.RegisterPushNotifications)
+
+            val state = viewModel.viewState.value
+            assertThat(state.isExecutingFixAction).isFalse()
+            assertThat(state.diagnosticResult).isEqualTo(failedResult)
+            assertThat(state.showSuggestedFixActionError).isTrue()
+            verify(diagnosticsService).registerPushNotifications()
+            verify(diagnosticsService).runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS)
+        }
+
+    @Test
     fun `given other issue selected, when tapped, then diagnostics are skipped and chat input is shown`() =
         testBlocking {
             viewModel.onIssueSelected(SupportIssueType.OTHER, OTHER_ISSUE_LABEL)
@@ -1697,6 +1760,27 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 DiagnosticStatus(DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION, TestStatus.Pending)
             ),
             suggestedAction = SuggestedFixAction.OpenNotificationSettings
+        )
+
+    private fun createPushRegistrationFailedDiagnosticResult() =
+        DiagnosticResult(
+            issueType = SupportIssueType.RECEIVING_NOTIFICATIONS,
+            statuses = listOf(
+                DiagnosticStatus(DiagnosticTest.INTERNET_CONNECTION, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.NOTIFICATION_PERMISSION, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.APP_NOTIFICATIONS_ENABLED, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED, TestStatus.Passed),
+                DiagnosticStatus(DiagnosticTest.PUSH_NOTIFICATION_TOKEN, TestStatus.Passed),
+                DiagnosticStatus(
+                    DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION,
+                    TestStatus.Failed(
+                        technicalDetails = "Operation: Checking push registration\n" +
+                            "Error Type: PUSH_NOTIFICATIONS_UNREGISTERED"
+                    )
+                )
+            ),
+            suggestedAction = SuggestedFixAction.RegisterPushNotifications
         )
 
     private fun createResponse(

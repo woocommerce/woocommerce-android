@@ -313,7 +313,12 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun registerPushNotifications() {
         launch {
-            _viewState.update { it.copy(isExecutingFixAction = true) }
+            _viewState.update {
+                it.copy(
+                    isExecutingFixAction = true,
+                    showSuggestedFixActionError = false
+                )
+            }
 
             diagnosticsService.registerPushNotifications()
                 .onSuccess {
@@ -322,7 +327,12 @@ class AiSupportChatViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     WooLog.e(WooLog.T.AI, "Registering push notifications failed", error)
-                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    _viewState.update {
+                        it.copy(
+                            isExecutingFixAction = false,
+                            showSuggestedFixActionError = true
+                        )
+                    }
                 }
         }
     }
