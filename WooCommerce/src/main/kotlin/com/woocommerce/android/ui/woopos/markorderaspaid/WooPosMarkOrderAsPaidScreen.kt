@@ -235,3 +235,35 @@ private fun WooPosMarkOrderAsPaidScreenErrorPreview() {
         )
     }
 }
+
+@WooPosPreview
+@Composable
+private fun WooPosMarkOrderAsPaidScreenInitiatingPreview() {
+    WooPosTheme {
+        WooPosMarkOrderAsPaidScreen(
+            state = WooPosMarkOrderAsPaidState.Initiating,
+            onNoteChanged = {},
+            onConfirmClicked = {},
+            onCloseClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun WooPosMarkOrderAsPaidScreenOrderNotFoundPreview() {
+    WooPosTheme {
+        WooPosMarkOrderAsPaidScreen(
+            state = WooPosMarkOrderAsPaidState.Confirming(
+                formattedTotal = "",
+                note = "",
+                errorMessage = "Order could not be loaded. Go back and try again.",
+                isProcessing = false,
+                canConfirm = false,
+            ),
+            onNoteChanged = {},
+            onConfirmClicked = {},
+            onCloseClicked = {},
+        )
+    }
+}
