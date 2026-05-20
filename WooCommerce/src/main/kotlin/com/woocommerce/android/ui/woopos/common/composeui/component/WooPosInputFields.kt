@@ -30,6 +30,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.payments.changeduecalculator.CurrencyVisualTransformation
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -195,8 +196,8 @@ fun WooPosInputField(
                 text = label,
                 style = textStyle,
                 color = WooPosTheme.colors.onDisabledContainer,
-                maxLines = 1,
-                softWrap = false,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.onGloballyPositioned { coordinates ->
                     labelWidth = coordinates.size.width
                 }

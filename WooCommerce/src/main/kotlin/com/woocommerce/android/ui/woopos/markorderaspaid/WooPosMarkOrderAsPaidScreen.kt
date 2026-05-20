@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -109,7 +110,8 @@ private fun Confirming(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .imePadding(),
+            .imePadding()
+            .navigationBarsPadding(),
     ) {
         WooPosText(
             text = stringResource(R.string.woopos_mark_order_as_paid_message, state.formattedTotal),
@@ -119,8 +121,8 @@ private fun Confirming(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value,
+                    start = WooPosSpacing.Large.value,
+                    end = WooPosSpacing.Large.value,
                     top = WooPosSpacing.Small.value,
                 ),
         )
@@ -140,7 +142,7 @@ private fun Confirming(
                 textColor = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .focusRequester(focusRequester)
-                    .padding(horizontal = WooPosSpacing.Medium.value)
+                    .padding(horizontal = WooPosSpacing.Large.value)
                     .testTag(WooPosTestTags.MARK_ORDER_AS_PAID_NOTE_FIELD),
             )
 
@@ -152,7 +154,7 @@ private fun Confirming(
                     color = MaterialTheme.colorScheme.error,
                     style = WooPosTypography.BodyLarge,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Large.value),
                 )
             }
         }
