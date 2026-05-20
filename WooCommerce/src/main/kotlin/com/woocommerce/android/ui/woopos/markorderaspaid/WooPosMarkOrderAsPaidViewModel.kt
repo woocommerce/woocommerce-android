@@ -33,7 +33,9 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val orderId: Long = requireNotNull(savedState[MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY])
+    private val orderId: Long = requireNotNull(savedState[MARK_ORDER_AS_PAID_ROUTE_ORDER_ID_KEY]) {
+        "orderId missing in MarkOrderAsPaid args"
+    }
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
@@ -47,33 +49,39 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val current = _state.value
-            if (current is WooPosMarkOrderAsPaidState.Confirming && current.isProcessing) {
-                _state.value = current.copy(isProcessing = false)
-                return@launch
+            when (val current = _state.value) {
+                is WooPosMarkOrderAsPaidState.Confirming -> resetStaleProcessing(current)
+                WooPosMarkOrderAsPaidState.Initiating -> loadOrder()
             }
-            if (current !is WooPosMarkOrderAsPaidState.Initiating) return@launch
+        }
+    }
 
-            val order = repository.getOrderById(orderId)
-            _state.value = if (order != null) {
-                WooPosMarkOrderAsPaidState.Confirming(
-                    formattedTotal = priceFormat(order.total),
-                    note = "",
-                    errorMessage = null,
-                    isProcessing = false,
-                    canConfirm = true,
-                )
-            } else {
-                WooPosMarkOrderAsPaidState.Confirming(
-                    formattedTotal = "",
-                    note = "",
-                    errorMessage = resourceProvider.getString(
-                        R.string.woopos_mark_order_as_paid_order_not_found,
-                    ),
-                    isProcessing = false,
-                    canConfirm = false,
-                )
-            }
+    private fun resetStaleProcessing(current: WooPosMarkOrderAsPaidState.Confirming) {
+        if (current.isProcessing) {
+            _state.value = current.copy(isProcessing = false)
+        }
+    }
+
+    private suspend fun loadOrder() {
+        val order = repository.getOrderById(orderId)
+        _state.value = if (order != null) {
+            WooPosMarkOrderAsPaidState.Confirming(
+                formattedTotal = priceFormat(order.total),
+                note = "",
+                errorMessage = null,
+                isProcessing = false,
+                canConfirm = true,
+            )
+        } else {
+            WooPosMarkOrderAsPaidState.Confirming(
+                formattedTotal = "",
+                note = "",
+                errorMessage = resourceProvider.getString(
+                    R.string.woopos_mark_order_as_paid_order_not_found,
+                ),
+                isProcessing = false,
+                canConfirm = false,
+            )
         }
     }
 
@@ -93,7 +101,8 @@ class WooPosMarkOrderAsPaidViewModel @Inject constructor(
 
     private fun handleNoteChanged(newNote: String) {
         val current = _state.value as? WooPosMarkOrderAsPaidState.Confirming ?: return
-        _state.value = current.copy(note = newNote, errorMessage = null)
+        val errorMessage = if (current.canConfirm) null else current.errorMessage
+        _state.value = current.copy(note = newNote, errorMessage = errorMessage)
     }
 
     private fun handleConfirm() {

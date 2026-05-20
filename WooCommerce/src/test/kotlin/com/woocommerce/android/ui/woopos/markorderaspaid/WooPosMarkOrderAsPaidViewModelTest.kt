@@ -119,6 +119,24 @@ class WooPosMarkOrderAsPaidViewModelTest {
     }
 
     @Test
+    fun `given order not found, when note changed, then error message is preserved`() = runTest {
+        // GIVEN
+        whenever(repository.getOrderById(orderId)).thenReturn(null)
+        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_order_not_found))
+            .thenReturn("Order could not be loaded. Go back and try again.")
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosMarkOrderAsPaidUIEvent.NoteChanged("anything"))
+
+        // THEN
+        val updated = viewModel.state.value as WooPosMarkOrderAsPaidState.Confirming
+        assertThat(updated.note).isEqualTo("anything")
+        assertThat(updated.errorMessage).isEqualTo("Order could not be loaded. Go back and try again.")
+        assertThat(updated.canConfirm).isFalse()
+    }
+
+    @Test
     fun `given repo succeeds, when confirm clicked, then analytics tracked, parent event sent, GoBack emitted`() =
         runTest {
             // GIVEN
@@ -169,6 +187,7 @@ class WooPosMarkOrderAsPaidViewModelTest {
         assertThat(finalState.errorMessage).isEqualTo("Couldn't update the order. Try again.")
         assertThat(finalState.isProcessing).isFalse()
         assertThat(finalState.canConfirm).isTrue()
+        verify(tracker).track(MarkAsPaidConfirmed)
         verify(tracker).track(MarkAsPaidFailed)
     }
 
