@@ -33,8 +33,13 @@ module WooAiTranslation
       asymmetry = Validators.plural_pairs(doc.translatable_names)
       @logger.call("source has #{asymmetry.size} unpaired manual-plural keys (informational)") unless asymmetry.empty?
 
-      reports = locales.map { |loc| translate_locale(source_units, loc, origin) }
-      @manifest.save(@manifest_path)
+      reports = locales.map do |loc|
+        r = translate_locale(source_units, loc, origin)
+        # Save after every locale so a long-running backfill survives Ctrl-C /
+        # a CLI hiccup: next run resumes from where we stopped.
+        @manifest.save(@manifest_path)
+        r
+      end
       reports
     end
 
@@ -158,8 +163,14 @@ module WooAiTranslation
 
     def translation_errors(source, shell)
       preserve_terms = @context.respond_to?(:preserved_terms) ? @context.preserved_terms : []
+      # `formatted="false"` declares "do not treat % as a format specifier" -- a
+      # literal "%" character. Our placeholder regex is intentionally greedy
+      # (covers "% d", "%1$s", etc.), so it must NOT run on these units or it
+      # would flag false positives on every literal "50% off" / "5 % rate".
+      validate_placeholders = source.attributes['formatted'] != 'false'
       source.entries.zip(shell.entries).flat_map do |src_e, out_e|
-        Validators.placeholder_parity(src_e[:source], out_e[:value]) +
+        placeholder_errors = validate_placeholders ? Validators.placeholder_parity(src_e[:source], out_e[:value]) : []
+        placeholder_errors +
           Validators.glossary_preservation(src_e[:source], out_e[:value], preserve_terms)
       end
     end

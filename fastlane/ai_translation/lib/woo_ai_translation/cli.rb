@@ -17,6 +17,7 @@ module WooAiTranslation
       mode: 'prtime',
       batch: Translator::DEFAULT_BATCH,
       offline: false,
+      claude_cli: false,
       strict: false,
       metadata_source: 'fastlane/metadata/android/en-US',
       metadata_out: 'fastlane/metadata/android',
@@ -38,9 +39,15 @@ module WooAiTranslation
       # human translations already committed in values-*/strings.xml.
       return run_import(opts, manifest, context, logger) if opts[:mode] == 'import'
 
-      client = opts[:offline] ? StubClient.new : AnthropicClient.from_env
+      client = if opts[:claude_cli]
+                 ClaudeCliClient.new(logger: logger)
+               elsif opts[:offline]
+                 StubClient.new
+               else
+                 AnthropicClient.from_env
+               end
       unless client.available?
-        warn('[ai_translate] ANTHROPIC_API_KEY not set and not --offline; nothing to do.')
+        warn('[ai_translate] no usable client (set ANTHROPIC_API_KEY, or pass --claude-cli, or --offline).')
         return 0
       end
       translator = Translator.new(client: client, glossary: context.glossary_text, batch_size: opts[:batch], logger: logger)
@@ -123,6 +130,7 @@ module WooAiTranslation
         p.on('--report PATH', 'shadow-diff report output') { |v| o[:report] = v }
         p.on('--batch N', Integer) { |v| o[:batch] = v }
         p.on('--offline', 'Use the deterministic stub (no network/spend)') { o[:offline] = true }
+        p.on('--claude-cli', 'Shell out to the local `claude` CLI (uses your Claude Code account)') { o[:claude_cli] = true }
         p.on('--strict', 'Exit non-zero if any key failed') { o[:strict] = true }
         # Metadata mode (workstream 3c)
         p.on('--metadata-source DIR') { |v| o[:metadata_source] = v }
