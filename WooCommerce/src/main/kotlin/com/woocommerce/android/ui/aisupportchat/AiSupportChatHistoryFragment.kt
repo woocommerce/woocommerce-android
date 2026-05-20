@@ -23,7 +23,9 @@ class AiSupportChatHistoryFragment : Fragment() {
                             context = requireContext(),
                             chatId = bookmark.chatId,
                             botSlug = bookmark.botSlug,
-                            sessionId = bookmark.sessionId
+                            sessionId = bookmark.sessionId,
+                            hasCreatedTicket = bookmark.hasCreatedTicket,
+                            isResolved = bookmark.isResolved
                         )
                     )
                 }

@@ -127,6 +127,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onMarkResolvedConfirmed() {
+        val chatId = _viewState.value.chatId
         _viewState.update {
             it.copy(
                 isChatResolved = true,
@@ -135,6 +136,17 @@ class AiSupportChatViewModel @Inject constructor(
                 showSendError = false,
                 input = ""
             )
+        }
+
+        if (chatId != null) {
+            launch {
+                runCatching {
+                    repository.markChatAsResolved(chatId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Marking AI support chat as resolved failed", error)
+                }
+            }
         }
     }
 
@@ -157,6 +169,7 @@ class AiSupportChatViewModel @Inject constructor(
     }
 
     fun onSupportTicketCreated() {
+        val chatId = _viewState.value.chatId
         _viewState.update {
             it.copy(
                 input = "",
@@ -164,6 +177,17 @@ class AiSupportChatViewModel @Inject constructor(
                 showHumanSupportPrompt = false,
                 showSendError = false
             )
+        }
+
+        if (chatId != null) {
+            launch {
+                runCatching {
+                    repository.markChatAsTicketCreated(chatId)
+                }.onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Marking AI support chat as ticket created failed", error)
+                }
+            }
         }
     }
 
@@ -265,6 +289,8 @@ class AiSupportChatViewModel @Inject constructor(
                 botSlug = launchMode.botSlug,
                 hasProceededToChat = true,
                 hasStartedChat = true,
+                hasCreatedTicket = launchMode.hasCreatedTicket,
+                isChatResolved = launchMode.isResolved,
                 isLoadingHistory = true,
                 showSendError = false,
                 showLoadHistoryError = false
@@ -292,7 +318,7 @@ class AiSupportChatViewModel @Inject constructor(
 
     private suspend fun handleResumeSuccess(response: SupportChatResponse) {
         _viewState.update {
-            val remoteMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages(isNewInSession = false)
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             it.copy(
                 chatId = response.chatId,
@@ -388,7 +414,7 @@ class AiSupportChatViewModel @Inject constructor(
         wasInitialMessage: Boolean
     ) {
         _viewState.update {
-            val remoteMessages = response.messages.toUiMessages()
+            val remoteMessages = response.messages.toUiMessages(isNewInSession = true)
             val latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea
             val shouldPromptHumanSupport = response.messages.shouldPromptHumanSupport()
             val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
@@ -499,7 +525,7 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
-    private fun List<SupportChatMessage>.toUiMessages(): List<AiSupportChatMessage> =
+    private fun List<SupportChatMessage>.toUiMessages(isNewInSession: Boolean): List<AiSupportChatMessage> =
         filterNot { it.isBotEscalationPrompt() }
             .map { message ->
                 AiSupportChatMessage(
@@ -507,6 +533,7 @@ class AiSupportChatViewModel @Inject constructor(
                     messageId = if (message.role == SupportChatRole.BOT) message.messageId else null,
                     role = message.role.toUiRole(),
                     isResolved = message.context?.isResolved == true,
+                    isNewInSession = isNewInSession,
                     content = AiSupportChatMessageContent.Text(message.content)
                 )
             }
@@ -788,7 +815,7 @@ data class AiSupportChatViewState(
         }
 
     private companion object {
-        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 2
+        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 1
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
 }
@@ -824,8 +851,16 @@ data class AiSupportChatMessage(
     val messageId: Long? = null,
     val role: AiSupportChatMessageRole,
     val isResolved: Boolean = false,
+    val isNewInSession: Boolean = false,
     val content: AiSupportChatMessageContent
-)
+) {
+    val shouldShowFeedback: Boolean
+        get() = role == AiSupportChatMessageRole.BOT &&
+            isNewInSession &&
+            !isResolved &&
+            messageId != null &&
+            content is AiSupportChatMessageContent.Text
+}
 
 enum class AiSupportChatMessageRole {
     USER,
