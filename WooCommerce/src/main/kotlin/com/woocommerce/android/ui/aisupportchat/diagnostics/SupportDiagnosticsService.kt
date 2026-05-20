@@ -129,7 +129,7 @@ class SupportDiagnosticsService @Inject constructor(
     suspend fun registerPushNotifications(): Result<Unit> =
         runCatching {
             registerPushNotificationsWithRetry(retries = 0)
-        }
+        }.rethrow<CancellationException, Unit>()
 
     private suspend fun registerPushNotificationsWithRetry(retries: Int) {
         storeNotificationsCheck.registerPushNotifications()
