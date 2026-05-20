@@ -51,7 +51,14 @@ class WooPosScanToPayViewModel @Inject constructor(
     private var pollingJob: Job? = null
 
     init {
-        viewModelScope.launch { prepareAndShowQr() }
+        viewModelScope.launch {
+            when (_state.value) {
+                WooPosScanToPayState.Loading -> prepareAndShowQr()
+                is WooPosScanToPayState.ShowingQR -> startPolling()
+                WooPosScanToPayState.PaymentDetected -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+                is WooPosScanToPayState.Failed -> Unit
+            }
+        }
     }
 
     fun onUIEvent(event: WooPosScanToPayUIEvent) {
@@ -65,6 +72,7 @@ class WooPosScanToPayViewModel @Inject constructor(
     }
 
     fun onBackClicked() {
+        if (_state.value is WooPosScanToPayState.PaymentDetected) return
         viewModelScope.launch {
             analyticsTracker.track(BackToCheckoutFromScanToPay)
             pollingJob?.cancel()
@@ -75,13 +83,13 @@ class WooPosScanToPayViewModel @Inject constructor(
     private suspend fun prepareAndShowQr() {
         val promote = repository.promoteOrderToPending(orderId)
         if (promote.isFailure) {
-            _state.value = failedState(retryable = true)
+            _state.value = failedState()
             return
         }
 
         val paymentUrl = readPaymentUrlWithRetry()
         if (paymentUrl.isNullOrBlank()) {
-            _state.value = failedState(retryable = true)
+            _state.value = failedState()
             return
         }
 
@@ -113,26 +121,25 @@ class WooPosScanToPayViewModel @Inject constructor(
                 }
             }
             analyticsTracker.track(ScanToPayPaymentFailed)
-            _state.value = failedState(retryable = true)
+            _state.value = failedState()
         }
     }
 
     private suspend fun onPaymentDetected() {
-        analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
         _state.value = WooPosScanToPayState.PaymentDetected
-        viewModelScope.launch {
-            repository.addOrderNote(orderId, resourceProvider.getString(R.string.woopos_scan_to_pay_order_note))
-        }
+        analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
         analyticsTracker.track(ScanToPayCollectPaymentSuccess)
         parentToChildrenEventSender.sendToChildren(
             ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY),
         )
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+        viewModelScope.launch {
+            repository.addOrderNote(orderId, resourceProvider.getString(R.string.woopos_scan_to_pay_order_note))
+        }
     }
 
-    private fun failedState(retryable: Boolean) = WooPosScanToPayState.Failed(
+    private fun failedState() = WooPosScanToPayState.Failed(
         message = resourceProvider.getString(R.string.woopos_scan_to_pay_error_message),
-        retryable = retryable,
     )
 
     private fun Order.isPaid(): Boolean = datePaid != null || status in PAID_STATUSES
