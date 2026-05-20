@@ -8,6 +8,7 @@ import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseStreamErrorConte
 import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.Diagnostics
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -96,3 +97,15 @@ internal class WooMobileAiWrapperErrorMapper @Inject constructor(
         private val HTTP_SERVER_ERROR_RANGE = 500..599
     }
 }
+
+@Serializable
+private data class WrapperErrorEnvelope(
+    val code: String? = null,
+    val message: String? = null,
+    val data: WrapperErrorData? = null,
+)
+
+@Serializable
+private data class WrapperErrorData(
+    val status: Int? = null,
+)
