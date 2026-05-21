@@ -81,6 +81,7 @@ class SupportChatContextProviderTest {
                     test = DiagnosticTest.WPCOM_SERVERS,
                     status = TestStatus.Failed(technicalDetails = "WPCom 503")
                 ),
+                DiagnosticStatus(DiagnosticTest.ANALYTICS_SETTING, TestStatus.Passed),
                 DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Pending)
             )
         )
@@ -103,6 +104,9 @@ class SupportChatContextProviderTest {
             ## 2. Connecting to WordPress.com Servers
             Result: Failed
             Details: WPCom 503
+
+            ## 3. Checking analytics setting
+            Result: Success
             """.trimIndent()
         )
         assertThat(result.has("diagnostics")).isFalse

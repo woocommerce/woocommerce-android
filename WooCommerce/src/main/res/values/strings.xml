@@ -2296,6 +2296,7 @@
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Turn on notifications&lt;/a&gt; in your device settings to receive store notifications.</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Turn on in device settings</string>
     <string name="settings_notifs_enable_title">Enable notifications</string>
     <string name="settings_notifs_error_fetch">There was an error fetching your notification settings.</string>
     <string name="settings_notifs_error_update">There was an error updating your notification settings.</string>
@@ -2428,6 +2429,7 @@
     <string name="ai_support_chat_error_dismiss">Dismiss</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
     <string name="ai_support_chat_load_history_error">Unable to load this chat. Check your connection and try again.</string>
+    <string name="ai_support_chat_suggested_fix_error">Unable to apply this fix. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
     <string name="ai_support_chat_human_support_message">It looks like you might need additional help. Would you like to contact our support team?</string>
     <string name="ai_support_chat_contact_support">Contact Support</string>
@@ -2454,13 +2456,18 @@
     <string name="ai_support_chat_issue_other">Something else</string>
     <string name="ai_support_chat_diagnostics_title">Checking your store…</string>
     <string name="ai_support_chat_diagnostics_success">Diagnostics completed</string>
-    <string name="ai_support_chat_diagnostics_failure">Some checks failed. You can try again or continue to chat with these results.</string>
-    <string name="ai_support_chat_diagnostics_retry">Retry</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Enable Analytics</string>
     <string name="ai_support_chat_diagnostics_continue">Continue to Chat</string>
     <string name="ai_support_chat_diagnostics_status_pending">Pending</string>
     <string name="ai_support_chat_diagnostics_status_running">Running</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passed</string>
     <string name="ai_support_chat_diagnostics_status_failed">Failed</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Checking analytics setting</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">We can\'t work properly with your site\'s response.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">There is a problem with your Jetpack connection.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce Analytics is not enabled on your store.\n\nAnalytics data like revenue and order stats won\'t be available until it\'s enabled.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">We couldn\'t check your analytics setting.</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
     <string name="ai_support_chat_connectivity_action">Chat with support</string>
     <string name="ai_support_chat_feedback_helpful">Helpful</string>

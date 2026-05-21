@@ -17,7 +17,14 @@ internal data class ConfirmationPreview(
 
 data class ConfirmationBulkEntry(
     val id: Long,
-)
+    val displayName: String? = null,
+) {
+    val displayText: String
+        get() = displayName?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { "#$id  $it" }
+            ?: "#$id"
+}
 
 internal data class ConfirmationPreviewField(
     val name: String,

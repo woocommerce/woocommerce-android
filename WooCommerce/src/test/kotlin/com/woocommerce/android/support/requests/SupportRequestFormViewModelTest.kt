@@ -12,6 +12,9 @@ import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetEx
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatAnalyticsTracker
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketRoute
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +40,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var zendeskSettings: ZendeskSettings
     private lateinit var selectedSite: SelectedSite
     private lateinit var tracks: AnalyticsTrackerWrapper
+    private lateinit var aiSupportChatAnalyticsTracker: AiSupportChatAnalyticsTracker
     private val savedState = SavedStateHandle()
 
     @Before
@@ -299,9 +303,64 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
+    @Test
+    fun `given ai support chat context, when submit request succeeds, then ticket created analytics are tracked`() =
+        testBlocking {
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(
+                context = mock(),
+                helpOrigin = HelpOrigin.AI_TROUBLESHOOTING,
+                extraTags = listOf("in_app_support_escalate"),
+                aiSupportChatTicketAnalyticsContext = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker).trackTicketCreated(
+                route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                context = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+        }
+
+    @Test
+    fun `given ai support chat context, when submit request fails, then ticket failed analytics are tracked`() =
+        testBlocking {
+            // Given
+            val error = Exception("Zendesk failed")
+            configureMocks(requestResult = Result.failure(error))
+
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(
+                context = mock(),
+                helpOrigin = HelpOrigin.AI_TROUBLESHOOTING,
+                extraTags = listOf("in_app_support_escalate"),
+                aiSupportChatTicketAnalyticsContext = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker).trackTicketCreationFailed(
+                route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                context = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT,
+                error = error
+            )
+        }
+
+    @Test
+    fun `given regular support form, when submit request succeeds, then ai chat ticket analytics are not tracked`() =
+        testBlocking {
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker, never()).trackTicketCreated(any(), any())
+        }
+
     private fun configureMocks(requestResult: Result<Request?>) {
         zendeskSettings = mock()
         tracks = mock()
+        aiSupportChatAnalyticsTracker = mock()
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
             on { getIfExists() }.then { testSite }
@@ -327,7 +386,17 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             zendeskSettings = zendeskSettings,
             selectedSite = selectedSite,
             tracks = tracks,
+            aiSupportChatAnalyticsTracker = aiSupportChatAnalyticsTracker,
             savedState = savedState
+        )
+    }
+
+    private companion object {
+        val AI_SUPPORT_CHAT_ANALYTICS_CONTEXT = AiSupportChatTicketAnalyticsContext(
+            entryPoint = "help_and_support",
+            supportArea = "mobile-app",
+            supportAreaConfidence = "high",
+            chatTopic = "woo_mobile_issue_mobile_app"
         )
     }
 }
