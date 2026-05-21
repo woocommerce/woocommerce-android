@@ -1,6 +1,5 @@
 package com.woocommerce.android.aiassistant.chat.openai
 
-import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -8,12 +7,15 @@ import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 
-internal fun ChatRequest.toOpenAi(): OpenAiRequestBody = OpenAiRequestBody(
-    feature = AssistantConfig.FEATURE_NAME,
-    model = AssistantConfig.MODEL_ID,
+internal fun ChatRequest.toOpenAiRequestBody(
+    model: String,
+    includeUsage: Boolean = false,
+): OpenAiRequestBody = OpenAiRequestBody(
+    model = model,
     stream = true,
     messages = messages.map(AssistantMessage::toOpenAi),
     tools = tools.takeIf { it.isNotEmpty() }?.map(ToolDefinition::toOpenAi),
+    streamOptions = if (includeUsage) OpenAiStreamOptions(includeUsage = true) else null,
 )
 
 internal fun AssistantMessage.toOpenAi(): OpenAiMessage = when (this) {

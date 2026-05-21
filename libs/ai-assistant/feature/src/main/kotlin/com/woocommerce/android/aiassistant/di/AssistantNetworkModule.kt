@@ -1,8 +1,10 @@
 package com.woocommerce.android.aiassistant.di
 
+import com.woocommerce.android.aiassistant.auth.AccessTokenWpComOAuthTokenProvider
 import com.woocommerce.android.aiassistant.auth.WpComJetpackAiTokenProvider
-import com.woocommerce.android.aiassistant.chat.JetpackAiChatService
+import com.woocommerce.android.aiassistant.auth.WpComOAuthTokenProvider
 import com.woocommerce.android.aiassistant.chat.JetpackAiChatService.Companion.DEFAULT_BASE_URL
+import com.woocommerce.android.aiassistant.chat.WooMobileAiChatService
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import dagger.Binds
@@ -21,7 +23,11 @@ import javax.inject.Singleton
 internal abstract class AssistantNetworkModule {
     @Binds
     @Singleton
-    internal abstract fun bindChatService(impl: JetpackAiChatService): ChatService
+    internal abstract fun bindChatService(impl: WooMobileAiChatService): ChatService
+
+    @Binds
+    @Singleton
+    internal abstract fun bindWpComOAuthTokenProvider(impl: AccessTokenWpComOAuthTokenProvider): WpComOAuthTokenProvider
 
     @Binds
     @Singleton
