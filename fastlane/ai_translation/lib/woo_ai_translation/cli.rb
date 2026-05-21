@@ -19,6 +19,8 @@ module WooAiTranslation
       offline: false,
       claude_cli: false,
       force_model: nil,
+      keys: [],
+      key_pattern: nil,
       strict: false,
       metadata_source: 'fastlane/metadata/android/en-US',
       metadata_out: 'fastlane/metadata/android',
@@ -56,6 +58,11 @@ module WooAiTranslation
       return run_metadata(opts, translator, manifest, logger) if opts[:mode] == 'metadata'
       return run_shadow(opts, translator, context, logger) if opts[:mode] == 'shadow-diff'
 
+      # Selective re-translation: clear manifest entries for matching keys so
+      # the engine's delta logic naturally re-translates them. Reused keys
+      # outside the selection keep their existing cache.
+      invalidate_selected_keys(manifest, opts, logger) if opts[:keys].any? || opts[:key_pattern]
+
       engine = Engine.new(
         source_path: opts[:source], res_dir: opts[:res_dir],
         manifest: manifest, manifest_path: opts[:manifest],
@@ -85,6 +92,21 @@ module WooAiTranslation
       manifest.save(opts[:manifest])
       reports.each { |r| warn("[ai_translate] import #{r.locale}: imported=#{r.imported} gaps=#{r.gaps}") }
       0
+    end
+
+    def invalidate_selected_keys(manifest, opts, logger)
+      explicit = Array(opts[:keys])
+      pattern = opts[:key_pattern] ? Regexp.new(opts[:key_pattern]) : nil
+
+      matching = manifest.known_keys.select do |name|
+        explicit.include?(name) || (pattern && name =~ pattern)
+      end
+      # Allow targeting keys that aren't in the manifest yet (first-time runs):
+      # union the explicit list in so they still get queued.
+      matching = (matching + explicit).uniq
+
+      cleared = matching.sum { |k| manifest.invalidate(name: k, locales: opts[:locales]) }
+      logger.call("invalidated #{cleared} manifest entries across #{matching.size} keys × #{opts[:locales].size} locales")
     end
 
     def run_shadow(opts, translator, context, logger)
@@ -134,6 +156,8 @@ module WooAiTranslation
         p.on('--offline', 'Use the deterministic stub (no network/spend)') { o[:offline] = true }
         p.on('--claude-cli', 'Shell out to the local `claude` CLI (uses your Claude Code account)') { o[:claude_cli] = true }
         p.on('--force-model NAME', 'Override per-unit model for NEW translations (reused keys unaffected)') { |v| o[:force_model] = v }
+        p.on('--keys LIST', 'Comma-separated key names to force-retranslate (clears their manifest entries first)') { |v| o[:keys] = v }
+        p.on('--key-pattern REGEX', 'Force-retranslate every key whose name matches REGEX') { |v| o[:key_pattern] = v }
         p.on('--strict', 'Exit non-zero if any key failed') { o[:strict] = true }
         # Metadata mode (workstream 3c)
         p.on('--metadata-source DIR') { |v| o[:metadata_source] = v }
@@ -144,6 +168,7 @@ module WooAiTranslation
       end.parse!(argv)
 
       o[:gp_locales] = Array(o[:gp_locales]).flat_map { |x| x.to_s.split(',') }.map(&:strip).reject(&:empty?)
+      o[:keys] = Array(o[:keys]).flat_map { |x| x.to_s.split(',') }.map(&:strip).reject(&:empty?)
       return o if o[:mode] == 'metadata'
 
       o[:locales] = Array(o[:locales]).flat_map { |x| x.split(',') }.map(&:strip).reject(&:empty?)
