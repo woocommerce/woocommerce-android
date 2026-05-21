@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.overrides
 
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
@@ -26,13 +25,15 @@ class WooLoginSiteAddressFragment : LoginSiteAddressFragment() {
         super.setupContent(rootView)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         val prefilledSiteUrl = arguments?.getString(ARG_PREFILLED_SITE_URL)
         if (prefilledSiteUrl.isNotNullOrEmpty()) {
-            view.findViewById<WPLoginInputRow>(R.id.login_site_address_row)
+            val siteAddressEditText = view?.findViewById<WPLoginInputRow>(R.id.login_site_address_row)
                 ?.editText
-                ?.setText(prefilledSiteUrl)
+                ?: return
+            siteAddressEditText.setText(prefilledSiteUrl)
             // Auto-submit so the merchant goes from "scan QR" to the next login step with no taps,
             // mirroring WooLoginEmailFragment which calls next(prefilledEmail) on the email screen.
             discover()
