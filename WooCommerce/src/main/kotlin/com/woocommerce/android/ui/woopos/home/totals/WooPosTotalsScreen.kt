@@ -213,6 +213,13 @@ private fun TotalsLoaded(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
     onPhoneBack: (() -> Unit)? = null,
 ) {
+    val scrollState = rememberScrollState()
+    val showToolbarBottomShadow by remember {
+        derivedStateOf { scrollState.canScrollBackward }
+    }
+    val showButtonsTopShadow by remember {
+        derivedStateOf { scrollState.canScrollForward }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -231,10 +238,7 @@ private fun TotalsLoaded(
                     onClick = onPhoneBack,
                 )
             }
-        }
-        val scrollState = rememberScrollState()
-        val showButtonsTopShadow by remember {
-            derivedStateOf { scrollState.canScrollForward }
+            ScrollEdgeShadow(visible = showToolbarBottomShadow, edge = ScrollEdge.Top)
         }
         BoxWithConstraints(
             modifier = Modifier
@@ -309,25 +313,7 @@ private fun CheckoutPaymentButtons(
         WooPosTotalsViewState.PaymentButtonsState.Disabled -> WooPosButtonState.DISABLED
     }
     Column(modifier = Modifier.fillMaxWidth()) {
-        AnimatedVisibility(
-            visible = showTopShadow,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(BUTTONS_TOP_SHADOW_HEIGHT)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Black.copy(alpha = BUTTONS_TOP_SHADOW_ALPHA),
-                            ),
-                        ),
-                    ),
-            )
-        }
+        ScrollEdgeShadow(visible = showTopShadow, edge = ScrollEdge.Bottom)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -355,8 +341,34 @@ private fun CheckoutPaymentButtons(
     }
 }
 
-private val BUTTONS_TOP_SHADOW_HEIGHT = 1.dp
-private const val BUTTONS_TOP_SHADOW_ALPHA = 0.12f
+private enum class ScrollEdge { Top, Bottom }
+
+@Composable
+private fun ScrollEdgeShadow(
+    visible: Boolean,
+    edge: ScrollEdge,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        val shadowColor = Color.Black.copy(alpha = SCROLL_EDGE_SHADOW_ALPHA)
+        val gradientColors = when (edge) {
+            ScrollEdge.Top -> listOf(shadowColor, Color.Transparent)
+            ScrollEdge.Bottom -> listOf(Color.Transparent, shadowColor)
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SCROLL_EDGE_SHADOW_HEIGHT)
+                .background(Brush.verticalGradient(colors = gradientColors)),
+        )
+    }
+}
+
+private val SCROLL_EDGE_SHADOW_HEIGHT = 1.dp
+private const val SCROLL_EDGE_SHADOW_ALPHA = 0.12f
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
