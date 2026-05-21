@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.chat.openai
 
 import com.woocommerce.android.aiassistant.chat.assistantJsonForTests
-import com.woocommerce.android.aiassistant.config.AssistantConfig
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
@@ -53,7 +52,7 @@ class OpenAiMappingTest {
                     },
                 )
             ),
-        ).toOpenAi()
+        ).toOpenAiRequestBody(model = "gpt-test", includeUsage = true)
 
         val encoded = json.encodeToString(payload)
         val root = json.parseToJsonElement(encoded).jsonObject
@@ -64,9 +63,11 @@ class OpenAiMappingTest {
         val toolMessage = messages[3].jsonObject
         val toolDefinition = root.getValue("tools").jsonArray.single().jsonObject
 
-        assertThat(root.getValue("feature").jsonPrimitive.content).isEqualTo(AssistantConfig.FEATURE_NAME)
+        assertThat(root).doesNotContainKey("feature")
+        assertThat(root.getValue("stream_options").jsonObject.getValue("include_usage").jsonPrimitive.boolean).isTrue()
+        assertThat(root).doesNotContainKey("tool_choice")
         assertThat(root.getValue("stream").jsonPrimitive.boolean).isTrue()
-        assertThat(root.getValue("model").jsonPrimitive.content).isEqualTo(AssistantConfig.MODEL_ID)
+        assertThat(root.getValue("model").jsonPrimitive.content).isEqualTo("gpt-test")
         assertThat(systemMessage.getValue("role").jsonPrimitive.content).isEqualTo("system")
         assertThat(userMessage.getValue("role").jsonPrimitive.content).isEqualTo("user")
         assertThat(assistantMessage.getValue("role").jsonPrimitive.content).isEqualTo("assistant")

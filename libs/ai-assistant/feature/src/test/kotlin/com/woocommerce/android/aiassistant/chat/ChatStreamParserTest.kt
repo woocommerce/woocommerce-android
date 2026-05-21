@@ -149,6 +149,15 @@ class ChatStreamParserTest {
     }
 
     @Test
+    fun `given empty choices usage payload, when parsed, then no event is emitted`() = runTest {
+        val payload = """{"choices":[],"usage":{"prompt_tokens":1,"completion_tokens":2,"total_tokens":3}}"""
+
+        val events = parser.parse(flowOf(payload)).toList()
+
+        assertThat(events).isEmpty()
+    }
+
+    @Test
     fun `given content and finish in the same chunk, when parsed, then both events are emitted in order`() = runTest {
         val payload = """{"choices":[{"delta":{"content":"done"},"finish_reason":"stop"}]}"""
 
