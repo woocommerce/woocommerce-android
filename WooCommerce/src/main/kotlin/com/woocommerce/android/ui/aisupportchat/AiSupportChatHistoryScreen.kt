@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.aisupportchat
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,24 +15,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -140,7 +143,7 @@ private fun HistoryList(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100))
     ) {
         items(bookmarks, key = { it.chatId }) { bookmark ->
-            SwipeToDeleteHistoryRow(
+            HistoryRow(
                 bookmark = bookmark,
                 onDelete = { onBookmarkDeleted(bookmark) },
                 onClick = { onBookmarkClicked(bookmark) }
@@ -149,54 +152,68 @@ private fun HistoryList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SwipeToDeleteHistoryRow(
+private fun HistoryRow(
     bookmark: SupportChatBookmark,
     onDelete: () -> Unit,
     onClick: () -> Unit
 ) {
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
-    SwipeToDismissBox(
-        state = swipeToDismissBoxState,
-        enableDismissFromStartToEnd = false,
-        backgroundContent = {
-            if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
-                    contentDescription = stringResource(id = R.string.delete),
-                    tint = colorResource(R.color.woo_white),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(colorResource(R.color.woo_red_50))
-                        .wrapContentSize(Alignment.CenterEnd)
-                        .padding(end = dimensionResource(R.dimen.major_100))
+    var isContextMenuExpanded by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        HistoryRowContent(
+            bookmark = bookmark,
+            onClick = onClick,
+            onLongClick = { isContextMenuExpanded = true }
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .width(1.dp)
+        ) {
+            DropdownMenu(
+                expanded = isContextMenuExpanded,
+                onDismissRequest = { isContextMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.delete)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
+                            contentDescription = null
+                        )
+                    },
+                    onClick = {
+                        isContextMenuExpanded = false
+                        onDelete()
+                    }
                 )
             }
-        },
-        onDismiss = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) onDelete()
-            value != SwipeToDismissBoxValue.EndToStart
         }
-    ) {
-        HistoryRow(
-            bookmark = bookmark,
-            onClick = onClick
-        )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun HistoryRow(
+private fun HistoryRowContent(
     bookmark: SupportChatBookmark,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
+    val deleteLabel = stringResource(R.string.delete)
     Surface(
-        onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+                onLongClickLabel = deleteLabel
+            )
     ) {
         Column(
             modifier = Modifier.padding(
