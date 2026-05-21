@@ -10,6 +10,7 @@ sealed class WooPosTotalsViewState : Parcelable {
     data class Checkout(
         val totals: Totals,
         val readerStatus: ReaderStatus,
+        val isCardPaymentEnabledForCountry: Boolean = true,
         val isTapToPayAvailable: Boolean = false,
         val isAllPaymentMethodsDialogVisible: Boolean = false,
         // UI-only rendering hint covering the TTP loading window. `Preparing` is the
