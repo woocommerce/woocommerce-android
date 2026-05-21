@@ -12,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.CookieJar
 import okhttp3.OkHttpClient
 import org.wordpress.android.fluxc.network.UserAgent
 import java.util.concurrent.TimeUnit
@@ -51,6 +52,7 @@ internal abstract class AssistantNetworkModule {
         ): OkHttpClient = base.newBuilder()
             .readTimeout(0, TimeUnit.MILLISECONDS)
             .callTimeout(SSE_CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .cookieJar(CookieJar.NO_COOKIES)
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                     .header("User-Agent", userAgent.apiUserAgent)
