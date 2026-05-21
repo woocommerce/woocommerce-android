@@ -38,7 +38,7 @@ data class NotificationModel(
         NEW_POST,
         POST,
         STORE_ORDER,
-        STOCK,
+        STORE_STOCK,
         USER,
         REWIND_BACKUP_INITIAL,
         PLAN_SETUP_NUDGE,

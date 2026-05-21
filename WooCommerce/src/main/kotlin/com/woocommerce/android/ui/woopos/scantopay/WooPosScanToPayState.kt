@@ -22,6 +22,5 @@ sealed class WooPosScanToPayState : Parcelable {
     @Parcelize
     data class Failed(
         val message: String,
-        val retryable: Boolean,
     ) : WooPosScanToPayState()
 }

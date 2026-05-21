@@ -231,7 +231,12 @@ class WooAssistantHeadlessTest {
         toolDescriptor: ToolDescriptor,
     ) = HeadlessScenario(
         id = id,
-        turns = listOf(HeadlessTurnSpec(userMessage = userMessage)),
+        turns = listOf(
+            HeadlessTurnSpec(
+                userMessage = userMessage,
+                hardChecks = emptyList(),
+            )
+        ),
         initialHistory = listOf(AssistantMessage.System("You are a helpful commerce assistant.")),
         context = SessionContext(
             siteId = 1L,

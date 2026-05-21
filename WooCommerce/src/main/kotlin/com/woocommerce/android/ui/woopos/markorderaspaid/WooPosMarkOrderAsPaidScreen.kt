@@ -140,6 +140,7 @@ private fun Confirming(
                 contentAlignment = Alignment.Center,
                 textStyle = WooPosTypography.Heading,
                 textColor = MaterialTheme.colorScheme.onSurface,
+                labelMaxLines = 2,
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .padding(horizontal = WooPosSpacing.Large.value)

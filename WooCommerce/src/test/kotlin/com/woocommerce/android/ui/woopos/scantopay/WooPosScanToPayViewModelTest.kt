@@ -98,7 +98,7 @@ class WooPosScanToPayViewModelTest {
     }
 
     @Test
-    fun `given promote fails, when VM initializes, then state Failed retryable`() = runTest {
+    fun `given promote fails, when VM initializes, then state Failed`() = runTest {
         // GIVEN
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.failure(Exception("boom")))
 
@@ -108,12 +108,11 @@ class WooPosScanToPayViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosScanToPayState.Failed
-        assertThat(state.retryable).isTrue()
         assertThat(state.message).isEqualTo("Something went wrong. Please try again.")
     }
 
     @Test
-    fun `given paymentUrl blank after retry, when VM initializes, then state Failed retryable`() = runTest {
+    fun `given paymentUrl blank after retry, when VM initializes, then state Failed`() = runTest {
         // GIVEN
         val blankOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, paymentUrl = "")
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
@@ -125,8 +124,7 @@ class WooPosScanToPayViewModelTest {
         runCurrent()
 
         // THEN
-        val state = viewModel.state.value as WooPosScanToPayState.Failed
-        assertThat(state.retryable).isTrue()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.Failed::class.java)
     }
 
     @Test
@@ -143,8 +141,8 @@ class WooPosScanToPayViewModelTest {
             val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, datePaid = Date())
             whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
             whenever(repository.fetchOrderSnapshot(orderId))
-                .thenReturn(pendingOrder) // initial paymentUrl fetch
-                .thenReturn(paidOrder) // polling detects payment
+                .thenReturn(pendingOrder)
+                .thenReturn(paidOrder)
             whenever(repository.getCachedOrder(orderId)).thenReturn(cached)
             whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
 
@@ -153,7 +151,7 @@ class WooPosScanToPayViewModelTest {
             runCurrent()
 
             viewModel.navigationEvent.test {
-                advanceTimeBy(2_500) // poll once
+                advanceTimeBy(2_500)
                 runCurrent()
                 assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
             }
@@ -213,7 +211,7 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given QR shown, when polling sees OnHold status, then payment not detected`() = runTest {
-        // GIVEN: OnHold means awaiting verification, not paid — we should keep waiting
+        // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             paymentUrl = "https://example.com/pay/abc",
@@ -231,7 +229,6 @@ class WooPosScanToPayViewModelTest {
         // WHEN
         val viewModel = createViewModel()
         runCurrent()
-        // Allow at least one poll cycle
         advanceTimeBy(2_500)
         runCurrent()
 
@@ -260,7 +257,6 @@ class WooPosScanToPayViewModelTest {
         // WHEN
         val viewModel = createViewModel()
         runCurrent()
-        // Advance past the 5.5-min ceiling (15 × 2s + 60 × 5s = 330s)
         advanceTimeBy(340_000)
         runCurrent()
 
@@ -271,7 +267,7 @@ class WooPosScanToPayViewModelTest {
 
     @Test
     fun `given Failed state, when RetryClicked, then attempts to prepare again`() = runTest {
-        // GIVEN: first attempt fails, second succeeds
+        // GIVEN
         val cached = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
@@ -293,5 +289,93 @@ class WooPosScanToPayViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
+    }
+
+    @Test
+    fun `given saved state has ShowingQR, when VM restored, then polling resumes without re-promoting`() = runTest {
+        // GIVEN
+        val restored = WooPosScanToPayState.ShowingQR(
+            paymentUrl = "https://example.com/pay/abc",
+            totalText = "Order total: $42.00",
+        )
+        val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, datePaid = Date())
+        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(paidOrder)
+        whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
+
+        // WHEN
+        val viewModel = WooPosScanToPayViewModel(
+            repository = repository,
+            parentToChildrenEventSender = parentToChildrenEventSender,
+            analyticsTracker = tracker,
+            resourceProvider = resourceProvider,
+            priceFormat = priceFormat,
+            savedState = SavedStateHandle(
+                mapOf(
+                    SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId,
+                    "woo_pos_scan_to_pay_state" to restored,
+                ),
+            ),
+        )
+        runCurrent()
+        advanceTimeBy(2_500)
+        runCurrent()
+
+        // THEN
+        verify(repository, never()).promoteOrderToPending(any())
+        verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
+    }
+
+    @Test
+    fun `given saved state has PaymentDetected, when VM restored, then GoBack emitted without restarting flow`() =
+        runTest {
+            // GIVEN
+            val viewModel = WooPosScanToPayViewModel(
+                repository = repository,
+                parentToChildrenEventSender = parentToChildrenEventSender,
+                analyticsTracker = tracker,
+                resourceProvider = resourceProvider,
+                priceFormat = priceFormat,
+                savedState = SavedStateHandle(
+                    mapOf(
+                        SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId,
+                        "woo_pos_scan_to_pay_state" to WooPosScanToPayState.PaymentDetected,
+                    ),
+                ),
+            )
+
+            // WHEN / THEN
+            viewModel.navigationEvent.test {
+                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+            }
+            verify(repository, never()).promoteOrderToPending(any())
+            verify(repository, never()).fetchOrderSnapshot(any())
+        }
+
+    @Test
+    fun `given state is PaymentDetected, when onBackClicked invoked, then no analytics and no GoBack`() = runTest {
+        // GIVEN
+        val viewModel = WooPosScanToPayViewModel(
+            repository = repository,
+            parentToChildrenEventSender = parentToChildrenEventSender,
+            analyticsTracker = tracker,
+            resourceProvider = resourceProvider,
+            priceFormat = priceFormat,
+            savedState = SavedStateHandle(
+                mapOf(
+                    SCAN_TO_PAY_ROUTE_ORDER_ID_KEY to orderId,
+                    "woo_pos_scan_to_pay_state" to WooPosScanToPayState.PaymentDetected,
+                ),
+            ),
+        )
+        viewModel.navigationEvent.test {
+            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+        }
+
+        // WHEN
+        viewModel.onBackClicked()
+        runCurrent()
+
+        // THEN
+        verify(tracker, never()).track(BackToCheckoutFromScanToPay)
     }
 }

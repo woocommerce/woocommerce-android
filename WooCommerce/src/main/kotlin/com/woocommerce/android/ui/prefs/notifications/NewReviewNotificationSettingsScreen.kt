@@ -30,30 +30,28 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
-import com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsViewModel.Companion.MAX_RATING
-import com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsViewModel.Companion.MIN_RATING
-import com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsViewModel.NotificationPreference
-import com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsViewModel.ViewState
+import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.Companion.MAX_REVIEW_RATING
+import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.Companion.MIN_REVIEW_RATING
 import com.woocommerce.android.ui.prefs.notifications.compose.EnableNotificationsCard
 import com.woocommerce.android.ui.prefs.notifications.compose.NotificationPreferenceOption
 
 @Composable
-fun NewReviewNotificationSettingsScreen(viewModel: NewReviewNotificationSettingsViewModel) {
-    viewModel.viewState.observeAsState().value?.let { viewState ->
+fun NewReviewNotificationSettingsScreen(sharedViewModel: NotificationSettingsSharedViewModel) {
+    sharedViewModel.newReviewNotificationSettingsViewState.observeAsState().value?.let { viewState ->
         NewReviewNotificationSettingsScreen(
             viewState = viewState,
-            onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
-            onNotificationPreferenceChanged = viewModel::onNotificationPreferenceChanged,
-            onSelectedRatingChanged = viewModel::onSelectedRatingChanged
+            onNotificationsEnabledChanged = sharedViewModel::onNewReviewNotificationsEnabledChanged,
+            onNotificationPreferenceChanged = sharedViewModel::onNewReviewNotificationPreferenceChanged,
+            onSelectedRatingChanged = sharedViewModel::onNewReviewSelectedRatingChanged
         )
     }
 }
 
 @Composable
 private fun NewReviewNotificationSettingsScreen(
-    viewState: ViewState,
+    viewState: NotificationSettingsSharedViewModel.NewReviewNotificationSettingsViewState,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
-    onNotificationPreferenceChanged: (NotificationPreference) -> Unit,
+    onNotificationPreferenceChanged: (NotificationSettingsSharedViewModel.NewReviewNotificationPreference) -> Unit,
     onSelectedRatingChanged: (Int) -> Unit
 ) {
     Scaffold(
@@ -79,18 +77,28 @@ private fun NewReviewNotificationSettingsScreen(
             NotificationPreferenceOption(
                 title = stringResource(R.string.settings_notifs_new_reviews_all_title),
                 description = stringResource(R.string.settings_notifs_new_reviews_all_description),
-                selected = viewState.notificationPreference == NotificationPreference.AllReviews,
+                selected = viewState.notificationPreference ==
+                    NotificationSettingsSharedViewModel.NewReviewNotificationPreference.AllReviews,
                 enabled = viewState.notificationsEnabled,
-                onClick = { onNotificationPreferenceChanged(NotificationPreference.AllReviews) }
+                onClick = {
+                    onNotificationPreferenceChanged(
+                        NotificationSettingsSharedViewModel.NewReviewNotificationPreference.AllReviews
+                    )
+                }
             )
             val isRatingFilterSelected =
-                viewState.notificationPreference == NotificationPreference.RatingFilteredReviews
+                viewState.notificationPreference ==
+                    NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews
             NotificationPreferenceOption(
                 title = stringResource(R.string.settings_notifs_new_reviews_rating_filter_title),
                 description = stringResource(R.string.settings_notifs_new_reviews_rating_filter_description),
                 selected = isRatingFilterSelected,
                 enabled = viewState.notificationsEnabled,
-                onClick = { onNotificationPreferenceChanged(NotificationPreference.RatingFilteredReviews) }
+                onClick = {
+                    onNotificationPreferenceChanged(
+                        NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews
+                    )
+                }
             )
             AnimatedVisibility(visible = isRatingFilterSelected) {
                 RatingSelector(
@@ -127,7 +135,7 @@ private fun RatingSelector(
             modifier = Modifier.padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            for (rating in MIN_RATING..MAX_RATING) {
+            for (rating in MIN_REVIEW_RATING..MAX_REVIEW_RATING) {
                 RatingStar(
                     rating = rating,
                     isSelected = rating <= selectedRating,
@@ -180,9 +188,11 @@ private fun ratingStarColor(isSelected: Boolean, enabled: Boolean): Color {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NewReviewNotificationSettingsScreenPreview() {
     WooThemeWithBackground {
+        val ratingFilteredReviews =
+            NotificationSettingsSharedViewModel.NewReviewNotificationPreference.RatingFilteredReviews
         NewReviewNotificationSettingsScreen(
-            viewState = ViewState(
-                notificationPreference = NotificationPreference.RatingFilteredReviews
+            viewState = NotificationSettingsSharedViewModel.NewReviewNotificationSettingsViewState(
+                notificationPreference = ratingFilteredReviews
             ),
             onNotificationsEnabledChanged = {},
             onNotificationPreferenceChanged = {},

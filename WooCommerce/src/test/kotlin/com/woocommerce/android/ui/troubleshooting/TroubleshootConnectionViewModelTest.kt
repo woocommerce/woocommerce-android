@@ -30,7 +30,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TroubleshootConnectionViewModelTest : BaseUnitTest() {
@@ -314,23 +313,25 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given AI support chat flag is enabled and site is not Jetpack-connected, when state loads, then button is hidden`() =
+    fun `given AI support chat flag is enabled, when checks finish for a non Jetpack-connected site, then button is visible`() =
         testBlocking {
             // GIVEN
-            stubAiSupportChatAvailability(isFeatureEnabled = true, isJetpackConnected = false)
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)).thenReturn(true)
             createViewModel()
             sut.viewState.observeForever {}
 
+            // WHEN
+            sut.startConnectionChecks()
+
             // THEN
-            assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isFalse()
+            assertThat(sut.viewState.value?.shouldDisplayAiSupportChatButton).isTrue()
             assertThat(sut.viewState.value?.shouldDisplayContactSupportButton).isFalse()
         }
 
     @Test
-    fun `given AI support chat flag is disabled and site is Jetpack-connected, when state loads, then button is hidden`() =
+    fun `given AI support chat flag is disabled, when state loads, then support CTAs are hidden`() =
         testBlocking {
             // GIVEN
-            stubAiSupportChatAvailability(isFeatureEnabled = false, isJetpackConnected = true)
             createViewModel()
             sut.viewState.observeForever {}
 
@@ -376,6 +377,23 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given AI support chat flag is disabled, when AI support chat clicked, then no event is emitted`() =
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            sut.viewState.observeForever {}
+            sut.startConnectionChecks()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever { events.add(it) }
+
+            // WHEN
+            sut.onAiSupportChatClicked()
+
+            // THEN
+            assertThat(events).isEmpty()
+        }
+
+    @Test
     fun `given app password site, when all checks succeed, then isCheckFinished is true`() = testBlocking {
         // GIVEN
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
@@ -390,16 +408,7 @@ class TroubleshootConnectionViewModelTest : BaseUnitTest() {
     }
 
     private fun stubAiSupportChatAvailable() {
-        stubAiSupportChatAvailability(isFeatureEnabled = true, isJetpackConnected = true)
-    }
-
-    private fun stubAiSupportChatAvailability(isFeatureEnabled: Boolean, isJetpackConnected: Boolean) {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)).thenReturn(isFeatureEnabled)
-        whenever(selectedSite.getIfExists()).thenReturn(
-            SiteModel().apply {
-                setIsJetpackConnected(isJetpackConnected)
-            }
-        )
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)).thenReturn(true)
     }
 
     @Test

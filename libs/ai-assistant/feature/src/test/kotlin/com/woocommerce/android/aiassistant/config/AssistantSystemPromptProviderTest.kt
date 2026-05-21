@@ -64,6 +64,37 @@ class AssistantSystemPromptProviderTest {
     }
 
     @Test
+    fun `when prompt is built, then app how-to guidance includes mobile docs link instructions`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-04")
+
+        assertThat(prompt).contains("WooCommerce mobile app documentation link")
+        assertThat(prompt).contains("https://woocommerce.com/documentation/woocommerce/mobile/")
+        assertThat(prompt).contains("rendered as a Markdown link")
+        assertThat(prompt).contains("how the app works")
+        assertThat(prompt).contains("what it can do")
+        assertThat(prompt).contains("where to do something")
+    }
+
+    @Test
+    fun `when prompt is built, then app support guidance points to help and support`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-04")
+
+        assertThat(prompt).contains("Menu > Help & Support")
+        assertThat(prompt).contains("When something in the app isn't working")
+    }
+
+    @Test
+    fun `when prompt is built, then only the approved mobile docs url is present`() {
+        val prompt = promptFor(todayIsoDate = "2026-05-04")
+        val wooDocsUrls = Regex("""https://woocommerce\.com/[^\s),]+""")
+            .findAll(prompt)
+            .map { it.value.trimEnd('.', ',') }
+            .toList()
+
+        assertThat(wooDocsUrls).containsOnly("https://woocommerce.com/documentation/woocommerce/mobile/")
+    }
+
+    @Test
     fun `when prompt is built, then it keeps the assistant behavioral contract`() {
         val prompt = promptFor(todayIsoDate = "2026-05-04")
 

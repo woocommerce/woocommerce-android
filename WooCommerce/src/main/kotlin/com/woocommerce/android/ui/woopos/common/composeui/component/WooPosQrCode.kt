@@ -12,8 +12,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.WriterException
 import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 
 @Composable
 fun WooPosQrCode(
@@ -28,17 +32,25 @@ fun WooPosQrCode(
         bitmap = bitmap.asImageBitmap(),
         contentDescription = contentDescription,
         modifier = modifier.size(size),
-        // QR codes are inherently pixelated; disable filtering so edges stay sharp.
         filterQuality = FilterQuality.None,
     )
 }
 
 private fun encodeToBitmap(data: String, sizePx: Int): Bitmap {
+    if (data.isBlank()) return blankBitmap(sizePx)
     val hints = mapOf(
-        com.google.zxing.EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M,
-        com.google.zxing.EncodeHintType.MARGIN to 1,
+        EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M,
+        EncodeHintType.MARGIN to 1,
     )
-    val matrix = QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, sizePx, sizePx, hints)
+    val matrix = try {
+        QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, sizePx, sizePx, hints)
+    } catch (e: WriterException) {
+        WooLog.e(T.POS, "WooPosQrCode: encode failed", e)
+        return blankBitmap(sizePx)
+    } catch (e: IllegalArgumentException) {
+        WooLog.e(T.POS, "WooPosQrCode: invalid input", e)
+        return blankBitmap(sizePx)
+    }
     val pixels = IntArray(sizePx * sizePx)
     for (y in 0 until sizePx) {
         for (x in 0 until sizePx) {
@@ -47,3 +59,6 @@ private fun encodeToBitmap(data: String, sizePx: Int): Bitmap {
     }
     return Bitmap.createBitmap(pixels, sizePx, sizePx, Bitmap.Config.RGB_565)
 }
+
+private fun blankBitmap(sizePx: Int): Bitmap =
+    Bitmap.createBitmap(IntArray(sizePx * sizePx) { Color.WHITE }, sizePx, sizePx, Bitmap.Config.RGB_565)

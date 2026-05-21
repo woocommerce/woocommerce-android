@@ -288,6 +288,23 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
+                    is ChildToParentEvent.CustomAmountDialogRequested -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.ShowCustomAmountForm(editing = event.editing)
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountSubmitted -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.CustomAmountSubmitted(
+                                name = event.name,
+                                amount = event.amount,
+                                isTaxable = event.isTaxable,
+                                editingItemNumber = event.editingItemNumber,
+                            )
+                        )
+                    }
+
                     is ChildToParentEvent.SettingsEvent -> Unit
                 }
             }

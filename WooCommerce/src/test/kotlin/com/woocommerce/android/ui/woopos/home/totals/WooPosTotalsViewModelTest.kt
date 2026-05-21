@@ -42,8 +42,6 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsPaidEnabled
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsScanToPayEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated
@@ -65,6 +63,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -173,8 +172,7 @@ class WooPosTotalsViewModelTest {
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
-    private val isScanToPayEnabled: WooPosIsScanToPayEnabled = mock()
-    private val isMarkOrderAsPaidEnabled: WooPosIsMarkOrderAsPaidEnabled = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val builtInReaderConnector: WooPosBuiltInReaderConnector = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
@@ -2676,8 +2674,7 @@ class WooPosTotalsViewModelTest {
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
         isTapToPayAvailable = isTapToPayAvailable,
-        isScanToPayEnabled = isScanToPayEnabled,
-        isMarkOrderAsPaidEnabled = isMarkOrderAsPaidEnabled,
+        featureFlagRepository = featureFlagRepository,
         tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
         paymentsFlowTracker = tracker,
         builtInReaderConnector = builtInReaderConnector,
