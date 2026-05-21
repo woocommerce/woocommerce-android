@@ -296,21 +296,38 @@ private fun TotalsLoaded(
             }
         }
 
+        CheckoutBottomBar(state = state, onUIEvent = onUIEvent)
+    }
+
+    if (state.isCardPaymentEnabledForCountry) {
+        WooPosAllPaymentMethodsDialog(
+            isVisible = state.isAllPaymentMethodsDialogVisible,
+            methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
+            onMethodClicked = { method ->
+                onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+                method.toUIEvent()?.let(onUIEvent)
+            },
+            onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
+        )
+    }
+}
+
+@Composable
+private fun CheckoutBottomBar(
+    state: WooPosTotalsViewState.Checkout,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+) {
+    if (state.isCardPaymentEnabledForCountry) {
         CheckoutPaymentButtons(
             onUIEvent = onUIEvent,
             buttonsState = state.paymentButtonsState,
         )
+    } else {
+        NoCardCheckoutPaymentButtons(
+            onUIEvent = onUIEvent,
+            buttonsState = state.paymentButtonsState,
+        )
     }
-
-    WooPosAllPaymentMethodsDialog(
-        isVisible = state.isAllPaymentMethodsDialogVisible,
-        methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
-        onMethodClicked = { method ->
-            onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
-            method.toUIEvent()?.let(onUIEvent)
-        },
-        onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
-    )
 }
 
 @Composable
@@ -350,6 +367,39 @@ private fun CheckoutPaymentButtons(
             text = stringResource(R.string.woopos_payment_method_other_methods_label),
             state = buttonState,
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+        )
+    }
+}
+
+@Composable
+private fun NoCardCheckoutPaymentButtons(
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    buttonsState: WooPosTotalsViewState.PaymentButtonsState,
+) {
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    val outerPaddingModifier = if (isPhone) {
+        Modifier.padding(WooPosSpacing.Large.value)
+    } else {
+        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+    }
+    val buttonState = when (buttonsState) {
+        WooPosTotalsViewState.PaymentButtonsState.Enabled -> WooPosButtonState.ENABLED
+        WooPosTotalsViewState.PaymentButtonsState.Disabled -> WooPosButtonState.DISABLED
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(outerPaddingModifier)
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+    ) {
+        WooPosButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON),
+            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+            state = buttonState,
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
         )
     }
 }
@@ -788,6 +838,27 @@ fun WooPosTotalsScreenPreviewWithCashPaymentAvailable() {
                     subtitle = "To process this payment, please connect your reader.",
                     actionButtonLabel = "Connect to a reader",
                 ),
+            ),
+            onUIEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsScreenPreviewNoCardPaymentSupported() {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = Modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$10.50",
+                    orderTotalText = "$12.00",
+                    orderTaxText = "$1.50",
+                    orderDiscountText = null,
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
+                isCardPaymentEnabledForCountry = false,
             ),
             onUIEvent = {},
         )
