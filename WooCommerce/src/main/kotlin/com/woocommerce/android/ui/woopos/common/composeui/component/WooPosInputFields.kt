@@ -184,6 +184,7 @@ fun WooPosInputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentAlignment: Alignment = Alignment.CenterStart,
+    labelMaxLines: Int = 1,
 ) {
     var labelWidth by remember { mutableIntStateOf(0) }
 
@@ -196,7 +197,8 @@ fun WooPosInputField(
                 text = label,
                 style = textStyle,
                 color = WooPosTheme.colors.onDisabledContainer,
-                maxLines = 2,
+                maxLines = labelMaxLines,
+                softWrap = labelMaxLines > 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.onGloballyPositioned { coordinates ->
                     labelWidth = coordinates.size.width

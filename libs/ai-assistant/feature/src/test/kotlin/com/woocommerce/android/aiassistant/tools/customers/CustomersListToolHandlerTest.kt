@@ -244,17 +244,17 @@ class CustomersListToolHandlerTest {
     }
 
     @Test
-    fun `given no selected site, when executed, then validation error is returned`() = runTest {
+    fun `given data source failure, when executed, then retryable transport error is returned`() = runTest {
         // given
         whenever(dataSource.fetchCustomers()).thenReturn(
-            Result.failure(AICustomersDataSource.NoSelectedSiteException)
+            Result.failure(IllegalStateException("No selected site"))
         )
 
         // when
         val result = handler.execute(toolCall(arguments = buildJsonObject { }))
 
         // then
-        assertThat(result).isInstanceOf(ToolResult.ValidationError::class.java)
+        assertCustomerTransportError(result, retryable = true)
     }
 
     @Test

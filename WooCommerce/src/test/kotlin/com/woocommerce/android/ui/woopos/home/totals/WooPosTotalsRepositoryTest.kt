@@ -23,6 +23,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore
+import java.math.BigDecimal
 
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
@@ -278,6 +279,66 @@ class WooPosTotalsRepositoryTest {
 
         assertThat(orderCapture.lastValue.items.size).isEqualTo(2)
         assertThat(orderCapture.lastValue.items.map { it.productId }).containsExactly(1L, 3L)
+    }
+
+    @Test
+    fun `given taxable custom amount, when createOrderFromCartItems, then fee line is taxable`() = runTest {
+        // GIVEN
+        repository = createRepository()
+        val itemClickedData = listOf(
+            WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                id = 1L,
+                name = "Service",
+                amount = BigDecimal("12.50"),
+                isTaxable = true,
+            )
+        )
+
+        // WHEN
+        repository.createOrderFromCartItems(itemClickedData)
+
+        // THEN
+        val orderCapture = argumentCaptor<Order>()
+        verify(orderCreateEditRepository).createOrUpdateOrder(
+            orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
+            eq("")
+        )
+
+        val feesLines = orderCapture.lastValue.feesLines
+        assertThat(feesLines).hasSize(1)
+        assertThat(feesLines.first().name).isEqualTo("Service")
+        assertThat(feesLines.first().total).isEqualByComparingTo(BigDecimal("12.50"))
+        assertThat(feesLines.first().taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
+    }
+
+    @Test
+    fun `given non-taxable custom amount, when createOrderFromCartItems, then fee line tax status is NONE`() = runTest {
+        // GIVEN
+        repository = createRepository()
+        val itemClickedData = listOf(
+            WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                id = 1L,
+                name = "Deposit",
+                amount = BigDecimal("5.00"),
+                isTaxable = false,
+            )
+        )
+
+        // WHEN
+        repository.createOrderFromCartItems(itemClickedData)
+
+        // THEN
+        val orderCapture = argumentCaptor<Order>()
+        verify(orderCreateEditRepository).createOrUpdateOrder(
+            orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
+            eq("")
+        )
+
+        val feesLines = orderCapture.lastValue.feesLines
+        assertThat(feesLines).hasSize(1)
+        assertThat(feesLines.first().taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.NONE)
     }
 
     private fun createRepository() = WooPosTotalsRepository(

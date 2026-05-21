@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -21,6 +22,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NotificationSettingsFragment : BaseFragment() {
     private val viewModel: NotificationSettingsViewModel by viewModels()
+    private val sharedViewModel: NotificationSettingsSharedViewModel by hiltNavGraphViewModels(
+        R.id.nav_graph_notification_settings
+    )
     private val navArgs: NotificationSettingsFragmentArgs by navArgs()
 
     @Inject
@@ -30,10 +34,14 @@ class NotificationSettingsFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            NotificationSettingsScreen(
-                viewModel = viewModel,
-                showSmarterNotifications = navArgs.showSmarterNotifications
-            )
+            if (navArgs.showSmarterNotifications) {
+                WooPushNotificationSettingsScreen(
+                    viewModel = viewModel,
+                    sharedViewModel = sharedViewModel
+                )
+            } else {
+                NotificationSettingsScreen(viewModel = viewModel)
+            }
         }
     }
 
@@ -47,14 +55,33 @@ class NotificationSettingsFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (navArgs.showSmarterNotifications) {
+            sharedViewModel.savePendingNotificationPreferences()
+        }
+    }
+
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NotificationSettingsViewModel.OpenDeviceNotificationSettings -> openDeviceNotificationSettings()
-                is NotificationSettingsViewModel.OpenNewOrderNotificationSettings -> openNewOrderNotificationSettings()
-                is NotificationSettingsViewModel.OpenNewReviewNotificationSettings ->
+                is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
+                    event.message,
+                    event.actionText,
+                    event.action
+                )
+            }
+        }
+        if (!navArgs.showSmarterNotifications) return
+
+        sharedViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is NotificationSettingsSharedViewModel.OpenNewOrderNotificationSettings ->
+                    openNewOrderNotificationSettings()
+                is NotificationSettingsSharedViewModel.OpenNewReviewNotificationSettings ->
                     openNewReviewNotificationSettings()
-                is NotificationSettingsViewModel.OpenStockNotificationSettings -> openStockNotificationSettings()
+                is NotificationSettingsSharedViewModel.OpenStockNotificationSettings -> openStockNotificationSettings()
                 is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
                     event.actionText,

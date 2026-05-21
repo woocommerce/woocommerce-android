@@ -56,8 +56,19 @@ class NullBigDecimalJsonAdapter : NullableJsonAdapter<BigDecimal>() {
         out.value(value)
     }
 
-    override fun readValue(input: JsonReader): BigDecimal? {
+    override fun readValue(input: JsonReader): BigDecimal {
         val value = input.nextString()
         return value.toBigDecimalOrNull() ?: throw MalformedJsonException("Unexpected value: $value")
+    }
+}
+
+class NullIntJsonAdapter : NullableJsonAdapter<Int>() {
+    override fun writeValue(out: JsonWriter, value: Int) {
+        out.value(value)
+    }
+
+    override fun readValue(input: JsonReader): Int {
+        val value = input.nextString()
+        return value.toIntOrNull() ?: throw MalformedJsonException("Unexpected value: $value")
     }
 }

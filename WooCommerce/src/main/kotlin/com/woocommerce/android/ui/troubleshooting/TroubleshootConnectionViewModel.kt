@@ -103,7 +103,7 @@ class TroubleshootConnectionViewModel @Inject constructor(
     }
 
     fun onAiSupportChatClicked() {
-        if (!checksFlow.value.isFinished()) return
+        if (!checksFlow.value.isFinished() || !isAiSupportChatAvailable()) return
         triggerEvent(OpenAiSupportChat(checks = checksFlow.value))
     }
 
@@ -204,8 +204,7 @@ class TroubleshootConnectionViewModel @Inject constructor(
     }
 
     private fun isAiSupportChatAvailable(): Boolean =
-        featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT) &&
-            selectedSite.getIfExists()?.isJetpackConnected == true
+        featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)
 
     private fun List<ConnectivityCheckCardData>.isFinished(): Boolean =
         any { it.status is Failure } || all { it.status is Success }

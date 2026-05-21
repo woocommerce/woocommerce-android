@@ -65,14 +65,8 @@ internal class OrdersListToolHandler @Inject constructor(
         val args = call.parseArgs<Args>(json).getOrElse {
             return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
         }
-        val after = args.after?.let {
-            RestDateBounds.lowerBound(it)
-                ?: return ToolResult.ValidationError(call.id, "after must be YYYY-MM-DD")
-        }
-        val before = args.before?.let {
-            RestDateBounds.upperBound(it)
-                ?: return ToolResult.ValidationError(call.id, "before must be YYYY-MM-DD")
-        }
+        val dateRange = args.toRestDateRange(call.id)
+        dateRange.validationError?.let { return it }
         return dataSource.fetchOrders(
             search = args.search,
             status = args.status,
@@ -80,8 +74,8 @@ internal class OrdersListToolHandler @Inject constructor(
             perPage = args.perPage,
             customer = args.customer,
             include = args.include,
-            after = after,
-            before = before,
+            after = dateRange.after,
+            before = dateRange.before,
             orderby = args.orderby,
             order = args.order,
         ).fold(
@@ -128,6 +122,28 @@ internal class OrdersListToolHandler @Inject constructor(
         val order: String? = null,
         val page: Int = 1,
         @SerialName("per_page") val perPage: Int = 20,
+    )
+
+    private fun Args.toRestDateRange(toolCallId: String): RestDateRange {
+        val after = after?.let {
+            RestDateBounds.lowerBound(it)
+                ?: return RestDateRange(
+                    validationError = ToolResult.ValidationError(toolCallId, "after must be YYYY-MM-DD")
+                )
+        }
+        val before = before?.let {
+            RestDateBounds.upperBound(it)
+                ?: return RestDateRange(
+                    validationError = ToolResult.ValidationError(toolCallId, "before must be YYYY-MM-DD")
+                )
+        }
+        return RestDateRange(after = after, before = before)
+    }
+
+    private data class RestDateRange(
+        val after: String? = null,
+        val before: String? = null,
+        val validationError: ToolResult.ValidationError? = null,
     )
 
     @Serializable
