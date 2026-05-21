@@ -11,18 +11,14 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Locale
 import javax.inject.Inject
 
 class WooPosTabShouldBeVisible @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
-    private val wooCommerceStore: WooCommerceStore,
     private val featureFlagRepository: FeatureFlagRepository,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
-    private val supportedCountries: WooPosSupportedCountries,
     private val wooPosLog: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(forceRefresh: Boolean = false): Result<Boolean> = withContext(Dispatchers.IO) {
@@ -56,26 +52,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
             }
         }
 
-        val siteSettings = if (forceRefresh) {
-            wooCommerceStore.fetchSiteGeneralSettings(site).model
-        } else {
-            wooCommerceStore.getSiteSettings(site)
-                ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
-        }
-            ?: return@withContext Result.failure(WooPosCouldNotDetermineValueException())
-
-        val isSupported = isCountrySupported(countryCode = siteSettings.countryCode)
-
-        if (isSupported) {
-            appPrefs.setPOSTabVisibilityForSite(site.id)
-        } else {
-            appPrefs.clearPOSTabVisibilityForSite(site.id)
-            wooPosLog.i("POS Tab Not visible reason: Country ${siteSettings.countryCode} is not supported")
-        }
-
-        return@withContext Result.success(isSupported)
+        appPrefs.setPOSTabVisibilityForSite(site.id)
+        return@withContext Result.success(true)
     }
-
-    private suspend fun isCountrySupported(countryCode: String): Boolean =
-        supportedCountries.supportedCountries().contains(countryCode.lowercase(Locale.ROOT))
 }

@@ -11,15 +11,14 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.settings.Settings
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Determines if POS can be launched *from within the POS tab* based on launch conditions,
- * e.g., currency support, WooCommerce version, feature flags, etc.
- * This is only checked once the POS tab is already visible.
+ * Determines if POS can be launched *from within the POS tab* based on launch conditions
+ * (WooCommerce version, server-side feature switch, plan eligibility). POS is available
+ * worldwide — the country gate has been removed in favour of per-country card-payment
+ * gating inside the POS UI.
  */
 @Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
@@ -27,9 +26,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     private val selectedSite: SelectedSite,
     private val getWooCoreCachedVersion: GetWooCorePluginCachedVersion,
     private val fetchWooCoreVersion: FetchActiveWCPluginVersion,
-    private val wooCommerceStore: WooCommerceStore,
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled,
-    private val supportedCountries: WooPosSupportedCountries,
     private val wooPosLog: WooPosLogWrapper,
 ) {
 
@@ -58,10 +55,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
         }
 
-        getNonLaunchabilityReasonFromSiteSettingsAndCurrency(site, forceRefresh, cachedPositive)?.let {
-            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
-        }
-
         appPrefs.setPOSLaunchableForSite(site.id)
         return WooPosLaunchability.Launchable
     }
@@ -86,21 +79,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         return getNonLaunchabilityReasonFromWooCoreVersion(wooCoreVersion)
             ?: getNonLaunchabilityReasonFromFeatureSwitch(wooCoreVersion, forceRefresh, cachedPositive)
-    }
-
-    private suspend fun getNonLaunchabilityReasonFromSiteSettingsAndCurrency(
-        site: SiteModel,
-        forceRefresh: Boolean,
-        cachedPositive: Boolean
-    ): WooPosLaunchability.NonLaunchabilityReason? {
-        val siteSettings = resolveSiteSettings(site, forceRefresh)
-            ?: return reasonIfNoPositiveCache(cachedPositive)
-
-        return if (!isCountryAndCurrencySupported(siteSettings.countryCode, siteSettings.currencyCode)) {
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
-        } else {
-            null
-        }
     }
 
     private fun reasonIfNoPositiveCache(hasCachedPositive: Boolean): WooPosLaunchability.NonLaunchabilityReason? =
@@ -151,21 +129,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         return result
     }
 
-    private suspend fun resolveSiteSettings(site: SiteModel, forceRefresh: Boolean): Settings? =
-        if (forceRefresh) {
-            wooCommerceStore.fetchSiteGeneralSettings(site).model
-        } else {
-            wooCommerceStore.getSiteSettings(site) ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
-        }
-
-    private suspend fun isCountryAndCurrencySupported(countryCode: String, currency: String): Boolean {
-        val pairs = supportedCountries.supportedCountryCurrencyPairs()
-        return pairs.any {
-            it.first.equals(countryCode, ignoreCase = true) &&
-                it.second.equals(currency, ignoreCase = true)
-        }
-    }
-
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion: String): Boolean {
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
     }
@@ -199,7 +162,6 @@ sealed class WooPosLaunchability {
         UnsupportedWooCommerceVersion,
         SiteSettingsUnavailable,
         FeatureSwitchDisabled,
-        UnsupportedCurrency,
         NoSiteSelected,
         UnknownNoPositiveCache,
         CiabPlanUpgradeRequired,

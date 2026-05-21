@@ -9,9 +9,6 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
-import com.woocommerce.android.ui.woopos.tab.WooPosSupportedCountries
-import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
-import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -52,9 +49,6 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
-    private val getCountryName: WooPosGetStoreCountryName,
-    private val getCountryCode: WooPosGetStoreCountryCode,
-    private val supportedCountries: WooPosSupportedCountries,
 ) : ViewModel() {
 
     private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
@@ -120,7 +114,7 @@ class WooPosEligibilityViewModel @Inject constructor(
         }
     }
 
-    private suspend fun buildIneligibleState(
+    private fun buildIneligibleState(
         reason: WooPosLaunchability.NonLaunchabilityReason
     ): WooPosEligibilityRetryState.Ineligible {
         val suggestionText = getSuggestionText(reason)
@@ -145,7 +139,7 @@ class WooPosEligibilityViewModel @Inject constructor(
         return ciabSiteGateKeeper.buildPlanUpgradeUrl().toUri()
     }
 
-    private suspend fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
+    private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
         return when (reason) {
             WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_woocommerce_plugin_not_found)
@@ -158,23 +152,6 @@ class WooPosEligibilityViewModel @Inject constructor(
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
             WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> {
-                val countryCode = getCountryCode()
-                val supportedCurrency = supportedCountries.supportedCountryCurrencyPairs()
-                    .find { (country, _) -> country.equals(countryCode, ignoreCase = true) }
-                    ?.second?.uppercase()
-
-                val countryName = getCountryName()
-                if (countryName != null && supportedCurrency != null) {
-                    resourceProvider.getString(
-                        R.string.woopos_eligibility_reason_unsupported_currency_country_pair,
-                        countryName,
-                        supportedCurrency
-                    )
-                } else {
-                    resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)
-                }
-            }
             WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
