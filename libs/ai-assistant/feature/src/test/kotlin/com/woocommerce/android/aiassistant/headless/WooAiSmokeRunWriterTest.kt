@@ -245,8 +245,8 @@ class WooAiSmokeRunWriterTest {
         approvedBaselineFileName = "approved-baseline.json",
         redactor = WooAiSmokeRedactor(
             siteUrl = "https://store.example",
-            username = "merchant@example.com",
-            appPassword = "app password",
+            wpComUsername = "merchant@example.com",
+            wpComPassword = "app password",
         ),
         usePerRunDirectory = usePerRunDirectory,
     )

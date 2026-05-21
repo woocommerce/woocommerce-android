@@ -20,7 +20,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class WooAiSmokeLiveChatServiceFactoryTest {
@@ -81,22 +80,7 @@ class WooAiSmokeLiveChatServiceFactoryTest {
             transportDiagnosticsFactory = TransportDiagnosticsFactory(),
             tokenProvider = FakeWpComOAuthTokenProvider(),
             wrapperErrorMapper = WooMobileAiWrapperErrorMapper(json),
-        ).create(
-            credentials = WooAiSmokeCredentialConfig(
-                siteUrl = server.url("/").toString(),
-                siteId = 2922L,
-                username = "merchant@example.com",
-                appPassword = "app password",
-                storeLabel = "store",
-                outputDirectory = File("build/woo-ai-smoke"),
-                credentialSource = "test",
-            ),
-            redactor = WooAiSmokeRedactor(
-                siteUrl = server.url("/").toString(),
-                username = "merchant@example.com",
-                appPassword = "app password",
-            ),
-        )
+        ).create()
     }
 
     private fun sseResponse(body: String): MockResponse = MockResponse()

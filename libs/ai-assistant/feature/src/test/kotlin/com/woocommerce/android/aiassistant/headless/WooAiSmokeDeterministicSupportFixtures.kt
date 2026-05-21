@@ -78,8 +78,8 @@ internal object WooAiSmokeDeterministicSupportFixtures {
         credentialSource = "support-fixtures",
         redactor = WooAiSmokeRedactor(
             siteUrl = "",
-            username = "",
-            appPassword = "",
+            wpComUsername = "",
+            wpComPassword = "",
         ),
     )
 

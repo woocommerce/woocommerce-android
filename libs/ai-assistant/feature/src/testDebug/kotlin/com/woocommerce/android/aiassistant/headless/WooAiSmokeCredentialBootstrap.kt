@@ -13,8 +13,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCredentials
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
 import java.net.URI
 import java.time.LocalDate
@@ -23,41 +21,34 @@ import kotlin.time.Duration.Companion.seconds
 internal class WooAiSmokeCredentialBootstrap(
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
-    private val applicationPasswordsStore: ApplicationPasswordsStore,
     private val toolRegistry: ToolRegistry,
 ) {
     @Suppress("LongMethod")
-    suspend fun bootstrap(credentials: WooAiSmokeCredentialConfig): WooAiSmokeBootstrapResult {
-        val site = persistedSite(credentials)
+    suspend fun bootstrap(
+        credentials: WooAiSmokeCredentialConfig,
+        resolvedSite: SiteModel,
+        wpComAccessTokenPresent: Boolean,
+    ): WooAiSmokeBootstrapResult {
+        val site = persistedSite(credentials, resolvedSite)
 
         require(site.id > 0) { "SITE_FETCH_FAILED: persisted local site id missing" }
         require(normalizedHost(site.url) == normalizedHost(credentials.siteUrl)) {
             "SITE_FETCH_FAILED: fetched site host did not match credential host"
         }
 
-        site.siteId = credentials.siteId
+        site.siteId = resolvedSite.siteId
         site.url = credentials.siteUrl
-        site.username = credentials.username
+        site.username = credentials.wpComUsername
         site.setHasWooCommerce(true)
-        applicationPasswordsStore.saveCredentials(
-            site,
-            ApplicationPasswordCredentials(
-                userName = credentials.username,
-                password = credentials.appPassword,
-            )
-        )
-        require(applicationPasswordsStore.hasCredentials(site)) {
-            "APPLICATION_PASSWORD_CREDENTIALS_MISSING"
-        }
 
         selectedSite.set(site)
         val selected = selectedSite.get()
         require(selected.id == site.id) { "SELECTED_SITE_LOCAL_ID_MISMATCH" }
-        require(selected.siteId == credentials.siteId) { "SELECTED_SITE_REMOTE_ID_MISMATCH" }
+        require(selected.siteId == resolvedSite.siteId) { "SELECTED_SITE_REMOTE_ID_MISMATCH" }
         require(selected.url == site.url) { "SELECTED_SITE_URL_MISMATCH" }
-        require(selected.username == credentials.username) { "SELECTED_SITE_USERNAME_MISMATCH" }
+        require(selected.username == credentials.wpComUsername) { "SELECTED_SITE_USERNAME_MISMATCH" }
 
-        require(toolRegistry::class.java.simpleName == WooCommerceToolRegistry::class.java.simpleName) {
+        require(toolRegistry is WooCommerceToolRegistry) {
             "Expected WooCommerceToolRegistry, found ${toolRegistry::class.java.simpleName}"
         }
         require(toolRegistry.descriptors().size == EXPECTED_TOOL_CATALOG_SIZE) {
@@ -77,12 +68,16 @@ internal class WooAiSmokeCredentialBootstrap(
             site = selected,
             preflight = WooAiSmokePreflightReport(
                 localSiteIdPresent = selected.id > 0,
-                remoteSiteIdMatched = selected.siteId == credentials.siteId,
+                remoteSiteIdMatched = selected.siteId == resolvedSite.siteId,
                 urlHostMatched = normalizedHost(selected.url) == normalizedHost(credentials.siteUrl),
-                usernameMatched = selected.username == credentials.username,
-                appPasswordCredentialsPresent = applicationPasswordsStore.hasCredentials(selected),
+                usernameMatched = selected.username == credentials.wpComUsername,
+                siteOrigin = selected.origin,
+                jetpackConnected = selected.isJetpackConnected,
+                jetpackInstalled = selected.isJetpackInstalled,
+                wpComAccessTokenPresent = wpComAccessTokenPresent,
                 toolRegistryClass = toolRegistry::class.java.simpleName,
                 authProviderClass = "AccessTokenWpComOAuthTokenProvider",
+                toolTransportIntent = TOOL_TRANSPORT_INTENT,
                 safeToolResults = listOf(
                     WooAiSmokePreflightToolResult("products_list", productResult.kindName()),
                     WooAiSmokePreflightToolResult("orders_list", ordersResult.kindName()),
@@ -93,20 +88,13 @@ internal class WooAiSmokeCredentialBootstrap(
         )
     }
 
-    private fun persistedSite(credentials: WooAiSmokeCredentialConfig): SiteModel {
-        val site = (siteStore.getSiteBySiteId(credentials.siteId) ?: SiteModel()).apply {
-            siteId = credentials.siteId
-            url = credentials.siteUrl
-            wpApiRestUrl = credentials.siteUrl.trimEnd('/') + "/wp-json/"
-            username = credentials.username
-            password = credentials.appPassword
-            origin = SiteModel.ORIGIN_WPAPI
-            setHasWooCommerce(true)
-            applicationPasswordsAuthorizeUrl = credentials.siteUrl.trimEnd('/') +
-                "/wp-admin/authorize-application.php"
-        }
+    private fun persistedSite(
+        credentials: WooAiSmokeCredentialConfig,
+        resolvedSite: SiteModel,
+    ): SiteModel {
+        val site = siteForPersistence(credentials, resolvedSite)
         siteStore.onAction(SiteActionBuilder.newUpdateSiteAction(site))
-        return siteStore.getSiteBySiteId(credentials.siteId)
+        return siteStore.getSiteBySiteId(resolvedSite.siteId)
             ?: error("SITE_FETCH_FAILED: persisted local site id missing")
     }
 
@@ -162,8 +150,23 @@ internal class WooAiSmokeCredentialBootstrap(
     private fun normalizedHost(url: String): String =
         URI(url.trim()).host.orEmpty().removePrefix("www.").lowercase()
 
-    private companion object {
+    internal companion object {
+        fun siteForPersistence(
+            credentials: WooAiSmokeCredentialConfig,
+            resolvedSite: SiteModel,
+        ): SiteModel = resolvedSite.apply {
+            siteId = resolvedSite.siteId
+            url = credentials.siteUrl
+            wpApiRestUrl = credentials.siteUrl.trimEnd('/') + "/wp-json/"
+            username = credentials.wpComUsername
+            origin = SiteModel.ORIGIN_WPCOM_REST
+            setIsJetpackInstalled(true)
+            setIsJetpackConnected(true)
+            setHasWooCommerce(true)
+        }
+
         private const val EXPECTED_TOOL_CATALOG_SIZE = 13
+        internal const val TOOL_TRANSPORT_INTENT = "WPCOM_REST_JETPACK_TUNNEL"
         private val PREFLIGHT_TIMEOUT = 45.seconds
     }
 }
@@ -179,9 +182,13 @@ data class WooAiSmokePreflightReport(
     val remoteSiteIdMatched: Boolean,
     val urlHostMatched: Boolean,
     val usernameMatched: Boolean,
-    val appPasswordCredentialsPresent: Boolean,
+    val siteOrigin: Int,
+    val jetpackConnected: Boolean,
+    val jetpackInstalled: Boolean,
+    val wpComAccessTokenPresent: Boolean,
     val toolRegistryClass: String,
     val authProviderClass: String,
+    val toolTransportIntent: String,
     val safeToolResults: List<WooAiSmokePreflightToolResult>,
 )
 

@@ -22,11 +22,7 @@ internal class WooAiSmokeLiveChatServiceFactory @Inject constructor(
     private val tokenProvider: WpComOAuthTokenProvider,
     private val wrapperErrorMapper: WooMobileAiWrapperErrorMapper,
 ) {
-    @Suppress("UNUSED_PARAMETER")
-    fun create(
-        credentials: WooAiSmokeCredentialConfig,
-        redactor: WooAiSmokeRedactor,
-    ): ChatService = WooMobileAiChatService(
+    fun create(): ChatService = WooMobileAiChatService(
         httpClient = httpClient,
         tokenProvider = tokenProvider,
         streamParser = streamParser,
