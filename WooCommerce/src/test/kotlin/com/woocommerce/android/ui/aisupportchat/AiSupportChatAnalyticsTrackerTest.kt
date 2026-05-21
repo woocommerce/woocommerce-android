@@ -52,7 +52,7 @@ class AiSupportChatAnalyticsTrackerTest {
     }
 
     @Test
-    fun `given unrecognized support area, when response is tracked, then unknown classification is emitted`() {
+    fun `given unrecognized support area, when response is tracked, then raw classification is emitted`() {
         tracker.trackResponseReceived(
             entryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
             supportArea = SupportChatSupportArea(area = "custom-area", confidence = "certain"),
@@ -62,8 +62,8 @@ class AiSupportChatAnalyticsTrackerTest {
         verify(analyticsTrackerWrapper).track(
             stat = AnalyticsEvent.SUPPORT_CHAT_RESPONSE_RECEIVED,
             properties = mapOf(
-                AnalyticsTracker.KEY_SUPPORT_CHAT_SUPPORT_AREA to "unknown",
-                AnalyticsTracker.KEY_SUPPORT_CHAT_SUPPORT_AREA_CONFIDENCE to "unknown",
+                AnalyticsTracker.KEY_SUPPORT_CHAT_SUPPORT_AREA to "custom-area",
+                AnalyticsTracker.KEY_SUPPORT_CHAT_SUPPORT_AREA_CONFIDENCE to "certain",
                 AnalyticsTracker.KEY_SUPPORT_CHAT_ENTRY_POINT to "help_and_support",
                 AnalyticsTracker.KEY_SUPPORT_CHAT_HAS_CHAT_TOPIC to false,
                 AnalyticsTracker.KEY_SUPPORT_CHAT_FORWARD_TO_HUMAN_SUPPORT to true
