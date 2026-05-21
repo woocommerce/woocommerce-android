@@ -355,8 +355,8 @@ private fun CheckoutPaymentButtons(
     }
 }
 
-private val BUTTONS_TOP_SHADOW_HEIGHT = 6.dp
-private const val BUTTONS_TOP_SHADOW_ALPHA = 0.08f
+private val BUTTONS_TOP_SHADOW_HEIGHT = 1.dp
+private const val BUTTONS_TOP_SHADOW_ALPHA = 0.12f
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
