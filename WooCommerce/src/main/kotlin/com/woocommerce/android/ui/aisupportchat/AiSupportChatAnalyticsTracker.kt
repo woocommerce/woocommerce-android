@@ -249,6 +249,11 @@ private val DiagnosticTest.analyticsValue: String
         DiagnosticTest.STORE_ORDERS -> "site_orders"
         DiagnosticTest.STORE_PRODUCTS -> "loading_products"
         DiagnosticTest.ANALYTICS_SETTING -> "analytics_setting"
+        DiagnosticTest.NOTIFICATION_PERMISSION -> "notification_permission"
+        DiagnosticTest.APP_NOTIFICATIONS_ENABLED -> "app_notifications_enabled"
+        DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED -> "notification_channels_enabled"
+        DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "push_notification_token"
+        DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "push_notification_registration"
     }
 
 private val AiSupportChatFeedbackRating.analyticsValue: String
