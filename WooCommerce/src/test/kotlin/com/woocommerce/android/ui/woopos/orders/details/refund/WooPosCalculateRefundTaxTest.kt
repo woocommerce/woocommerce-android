@@ -242,4 +242,53 @@ class WooPosCalculateRefundTaxTest {
 
         assertThat(result).isEqualTo(BigDecimal("10.00"))
     }
+
+    @Test
+    fun `given lump-sum fee row, when invoke called, then tax is fee unit tax`() {
+        val feeRow = WooPosRefundableItem(
+            orderItemId = 99L,
+            productId = 0L,
+            variationId = 0L,
+            name = "Tip",
+            unitPrice = BigDecimal("12.50"),
+            unitTax = BigDecimal("1.25"),
+            formattedUnitPrice = "$12.50",
+            formattedUnitTax = "$1.25",
+            rowIndex = 0,
+            isLumpSum = true,
+        )
+        val order = createOrder(emptyList())
+
+        val result = sut(listOf(feeRow), order, numberOfDecimals = 2, roundAtSubtotal = false)
+
+        assertThat(result).isEqualByComparingTo(BigDecimal("1.25"))
+    }
+
+    @Test
+    fun `given product and lump-sum rows, when invoke called, then taxes are summed`() {
+        val product = createRefundableItem(orderItemId = 1L)
+        val orderItem = createOrderItem(
+            itemId = 1L,
+            quantity = 1f,
+            totalTax = BigDecimal("2.00"),
+            taxes = listOf(Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("2.00"))),
+        )
+        val fee = WooPosRefundableItem(
+            orderItemId = 99L,
+            productId = 0L,
+            variationId = 0L,
+            name = "Tip",
+            unitPrice = BigDecimal("5.00"),
+            unitTax = BigDecimal("0.50"),
+            formattedUnitPrice = "$5.00",
+            formattedUnitTax = "$0.50",
+            rowIndex = 0,
+            isLumpSum = true,
+        )
+        val order = createOrder(listOf(orderItem))
+
+        val result = sut(listOf(product, fee), order, numberOfDecimals = 2, roundAtSubtotal = false)
+
+        assertThat(result).isEqualByComparingTo(BigDecimal("2.50"))
+    }
 }

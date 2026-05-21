@@ -26,8 +26,6 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusP
 import com.woocommerce.android.ui.woopos.cardreader.WooPosIsTapToPayAvailable
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsMarkOrderAsCompleteEnabled
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsScanToPayEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
@@ -49,6 +47,8 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReaso
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -83,8 +83,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable,
-    private val isScanToPayEnabled: WooPosIsScanToPayEnabled,
-    private val isMarkOrderAsCompleteEnabled: WooPosIsMarkOrderAsCompleteEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val builtInReaderConnector: WooPosBuiltInReaderConnector,
@@ -686,7 +685,9 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.MissingVariationEvent,
-                    is ParentToChildrenEvent.SettingsEvent -> Unit
+                    is ParentToChildrenEvent.SettingsEvent,
+                    is ParentToChildrenEvent.CustomAmountSubmitted,
+                    is ParentToChildrenEvent.ShowCustomAmountForm -> Unit
                 }
             }
         }
@@ -1104,8 +1105,8 @@ class WooPosTotalsViewModel @Inject constructor(
             ),
             readerStatus = readerStatus,
             isTapToPayAvailable = isTapToPayAvailable(),
-            isScanToPayEnabled = isScanToPayEnabled(),
-            isMarkOrderAsCompleteEnabled = isMarkOrderAsCompleteEnabled(),
+            isScanToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SCAN_TO_PAY),
+            isMarkOrderAsCompleteEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MARK_ORDER_AS_COMPLETE),
         )
     }
 

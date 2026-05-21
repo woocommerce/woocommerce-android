@@ -242,6 +242,16 @@ class OrderListViewModel @Inject constructor(
 
     fun loadOrders() {
         val listDescriptor = getWCOrderListDescriptorWithFilters()
+        // When filters haven't changed (e.g. returning from order detail), avoid recreating the
+        // PagedListWrapper — clearing/re-binding its LiveData sources causes the list to flash.
+        if (listDescriptor == activeWCOrderListDescriptor && ordersPagedListWrapper != null) {
+            launch {
+                if (shouldUpdateOrdersList(listDescriptor)) {
+                    fetchOrdersAndOrderDependencies()
+                }
+            }
+            return
+        }
         activeWCOrderListDescriptor = listDescriptor
         ordersPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         viewState = viewState.copy(

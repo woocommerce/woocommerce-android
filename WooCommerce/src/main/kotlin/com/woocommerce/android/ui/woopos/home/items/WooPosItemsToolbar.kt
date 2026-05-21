@@ -29,9 +29,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -47,10 +49,14 @@ fun WooPosItemsToolbar(
     onBackClicked: () -> Unit,
     onAddCouponEvent: () -> Unit,
     leadingContent: (@Composable () -> Unit)? = null,
+    showAddCouponButton: Boolean = true,
 ) {
     val isSearchOpen = (state.search as? SearchState.Visible)?.let {
         it.state is WooPosSearchInputState.Open
     } == true
+
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    val tabsTextStyle = if (isPhone) WooPosTypography.BodyLarge else WooPosTypography.Heading
 
     Box(
         modifier = modifier
@@ -82,10 +88,11 @@ fun WooPosItemsToolbar(
                     tabs = state.tabs,
                     onTabClicked = onTabClicked,
                     itemSpacing = WooPosSpacing.Large.value,
+                    textStyle = tabsTextStyle,
                     modifier = Modifier.weight(1f),
                 )
 
-                if (state is WooPosItemsToolbarViewState.CouponList) {
+                if (showAddCouponButton && state is WooPosItemsToolbarViewState.CouponList) {
                     Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                     WooPosCircularIconButton(
                         icon = ImageVector.vectorResource(R.drawable.ic_add),
@@ -117,6 +124,7 @@ fun WooPosItemsTabsRow(
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     itemSpacing: Dp,
     modifier: Modifier = Modifier,
+    textStyle: WooPosTypography = WooPosTypography.Heading,
 ) {
     Row(
         modifier = modifier,
@@ -125,7 +133,7 @@ fun WooPosItemsTabsRow(
         tabs.forEachIndexed { index, tab ->
             WooPosText(
                 text = tab.name,
-                style = WooPosTypography.Heading,
+                style = textStyle,
                 fontWeight = FontWeight.Bold,
                 color = tab.highlightLevel.titleColor(),
                 maxLines = 1,

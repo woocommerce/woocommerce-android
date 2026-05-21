@@ -14,7 +14,8 @@ data class WooPosRefundableItem(
     val formattedUnitPrice: String,
     val formattedUnitTax: String,
     val rowIndex: Int,
+    val isLumpSum: Boolean = false,
 ) {
     val uniqueId: String
-        get() = "${orderItemId}_$rowIndex"
+        get() = if (isLumpSum) "fee_$orderItemId" else "${orderItemId}_$rowIndex"
 }

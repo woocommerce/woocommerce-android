@@ -596,6 +596,38 @@ class MigrationTests {
         }
     }
 
+    @Test
+    fun testMigration85to86_addsSupportChatBookmarkState() {
+        helper.createDatabase(TEST_DB, 85).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO SupportChatBookmarkEntity (
+                    chatId, localSiteId, remoteSiteId, botSlug, title, createdAt, updatedAt
+                ) VALUES (
+                    1234, 10, 20, 'woo-workflow-support_mobile_inapp_all_users', 'Order help', 1000, 2000
+                )
+                """.trimIndent()
+            )
+        }
+
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 86, true)
+
+        migratedDb.query(
+            """
+            SELECT chatId, sessionId, hasCreatedTicket, isResolved
+            FROM SupportChatBookmarkEntity
+            WHERE chatId = 1234
+            """.trimIndent()
+        ).use { cursor ->
+            assertThat(cursor.count).isEqualTo(1)
+            cursor.moveToFirst()
+            assertThat(cursor.getLong(0)).isEqualTo(1234)
+            assertThat(cursor.isNull(1)).isTrue()
+            assertThat(cursor.getInt(2)).isEqualTo(0)
+            assertThat(cursor.getInt(3)).isEqualTo(0)
+        }
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
     }

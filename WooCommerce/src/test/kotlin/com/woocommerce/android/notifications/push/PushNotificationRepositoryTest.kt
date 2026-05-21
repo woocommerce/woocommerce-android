@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
@@ -57,6 +58,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val localeProvider: LocaleProvider = mock {
         on { provideLocale() } doReturn Locale.US
     }
+    private val selectedSite: SelectedSite = mock()
     private val siteModel: SiteModel = mock()
     private val preferences: Preferences = mock()
     private val pushNotificationsDataStore: DataStore<Preferences> = mock {
@@ -82,7 +84,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             notificationAnalyticsTracker,
             localeProvider,
             checkWooPluginPushNotificationsSupport,
-            coroutinesTestRule.testDispatchers
+            coroutinesTestRule.testDispatchers,
+            selectedSite
         )
     }
 

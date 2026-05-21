@@ -110,17 +110,12 @@ internal class CustomersListToolHandler @Inject constructor(
                 )
             },
             onFailure = { error ->
-                when (error) {
-                    AICustomersDataSource.NoSelectedSiteException -> {
-                        ToolResult.ValidationError(call.id, "No selected site")
-                    }
-                    else -> diagnosticsFactory.transportError(
-                        toolCallId = call.id,
-                        toolName = descriptor.name,
-                        error = error,
-                        retryable = error.isRetryableStoreError(),
-                    )
-                }
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = error.isRetryableStoreError(),
+                )
             }
         )
     }

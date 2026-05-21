@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-21 13:57:02+0000
+Translation-Revision-Date: 2026-05-06 17:58:11+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">Аккумулятор устройства чтения заряжен лишь на %d %%, поэтому установить это обновление невозможно. Зарядите платёжный терминал хотя бы до 50 %% и повторите попытку.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Уровень заряда аккумулятора платёжного терминала недостаточен для установки этого обновления. Зарядите платёжный терминал хотя бы до 50 % и повторите попытку.</string>
+    <string name="woopos_card_reader_update_failed_title">Обновление прервано</string>
+    <string name="woopos_card_reader_update_completed_title">ПО обновлено</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Всё равно отменить</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Не рекомендуется отменять текущее обновление ПО. В случае отмены подключение платёжного терминала будет заблокировано.</string>
+    <string name="woopos_card_reader_update_optional_message">Для корректной работы платёжного терминала необходимо обновить его ПО.</string>
+    <string name="woopos_card_reader_update_required_message">Чтобы принимать платежи, требуется обновить ПО вашего платёжного терминала. В случае отмены подключение платёжного терминала будет заблокировано.</string>
+    <string name="woopos_card_reader_update_progress">Выполнено %d %%</string>
+    <string name="woopos_card_reader_updating_optional_title">Обновление ПО платёжного терминала</string>
+    <string name="woopos_card_reader_updating_title">Обновление программного обеспечения</string>
+    <string name="woopos_card_reader_cancel_button">Отмена</string>
+    <string name="woopos_card_reader_retry_button">Повторить</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">Почтовый индекс магазина отсутствует или недействителен. Отредактируйте адрес магазина в настройках WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Почтовый индекс недействителен</string>
+    <string name="woopos_card_reader_invalid_address_message">Адрес магазина отсутствует или неполный. Отредактируйте адрес магазина в настройках WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_address_title">Неверный адрес продавца</string>
+    <string name="woopos_card_reader_grant_permission_button">Предоставьте разрешение</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">Для подключения к платёжному терминалу требуется разрешение Bluetooth.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Требуются права доступа к Bluetooth</string>
+    <string name="woopos_card_reader_location_permission_message">Для подключения к платёжному терминалу через Bluetooth требуется разрешение на определение местоположения.</string>
+    <string name="woopos_card_reader_location_permission_title">Требуется разрешение на определение местоположения</string>
+    <string name="woopos_card_reader_enable_location_button">Вкл. определение местоположения</string>
+    <string name="woopos_card_reader_location_disabled_message">Включите определение местоположения для подключения к платёжному терминалу.</string>
+    <string name="woopos_card_reader_location_disabled_title">Определение местоположения отключено</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Включить Bluetooth</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Включите Bluetooth для подключения к платёжному терминалу.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth отключён</string>
+    <string name="woopos_card_reader_battery_low_message">Аккумулятор платёжного терминала почти разряжен. Зарядите аккумулятор платёжного терминала и повторите попытку.</string>
+    <string name="woopos_card_reader_battery_low_title">Аккумулятор разряжен</string>
+    <string name="woopos_card_reader_connected_title">Подключено</string>
+    <string name="woopos_card_reader_connecting_failed_title">Подключение прервано</string>
+    <string name="woopos_card_reader_connecting_message">Подождите, пока выполняется подключение к платёжному терминалу</string>
+    <string name="woopos_card_reader_connecting_title">Подключение…</string>
+    <string name="woopos_card_reader_multiple_found_description">Выберите платёжный терминал</string>
+    <string name="woopos_card_reader_multiple_found_title">Найдено несколько платёжных терминалов</string>
+    <string name="woopos_card_reader_keep_searching_button">Продолжить поиск</string>
+    <string name="woopos_card_reader_connect_button">Подключить</string>
+    <string name="woopos_card_reader_found_description">Подключить этот платёжный терминал?</string>
+    <string name="woopos_card_reader_found_title">Обнаружен %s</string>
+    <string name="woopos_card_reader_scanning_failed_title">Сбой сканирования</string>
+    <string name="woopos_card_reader_scanning_instruction">Убедитесь, что платёжный терминал заряжен и включён</string>
+    <string name="woopos_card_reader_scanning_title">Поиск платёжного терминала</string>
+    <string name="woopos_card_reader_close_content_description">Закрыть</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Диалоговое окно подключения платёжного терминала</string>
+    <string name="woopos_orders_empty_list_message">Заказы появятся здесь, как только вы начнёте обрабатывать продажи в POS.</string>
+    <string name="woopos_battery_critical">Аккумулятор платёжного терминала разряжен</string>
+    <string name="woopos_battery_low">Аккумулятор платёжного терминала почти разряжен</string>
+    <string name="woopos_reader_reconnecting">Повторное подключение…</string>
+    <string name="more_menu_button_ai_assistant_description">Задайте вопросы о магазине</string>
+    <string name="more_menu_button_ai_assistant">Помощник на базе ИИ</string>
+    <string name="settings_notifs_new_reviews_subtitle">Все отзывы</string>
+    <string name="settings_notifs_new_reviews">Новые отзывы</string>
+    <string name="settings_notifs_stock_subtitle">Все оповещения о запасах</string>
+    <string name="settings_notifs_stock">В наличии</string>
+    <string name="settings_notifs_new_orders_subtitle">Все заказы</string>
+    <string name="settings_notifs_new_orders">Новые заказы</string>
+    <string name="settings_push_notifications">Push-уведомления</string>
+    <string name="settings_logout_dialog_message">Выход из системы.</string>
+    <string name="card_reader_detail_reconnecting_cancel">Отменить повторное подключение</string>
+    <string name="card_reader_detail_reconnecting_header">Повторное подключение к платёжному терминалу…</string>
+    <string name="dashboard_stats_order_date_type_update_error">Не удалось обновить тип заказа. Повторите попытку.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">Это настройка на уровне магазина, которая также управляет параметром «Тип даты» в настройках аналитики администратора WooCommerce.</string>
+    <string name="dashboard_stats_completed_orders_description">Учитывать заказы на дату, когда они отмечены как выполненные.</string>
+    <string name="dashboard_stats_placed_orders_description">Учитывать заказы на дату их размещения или создания.</string>
+    <string name="dashboard_stats_paid_orders_description">Учитывать заказы на дату оплаты.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Выберите заказы для включения в показатели производительности за выбранный период времени.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Тип даты заказа</string>
+    <string name="dashboard_stats_completed_orders">Выполненные заказы</string>
+    <string name="dashboard_stats_placed_orders">Размещённые заказы</string>
+    <string name="dashboard_stats_paid_orders">Оплаченные заказы</string>
+    <string name="dashboard_stats_revenue_type_total">Итого</string>
+    <string name="dashboard_stats_revenue_type_net">Нетто</string>
+    <string name="dashboard_stats_revenue_type_gross">Брутто</string>
     <string name="booking_reschedule_change_team_member">Заменить сотрудника</string>
     <string name="booking_reschedule_screen_title">Перенести бронирование</string>
     <string name="booking_details_reschedule_button">Перенести</string>
@@ -353,8 +427,6 @@ Language: ru
     <string name="woopos_bookings_status_cancelled">Отменено</string>
     <string name="woopos_orders_loading_error_title">Не удалось загрузить заказы</string>
     <string name="woopos_orders_empty_list_image_description">Заказов нет</string>
-    <string name="woopos_orders_empty_action_label">Подробнее</string>
-    <string name="woopos_orders_empty_list_message">Узнайте о том, как повысить продажи магазина.</string>
     <string name="woopos_orders_empty_list_title">Заказов не найдено</string>
     <string name="woopos_date_yesterday_at">Вчера в %s</string>
     <string name="woopos_date_today_at">Сегодня в %s</string>
@@ -362,6 +434,7 @@ Language: ru
     <string name="woopos_date_never">Никогда</string>
     <string name="woopos_settings_local_catalog_refresh_button">Обновить каталог</string>
     <string name="woopos_orders_loading_error_message">Проверьте подключение и повторите попытку.</string>
+    <string name="woopos_orders_empty_action_label">Обновить</string>
     <string name="woopos_settings_local_catalog_settings">Управление использованием данных</string>
     <string name="woopos_settings_local_catalog_status">Статус каталога</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Управление настройками каталога</string>
@@ -530,6 +603,8 @@ Language: ru
     <string name="woopos_scanning_setup_device_selection_title">Настройка сканера штрихкодов</string>
     <string name="woopos_scanning_setup_barcode_content_description">Штрихкод</string>
     <string name="woopos_scanning_setup_dialog_content_description">Диалог настройки сканера</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Великобритания</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Соединённые Штаты</string>
     <string name="woopos_eligibility_screen_unable_to_load">Не удалось загрузить</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Система POS не поддерживает валюту вашего магазина. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Система POS не поддерживает валюту вашего магазина. В %1$s в настоящее время поддерживается только %2$s. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
