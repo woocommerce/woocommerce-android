@@ -50,7 +50,7 @@
         </action>
         <action
             android:id="@+id/action_mainSettingsFragment_to_notificationSettingsFragment"
-            app:destination="@id/notificationSettingsFragment" />
+            app:destination="@id/nav_graph_notification_settings" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_pluginsFragment"
             app:destination="@id/pluginsFragment" />
@@ -203,36 +203,44 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
-    <fragment
-        android:id="@+id/notificationSettingsFragment"
-        android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
-        android:label="NotificationSettingsFragment">
+    <navigation
+        android:id="@+id/nav_graph_notification_settings"
+        app:startDestination="@id/notificationSettingsFragment">
         <argument
             android:name="showSmarterNotifications"
             android:defaultValue="false"
             app:argType="boolean" />
-        <action
-            android:id="@+id/action_notificationSettingsFragment_to_newOrderNotificationSettingsFragment"
-            app:destination="@id/newOrderNotificationSettingsFragment" />
-        <action
-            android:id="@+id/action_notificationSettingsFragment_to_newReviewNotificationSettingsFragment"
-            app:destination="@id/newReviewNotificationSettingsFragment" />
-        <action
-            android:id="@+id/action_notificationSettingsFragment_to_newStockNotificationSettingsFragment"
-            app:destination="@id/newStockNotificationSettingsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/newOrderNotificationSettingsFragment"
-        android:name="com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsFragment"
-        android:label="NewOrderNotificationSettingsFragment" />
-    <fragment
-        android:id="@+id/newReviewNotificationSettingsFragment"
-        android:name="com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsFragment"
-        android:label="NewReviewNotificationSettingsFragment" />
-    <fragment
-        android:id="@+id/newStockNotificationSettingsFragment"
-        android:name="com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsFragment"
-        android:label="NewStockNotificationSettingsFragment" />
+        <fragment
+            android:id="@+id/notificationSettingsFragment"
+            android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
+            android:label="NotificationSettingsFragment">
+            <argument
+                android:name="showSmarterNotifications"
+                android:defaultValue="false"
+                app:argType="boolean" />
+            <action
+                android:id="@+id/action_notificationSettingsFragment_to_newOrderNotificationSettingsFragment"
+                app:destination="@id/newOrderNotificationSettingsFragment" />
+            <action
+                android:id="@+id/action_notificationSettingsFragment_to_newReviewNotificationSettingsFragment"
+                app:destination="@id/newReviewNotificationSettingsFragment" />
+            <action
+                android:id="@+id/action_notificationSettingsFragment_to_newStockNotificationSettingsFragment"
+                app:destination="@id/newStockNotificationSettingsFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/newOrderNotificationSettingsFragment"
+            android:name="com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsFragment"
+            android:label="NewOrderNotificationSettingsFragment" />
+        <fragment
+            android:id="@+id/newReviewNotificationSettingsFragment"
+            android:name="com.woocommerce.android.ui.prefs.notifications.NewReviewNotificationSettingsFragment"
+            android:label="NewReviewNotificationSettingsFragment" />
+        <fragment
+            android:id="@+id/newStockNotificationSettingsFragment"
+            android:name="com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsFragment"
+            android:label="NewStockNotificationSettingsFragment" />
+    </navigation>
     <fragment
         android:id="@+id/pluginsFragment"
         android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"

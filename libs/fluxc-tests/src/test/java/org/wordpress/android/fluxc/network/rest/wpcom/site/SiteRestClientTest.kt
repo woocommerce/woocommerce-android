@@ -844,6 +844,7 @@ class SiteRestClientTest {
                 eq(clazz),
                 anyOrNull(),
                 anyOrNull(),
+                eq(true),
             )
         ).thenReturn(response)
         return response

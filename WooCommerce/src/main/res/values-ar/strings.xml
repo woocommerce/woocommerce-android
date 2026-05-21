@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-04-20 17:55:48+0000
+Translation-Revision-Date: 2026-05-06 08:55:14+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_update_battery_low_message_with_level">مستوى بطارية القارئ هو %d%%، وهو منخفض جدًا لتثبيت هذا التحديث. يُرجى شحن القارئ إلى 50%% على الأقل ثم المحاولة مجددًا.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">مستوى بطارية القارئ منخفض جدًا لتثبيت هذا التحديث. يُرجى شحن القارئ إلى 50% على الأقل ثم المحاولة مجددًا.</string>
+    <string name="woopos_card_reader_update_failed_title">فشل التحديث</string>
+    <string name="woopos_card_reader_update_completed_title">تم تحديث البرنامج</string>
+    <string name="woopos_card_reader_cancel_anyway_button">إلغاء على أي حال</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">لا يُنصح بإلغاء تحديث البرنامج أثناء تنفيذه. سيؤدي الإلغاء إلى حظر اتصال القارئ الخاص بك.</string>
+    <string name="woopos_card_reader_update_optional_message">يتطلب برنامج قارئ البطاقات تحديثًا لضمان استمرار عمله بسلاسة.</string>
+    <string name="woopos_card_reader_update_required_message">يتعين تحديث برنامج قارئ البطاقات لتمكين تحصيل المدفوعات. سيؤدي الإلغاء إلى حظر اتصال القارئ الخاص بك.</string>
+    <string name="woopos_card_reader_update_progress">مُكتمل بنسبة %d%%</string>
+    <string name="woopos_card_reader_updating_optional_title">جارٍ تحديث برنامج القارئ لديك</string>
+    <string name="woopos_card_reader_updating_title">جارٍ تحديث البرنامج</string>
+    <string name="woopos_card_reader_cancel_button">إلغاء</string>
+    <string name="woopos_card_reader_retry_button">إعادة المحاولة</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">الكود البريدي للمتجر مفقود أو غير صالح. يُرجى تحديث عنوان متجرك في إعدادات WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">كود بريدي غير صالح</string>
+    <string name="woopos_card_reader_invalid_address_message">عنوان متجرك مفقود أو غير مكتمل. يُرجى تحديث عنوان متجرك في إعدادات WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_address_title">عنوان التاجر غير صالح</string>
+    <string name="woopos_card_reader_grant_permission_button">منح الصلاحية</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">يتطلب الاتصال بقارئ البطاقات الحصول على صلاحية استخدام تقنية البلوتوث.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">صلاحية استخدام تقنية البلوتوث مطلوبة</string>
+    <string name="woopos_card_reader_location_permission_message">يتطلب الاتصال بقارئ البطاقات عبر البلوتوث صلاحية الموقع.</string>
+    <string name="woopos_card_reader_location_permission_title">صلاحية الموقع مطلوبة</string>
+    <string name="woopos_card_reader_enable_location_button">تمكين الموقع</string>
+    <string name="woopos_card_reader_location_disabled_message">قم بتمكين الموقع للاتصال بقارئ البطاقات.</string>
+    <string name="woopos_card_reader_location_disabled_title">الموقع غير مفعّل</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">تمكين البلوتوث</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">قم بتمكين تقنية البلوتوث للاتصال بقارئ البطاقات.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">البلوتوث غير مفعّل</string>
+    <string name="woopos_card_reader_battery_low_message">مستوى بطارية القارئ منخفض جدًا. يُرجى شحن القارئ ثم المحاولة مجددًا.</string>
+    <string name="woopos_card_reader_battery_low_title">البطارية منخفضة جدًا</string>
+    <string name="woopos_card_reader_connected_title">اكتمل الاتصال</string>
+    <string name="woopos_card_reader_connecting_failed_title">فشل الاتصال</string>
+    <string name="woopos_card_reader_connecting_message">يُرجى الانتظار بينما يتم الاتصال بالقارئ الخاص بك</string>
+    <string name="woopos_card_reader_connecting_title">جارٍ الاتصال</string>
+    <string name="woopos_card_reader_multiple_found_description">اختيار قارئ</string>
+    <string name="woopos_card_reader_multiple_found_title">تم العثور على مجموعة من قارئات البطاقات</string>
+    <string name="woopos_card_reader_keep_searching_button">مواصلة البحث</string>
+    <string name="woopos_card_reader_connect_button">الاتصال</string>
+    <string name="woopos_card_reader_found_description">هل ترغب في الاتصال بهذا القارئ؟</string>
+    <string name="woopos_card_reader_found_title">تم العثور على %s</string>
+    <string name="woopos_card_reader_scanning_failed_title">فشل الفحص</string>
+    <string name="woopos_card_reader_scanning_instruction">تأكد من أن القارئ مشحون وقيد التشغيل</string>
+    <string name="woopos_card_reader_scanning_title">جارٍ البحث عن قارئ</string>
+    <string name="woopos_card_reader_close_content_description">إغلاق</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">مربع حوار اتصال قارئ البطاقة</string>
+    <string name="woopos_orders_empty_list_message">ستظهر الطلبات هنا بمجرد بدء معالجة المبيعات عبر نقطة البيع.</string>
+    <string name="woopos_battery_critical">بطارية قارئ البطاقات حرجة</string>
+    <string name="woopos_battery_low">بطارية قارئ البطاقات منخفضة</string>
+    <string name="woopos_reader_reconnecting">جارٍ إعادة الاتصال…</string>
+    <string name="more_menu_button_ai_assistant_description">اسأل عن متجرك</string>
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="settings_notifs_new_reviews_subtitle">كل المراجعات</string>
+    <string name="settings_notifs_new_reviews">مراجعات جديدة</string>
+    <string name="settings_notifs_stock_subtitle">جميع تنبيهات المخزون</string>
+    <string name="settings_notifs_stock">المخزون</string>
+    <string name="settings_notifs_new_orders_subtitle">جميع الطلبات</string>
+    <string name="settings_notifs_new_orders">طلبات جديدة</string>
+    <string name="settings_push_notifications">التنبيهات الفورية</string>
+    <string name="settings_logout_dialog_message">جارٍ تسجيل الخروج.</string>
+    <string name="card_reader_detail_reconnecting_cancel">إلغاء إعادة الاتصال</string>
+    <string name="card_reader_detail_reconnecting_header">جارٍ إعادة الاتصال بقارئ البطاقات…</string>
+    <string name="dashboard_stats_order_date_type_update_error">يتعذر تحديث نوع الطلب. يُرجى المحاولة مرة أخرى.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">هذا إعداد على مستوى المتجر، ويتحكم أيضًا في خيار \"نوع التاريخ\" ضمن إعدادات تحليلات مشرف WooCommerce.</string>
+    <string name="dashboard_stats_completed_orders_description">احتساب الطلبات وفق تاريخ اكتمالها.</string>
+    <string name="dashboard_stats_placed_orders_description">احتساب الطلبات وفق تاريخ إنشائها أو تقديمها.</string>
+    <string name="dashboard_stats_paid_orders_description">احتساب الطلبات وفق تاريخ سداد قيمتها.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">اختر الطلبات التي ترغب في تضمينها ضمن مؤشرات الأداء لديك للفترة الزمنية المحددة.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">نوع تاريخ الطلب</string>
+    <string name="dashboard_stats_completed_orders">الطلبات المكتملة</string>
+    <string name="dashboard_stats_placed_orders">الطلبات المُقدَّمة</string>
+    <string name="dashboard_stats_paid_orders">الطلبات المدفوعة</string>
+    <string name="dashboard_stats_revenue_type_total">الإجمالي</string>
+    <string name="dashboard_stats_revenue_type_net">الصافي</string>
+    <string name="dashboard_stats_revenue_type_gross">الإجمالي قبل الخصومات</string>
     <string name="booking_reschedule_change_team_member">تغيير عضو الفريق</string>
     <string name="booking_reschedule_screen_title">إعادة جدولة الحجز</string>
     <string name="booking_details_reschedule_button">إعادة الجدولة</string>
@@ -353,8 +427,6 @@ Language: ar
     <string name="woopos_orders_pagination_error_title">يتعذر تحميل المزيد من الطلبات</string>
     <string name="woopos_orders_loading_error_title">يتعذر تحميل الطلبات</string>
     <string name="woopos_orders_empty_list_image_description">لا توجد طلبات</string>
-    <string name="woopos_orders_empty_action_label">معرفة المزيد</string>
-    <string name="woopos_orders_empty_list_message">استكشف كيف يمكنك زيادة مبيعات متجرك.</string>
     <string name="woopos_orders_empty_list_title">لم يتم العثور على طلبات</string>
     <string name="woopos_date_yesterday_at">بالأمس في %s</string>
     <string name="woopos_date_today_at">اليوم في %s</string>
@@ -362,6 +434,7 @@ Language: ar
     <string name="woopos_date_never">أبدًا</string>
     <string name="woopos_settings_local_catalog_refresh_button">تحديث قائمة المنتجات</string>
     <string name="woopos_orders_loading_error_message">يُرجى التحقق من الاتصال بالشبكة وإعادة المحاولة.</string>
+    <string name="woopos_orders_empty_action_label">تحديث</string>
     <string name="woopos_settings_local_catalog_settings">إدارة استخدام البيانات</string>
     <string name="woopos_settings_local_catalog_status">حالة الكتالوج</string>
     <string name="woopos_settings_local_catalog_category_subtitle">إدارة إعدادات الكتالوج</string>
@@ -530,6 +603,8 @@ Language: ar
     <string name="woopos_scanning_setup_device_selection_title">إعداد الماسح الضوئي للرمز الشريطي</string>
     <string name="woopos_scanning_setup_barcode_content_description">الرمز الشريطي</string>
     <string name="woopos_scanning_setup_dialog_content_description">مربع حوار إعداد الماسح الضوئي</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">المملكة المتحدة</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">الولايات المتحدة</string>
     <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">لا يتوافر نظام نقطة البيع لعملة متجرك. ُيرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>

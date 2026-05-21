@@ -3,9 +3,12 @@ package com.woocommerce.android.util
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.di.AppCoroutineScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
@@ -28,6 +31,12 @@ class FeatureFlagRepository @Inject constructor(
 
     fun isEnabled(flag: FeatureFlag) = getFlagState(flag).effectiveValue
 
+    fun observeIsEnabled(flag: FeatureFlag): Flow<Boolean> {
+        return remoteFlagValues
+            .map { remoteValues -> getFlagState(flag, remoteValues).effectiveValue }
+            .distinctUntilChanged()
+    }
+
     suspend fun awaitRemoteFlagsLoaded() {
         remoteFlagValues.filter { it != null }.first()
     }
@@ -46,10 +55,12 @@ class FeatureFlagRepository @Inject constructor(
         AppPrefs.removeFeatureFlagOverride(flag)
     }
 
-    fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
+    fun getFlagState(flag: FeatureFlag) = getFlagState(flag, remoteFlagValues.value)
+
+    private fun getFlagState(flag: FeatureFlag, remoteValues: Map<String, Boolean>?) = FeatureFlagState(
         flag = flag,
         localValue = flag.localValue,
-        remoteValue = remoteFlagValues.value?.get(flag.remoteFlagKey),
+        remoteValue = remoteValues?.get(flag.remoteFlagKey),
         overrideValue = getOverrideValue(flag)
     )
 

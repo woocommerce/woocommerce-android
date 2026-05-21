@@ -1145,4 +1145,87 @@ class WooPosGetRefundableItemsTest {
         assertThat(result).hasSize(5)
         assertThat(result.map { it.rowIndex }).containsExactly(0, 1, 2, 3, 4)
     }
+
+    @Test
+    fun `given order with custom amount, when invoke called, then includes lump-sum refundable row`() {
+        // GIVEN
+        val feeLine = Order.FeeLine(
+            id = 42L,
+            name = "Service fee",
+            total = BigDecimal("12.50"),
+            totalTax = BigDecimal("1.25"),
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+            taxes = emptyList(),
+        )
+        val order = OrderTestUtils.generateTestOrder().copy(items = emptyList(), feesLines = listOf(feeLine))
+
+        // WHEN
+        val result = sut.invoke(order, emptyList())
+
+        // THEN
+        assertThat(result).hasSize(1)
+        val row = result.first()
+        assertThat(row.isLumpSum).isTrue()
+        assertThat(row.orderItemId).isEqualTo(42L)
+        assertThat(row.name).isEqualTo("Service fee")
+        assertThat(row.unitPrice).isEqualByComparingTo(BigDecimal("12.50"))
+        assertThat(row.unitTax).isEqualByComparingTo(BigDecimal("1.25"))
+        assertThat(row.uniqueId).isEqualTo("fee_42")
+    }
+
+    @Test
+    fun `given custom amount already refunded, when invoke called, then it is excluded`() {
+        // GIVEN
+        val feeLine = Order.FeeLine(
+            id = 42L,
+            name = "Service fee",
+            total = BigDecimal("12.50"),
+            totalTax = BigDecimal.ZERO,
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+            taxes = emptyList(),
+        )
+        val order = OrderTestUtils.generateTestOrder().copy(items = emptyList(), feesLines = listOf(feeLine))
+        val previousRefund = Refund(
+            id = 1L,
+            dateCreated = Date(),
+            amount = BigDecimal("12.50"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = listOf(
+                Refund.FeeLine(id = 42L, name = "Service fee", totalTax = BigDecimal.ZERO, total = BigDecimal("-12.50"))
+            ),
+        )
+
+        // WHEN
+        val result = sut.invoke(order, listOf(previousRefund))
+
+        // THEN
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `given order with product and custom amount, when invoke called, then both rows are returned`() {
+        // GIVEN
+        val orderItem = generateOrderItem(itemId = 1L, quantity = 1f, price = BigDecimal("10.00"))
+        val feeLine = Order.FeeLine(
+            id = 99L,
+            name = "Tip",
+            total = BigDecimal("5.00"),
+            totalTax = BigDecimal.ZERO,
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+            taxes = emptyList(),
+        )
+        val order = OrderTestUtils.generateTestOrder()
+            .copy(items = listOf(orderItem), feesLines = listOf(feeLine))
+
+        // WHEN
+        val result = sut.invoke(order, emptyList())
+
+        // THEN
+        assertThat(result).hasSize(2)
+        assertThat(result.count { it.isLumpSum }).isEqualTo(1)
+        assertThat(result.count { !it.isLumpSum }).isEqualTo(1)
+    }
 }

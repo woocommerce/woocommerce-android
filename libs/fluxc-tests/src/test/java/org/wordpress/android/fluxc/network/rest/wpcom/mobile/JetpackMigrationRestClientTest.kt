@@ -90,6 +90,7 @@ class JetpackMigrationRestClientTest {
                         eq(JsonElement::class.java),
                         isNull(),
                         anyOrNull(),
+                        eq(true),
                 )
         ).thenReturn(expectedRestCallResponse)
 
