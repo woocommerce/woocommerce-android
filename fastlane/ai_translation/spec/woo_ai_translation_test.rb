@@ -825,3 +825,195 @@ class CliShimTest < Minitest::Test
     assert_includes out, 'Usage: woo-ai-translate'
   end
 end
+
+class BaselineReaderTest < Minitest::Test
+  BR = WooAiTranslation::AndroidResources::BaselineReader
+
+  def write_baseline(dir, locale, body)
+    path = File.join(dir, "values-#{locale}", 'strings.xml')
+    FileUtils.mkdir_p(File.dirname(path))
+    File.write(path, body)
+    path
+  end
+
+  def test_captures_single_line_string_with_attributes_verbatim
+    Dir.mktmpdir do |dir|
+      raw = <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources xmlns:tools="http://schemas.android.com/tools">
+            <string name="app_name">Mein Laden</string>
+            <string name="raw_percent" formatted="false">50 % rabatt</string>
+        </resources>
+      XML
+      path = write_baseline(dir, 'de', raw)
+      blocks = BR.read(path)
+      assert_equal 2, blocks.size
+      assert_equal %(    <string name="app_name">Mein Laden</string>\n), blocks['app_name']
+      assert_equal %(    <string name="raw_percent" formatted="false">50 % rabatt</string>\n), blocks['raw_percent']
+    end
+  end
+
+  def test_captures_multi_line_plurals_and_arrays_verbatim
+    Dir.mktmpdir do |dir|
+      raw = <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources xmlns:tools="http://schemas.android.com/tools">
+            <plurals name="cart_items">
+                <item quantity="one">1 Artikel</item>
+                <item quantity="other">%d Artikel</item>
+            </plurals>
+            <string-array name="weekdays">
+                <item>Montag</item>
+                <item>Dienstag</item>
+            </string-array>
+        </resources>
+      XML
+      path = write_baseline(dir, 'de', raw)
+      blocks = BR.read(path)
+      assert_includes blocks['cart_items'], '<plurals name="cart_items">'
+      assert_includes blocks['cart_items'], '<item quantity="one">1 Artikel</item>'
+      assert_includes blocks['cart_items'], '</plurals>'
+      assert_includes blocks['weekdays'], '<item>Montag</item>'
+      assert_includes blocks['weekdays'], '</string-array>'
+    end
+  end
+
+  def test_returns_empty_for_missing_file
+    assert_equal({}, BR.read('/tmp/does-not-exist-baseline-strings.xml'))
+    assert_equal({}, BR.read(nil))
+  end
+
+  def test_ignores_nested_item_lines_when_matching_top_level_units
+    # An <item> child at 8-space indent must not be mistaken for a unit start.
+    Dir.mktmpdir do |dir|
+      raw = <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources>
+            <string-array name="picker">
+                <item>Eins</item>
+                <item>Zwei</item>
+            </string-array>
+        </resources>
+      XML
+      blocks = BR.read(write_baseline(dir, 'de', raw))
+      assert_equal %w[picker], blocks.keys
+    end
+  end
+end
+
+class PreservedLineWriterTest < Minitest::Test
+  P = WooAiTranslation::AndroidResources::Parser
+  W = WooAiTranslation::AndroidResources::Writer
+
+  def test_writer_emits_preserved_xml_verbatim_when_set
+    Dir.mktmpdir do |dir|
+      doc = P.parse_file(FIXTURE)
+      doc.translatable_units.each { |u| u.entries.each { |e| e[:value] = e[:source] } }
+      # Pick one unit and pin its preserved_xml to something we can recognize
+      # in the output (a human-edited line with idiosyncratic spacing the
+      # render_unit path would never produce).
+      target = doc.find('app_name')
+      target.preserved_xml = %(    <string  name="app_name"   formatted="false"  >Verbatim&#x20;Wert</string>\n)
+      out = File.join(dir, 'values-zz', 'strings.xml')
+      W.write(out, doc.translatable_units, 'zz')
+      raw = File.read(out)
+      assert_includes raw, %(    <string  name="app_name"   formatted="false"  >Verbatim&#x20;Wert</string>)
+      refute_includes raw, '<string name="app_name">' # the render_unit form
+    end
+  end
+
+  def test_writer_falls_back_to_render_unit_when_preserved_xml_is_nil
+    Dir.mktmpdir do |dir|
+      doc = P.parse_file(FIXTURE)
+      doc.translatable_units.each { |u| u.entries.each { |e| e[:value] = e[:source] } }
+      assert doc.translatable_units.all? { |u| u.preserved_xml.nil? }
+      out = File.join(dir, 'values-zz', 'strings.xml')
+      W.write(out, doc.translatable_units, 'zz')
+      raw = File.read(out)
+      # render_unit produces the canonical single-space form.
+      assert_includes raw, '<string name="app_name"'
+    end
+  end
+end
+
+class EnginePreservedLineIntegrationTest < Minitest::Test
+  include WooAiTranslation
+
+  # End-to-end: import the baseline as glotpress-import, then run an engine
+  # sweep that should reuse those keys AND emit them from the sidecar
+  # baseline (byte-for-byte). Proves the writer doesn't re-serialize through
+  # render_unit when origin=glotpress-import is preserved across runs.
+  def test_glotpress_import_keys_emit_from_sidecar_after_sweep
+    Dir.mktmpdir do |root|
+      source = File.join(root, 'values', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(source))
+      File.write(source, <<~XML)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources xmlns:tools="http://schemas.android.com/tools">
+            <string name="app_name">My Store</string>
+            <string name="raw_percent" formatted="false">50% off</string>
+        </resources>
+      XML
+      # Idiosyncratic spacing the engine's render_unit would never emit.
+      human_line = %(    <string name="app_name"   >Mein   Laden</string>)
+      existing = File.join(root, 'values-de', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(existing))
+      File.write(existing, <<~XML)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources xmlns:tools="http://schemas.android.com/tools">
+        #{human_line}
+            <string name="raw_percent" formatted="false">50% rabatt</string>
+        </resources>
+      XML
+      # Sidecar is the byte-for-byte snapshot the writer should emit from.
+      baseline_path = File.join(root, 'baseline', 'values-de', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(baseline_path))
+      FileUtils.cp(existing, baseline_path)
+
+      manifest = Manifest.new
+      context = ContextProvider.new({})
+
+      Importer.new(source_path: source, res_dir: root, manifest: manifest, context: context).import(locales: %w[de])
+
+      Engine.new(
+        source_path: source, res_dir: root,
+        manifest: manifest, manifest_path: File.join(root, 'm.json'),
+        translator: Translator.new(client: StubClient.new),
+        context: context, baseline_dir: File.join(root, 'baseline')
+      ).run_strings(locales: %w[de])
+
+      out = File.read(existing)
+      assert_includes out, human_line,
+                      'expected the idiosyncratic baseline spacing to survive the writer'
+      # Verifying the negative is what proves the preserved-line path actually
+      # fired -- render_unit would have collapsed the spacing.
+      refute_includes out, '<string name="app_name">Mein   Laden</string>'
+    end
+  end
+
+  def test_ai_origin_keys_still_route_through_render_unit
+    Dir.mktmpdir do |root|
+      source = File.join(root, 'values', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(source))
+      File.write(source, <<~XML)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources>
+            <string name="newly_added">Brand new</string>
+        </resources>
+      XML
+      # Sidecar is empty for this locale; nothing for the writer to preserve.
+      manifest = Manifest.new
+      Engine.new(
+        source_path: source, res_dir: root,
+        manifest: manifest, manifest_path: File.join(root, 'm.json'),
+        translator: Translator.new(client: StubClient.new),
+        context: ContextProvider.new({}),
+        baseline_dir: File.join(root, 'baseline')
+      ).run_strings(locales: %w[de])
+
+      out = File.read(File.join(root, 'values-de', 'strings.xml'))
+      assert_includes out, '<string name="newly_added">[de] Brand new</string>'
+      assert_equal 'ai', manifest.origin(name: 'newly_added', locale: 'de')
+    end
+  end
+end

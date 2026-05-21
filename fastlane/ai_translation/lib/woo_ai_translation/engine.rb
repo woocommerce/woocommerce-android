@@ -14,7 +14,7 @@ module WooAiTranslation
   class Engine
     Report = Struct.new(:locale, :translated, :reused, :failed, :written, :gate_errors, keyword_init: true)
 
-    def initialize(source_path:, res_dir:, manifest:, manifest_path:, translator:, context:, force_model: nil, logger: nil)
+    def initialize(source_path:, res_dir:, manifest:, manifest_path:, translator:, context:, force_model: nil, baseline_dir: nil, logger: nil)
       @source_path = source_path
       @res_dir = res_dir
       @manifest = manifest
@@ -26,6 +26,11 @@ module WooAiTranslation
       # model only against the keys that previously failed validation; reused
       # keys keep their original recorded model.
       @force_model = force_model
+      # Root of fastlane/ai_translation/baseline/. When set, the writer emits
+      # raw XML from baseline/values-<locale>/strings.xml for keys whose
+      # manifest origin is still glotpress-import. nil disables the preserved-
+      # line path (sweep still works, but everything goes through render_unit).
+      @baseline_dir = baseline_dir
       @logger = logger || ->(_m) {}
     end
 
@@ -53,6 +58,11 @@ module WooAiTranslation
     def translate_locale(source_units, locale, origin)
       out_path = File.join(@res_dir, "values-#{locale}", 'strings.xml')
       existing = load_existing(out_path)
+      # Read the sidecar baseline once per locale; the writer attaches preserved
+      # blocks for keys whose manifest origin is still glotpress-import. Empty
+      # hash when no sidecar exists for this locale (the 15 AI-backfilled
+      # locales and any future-added locales hit this path).
+      baseline_raw = load_baseline_raw(locale)
 
       plan = build_plan(source_units, locale, existing)
       results = run_translation(locale, plan[:pending])
@@ -64,6 +74,7 @@ module WooAiTranslation
       end
 
       ordered = source_units.map { |u| plan[:units][u.name] }
+      attach_preserved_xml(ordered, locale, baseline_raw)
       AndroidResources::Writer.write(out_path, ordered, locale)
 
       malformed = Validators.xml_well_formed(out_path)
@@ -223,6 +234,31 @@ module WooAiTranslation
 
       shell.entries.each { |e| e[:value] = by_id[e[:id]] }
       true
+    end
+
+    def load_baseline_raw(locale)
+      return {} unless @baseline_dir
+
+      path = File.join(@baseline_dir, "values-#{locale}", 'strings.xml')
+      AndroidResources::BaselineReader.read(path)
+    end
+
+    # Attach `preserved_xml` only to units that (a) are still recorded as
+    # origin=glotpress-import in the manifest for this locale and (b) have a
+    # block in the sidecar baseline. The manifest's origin can flip from
+    # glotpress-import to ai mid-run (when an AI-translated key replaces a
+    # human one because its English source changed); in that case the manifest
+    # has just been written via apply_and_validate, so the read here sees the
+    # correct, current origin.
+    def attach_preserved_xml(units, locale, baseline_raw)
+      return if baseline_raw.empty?
+
+      units.each do |u|
+        next unless @manifest.origin(name: u.name, locale: locale) == 'glotpress-import'
+
+        raw = baseline_raw[u.name]
+        u.preserved_xml = raw if raw
+      end
     end
 
     def load_existing(path)
