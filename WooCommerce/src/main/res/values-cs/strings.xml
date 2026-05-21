@@ -403,17 +403,17 @@ Můžete však klepnout na hodnotu v grafu a podívat se na návštěvníky a ko
     <string name="dashboard_new_widgets_card_button">Přidat nové sekce</string>
     <string name="analytics_section_see_all">Zobrazit všechny analýzy obchodu</string>
     <string-array name="analytics_date_range_selectors">
-        <item>@string/date_timeframe_custom</item>
-        <item>@string/date_timeframe_today</item>
-        <item>@string/date_timeframe_yesterday</item>
-        <item>@string/date_timeframe_last_week</item>
-        <item>@string/date_timeframe_last_month</item>
-        <item>@string/date_timeframe_last_quarter</item>
-        <item>@string/date_timeframe_last_year</item>
-        <item>@string/date_timeframe_week_to_date</item>
-        <item>@string/date_timeframe_month_to_date</item>
-        <item>@string/date_timeframe_quarter_to_date</item>
-        <item>@string/date_timeframe_year_to_date</item>
+        <item translatable="false">@string/date_timeframe_custom</item>
+        <item translatable="false">@string/date_timeframe_today</item>
+        <item translatable="false">@string/date_timeframe_yesterday</item>
+        <item translatable="false">@string/date_timeframe_last_week</item>
+        <item translatable="false">@string/date_timeframe_last_month</item>
+        <item translatable="false">@string/date_timeframe_last_quarter</item>
+        <item translatable="false">@string/date_timeframe_last_year</item>
+        <item translatable="false">@string/date_timeframe_week_to_date</item>
+        <item translatable="false">@string/date_timeframe_month_to_date</item>
+        <item translatable="false">@string/date_timeframe_quarter_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_revenue_card_title">Tržby</string>
     <string name="analytics_revenue_no_data">Žádné tržby v tomto období</string>

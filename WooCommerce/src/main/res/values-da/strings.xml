@@ -402,17 +402,17 @@ Du kan dog trykke på en værdi i grafen for at se besøgende og konverteringer 
     <string name="dashboard_new_widgets_card_button">Tilføj nye sektioner</string>
     <string name="analytics_section_see_all">Vis alle butiksanalyser</string>
     <string-array name="analytics_date_range_selectors">
-        <item>@string/date_timeframe_custom</item>
-        <item>@string/date_timeframe_today</item>
-        <item>@string/date_timeframe_yesterday</item>
-        <item>@string/date_timeframe_last_week</item>
-        <item>@string/date_timeframe_last_month</item>
-        <item>@string/date_timeframe_last_quarter</item>
-        <item>@string/date_timeframe_last_year</item>
-        <item>@string/date_timeframe_week_to_date</item>
-        <item>@string/date_timeframe_month_to_date</item>
-        <item>@string/date_timeframe_quarter_to_date</item>
-        <item>@string/date_timeframe_year_to_date</item>
+        <item translatable="false">@string/date_timeframe_custom</item>
+        <item translatable="false">@string/date_timeframe_today</item>
+        <item translatable="false">@string/date_timeframe_yesterday</item>
+        <item translatable="false">@string/date_timeframe_last_week</item>
+        <item translatable="false">@string/date_timeframe_last_month</item>
+        <item translatable="false">@string/date_timeframe_last_quarter</item>
+        <item translatable="false">@string/date_timeframe_last_year</item>
+        <item translatable="false">@string/date_timeframe_week_to_date</item>
+        <item translatable="false">@string/date_timeframe_month_to_date</item>
+        <item translatable="false">@string/date_timeframe_quarter_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_revenue_card_title">Omsætning</string>
     <string name="analytics_revenue_no_data">Ingen omsætning i denne periode</string>
