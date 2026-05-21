@@ -9,6 +9,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext

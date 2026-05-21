@@ -1,16 +1,18 @@
-package com.woocommerce.android.aiassistant.core.headless
+package com.woocommerce.android.aiassistant.core.history
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 
-internal class HeadlessSessionHistoryMapper {
+/**
+ * Converts current-turn model protocol into reusable session history for the AI Assistant feature.
+ */
+class AssistantSessionHistoryMapper {
     fun appendTurn(
         baseHistory: AssistantSessionHistory,
         modelTurnMessages: List<AssistantMessage>,
         error: AssistantError? = null,
     ): AssistantSessionHistory {
+        // AssistantError.Cancelled is the full-run cancellation sentinel; otherwise matched exchanges are replayable.
         val preserveToolExchanges = error != AssistantError.Cancelled
         val sessionMessages = buildList {
             var index = 0
@@ -44,6 +46,20 @@ internal class HeadlessSessionHistoryMapper {
                     is AssistantMessage.Tool -> index += 1
                 }
             }
+        }
+        return baseHistory.append(sessionMessages)
+    }
+
+    fun appendCancelledTurn(
+        baseHistory: AssistantSessionHistory,
+        userMessage: String,
+        assistantText: String?,
+    ): AssistantSessionHistory {
+        val sessionMessages = buildList {
+            add(AssistantSessionMessage.User(userMessage))
+            assistantText
+                ?.takeIf { text -> text.isNotBlank() }
+                ?.let { text -> add(AssistantSessionMessage.Assistant(text)) }
         }
         return baseHistory.append(sessionMessages)
     }

@@ -13,8 +13,10 @@ import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.history.ModelRequestHistory
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.BudgetedHistory
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot

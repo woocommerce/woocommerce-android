@@ -1,9 +1,7 @@
-package com.woocommerce.android.aiassistant.runtime
+package com.woocommerce.android.aiassistant.core.history
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgeter
 import kotlinx.serialization.json.buildJsonObject
@@ -114,26 +112,6 @@ internal class ModelRequestHistoryBuilderTest {
             AssistantMessage.Assistant("Here are the orders"),
             AssistantMessage.User("Current question"),
         )
-    }
-
-    @Test
-    fun `given stale prompt concept in old model fixtures, when building, then fresh prompt is first`() {
-        val sessionHistory = AssistantSessionHistory(
-            messages = listOf(
-                AssistantSessionMessage.User("Earlier question"),
-                AssistantSessionMessage.Assistant("Earlier answer"),
-            )
-        )
-        val builder = ModelRequestHistoryBuilder(passThroughBudgeter())
-
-        val result = builder.build(
-            systemPrompt = "Fresh prompt",
-            sessionHistory = sessionHistory,
-            currentUserMessage = "Current question",
-        )
-
-        assertThat(result.messages.first()).isEqualTo(AssistantMessage.System("Fresh prompt"))
-        assertThat(result.messages).doesNotContain(AssistantMessage.System("Stale prompt"))
     }
 
     @Test

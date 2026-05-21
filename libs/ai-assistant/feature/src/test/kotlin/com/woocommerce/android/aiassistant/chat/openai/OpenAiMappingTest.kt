@@ -10,9 +10,9 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDefinition
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.BudgetedHistory
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
-import com.woocommerce.android.aiassistant.runtime.ModelRequestHistoryBuilder
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject

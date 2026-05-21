@@ -7,6 +7,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoopImpl
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
@@ -31,8 +33,8 @@ class WooAssistantHeadless(
 ) {
     suspend fun runScenario(scenario: HeadlessScenario): HeadlessRunResult {
         var sessionHistory = scenario.initialSessionHistory
-        val modelRequestHistoryBuilder = HeadlessModelRequestHistoryBuilder(historyBudgeter)
-        val sessionHistoryMapper = HeadlessSessionHistoryMapper()
+        val modelRequestHistoryBuilder = ModelRequestHistoryBuilder(historyBudgeter)
+        val sessionHistoryMapper = AssistantSessionHistoryMapper()
         val turns = scenario.turns.mapIndexed { index, turn ->
             val loop = AgenticLoopImpl(
                 chatService = chatService,

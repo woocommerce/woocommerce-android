@@ -1,10 +1,8 @@
-package com.woocommerce.android.aiassistant.runtime
+package com.woocommerce.android.aiassistant.core.history
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
 import kotlinx.serialization.json.buildJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

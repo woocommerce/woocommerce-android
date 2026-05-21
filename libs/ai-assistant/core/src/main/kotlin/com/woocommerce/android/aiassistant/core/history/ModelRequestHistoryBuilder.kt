@@ -1,12 +1,12 @@
-package com.woocommerce.android.aiassistant.runtime
+package com.woocommerce.android.aiassistant.core.history
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
-import com.woocommerce.android.aiassistant.core.history.AssistantSessionMessage
-import com.woocommerce.android.aiassistant.core.history.ModelRequestHistory
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 
-internal class ModelRequestHistoryBuilder(
+/**
+ * Builds provider-ready model history from committed AI Assistant session history.
+ */
+class ModelRequestHistoryBuilder(
     private val historyBudgeter: HistoryBudgeter,
 ) {
     fun build(

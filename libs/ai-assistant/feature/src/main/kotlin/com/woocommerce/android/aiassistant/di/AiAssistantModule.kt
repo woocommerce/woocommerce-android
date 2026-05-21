@@ -11,8 +11,8 @@ import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgete
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
-import com.woocommerce.android.aiassistant.runtime.AssistantSessionHistoryMapper
-import com.woocommerce.android.aiassistant.runtime.ModelRequestHistoryBuilder
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import dagger.Module
 import dagger.Provides
