@@ -14,6 +14,7 @@ module WooAiTranslation
       context: 'fastlane/ai_translation/context/strings_context.json',
       glossary: 'fastlane/ai_translation/context/glossary.json',
       style_dir: 'fastlane/ai_translation/context/style',
+      baseline_dir: 'fastlane/ai_translation/baseline',
       mode: 'prtime',
       batch: Translator::DEFAULT_BATCH,
       offline: false,
@@ -67,7 +68,9 @@ module WooAiTranslation
         source_path: opts[:source], res_dir: opts[:res_dir],
         manifest: manifest, manifest_path: opts[:manifest],
         translator: translator, context: context,
-        force_model: opts[:force_model], logger: logger
+        force_model: opts[:force_model],
+        baseline_dir: opts[:baseline_dir],
+        logger: logger
       )
 
       # backfill = seed the human baseline first (origin glotpress-import, no
@@ -148,6 +151,7 @@ module WooAiTranslation
         p.on('--context PATH') { |v| o[:context] = v }
         p.on('--glossary PATH', 'JSON brand/domain glossary (cached prompt prefix)') { |v| o[:glossary] = v }
         p.on('--style-dir PATH', 'Directory of per-locale style notes: <locale>.md') { |v| o[:style_dir] = v }
+        p.on('--baseline-dir PATH', 'Sidecar baseline root; writer emits raw XML for glotpress-import keys') { |v| o[:baseline_dir] = v }
         p.on('--locales LIST', 'Comma-separated Android locale qualifiers') { |v| o[:locales] = v }
         p.on('--locales-file PATH') { |v| o[:locales] = File.read(v).split }
         p.on('--mode MODE', 'prtime|ondemand|sweep|backfill|metadata|import|shadow-diff') { |v| o[:mode] = v }
