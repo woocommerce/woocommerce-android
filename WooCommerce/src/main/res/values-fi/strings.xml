@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Käteinen</string>
     <string name="create">Luo</string>
     <string name="amount">Summa</string>
-    <string name="copy" override="true">Kopioi</string>
+    <string name="copy" tools:override="true">Kopioi</string>
     <string name="variations_bulk_update_sale_price">Päivitä alennettu hinta</string>
     <string name="variations_bulk_update_regular_price">Päivitä tavallinen hinta</string>
     <string name="tip">Juomaraha</string>
@@ -903,7 +903,7 @@ Ota yhteyttä palveluntarjoajaasi saadaksesi lisäapua.</string>
     <string name="shipping_label_create_mark_order_complete">Merkitse tämä tilaus valmistuneeksi ja ilmoita asiakkaalle</string>
     <string name="shipping_label_create_purchase">Osta lähetysotisikko</string>
     <string name="shipping_label_create_purchase_progress_title">Ostetaan otsikoita</string>
-    <string name="shipping_label_create_purchase_progress_message">Odota...</string>
+    <string name="shipping_label_create_purchase_progress_message">Odota…</string>
     <string name="shipping_label_create_purchase_error">Virhe ostettaessa etikettejä</string>
     <string name="shipping_label_create_purchase_fulfill_error">Tilausta ei voitu merkitä valmiiksi</string>
     <string name="shipping_label_selected_payment_description">Luottokortti, jonka viimeinen numero on %1$s</string>
@@ -921,7 +921,7 @@ Ota yhteyttä palveluntarjoajaasi saadaksesi lisäapua.</string>
     <string name="shipping_label_edit_address_use_address_as_is">Käytä osoitetta sellaisenaan</string>
     <string name="shipping_label_edit_address_validation_progress_title">Osoitteen validointi käynnissä</string>
     <string name="shipping_label_edit_address_loading_progress_title">Osoitetietojen lataus</string>
-    <string name="shipping_label_edit_address_progress_message">Odota...</string>
+    <string name="shipping_label_edit_address_progress_message">Odota…</string>
     <string name="shipping_label_edit_address_validation_error">Osoitteen validointi epäonnistui</string>
     <string name="shipping_label_edit_origin_address_error_warning">Lähiosotetta ei voitu automaattisesti vahvistaa. Tarkista osoite Google Maps -sovelluksessa ja varmista, että se on oikein.</string>
     <string name="shipping_label_edit_address_error_warning">Toimitusosoitetta ei voitu automaattisesti vahvistaa. Tarkista se Google Maps -sovelluksessa tai ota yhteyttä asiakkaaseen varmistaaksesi, että osoite on oikein.</string>
@@ -2640,7 +2640,7 @@ Ota yhteyttä ylläpitäjään.</string>
     <string name="product_downloadable_files_add_title">Lisää ladattava tiedosto</string>
     <string name="product_downloadable_files_upload_failed">Virhe tiedoston latauksessa</string>
     <string name="product_downloadable_files_upload_dialog_title">Tiedostojen lataaminen</string>
-    <string name="product_downloadable_files_upload_dialog_message">Odota...</string>
+    <string name="product_downloadable_files_upload_dialog_message">Odota…</string>
     <string name="product_downloadable_files_url_invalid">Tarkista, että antamasi URL on oikea</string>
     <string name="product_downloadable_files_add_media_from_device">Kuvat ja videot laitteella</string>
     <string name="product_downloadable_files_add_documents_from_device">Asiakirjat ja muut tiedostot laitteella</string>

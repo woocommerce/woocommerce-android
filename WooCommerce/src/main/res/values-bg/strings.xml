@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Парични средства</string>
     <string name="create">Създаване</string>
     <string name="amount">Сума</string>
-    <string name="copy" override="true">Копиране</string>
+    <string name="copy" tools:override="true">Копиране</string>
     <string name="variations_bulk_update_sale_price">Актуализиране на цената на разпродажба</string>
     <string name="variations_bulk_update_regular_price">Актуализиране на редовната цена</string>
     <string name="tip">Бакшиш</string>
@@ -1654,8 +1654,8 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="product_wip_title_m5">Налични са нови функции!</string>
     <string name="product_variant_list_add_first_variation">Създайте първия си вариант</string>
     <string name="product_variant_list_empty_action">Добавяне на вариант</string>
-    <string name="product_description_hint_no_title">Опишете вашия продукт на бъдещите клиенти...</string>
-    <string name="product_description_hint_with_title">Разкажете ни повече за %s...</string>
+    <string name="product_description_hint_no_title">Опишете вашия продукт на бъдещите клиенти…</string>
+    <string name="product_description_hint_with_title">Разкажете ни повече за %s…</string>
     <string name="product_description">Описание</string>
     <string name="product_description_empty">Опишете вашия продукт</string>
     <string name="product_short_description">Кратко описание</string>
@@ -1678,7 +1678,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="product_settings">Настройки на продукта</string>
     <string name="product_duplicate">Дублиране</string>
     <string name="product_duplicate_error">Не могу да дублирам продукта</string>
-    <string name="product_duplicate_progress_title">Дублиране на вашия продукт...</string>
+    <string name="product_duplicate_progress_title">Дублиране на вашия продукт…</string>
     <string name="product_duplicate_progress_body">Моля, чакайте, докато запазваме копие на този продукт във вашия магазин</string>
     <string name="product_duplicate_copied_product_name">%1$s копие</string>
     <string name="product_trash">Преместване в кошче</string>

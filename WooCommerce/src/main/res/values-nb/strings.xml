@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Kontant</string>
     <string name="create">Opprett</string>
     <string name="amount">Beløp</string>
-    <string name="copy" override="true">Kopier</string>
+    <string name="copy" tools:override="true">Kopier</string>
     <string name="variations_bulk_update_sale_price">Oppdater tilbudspris</string>
     <string name="variations_bulk_update_regular_price">Oppdater ordinær pris</string>
     <string name="tip">Tips</string>
@@ -3469,7 +3469,7 @@ Denne handlingen kan ikke angres.</string>
     <string name="woopos_orders_details_totals_card_content_description">Oversikt over ordretotaler</string>
     <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
     <string name="woopos_orders_details_booking_info_error">Bookinginfo utilgjengelig</string>
-    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · 1. jan. 2025, 12:00 - 13:00</string>
+    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · 1. jan. 2025, 12:00 – 13:00</string>
     <string name="woopos_orders_details_refund_label_numbered">Refusjon #%1$d</string>
     <string name="woopos_orders_details_refund_view_details">Vis detaljer</string>
     <string name="woopos_orders_details_refund_items_subtotal_one">Delsum varer (%d vare)</string>

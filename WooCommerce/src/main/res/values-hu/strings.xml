@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Készpénz</string>
     <string name="create">Létrehozás</string>
     <string name="amount">Összeg</string>
-    <string name="copy" override="true">Másolás</string>
+    <string name="copy" tools:override="true">Másolás</string>
     <string name="variations_bulk_update_sale_price">Akciós ár frissítése</string>
     <string name="variations_bulk_update_regular_price">Normál ár frissítése</string>
     <string name="tip">Borravaló</string>

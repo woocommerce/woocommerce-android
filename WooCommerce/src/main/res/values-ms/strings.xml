@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Tunai</string>
     <string name="create">Buat</string>
     <string name="amount">Jumlah</string>
-    <string name="copy" override="true">Salin</string>
+    <string name="copy" tools:override="true">Salin</string>
     <string name="variations_bulk_update_sale_price">Kemas kini Harga Jualan</string>
     <string name="variations_bulk_update_regular_price">Kemas kini Harga Biasa</string>
     <string name="tip">Hujung</string>
@@ -1654,14 +1654,14 @@ Hubungi penyedia pengehosan anda untuk bantuan lanjutan.</string>
     <string name="product_wip_title_m5">Ciri baru tersedia!</string>
     <string name="product_variant_list_add_first_variation">Cipta variasi pertama anda</string>
     <string name="product_variant_list_empty_action">Tambah Variasi</string>
-    <string name="product_description_hint_no_title">Terangkan produk anda kepada pelanggan masa depan...</string>
-    <string name="product_description_hint_with_title">Beritahu kami lebih banyak tentang %s...</string>
+    <string name="product_description_hint_no_title">Terangkan produk anda kepada pelanggan masa depan…</string>
+    <string name="product_description_hint_with_title">Beritahu kami lebih banyak tentang %s…</string>
     <string name="product_description">Penerangan</string>
     <string name="product_description_empty">Terangkan produk anda</string>
     <string name="product_short_description">Penerangan pendek</string>
     <string name="product_save_dialog_title">Menyimpan produk anda</string>
     <string name="product_delete_dialog_title">Menghapus produk</string>
-    <string name="product_update_dialog_message">Sila tunggu...</string>
+    <string name="product_update_dialog_message">Sila tunggu…</string>
     <string name="product_detail_update_product_error">Ralat mengemas kini produk</string>
     <string name="product_detail_save_product_success">Produk disimpan</string>
     <string name="product_detail_update_product_password_error">Ralat mengemas kini kata laluan</string>
@@ -1678,7 +1678,7 @@ Hubungi penyedia pengehosan anda untuk bantuan lanjutan.</string>
     <string name="product_settings">Tetapan produk</string>
     <string name="product_duplicate">Pendua</string>
     <string name="product_duplicate_error">Tidak dapat menduakan produk</string>
-    <string name="product_duplicate_progress_title">Menduakan produk anda...</string>
+    <string name="product_duplicate_progress_title">Menduakan produk anda…</string>
     <string name="product_duplicate_progress_body">Sila tunggu sementara kami menyimpan salinan produk ini ke kedai anda</string>
     <string name="product_duplicate_copied_product_name">%1$s Salinan</string>
     <string name="product_trash">Buang produk ke tong sampah</string>
