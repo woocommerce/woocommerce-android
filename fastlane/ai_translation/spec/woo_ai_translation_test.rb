@@ -287,7 +287,9 @@ class EngineTest < Minitest::Test
       assert_equal '[fr] Woo', doc.find('app_name').entries.first[:source]
       assert_equal '[fr] Please <a href="support">contact us</a> now.',
                    doc.find('html_note').entries.first[:source]
-      assert_equal %w[one other], doc.find('cart_items').entries.map { |e| e[:quantity] }
+      # French CLDR plural categories are one/many/other; the engine reshapes
+      # the source's [one, other] plurals block to cover all three.
+      assert_equal %w[one many other], doc.find('cart_items').entries.map { |e| e[:quantity] }
 
       # Reuse: nothing stale, existing files present -> zero model calls.
       c2 = StubClient.new
@@ -426,5 +428,199 @@ class EngineTest < Minitest::Test
       manifest = Manifest.load(File.join(dir, 'manifest.json'))
       assert_nil manifest.origin(name: 'greeting', locale: 'fr')
     end
+  end
+
+  def test_polish_plurals_get_all_four_cldr_quantities_synthesized
+    Dir.mktmpdir do |dir|
+      build(dir).run_strings(locales: %w[pl])
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-pl', 'strings.xml'))
+      assert_equal %w[one few many other],
+                   doc.find('cart_items').entries.map { |e| e[:quantity] }
+    end
+  end
+
+  def test_thai_plurals_drop_irrelevant_one_quantity
+    Dir.mktmpdir do |dir|
+      build(dir).run_strings(locales: %w[th])
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-th', 'strings.xml'))
+      # Thai CLDR uses only `other`; the engine drops the irrelevant `one` form.
+      assert_equal %w[other], doc.find('cart_items').entries.map { |e| e[:quantity] }
+    end
+  end
+end
+
+class CldrPluralsTest < Minitest::Test
+  CP = WooAiTranslation::CldrPlurals
+
+  def test_loads_data_and_drops_comment_keys
+    data = CP.load_data
+    assert data.key?('pl')
+    refute data.key?('_comment'), 'underscore-prefixed keys are dropped'
+  end
+
+  def test_quantities_for_returns_full_cldr_list_for_polish
+    assert_equal %w[one few many other], CP.quantities_for('pl')
+  end
+
+  def test_quantities_for_thai_is_only_other
+    assert_equal %w[other], CP.quantities_for('th')
+  end
+
+  def test_quantities_for_unknown_locale_is_nil
+    assert_nil CP.quantities_for('xx-rZZ')
+  end
+
+  def test_prompt_line_mentions_required_categories
+    line = CP.prompt_line_for('pl')
+    assert_includes line, 'pl'
+    %w[one few many other].each { |q| assert_includes line, q }
+  end
+
+  def test_prompt_line_for_unknown_locale_is_empty
+    assert_equal '', CP.prompt_line_for('xx-rZZ')
+  end
+end
+
+class TextNormalizerTest < Minitest::Test
+  TN = WooAiTranslation::TextNormalizer
+
+  def test_three_dot_run_becomes_unicode_ellipsis
+    assert_equal 'Loading…', TN.normalize('Loading...')
+  end
+
+  def test_does_not_touch_already_unicode_ellipsis
+    assert_equal 'Loading…', TN.normalize('Loading…')
+  end
+
+  def test_four_or_more_dots_are_left_alone_conservative
+    assert_equal 'Wait.....', TN.normalize('Wait.....')
+  end
+
+  def test_numeric_range_dash_becomes_endash
+    assert_equal '8–20%', TN.normalize('8-20%')
+  end
+
+  def test_time_range_with_spaces_becomes_endash
+    assert_equal '12:00–13:00', TN.normalize('12:00 - 13:00')
+  end
+
+  def test_compound_word_hyphen_is_preserved
+    assert_equal 'plug-in', TN.normalize('plug-in')
+    assert_equal 'step-by-step', TN.normalize('step-by-step')
+  end
+
+  def test_prose_dash_between_words_is_preserved
+    assert_equal 'Open - close cycle', TN.normalize('Open - close cycle')
+  end
+
+  def test_placeholders_themselves_are_preserved_verbatim
+    # `...` between placeholders still normalizes to `…`; only the placeholder
+    # spans themselves (%1$d, %s) are untouched.
+    assert_equal '%1$d… %s', TN.normalize('%1$d... %s')
+    # `%d-%d` is two placeholders glued together; the dash sits inside the
+    # protected region and is left alone.
+    assert_equal '%d-%d', TN.normalize('%d-%d')
+  end
+
+  def test_escape_sequences_are_preserved
+    assert_equal "line 1\\nline 2", TN.normalize("line 1\\nline 2")
+  end
+
+  def test_handles_empty_and_nil
+    assert_equal '', TN.normalize('')
+    assert_nil TN.normalize(nil)
+  end
+end
+
+class PluralCoverageValidatorTest < Minitest::Test
+  V = WooAiTranslation::Validators
+
+  def test_passes_when_required_categories_all_present
+    errs = V.plural_form_coverage(
+      output_plurals_quantities: { 'items' => %w[one few many other] },
+      required: %w[one few many other]
+    )
+    assert_empty errs
+  end
+
+  def test_flags_missing_categories
+    errs = V.plural_form_coverage(
+      output_plurals_quantities: { 'items' => %w[one other] },
+      required: %w[one few many other]
+    )
+    assert_equal 1, errs.size
+    assert_includes errs.first, 'missing CLDR quantities'
+    assert_includes errs.first, 'few'
+    assert_includes errs.first, 'many'
+  end
+
+  def test_flags_irrelevant_categories
+    errs = V.plural_form_coverage(
+      output_plurals_quantities: { 'items' => %w[one other] },
+      required: %w[other]
+    )
+    assert_equal 1, errs.size
+    assert_includes errs.first, 'irrelevant'
+    assert_includes errs.first, 'one'
+  end
+
+  def test_skips_gate_when_required_is_nil_or_empty
+    assert_empty V.plural_form_coverage(output_plurals_quantities: { 'k' => %w[other] }, required: nil)
+    assert_empty V.plural_form_coverage(output_plurals_quantities: { 'k' => %w[other] }, required: [])
+  end
+end
+
+class AttributePreservationTest < Minitest::Test
+  P = WooAiTranslation::AndroidResources::Parser
+  W = WooAiTranslation::AndroidResources::Writer
+
+  def test_tools_namespace_prefix_survives_parse_and_write
+    xml = <<~XML
+      <resources xmlns:tools="http://schemas.android.com/tools">
+        <string name="copy" tools:override="true">Copy</string>
+      </resources>
+    XML
+    doc = P.parse(xml)
+    copy_unit = doc.find('copy')
+    assert_equal 'true', copy_unit.attributes['tools:override'],
+                 'namespace-prefixed attribute name must survive parse intact'
+
+    copy_unit.entries.first[:value] = 'Kopia'
+    Dir.mktmpdir do |dir|
+      out = File.join(dir, 'values-xx', 'strings.xml')
+      W.write(out, [copy_unit], 'xx')
+      raw = File.read(out)
+      assert_includes raw, 'tools:override="true"',
+                      'Writer must emit the namespace prefix'
+      refute_match(/(?<!tools:)override="true"/, raw,
+                   'Writer must not emit bare override="true"')
+    end
+  end
+end
+
+class ManifestInvalidationTest < Minitest::Test
+  M = WooAiTranslation::Manifest
+
+  def test_invalidate_clears_recorded_locales_for_a_key
+    m = M.new
+    m.record(name: 'app_name', locale: 'pl', cache_key: 'ck1', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'app_name', locale: 'fr', cache_key: 'ck2', model: 'haiku', origin: 'ai', source_sha: 'sha')
+
+    cleared = m.invalidate(name: 'app_name', locales: %w[pl])
+    assert_equal 1, cleared
+    assert m.stale?(name: 'app_name', locale: 'pl', expected_cache_key: 'ck1'), 'pl is stale after invalidation'
+    refute m.stale?(name: 'app_name', locale: 'fr', expected_cache_key: 'ck2'), 'fr is unaffected'
+  end
+
+  def test_invalidate_on_unknown_key_is_noop
+    m = M.new
+    assert_equal 0, m.invalidate(name: 'never_recorded', locales: %w[pl])
+  end
+
+  def test_known_keys_reports_recorded_names
+    m = M.new
+    m.record(name: 'a', locale: 'pl', cache_key: 'ck1', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'b', locale: 'pl', cache_key: 'ck2', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    assert_equal %w[a b].sort, m.known_keys.sort
   end
 end

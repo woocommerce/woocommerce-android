@@ -71,8 +71,12 @@ module WooAiTranslation
 
       source_names = source_units.map(&:name)
       output_names = ordered.select(&:fully_translated?).map(&:name)
+      output_plurals_qs = ordered.select { |u| u.fully_translated? && u.type == :plurals }
+                                 .to_h { |u| [u.name, u.entries.map { |e| e[:quantity] }] }
       gate_errors = Validators.key_parity(source_names: source_names, output_names: output_names) +
-                    Validators.plural_pair_integrity(source_names: source_names, output_names: output_names)
+                    Validators.plural_pair_integrity(source_names: source_names, output_names: output_names) +
+                    Validators.plural_form_coverage(output_plurals_quantities: output_plurals_qs,
+                                                    required: CldrPlurals.quantities_for(locale))
       gate_errors.each { |e| @logger.call("GATE [#{locale}] #{e}") }
 
       Report.new(
@@ -92,11 +96,15 @@ module WooAiTranslation
       pending = []
       reused = []
 
+      target_quantities = CldrPlurals.quantities_for(locale)
       source_units.each do |u|
         default_model = model_for(u)
         ctx = context_for_unit(u)
         ck = @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: default_model)
-        shell = u.dup_shell
+        # For <plurals>, reshape the output shell to match the target locale's
+        # CLDR-required quantity categories so the model is asked for exactly
+        # the forms Android expects. Non-plural units are unaffected.
+        shell = u.dup_shell_for_locale(target_quantities)
         units[u.name] = shell
 
         if !@manifest.stale?(name: u.name, locale: locale, expected_cache_key: ck) && reuse(shell, existing)
@@ -120,7 +128,10 @@ module WooAiTranslation
       pending.group_by { |st| st[:model] }.each do |model, group|
         items = group.flat_map do |st|
           ctx = context_for_unit(st[:source])
-          st[:source].translation_requests.map do |r|
+          # Use the SHELL's translation_requests, not the source's: for plural
+          # units the shell may carry extra quantities synthesized from the
+          # target locale's CLDR rules, and we need a translation for each.
+          st[:unit].translation_requests.map do |r|
             { id: "#{st[:source].name}::#{r[:id]}", source: r[:source], context: ctx }
           end
         end
@@ -178,9 +189,11 @@ module WooAiTranslation
       # would flag false positives on every literal "50% off" / "5 % rate".
       return [] if source.attributes['formatted'] == 'false'
 
-      source.entries.zip(shell.entries).flat_map do |src_e, out_e|
-        Validators.placeholder_parity(src_e[:source], out_e[:value])
-      end
+      # Compare each output entry's placeholders against its OWN recorded source
+      # (not against `source.entries` by index): plural shells expanded for a
+      # locale's CLDR rules may carry more entries than the English source has,
+      # and a zip-by-index would compare a real translation to a nil source.
+      shell.entries.flat_map { |e| Validators.placeholder_parity(e[:source], e[:value]) }
     end
 
     def clear(shell)
