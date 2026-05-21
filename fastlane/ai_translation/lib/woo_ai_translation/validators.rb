@@ -113,5 +113,31 @@ module WooAiTranslation
 
       ["#{field} exceeds cap #{cap} (#{text.length})"]
     end
+
+    # Output `<plurals>` blocks must cover exactly the CLDR-required quantity
+    # categories for the target locale. Missing categories are a hard Android
+    # Lint error (e.g. Polish without `few`/`many`); categories the locale
+    # doesn't use (e.g. `one` for Thai) are a warning. Both are real bugs and
+    # we treat them as blocking gates so they cannot ship.
+    #
+    # `output_plurals_quantities`: Hash<String, Array<String>> mapping the
+    # output unit's name to the list of `quantity` values it ships. Caller
+    # restricts this to fully-translated units.
+    # `required`: the locale's CLDR list (from CldrPlurals.quantities_for).
+    # `nil`/empty means "no enforcement"; the gate is skipped.
+    def plural_form_coverage(output_plurals_quantities:, required:)
+      return [] if required.nil? || required.empty?
+
+      req_set = required.to_set
+      errors = []
+      output_plurals_quantities.each do |name, quantities|
+        have = quantities.to_set
+        missing = req_set - have
+        extra   = have - req_set
+        errors << "plural #{name} missing CLDR quantities: #{missing.to_a.sort.inspect}" unless missing.empty?
+        errors << "plural #{name} has irrelevant quantities: #{extra.to_a.sort.inspect}" unless extra.empty?
+      end
+      errors
+    end
   end
 end

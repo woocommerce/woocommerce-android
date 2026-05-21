@@ -59,6 +59,10 @@ module WooAiTranslation
         user_content: user_content(locale, items)
       )
       parsed = parse(raw)
+      # Conservative typography normalization (ASCII … and –, range dashes)
+      # so Android Lint doesn't flag the output. Placeholders are preserved by
+      # design; see TextNormalizer.
+      parsed = parsed.transform_values { |v| TextNormalizer.normalize(v, locale: locale) }
       covered = items.select { |i| parsed.key?(i[:id]) }.size
 
       return parsed if covered == items.size
@@ -80,12 +84,18 @@ module WooAiTranslation
 
     def system_blocks(locale, style)
       # Constant rules + (optional) brand/domain glossary + per-locale style
-      # guide. The client cache-flags the last block; Anthropic prompt-caching
-      # treats that marker as a breakpoint covering the entire prefix, so the
-      # whole constant prologue is cached across every batched call.
+      # guide (with CLDR plural categories appended when known). The client
+      # cache-flags the last block; Anthropic prompt-caching treats that marker
+      # as a breakpoint covering the entire prefix, so the whole constant
+      # prologue is cached across every batched call.
       blocks = [SYSTEM_RULES]
       blocks << @glossary unless @glossary.empty?
-      blocks << "Target locale: #{locale}.\n#{style.to_s.empty? ? default_style(locale) : style}"
+
+      style_block = "Target locale: #{locale}.\n#{style.to_s.empty? ? default_style(locale) : style}"
+      cldr_line = CldrPlurals.prompt_line_for(locale)
+      style_block += "\n\n#{cldr_line}" unless cldr_line.empty?
+
+      blocks << style_block
       blocks
     end
 

@@ -66,6 +66,29 @@ module WooAiTranslation
         copy.entries = @entries.map { |e| e.dup.tap { |x| x[:value] = nil } }
         copy
       end
+
+      # An output-side copy where, for `:plurals` units, the entries are
+      # reshaped to match the target locale's CLDR-required quantity categories
+      # (`one`, `few`, `many`, `other`, …). Source quantities that aren't in
+      # `quantities` are dropped; required quantities not present in source are
+      # added, seeded with the source's `other` entry (or the first available)
+      # so the model has the meaning to work from. For non-plural units this
+      # behaves exactly like {#dup_shell}.
+      def dup_shell_for_locale(quantities)
+        return dup_shell if @type != :plurals
+        return dup_shell if quantities.nil? || quantities.empty?
+
+        seed = @entries.find { |e| e[:quantity] == 'other' } || @entries.first
+        new_entries = quantities.map do |q|
+          existing = @entries.find { |e| e[:quantity] == q }
+          src = (existing || seed)[:source]
+          { id: "#{@name}{#{q}}", quantity: q, source: src, value: nil }
+        end
+
+        copy = Unit.new(type: @type, name: @name, attributes: @attributes.dup, comment: @comment)
+        copy.entries = new_entries
+        copy
+      end
     end
 
     # Parsed document; keeps every unit in source order.
@@ -147,8 +170,13 @@ module WooAiTranslation
       end
 
       def attrs(node)
+        # Use expanded_name so namespace-prefixed attributes (e.g. `tools:override`)
+        # keep their prefix. Without this REXML returns just the local name
+        # (`override`), the Writer reflects that on output, and Android Lint flags
+        # `<string name="copy" override="true">` as a private-symbol override that
+        # doesn't actually opt out of the lint check.
         h = {}
-        node.attributes.each_attribute { |a| h[a.name] = a.value }
+        node.attributes.each_attribute { |a| h[a.expanded_name] = a.value }
         h
       end
 
