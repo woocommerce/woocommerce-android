@@ -41,6 +41,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
 
     @Inject lateinit var selectedSite: SelectedSite
 
+    @Inject lateinit var analyticsTracker: AiSupportChatAnalyticsTracker
+
     private val supportRequestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             viewModel.onSupportTicketCreated()
@@ -148,10 +150,19 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 hideProgressDialog()
                 result
                     .onSuccess {
+                        analyticsTracker.trackTicketCreated(
+                            route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
+                            context = event.ticketAnalyticsContext
+                        )
                         viewModel.onSupportTicketCreated()
                         showTicketCreatedDialog()
                     }
-                    .onFailure {
+                    .onFailure { error ->
+                        analyticsTracker.trackTicketCreationFailed(
+                            route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
+                            context = event.ticketAnalyticsContext,
+                            error = error
+                        )
                         openSupportRequestForm(event)
                     }
             }
@@ -167,7 +178,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 preselectedTicketType = event.ticketType,
                 prefilledSubject = event.subject,
                 prefilledMessage = event.description,
-                prefilledSiteAddress = selectedSite.getIfExists()?.url.orEmpty()
+                prefilledSiteAddress = selectedSite.getIfExists()?.url.orEmpty(),
+                aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext
             )
         )
     }

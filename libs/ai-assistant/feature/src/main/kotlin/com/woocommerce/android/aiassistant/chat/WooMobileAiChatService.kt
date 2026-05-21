@@ -1,12 +1,10 @@
 package com.woocommerce.android.aiassistant.chat
 
-import com.woocommerce.android.aiassistant.chat.jetpackai.JetpackAiQueryErrorMapper
-import com.woocommerce.android.aiassistant.chat.jetpackai.JetpackAiQueryRequestBodyMapper
-import com.woocommerce.android.aiassistant.chat.openai.JwtOpenAiSseAuthProvider
+import com.woocommerce.android.aiassistant.auth.WpComOAuthTokenProvider
 import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseChatService
 import com.woocommerce.android.aiassistant.chat.openai.OpenAiSseChatServiceConfig
-import com.woocommerce.android.aiassistant.config.AssistantConfig
-import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
+import com.woocommerce.android.aiassistant.chat.openai.WpComOpenAiSseAuthProvider
+import com.woocommerce.android.aiassistant.chat.woomobileai.WooMobileAiWrapperErrorMapper
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.ChatRequest
 import com.woocommerce.android.aiassistant.core.chat.ChatService
@@ -17,22 +15,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
- * Active [ChatService] for the legacy `jetpack-ai-query` SSE endpoint.
- *
- * The endpoint still uses Jetpack AI JWT auth and retries one 401 received before
- * any model output by invalidating the cached JWT through [JwtTokenProvider].
+ * Wrapper chat service for the `woo-mobile-ai` endpoint.
  */
-@Singleton
-internal class JetpackAiChatService @Inject constructor(
+internal class WooMobileAiChatService @Inject constructor(
     @AssistantOkHttpClient httpClient: OkHttpClient,
-    tokenProvider: JwtTokenProvider,
+    tokenProvider: WpComOAuthTokenProvider,
     streamParser: ChatStreamParser,
     @AiAssistantJson json: Json,
     @AssistantBaseUrl baseUrl: String,
     transportDiagnosticsFactory: TransportDiagnosticsFactory,
+    wrapperErrorMapper: WooMobileAiWrapperErrorMapper,
 ) : ChatService {
     private val delegate = OpenAiSseChatService(
         httpClient = httpClient,
@@ -41,19 +35,16 @@ internal class JetpackAiChatService @Inject constructor(
         baseUrl = baseUrl,
         transportDiagnosticsFactory = transportDiagnosticsFactory,
         config = OpenAiSseChatServiceConfig(
-            path = JETPACK_AI_QUERY_PATH,
-            authProvider = JwtOpenAiSseAuthProvider(tokenProvider),
-            requestBodyMapper = JetpackAiQueryRequestBodyMapper(AssistantConfig.FEATURE_NAME),
-            errorMappers = listOf(JetpackAiQueryErrorMapper(json)),
-            retryOnUnauthorizedBeforeOutput = true,
+            path = WOO_MOBILE_AI_CHAT_COMPLETIONS_PATH,
+            authProvider = WpComOpenAiSseAuthProvider(tokenProvider),
+            errorMappers = listOf(wrapperErrorMapper),
         ),
     )
 
     override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
         delegate.streamTurn(request)
 
-    companion object {
-        internal const val DEFAULT_BASE_URL = "https://public-api.wordpress.com"
-        private const val JETPACK_AI_QUERY_PATH = "/wpcom/v2/jetpack-ai-query"
+    private companion object {
+        private const val WOO_MOBILE_AI_CHAT_COMPLETIONS_PATH = "/wpcom/v2/woo-mobile-ai/chat/completions"
     }
 }

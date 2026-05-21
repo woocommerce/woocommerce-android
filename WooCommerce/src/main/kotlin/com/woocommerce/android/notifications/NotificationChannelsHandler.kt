@@ -46,6 +46,11 @@ class NotificationChannelsHandler @Inject constructor(
         return channel.getNewOrderNotificationSoundStatus()
     }
 
+    fun isNotificationChannelEnabled(channelType: NotificationChannelType): Boolean {
+        val channel = notificationManagerCompat.getNotificationChannel(channelType.getChannelId()) ?: return true
+        return channel.importance != NotificationManager.IMPORTANCE_NONE
+    }
+
     private fun createChannels() {
         NotificationChannelType.entries.forEach {
             createChannel(it)
