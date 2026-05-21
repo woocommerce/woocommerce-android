@@ -404,17 +404,17 @@ A grafikonon egy értékre koppintva azonban megtekintheted az adott időszak l�
     <string name="dashboard_new_widgets_card_button">Új szekciók hozzáadása</string>
     <string name="analytics_section_see_all">Összes boltelemzés megtekintése</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>Hónap eddig</item>
-        <item>Negyedév eddig</item>
-        <item>Év eddig</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_revenue_card_title">Bevétel</string>
     <string name="analytics_revenue_no_data">Nincs bevétel ebben az időszakban</string>

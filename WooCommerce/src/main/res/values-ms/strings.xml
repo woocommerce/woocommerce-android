@@ -399,17 +399,17 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="dashboard_new_widgets_card_button">Tambah Bahagian Baharu</string>
     <string name="analytics_section_see_all">Lihat semua analitik kedai</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>Bulan hingga kini</item>
-        <item>Suku tahun hingga kini</item>
-        <item>Tahun hingga kini</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_revenue_card_title">Hasil Jualan</string>
     <string name="analytics_revenue_no_data">Tiada hasil jualan dalam tempoh ini</string>
