@@ -271,6 +271,7 @@ class AiSupportChatViewModel @Inject constructor(
                             selectedIssueType = issueType,
                             selectedIssueLabel = issueLabel,
                             diagnosticResult = result,
+                            diagnosticSuggestedActionOverride = null,
                             isRunningDiagnostics = !result.isComplete && !hasFailure,
                             showSendError = false,
                             messages = diagnosticsMessages(result, issueLabel)
@@ -300,7 +301,17 @@ class AiSupportChatViewModel @Inject constructor(
 
         when (action) {
             SuggestedFixAction.EnableAnalytics -> enableAnalytics()
+            SuggestedFixAction.OpenNotificationSettings -> openNotificationSettings()
+            SuggestedFixAction.RegisterPushNotifications -> registerPushNotifications()
+            SuggestedFixAction.RerunDiagnostics -> rerunDiagnostics()
         }
+    }
+
+    private fun openNotificationSettings() {
+        _viewState.update {
+            it.copy(diagnosticSuggestedActionOverride = SuggestedFixAction.RerunDiagnostics)
+        }
+        triggerEvent(OpenAppNotificationSettings)
     }
 
     fun onContinueAfterDiagnosticsClicked() {
@@ -334,6 +345,32 @@ class AiSupportChatViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     WooLog.e(WooLog.T.AI, "Enabling WooCommerce Analytics failed", error)
+                    _viewState.update {
+                        it.copy(
+                            isExecutingFixAction = false,
+                            showSuggestedFixActionError = true
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun registerPushNotifications() {
+        launch {
+            _viewState.update {
+                it.copy(
+                    isExecutingFixAction = true,
+                    showSuggestedFixActionError = false
+                )
+            }
+
+            diagnosticsService.registerPushNotifications()
+                .onSuccess {
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    rerunDiagnostics()
+                }
+                .onFailure { error ->
+                    WooLog.e(WooLog.T.AI, "Registering push notifications failed", error)
                     _viewState.update {
                         it.copy(
                             isExecutingFixAction = false,
@@ -830,6 +867,11 @@ class AiSupportChatViewModel @Inject constructor(
             DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
             DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
             DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
+            DiagnosticTest.NOTIFICATION_PERMISSION -> "Checking notification permission"
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED -> "Checking app notification settings"
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED -> "Checking notification channels"
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "Checking push notification token"
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "Checking push registration"
         }
 
     private fun createContactHumanSupportEvent(
@@ -952,6 +994,7 @@ data class AiSupportChatViewState(
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
     val diagnosticResult: DiagnosticResult? = null,
+    val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
@@ -992,6 +1035,9 @@ data class AiSupportChatViewState(
             return (canUseDiagnosticActions || isExecutingFixAction) &&
                 (result.firstFailure != null || result.isComplete)
         }
+
+    val currentDiagnosticSuggestedAction: SuggestedFixAction?
+        get() = diagnosticSuggestedActionOverride ?: diagnosticResult?.suggestedAction
 
     val canContactHumanSupportFromToolbar: Boolean
         get() = canSendMessages && completedUserMessageResponseCount >= MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR
@@ -1041,6 +1087,8 @@ data class ContactHumanSupport(
     val extraTags: List<String>,
     val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext
 ) : Event()
+
+data object OpenAppNotificationSettings : Event()
 
 data class AiSupportChatMessage(
     val id: String,

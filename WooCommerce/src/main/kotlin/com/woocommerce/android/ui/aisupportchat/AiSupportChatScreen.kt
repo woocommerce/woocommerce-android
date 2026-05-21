@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,6 +71,7 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreNotificationsCheckUseCase
 import com.woocommerce.commons.ui.markdown.MarkdownText
 
 @Composable
@@ -125,6 +127,7 @@ fun AiSupportChatScreen(
             isSending = viewState.isSending,
             isLoadingHistory = viewState.isLoadingHistory,
             showDiagnosticActions = viewState.showDiagnosticActions,
+            diagnosticSuggestedAction = viewState.currentDiagnosticSuggestedAction,
             isExecutingFixAction = viewState.isExecutingFixAction,
             onIssueSelected = onIssueSelected,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -182,6 +185,7 @@ private fun MessageList(
     isSending: Boolean,
     isLoadingHistory: Boolean,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -222,6 +226,7 @@ private fun MessageList(
                 message = message,
                 feedbackRating = message.messageId?.let { messageRatings[it] },
                 showDiagnosticActions = showDiagnosticActions,
+                diagnosticSuggestedAction = diagnosticSuggestedAction,
                 isExecutingFixAction = isExecutingFixAction,
                 onIssueSelected = onIssueSelected,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -243,6 +248,7 @@ private fun MessageBubble(
     message: AiSupportChatMessage,
     feedbackRating: AiSupportChatFeedbackRating?,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -279,6 +285,7 @@ private fun MessageBubble(
                     textColor = textColor,
                     shouldFormatMarkdown = message.role == AiSupportChatMessageRole.BOT,
                     showDiagnosticActions = showDiagnosticActions,
+                    diagnosticSuggestedAction = diagnosticSuggestedAction,
                     isExecutingFixAction = isExecutingFixAction,
                     onIssueSelected = onIssueSelected,
                     onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
@@ -374,6 +381,7 @@ private fun MessageContent(
     textColor: Color,
     shouldFormatMarkdown: Boolean,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit,
     onContinueAfterDiagnosticsClicked: () -> Unit,
@@ -408,6 +416,7 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
+            diagnosticSuggestedAction = diagnosticSuggestedAction,
             isExecutingFixAction = isExecutingFixAction,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked
@@ -416,6 +425,7 @@ private fun MessageContent(
             result = content.result,
             textColor = textColor,
             showDiagnosticActions = showDiagnosticActions,
+            diagnosticSuggestedAction = diagnosticSuggestedAction,
             isExecutingFixAction = isExecutingFixAction,
             onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked,
             onSuggestedFixActionClicked = onSuggestedFixActionClicked
@@ -482,6 +492,7 @@ private fun DiagnosticsContent(
     result: DiagnosticResult,
     textColor: Color,
     showDiagnosticActions: Boolean,
+    diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
     onContinueAfterDiagnosticsClicked: () -> Unit,
     onSuggestedFixActionClicked: (SuggestedFixAction) -> Unit
@@ -492,18 +503,12 @@ private fun DiagnosticsContent(
         modifier = Modifier.padding(dimensionResource(R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
     ) {
-        Text(
-            text = if (result.firstFailure == null && result.isComplete) {
-                stringResource(R.string.ai_support_chat_diagnostics_success)
-            } else {
-                stringResource(R.string.ai_support_chat_diagnostics_title)
-            },
-            color = textColor,
-            style = MaterialTheme.typography.titleSmall
-        )
-
-        result.statuses.forEach { status ->
-            DiagnosticStatusRow(status = status, textColor = textColor)
+        if (result.firstFailure == null && result.isComplete) {
+            DiagnosticSuccessRow()
+        } else {
+            result.visibleStatus?.let { status ->
+                DiagnosticStatusRow(status = status, textColor = textColor)
+            }
         }
 
         if (showDiagnosticActions) {
@@ -515,14 +520,20 @@ private fun DiagnosticsContent(
                 )
             }
             DiagnosticActions(
-                suggestedAction = result.suggestedAction,
+                suggestedAction = diagnosticSuggestedAction,
                 isExecutingFixAction = isExecutingFixAction,
                 onSuggestedFixActionClicked = onSuggestedFixActionClicked,
                 onContinueAfterDiagnosticsClicked = onContinueAfterDiagnosticsClicked
             )
+            if (isExecutingFixAction && diagnosticSuggestedAction != null) {
+                DiagnosticActionProgressText(action = diagnosticSuggestedAction, textColor = textColor)
+            }
         }
     }
 }
+
+private val DiagnosticResult.visibleStatus: DiagnosticStatus?
+    get() = statuses.lastOrNull { it.status !is TestStatus.Pending } ?: statuses.firstOrNull()
 
 @Composable
 private fun DiagnosticActions(
@@ -587,6 +598,18 @@ private fun SuggestedFixActionButton(
 }
 
 @Composable
+private fun DiagnosticActionProgressText(
+    action: SuggestedFixAction,
+    textColor: Color
+) {
+    Text(
+        text = action.progressMessage(),
+        color = textColor,
+        style = MaterialTheme.typography.bodySmall
+    )
+}
+
+@Composable
 private fun ContinueAfterDiagnosticsButton(
     onContinueAfterDiagnosticsClicked: () -> Unit,
     enabled: Boolean,
@@ -604,31 +627,69 @@ private fun ContinueAfterDiagnosticsButton(
 private fun DiagnosticStatusRow(status: DiagnosticStatus, textColor: Color) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = status.test.title(),
-            color = textColor,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(1f)
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (status.status is TestStatus.Running) {
-                CircularProgressIndicator(
-                    strokeWidth = 2.dp,
-                    modifier = Modifier
-                        .padding(end = dimensionResource(R.dimen.minor_100))
-                        .size(14.dp)
-                )
-            }
-            Text(
-                text = status.status.title(),
-                color = textColor,
-                style = MaterialTheme.typography.bodySmall
+        when (status.status) {
+            is TestStatus.Failed -> DiagnosticStatusIcon(
+                icon = R.drawable.ic_gridicons_cross_24dp,
+                tint = MaterialTheme.colorScheme.error,
+                contentDescription = status.status.title()
+            )
+            TestStatus.Running -> CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.minor_100))
+                    .size(DIAGNOSTIC_STATUS_ICON_SIZE)
+            )
+            else -> Spacer(
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.minor_100))
+                    .size(DIAGNOSTIC_STATUS_ICON_SIZE)
             )
         }
+        Text(
+            text = status.test.title(),
+            color = if (status.status is TestStatus.Failed) MaterialTheme.colorScheme.error else textColor,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
+}
+
+@Composable
+private fun DiagnosticSuccessRow() {
+    val successColor = colorResource(R.color.woo_green_50)
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        DiagnosticStatusIcon(
+            icon = R.drawable.ic_check_circle_filled_24dp,
+            tint = successColor,
+            contentDescription = stringResource(R.string.ai_support_chat_diagnostics_status_passed)
+        )
+        Text(
+            text = stringResource(R.string.ai_support_chat_diagnostics_success),
+            color = successColor,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+@Composable
+private fun DiagnosticStatusIcon(
+    icon: Int,
+    tint: Color,
+    contentDescription: String
+) {
+    Icon(
+        painter = painterResource(icon),
+        contentDescription = contentDescription,
+        tint = tint,
+        modifier = Modifier
+            .padding(end = dimensionResource(R.dimen.minor_100))
+            .size(DIAGNOSTIC_STATUS_ICON_SIZE)
+    )
 }
 
 @Composable
@@ -641,6 +702,14 @@ private fun DiagnosticTest.title(): String =
             DiagnosticTest.STORE_ORDERS -> R.string.orderlist_connectivity_tool_store_orders_check_title
             DiagnosticTest.STORE_PRODUCTS -> R.string.orderlist_connectivity_tool_store_products_check_title
             DiagnosticTest.ANALYTICS_SETTING -> R.string.ai_support_chat_diagnostics_analytics_setting_title
+            DiagnosticTest.NOTIFICATION_PERMISSION -> R.string.ai_support_chat_diagnostics_notification_permission_title
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED ->
+                R.string.ai_support_chat_diagnostics_app_notifications_enabled_title
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED ->
+                R.string.ai_support_chat_diagnostics_notification_channels_enabled_title
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> R.string.ai_support_chat_diagnostics_push_token_title
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION ->
+                R.string.ai_support_chat_diagnostics_push_registration_title
         }
     )
 
@@ -649,6 +718,23 @@ private fun SuggestedFixAction.title(): String =
     stringResource(
         when (this) {
             SuggestedFixAction.EnableAnalytics -> R.string.ai_support_chat_diagnostics_enable_analytics
+            SuggestedFixAction.OpenNotificationSettings ->
+                R.string.ai_support_chat_diagnostics_open_notification_settings
+            SuggestedFixAction.RegisterPushNotifications ->
+                R.string.ai_support_chat_diagnostics_register_push_notifications
+            SuggestedFixAction.RerunDiagnostics -> R.string.ai_support_chat_diagnostics_rerun_checks
+        }
+    )
+
+@Composable
+private fun SuggestedFixAction.progressMessage(): String =
+    stringResource(
+        when (this) {
+            SuggestedFixAction.EnableAnalytics -> R.string.ai_support_chat_diagnostics_enabling_analytics
+            SuggestedFixAction.RegisterPushNotifications ->
+                R.string.ai_support_chat_diagnostics_registering_push_notifications
+            SuggestedFixAction.OpenNotificationSettings,
+            SuggestedFixAction.RerunDiagnostics -> R.string.loading
         }
     )
 
@@ -668,9 +754,25 @@ private fun DiagnosticResult.failureMessage(): String {
             stringResource(R.string.ai_support_chat_diagnostics_analytics_disabled_failure)
         failedTest.test == DiagnosticTest.ANALYTICS_SETTING ->
             stringResource(R.string.ai_support_chat_diagnostics_analytics_check_failure)
+        failedTest.test in notificationSettingsTests ->
+            stringResource(R.string.ai_support_chat_diagnostics_notification_settings_failure)
+        failedTest.test == DiagnosticTest.PUSH_NOTIFICATION_TOKEN ->
+            stringResource(R.string.ai_support_chat_diagnostics_push_token_failure)
+        failedTest.test == DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION &&
+            failedStatus.technicalDetails
+                ?.contains(StoreNotificationsCheckUseCase.ERROR_PUSH_NOTIFICATIONS_UNREGISTERED) == true ->
+            stringResource(R.string.ai_support_chat_diagnostics_push_registration_failure)
+        failedTest.test == DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION ->
+            stringResource(R.string.ai_support_chat_diagnostics_push_check_failure)
         else -> failedStatus.failureMessage()
     }
 }
+
+private val notificationSettingsTests = setOf(
+    DiagnosticTest.NOTIFICATION_PERMISSION,
+    DiagnosticTest.APP_NOTIFICATIONS_ENABLED,
+    DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED
+)
 
 @Composable
 private fun TestStatus.Failed.failureMessage(): String =
@@ -971,3 +1073,4 @@ private val MESSAGE_BUBBLE_CORNER_RADIUS = 16.dp
 private val FEEDBACK_BUTTON_SIZE = 48.dp
 private val RATED_FEEDBACK_ICON_SIZE = 18.dp
 private val TYPING_INDICATOR_SIZE = 16.dp
+private val DIAGNOSTIC_STATUS_ICON_SIZE = 16.dp
