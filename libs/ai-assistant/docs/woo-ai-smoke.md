@@ -15,7 +15,7 @@ where to look when it fails. For the why behind the layout, see
 | --- | --- | --- |
 | Anything in `:libs:ai-assistant:core` headless types (harness, parser, comparator, hard-check evaluator) | [Level 1 — core unit tests](#level-1--core-unit-tests) | No |
 | Smoke harness wiring: scenario mapper, redactor, summary renderer, run writer, Hilt test graph | [Level 2 — feature support tests](#level-2--feature-support-tests-no-network) | No |
-| `JetpackAiChatService`, SSE plumbing, JWT header, stream parser | [Level 2 — chat-service slice](#chat-service-slice) | No |
+| `WooMobileAiChatService`, SSE plumbing, WPCOM bearer auth, stream parser | [Level 2 — chat-service slice](#chat-service-slice) | No |
 | Anything the live model or the real Woo store sees: tool implementations, tool catalog, system prompt, model id, scenarios | [Level 3 — live no-device smoke](#level-3--live-no-device-smoke-check-mode) | **Yes** |
 | Intentionally accepting a new live baseline | [Level 4 — live approval](#level-4--live-baseline-approval) | Yes, after manual review |
 
@@ -35,9 +35,9 @@ differs only in *what gets plugged into it*:
 | --- | --- | --- | --- | --- |
 | 1. `WooAssistantHeadlessTest` | scripted `ScriptedHeadlessChatService` | recording fake | plain JVM | Direct |
 | 1. `Headless{Baseline,HardCheck}*Test` | n/a | n/a | plain JVM | No — tests supporting contracts only |
-| 2. `JetpackAiChatServiceHeadlessHarnessTest` | real `JetpackAiChatService` against `MockWebServer` | `NoOpToolRegistry` | plain JVM | Direct |
+| 2. `WooMobileAiChatServiceHeadlessHarnessTest` | real `WooMobileAiChatService` against `MockWebServer` | `NoOpToolRegistry` | plain JVM | Direct |
 | 2. `WooAiSmokeDeterministicSupportTest` | fake `WooAiSmokeDeterministicSupportChatService` | fake `WooAiSmokeDeterministicSupportToolRegistry` | Robolectric | Indirect, via `WooAiSmokeRunner.run()` |
-| 3. `WooAiSmokeLiveRobolectricTest` | real `JetpackAiChatService` against Jetpack AI | real `WooCommerceToolRegistry` | Robolectric | Indirect, via `WooAiSmokeRunner.run()` |
+| 3. `WooAiSmokeLiveRobolectricTest` | real `WooMobileAiChatService` against the WPCOM wrapper | real `WooCommerceToolRegistry` | Robolectric | Indirect, via `WooAiSmokeRunner.run()` |
 | 4. `WooAiSmokeLiveRobolectricApprovalTest` | same as Level 3 | same as Level 3 | Robolectric, approval mode | Indirect, via `WooAiSmokeRunner.run()` |
 
 The parser/comparator/hard-check evaluator tests in `:core` do **not** instantiate the harness —
@@ -58,7 +58,7 @@ regressions, missing scenarios, and new scenarios. The hard-check evaluator matc
 correctly.
 
 What it does not prove: that any live chat, real tool, or scenario fixture still works. This level
-never touches `JetpackAiChatService` or `WooCommerceToolRegistry`.
+never touches `WooMobileAiChatService` or `WooCommerceToolRegistry`.
 
 Where to look on failure: each `Headless*Test` class under
 `core/src/test/kotlin/.../core/headless/` names exactly what it pins. Read the assertion failure,
@@ -104,10 +104,10 @@ How to read a failure:
 
 ```bash
 ./gradlew :libs:ai-assistant:feature:testDebugUnitTest \
-  --tests "*.JetpackAiChatServiceHeadlessHarnessTest"
+  --tests "*.WooMobileAiChatServiceHeadlessHarnessTest"
 ```
 
-This single test instantiates `WooAssistantHeadless` directly with the real `JetpackAiChatService`
+This single test instantiates `WooAssistantHeadless` directly with the real `WooMobileAiChatService`
 talking to a `MockWebServer`. It pins the SSE transport, the `Authorization: Bearer …` header, and
 the stream parser without needing credentials or a live store. Use it when you touched
 `:feature` chat plumbing and want fast feedback before paying the cost of a live run.
@@ -115,13 +115,13 @@ the stream parser without needing credentials or a live store. Use it when you t
 ## Level 3 — Live no-device smoke (check mode)
 
 Module: `:libs:ai-assistant:feature`, source set `src/testDebug`. Robolectric host;
-real `JetpackAiChatService` against real Jetpack AI; real `WooCommerceToolRegistry` against the
+real `WooMobileAiChatService` against real woo-mobile-ai WPCOM wrapper; real `WooCommerceToolRegistry` against the
 smoke store named in your credentials file.
 
 ```bash
 while IFS='=' read -r key value; do
   case "$key" in
-    WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
+    WOO_SITE_URL|WOO_WPCOM_USERNAME|WOO_WPCOM_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 ./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
@@ -133,12 +133,13 @@ the Hilt graph is never built and no live network calls happen. The opt-in is a 
 the current command, not a sticky shell environment variable. If the property is present but
 credentials are missing or malformed, the test fails loudly rather than skipping.
 
-What it proves: the Android AI Assistant runtime can, without a device or UI, mint a smoke-only
-Jetpack AI JWT, bootstrap `SelectedSite` and application-password state under Robolectric, drive
-the real chat service, exercise the real Woo tool registry, and match the canonical merchant
-scenarios in `live-scenarios.json` (plus their hard checks) against the checked-in
-`live-baseline.json`. This is the only level whose green status is accepted regression evidence
-for merge.
+What it proves: the Android AI Assistant runtime can, without a device or UI, authenticate to
+WordPress.com through `AccountStore`, resolve the configured site's WPCOM site id from the
+authenticated account's `/me/sites` response, bootstrap `SelectedSite` as a WPCOM REST
+Jetpack-connected site under Robolectric, drive the real WPCOM wrapper chat service, exercise the
+real Woo tool registry against the configured store, and match the canonical merchant scenarios in
+`live-scenarios.json` (plus their hard checks) against the checked-in `live-baseline.json`. This is
+the only level whose green status is accepted regression evidence for merge.
 
 Focused and sampled controls:
 - `WOO_AI_SMOKE_SCENARIO_ID=orders_with_email` runs a focused subset in the check test entrypoint. Multiple ids
@@ -175,7 +176,7 @@ libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/runs/<yyyyMMdd-HHmmss>
 
 | File | What to inspect |
 | --- | --- |
-| `preflight.json` | Did SelectedSite, app password, JWT, and the read-only preflight tools bootstrap? `safeToolResults` lists every preflight call with its result kind. |
+| `preflight.json` | Did WordPress.com auth, WPCOM site-id resolution, `SelectedSite`, WPCOM REST / Jetpack-connected routing intent, and the read-only preflight tools bootstrap? `safeToolResults` lists every preflight call with its result kind. |
 | `run.json` | Per-scenario status and hard-check outcomes. Sampled check runs include `sampleResults` and `sampleSummary` while keeping primary fields based on sample 1. |
 | `baseline-comparison.json` | Per-scenario diff against `live-baseline.json`. `PASS`, `KNOWN_FAILURE`, and `KNOWN_FAILURE_FIXED` are non-blocking; `REGRESSION`, `NEW`, and `MISSING` need triage. |
 | `turns.jsonl` | Redacted turn-by-turn trace of chat and tool calls. Sampled check runs include `sampleIndex`; one-sample runs keep the current shape. |
@@ -187,7 +188,12 @@ How to read common failures:
 | --- | --- | --- |
 | `Live baseline approval required: missing woo-ai-smoke/live-baseline.json` | Checked-in baseline was deleted or renamed. | `feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json`. Do not work around with approval mode; find out why the baseline went missing. |
 | `Woo AI smoke baseline check failed: ...` | A blocking diff (`REGRESSION`, `NEW`, or `MISSING`). Hard-check failures surface here as `REGRESSION`. | `baseline-comparison.json` first, then `run.json` or `summary.md` for failed hard checks. |
-| `PHASE_TIMEOUT: <phase>` (one of `jwt_mint`, `selected_site_and_tool_preflight`, `live_scenarios`) | The named phase exceeded its timeout (`jwt_mint`: 30s, `selected_site_and_tool_preflight`: 3min, `live_scenarios`: 5min multiplied by `WOO_AI_SMOKE_SAMPLES`). | `preflight.json` first — that tells you whether bootstrap finished. |
+| `PHASE_TIMEOUT: <phase>` (one of `wpcom_auth`, `wpcom_site_resolution`, `selected_site_and_tool_preflight`, `live_scenarios`) | The named phase exceeded its timeout (`wpcom_auth`: 1min, `wpcom_site_resolution`: 1min, `selected_site_and_tool_preflight`: 3min, `live_scenarios`: 5min multiplied by `WOO_AI_SMOKE_SAMPLES`). | `preflight.json` first — that tells you whether bootstrap finished. |
+| `WPCOM_AUTH_REQUIRES_2FA: ...` | The WordPress.com account requires two-factor authentication for password auth. | Use a WordPress.com Application Password as `WOO_WPCOM_PASSWORD`; the smoke harness does not implement an interactive 2FA challenge. |
+| `WPCOM_OAUTH_TOKEN_MISSING: ...` | AccountStore reported authentication success but no WPCOM access token was available. | Check `wc.oauth.app_id`, `wc.oauth.app_secret`, and the WPCOM credentials. |
+| `WPCOM_SITE_NOT_FOUND: ...` | The configured `WOO_SITE_URL` was not found in the authenticated account's `/me/sites` response. | Confirm the site is connected to the same WordPress.com account used by the smoke run. |
+| `WPCOM_SITE_INVALID_ORIGIN: ...` | The matched site is not a WPCOM REST site. | Use a WordPress.com-connected site exposed through the WPCOM REST path. |
+| `WPCOM_SITE_NOT_JETPACK_CONNECTED: ...` | The matched site is not Jetpack installed and connected. | Connect Jetpack for the target store before running live smoke. |
 | `PREFLIGHT_FAILED: <tool> returned <kind>` | A read-only preflight tool returned anything other than `Success`. Scenarios never ran. | The named tool, plus credentials/site setup. |
 
 Reminder: `safeToolResults` in `preflight.json` is a **report, not enforcement**. The enforcement
@@ -202,7 +208,7 @@ Run approval only when you are intentionally refreshing the accepted live baseli
 ```bash
 while IFS='=' read -r key value; do
   case "$key" in
-    WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
+    WOO_SITE_URL|WOO_WPCOM_USERNAME|WOO_WPCOM_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 WOO_AI_SMOKE_SAMPLES=3 \
@@ -223,9 +229,9 @@ cp \
   libs/ai-assistant/feature/src/testDebug/resources/woo-ai-smoke/live-baseline.json
 ```
 
-The accepted live baseline must come from `JetpackAiChatService`,
-`WooAiSmokeDirectJwtTokenProvider`, and `WooCommerceToolRegistry`. There is no Level 2 approval
-baseline. If a scenario cannot reliably pass yet, keep the scenario in the baseline with a
+The accepted live baseline must come from `WooMobileAiChatService` using a WordPress.com OAuth
+bearer, a WPCOM REST Jetpack-connected selected site, and `WooCommerceToolRegistry`. There is no
+Level 2 approval baseline. If a scenario cannot reliably pass yet, keep the scenario in the baseline with a
 `knownFailure` block containing a reason and the exact hard checks expected to fail.
 Do not add undocumented failures.
 
@@ -259,14 +265,32 @@ Live runs (Levels 3 and 4) require an env file outside the repo at `~/.woo-ai-sm
 
 ```text
 WOO_SITE_URL=
-WOO_SITE_ID=
-WOO_USERNAME=
-WOO_APP_PASSWORD=
+WOO_WPCOM_USERNAME=
+WOO_WPCOM_PASSWORD=
 ```
+
+Do not provide `WOO_SITE_ID`. After WordPress.com auth, the harness resolves the site id by finding
+`WOO_SITE_URL` in the authenticated account's `/me/sites` response. Any `/sites/<url>` lookup is
+fallback/diagnostic only; it is not a substitute for proving the site belongs to the same
+WordPress.com account.
+
+`WOO_WPCOM_PASSWORD` is the password used for WordPress.com AccountStore authentication. If the
+account requires 2FA, use a WordPress.com Application Password for this value; the smoke harness
+does not implement an interactive 2FA challenge.
+
+The target store must be Jetpack-connected and connected to the same WordPress.com account named by
+`WOO_WPCOM_USERNAME`. Local builds also need valid `wc.oauth.app_id` and `wc.oauth.app_secret` in
+the usual secrets file so AccountStore password auth can request a WPCOM OAuth token.
+
+Chat traffic goes through `WooMobileAiChatService` to
+`/wpcom/v2/woo-mobile-ai/chat/completions` with that WPCOM OAuth bearer. Store tools still target
+the configured `WOO_SITE_URL`; the resolver-selected site is persisted as `ORIGIN_WPCOM_REST` with
+Jetpack installed/connected state, and preflight records `toolTransportIntent =
+WPCOM_REST_JETPACK_TUNNEL`.
 
 Never echo this file, paste its values into chat, commit it, or include expanded environment
 output in logs or PR text. CI provides the same keys as masked environment variables. The harness
-redacts site URL, username, and app password from artifacts before they reach disk; do not bypass
+redacts site URL, username, and WPCOM password from artifacts before they reach disk; do not bypass
 that redaction.
 
 ## Skill recap
