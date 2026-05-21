@@ -32,11 +32,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -229,6 +232,10 @@ private fun TotalsLoaded(
                 )
             }
         }
+        val scrollState = rememberScrollState()
+        val showButtonsTopShadow by remember {
+            derivedStateOf { scrollState.canScrollForward }
+        }
         BoxWithConstraints(
             modifier = Modifier
                 .weight(1f)
@@ -238,7 +245,7 @@ private fun TotalsLoaded(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .heightIn(min = minContentHeight),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -270,6 +277,7 @@ private fun TotalsLoaded(
         CheckoutPaymentButtons(
             onUIEvent = onUIEvent,
             buttonsState = state.paymentButtonsState,
+            showTopShadow = showButtonsTopShadow,
         )
     }
 
@@ -288,6 +296,7 @@ private fun TotalsLoaded(
 private fun CheckoutPaymentButtons(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
     buttonsState: WooPosTotalsViewState.PaymentButtonsState,
+    showTopShadow: Boolean,
 ) {
     val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     val outerPaddingModifier = if (isPhone) {
@@ -299,31 +308,55 @@ private fun CheckoutPaymentButtons(
         WooPosTotalsViewState.PaymentButtonsState.Enabled -> WooPosButtonState.ENABLED
         WooPosTotalsViewState.PaymentButtonsState.Disabled -> WooPosButtonState.DISABLED
     }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(outerPaddingModifier)
-            .navigationBarsPadding(),
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-    ) {
-        WooPosOutlinedButton(
+    Column(modifier = Modifier.fillMaxWidth()) {
+        AnimatedVisibility(
+            visible = showTopShadow,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(BUTTONS_TOP_SHADOW_HEIGHT)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = BUTTONS_TOP_SHADOW_ALPHA),
+                            ),
+                        ),
+                    ),
+            )
+        }
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON),
-            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-            state = buttonState,
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-        )
-        WooPosOutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
-            text = stringResource(R.string.woopos_payment_method_other_methods_label),
-            state = buttonState,
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
-        )
+                .then(outerPaddingModifier)
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        ) {
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON),
+                text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                state = buttonState,
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+            )
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+                text = stringResource(R.string.woopos_payment_method_other_methods_label),
+                state = buttonState,
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+            )
+        }
     }
 }
+
+private val BUTTONS_TOP_SHADOW_HEIGHT = 6.dp
+private const val BUTTONS_TOP_SHADOW_ALPHA = 0.08f
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
