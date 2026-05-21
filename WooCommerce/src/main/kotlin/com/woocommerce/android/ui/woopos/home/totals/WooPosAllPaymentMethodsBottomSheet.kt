@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +63,7 @@ internal fun WooPosAllPaymentMethodsBottomSheet(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = SCRIM_ALPHA))
+                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = SCRIM_ALPHA))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -111,10 +110,8 @@ private fun PaymentMethodsBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = WooPosSpacing.XLarge.value,
-                vertical = WooPosSpacing.XLarge.value,
-            )
+            .padding(horizontal = WooPosSpacing.XLarge.value)
+            .padding(top = WooPosSpacing.XLarge.value)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
