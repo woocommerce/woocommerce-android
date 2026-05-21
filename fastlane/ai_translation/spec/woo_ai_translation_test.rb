@@ -205,7 +205,10 @@ end
 class ManifestTest < Minitest::Test
   M = WooAiTranslation::Manifest
 
-  def test_cache_key_is_deterministic_and_sensitive
+  def test_legacy_cache_key_helper_is_deterministic_and_sensitive
+    # Metadata staleness still leans on this multi-component hash; app-string
+    # translations don't. Locked here so the metadata path doesn't silently
+    # change.
     m = M.new
     a = m.cache_key(source: 's', context: 'c', locale: 'fr', model: 'X')
     assert_equal a, m.cache_key(source: 's', context: 'c', locale: 'fr', model: 'X')
@@ -218,16 +221,20 @@ class ManifestTest < Minitest::Test
     Dir.mktmpdir do |dir|
       path = File.join(dir, 'm.json')
       m = M.new
-      ck = m.cache_key(source: 's', context: '', locale: 'fr', model: 'X')
-      assert m.stale?(name: 'k', locale: 'fr', expected_cache_key: ck)
-      m.record(name: 'k', locale: 'fr', cache_key: ck, model: 'X', origin: 'ai', source_sha: 'abc')
-      refute m.stale?(name: 'k', locale: 'fr', expected_cache_key: ck)
-      assert m.stale?(name: 'k', locale: 'fr', expected_cache_key: 'different')
+      sha = 'abc'
+      # Empty manifest: no key entry yet -> trust whatever's on disk -> not stale.
+      refute m.stale?(name: 'k', locale: 'fr', expected_source_sha: sha)
+      m.record(name: 'k', locale: 'fr', model: 'X', origin: 'ai', source_sha: sha)
+      refute m.stale?(name: 'k', locale: 'fr', expected_source_sha: sha)
+      # Same key, locale that was never recorded for it: stale (locale missing).
+      assert m.stale?(name: 'k', locale: 'de', expected_source_sha: sha)
+      # Source mismatch: stale even though the locale is recorded.
+      assert m.stale?(name: 'k', locale: 'fr', expected_source_sha: 'different')
       assert_equal 'ai', m.origin(name: 'k', locale: 'fr')
       m.save(path)
 
       reloaded = M.load(path)
-      refute reloaded.stale?(name: 'k', locale: 'fr', expected_cache_key: ck)
+      refute reloaded.stale?(name: 'k', locale: 'fr', expected_source_sha: sha)
     end
   end
 end
@@ -416,17 +423,19 @@ class EngineTest < Minitest::Test
     end
   end
 
-  def test_changing_an_xml_comment_only_retranslates_its_section
+  def test_changing_an_xml_comment_does_not_retranslate_anything
+    # Under the source-only invalidation contract, dev-authored context edits
+    # (XML comments, AINFRA-1707 entries) are NOT triggers. Adding a clarifying
+    # section header must not cause a 31-locale re-run of already-translated
+    # keys. To force re-translation, the operator uses --keys / --key-pattern.
     Dir.mktmpdir do |dir|
-      mpath = File.join(dir, 'm.json')
-
       # Initial run seeds everything.
       c1 = StubClient.new
       build(dir, client: c1).run_strings(locales: %w[fr])
 
-      # Rewrite the source: change ONLY the first comment ("Greetings ...").
-      # Sticky propagation means the 3 strings in that section invalidate;
-      # the 6 strings under the second comment must reuse.
+      # Rewrite the source: change the first XML comment. Existing source TEXT
+      # is unchanged for every key, so source_sha matches and nothing
+      # invalidates.
       modified = File.join(dir, 'modified.xml')
       File.write(modified, File.read(FIXTURE).sub('Greetings on the main dashboard.',
                                                   'Dashboard greetings, shown above the order list.'))
@@ -434,9 +443,9 @@ class EngineTest < Minitest::Test
       c2 = StubClient.new
       report = build(dir, source: modified, client: c2).run_strings(locales: %w[fr]).first
 
-      assert_equal 3, report.translated, 'only the section above the changed comment retranslates'
-      assert_equal 6, report.reused
-      assert_equal 1, c2.calls
+      assert_equal 0, report.translated, 'comment changes must not auto-invalidate'
+      assert_equal 9, report.reused
+      assert_equal 0, c2.calls, 'no model calls when nothing is stale'
     end
   end
 
@@ -490,6 +499,115 @@ class EngineTest < Minitest::Test
       doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-th', 'strings.xml'))
       # Thai CLDR uses only `other`; the engine drops the irrelevant `one` form.
       assert_equal %w[other], doc.find('cart_items').entries.map { |e| e[:quantity] }
+    end
+  end
+
+  # ---- Source-only invalidation contract -------------------------------------
+  # These tests encode the rows of the table the team agreed on: source-text
+  # changes are the ONLY automatic re-translation trigger. Model, prompt,
+  # context-comment, and attribute changes don't auto-propagate. On-demand
+  # re-translation runs through Manifest#invalidate (the --keys / --key-pattern
+  # CLI flags).
+
+  def test_model_bump_does_not_invalidate_existing_translations
+    # Run 1 seeds translations with the default model. Run 2 forces a different
+    # model -- under the source-only contract the existing translations stay
+    # put (force_model is only consulted for keys that would translate anyway,
+    # which here is none).
+    Dir.mktmpdir do |dir|
+      build(dir, client: StubClient.new).run_strings(locales: %w[fr])
+
+      bumped_client = StubClient.new
+      engine = Engine.new(
+        source_path: FIXTURE, res_dir: dir,
+        manifest: Manifest.load(File.join(dir, 'manifest.json')),
+        manifest_path: File.join(dir, 'manifest.json'),
+        translator: Translator.new(client: bumped_client),
+        context: ContextProvider.new({}),
+        force_model: 'claude-opus-4-7'
+      )
+      r2 = engine.run_strings(locales: %w[fr]).first
+      assert_equal 0, r2.translated, 'a model bump must not auto-invalidate existing translations'
+      assert_equal 9, r2.reused
+      assert_equal 0, bumped_client.calls
+    end
+  end
+
+  def test_attribute_only_change_does_not_invalidate
+    # Toggling a non-text attribute (e.g. adding formatted="false") must not
+    # invalidate. source_signature is built from entry text only.
+    Dir.mktmpdir do |dir|
+      build(dir, client: StubClient.new).run_strings(locales: %w[fr])
+
+      modified = File.join(dir, 'modified.xml')
+      File.write(modified, File.read(FIXTURE).sub('<string name="app_name">',
+                                                  '<string name="app_name" formatted="false">'))
+
+      c2 = StubClient.new
+      r2 = build(dir, source: modified, client: c2).run_strings(locales: %w[fr]).first
+      assert_equal 0, r2.translated, 'attribute-only change must not invalidate'
+      assert_equal 9, r2.reused
+      assert_equal 0, c2.calls
+    end
+  end
+
+  def test_manifest_loss_trusts_existing_localized_files
+    # Bootstrap path: an operator wipes translation-manifest.json by accident
+    # (or merges across branches and ends up with an empty one). The engine
+    # must NOT decide every existing locale file is stale and clobber the
+    # human translations -- it should treat the on-disk files as authoritative
+    # for keys whose source it has never seen.
+    Dir.mktmpdir do |dir|
+      build(dir, client: StubClient.new).run_strings(locales: %w[fr])
+      File.delete(File.join(dir, 'manifest.json'))
+
+      bad_client = StubClient.new { |loc, src| "[#{loc}] DESTRUCTIVE: #{src}" }
+      r2 = build(dir, client: bad_client).run_strings(locales: %w[fr]).first
+      assert_equal 0, r2.translated, 'empty manifest + file present must trust the file'
+      assert_equal 9, r2.reused
+      assert_equal 0, bad_client.calls, 'no model calls when the file is trusted'
+
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-fr', 'strings.xml'))
+      refute_includes doc.find('app_name').entries.first[:source], 'DESTRUCTIVE'
+    end
+  end
+
+  def test_keys_invalidation_still_forces_retranslation
+    # --keys / --key-pattern (via Manifest#invalidate) is the operator's only
+    # auto-invalidation path under the new contract. Removing the locale entry
+    # must make build_plan re-translate that (name, locale).
+    Dir.mktmpdir do |dir|
+      manifest_path = File.join(dir, 'manifest.json')
+      build(dir, client: StubClient.new).run_strings(locales: %w[fr])
+
+      m = Manifest.load(manifest_path)
+      assert_equal 1, m.invalidate(name: 'app_name', locales: %w[fr])
+      m.save(manifest_path)
+
+      c2 = StubClient.new
+      r2 = build(dir, client: c2).run_strings(locales: %w[fr]).first
+      assert_equal 1, r2.translated, '--keys must force re-translation of the invalidated key'
+      assert_equal 8, r2.reused
+    end
+  end
+
+  def test_source_text_change_invalidates_only_the_changed_key
+    # The single auto-invalidation rule: an English source text change for
+    # ONE key re-translates exactly that one key, leaves the other 8 untouched.
+    # This is also covered by the big idempotency test; pinned here as the
+    # canonical positive case for the contract.
+    Dir.mktmpdir do |dir|
+      build(dir, client: StubClient.new).run_strings(locales: %w[fr])
+
+      modified = File.join(dir, 'modified.xml')
+      File.write(modified, File.read(FIXTURE).sub('Hello %1$s, you have %2$d items',
+                                                  'Hi %1$s, %2$d items await'))
+
+      c2 = StubClient.new
+      r2 = build(dir, source: modified, client: c2).run_strings(locales: %w[fr]).first
+      assert_equal 1, r2.translated
+      assert_equal 8, r2.reused
+      assert_equal 1, c2.calls
     end
   end
 end
@@ -712,13 +830,13 @@ class ManifestInvalidationTest < Minitest::Test
 
   def test_invalidate_clears_recorded_locales_for_a_key
     m = M.new
-    m.record(name: 'app_name', locale: 'pl', cache_key: 'ck1', model: 'haiku', origin: 'ai', source_sha: 'sha')
-    m.record(name: 'app_name', locale: 'fr', cache_key: 'ck2', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'app_name', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'app_name', locale: 'fr', model: 'haiku', origin: 'ai', source_sha: 'sha')
 
     cleared = m.invalidate(name: 'app_name', locales: %w[pl])
     assert_equal 1, cleared
-    assert m.stale?(name: 'app_name', locale: 'pl', expected_cache_key: 'ck1'), 'pl is stale after invalidation'
-    refute m.stale?(name: 'app_name', locale: 'fr', expected_cache_key: 'ck2'), 'fr is unaffected'
+    assert m.stale?(name: 'app_name', locale: 'pl', expected_source_sha: 'sha'), 'pl is stale after invalidation'
+    refute m.stale?(name: 'app_name', locale: 'fr', expected_source_sha: 'sha'), 'fr is unaffected'
   end
 
   def test_invalidate_on_unknown_key_is_noop
@@ -728,8 +846,8 @@ class ManifestInvalidationTest < Minitest::Test
 
   def test_known_keys_reports_recorded_names
     m = M.new
-    m.record(name: 'a', locale: 'pl', cache_key: 'ck1', model: 'haiku', origin: 'ai', source_sha: 'sha')
-    m.record(name: 'b', locale: 'pl', cache_key: 'ck2', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'a', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'b', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
     assert_equal %w[a b].sort, m.known_keys.sort
   end
 end

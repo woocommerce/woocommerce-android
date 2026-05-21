@@ -42,15 +42,10 @@ module WooAiTranslation
       gaps = 0
 
       source_units.each do |u|
-        # Must use the SAME context formula the engine uses (XML comment +
-        # AINFRA-1707), otherwise the engine would see imported keys as stale
-        # and re-translate the entire human baseline.
-        ctx = [u.comment.to_s, @context.context_for(u.name).to_s].reject(&:empty?).join("\n").strip
         model = WooAiTranslation.model_for(u.name)
         if existing.include?(u.name)
           @manifest.record(
             name: u.name, locale: locale,
-            cache_key: @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: model),
             model: model, origin: 'glotpress-import',
             source_sha: Digest::SHA256.hexdigest(u.source_signature)
           )

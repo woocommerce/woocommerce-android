@@ -35,6 +35,44 @@ You shouldn't need to touch the `strings.xml` for the other languages. **GlotPre
 
 You normally don't run anything by hand. To translate locally: `bundle exec fastlane ai_translate mode:prtime` (needs `ANTHROPIC_API_KEY`), or a no-spend dry run: `ruby fastlane/ai_translation/bin/woo-ai-translate --offline --locales pl,cs ...`.
 
+### Invalidation contract
+
+The engine's re-translation rule is deliberately narrow: **only an English source-text change auto-invalidates a translation**. Everything else stays put.
+
+| Change | Auto-invalidates? |
+|---|---|
+| English source text changed | ✅ Yes — that (key, locale) re-translates |
+| New locale added (no file yet) | ✅ Yes — all keys translate for the new locale |
+| Model bump (e.g. Haiku → Opus) | ❌ No — existing translations keep their original model |
+| Prompt rewrite | ❌ No — existing translations keep their original prompt output |
+| XML comment / AINFRA-1707 context edit | ❌ No — context is dev-authored guidance, not invalidation |
+| Adding/removing an attribute (`formatted="false"`, `translatable`, etc.) | ❌ No — attributes don't drive invalidation |
+| Operator runs `--keys` / `--key-pattern` | ✅ Yes — but only the keys you named |
+| Manifest file is lost / wiped | ❌ No — the engine trusts the committed `values-XX/strings.xml` |
+
+If you want to migrate the whole corpus to a new model or prompt, do it deliberately:
+
+```bash
+# Re-translate everything tagged with a specific key pattern:
+bundle exec fastlane ai_translate mode:sweep \
+  locales:"ar,de,..." \
+  key_pattern:".*"      # or a narrower regex
+
+# Re-translate one or a few keys:
+bundle exec fastlane ai_translate mode:ondemand locales:de keys:"order_button_pay,checkout_title"
+```
+
+The shadow-diff mode is the audit habit: periodically (e.g. once per release cycle) run `ai_translate_shadow` to see what would change if every translation were redone under the current model and prompt. You're not committing the output — it's a report. Use it to spot drift between human translations, old AI translations, and what current Claude would produce, and decide deliberately whether to invalidate anything.
+
+### Why this design
+
+Source-only invalidation trades one capability for two:
+
+- **Lost**: model/prompt changes don't auto-propagate. To get the benefit of a model bump for existing translations, you have to invalidate explicitly.
+- **Gained**: stable production translations (no surprise cost spikes when someone bumps a constant), and a bootstrap-safe engine (an accidentally wiped manifest can't clobber human work).
+
+The `--keys` / `--key-pattern` flags exist precisely because of the first trade-off: deliberate corpus-wide re-translation is one command away when you want it.
+
 ## Use Meaningful Names
 
 Meaningful names help give more context to translators. Whenever possible, the first part of the `name` should succinctly describe where the string is used.

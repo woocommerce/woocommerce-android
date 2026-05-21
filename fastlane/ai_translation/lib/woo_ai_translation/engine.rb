@@ -90,7 +90,10 @@ module WooAiTranslation
     end
 
     # Decide, per source unit, whether to reuse the existing translation or
-    # queue it for (re)translation.
+    # queue it for (re)translation. The decision is driven entirely by the
+    # source: a key is queued only when its English text changed (source_sha
+    # diverges from the manifest) or when no translation exists yet. Model
+    # bumps, prompt rewrites, and context-comment edits never invalidate.
     def build_plan(source_units, locale, existing)
       units = {}
       pending = []
@@ -99,23 +102,22 @@ module WooAiTranslation
       target_quantities = CldrPlurals.quantities_for(locale)
       source_units.each do |u|
         default_model = model_for(u)
-        ctx = context_for_unit(u)
-        ck = @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: default_model)
+        source_sha = Digest::SHA256.hexdigest(u.source_signature)
         # For <plurals>, reshape the output shell to match the target locale's
         # CLDR-required quantity categories so the model is asked for exactly
         # the forms Android expects. Non-plural units are unaffected.
         shell = u.dup_shell_for_locale(target_quantities)
         units[u.name] = shell
 
-        if !@manifest.stale?(name: u.name, locale: locale, expected_cache_key: ck) && reuse(shell, existing)
+        if !@manifest.stale?(name: u.name, locale: locale, expected_source_sha: source_sha) && reuse(shell, existing)
           reused << u.name
         else
-          # Force-model only affects NEW translations; reused units keep their
-          # originally recorded model. Cache key is recorded under the model
-          # that actually produced the translation, for auditability.
+          # Force-model overrides per-key default; reused units keep their
+          # originally recorded model (we never re-translate just to apply a
+          # different model -- that's an on-demand --keys invalidation, not
+          # an automatic one).
           actual_model = @force_model || default_model
-          actual_ck = @force_model ? @manifest.cache_key(source: u.source_signature, context: ctx, locale: locale, model: actual_model) : ck
-          pending << { unit: shell, source: u, ck: actual_ck, model: actual_model }
+          pending << { unit: shell, source: u, source_sha: source_sha, model: actual_model }
         end
       end
 
@@ -186,9 +188,9 @@ module WooAiTranslation
       end
 
       @manifest.record(
-        name: source.name, locale: locale, cache_key: state[:ck],
+        name: source.name, locale: locale,
         model: state[:model], origin: origin,
-        source_sha: Digest::SHA256.hexdigest(source.source_signature)
+        source_sha: state[:source_sha]
       )
       translated << source.name
     end
