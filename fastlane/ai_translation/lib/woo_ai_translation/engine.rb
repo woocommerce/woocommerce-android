@@ -131,8 +131,17 @@ module WooAiTranslation
           # Use the SHELL's translation_requests, not the source's: for plural
           # units the shell may carry extra quantities synthesized from the
           # target locale's CLDR rules, and we need a translation for each.
+          #
+          # The entry id ALREADY encodes the unit name for arrays and plurals
+          # (`unit_name[0]`, `unit_name{one}`); for plain strings it equals
+          # `unit_name`. Sending `"unit_name::entry_id"` was therefore both
+          # redundant and -- empirically -- a structural hazard for Sonnet:
+          # the long, repetitive `name::name` shape caused the model to emit
+          # `,` instead of `:` between key and value, breaking JSON parse.
+          # Using the entry id directly cuts output size ~30% AND fixes the
+          # malformation. See repro at /tmp/probe_sonnet_clean_ids.rb.
           st[:unit].translation_requests.map do |r|
-            { id: "#{st[:source].name}::#{r[:id]}", source: r[:source], context: ctx }
+            { id: r[:id], source: r[:source], context: ctx }
           end
         end
         next if items.empty?
@@ -156,8 +165,10 @@ module WooAiTranslation
       shell = state[:unit]
       mapped = {}
       shell.entries.each do |e|
-        gid = "#{source.name}::#{e[:id]}"
-        mapped[e[:id]] = results[gid] if results.key?(gid)
+        # Lookup matches run_translation's id format: just the entry id (which
+        # already encodes the unit name for arrays/plurals; equals the unit
+        # name for plain strings).
+        mapped[e[:id]] = results[e[:id]] if results.key?(e[:id])
       end
       shell.apply!(mapped)
 
