@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Numerar</string>
     <string name="create">Creare</string>
     <string name="amount">Sumă</string>
-    <string name="copy" override="true">Copiere</string>
+    <string name="copy" tools:override="true">Copiere</string>
     <string name="variations_bulk_update_sale_price">Actualizare preț vânzare</string>
     <string name="variations_bulk_update_regular_price">Actualizare preț obișnuit</string>
     <string name="tip">Bacșiș</string>
@@ -988,8 +988,8 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="shipping_label_hazmat_option_class_9_dry_ice">Clasa 9 – Pachet de gheață uscată (limitat la 5 lire dacă se expediază pe cale aeriană)</string>
     <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Clasa 9 – Baterii litiu, pachet nemarcat - Dispozitive electronice noi cu baterii din litiu instalate sau ambalate (fără marcaj)</string>
     <string name="shipping_label_hazmat_option_class_9_magnetized">Clasa 9 – Pachet de materiale magnetizate</string>
-    <string name="shipping_label_hazmat_option_division_4_1">Diviziunea 4.1 – Solide inflamabile și cutii de siguranță - Cutii de chibrituri de siguranță/frecare, carți de chibrituri, solide inflamabile expedibile</string>
-    <string name="shipping_label_hazmat_option_division_5_1">Diviziunea 5.1 – Pachet de oxidanți - Peroxid de hidrogen (concentrație 8-20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">Diviziunea 4.1 – Solide inflamabile și cutii de siguranță – Cutii de chibrituri de siguranță/frecare, carți de chibrituri, solide inflamabile expedibile</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Diviziunea 5.1 – Pachet de oxidanți – Peroxid de hidrogen (concentrație 8–20%%)</string>
     <string name="shipping_label_hazmat_option_division_5_2">Diviziunea 5.2 – Pachet de peroxizi organici</string>
     <string name="shipping_label_hazmat_option_division_6_1">Diviziunea 6.1 – Pachet de materiale toxice (cu LD50 de 50 mg/kg sau mai puțin) - (pesticide, erbicide, etc.)</string>
     <string name="shipping_label_hazmat_option_division_6_2">Diviziunea 6.2 - Materiale periculoase - Materiale biologice (de ex., kiturile pentru teste de laborator, returnări de kit de testare COVID autorizate)</string>
@@ -1165,8 +1165,8 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="order_refunds_manual_refund">Rambursare manuală</string>
     <string name="order_refunds_credit_card_refund">Carte de credit</string>
     <string name="order_refunds_quote_image_description">Pictograma de ofertă</string>
-    <string name="order_refunds_amount_refund_progress_message">Rambursarea pentru %s este în curs de procesare. Așteptați...</string>
-    <string name="order_refunds_amount_refund_confirmation_message">Se așteaptă confirmarea rambursării...</string>
+    <string name="order_refunds_amount_refund_progress_message">Rambursarea pentru %s este în curs de procesare. Așteptați…</string>
+    <string name="order_refunds_amount_refund_confirmation_message">Se așteaptă confirmarea rambursării…</string>
     <string name="order_refunds_amount_refund_successful">Rambursarea a fost trimisă cu succes.</string>
     <string name="order_refunds_amount_refund_error">Ceva nu a funcționat bine cu rambursarea. Încercați din nou.</string>
     <string name="order_refunds_refund_manual_refund_note">Metoda de plată nu acceptă rambursări automate. Completați rambursarea prin transferarea banilor către client manual.</string>
@@ -1181,7 +1181,7 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="order_refunds_select_quantity">Selectați cantitatea</string>
     <string name="order_refunds_refund_shipping">Rambursare expediere</string>
     <string name="order_refunds_refund_custom_amount">Rambursare Sumă Personalizată</string>
-    <string name="order_refunds_refund_in_progress">Rambursare în curs, așteptați...</string>
+    <string name="order_refunds_refund_in_progress">Rambursare în curs, așteptați…</string>
     <string name="order_refunds_refund_info_description_one">%d articol</string>
     <string name="order_refunds_refund_info_description_many">%d articole</string>
     <string name="order_refunds_refund_info_title">Produse rambursate</string>
@@ -1655,14 +1655,14 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="product_wip_title_m5">Noi funcții disponibile!</string>
     <string name="product_variant_list_add_first_variation">Creează prima ta variantă</string>
     <string name="product_variant_list_empty_action">Adaugă variantă</string>
-    <string name="product_description_hint_no_title">Descrie produsul tău clienților viitori...</string>
-    <string name="product_description_hint_with_title">Spune-ne mai multe despre %s...</string>
+    <string name="product_description_hint_no_title">Descrie produsul tău clienților viitori…</string>
+    <string name="product_description_hint_with_title">Spune-ne mai multe despre %s…</string>
     <string name="product_description">Descriere</string>
     <string name="product_description_empty">Descrie produsul</string>
     <string name="product_short_description">Descriere scurtă</string>
     <string name="product_save_dialog_title">Se salvează produsul</string>
     <string name="product_delete_dialog_title">Se șterge produsul</string>
-    <string name="product_update_dialog_message">Te rog așteptă...</string>
+    <string name="product_update_dialog_message">Te rog așteptă…</string>
     <string name="product_detail_update_product_error">Eroare la actualizarea produsului</string>
     <string name="product_detail_save_product_success">Produs salvat</string>
     <string name="product_detail_update_product_password_error">Eroare la actualizarea parolei</string>
@@ -1679,7 +1679,7 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="product_settings">Setări produs</string>
     <string name="product_duplicate">Duplicează</string>
     <string name="product_duplicate_error">Nu se poate duplica produsul</string>
-    <string name="product_duplicate_progress_title">Se duplică produsul...</string>
+    <string name="product_duplicate_progress_title">Se duplică produsul…</string>
     <string name="product_duplicate_progress_body">Te rog așteptă în timp ce salvez o copie a acestui produs în magazinul tău</string>
     <string name="product_duplicate_copied_product_name">%1$s Copie</string>
     <string name="product_trash">Mută produsul în coș</string>
@@ -1958,7 +1958,7 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="settings_close_account_dialog_title">Confirmați închiderea contului</string>
     <string name="settings_close_account_dialog_description">Pentru a confirma, reintroduceți-vă numele de utilizator înainte de a închide</string>
     <string name="settings_close_account_dialog_confirm_button">Închideți permanent contul</string>
-    <string name="settings_close_account_dialog_loading_title">Se închide contul...</string>
+    <string name="settings_close_account_dialog_loading_title">Se închide contul…</string>
     <string name="settings_close_account_error_dialog_title">Nu s-a putut închide contul</string>
     <string name="settings_close_account_generic_error_description">A apărut o eroare la încercarea de a închide contul.</string>
     <string name="settings_close_account_active_stores_error_description">Acest cont nu poate fi închis cât timp are magazine active.</string>
@@ -2050,6 +2050,7 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="settings_notifs_new_reviews_rating_filter_description">Alege ratingul cel mai mare care ar trebui să trimită o notificare.</string>
     <plurals name="settings_notifs_new_reviews_selected_rating">
         <item quantity="one">%1$d stea sau mai jos</item>
+        <item quantity="few">%1$d stele sau mai jos</item>
         <item quantity="other">%1$d stele sau mai jos</item>
     </plurals>
     <string name="settings_image_optimization_title">Optimizare imagine</string>
@@ -2871,7 +2872,7 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="share_product">Partajați produsul</string>
     <string name="product_sharing_write_with_ai">Scrieți cu AI</string>
     <string name="product_sharing_regenerate">Scrieți din nou</string>
-    <string name="product_sharing_generating">Se scrie...</string>
+    <string name="product_sharing_generating">Se scrie…</string>
     <string name="product_sharing_optional_message_label">Adăugați un mesaj opțional</string>
     <string name="product_sharing_ai_generating_failure">Imposibil să generez mesajul de partajare. Încercați din nou!</string>
     <string name="ai_product_description_title">Scrieți o descriere</string>
@@ -3419,6 +3420,7 @@ Contactați furnizorul dvs. de găzduire pentru asistență suplimentară.</stri
     <string name="woopos_orders_issue_refund">Emiteți rambursare</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotal articole (%d articol)</item>
+        <item quantity="few">Subtotal articole (%d articole)</item>
         <item quantity="other">Subtotal articole (%d articole)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Total rambursare</string>

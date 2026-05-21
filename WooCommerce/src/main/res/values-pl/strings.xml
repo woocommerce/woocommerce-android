@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Gotówka</string>
     <string name="create">Utwórz</string>
     <string name="amount">Kwota</string>
-    <string name="copy" override="true">Kopiuj</string>
+    <string name="copy" tools:override="true">Kopiuj</string>
     <string name="variations_bulk_update_sale_price">Zaktualizuj cenę promocyjną</string>
     <string name="variations_bulk_update_regular_price">Zaktualizuj zwykłą cenę</string>
     <string name="tip">Wskazówka</string>
@@ -2047,7 +2047,9 @@ Możesz je usunąć przesunięciem.</string>
     <string name="settings_notifs_new_reviews_rating_filter_description">Wybierz najwyższą ocenę, która powinna wysłać powiadomienie.</string>
     <plurals name="settings_notifs_new_reviews_selected_rating">
         <item quantity="one">%1$d gwiazdka lub mniej</item>
-        <item quantity="other">%1$d gwiazdek lub mniej</item>
+        <item quantity="few">%1$d gwiazdki lub mniej</item>
+        <item quantity="many">%1$d gwiazdek lub mniej</item>
+        <item quantity="other">%1$d gwiazdki lub mniej</item>
     </plurals>
     <string name="settings_image_optimization_title">Optymalizacja obrazów</string>
     <string name="settings_image_optimization_message">Zmień rozmiar i skompresuj obrazy w celu szybszego przesyłania</string>
@@ -3428,6 +3430,8 @@ Nie udało nam się utworzyć Twojej kampanii.</string>
     <string name="woopos_orders_issue_refund">Wystawić zwrot</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Suma częściowa pozycji (%d pozycja)</item>
+        <item quantity="few">Suma częściowa pozycji (%d pozycje)</item>
+        <item quantity="many">Suma częściowa pozycji (%d pozycji)</item>
         <item quantity="other">Suma częściowa pozycji (%d pozycji)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Całkowity zwrot</string>
@@ -3467,7 +3471,7 @@ Nie udało nam się utworzyć Twojej kampanii.</string>
     <string name="woopos_orders_details_totals_card_content_description">Zestawienie sum zamówienia</string>
     <string name="woopos_orders_details_booking_info">Rezerwacja #%1$d · %2$s, %3$s</string>
     <string name="woopos_orders_details_booking_info_error">Informacje o rezerwacji niedostępne</string>
-    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Rezerwacja #000 · 1 sty 2025, 12:00 - 1:00</string>
+    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Rezerwacja #000 · 1 sty 2025, 12:00 – 1:00</string>
     <string name="woopos_orders_details_refund_label_numbered">Zwrot #%1$d</string>
     <string name="woopos_orders_details_refund_view_details">Wyświetl szczegóły</string>
     <string name="woopos_orders_details_refund_items_subtotal_one">Suma pozycji (%d przedmiot)</string>

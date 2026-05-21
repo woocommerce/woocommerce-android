@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Tiền mặt</string>
     <string name="create">Tạo</string>
     <string name="amount">Số tiền</string>
-    <string name="copy" override="true">Sao chép</string>
+    <string name="copy" tools:override="true">Sao chép</string>
     <string name="variations_bulk_update_sale_price">Cập nhật Giá bán</string>
     <string name="variations_bulk_update_regular_price">Cập nhật Giá thông thường</string>
     <string name="tip">Tiền boa</string>
@@ -598,7 +598,7 @@ Liên hệ với nhà cung cấp hosting của bạn để được hỗ trợ t
     <string name="order_creation_payment_products">Sản phẩm</string>
     <string name="order_creation_payment_order_total">Tổng đơn hàng</string>
     <string name="order_creation_loading_dialog_title">Đang tạo đơn hàng của bạn</string>
-    <string name="order_creation_loading_dialog_message">Vui lòng chờ...</string>
+    <string name="order_creation_loading_dialog_message">Vui lòng chờ…</string>
     <string name="order_creation_failure_snackbar">Tạo đơn hàng không thành công</string>
     <string name="order_creation_success_snackbar">Đơn hàng đã được tạo</string>
     <string name="order_creation_payment_tax_label">Thuế</string>
@@ -2044,7 +2044,6 @@ Liên hệ với nhà cung cấp hosting của bạn để được hỗ trợ t
     <string name="settings_notifs_new_reviews_rating_filter_title">Đánh giá tối đa theo xếp hạng</string>
     <string name="settings_notifs_new_reviews_rating_filter_description">Chọn xếp hạng cao nhất sẽ gửi thông báo.</string>
     <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d sao trở xuống</item>
         <item quantity="other">%1$d sao trở xuống</item>
     </plurals>
     <string name="settings_image_optimization_title">Tối ưu hóa hình ảnh</string>
@@ -3421,7 +3420,6 @@ Hãy nhớ rằng, lần hiển thị là về khả năng hiển thị, không 
     <string name="woopos_orders_review_refund">Xem lại hoàn tiền</string>
     <string name="woopos_orders_issue_refund">Hoàn tiền</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
-        <item quantity="one">Tổng cộng mục (%d mục)</item>
         <item quantity="other">Tổng cộng mục (%d mục)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Tổng hoàn tiền</string>

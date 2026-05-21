@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Μετρητά</string>
     <string name="create">Δημιουργία</string>
     <string name="amount">Ποσό</string>
-    <string name="copy" override="true">Αντιγραφή</string>
+    <string name="copy" tools:override="true">Αντιγραφή</string>
     <string name="variations_bulk_update_sale_price">Ενημέρωση τιμής πώλησης</string>
     <string name="variations_bulk_update_regular_price">Ενημέρωση κανονικής τιμής</string>
     <string name="tip">Φιλοδώρημα</string>

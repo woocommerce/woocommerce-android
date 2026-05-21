@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">नकद</string>
     <string name="create">बनाएं</string>
     <string name="amount">राशि</string>
-    <string name="copy" override="true">कॉपी करें</string>
+    <string name="copy" tools:override="true">कॉपी करें</string>
     <string name="variations_bulk_update_sale_price">विक्रय मूल्य अपडेट करें</string>
     <string name="variations_bulk_update_regular_price">नियमित मूल्य अपडेट करें</string>
     <string name="tip">टिप</string>
@@ -1854,9 +1854,9 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="variation_list_add">वेरिएशन जोड़ें</string>
     <string name="variation_created_title">वेरिएशन बनाया गया</string>
     <string name="variation_create_dialog_title">वेरिएशन जेनरेट किया जा रहा है</string>
-    <string name="variation_loading_dialog_title">वेरिएशन लाए जा रहे हैं...</string>
+    <string name="variation_loading_dialog_title">वेरिएशन लाए जा रहे हैं…</string>
     <string name="variation_confirm_delete">क्या आप इस वेरिएशन को हटाना चाहते हैं?</string>
-    <string name="variation_list_menu_bulk_update">बल्क अपडेट...</string>
+    <string name="variation_list_menu_bulk_update">बल्क अपडेट…</string>
     <string name="variations_bulk_limit_exceeded_button_ok">ठीक है</string>
     <string name="variation_add_new">नया वेरिएशन जोड़ें</string>
     <string name="variation_add_new_description">एक नया वेरिएशन बनाएं। मैनुअल रूप से सेट करें कि कौन सी विशेषताएं वेरिएबल उत्पाद से संबंधित हैं।</string>
@@ -2124,13 +2124,13 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="ai_support_chat_history_default_title">सहायता बातचीत</string>
     <string name="ai_support_chat_placeholder">जल्द आ रहा है</string>
     <string name="ai_support_chat_greeting">नमस्ते! मैं आपका Woo मोबाइल सहायता बॉट हूँ। क्या मैं आपकी कोई मदद कर सकता हूँ?</string>
-    <string name="ai_support_chat_input_hint">कोई संदेश लिखें...</string>
+    <string name="ai_support_chat_input_hint">कोई संदेश लिखें…</string>
     <string name="ai_support_chat_send">भेजें</string>
     <string name="ai_support_chat_error_title">त्रुटि</string>
     <string name="ai_support_chat_error_dismiss">खारिज करें</string>
     <string name="ai_support_chat_send_error">आपका संदेश भेजने में विफल। अपना कनेक्शन जांचें और फिर से कोशिश करें।</string>
     <string name="ai_support_chat_load_history_error">यह चैट लोड नहीं कर सके। अपना कनेक्शन जांचें और फिर से कोशिश करें।</string>
-    <string name="ai_support_chat_typing">सोच रहा हूँ...</string>
+    <string name="ai_support_chat_typing">सोच रहा हूँ…</string>
     <string name="ai_support_chat_human_support_message">लगता है आपको अतिरिक्त सहायता की जरूरत है। क्या आप हमारी सहायता टीम से संपर्क करना चाहते हैं?</string>
     <string name="ai_support_chat_contact_support">सहायता से संपर्क करें</string>
     <string name="ai_support_chat_ticket_created_message">इस चैट के लिए एक सहायता टिकट बनाया गया है। हम ईमेल से जवाब देंगे।</string>
@@ -2154,7 +2154,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="ai_support_chat_issue_loading_analytics">मेरे विश्लेषण लोड नहीं हो रहे हैं</string>
     <string name="ai_support_chat_issue_receiving_notifications">मैं सूचनाएं प्राप्त नहीं कर रहा हूँ</string>
     <string name="ai_support_chat_issue_other">कुछ और</string>
-    <string name="ai_support_chat_diagnostics_title">आपके स्टोर की जांच की जा रही है...</string>
+    <string name="ai_support_chat_diagnostics_title">आपके स्टोर की जांच की जा रही है…</string>
     <string name="ai_support_chat_diagnostics_success">निदान पूरा हुआ</string>
     <string name="ai_support_chat_diagnostics_failure">कुछ जांचें विफल रहीं। आप फिर से कोशिश कर सकते हैं या इन परिणामों के साथ चैट करना जारी रख सकते हैं।</string>
     <string name="ai_support_chat_diagnostics_retry">पुनः प्रयास करें</string>

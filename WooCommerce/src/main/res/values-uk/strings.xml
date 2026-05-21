@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Готівка</string>
     <string name="create">Створити</string>
     <string name="amount">Сума</string>
-    <string name="copy" override="true">Копіювати</string>
+    <string name="copy" tools:override="true">Копіювати</string>
     <string name="variations_bulk_update_sale_price">Оновити ціну продажу</string>
     <string name="variations_bulk_update_regular_price">Оновити звичайну ціну</string>
     <string name="tip">Чайові</string>
@@ -2054,7 +2054,9 @@ aналітики вашого магазину</string>
     <string name="settings_notifs_new_reviews_rating_filter_description">Виберіть найвищий рейтинг, який повинен надсилати сповіщення.</string>
     <plurals name="settings_notifs_new_reviews_selected_rating">
         <item quantity="one">%1$d зірка або менше</item>
-        <item quantity="other">%1$d зірок або менше</item>
+        <item quantity="few">%1$d зірки або менше</item>
+        <item quantity="many">%1$d зірок або менше</item>
+        <item quantity="other">%1$d зірки або менше</item>
     </plurals>
     <string name="settings_image_optimization_title">Оптимізація зображень</string>
     <string name="settings_image_optimization_message">Змініть розмір і стисніть зображення для швидшого завантаження</string>
@@ -3427,7 +3429,9 @@ aналітики вашого магазину</string>
     <string name="woopos_orders_issue_refund">Повернути кошти</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Проміжна вартість (%d товар)</item>
-        <item quantity="other">Проміжна вартість (%d товарів)</item>
+        <item quantity="few">Проміжна вартість (%d товари)</item>
+        <item quantity="many">Проміжна вартість (%d товарів)</item>
+        <item quantity="other">Проміжна вартість (%d товари)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Сума повернення</string>
     <string name="woopos_orders_via_payment_method">Через %1$s</string>

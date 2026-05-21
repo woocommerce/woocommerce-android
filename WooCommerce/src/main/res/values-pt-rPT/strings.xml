@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Dinheiro</string>
     <string name="create">Criar</string>
     <string name="amount">Quantidade</string>
-    <string name="copy" override="true">Copiar</string>
+    <string name="copy" tools:override="true">Copiar</string>
     <string name="variations_bulk_update_sale_price">Atualizar Preço de Promoção</string>
     <string name="variations_bulk_update_regular_price">Atualizar Preço Normal</string>
     <string name="tip">Gorjeta</string>
@@ -2530,7 +2530,7 @@ Contacte o seu administrador para obter ajuda.</string>
     <string name="coupon_edit_coupon_update_failed">Falha ao atualizar cupom</string>
     <string name="coupon_create_coupon_creation_failed">Falha ao criar cupom</string>
     <string name="coupon_edit_saving_dialog_title">A guardar cupom</string>
-    <string name="coupon_edit_saving_dialog_subtitle">Aguarde...</string>
+    <string name="coupon_edit_saving_dialog_subtitle">Aguarde…</string>
     <string name="coupon_restrictions_minimum_spend_hint">Gasto Mínimo (%1$s)</string>
     <string name="coupon_restrictions_maximum_spend_hint">Gasto Máximo (%1$s)</string>
     <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Nenhum</string>
@@ -3474,7 +3474,7 @@ Contacte o seu administrador para obter ajuda.</string>
     <string name="woopos_orders_details_totals_card_content_description">Discriminação dos totais da encomenda</string>
     <string name="woopos_orders_details_booking_info">Marcação nº %1$d · %2$s, %3$s</string>
     <string name="woopos_orders_details_booking_info_error">Informações da marcação indisponíveis</string>
-    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Marcação nº 000 · 1 Jan, 2025, 00:00 - 01:00</string>
+    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Marcação nº 000 · 1 Jan, 2025, 00:00 – 01:00</string>
     <string name="woopos_orders_details_refund_label_numbered">Reembolso nº %1$d</string>
     <string name="woopos_orders_details_refund_view_details">Ver detalhes</string>
     <string name="woopos_orders_details_refund_items_subtotal_one">Subtotal de itens (%d item)</string>

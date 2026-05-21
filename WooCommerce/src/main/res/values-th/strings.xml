@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">เงินสด</string>
     <string name="create">สร้าง</string>
     <string name="amount">จำนวน</string>
-    <string name="copy" override="true">คัดลอก</string>
+    <string name="copy" tools:override="true">คัดลอก</string>
     <string name="variations_bulk_update_sale_price">อัปเดตราคาลด</string>
     <string name="variations_bulk_update_regular_price">อัปเดตราคาปกติ</string>
     <string name="tip">ทิป</string>
@@ -293,7 +293,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="login_site_credentials_use_web_authorization">ลองอีกครั้งด้วยหน้า WP Admin</string>
     <string name="login_site_credentials_http_basic_auth_error">เปิดใช้งาน Basic Authentication บนไซต์ของคุณแล้ว ไม่รองรับ Basic Authentication ในแอปมือถือ WooCommerce โปรดปิดใช้งานหรือติดต่อการสนับสนุนเพื่อแก้ไขปัญหา</string>
     <string name="login_site_credentials_fetching_site_failed">เกิดข้อผิดพลาดขณะดึงข้อมูลเว็บไซต์ของคุณ</string>
-    <string name="login_site_credentials_fetching_site">กำลังดึงข้อมูลไซต์...</string>
+    <string name="login_site_credentials_fetching_site">กำลังดึงข้อมูลไซต์…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">ไม่สามารถเข้าสู่ระบบได้เนื่องจากไม่อนุมัติการสร้างรหัสผ่านแอปพลิเคชัน</string>
     <string name="login_app_login_malformed_link">เราไม่สามารถประมวลผลคำขอเข้าสู่ระบบแอปของคุณได้</string>
     <string name="login_jetpack_connection_create_account">หากคุณไม่มีบัญชี เราจะใช้อีเมลนี้เพื่อสร้างบัญชี</string>
@@ -1395,7 +1395,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="card_reader_welcome_dialog_header">รับชำระเงินด้วยอ่านการ์ด</string>
     <string name="card_reader_welcome_dialog_text">ยินดีด้วย ตอนนี้คุณสามารถรับชำระเงินบัตรเดบิตและบัตรเครดิตได้แล้วด้วย WooCommerce Payments</string>
     <string name="card_reader_connect_scanning_header">กำลังค้นหาอ่านการ์ด</string>
-    <string name="card_reader_connect_scanning_built_in_header">กำลังเตรียมอ่านการ์ดในตัว...</string>
+    <string name="card_reader_connect_scanning_built_in_header">กำลังเตรียมอ่านการ์ดในตัว…</string>
     <string name="card_reader_connect_scanning_hint">กดปุ่มเปิด/ปิดบนอ่านการ์ดของคุณ</string>
     <string name="card_reader_connect_scanning_built_in_hint">จะไม่ใช้เวลานาน</string>
     <string name="card_reader_connect_reader_found_header">คุณต้องการเชื่อมต่ออ่านการ์ด %s หรือไม่</string>
@@ -1425,7 +1425,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="card_reader_connect_failed_battery_low_hint">แบตเตอรี่อ่านการ์ดต่ำ โปรดชาร์จอ่านการ์ดและลองใหม่</string>
     <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">ลืมอ่านการ์ดในการตั้งค่า Bluetooth ของ Android</string>
     <string name="card_reader_detail_not_connected_header">เชื่อมต่ออ่านการ์ดของคุณ</string>
-    <string name="card_reader_detail_reconnecting_header">กำลังเชื่อมต่ออ่านการ์ดใหม่...</string>
+    <string name="card_reader_detail_reconnecting_header">กำลังเชื่อมต่ออ่านการ์ดใหม่…</string>
     <string name="card_reader_detail_reconnecting_cancel">ยกเลิกการเชื่อมต่อใหม่</string>
     <string name="card_reader_detail_learn_more">&lt;a href=\'\'&gt;เรียนรู้เพิ่มเติม&lt;/a&gt;เกี่ยวกับการรับชำระเงินเคลื่อนที่และการสั่งซื้ออ่านการ์ด</string>
     <string name="card_reader_detail_not_connected_first_hint_label">ตรวจสอบว่าอ่านการ์ดมีการชาร์จแบตเตอรี่</string>
@@ -2047,7 +2047,6 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="settings_notifs_new_reviews_rating_filter_title">รีวิวจนถึงคะแนนระดับหนึ่ง</string>
     <string name="settings_notifs_new_reviews_rating_filter_description">เลือกคะแนนสูงสุดที่ควรส่งการแจ้งเตือน</string>
     <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d ดาวหรือต่ำกว่า</item>
         <item quantity="other">%1$d ดาวหรือต่ำกว่า</item>
     </plurals>
     <string name="settings_image_optimization_title">การปรับขนาดรูปภาพ</string>
@@ -3425,7 +3424,6 @@ Jetpack</string>
     <string name="woopos_orders_review_refund">ตรวจสอบการคืนเงิน</string>
     <string name="woopos_orders_issue_refund">คืนเงิน</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
-        <item quantity="one">ยอดรวมสินค้า (%d รายการ)</item>
         <item quantity="other">ยอดรวมสินค้า (%d รายการ)</item>
     </plurals>
     <string name="woopos_orders_refund_total">ยอดรวมการคืนเงิน</string>

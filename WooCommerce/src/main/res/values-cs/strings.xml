@@ -134,7 +134,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="cash">Hotovost</string>
     <string name="create">Vytvořit</string>
     <string name="amount">Částka</string>
-    <string name="copy" override="true">Kopírovat</string>
+    <string name="copy" tools:override="true">Kopírovat</string>
     <string name="variations_bulk_update_sale_price">Aktualizovat prodejní cenu</string>
     <string name="variations_bulk_update_regular_price">Aktualizovat běžnou cenu</string>
     <string name="tip">Spropitné</string>
@@ -2062,6 +2062,8 @@ Můžete jej zavřít.</string>
     <string name="settings_notifs_new_reviews_rating_filter_description">Zvolte nejvyšší hodnocení, které by mělo spustit upozornění.</string>
     <plurals name="settings_notifs_new_reviews_selected_rating">
         <item quantity="one">%1$d hvězda nebo nižší</item>
+        <item quantity="few">%1$d hvězdy nebo nižší</item>
+        <item quantity="many">%1$d hvězdy nebo nižší</item>
         <item quantity="other">%1$d hvězd nebo nižší</item>
     </plurals>
     <string name="settings_image_optimization_title">Optimalizace obrázků</string>
@@ -3439,6 +3441,8 @@ Prosím obraťte se na správce.</string>
     <string name="woopos_orders_issue_refund">Vydat vrácení</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Mezisoučet položek (%d položka)</item>
+        <item quantity="few">Mezisoučet položek (%d položky)</item>
+        <item quantity="many">Mezisoučet položek (%d položky)</item>
         <item quantity="other">Mezisoučet položek (%d položek)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Celkové vrácení</string>
@@ -3478,7 +3482,7 @@ Prosím obraťte se na správce.</string>
     <string name="woopos_orders_details_totals_card_content_description">Rozpis součtů objednávky</string>
     <string name="woopos_orders_details_booking_info">Rezervace č. %1$d · %2$s, %3$s</string>
     <string name="woopos_orders_details_booking_info_error">Informace o rezervaci nejsou k dispozici</string>
-    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Rezervace č. 000 · 1. led 2025, 00:00 - 1:00</string>
+    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Rezervace č. 000 · 1. led 2025, 00:00 – 1:00</string>
     <string name="woopos_orders_details_refund_label_numbered">Vrácení č. %1$d</string>
     <string name="woopos_orders_details_refund_view_details">Zobrazit podrobnosti</string>
     <string name="woopos_orders_details_refund_items_subtotal_one">Mezisoučet položek (%d položka)</string>
