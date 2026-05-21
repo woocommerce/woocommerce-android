@@ -113,14 +113,14 @@ private fun ShowingQR(
             textAlign = TextAlign.Center,
         )
         if (state.totalText.isNotBlank()) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             WooPosText(
                 text = state.totalText,
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
             )
         }
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         @Suppress("WooPosDesignSystemComponentSizeUsageRule")
         WooPosQrCode(
             data = state.paymentUrl,
