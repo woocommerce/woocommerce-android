@@ -70,9 +70,16 @@ module WooAiTranslation
 
       log("unparseable translation for #{items.first[:id]} (#{locale}); left untranslated")
       {}
-    rescue JSON::ParserError, AnthropicClient::Error => e
-      raise if items.size <= 1 && !e.is_a?(JSON::ParserError)
-
+    rescue JSON::ParserError, AnthropicClient::Error, ClaudeCliClient::Error => e
+      # Persistent client failures (CLI / API) and parser failures must not
+      # crash the whole run -- "required from day one" means a single
+      # transient or single-key issue cannot block every PR. Split-retry on
+      # larger slices; at size 1, leave the key untranslated (engine falls
+      # back to default at runtime) and let the engine report it in the
+      # spot-check / failed list. Truly unexpected exception types
+      # (NoMethodError, SystemCallError, ...) are NOT in this rescue list
+      # and still propagate -- those indicate real engine bugs.
+      log("recoverable error in slice (#{items.size} items, #{locale}, #{e.class}): #{e.message[0, 200]}")
       items.size > 1 ? split_retry(locale, items, model, style) : {}
     end
 
