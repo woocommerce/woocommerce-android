@@ -126,7 +126,7 @@ class WooAiSmokeRunWriterTest {
             toolCatalogVersion = "1.0.0",
             startedAtIso8601 = "2026-05-15T00:00:00Z",
             chatServiceClass = "JetpackAiChatService",
-            jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
+            authProviderClass = "AccessTokenWpComOAuthTokenProvider",
             toolRegistryClass = "WooCommerceToolRegistry",
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = "store",

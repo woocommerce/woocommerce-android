@@ -36,6 +36,7 @@ class WooAiSmokeSummaryRendererTest {
         assertThat(summary).contains("Prompt: 1.0.0")
         assertThat(summary).contains("Tool catalog: 1.0.0")
         assertThat(summary).contains("ChatService: JetpackAiChatService")
+        assertThat(summary).contains("AuthProvider: AccessTokenWpComOAuthTokenProvider")
         assertThat(summary).contains("ToolRegistry: WooCommerceToolRegistry")
         assertThat(summary).contains("Safety: ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)")
         assertThat(summary).contains(
@@ -83,7 +84,7 @@ class WooAiSmokeSummaryRendererTest {
             toolCatalogVersion = "1.0.0",
             startedAtIso8601 = "2026-05-15T00:00:00Z",
             chatServiceClass = "JetpackAiChatService",
-            jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
+            authProviderClass = "AccessTokenWpComOAuthTokenProvider",
             toolRegistryClass = "WooCommerceToolRegistry",
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = "store",

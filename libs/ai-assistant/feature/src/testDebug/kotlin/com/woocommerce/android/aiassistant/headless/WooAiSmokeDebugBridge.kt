@@ -11,7 +11,6 @@ import kotlinx.serialization.encodeToString
 import java.io.File
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 object WooAiSmokeDebugBridge {
     @Suppress("LongMethod")
@@ -35,11 +34,6 @@ object WooAiSmokeDebugBridge {
                 credentials = credentials,
                 mode = mode,
             )
-            runPhase("jwt_mint", JWT_MINT_TIMEOUT) {
-                entryPoint.liveChatServiceFactory()
-                    .createTokenProvider(credentials, redactor)
-                    .provide()
-            }
             WooAiSmokeApplicationPasswordStore.installRobolectricPreferences(
                 context = application,
                 applicationPasswordsStore = entryPoint.applicationPasswordsStore(),
@@ -85,7 +79,7 @@ object WooAiSmokeDebugBridge {
                     ),
                     selectedSiteId = bootstrap.site.siteId,
                     outputDirectory = outputDirectory,
-                    jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
+                    authProviderClass = "AccessTokenWpComOAuthTokenProvider",
                     storeLabel = credentials.storeLabel,
                     credentialSource = credentials.credentialSource,
                     redactor = redactor,
@@ -146,7 +140,6 @@ object WooAiSmokeDebugBridge {
         error("PHASE_TIMEOUT: $phaseName")
     }
 
-    private val JWT_MINT_TIMEOUT = 30.seconds
     private val BOOTSTRAP_TIMEOUT = 3.minutes
     private val LIVE_SCENARIOS_TIMEOUT = 5.minutes
     private const val PREFLIGHT_FILE_NAME = "preflight.json"
