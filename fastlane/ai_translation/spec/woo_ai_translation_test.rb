@@ -3,6 +3,7 @@
 require 'minitest/autorun'
 require 'tmpdir'
 require 'fileutils'
+require 'English'
 require_relative '../lib/woo_ai_translation'
 
 FIXTURE = File.join(__dir__, 'fixtures', 'strings_sample.xml')
@@ -804,5 +805,23 @@ class ManifestInvalidationTest < Minitest::Test
     m.record(name: 'a', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
     m.record(name: 'b', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
     assert_equal %w[a b].sort, m.known_keys.sort
+  end
+end
+
+class CliShimTest < Minitest::Test
+  # The .gitignore at repo root has a blanket `bin/` rule, so the executable
+  # entry point must be force-added. These tests catch a regression where the
+  # shim is on disk locally but not committed, or loses its exec bit.
+  SHIM = File.expand_path('../bin/woo-ai-translate', __dir__)
+
+  def test_shim_is_present_and_executable
+    assert File.exist?(SHIM), "shim missing at #{SHIM} (was it force-added?)"
+    assert File.executable?(SHIM), "shim not executable at #{SHIM}"
+  end
+
+  def test_shim_boots_the_cli
+    out = IO.popen([SHIM, '--help'], err: %i[child out], &:read)
+    assert_equal 0, $CHILD_STATUS.exitstatus, "shim exited non-zero: #{out}"
+    assert_includes out, 'Usage: woo-ai-translate'
   end
 end
