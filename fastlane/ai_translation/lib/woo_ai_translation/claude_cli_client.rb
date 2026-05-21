@@ -48,7 +48,16 @@ module WooAiTranslation
       # (every non-English locale).
       stdout.force_encoding('UTF-8')
       stderr.force_encoding('UTF-8')
-      raise Error, "claude CLI exit #{status.exitstatus}: #{stderr.strip[0, 400]}" unless status.success?
+      unless status.success?
+        # On failure, dump the prompt to /tmp for offline reproduction and
+        # include BOTH stderr and stdout in the error: the CLI often writes
+        # diagnostics to stdout when --output-format=text, and stderr is
+        # often empty. Truncate generously so a real error message fits.
+        dump = "/tmp/claude-cli-fail-#{Time.now.to_i}-#{$PROCESS_ID}.prompt.txt"
+        File.write(dump, prompt) rescue nil
+        raise Error, "claude CLI exit #{status.exitstatus} (model=#{model}, prompt=#{prompt.bytesize}B, dumped=#{dump}): " \
+                     "stderr=#{stderr.strip[0, 600].inspect} stdout=#{stdout.strip[0, 600].inspect}"
+      end
 
       strip_fences(stdout.strip)
     end

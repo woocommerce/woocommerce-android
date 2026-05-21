@@ -598,6 +598,70 @@ class AttributePreservationTest < Minitest::Test
   end
 end
 
+class TranslatorRecoverableErrorsTest < Minitest::Test
+  # Persistent client failures must NOT crash the run; they fall through the
+  # split-retry loop and a single bad key is left untranslated (Android falls
+  # back to default at runtime). This locks the "required from day one"
+  # behavior: a CLI / API hiccup mid-batch never blocks PRs.
+
+  def make_translator(error_class:, message: 'boom')
+    stub = Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) do |model:, system_blocks:, user_content:, max_tokens: 8192|
+        raise error_class, message
+      end
+    end.new
+    WooAiTranslation::Translator.new(client: stub)
+  end
+
+  def items(n)
+    (1..n).map { |i| { id: "k#{i}", source: "s#{i}", context: "" } }
+  end
+
+  def test_persistent_claude_cli_error_returns_empty_does_not_raise
+    t = make_translator(error_class: WooAiTranslation::ClaudeCliClient::Error)
+    result = nil
+    assert_silent { result = t.translate(locale: 'pl', items: items(8), model: 'sonnet') }
+    assert_equal({}, result)
+  end
+
+  def test_persistent_anthropic_error_returns_empty_does_not_raise
+    t = make_translator(error_class: WooAiTranslation::AnthropicClient::Error)
+    result = t.translate(locale: 'pl', items: items(4), model: 'sonnet')
+    assert_equal({}, result)
+  end
+
+  def test_persistent_parser_error_returns_empty_does_not_raise
+    # Malformed JSON (key with no value, then another key) is what Sonnet
+    # occasionally emits in long payloads.
+    bad_json = '{"k1":"good","k2","k3":"also good"}'
+    stub = Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) do |model:, system_blocks:, user_content:, max_tokens: 8192|
+        bad_json
+      end
+    end.new
+    t = WooAiTranslation::Translator.new(client: stub)
+    result = t.translate(locale: 'pl', items: items(8), model: 'sonnet')
+    assert_equal({}, result)
+  end
+
+  def test_unknown_error_class_still_propagates
+    # NoMethodError, SystemCallError, etc. are NOT in the rescue list because
+    # they indicate engine bugs we want to surface, not transient failures.
+    stub = Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) do |model:, system_blocks:, user_content:, max_tokens: 8192|
+        raise NoMethodError, 'this is a real bug'
+      end
+    end.new
+    t = WooAiTranslation::Translator.new(client: stub)
+    assert_raises(NoMethodError) do
+      t.translate(locale: 'pl', items: items(2), model: 'sonnet')
+    end
+  end
+end
+
 class ManifestInvalidationTest < Minitest::Test
   M = WooAiTranslation::Manifest
 
