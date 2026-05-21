@@ -12,12 +12,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -227,72 +229,39 @@ private fun TotalsLoaded(
                 )
             }
         }
-        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        BoxWithConstraints(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
         ) {
+            val minContentHeight = maxHeight
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(if (isPhone) 2f else 1f),
+                    .verticalScroll(rememberScrollState())
+                    .heightIn(min = minContentHeight),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                when (val readerStatus = state.readerStatus) {
-                    is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                        when {
-                            state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.Preparing ->
-                                PreparingReader(
-                                    title = stringResource(R.string.woopos_tap_to_pay_preparing_title),
-                                    subtitle = stringResource(R.string.woopos_tap_to_pay_preparing_subtitle),
-                                )
+                ReaderStatusContent(state = state, onUIEvent = onUIEvent)
 
-                            state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.SdkActive ->
-                                TapToPayConnecting()
-
-                            state.isTapToPayAvailable -> TapToPayPromoted(onUIEvent = onUIEvent)
-                            else -> ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
+                AnimatedContent(
+                    modifier = Modifier.fillMaxWidth(),
+                    targetState = state.totals,
+                    label = "totals_grid_animation",
+                ) { totalsVisible ->
+                    if (totalsVisible is Totals.Visible) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = WooPosSpacing.XLarge.value,
+                                    vertical = WooPosSpacing.Medium.value,
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            TotalsGrid(totalsVisible)
                         }
-                    }
-                    is WooPosTotalsViewState.ReaderStatus.Preparing -> {
-                        PreparingReader(
-                            title = readerStatus.title,
-                            subtitle = readerStatus.subtitle
-                        )
-                    }
-                    is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
-                        PreparingReader(
-                            title = readerStatus.title,
-                            subtitle = readerStatus.subtitle
-                        )
-                    }
-                    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
-                        ReaderReadyForPayment(readerStatus)
-                    }
-                    WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
-                }
-            }
-
-            AnimatedContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                targetState = state.totals,
-                label = "totals_grid_animation",
-            ) { totalsVisible ->
-                if (totalsVisible is Totals.Visible) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = WooPosSpacing.XLarge.value,
-                                vertical = WooPosSpacing.Medium.value,
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        TotalsGrid(totalsVisible)
                     }
                 }
             }
@@ -413,15 +382,53 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
 }
 
 @Composable
+private fun ReaderStatusContent(
+    state: WooPosTotalsViewState.Checkout,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        when (val readerStatus = state.readerStatus) {
+            is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
+                when {
+                    state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.Preparing ->
+                        PreparingReader(
+                            title = stringResource(R.string.woopos_tap_to_pay_preparing_title),
+                            subtitle = stringResource(R.string.woopos_tap_to_pay_preparing_subtitle),
+                        )
+
+                    state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.SdkActive ->
+                        TapToPayConnecting()
+
+                    state.isTapToPayAvailable -> TapToPayPromoted(onUIEvent = onUIEvent)
+                    else -> ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
+                }
+            }
+            is WooPosTotalsViewState.ReaderStatus.Preparing -> {
+                PreparingReader(title = readerStatus.title, subtitle = readerStatus.subtitle)
+            }
+            is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
+                PreparingReader(title = readerStatus.title, subtitle = readerStatus.subtitle)
+            }
+            is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
+                ReaderReadyForPayment(readerStatus)
+            }
+            WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
+        }
+    }
+}
+
+@Composable
 private fun ReaderDisconnected(
     modifier: Modifier = Modifier,
     status: WooPosTotalsViewState.ReaderStatus.Disconnected,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(WooPosSpacing.XLarge.value),
+        modifier = modifier.padding(WooPosSpacing.XLarge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
