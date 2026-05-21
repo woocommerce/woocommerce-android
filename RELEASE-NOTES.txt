@@ -4,7 +4,7 @@
 
 24.9
 -----
-
+- [*] Fixed POS Checkout screen clipping content on small phones and in phone landscape [https://github.com/woocommerce/woocommerce-android/pull/15953]
 
 24.8
 -----
