@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.util.runAndCaptureValues
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 
@@ -77,8 +81,49 @@ class AiSupportChatHistoryViewModelTest : BaseUnitTest() {
         assertThat(state.bookmarks).isEmpty()
     }
 
-    private fun createBookmark() = SupportChatBookmark(
-        chatId = 1234L,
+    @Test
+    fun `given history loaded, when deleting bookmark succeeds, then bookmark is removed`() = testBlocking {
+        val bookmark = createBookmark(chatId = 1L)
+        whenever(repository.loadChatHistory()).thenReturn(listOf(bookmark))
+        viewModel.loadHistory()
+
+        viewModel.onDeleteBookmark(bookmark)
+
+        verify(repository).deleteChat(bookmark.chatId)
+        assertThat(viewModel.viewState.value.bookmarks).isEmpty()
+    }
+
+    @Test
+    fun `given multiple bookmarks loaded, when deleting bookmark succeeds, then only target bookmark is removed`() =
+        testBlocking {
+            val firstBookmark = createBookmark(chatId = 1L)
+            val secondBookmark = createBookmark(chatId = 2L)
+            whenever(repository.loadChatHistory()).thenReturn(listOf(firstBookmark, secondBookmark))
+            viewModel.loadHistory()
+
+            viewModel.onDeleteBookmark(firstBookmark)
+
+            verify(repository).deleteChat(firstBookmark.chatId)
+            assertThat(viewModel.viewState.value.bookmarks).containsExactly(secondBookmark)
+        }
+
+    @Test
+    fun `given delete fails, when deleting bookmark, then bookmark is restored and error is shown`() = testBlocking {
+        val bookmark = createBookmark(chatId = 1L)
+        whenever(repository.loadChatHistory()).thenReturn(listOf(bookmark))
+        whenever(repository.deleteChat(bookmark.chatId)).thenThrow(RuntimeException("DB unavailable"))
+        viewModel.loadHistory()
+
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.onDeleteBookmark(bookmark)
+        }
+
+        assertThat(viewModel.viewState.value.bookmarks).containsExactly(bookmark)
+        assertThat(events.last()).isEqualTo(ShowSnackbar(R.string.ai_support_chat_history_delete_error))
+    }
+
+    private fun createBookmark(chatId: Long = 1234L) = SupportChatBookmark(
+        chatId = chatId,
         localSiteId = LocalId(10),
         remoteSiteId = 20L,
         botSlug = AiSupportChatViewModel.DEFAULT_BOT_SLUG,

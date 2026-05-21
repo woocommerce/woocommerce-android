@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,14 +21,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,11 +47,13 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 @Composable
 fun AiSupportChatHistoryScreen(
     viewModel: AiSupportChatHistoryViewModel,
+    onBookmarkDeleted: (SupportChatBookmark) -> Unit,
     onBookmarkClicked: (SupportChatBookmark) -> Unit
 ) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     AiSupportChatHistoryScreen(
         viewState = viewState,
+        onBookmarkDeleted = onBookmarkDeleted,
         onBookmarkClicked = onBookmarkClicked
     )
 }
@@ -52,6 +61,7 @@ fun AiSupportChatHistoryScreen(
 @Composable
 fun AiSupportChatHistoryScreen(
     viewState: AiSupportChatHistoryViewState,
+    onBookmarkDeleted: (SupportChatBookmark) -> Unit,
     onBookmarkClicked: (SupportChatBookmark) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,6 +73,7 @@ fun AiSupportChatHistoryScreen(
         )
         else -> HistoryList(
             bookmarks = viewState.bookmarks,
+            onBookmarkDeleted = onBookmarkDeleted,
             onBookmarkClicked = onBookmarkClicked,
             modifier = modifier
         )
@@ -117,6 +128,7 @@ private fun EmptyHistory(
 @Composable
 private fun HistoryList(
     bookmarks: List<SupportChatBookmark>,
+    onBookmarkDeleted: (SupportChatBookmark) -> Unit,
     onBookmarkClicked: (SupportChatBookmark) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -128,11 +140,48 @@ private fun HistoryList(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100))
     ) {
         items(bookmarks, key = { it.chatId }) { bookmark ->
-            HistoryRow(
+            SwipeToDeleteHistoryRow(
                 bookmark = bookmark,
+                onDelete = { onBookmarkDeleted(bookmark) },
                 onClick = { onBookmarkClicked(bookmark) }
             )
         }
+    }
+}
+
+@Composable
+private fun SwipeToDeleteHistoryRow(
+    bookmark: SupportChatBookmark,
+    onDelete: () -> Unit,
+    onClick: () -> Unit
+) {
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+    SwipeToDismissBox(
+        state = swipeToDismissBoxState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
+                    contentDescription = stringResource(id = R.string.delete),
+                    tint = colorResource(R.color.woo_white),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorResource(R.color.woo_red_50))
+                        .wrapContentSize(Alignment.CenterEnd)
+                        .padding(end = dimensionResource(R.dimen.major_100))
+                )
+            }
+        },
+        onDismiss = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) onDelete()
+            value != SwipeToDismissBoxValue.EndToStart
+        }
+    ) {
+        HistoryRow(
+            bookmark = bookmark,
+            onClick = onClick
+        )
     }
 }
 
@@ -214,6 +263,7 @@ private fun AiSupportChatHistoryScreenPreview() {
                     )
                 )
             ),
+            onBookmarkDeleted = {},
             onBookmarkClicked = {}
         )
     }

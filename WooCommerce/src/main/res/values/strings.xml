@@ -2420,6 +2420,7 @@
     <string name="ai_support_chat_history_title">Chat history</string>
     <string name="ai_support_chat_history_empty">You haven\'t chatted with support yet.</string>
     <string name="ai_support_chat_history_load_error">Unable to load chat history.</string>
+    <string name="ai_support_chat_history_delete_error">Unable to delete chat history.</string>
     <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
     <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
