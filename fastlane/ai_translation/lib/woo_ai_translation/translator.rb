@@ -34,6 +34,25 @@ module WooAiTranslation
       its translated string. No prose, no code fences.
     RULES
 
+    # Raw-text variant for single long-form fields (Play Store metadata:
+    # full_description, release_notes, title, short_description). No JSON
+    # envelope -- multi-paragraph marketing copy routinely makes the model emit
+    # unescaped quotes/newlines that break JSON parsing. Plain text in, plain
+    # text out, nothing to mis-escape.
+    RAW_SYSTEM_RULES = <<~RULES
+      You are a professional software localizer for the WooCommerce Android app.
+      Translate the given app-store listing text from English into the requested locale.
+
+      Hard rules:
+      - Preserve any placeholders exactly: %s, %d, %1$s, %% etc.
+      - Preserve the paragraph / line-break structure of the source.
+      - Keep brand names (WooCommerce, Woo, WordPress.com, Jetpack) untranslated.
+      - Keep any URLs unchanged.
+      - Use natural, concise marketing tone appropriate for an app-store listing.
+      - Respond with ONLY the translated text. No quotes around it, no JSON, no
+        code fences, no commentary, no preamble.
+    RULES
+
     def initialize(client:, glossary: '', batch_size: DEFAULT_BATCH, logger: nil)
       @client = client
       @glossary = glossary.to_s
@@ -42,7 +61,11 @@ module WooAiTranslation
     end
 
     # items: [{ id:, source:, context: }] ; returns { id => translation }.
-    def translate(locale:, items:, model:, style: nil)
+    # raw_text: true bypasses the JSON envelope (one model call per item) for
+    # robust long-form metadata translation.
+    def translate(locale:, items:, model:, style: nil, raw_text: false)
+      return translate_raw(locale: locale, items: items, model: model, style: style) if raw_text
+
       result = {}
       items.each_slice(@batch_size) do |slice|
         result.merge!(translate_slice(locale: locale, items: slice, model: model, style: style))
@@ -51,6 +74,35 @@ module WooAiTranslation
     end
 
     private
+
+    def translate_raw(locale:, items:, model:, style:)
+      result = {}
+      items.each do |item|
+        raw = @client.complete(
+          model: model,
+          system_blocks: raw_system_blocks(locale, style),
+          user_content: "Locale: #{locale}. Translate the following text into #{locale}. " \
+                        "Output ONLY the translation as plain text.\n\n#{item[:source]}"
+        )
+        text = strip_fences(raw)
+        result[item[:id]] = TextNormalizer.normalize(text, locale: locale)
+      rescue AnthropicClient::Error, ClaudeCliClient::Error => e
+        log("raw translate failed #{item[:id]} [#{locale}] (#{e.class}): #{e.message[0, 150]}")
+      end
+      result
+    end
+
+    def raw_system_blocks(locale, style)
+      blocks = [RAW_SYSTEM_RULES]
+      blocks << @glossary unless @glossary.empty?
+      style_block = "Target locale: #{locale}.\n#{style.to_s.empty? ? default_style(locale) : style}"
+      blocks << style_block
+      blocks
+    end
+
+    def strip_fences(raw)
+      raw.to_s.strip.gsub(/\A```[\w-]*\n?/, '').gsub(/\n?```\z/, '').strip
+    end
 
     def translate_slice(locale:, items:, model:, style:)
       raw = @client.complete(
@@ -120,11 +172,43 @@ module WooAiTranslation
     def parse(raw)
       text = raw.to_s.strip
       text = text.gsub(/\A```(?:json)?/, '').gsub(/```\z/, '').strip
-      obj = JSON.parse(text)
+      obj = begin
+        JSON.parse(text)
+      rescue JSON::ParserError
+        # Models routinely emit RAW newlines/tabs inside JSON string values for
+        # long-form, multi-paragraph content (full_description, release_notes),
+        # which is invalid JSON. Repair by escaping control chars that sit
+        # inside string literals, then parse again.
+        JSON.parse(escape_unescaped_control_chars(text))
+      end
       raise JSON::ParserError, 'expected object' unless obj.is_a?(Hash)
       raise JSON::ParserError, 'expected string values' unless obj.values.all? { |v| v.is_a?(String) }
 
       obj
+    end
+
+    # Walk the text tracking whether we're inside a JSON string literal, and
+    # escape any raw \n, \r, \t found there. Characters outside strings (and
+    # already-escaped sequences) are left untouched.
+    def escape_unescaped_control_chars(text)
+      out = +''
+      in_string = false
+      escaped = false
+      text.each_char do |ch|
+        if in_string && !escaped && (repl = { "\n" => '\\n', "\r" => '\\r', "\t" => '\\t' }[ch])
+          out << repl
+          next
+        end
+        if escaped
+          escaped = false
+        elsif ch == '\\'
+          escaped = true
+        elsif ch == '"'
+          in_string = !in_string
+        end
+        out << ch
+      end
+      out
     end
 
     def log(msg)
