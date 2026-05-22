@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
@@ -23,6 +24,7 @@ import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -40,6 +42,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     @Inject lateinit var zendeskTicketRepository: ZendeskTicketRepository
 
     @Inject lateinit var selectedSite: SelectedSite
+
+    @Inject lateinit var analyticsTracker: AiSupportChatAnalyticsTracker
 
     private val supportRequestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
@@ -121,15 +125,32 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ContactHumanSupport -> handleContactHumanSupport(event)
+                OpenAppNotificationSettings -> WooPermissionUtils.showAppNotificationSettings(
+                    context = requireContext(),
+                    openInNewStack = false
+                )
             }
         }
     }
 
     private fun handleContactHumanSupport(event: ContactHumanSupport) {
         when (event.mode) {
-            HumanSupportContactMode.DIRECT_CREATE -> createTicketDirectly(event)
-            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event)
+            HumanSupportContactMode.DIRECT_CREATE -> showTranscriptConsentDialog(event)
+            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event, includeTranscript = false)
         }
+    }
+
+    private fun showTranscriptConsentDialog(event: ContactHumanSupport) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.ai_support_chat_escalation_consent_title)
+            .setMessage(R.string.ai_support_chat_escalation_consent_message)
+            .setPositiveButton(R.string.ai_support_chat_escalation_consent_send_request) { _, _ ->
+                createTicketDirectly(event)
+            }
+            .setNeutralButton(R.string.ai_support_chat_escalation_consent_contact_form) { _, _ ->
+                openSupportRequestForm(event, includeTranscript = false)
+            }
+            .show()
     }
 
     private fun createTicketDirectly(event: ContactHumanSupport) {
@@ -143,22 +164,31 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 subject = requireNotNull(event.subject),
                 description = event.description,
                 extraTags = event.extraTags,
-                siteAddress = selectedSite.getIfExists()?.url.orEmpty()
+                siteAddress = event.siteAddress
             ).collect { result ->
                 hideProgressDialog()
                 result
                     .onSuccess {
+                        analyticsTracker.trackTicketCreated(
+                            route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
+                            context = event.ticketAnalyticsContext
+                        )
                         viewModel.onSupportTicketCreated()
                         showTicketCreatedDialog()
                     }
-                    .onFailure {
-                        openSupportRequestForm(event)
+                    .onFailure { error ->
+                        analyticsTracker.trackTicketCreationFailed(
+                            route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
+                            context = event.ticketAnalyticsContext,
+                            error = error
+                        )
+                        openSupportRequestForm(event, includeTranscript = true)
                     }
             }
         }
     }
 
-    private fun openSupportRequestForm(event: ContactHumanSupport) {
+    private fun openSupportRequestForm(event: ContactHumanSupport, includeTranscript: Boolean) {
         supportRequestLauncher.launch(
             SupportRequestFormActivity.createIntent(
                 context = requireContext(),
@@ -166,8 +196,9 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 extraTags = ArrayList(event.extraTags),
                 preselectedTicketType = event.ticketType,
                 prefilledSubject = event.subject,
-                prefilledMessage = event.description,
-                prefilledSiteAddress = selectedSite.getIfExists()?.url.orEmpty()
+                prefilledMessage = event.description.takeIf { includeTranscript },
+                prefilledSiteAddress = event.siteAddress,
+                aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext
             )
         )
     }

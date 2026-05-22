@@ -96,6 +96,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewProductDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
@@ -864,6 +865,7 @@ class MainActivity :
                 is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
+                is ViewProductDetail -> showProductDetail(event.uniqueId)
                 is ViewReviewList -> showReviewList()
                 is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
                 ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)

@@ -26,6 +26,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,6 +59,10 @@ class SupportRequestFormActivity : AppCompatActivity() {
             siteAddress = intent.extras?.getString(PREFILL_SITE_ADDRESS_KEY).orEmpty(),
             message = intent.extras?.getString(PREFILL_MESSAGE_KEY).orEmpty()
         )
+    }
+
+    private val aiSupportChatTicketAnalyticsContext by lazy {
+        intent.extras?.parcelable<AiSupportChatTicketAnalyticsContext>(AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY)
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -146,7 +151,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 context = this,
                 helpOrigin = helpOrigin,
                 extraTags = extraTags,
-                diagnosticLog = diagnosticLog
+                diagnosticLog = diagnosticLog,
+                aiSupportChatTicketAnalyticsContext = aiSupportChatTicketAnalyticsContext
             )
         }
     }
@@ -219,7 +225,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 extraTags = extraTags,
                 diagnosticLog = diagnosticLog,
                 selectedEmail = email,
-                selectedName = name
+                selectedName = name,
+                aiSupportChatTicketAnalyticsContext = aiSupportChatTicketAnalyticsContext
             )
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
@@ -249,6 +256,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
         private const val PREFILL_SUBJECT_KEY = "PREFILL_SUBJECT_KEY"
         private const val PREFILL_SITE_ADDRESS_KEY = "PREFILL_SITE_ADDRESS_KEY"
         private const val PREFILL_MESSAGE_KEY = "PREFILL_MESSAGE_KEY"
+        private const val AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY = "AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY"
 
         @JvmStatic
         @Suppress("LongParameterList")
@@ -260,7 +268,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
             preselectedTicketType: TicketType? = null,
             prefilledSubject: String? = null,
             prefilledSiteAddress: String? = null,
-            prefilledMessage: String? = null
+            prefilledMessage: String? = null,
+            aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
         ) = Intent(context, SupportRequestFormActivity::class.java).apply {
             putExtra(ORIGIN_KEY, origin)
             putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
@@ -269,6 +278,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             prefilledSubject?.let { putExtra(PREFILL_SUBJECT_KEY, it) }
             prefilledSiteAddress?.let { putExtra(PREFILL_SITE_ADDRESS_KEY, it) }
             prefilledMessage?.let { putExtra(PREFILL_MESSAGE_KEY, it) }
+            aiSupportChatTicketAnalyticsContext?.let { putExtra(AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY, it) }
         }
     }
 }

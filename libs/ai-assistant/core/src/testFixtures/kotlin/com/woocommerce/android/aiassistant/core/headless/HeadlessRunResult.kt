@@ -29,6 +29,8 @@ data class HeadlessRunMetadata(
     val safetyPolicy: String,
     val smokeStoreLabel: String,
     val credentialSource: String,
+    val sampleCount: Int = 1,
+    val scenarioFilter: List<String> = emptyList(),
 )
 
 @Serializable
@@ -38,7 +40,32 @@ data class HeadlessScenarioRunResult(
     val result: HeadlessRunResult,
     val hardCheckResults: List<HeadlessHardCheckResult>,
     val status: HeadlessScenarioStatus,
+    val sampleResults: List<HeadlessScenarioSampleRunResult> = emptyList(),
+    val sampleSummary: HeadlessScenarioSampleSummary? = null,
 )
+
+@Serializable
+data class HeadlessScenarioSampleRunResult(
+    val sampleIndex: Int,
+    val result: HeadlessRunResult,
+    val hardCheckResults: List<HeadlessHardCheckResult>,
+    val status: HeadlessScenarioStatus,
+)
+
+@Serializable
+data class HeadlessScenarioSampleSummary(
+    val requestedSamples: Int,
+    val passCount: Int,
+    val failCount: Int,
+    val classification: HeadlessSampleClassification,
+)
+
+@Serializable
+enum class HeadlessSampleClassification {
+    PASS,
+    FAIL,
+    FLAKY,
+}
 
 @Serializable
 enum class HeadlessScenarioStatus {

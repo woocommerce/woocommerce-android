@@ -196,7 +196,7 @@ private fun ConfirmationBulkEntriesSection(
         val visible = entries.take(MAX_BULK_ENTRIES_VISIBLE)
         visible.forEach {
             Text(
-                text = "#${it.id}",
+                text = it.displayText,
                 color = colors.value,
                 style = MaterialTheme.typography.bodySmall,
             )
