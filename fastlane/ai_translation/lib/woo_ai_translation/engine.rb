@@ -140,7 +140,7 @@ module WooAiTranslation
         return
       end
 
-      errs = placeholder_errors(source, shell)
+      errs = translation_errors(source, shell)
       unless errs.empty?
         @logger.call("validation failed #{source.name} [#{locale}]: #{errs.join('; ')}")
         failed << "#{source.name} (#{errs.first})"
@@ -156,9 +156,11 @@ module WooAiTranslation
       translated << source.name
     end
 
-    def placeholder_errors(source, shell)
+    def translation_errors(source, shell)
+      preserve_terms = @context.respond_to?(:preserved_terms) ? @context.preserved_terms : []
       source.entries.zip(shell.entries).flat_map do |src_e, out_e|
-        Validators.placeholder_parity(src_e[:source], out_e[:value])
+        Validators.placeholder_parity(src_e[:source], out_e[:value]) +
+          Validators.glossary_preservation(src_e[:source], out_e[:value], preserve_terms)
       end
     end
 
