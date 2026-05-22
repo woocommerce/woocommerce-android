@@ -4,6 +4,7 @@
 
 24.9
 -----
+- [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
 
 
 24.8

@@ -141,23 +141,16 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
     }
 
     private fun showTranscriptConsentDialog(event: ContactHumanSupport) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_ai_support_chat_escalation_consent, null)
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        dialogView.findViewById<View>(R.id.send_request).setOnClickListener {
-            dialog.dismiss()
-            createTicketDirectly(event)
-        }
-        dialogView.findViewById<View>(R.id.contact_form).setOnClickListener {
-            dialog.dismiss()
-            openSupportRequestForm(event, includeTranscript = false)
-        }
-        dialogView.findViewById<View>(R.id.cancel).setOnClickListener {
-            dialog.dismiss()
-        }
-        dialog.show()
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.ai_support_chat_escalation_consent_title)
+            .setMessage(R.string.ai_support_chat_escalation_consent_message)
+            .setPositiveButton(R.string.ai_support_chat_escalation_consent_send_request) { _, _ ->
+                createTicketDirectly(event)
+            }
+            .setNeutralButton(R.string.ai_support_chat_escalation_consent_contact_form) { _, _ ->
+                openSupportRequestForm(event, includeTranscript = false)
+            }
+            .show()
     }
 
     private fun createTicketDirectly(event: ContactHumanSupport) {
