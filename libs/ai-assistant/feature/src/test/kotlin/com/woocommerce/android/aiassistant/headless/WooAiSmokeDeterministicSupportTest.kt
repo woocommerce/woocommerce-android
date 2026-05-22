@@ -40,6 +40,7 @@ class WooAiSmokeDeterministicSupportTest {
         val summary = File(outputDirectory, "summary.md").readText()
         val turns = File(outputDirectory, "turns.jsonl").readLines()
 
+        assertThat(suite.metadata.modelId).isEqualTo("gpt-5.1")
         assertThat(suite.metadata.modelId).isEqualTo(AssistantConfig.MODEL_ID)
         assertThat(suite.metadata.promptVersion).isEqualTo(AssistantConfig.PROMPT_VERSION)
         assertThat(suite.metadata.toolCatalogVersion).isEqualTo(AssistantConfig.TOOL_CATALOG_VERSION)
