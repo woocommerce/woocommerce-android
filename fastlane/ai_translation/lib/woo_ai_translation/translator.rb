@@ -122,6 +122,7 @@ module WooAiTranslation
       text = text.gsub(/\A```(?:json)?/, '').gsub(/```\z/, '').strip
       obj = JSON.parse(text)
       raise JSON::ParserError, 'expected object' unless obj.is_a?(Hash)
+      raise JSON::ParserError, 'expected string values' unless obj.values.all? { |v| v.is_a?(String) }
 
       obj
     end
