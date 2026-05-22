@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.aisupportchat
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -44,6 +46,23 @@ class AiSupportChatHistoryViewModel @Inject constructor(
                             showError = true
                         )
                     }
+                }
+        }
+    }
+
+    fun onDeleteBookmark(bookmark: SupportChatBookmark) {
+        val previousBookmarks = _viewState.value.bookmarks
+        _viewState.update {
+            it.copy(bookmarks = it.bookmarks.filterNot { currentBookmark -> currentBookmark.chatId == bookmark.chatId })
+        }
+
+        launch {
+            runCatching { repository.deleteChat(bookmark.chatId) }
+                .onFailure { error ->
+                    if (error is CancellationException) throw error
+                    WooLog.e(WooLog.T.AI, "Deleting AI support chat history failed", error)
+                    _viewState.update { it.copy(bookmarks = previousBookmarks) }
+                    triggerEvent(ShowSnackbar(R.string.ai_support_chat_history_delete_error))
                 }
         }
     }
