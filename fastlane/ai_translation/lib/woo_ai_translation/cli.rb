@@ -22,6 +22,7 @@ module WooAiTranslation
       force_model: nil,
       keys: [],
       key_pattern: nil,
+      only_keys: [],
       strict: false,
       metadata_source: 'fastlane/metadata/android/en-US',
       metadata_out: 'fastlane/metadata/android',
@@ -70,6 +71,7 @@ module WooAiTranslation
         translator: translator, context: context,
         force_model: opts[:force_model],
         baseline_dir: opts[:baseline_dir],
+        only_names: opts[:only_keys].empty? ? nil : opts[:only_keys],
         logger: logger
       )
 
@@ -162,6 +164,7 @@ module WooAiTranslation
         p.on('--force-model NAME', 'Override per-unit model for NEW translations (reused keys unaffected)') { |v| o[:force_model] = v }
         p.on('--keys LIST', 'Comma-separated key names to force-retranslate (clears their manifest entries first)') { |v| o[:keys] = v }
         p.on('--key-pattern REGEX', 'Force-retranslate every key whose name matches REGEX') { |v| o[:key_pattern] = v }
+        p.on('--only-keys LIST', 'Translate only these comma-separated source keys; reuse existing values for all others') { |v| o[:only_keys] = v }
         p.on('--strict', 'Exit non-zero if any key failed') { o[:strict] = true }
         # Metadata mode (workstream 3c)
         p.on('--metadata-source DIR') { |v| o[:metadata_source] = v }
@@ -173,6 +176,7 @@ module WooAiTranslation
 
       o[:gp_locales] = Array(o[:gp_locales]).flat_map { |x| x.to_s.split(',') }.map(&:strip).reject(&:empty?)
       o[:keys] = Array(o[:keys]).flat_map { |x| x.to_s.split(',') }.map(&:strip).reject(&:empty?)
+      o[:only_keys] = Array(o[:only_keys]).flat_map { |x| x.to_s.split(',') }.map(&:strip).reject(&:empty?)
       return o if o[:mode] == 'metadata'
 
       o[:locales] = Array(o[:locales]).flat_map { |x| x.split(',') }.map(&:strip).reject(&:empty?)

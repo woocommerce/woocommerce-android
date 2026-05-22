@@ -18,6 +18,14 @@ module WooAiTranslation
 
     DEFAULT_BASE_URL = 'https://api.anthropic.com'
     MAX_RETRIES = 5
+    TRANSPORT_ERRORS = [
+      EOFError,
+      Net::OpenTimeout,
+      Net::ReadTimeout,
+      OpenSSL::SSL::SSLError,
+      SocketError,
+      SystemCallError
+    ].freeze
 
     def self.from_env
       new(
@@ -91,10 +99,16 @@ module WooAiTranslation
       attempt = 0
       begin
         yield
-      rescue Error, Net::OpenTimeout, Net::ReadTimeout => e
+      rescue Error => e
         attempt += 1
         raise if attempt > MAX_RETRIES
         raise if e.is_a?(Error) && client_error_no_retry?(e)
+
+        sleep(backoff_seconds(attempt))
+        retry
+      rescue *TRANSPORT_ERRORS => e
+        attempt += 1
+        raise Error, "#{e.class}: #{e.message}" if attempt > MAX_RETRIES
 
         sleep(backoff_seconds(attempt))
         retry

@@ -292,14 +292,15 @@ end
 class EngineTest < Minitest::Test
   include WooAiTranslation
 
-  def build(dir, source: FIXTURE, client: StubClient.new, context: ContextProvider.new({}))
+  def build(dir, source: FIXTURE, client: StubClient.new, context: ContextProvider.new({}), only_names: nil)
     Engine.new(
       source_path: source,
       res_dir: dir,
       manifest: Manifest.load(File.join(dir, 'manifest.json')),
       manifest_path: File.join(dir, 'manifest.json'),
       translator: Translator.new(client: client),
-      context: context
+      context: context,
+      only_names: only_names
     )
   end
 
@@ -592,6 +593,27 @@ class EngineTest < Minitest::Test
     end
   end
 
+  def test_only_names_translates_pr_delta_without_filling_old_gaps
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p(File.join(dir, 'values-fr'))
+      File.write(File.join(dir, 'values-fr', 'strings.xml'),
+                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resources>\n" \
+                 "    <string name=\"app_name\">Woo humain</string>\n</resources>\n")
+
+      report = build(dir, client: StubClient.new, only_names: %w[greeting]).run_strings(locales: %w[fr]).first
+
+      assert_equal 1, report.translated
+      assert_equal 1, report.reused
+      assert_empty report.failed
+      assert_empty report.gate_errors
+
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-fr', 'strings.xml'))
+      assert_equal 'Woo humain', doc.find('app_name').entries.first[:source]
+      assert_equal '[fr] Hello %1$s, you have %2$d items', doc.find('greeting').entries.first[:source]
+      assert_nil doc.find('raw_percent'), 'unselected missing keys must remain gaps'
+    end
+  end
+
   def test_source_text_change_invalidates_only_the_changed_key
     # The single auto-invalidation rule: an English source text change for
     # ONE key re-translates exactly that one key, leaves the other 8 untouched.
@@ -823,6 +845,33 @@ class TranslatorRecoverableErrorsTest < Minitest::Test
     assert_raises(NoMethodError) do
       t.translate(locale: 'pl', items: items(2), model: 'sonnet')
     end
+  end
+end
+
+class AnthropicClientTransportErrorsTest < Minitest::Test
+  def test_transport_errors_are_wrapped_after_retries
+    http = Class.new do
+      attr_reader :calls
+
+      def initialize
+        @calls = 0
+      end
+
+      def request(_req)
+        @calls += 1
+        raise Errno::ECONNRESET, 'connection reset'
+      end
+    end.new
+
+    client = WooAiTranslation::AnthropicClient.new(api_key: 'dummy', http: http)
+    client.define_singleton_method(:backoff_seconds) { |_attempt| 0 }
+
+    error = assert_raises(WooAiTranslation::AnthropicClient::Error) do
+      client.complete(model: 'haiku', system_blocks: ['rules'], user_content: '[]')
+    end
+
+    assert_equal WooAiTranslation::AnthropicClient::MAX_RETRIES + 1, http.calls
+    assert_includes error.message, 'ECONNRESET'
   end
 end
 

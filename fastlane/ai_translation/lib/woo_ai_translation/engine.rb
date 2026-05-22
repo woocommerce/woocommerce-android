@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'set'
 
 module WooAiTranslation
   # Orchestrates: detect delta vs the manifest -> attach context -> translate
@@ -14,7 +15,7 @@ module WooAiTranslation
   class Engine
     Report = Struct.new(:locale, :translated, :reused, :failed, :written, :gate_errors, keyword_init: true)
 
-    def initialize(source_path:, res_dir:, manifest:, manifest_path:, translator:, context:, force_model: nil, baseline_dir: nil, logger: nil)
+    def initialize(source_path:, res_dir:, manifest:, manifest_path:, translator:, context:, force_model: nil, baseline_dir: nil, only_names: nil, logger: nil)
       @source_path = source_path
       @res_dir = res_dir
       @manifest = manifest
@@ -31,6 +32,7 @@ module WooAiTranslation
       # manifest origin is still glotpress-import. nil disables the preserved-
       # line path (sweep still works, but everything goes through render_unit).
       @baseline_dir = baseline_dir
+      @only_names = only_names&.to_set
       @logger = logger || ->(_m) {}
     end
 
@@ -80,8 +82,11 @@ module WooAiTranslation
       malformed = Validators.xml_well_formed(out_path)
       raise "Generated #{out_path} is not well-formed: #{malformed.first}" unless malformed.empty?
 
-      source_names = source_units.map(&:name)
       output_names = ordered.select(&:fully_translated?).map(&:name)
+      output_name_set = output_names.to_set
+      source_names = source_units.map(&:name).select do |name|
+        @only_names.nil? || @only_names.include?(name) || output_name_set.include?(name)
+      end
       output_plurals_qs = ordered.select { |u| u.fully_translated? && u.type == :plurals }
                                  .to_h { |u| [u.name, u.entries.map { |e| e[:quantity] }] }
       gate_errors = Validators.key_parity(source_names: source_names, output_names: output_names) +
@@ -120,6 +125,11 @@ module WooAiTranslation
         shell = u.dup_shell_for_locale(target_quantities)
         units[u.name] = shell
 
+        unless should_translate?(u.name)
+          reused << u.name if reuse(shell, existing)
+          next
+        end
+
         if !@manifest.stale?(name: u.name, locale: locale, expected_source_sha: source_sha) && reuse(shell, existing)
           reused << u.name
         else
@@ -133,6 +143,10 @@ module WooAiTranslation
       end
 
       { units: units, pending: pending, reused: reused }
+    end
+
+    def should_translate?(name)
+      @only_names.nil? || @only_names.include?(name)
     end
 
     def run_translation(locale, pending)
