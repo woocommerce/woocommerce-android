@@ -12,8 +12,8 @@ import javax.inject.Inject
  * - When [FeatureFlag.WOO_POS_ALL_COUNTRIES] is enabled, every country is allowed.
  * - Otherwise, POS is restricted to the IPP-supported card-payment countries listed below.
  *
- * Inside POS, per-country card-payment gating still applies (CA, JP, etc. fall back to
- * a Cash-only checkout); this gate only decides whether POS is reachable at all.
+ * Inside POS, card-payment availability is still checked separately from launch eligibility;
+ * this gate only decides whether POS is reachable at all.
  */
 class WooPosIsCountryAllowed @Inject constructor(
     private val selectedSite: SelectedSite,
