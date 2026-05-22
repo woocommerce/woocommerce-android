@@ -192,7 +192,7 @@ apache-http-client-android = { group = "org.apache.httpcomponents", name = "http
 apache-http-core = { group = "org.apache.httpcomponents", name = "httpcore", version.ref = "apache-http-core" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 automattic-about = { group = "com.automattic", name = "about", version.ref = "automattic-about" }
-automattic-eventhorizon = "com.automattic:eventhorizon:woocommerce-2026-05-21_21-28-53"
+automattic-eventhorizon = "com.automattic:eventhorizon:woocommerce-2026-05-22_09-01-38"
 automattic-encryptedlogging = { group = "com.automattic", name = "encryptedlogging", version.ref = "automattic-encryptedlogging" }
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }

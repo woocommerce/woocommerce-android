@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.automattic.eventhorizon.NotificationFilterOptionValue
 import com.automattic.eventhorizon.NotificationTypeValue
 import com.automattic.eventhorizon.NotificationsDetailFilterOptionSelectEvent
-import com.automattic.eventhorizon.NotificationsDetailFilterValueChangeEvent
 import com.automattic.eventhorizon.NotificationsDetailPushToggleEvent
 import com.automattic.eventhorizon.NotificationsDetailViewEvent
 import com.automattic.eventhorizon.NotificationsSettingsLoadFailedEvent

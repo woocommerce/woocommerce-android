@@ -325,12 +325,12 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         saveInProgressWooPushNotificationPreferences = preferencesToSave
         savedPreferences.storeOrder?.minAmount?.let { savedMinAmount ->
             updateRequest.storeOrder?.minAmount?.takeIf { it != savedMinAmount }?.let {
-                trackNotificationDetailFilterValueChange(NotificationType.NEW_ORDERS, it.toLong())
+                trackNotificationDetailFilterValueChange(NotificationType.NEW_ORDERS, it.toDouble())
             }
         }
         savedPreferences.storeReview?.maxRating?.let { savedMaxRating ->
             updateRequest.storeReview?.maxRating?.takeIf { it != savedMaxRating }?.let {
-                trackNotificationDetailFilterValueChange(NotificationType.NEW_REVIEWS, it.toLong())
+                trackNotificationDetailFilterValueChange(NotificationType.NEW_REVIEWS, it.toDouble())
             }
         }
         // Once started, let the save request finish even if the screen is closed.
@@ -438,7 +438,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         )
     }
 
-    private fun trackNotificationDetailFilterValueChange(type: NotificationType, value: Long) {
+    private fun trackNotificationDetailFilterValueChange(type: NotificationType, value: Double) {
         analyticsTracker.track(
             NotificationsDetailFilterValueChangeEvent(
                 notificationType = type.toEventHorizonValue(),
