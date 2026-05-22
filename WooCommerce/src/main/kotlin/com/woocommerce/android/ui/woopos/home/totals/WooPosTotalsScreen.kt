@@ -343,6 +343,9 @@ private fun CheckoutPaymentButtons(
 
 private enum class ScrollEdge { Top, Bottom }
 
+private val SCROLL_EDGE_SHADOW_HEIGHT = 1.dp
+private const val SCROLL_EDGE_SHADOW_ALPHA = 0.12f
+
 @Composable
 private fun ScrollEdgeShadow(
     visible: Boolean,
@@ -366,9 +369,6 @@ private fun ScrollEdgeShadow(
         )
     }
 }
-
-private val SCROLL_EDGE_SHADOW_HEIGHT = 1.dp
-private const val SCROLL_EDGE_SHADOW_ALPHA = 0.12f
 
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
