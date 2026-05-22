@@ -4,10 +4,12 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
@@ -31,12 +33,30 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     private val selectedSite: SelectedSite = mock()
     private val orderStore: WCOrderStore = mock()
     private val orderMapper: OrderMapper = mock()
+    private val site: SiteModel = mock()
+    private val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
 
     private lateinit var repository: WooPosMarkOrderAsCompleteRepository
 
     @Before
     fun setUp() {
-        repository = WooPosMarkOrderAsCompleteRepository(selectedSite, orderStore, orderMapper)
+        runBlocking {
+            repository = WooPosMarkOrderAsCompleteRepository(selectedSite, orderStore, orderMapper)
+            whenever(selectedSite.get()).thenReturn(site)
+            whenever(
+                orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)
+            ).thenReturn(statusModel)
+            whenever(
+                orderStore.updateOrderStatusAndPaymentDetails(
+                    orderId = any(),
+                    site = eq(site),
+                    newStatus = any(),
+                    newPaymentMethodId = eq("other"),
+                    newPaymentMethodTitle = eq("Other"),
+                    cashPaymentChangeDueAmount = isNull(),
+                )
+            ).thenReturn(flowOf(UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())))
+        }
     }
 
     @Test
@@ -44,22 +64,6 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         runTest {
             // GIVEN
             val orderId = 123L
-            val site: SiteModel = mock()
-            val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
-            val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
-
-            whenever(selectedSite.get()).thenReturn(site)
-            whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
-            whenever(
-                orderStore.updateOrderStatusAndPaymentDetails(
-                    orderId = orderId,
-                    site = site,
-                    newStatus = statusModel,
-                    newPaymentMethodId = "other",
-                    newPaymentMethodTitle = "Other",
-                    cashPaymentChangeDueAmount = null,
-                )
-            ).thenReturn(flowOf(updateResult))
 
             // WHEN
             val result = repository.markOrderAsComplete(orderId, customerNote = null)
@@ -77,8 +81,8 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             verify(orderStore, never()).postOrderNote(
                 site = eq(site),
                 orderId = eq(orderId),
-                note = org.mockito.kotlin.any(),
-                isCustomerNote = org.mockito.kotlin.any(),
+                note = any(),
+                isCustomerNote = any(),
             )
         }
 
@@ -88,22 +92,6 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             // GIVEN
             val orderId = 123L
             val note = "Bank transfer"
-            val site: SiteModel = mock()
-            val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
-            val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
-
-            whenever(selectedSite.get()).thenReturn(site)
-            whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
-            whenever(
-                orderStore.updateOrderStatusAndPaymentDetails(
-                    orderId = orderId,
-                    site = site,
-                    newStatus = statusModel,
-                    newPaymentMethodId = "other",
-                    newPaymentMethodTitle = "Other",
-                    cashPaymentChangeDueAmount = null,
-                )
-            ).thenReturn(flowOf(updateResult))
             whenever(
                 orderStore.postOrderNote(site = site, orderId = orderId, note = note, isCustomerNote = false)
             ).thenReturn(
@@ -137,22 +125,6 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             // GIVEN
             val orderId = 123L
             val note = "Bank transfer"
-            val site: SiteModel = mock()
-            val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
-            val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
-
-            whenever(selectedSite.get()).thenReturn(site)
-            whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
-            whenever(
-                orderStore.updateOrderStatusAndPaymentDetails(
-                    orderId = orderId,
-                    site = site,
-                    newStatus = statusModel,
-                    newPaymentMethodId = "other",
-                    newPaymentMethodTitle = "Other",
-                    cashPaymentChangeDueAmount = null,
-                )
-            ).thenReturn(flowOf(updateResult))
             whenever(
                 orderStore.postOrderNote(site = site, orderId = orderId, note = note, isCustomerNote = false)
             ).thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, original = mock())))
@@ -168,25 +140,22 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     fun `given remote update fails, when markOrderAsComplete, then result is failure and no note posted`() = runTest {
         // GIVEN
         val orderId = 123L
-        val site: SiteModel = mock()
-        val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
-        val errorMessage = "Server error"
-        val updateResult = UpdateOrderResult.RemoteUpdateResult(
-            event = OnOrderChanged(orderError = WCOrderStore.OrderError(message = errorMessage)),
-        )
-
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
         whenever(
             orderStore.updateOrderStatusAndPaymentDetails(
-                orderId = orderId,
-                site = site,
-                newStatus = statusModel,
-                newPaymentMethodId = "other",
-                newPaymentMethodTitle = "Other",
-                cashPaymentChangeDueAmount = null,
+                orderId = eq(orderId),
+                site = eq(site),
+                newStatus = eq(statusModel),
+                newPaymentMethodId = eq("other"),
+                newPaymentMethodTitle = eq("Other"),
+                cashPaymentChangeDueAmount = isNull(),
             )
-        ).thenReturn(flowOf(updateResult))
+        ).thenReturn(
+            flowOf(
+                UpdateOrderResult.RemoteUpdateResult(
+                    event = OnOrderChanged(orderError = WCOrderStore.OrderError(message = "Server error")),
+                )
+            )
+        )
 
         // WHEN
         val result = repository.markOrderAsComplete(orderId, customerNote = "Bank transfer")
@@ -194,10 +163,10 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         // THEN
         assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Failure)
         verify(orderStore, never()).postOrderNote(
-            site = org.mockito.kotlin.any(),
-            orderId = org.mockito.kotlin.any(),
-            note = org.mockito.kotlin.any(),
-            isCustomerNote = org.mockito.kotlin.any(),
+            site = any(),
+            orderId = any(),
+            note = any(),
+            isCustomerNote = any(),
         )
     }
 
@@ -206,21 +175,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         runTest {
             // GIVEN
             val orderId = 321L
-            val site: SiteModel = mock()
-            val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
-
-            whenever(selectedSite.get()).thenReturn(site)
             whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(null)
-            whenever(
-                orderStore.updateOrderStatusAndPaymentDetails(
-                    orderId = eq(orderId),
-                    site = eq(site),
-                    newStatus = org.mockito.kotlin.any(),
-                    newPaymentMethodId = eq("other"),
-                    newPaymentMethodTitle = eq("Other"),
-                    cashPaymentChangeDueAmount = isNull(),
-                )
-            ).thenReturn(flowOf(updateResult))
 
             // WHEN
             val result = repository.markOrderAsComplete(orderId, customerNote = null)
