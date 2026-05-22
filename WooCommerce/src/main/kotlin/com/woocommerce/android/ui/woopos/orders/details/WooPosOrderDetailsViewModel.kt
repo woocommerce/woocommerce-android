@@ -164,8 +164,8 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onBackFromIssueRefund() {
-        refreshSelectedOrder()
+    fun onBackFromIssueRefund(orderId: Long? = null) {
+        refreshOrderAfterIssueRefund(orderId)
     }
 
     fun onRefundDetailsDialogDismissed() {
@@ -289,10 +289,16 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     }
 
     private fun refreshSelectedOrder() {
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        val selectedOrderId = current.details.id
+        refreshOrderAfterIssueRefund(orderId = null)
+    }
 
-        sideLoadJob?.cancel()
+    private fun refreshOrderAfterIssueRefund(orderId: Long?) {
+        val current = _state.value as? WooPosOrderDetailsState.Loaded
+        val selectedOrderId = orderId ?: current?.details?.id ?: return
+
+        if (current?.details?.id == selectedOrderId) {
+            sideLoadJob?.cancel()
+        }
         refreshOrderJob?.cancel()
         refreshOrderJob = viewModelScope.launch {
             // Fetch + notify run atomically so the list row is always refreshed when the cache
@@ -303,7 +309,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
                     coordinator.notifyOrderRefreshed(it.id)
                 }
             } ?: return@launch
-            applyOrderUpdate(updated)
+            if ((_state.value as? WooPosOrderDetailsState.Loaded)?.details?.id == updated.id) {
+                applyOrderUpdate(updated)
+            }
         }
     }
 

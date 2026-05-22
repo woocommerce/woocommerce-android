@@ -325,6 +325,28 @@ class WooPosOrderDetailsViewModelTest {
     }
 
     @Test
+    fun `given refunded order id, when back from issue refund after selection changed, then refunded order is refreshed`() =
+        runTest {
+            // GIVEN
+            doReturn(Result.success(order(2L))).whenever(dataSource).getOrderById(2L)
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            coordinator.selectOrder(1L)
+            advanceUntilIdle()
+            coordinator.selectOrder(2L)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onBackFromIssueRefund(orderId = 1L)
+            advanceUntilIdle()
+
+            // THEN
+            verify(dataSource).refreshOrderById(1L)
+            val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
+            assertThat(loaded.details.id).isEqualTo(2L)
+        }
+
+    @Test
     fun `given state is not Loaded, when back from issue refund, then order is not refreshed`() = runTest {
         // GIVEN
         viewModel = createViewModel()
