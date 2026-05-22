@@ -30,7 +30,7 @@ class WooPosIsCountryAllowed @Inject constructor(
 
     private companion object {
         val SUPPORTED_COUNTRIES = setOf(
-            "US", "PR", "GB",
+            "US", "PR", "GB", "CA",
             "FR", "DE", "IE", "NL", "AT", "BE", "FI", "IT", "LU", "PT", "ES",
             "SG", "NZ",
             "AU",
