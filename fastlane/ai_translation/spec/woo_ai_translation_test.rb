@@ -184,9 +184,10 @@ class ValidatorsTest < Minitest::Test
   end
 
   def test_glossary_preservation_uses_longest_match_wins
-    terms = %w[Woo WooCommerce WooPayments SKU]
+    terms = %w[Woo WooCommerce WooPayments SKU PIN]
     assert_empty V.glossary_preservation('Use WooCommerce SKU', 'Utiliser WooCommerce SKU', terms)
     assert_empty V.glossary_preservation('Use WooPayments', 'Utiliser WooPayments', terms)
+    assert_empty V.glossary_preservation('SHIPPING', 'LIVRAISON', terms)
 
     errors = V.glossary_preservation('Use WooCommerce SKU', 'Utiliser Woo commerce UGS', terms)
     assert_includes errors, 'glossary term not preserved: WooCommerce'
