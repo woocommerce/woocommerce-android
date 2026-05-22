@@ -608,7 +608,6 @@ Language: sv_SE
     <string name="woopos_eligibility_screen_unable_to_load">Hämtningen kunde inte genomföras</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS-systemet är inte tillgängligt för din butiks valuta. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS-systemet är inte tillgängligt för din butiks valuta. I %1$s stöder den för närvarande endast %2$s. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Försäljningsplats måste vara aktiverat för att fortsätta. Aktivera POS-funktionen från din WordPress-adminpanel under WooCommerce-inställningar &gt; Avancerat &gt; Funktioner.</string>
     <string name="woopos_eligibility_reason_check_connection">Kontrollera din internetanslutning och prova att starta om appen. Om problemet kvarstår, kontakta supporten.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Din WooCommerce-version stöds inte. POS-systemet kräver WooCommerce-version %1$s eller senare. Uppdatera till den senaste versionen av WooCommerce.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Se till att WooCommerce-tillägget installeras och aktiveras från din WordPress-adminpanel. Om du fortfarande upplever problem, kontakta supporten för att få hjälp.</string>

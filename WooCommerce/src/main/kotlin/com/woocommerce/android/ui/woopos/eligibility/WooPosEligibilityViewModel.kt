@@ -150,8 +150,6 @@ class WooPosEligibilityViewModel @Inject constructor(
                 )
             WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
-            WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
-                resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
             WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,

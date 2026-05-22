@@ -4264,10 +4264,6 @@
         errorLine1="    private val ssrModel: WCSSRModel = mock()"
         errorLine2="                                       ~~~~~~">
         <location
-            file="src/test/kotlin/com/woocommerce/android/ui/woopos/WooPOSIsRemotelyEnabledTest.kt"
-            line="20"
-            column="40"/>
-    </issue>
 
     <issue
         id="DoNotMockDataClass"
@@ -4275,10 +4271,6 @@
         errorLine1="    private val cacheResult: WooResult&lt;WCSSRModel> = mock()"
         errorLine2="                                                     ~~~~~~">
         <location
-            file="src/test/kotlin/com/woocommerce/android/ui/woopos/WooPOSIsRemotelyEnabledTest.kt"
-            line="22"
-            column="54"/>
-    </issue>
 
     <issue
         id="DoNotMockDataClass"

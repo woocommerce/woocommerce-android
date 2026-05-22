@@ -52,7 +52,7 @@ class WooPosEligibilityViewModelTest {
         // GIVEN
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
         val sut = createSut()
-        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled)
+        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable)
         val navigated = mutableListOf<Unit>()
         val job = launch { sut.navigateToPos.collect { navigated.add(it) } }
 
@@ -68,7 +68,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given POS is ineligible on retry, should update state to Ineligible with suggestion text`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(
             WooPosLaunchability.NotLaunchable(reason)
         )
@@ -87,7 +87,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `initialize should set state to Ineligible with suggestion text`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val sut = createSut()
 
         // WHEN
@@ -101,7 +101,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given ineligible reason, when initialize is called, then IneligibleUIShown event is tracked`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val tracker: WooPosAnalyticsTracker = mock()
         val sut = WooPosEligibilityViewModel(
             canBeLaunchedInTab,
@@ -122,7 +122,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given ineligible state, when retryEligibilityCheckTapped is called, then IneligibleUIRetryTapped event is tracked`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(reason))
         val sut = WooPosEligibilityViewModel(
@@ -148,7 +148,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given retry results in different ineligible reason, then IneligibleUIShown event is tracked for new reason`() = runTest {
         // GIVEN
-        val initialReason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val initialReason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val retryReason = WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(retryReason))

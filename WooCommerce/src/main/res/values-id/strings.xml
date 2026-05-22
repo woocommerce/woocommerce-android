@@ -607,7 +607,6 @@ Language: id
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale harus diaktifkan untuk melanjutkan. Aktifkan fitur POS dari admin WordPress Anda di pengaturan WooCommerce &gt; Lanjutan &gt; Fitur.</string>
     <string name="woopos_eligibility_reason_check_connection">Periksa sambungan internet, lalu coba luncurkan ulang aplikasi. Jika kendala ini terus berlanjut, hubungi bagian dukungan.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Versi WooCommerce Anda tidak didukung. Sistem POS memerlukan WooCommerce versi %1$s atau yang lebih tinggi. Harap perbarui WooCommerce dengan versi terbaru.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Pastikan plugin WooCommerce telah diinstal dan diaktifkan dari admin WordPress Anda. Jika masalah berlanjut, silakan hubungi dukungan untuk mendapatkan bantuan.</string>

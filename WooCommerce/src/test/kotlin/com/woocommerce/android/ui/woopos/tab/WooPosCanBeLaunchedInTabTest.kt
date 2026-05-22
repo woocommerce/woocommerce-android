@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.WooPOSIsRemotelyEnabled
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.Launchable
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NonLaunchabilityReason
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NotLaunchable
@@ -10,6 +9,7 @@ import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -26,7 +26,6 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
 
     private val appPrefs: AppPrefs = mock()
     private val selectedSite: SelectedSite = mock()
-    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val fetchWooCoreVersion: FetchActiveWCPluginVersion = mock()
 
@@ -34,14 +33,14 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
     private lateinit var siteModel: SiteModel
 
     @Before
-    fun setup() = testBlocking {
+    fun setup() {
         siteModel = SiteModel().also { it.id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
-        // Default: WC 10.0.0 (feature-switch threshold met), remotely enabled, no cached positive.
-        whenever(getWooCoreVersion()).thenReturn("10.0.0")
-        whenever(fetchWooCoreVersion()).thenReturn("10.0.0")
-        whenever(isRemotelyEnabled.invoke(any())).thenReturn(Result.success(true))
+        runBlocking {
+            whenever(getWooCoreVersion()).thenReturn("10.0.0")
+            whenever(fetchWooCoreVersion()).thenReturn("10.0.0")
+        }
         whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(false)
 
         sut = WooPosCanBeLaunchedInTab(
@@ -49,7 +48,6 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
             selectedSite = selectedSite,
             getWooCoreCachedVersion = getWooCoreVersion,
             fetchWooCoreVersion = fetchWooCoreVersion,
-            isRemotelyEnabled = isRemotelyEnabled,
             wooPosLog = mock()
         )
     }
@@ -91,40 +89,11 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
     }
 
-    // Feature-switch unsupported (version >= 9_6_0 but switch threshold not met)
     @Test
-    fun `given WC 9_6_0 (switch unsupported), when invoked, then Launchable`() = testBlocking {
+    fun `given WC 9_6_0 (minimum supported), when invoked, then Launchable`() = testBlocking {
         whenever(getWooCoreVersion()).thenReturn("9.6.0")
         val result = sut()
         assertEquals(Launchable, result)
-    }
-
-    // --- Feature switch checks ---
-
-    @Test
-    fun `given feature switch supported but remotely disabled, when invoked, then NotLaunchable FeatureSwitchDisabled and clears cache`() = testBlocking {
-        whenever(getWooCoreVersion()).thenReturn("10.0.0")
-        whenever(isRemotelyEnabled.invoke(any())).thenReturn(Result.success(false))
-        val result = sut()
-        assertEquals(NotLaunchable(NonLaunchabilityReason.FeatureSwitchDisabled), result)
-        verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
-    }
-
-    @Test
-    fun `given remote check failure and cached positive, when invoked, then Launchable`() = testBlocking {
-        whenever(isRemotelyEnabled.invoke(any())).thenReturn(Result.failure(RuntimeException("boom")))
-        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(true)
-        val result = sut()
-        assertEquals(Launchable, result)
-    }
-
-    @Test
-    fun `given remote check failure and no cached positive, when invoked, then NotLaunchable UnknownNoPositiveCache and does not clear`() = testBlocking {
-        whenever(isRemotelyEnabled.invoke(any())).thenReturn(Result.failure(RuntimeException("boom")))
-        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(false)
-        val result = sut()
-        assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
-        verify(appPrefs, times(0)).clearPOSLaunchableForSite(any())
     }
 
     // --- Force refresh paths ---

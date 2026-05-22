@@ -609,7 +609,6 @@ Language: ru
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Система POS не поддерживает валюту вашего магазина. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Система POS не поддерживает валюту вашего магазина. В %1$s в настоящее время поддерживается только %2$s. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_check_connection">Проверьте подключение к Интернету и попробуйте перезапустить приложение. Если решить проблему не удалось, обратитесь в службу поддержки.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Чтобы продолжить, необходимо активировать режим Point of Sale (Пункт продажи). Включите режим POS в консоли администратора WordPress в разделе «Настройки WooCommerce &gt; Расширенные &gt; Функции».</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Ваша версия WooCommerce не поддерживается. Для работы системы POS требуется WooCommerce версии %1$s или более поздней. Обновите WooCommerce до последней версии.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Необходимо установить плагин WooCommerce и активировать его через учётную запись администратора WordPress. Если решить проблему не удалось, обратитесь в службу поддержки.</string>
     <string name="orderfilters_sales_channel_filter">Канал продаж</string>

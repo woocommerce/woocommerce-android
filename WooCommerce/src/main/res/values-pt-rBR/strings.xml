@@ -608,7 +608,6 @@ Language: pt_BR
     <string name="woopos_eligibility_screen_unable_to_load">Não foi possível carregar</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">O sistema PDV não está disponível para a moeda da sua loja. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">O sistema PDV não está disponível para a moeda da sua loja. No %1$s, ele só é compatível com %2$s. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">O ponto de venda deve estar ativado para prosseguir. Ative a funcionalidade de PDV pela administração do WordPress em Configurações do WooCommerce &gt; Avançado &gt; Funcionalidades.</string>
     <string name="woopos_eligibility_reason_check_connection">Verifique sua conexão com a Internet e tente reiniciar o aplicativo. Se o problema persistir, entre em contato com o suporte.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Sua versão do WooCommerce não é compatível. O sistema PDV requer o WooCommerce na versão %1$s ou posterior. Atualize o WooCommerce para a versão mais recente.</string>
     <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Instale e ative o plugin do WooCommerce pela administração do WordPress. Entre em contato com o suporte para obter ajuda.</string>

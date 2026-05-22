@@ -6,8 +6,6 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -27,7 +25,6 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val selectedSite: SelectedSite = mock()
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isFeatureUnsupported(CIABAffectedFeature.POS) } doReturn false
     }
@@ -36,37 +33,26 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private lateinit var siteModel: SiteModel
 
     @Before
-    fun setup() = testBlocking {
+    fun setup() {
         siteModel = SiteModel().also { it.id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(isScreenSizeAllowed()).thenReturn(true)
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(true)
-        whenever(featureFlagRepository.awaitRemoteFlagsLoaded()).thenReturn(Unit)
         whenever(appPrefs.isPOSTabVisibleForSite(any())).thenReturn(false)
 
         sut = WooPosTabShouldBeVisible(
             appPrefs = appPrefs,
             selectedSite = selectedSite,
             isScreenSizeAllowed = isScreenSizeAllowed,
-            featureFlagRepository = featureFlagRepository,
             ciabSiteGateKeeper = ciabSiteGateKeeper,
             wooPosLog = mock()
         )
     }
 
     @Test
-    fun `given feature flag enabled and tablet, when invoked with forceRefresh, then return success true`() = testBlocking {
+    fun `given tablet, when invoked with forceRefresh, then return success true`() = testBlocking {
         val r = sut(forceRefresh = true)
         assertTrue(r.isSuccess)
         assertTrue(r.getOrThrow())
-    }
-
-    @Test
-    fun `given feature flag disabled, when invoked with forceRefresh, then return success false`() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(false)
-        val r = sut(forceRefresh = true)
-        assertTrue(r.isSuccess)
-        assertFalse(r.getOrThrow())
     }
 
     @Test
@@ -115,8 +101,8 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given feature flag off, when invoked with forceRefresh, then clear cache`() = testBlocking {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS)).thenReturn(false)
+    fun `given screen size not allowed, when invoked with forceRefresh, then clear cache`() = testBlocking {
+        whenever(isScreenSizeAllowed()).thenReturn(false)
 
         val r = sut(forceRefresh = true)
 
