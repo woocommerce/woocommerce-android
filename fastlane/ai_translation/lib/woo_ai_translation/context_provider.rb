@@ -49,11 +49,22 @@ module WooAiTranslation
       return '' unless @glossary.is_a?(Hash) && @glossary['terms'].is_a?(Array)
 
       lines = @glossary['terms'].map do |t|
-        "- #{t['term']}: #{t['rule']}"
+        gate = t['preserve'] ? ' [hard gate: preserve exact term]' : ''
+        "- #{t['term']}: #{t['rule']}#{gate}"
       end
       return '' if lines.empty?
 
       "Brand & domain glossary (applies to every locale):\n#{lines.join("\n")}"
+    end
+
+    def preserved_terms
+      return [] unless @glossary.is_a?(Hash) && @glossary['terms'].is_a?(Array)
+
+      @glossary['terms']
+        .select { |t| t['preserve'] }
+        .map { |t| t['term'].to_s }
+        .reject(&:empty?)
+        .uniq
     end
 
     # Per-locale style guide -- returns the contents of style/<locale>.md or ''.

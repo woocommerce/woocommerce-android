@@ -87,15 +87,26 @@ class GlossaryAndStyleTest < Minitest::Test
     Dir.mktmpdir do |dir|
       g = File.join(dir, 'glossary.json')
       File.write(g, JSON.generate('terms' => [
-                                    { 'term' => 'Woo', 'rule' => 'Brand; never translate.' },
+                                    { 'term' => 'Woo', 'rule' => 'Brand; never translate.', 'preserve' => true },
                                     { 'term' => 'SKU', 'rule' => 'Keep as SKU.' }
                                   ]))
       ctx = WooAiTranslation::ContextProvider.from_file(nil, glossary_path: g)
       text = ctx.glossary_text
       assert_includes text, 'Brand & domain glossary'
-      assert_includes text, '- Woo: Brand; never translate.'
+      assert_includes text, '- Woo: Brand; never translate. [hard gate: preserve exact term]'
       assert_includes text, '- SKU: Keep as SKU.'
     end
+  end
+
+  def test_preserved_terms_returns_only_hard_gated_terms
+    ctx = WooAiTranslation::ContextProvider.new({}, glossary: {
+                                                  'terms' => [
+                                                    { 'term' => 'WooPayments', 'preserve' => true },
+                                                    { 'term' => 'Coupon', 'rule' => 'Translate naturally.' },
+                                                    { 'term' => 'SKU', 'preserve' => true }
+                                                  ]
+                                                })
+    assert_equal %w[WooPayments SKU], ctx.preserved_terms
   end
 
   def test_glossary_text_is_empty_when_absent
@@ -172,6 +183,17 @@ class ValidatorsTest < Minitest::Test
     refute_empty V.placeholder_parity('Plain', 'Now %d')
   end
 
+  def test_glossary_preservation_uses_longest_match_wins
+    terms = %w[Woo WooCommerce WooPayments SKU]
+    assert_empty V.glossary_preservation('Use WooCommerce SKU', 'Utiliser WooCommerce SKU', terms)
+    assert_empty V.glossary_preservation('Use WooPayments', 'Utiliser WooPayments', terms)
+
+    errors = V.glossary_preservation('Use WooCommerce SKU', 'Utiliser Woo commerce UGS', terms)
+    assert_includes errors, 'glossary term not preserved: WooCommerce'
+    assert_includes errors, 'glossary term not preserved: SKU'
+    refute_includes errors, 'glossary term not preserved: Woo'
+  end
+
   def test_plural_pairs_is_informational_only
     assert_empty V.plural_pairs(%w[x_single x_multiple y])
     refute_empty V.plural_pairs(%w[x_single y])
@@ -200,14 +222,14 @@ end
 class EngineTest < Minitest::Test
   include WooAiTranslation
 
-  def build(dir, source: FIXTURE, client: StubClient.new)
+  def build(dir, source: FIXTURE, client: StubClient.new, context: ContextProvider.new({}))
     Engine.new(
       source_path: source,
       res_dir: dir,
       manifest: Manifest.load(File.join(dir, 'manifest.json')),
       manifest_path: File.join(dir, 'manifest.json'),
       translator: Translator.new(client: client),
-      context: ContextProvider.new({})
+      context: context
     )
   end
 
@@ -366,6 +388,26 @@ class EngineTest < Minitest::Test
 
       manifest = Manifest.load(File.join(dir, 'manifest.json'))
       assert_nil manifest.origin(name: 'greeting', locale: 'fr')
+    end
+  end
+
+  def test_glossary_preservation_failure_is_dropped_not_shipped
+    Dir.mktmpdir do |dir|
+      context = ContextProvider.new({}, glossary: {
+                                      'terms' => [
+                                        { 'term' => 'Woo', 'rule' => 'Brand; never translate.', 'preserve' => true }
+                                      ]
+                                    })
+      bad = StubClient.new { |loc, src| "[#{loc}] #{src.gsub('Woo', 'Oua')}" }
+      report = build(dir, client: bad, context: context).run_strings(locales: %w[fr]).first
+      assert(report.failed.any? { |f| f.start_with?('app_name') })
+
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-fr', 'strings.xml'))
+      assert_nil doc.find('app_name'), 'brand-unsafe translation must be omitted, not shipped'
+      assert_equal '[fr] Hello %1$s, you have %2$d items', doc.find('greeting').entries.first[:source]
+
+      manifest = Manifest.load(File.join(dir, 'manifest.json'))
+      assert_nil manifest.origin(name: 'app_name', locale: 'fr')
     end
   end
 end
