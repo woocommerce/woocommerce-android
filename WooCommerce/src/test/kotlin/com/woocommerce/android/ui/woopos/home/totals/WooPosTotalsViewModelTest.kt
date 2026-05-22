@@ -752,9 +752,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
 
             // THEN
-            verify(analyticsTracker).track(
-                com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped,
-            )
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped)
             verify(childrenToParentEventSender).sendToParent(
                 isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
             )
@@ -787,9 +785,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
 
         // THEN
-        verify(analyticsTracker).track(
-            com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutScanToPayPaymentTapped,
-        )
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutScanToPayPaymentTapped)
         verify(childrenToParentEventSender).sendToParent(
             isA<ChildToParentEvent.NavigationEvent.ToScanToPay>(),
         )

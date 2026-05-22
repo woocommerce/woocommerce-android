@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.woopos.scantopay
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.findActivity
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -61,7 +59,7 @@ fun WooPosScanToPayScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onCancelClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.CancelClicked) },
         onRetryClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.RetryClicked) },
     )
-    BackHandler { viewModel.onBackClicked() }
+    BackHandler(enabled = state !is WooPosScanToPayState.PaymentDetected) { viewModel.onBackClicked() }
 }
 
 @Composable
@@ -77,6 +75,8 @@ private fun WooPosScanToPayScreen(
         )
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             when (state) {
+                // PaymentDetected briefly shows the same spinner as Loading while the VM emits
+                // GoBack and the navigation pop is processed.
                 WooPosScanToPayState.Loading,
                 WooPosScanToPayState.PaymentDetected ->
                     WooPosCircularLoadingIndicator(
@@ -189,15 +189,6 @@ private fun MaxBrightnessWhen(active: Boolean) {
             window.attributes = window.attributes.apply { screenBrightness = originalBrightness }
         }
     }
-}
-
-private fun Context.findActivity(): Activity? {
-    var ctx: Context? = this
-    while (ctx is ContextWrapper) {
-        if (ctx is Activity) return ctx
-        ctx = ctx.baseContext
-    }
-    return null
 }
 
 @WooPosPreview
