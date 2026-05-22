@@ -1,0 +1,30 @@
+Hallinnoi kauppaasi mistä tahansa
+
+Hallinnoi liiketoimintaasi liikkeellä WooCommerce-mobiilisovelluksella. Lisää tuotteita, luo tilauksia, ota nopeita maksuja vastaan ja seuraa uusia myyntejä ja keskeisiä tilastoja reaaliajassa.
+
+Lisää ja muokkaa tuotteita kosketuksella
+Pääse alkuun sekunneissa! Luo, ryhmitä ja julkaise tuotteita suoraan Android-puhelimestasi tai tabletistasi. Kaappaa luovuutesi hetki, jolloin se iskee – muuta ideasi tuotteiksi välittömästi tai tallenna ne luonnoksiksi myöhempää käyttöä varten.
+
+Luo tilauksia lennosta
+Kun sinulla on joitakin tuotteita luotuna, se on yksinkertaista. Valitse tuotteet luettelostasi, lisää toimitus ja täytä sitten asiakkaan tiedot nopeasti luodaksesi tilauksen, joka synkronoidaan varastosi kanssa.
+
+Ota maksuja henkilökohtaisesti vastaan
+Kerää fyysisiä maksuja WooCommerce In-Person Payments -palvelulla ja kortinlukijalla (saatavilla Yhdysvalloissa, Isossa-Britanniassa ja Kanadassa), Tap to Pay -palvelulla tai digitaalisella lompakolla, kuten Apple Pay. Aloita uusi tilaus – tai etsi olemassa oleva tilaus, joka odottaa maksua – ja hyväksy maksu saumattomasti.
+
+Siirry klikkien maailmasta fyysiseen kauppaan
+Muuta mikä tahansa tabletti tehokkaaksi myyntipistejärjestelmäksi WooCommerce POS -palvelulla. Etsi tuotteita, skannaa viivakoodeja, käytä kuponkeja ja lähetä sähköpostikuitteja, ja kaikki online- ja fyysisen kaupan myynnit synkronoidaan reaaliajassa. Saatavilla Yhdysvalloissa ja Isossa-Britanniassa.
+
+Saa ilmoitus jokaisesta myynnistä
+Nyt kun myyt aktiivisesti, älä missaa yhtään tilausta tai arviota. Pysy ajan tasalla ottamalla käyttöön reaaliaikaiset hälytykset – ja kuuntele sitä riippuvuutta aiheuttavaa "cha-ching"-ääntä, joka tulee jokaisen uuden myynnin myötä!
+
+Seuraa myyntiä ja myydyimpiä tuotteita
+Näe mitkä tuotteet menestyvät silmäyksellä. Seuraa kokonaistuloistasi, tilausmäärästä ja kävijätiedoista viikko-, kuukausi- ja vuosittain. Tieto on valtaa.
+
+WooCommerce rannallasi
+WooCommerce Wear OS -sovelluksemme avulla voit vaivattomasti tarkastella tämän päivän kauppatietoja ja seurata tilauksiasi suoraan rannaltasi. Komplikaatioiden avulla voit myös saada välittömän pääsyn sovellukseen.
+
+WooCommerce on maailman muokattavin avoimen lähdekoodin verkkokauppaalusta. Riippumatta siitä, käynnistätkö liiketoimintaa, siirrät kivijalkakauppaa verkkoon vai kehität sivustoja asiakkaille, käytä WooCommercea kauppaan, joka yhdistää sisällön ja kaupan tehokkaasti.
+
+Vaatimukset: WooCommerce v3.5+.
+
+Tarkastele Kalifornian käyttäjien tietosuojakäytäntöä osoitteessa https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

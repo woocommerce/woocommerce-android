@@ -1,0 +1,30 @@
+Gerencie a sua loja de qualquer lugar
+
+Gira o seu negócio em movimento com a Aplicação Móvel WooCommerce. Adicione produtos, crie encomendas, processe pagamentos rápidos e acompanhe novas vendas e estatísticas-chave em tempo real.
+
+Adicione e edite produtos com um toque
+Comece em segundos! Crie, agrupe e publique produtos diretamente do seu telemóvel ou tablet Android. Capture a sua criatividade no momento – transforme as suas ideias em produtos imediatamente ou guarde-as como rascunhos para depois.
+
+Crie encomendas instantaneamente
+Depois de ter alguns produtos criados, é simples. Escolha itens do seu catálogo, adicione envio e preencha os detalhes do cliente para criar rapidamente uma encomenda que se sincroniza com o seu inventário.
+
+Receba pagamentos presencialmente
+Cobra pagamentos físicos com WooCommerce In-Person Payments e um leitor de cartões (disponível nos EUA, Reino Unido e Canadá), Tap to Pay ou uma carteira digital, como Apple Pay. Inicie uma nova encomenda — ou encontre uma existente pendente de pagamento – e aceite o pagamento sem problemas.
+
+Do digital ao físico
+Transforme qualquer tablet num poderoso ponto de venda com WooCommerce POS. Procure produtos, digitalize códigos de barras, aplique cupões e envie recibos por email, com todas as suas vendas online e físicas sincronizadas em tempo real. Disponível nos EUA e Reino Unido.
+
+Receba notificações de cada venda
+Agora que está a vender ativamente, nunca perca uma encomenda ou avaliação. Mantenha-se informado ativando alertas em tempo real – e ouça aquele som viciante de "cha-ching" que vem com cada nova venda!
+
+Acompanhe vendas e produtos mais vendidos
+Veja quais produtos estão a ganhar num relance. Acompanhe a sua receita geral, contagem de encomendas e dados de visitantes por semana, mês e ano. Conhecimento é poder.
+
+WooCommerce no seu relógio
+Com a nossa Aplicação WooCommerce Wear OS, pode ver facilmente os dados da loja de hoje e acompanhar as suas encomendas diretamente do seu pulso. Com as nossas complicações, também pode obter acesso instantâneo à aplicação.
+
+WooCommerce é a plataforma de eCommerce de código aberto mais personalizável do mundo. Quer esteja a lançar um negócio, a levar o retalho físico online ou a desenvolver sites para clientes, use WooCommerce para uma loja que mistura poderosa conteúdo e comércio.
+
+Requisitos: WooCommerce v3.5+.
+
+Veja o Aviso de Privacidade para utilizadores da Califórnia em https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

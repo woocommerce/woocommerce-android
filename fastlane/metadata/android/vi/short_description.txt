@@ -1,0 +1,1 @@
+Quản lý đơn hàng, nhận thông báo, xem số liệu và thanh toán trực tiếp.
