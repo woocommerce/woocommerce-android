@@ -38,6 +38,12 @@ module WooAiTranslation
       @api_key = api_key
       @base_url = base_url
       @http = http
+      # Some newer models (e.g. claude-opus-4-7) reject the `temperature`
+      # parameter outright (HTTP 400). We send temperature: 0 for determinism
+      # where it's accepted, learn which models reject it on the first 400, and
+      # omit it for those from then on (per-instance, so a long run pays the
+      # 400 at most once per model).
+      @no_temperature_models = {}
     end
 
     def available?
@@ -52,14 +58,30 @@ module WooAiTranslation
       body = {
         model: model,
         max_tokens: max_tokens,
-        temperature: 0,
         system: cacheable_system(system_blocks),
         messages: [{ role: 'user', content: user_content }]
       }
-      with_retries { post_messages(body) }
+      body[:temperature] = 0 unless @no_temperature_models[model]
+
+      begin
+        with_retries { post_messages(body) }
+      rescue Error => e
+        # First time we see a model reject `temperature`: drop it, remember the
+        # model, and retry once. Any other error propagates unchanged.
+        raise unless body.key?(:temperature) && temperature_rejected?(e)
+
+        @no_temperature_models[model] = true
+        body.delete(:temperature)
+        with_retries { post_messages(body) }
+      end
     end
 
     private
+
+    def temperature_rejected?(error)
+      msg = error.message.to_s
+      msg.include?('HTTP 400') && msg.downcase.include?('temperature')
+    end
 
     def cacheable_system(blocks)
       blocks.each_with_index.map do |text, i|
@@ -145,10 +167,18 @@ module WooAiTranslation
 
     def complete(model:, system_blocks:, user_content:, max_tokens: 8192)
       @calls += 1
-      locale = user_content[/locale:\s*([\w-]+)/, 1] || '??'
-      payload = JSON.parse(user_content[/\[.*\]/m] || '[]')
-      out = payload.to_h { |item| [item['id'], @transform.call(locale, item['source'])] }
-      JSON.generate(out)
+      # JSON batched mode (strings) vs raw-text mode (metadata) are told apart by
+      # the JSON-mode instruction the Translator emits.
+      if user_content.include?('respond with the JSON object only')
+        locale = user_content[/locale:\s*([\w-]+)/, 1] || '??'
+        payload = JSON.parse(user_content[/\[.*\]/m] || '[]')
+        out = payload.to_h { |item| [item['id'], @transform.call(locale, item['source'])] }
+        JSON.generate(out)
+      else
+        locale = user_content[/Locale:\s*([\w-]+)/, 1] || '??'
+        source = user_content.split("\n\n", 2).last.to_s
+        @transform.call(locale, source)
+      end
     end
   end
 end

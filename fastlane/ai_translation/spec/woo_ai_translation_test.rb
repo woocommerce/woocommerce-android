@@ -178,6 +178,90 @@ class ClaudeCliClientTest < Minitest::Test
   end
 end
 
+class AnthropicTemperatureFallbackTest < Minitest::Test
+  AC = WooAiTranslation::AnthropicClient
+
+  # Fake Net::HTTP: rejects `temperature` with HTTP 400 on the first request
+  # (mimicking claude-opus-4-7), then succeeds. Records each request body so we
+  # can assert the retry dropped temperature and later calls skip it entirely.
+  class FakeHttp
+    Resp = Struct.new(:code, :body)
+    attr_reader :bodies
+
+    def initialize
+      @bodies = []
+      @calls = 0
+    end
+
+    def request(req)
+      @bodies << JSON.parse(req.body)
+      @calls += 1
+      if @calls == 1
+        Resp.new('400', '{"type":"error","error":{"type":"invalid_request_error",' \
+                        '"message":"`temperature` is deprecated for this model."}}')
+      else
+        Resp.new('200', '{"content":[{"text":"{\"k\":\"ok\"}"}]}')
+      end
+    end
+  end
+
+  def test_drops_temperature_and_retries_on_deprecation_400
+    fake = FakeHttp.new
+    out = AC.new(api_key: 'k', http: fake)
+            .complete(model: 'claude-opus-4-7', system_blocks: ['rules'], user_content: 'translate')
+    assert_equal '{"k":"ok"}', out
+    assert_equal 2, fake.bodies.size, 'should retry exactly once'
+    assert fake.bodies[0].key?('temperature'), 'first attempt includes temperature: 0'
+    refute fake.bodies[1].key?('temperature'), 'retry omits temperature'
+  end
+
+  def test_remembers_model_and_skips_temperature_on_subsequent_calls
+    fake = FakeHttp.new
+    client = AC.new(api_key: 'k', http: fake)
+    client.complete(model: 'claude-opus-4-7', system_blocks: ['r'], user_content: 'a') # 400 -> retry
+    client.complete(model: 'claude-opus-4-7', system_blocks: ['r'], user_content: 'b') # learned: no temp
+    assert_equal 3, fake.bodies.size
+    refute fake.bodies[2].key?('temperature'), 'second call skips temperature from the start (no wasted 400)'
+  end
+end
+
+class TranslatorJsonRepairTest < Minitest::Test
+  def client_returning(raw)
+    Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) { |model:, system_blocks:, user_content:, max_tokens: 8192| raw }
+    end.new
+  end
+
+  def test_repairs_raw_newlines_and_tabs_inside_json_string_values
+    # The model emitted a multi-paragraph value with LITERAL newlines/tab
+    # (invalid JSON) — exactly the full_description / release_notes failure
+    # seen on pl-PL and cs-CZ during the metadata backfill.
+    raw = %({"full_description":"Para one.\n\nPara two with a\ttab."})
+    t = WooAiTranslation::Translator.new(client: client_returning(raw))
+    out = t.translate(locale: 'pl', model: 'm',
+                      items: [{ id: 'full_description', source: 'x', context: '' }])
+    assert_equal "Para one.\n\nPara two with a\ttab.", out['full_description']
+  end
+
+  def test_valid_json_still_parses_unchanged
+    raw = '{"k":"already \\n escaped fine"}'
+    t = WooAiTranslation::Translator.new(client: client_returning(raw))
+    out = t.translate(locale: 'pl', model: 'm', items: [{ id: 'k', source: 'x', context: '' }])
+    assert_equal "already \n escaped fine", out['k']
+  end
+
+  def test_raw_text_mode_takes_response_verbatim_no_json_parsing
+    # Metadata path: a multi-paragraph response with quotes/newlines that would
+    # break a JSON envelope is taken as-is (after fence stripping) in raw mode.
+    raw = "```\nZarządzaj sklepem \"od ręki\"\n\nDodawaj produkty.\n```"
+    t = WooAiTranslation::Translator.new(client: client_returning(raw))
+    out = t.translate(locale: 'pl', model: 'm', raw_text: true,
+                      items: [{ id: 'full_description', source: 'x', context: 'full_description' }])
+    assert_equal "Zarządzaj sklepem \"od ręki\"\n\nDodawaj produkty.", out['full_description']
+  end
+end
+
 class FormattedFalsePlaceholderExemptionTest < Minitest::Test
   include WooAiTranslation
 
