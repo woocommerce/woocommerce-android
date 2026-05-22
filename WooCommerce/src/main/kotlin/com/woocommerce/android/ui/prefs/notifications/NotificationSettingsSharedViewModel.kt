@@ -3,7 +3,22 @@ package com.woocommerce.android.ui.prefs.notifications
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.automattic.eventhorizon.NotificationFilterOptionValue
+import com.automattic.eventhorizon.NotificationsDetailFilterOptionSelectEvent
+import com.automattic.eventhorizon.NotificationsDetailFilterValueChangeEvent
+import com.automattic.eventhorizon.NotificationsDetailPushToggleEvent
+import com.automattic.eventhorizon.NotificationsDetailViewEvent
+import com.automattic.eventhorizon.NotificationsSettingsLoadFailedEvent
+import com.automattic.eventhorizon.NotificationsSettingsLoadRetryTappedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateFailedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateRetryTappedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateStartedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateSuccessEvent
+import com.automattic.eventhorizon.NotificationsSettingsViewEvent
+import com.automattic.eventhorizon.NotificationsStockOptionToggleEvent
+import com.automattic.eventhorizon.NotificationsTypeToggleEvent
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.PushNotificationRepository
@@ -40,7 +55,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val notificationChannelsHandler: NotificationChannelsHandler,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val wooPushNotificationPreferences = MutableStateFlow<WooPushNotificationPreferences?>(null)
     private var savedWooPushNotificationPreferences: WooPushNotificationPreferences? = null
@@ -106,7 +122,20 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         observeNotificationPreferencesChanges()
     }
 
+    fun onNotificationSettingsShown() {
+        analyticsTracker.track(NotificationsSettingsViewEvent)
+    }
+
+    fun onNotificationDetailShown(type: NotificationType) {
+        analyticsTracker.track(NotificationsDetailViewEvent(notificationType = type.toEventHorizonValue()))
+    }
+
     fun onNotificationTypeEnabledChanged(type: NotificationType, isEnabled: Boolean) {
+        updateNotificationTypeEnabled(type, isEnabled)
+        trackNotificationTypeToggle(type, isEnabled)
+    }
+
+    private fun updateNotificationTypeEnabled(type: NotificationType, isEnabled: Boolean) {
         val preferences = wooPushNotificationPreferences.value ?: return
         val updatedPreferences = when (type) {
             NotificationType.NEW_ORDERS -> preferences.copy(
@@ -138,7 +167,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     fun onNewOrderNotificationsEnabledChanged(isEnabled: Boolean) {
-        onNotificationTypeEnabledChanged(NotificationType.NEW_ORDERS, isEnabled)
+        updateNotificationTypeEnabled(NotificationType.NEW_ORDERS, isEnabled)
+        trackNotificationDetailPushToggle(NotificationType.NEW_ORDERS, isEnabled)
     }
 
     fun onNewOrderNotificationPreferenceChanged(preference: NewOrderNotificationPreference) {
@@ -155,6 +185,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
                 )
             )
         )
+        trackNotificationDetailFilterOptionSelect(NotificationType.NEW_ORDERS, preference.toEventHorizonValue())
     }
 
     fun onNewOrderThresholdAmountChanged(amount: BigDecimal) {
@@ -172,7 +203,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     fun onNewReviewNotificationsEnabledChanged(isEnabled: Boolean) {
-        onNotificationTypeEnabledChanged(NotificationType.NEW_REVIEWS, isEnabled)
+        updateNotificationTypeEnabled(NotificationType.NEW_REVIEWS, isEnabled)
+        trackNotificationDetailPushToggle(NotificationType.NEW_REVIEWS, isEnabled)
     }
 
     fun onNewReviewNotificationPreferenceChanged(preference: NewReviewNotificationPreference) {
@@ -183,6 +215,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
         )
+        trackNotificationDetailFilterOptionSelect(NotificationType.NEW_REVIEWS, preference.toEventHorizonValue())
     }
 
     fun onNewReviewSelectedRatingChanged(rating: Int) {
@@ -198,7 +231,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     fun onStockNotificationsEnabledChanged(isEnabled: Boolean) {
-        onNotificationTypeEnabledChanged(NotificationType.STOCK, isEnabled)
+        updateNotificationTypeEnabled(NotificationType.STOCK, isEnabled)
+        trackNotificationDetailPushToggle(NotificationType.STOCK, isEnabled)
     }
 
     fun onStockNotificationSubtypeEnabledChanged(type: StockNotificationType, isEnabled: Boolean) {
@@ -217,6 +251,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeStock = updatedViewState.toStoreStockPreferences())
         )
+        trackStockNotificationOptionToggle(type, isEnabled)
     }
 
     fun onNotificationTypeClicked(type: NotificationType) {
@@ -257,11 +292,13 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     private fun showFetchError() {
+        analyticsTracker.track(NotificationsSettingsLoadFailedEvent)
         triggerEvent(
             MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.settings_notifs_error_fetch),
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
+                analyticsTracker.track(NotificationsSettingsLoadRetryTappedEvent)
                 fetchWooPushNotificationPreferences()
             }
         )
@@ -286,8 +323,20 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         if (updateRequest.isEmpty()) {
             return
         }
+        val updatedNotificationTypes = updateRequest.changedNotificationTypes()
 
         saveInProgressWooPushNotificationPreferences = preferencesToSave
+        updatedNotificationTypes.forEach(::trackNotificationSettingsUpdateStarted)
+        savedPreferences.storeOrder?.minAmount?.let { savedMinAmount ->
+            updateRequest.storeOrder?.minAmount?.takeIf { it != savedMinAmount }?.let {
+                trackNotificationDetailFilterValueChange(NotificationType.NEW_ORDERS, it.toDouble())
+            }
+        }
+        savedPreferences.storeReview?.maxRating?.let { savedMaxRating ->
+            updateRequest.storeReview?.maxRating?.takeIf { it != savedMaxRating }?.let {
+                trackNotificationDetailFilterValueChange(NotificationType.NEW_REVIEWS, it.toDouble())
+            }
+        }
         // Once started, let the save request finish even if the screen is closed.
         withContext(NonCancellable + coroutineDispatchers.main) {
             pushNotificationRepository.updateWooNotificationPreferences(
@@ -295,23 +344,29 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             )
         }.onSuccess {
             savedWooPushNotificationPreferences = preferencesToSave
+            updatedNotificationTypes.forEach(::trackNotificationSettingsUpdateSuccess)
         }.onFailure {
+            updatedNotificationTypes.forEach(::trackNotificationSettingsUpdateFailed)
             if (wooPushNotificationPreferences.value != preferencesToSave) {
                 // User changed preferences after this save started, so don't rollback over the newer state.
                 return@onFailure
             }
             rollbackNotificationPreferences()
-            showUpdateError(preferencesToSave)
+            showUpdateError(preferencesToSave, updatedNotificationTypes)
         }
         saveInProgressWooPushNotificationPreferences = null
     }
 
-    private fun showUpdateError(preferencesToSave: WooPushNotificationPreferences) {
+    private fun showUpdateError(
+        preferencesToSave: WooPushNotificationPreferences,
+        notificationTypes: List<NotificationType>
+    ) {
         triggerEvent(
             MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.settings_notifs_error_update),
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
+                notificationTypes.forEach(::trackNotificationSettingsUpdateRetryTapped)
                 applyDisplayedWooPushNotificationPreferences(preferencesToSave)
                 saveNotificationPreferencesTrigger.tryEmit(0L)
             }
@@ -372,6 +427,84 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     private fun WooPushNotificationPreferences.isEmpty(): Boolean =
         storeOrder == null && storeReview == null && storeStock == null
+
+    private fun WooPushNotificationPreferences.changedNotificationTypes(): List<NotificationType> = buildList {
+        if (storeOrder != null) add(NotificationType.NEW_ORDERS)
+        if (storeReview != null) add(NotificationType.NEW_REVIEWS)
+        if (storeStock != null) add(NotificationType.STOCK)
+    }
+
+    private fun trackNotificationSettingsUpdateStarted(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateStartedEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationSettingsUpdateSuccess(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateSuccessEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationSettingsUpdateFailed(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateFailedEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationSettingsUpdateRetryTapped(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateRetryTappedEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationTypeToggle(type: NotificationType, isEnabled: Boolean) {
+        analyticsTracker.track(
+            NotificationsTypeToggleEvent(
+                notificationType = type.toEventHorizonValue(),
+                isEnabled = isEnabled
+            )
+        )
+    }
+
+    private fun trackNotificationDetailPushToggle(type: NotificationType, isEnabled: Boolean) {
+        analyticsTracker.track(
+            NotificationsDetailPushToggleEvent(
+                notificationType = type.toEventHorizonValue(),
+                isEnabled = isEnabled
+            )
+        )
+    }
+
+    private fun trackNotificationDetailFilterValueChange(type: NotificationType, value: Double) {
+        analyticsTracker.track(
+            NotificationsDetailFilterValueChangeEvent(
+                notificationType = type.toEventHorizonValue(),
+                filterValue = value
+            )
+        )
+    }
+
+    private fun trackNotificationDetailFilterOptionSelect(
+        type: NotificationType,
+        option: NotificationFilterOptionValue
+    ) {
+        analyticsTracker.track(
+            NotificationsDetailFilterOptionSelectEvent(
+                notificationType = type.toEventHorizonValue(),
+                filterOption = option
+            )
+        )
+    }
+
+    private fun trackStockNotificationOptionToggle(type: StockNotificationType, isEnabled: Boolean) {
+        analyticsTracker.track(
+            NotificationsStockOptionToggleEvent(
+                option = type.toEventHorizonValue(),
+                isEnabled = isEnabled
+            )
+        )
+    }
 
     private fun WooPushNotificationPreferences.toNewOrderNotificationSettingsViewState(
         displayedThresholdAmount: BigDecimal

@@ -55,6 +55,7 @@ class NotificationSettingsFragment : BaseFragment() {
         viewModel.refreshNotificationSettings()
         if (navArgs.showSmarterNotifications) {
             sharedViewModel.refreshNotificationChannelSettings()
+            sharedViewModel.onNotificationSettingsShown()
         }
         AnalyticsTracker.trackViewShown(this)
     }

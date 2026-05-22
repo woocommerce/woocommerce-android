@@ -1,7 +1,24 @@
 package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.eventhorizon.NotificationFilterOptionValue
+import com.automattic.eventhorizon.NotificationTypeValue
+import com.automattic.eventhorizon.NotificationsDetailFilterOptionSelectEvent
+import com.automattic.eventhorizon.NotificationsDetailPushToggleEvent
+import com.automattic.eventhorizon.NotificationsDetailViewEvent
+import com.automattic.eventhorizon.NotificationsSettingsLoadFailedEvent
+import com.automattic.eventhorizon.NotificationsSettingsLoadRetryTappedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateFailedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateRetryTappedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateStartedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateSuccessEvent
+import com.automattic.eventhorizon.NotificationsSettingsViewEvent
+import com.automattic.eventhorizon.NotificationsStockOptionToggleEvent
+import com.automattic.eventhorizon.NotificationsTypeToggleEvent
+import com.automattic.eventhorizon.StockNotificationOptionValue
+import com.automattic.eventhorizon.Trackable
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.PushNotificationRepository
@@ -24,6 +41,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
@@ -67,6 +85,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             "$${it.getArgument<BigDecimal>(0).toPlainString()}"
         }
     }
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val defaultNotificationPreferences = WooPushNotificationPreferences(
         storeOrder = StoreOrderPreferences(enabled = true),
         storeReview = StoreReviewPreferences(enabled = true),
@@ -95,7 +114,8 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             currencyFormatter = currencyFormatter,
             notificationChannelsHandler = notificationChannelsHandler,
-            coroutineDispatchers = coroutinesTestRule.testDispatchers
+            coroutineDispatchers = coroutinesTestRule.testDispatchers,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -153,6 +173,29 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             assertThat(orderItem.isNotificationChannelEnabled).isTrue()
         }
+
+    @Test
+    fun `when notification settings is shown, then track notification settings view`() = testBlocking {
+        setup()
+
+        viewModel.onNotificationSettingsShown()
+
+        verify(analyticsTracker).track(NotificationsSettingsViewEvent)
+    }
+
+    @Test
+    fun `when notification detail is shown, then track notification detail view`() = testBlocking {
+        setup()
+
+        viewModel.onNotificationDetailShown(NotificationType.NEW_ORDERS)
+
+        verify(analyticsTracker).track(
+            argThat<Trackable> {
+                this is NotificationsDetailViewEvent &&
+                    notificationType == NotificationTypeValue.NewOrder
+            }
+        )
+    }
 
     @Test
     fun `when view model is loaded, then fetch notification preferences`() = testBlocking {
@@ -215,6 +258,8 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             snackbar.action.onClick(null)
             advanceUntilIdle()
 
+            verify(analyticsTracker).track(NotificationsSettingsLoadFailedEvent)
+            verify(analyticsTracker).track(NotificationsSettingsLoadRetryTappedEvent)
             verify(pushNotificationRepository, times(2)).fetchWooNotificationPreferences()
             assertThat(viewModel.isNotificationTypeSelectionEnabled.captureValues().last()).isTrue()
         }
@@ -309,6 +354,25 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         assertThat(preferences.storeOrder).isNull()
         assertThat(preferences.storeReview).isNull()
         assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
+        verify(analyticsTracker).track(
+            argThat<Trackable> {
+                this is NotificationsTypeToggleEvent &&
+                    notificationType == NotificationTypeValue.StockAlert &&
+                    isEnabled == false
+            }
+        )
+        verify(analyticsTracker).track(
+            argThat<Trackable> {
+                this is NotificationsSettingsUpdateStartedEvent &&
+                    notificationType == NotificationTypeValue.StockAlert
+            }
+        )
+        verify(analyticsTracker).track(
+            argThat<Trackable> {
+                this is NotificationsSettingsUpdateSuccessEvent &&
+                    notificationType == NotificationTypeValue.StockAlert
+            }
+        )
     }
 
     @Test
@@ -331,6 +395,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeOrder)
                 .isEqualTo(StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)))
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsTypeToggleEvent &&
+                        notificationType == NotificationTypeValue.NewOrder &&
+                        isEnabled == false
+                }
+            )
         }
 
     @Test
@@ -347,6 +418,20 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeOrder)
                 .isEqualTo(StoreOrderPreferences(enabled = false, minAmount = BigDecimal(50)))
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailPushToggleEvent &&
+                        notificationType == NotificationTypeValue.NewOrder &&
+                        isEnabled == false
+                }
+            )
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewOrder &&
+                        filterOption == NotificationFilterOptionValue.Filtered
+                }
+            )
         }
 
     @Test
@@ -370,6 +455,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
             assertThat(orderViewState.thresholdAmount).isEqualTo(BigDecimal(50))
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewOrder &&
+                        filterOption == NotificationFilterOptionValue.All
+                }
+            )
         }
 
     @Test
@@ -403,6 +495,20 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val preferences = captureUpdatePreferences()
             assertThat(preferences.storeReview)
                 .isEqualTo(StoreReviewPreferences(enabled = false, maxRating = 4))
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailPushToggleEvent &&
+                        notificationType == NotificationTypeValue.NewReview &&
+                        isEnabled == false
+                }
+            )
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewReview &&
+                        filterOption == NotificationFilterOptionValue.Filtered
+                }
+            )
         }
 
     @Test
@@ -428,6 +534,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val reviewViewState = viewModel.newReviewNotificationSettingsViewState.captureValues().last()
             assertThat(reviewViewState.selectedRating).isEqualTo(3)
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewReview &&
+                        filterOption == NotificationFilterOptionValue.All
+                }
+            )
         }
 
     @Test
@@ -451,6 +564,20 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
                     outOfStock = true,
                     onBackorder = true
                 )
+            )
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailPushToggleEvent &&
+                        notificationType == NotificationTypeValue.StockAlert &&
+                        isEnabled == false
+                }
+            )
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsStockOptionToggleEvent &&
+                        option == StockNotificationOptionValue.LowStock &&
+                        isEnabled == false
+                }
             )
         }
 
@@ -526,6 +653,12 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val snackbar = event as Event.ShowActionStringSnackbar
             assertThat(snackbar.message).isEqualTo(resourceProvider.getString(R.string.settings_notifs_error_update))
             assertThat(snackbar.actionText).isEqualTo(resourceProvider.getString(R.string.retry))
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsSettingsUpdateFailedEvent &&
+                        notificationType == NotificationTypeValue.StockAlert
+                }
+            )
         }
 
     @Test
@@ -554,6 +687,12 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             (event as Event.ShowActionStringSnackbar).action.onClick(null)
             advanceUntilIdle()
 
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsSettingsUpdateRetryTappedEvent &&
+                        notificationType == NotificationTypeValue.StockAlert
+                }
+            )
             val preferences = captureLastUpdatePreferences()
             assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
         }
