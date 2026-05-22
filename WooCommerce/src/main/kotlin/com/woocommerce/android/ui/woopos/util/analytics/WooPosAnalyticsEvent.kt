@@ -139,6 +139,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "mark_as_paid_failed"
         }
 
+        data object MarkAsPaidNotePostFailed : Event() {
+            override val name: String = "mark_as_paid_note_post_failed"
+        }
+
         data object BackToCheckoutFromMarkAsPaid : Event() {
             override val name: String = "back_to_checkout_from_mark_as_paid"
         }
