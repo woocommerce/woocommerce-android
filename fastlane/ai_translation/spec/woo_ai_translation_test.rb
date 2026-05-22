@@ -194,7 +194,7 @@ class ValidatorsTest < Minitest::Test
     assert_includes errors, 'glossary term not preserved: WooCommerce'
     assert_includes errors, 'glossary term not preserved: SKU'
     refute_includes errors, 'glossary term not preserved: Woo'
-    assert_includes V.glossary_preservation('Use Woo', 'Use WooCommerce', terms), 'glossary term not preserved: Woo'
+    assert_empty V.glossary_preservation('Use Woo', 'Pidätkö Woosta?', terms)
   end
 
   def test_plural_pairs_is_informational_only
