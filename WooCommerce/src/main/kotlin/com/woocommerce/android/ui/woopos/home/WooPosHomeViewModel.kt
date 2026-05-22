@@ -196,6 +196,9 @@ class WooPosHomeViewModel @Inject constructor(
                         PaymentMethod.EXTERNAL
                     )
 
+                    is ChildToParentEvent.OrderSuccessfullyPaidExternallyWithFailedNote ->
+                        onOrderSuccessfullyPaid(PaymentMethod.EXTERNAL, hasFailedNote = true)
+
                     is ChildToParentEvent.PaymentCollecting -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
@@ -317,13 +320,13 @@ class WooPosHomeViewModel @Inject constructor(
         }
     }
 
-    private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
+    private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod, hasFailedNote: Boolean = false) {
         viewModelScope.launch {
             soundHelper.playChaChing()
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals
         )
-        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid(paymentMethod))
+        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid(paymentMethod, hasFailedNote))
     }
 }

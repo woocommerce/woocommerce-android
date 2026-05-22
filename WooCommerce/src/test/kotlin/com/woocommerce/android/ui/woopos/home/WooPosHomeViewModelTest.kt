@@ -126,7 +126,27 @@ class WooPosHomeViewModelTest {
 
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(
-                ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)
+                ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL, hasFailedNote = false)
+            )
+            verify(soundHelper).playChaChing()
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
+        }
+
+    @Test
+    fun `when OrderSuccessfullyPaidExternallyWithFailedNote received, then OrderSuccessfullyPaid with EXTERNAL and hasFailedNote true is sent`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaidExternallyWithFailedNote)
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL, hasFailedNote = true)
             )
             verify(soundHelper).playChaChing()
             assertThat(viewModel.state.value.screenPositionState)

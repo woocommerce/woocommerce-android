@@ -187,20 +187,24 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     }
 
     @Test
-    fun `given repo succeeds with failed note, when confirm clicked, then MarkAsPaidNotePostFailed tracked`() = runTest {
-        // GIVEN
-        whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-            .thenReturn(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
-        val viewModel = createViewModel()
+    fun `given repo succeeds with failed note, when confirm clicked, then failed-note variant emitted and analytic tracked`() =
+        runTest {
+            // GIVEN
+            whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
+                .thenReturn(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
+            val viewModel = createViewModel()
 
-        // WHEN / THEN
-        viewModel.navigationEvent.test {
-            viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
-            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+            // WHEN / THEN
+            viewModel.navigationEvent.test {
+                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+            }
+            verify(tracker).track(MarkAsPaidNotePostFailed)
+            verify(tracker).track(MarkAsPaidSuccess)
+            verify(childrenToParentEventSender).sendToParent(
+                eq(ChildToParentEvent.OrderSuccessfullyPaidExternallyWithFailedNote),
+            )
         }
-        verify(tracker).track(MarkAsPaidNotePostFailed)
-        verify(tracker).track(MarkAsPaidSuccess)
-    }
 
     @Test
     fun `given repo succeeds without failed note, when confirm clicked, then MarkAsPaidNotePostFailed not tracked`() =

@@ -51,7 +51,10 @@ sealed class WooPosTotalsViewState : Parcelable {
         ) : Totals()
     }
 
-    data class PaymentSuccess(val orderTotalText: String) : WooPosTotalsViewState()
+    data class PaymentSuccess(
+        val orderTotalText: String,
+        val secondaryMessage: String? = null,
+    ) : WooPosTotalsViewState()
 
     sealed class ReaderStatus : Parcelable {
         @Parcelize

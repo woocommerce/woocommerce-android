@@ -66,7 +66,7 @@ fun WooPosPaymentSuccessScreen(
         val textsMargin = WooPosSpacing.Small.value
 
         ConstraintLayout {
-            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
+            val (icon, title, message, secondaryMessage, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -101,8 +101,22 @@ fun WooPosPaymentSuccessScreen(
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    bottom.linkTo(secondaryMessage.top, margin = textsMargin)
                 }
+            )
+
+            WooPosText(
+                text = state.secondaryMessage.orEmpty(),
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
+                    .constrainAs(secondaryMessage) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    }
             )
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
@@ -145,6 +159,22 @@ fun WooPosPaymentSuccessScreenPreview() {
         WooPosPaymentSuccessScreen(
             state = WooPosTotalsViewState.PaymentSuccess(
                 orderTotalText = "A payment of 13.18 was successfully made",
+            ),
+            onReceiptClicked = {},
+            onNewTransactionClicked = {},
+            onBackPressed = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPaymentSuccessScreenWithFailedNotePreview() {
+    WooPosTheme {
+        WooPosPaymentSuccessScreen(
+            state = WooPosTotalsViewState.PaymentSuccess(
+                orderTotalText = "Order of $42.00 was marked as complete.",
+                secondaryMessage = "The order was marked as complete, but the customer note couldn't be saved.",
             ),
             onReceiptClicked = {},
             onNewTransactionClicked = {},

@@ -49,7 +49,10 @@ sealed class ParentToChildrenEvent {
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
 
-    data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
+    data class OrderSuccessfullyPaid(
+        val paymentMethod: PaymentMethod,
+        val hasFailedNote: Boolean = false,
+    ) : ParentToChildrenEvent() {
         enum class PaymentMethod {
             CARD,
             CASH,

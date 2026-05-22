@@ -126,9 +126,9 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
             when (outcome) {
                 MarkOrderAsCompleteOutcome.SuccessWithFailedNote -> {
                     analyticsTracker.track(MarkAsPaidNotePostFailed)
-                    onMarkAsPaidSucceeded()
+                    onMarkAsPaidSucceeded(hasFailedNote = true)
                 }
-                MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded()
+                MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded(hasFailedNote = false)
                 MarkOrderAsCompleteOutcome.Failure -> {
                     analyticsTracker.track(MarkAsPaidFailed)
                     _state.value = current.copy(
@@ -142,9 +142,14 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
         }
     }
 
-    private suspend fun onMarkAsPaidSucceeded() {
+    private suspend fun onMarkAsPaidSucceeded(hasFailedNote: Boolean) {
         analyticsTracker.track(MarkAsPaidSuccess)
-        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidExternally)
+        val event = if (hasFailedNote) {
+            ChildToParentEvent.OrderSuccessfullyPaidExternallyWithFailedNote
+        } else {
+            ChildToParentEvent.OrderSuccessfullyPaidExternally
+        }
+        childrenToParentEventSender.sendToParent(event)
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
     }
 

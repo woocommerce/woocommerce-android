@@ -655,7 +655,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             // Cancel payment intent if order is marked completed by cash
                             cancelPaymentAction()
                         }
-                        showSuccessfulPaymentState(event.paymentMethod)
+                        showSuccessfulPaymentState(event.paymentMethod, event.hasFailedNote)
                         performIncrementalSyncUseCase.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
                     }
 
@@ -1056,7 +1056,7 @@ class WooPosTotalsViewModel @Inject constructor(
             }
         }
 
-    private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
+    private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod, hasFailedNote: Boolean = false) {
         viewModelScope.launch {
             val dataState = dataState.value
             checkNotNull(dataState.orderTotal)
@@ -1070,8 +1070,14 @@ class WooPosTotalsViewModel @Inject constructor(
                 template,
                 priceFormat(dataState.orderTotal)
             )
+            val secondaryMessage = if (hasFailedNote) {
+                resourceProvider.getString(R.string.woopos_totals_success_payment_note_post_failed)
+            } else {
+                null
+            }
             uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                orderTotalText = orderTotalText
+                orderTotalText = orderTotalText,
+                secondaryMessage = secondaryMessage,
             )
         }
     }

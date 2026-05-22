@@ -1188,6 +1188,67 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given EXTERNAL payment with hasFailedNote true, when OrderSuccessfullyPaid arrives, then secondaryMessage set`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_external, "5.00$"))
+                .thenReturn("Order of 5.00$ was marked as complete.")
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_note_post_failed))
+                .thenReturn("The order was marked as complete, but the customer note couldn't be saved.")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+
+            // WHEN
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(
+                paymentMethod = PaymentMethod.EXTERNAL,
+                hasFailedNote = true,
+            )
+
+            // THEN
+            val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+            assertThat(successState.orderTotalText).isEqualTo("Order of 5.00$ was marked as complete.")
+            assertThat(successState.secondaryMessage)
+                .isEqualTo("The order was marked as complete, but the customer note couldn't be saved.")
+        }
+
+    @Test
+    fun `given EXTERNAL payment with hasFailedNote false, when OrderSuccessfullyPaid arrives, then secondaryMessage is null`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_external, "5.00$"))
+                .thenReturn("Order of 5.00$ was marked as complete.")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+
+            // WHEN
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)
+
+            // THEN
+            val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+            assertThat(successState.secondaryMessage).isNull()
+        }
+
+    @Test
     fun `given payment success state, when OnBackClicked, then sends OnNewTransactionStarted to parent`() =
         runTest {
             // GIVEN
