@@ -45,7 +45,10 @@ if [ -z "${CHANGED}" ]; then
 fi
 
 echo '--- :memo: Commit translations back to the PR branch'
-git add WooCommerce/src/main/res/values-*/strings.xml fastlane/ai_translation/translation-manifest.json
+git add -- 'WooCommerce/src/main/res/values-*/strings.xml'
+if [ -f fastlane/ai_translation/translation-manifest.json ]; then
+  git add -- 'fastlane/ai_translation/translation-manifest.json'
+fi
 git commit -m "Update AI translations ${BOT_SKIP_MARKER}"
 git push origin "HEAD:${BUILDKITE_BRANCH}"
 
