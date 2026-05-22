@@ -187,12 +187,14 @@ class ValidatorsTest < Minitest::Test
     terms = %w[Woo WooCommerce WooPayments SKU PIN]
     assert_empty V.glossary_preservation('Use WooCommerce SKU', 'Utiliser WooCommerce SKU', terms)
     assert_empty V.glossary_preservation('Use WooPayments', 'Utiliser WooPayments', terms)
+    assert_empty V.glossary_preservation('Connect Jetpack', 'Yhdistä Jetpackin', %w[Jetpack])
     assert_empty V.glossary_preservation('SHIPPING', 'LIVRAISON', terms)
 
     errors = V.glossary_preservation('Use WooCommerce SKU', 'Utiliser Woo commerce UGS', terms)
     assert_includes errors, 'glossary term not preserved: WooCommerce'
     assert_includes errors, 'glossary term not preserved: SKU'
     refute_includes errors, 'glossary term not preserved: Woo'
+    assert_includes V.glossary_preservation('Use Woo', 'Use WooCommerce', terms), 'glossary term not preserved: Woo'
   end
 
   def test_plural_pairs_is_informational_only
