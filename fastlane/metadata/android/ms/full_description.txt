@@ -1,0 +1,30 @@
+Jalankan kedai anda dari mana saja
+
+Urus perniagaan anda semasa dalam perjalanan dengan Aplikasi Mudah Alih WooCommerce. Tambah produk, buat pesanan, terima pembayaran pantas, dan pantau jualan baharu serta statistik utama secara real-time.
+
+Tambah dan edit produk dengan sentuhan
+Mulakan dalam beberapa saat! Buat, kumpulkan, dan terbitkan produk terus dari telefon atau tablet Android anda. Tangkap kreativiti anda pada saat itu – ubah idea anda menjadi produk dengan segera, atau simpan sebagai draf untuk kemudian.
+
+Buat pesanan dengan cepat
+Setelah anda mempunyai beberapa produk yang dibuat, ia mudah. Pilih item dari katalog anda, tambah penghantaran, kemudian isi butiran pelanggan untuk membuat pesanan dengan cepat yang disegerakkan dengan inventori anda.
+
+Terima pembayaran secara peribadi
+Kumpul pembayaran fizikal menggunakan WooCommerce In-Person Payments dan pembaca kad (tersedia di AS, UK, dan Kanada), Tap to Pay, atau dompet digital, seperti Apple Pay. Mulakan pesanan baharu — atau cari pesanan sedia ada yang menunggu pembayaran – kemudian terima pembayaran dengan lancar.
+
+Dari klik ke batu bata
+Tukarkan mana-mana tablet menjadi titik jualan yang berkuasa dengan WooCommerce POS. Cari produk, imbas kod bar, gunakan kupon, dan hantar resit e-mel, dengan semua jualan dalam talian dan fizikal anda disegerakkan secara real-time. Tersedia di AS dan UK.
+
+Dapatkan pemberitahuan setiap jualan
+Sekarang anda sedang menjual secara aktif, jangan pernah ketinggalan pesanan atau ulasan. Kekal dalam gelung dengan membolehkan amaran real-time – dan dengarkan bunyi "cha-ching" yang adiktif yang datang dengan setiap jualan baharu!
+
+Jejaki jualan dan produk terlaris
+Lihat produk mana yang menang sekilas pandang. Pantau hasil keseluruhan anda, kiraan pesanan, dan data pelawat mengikut minggu, bulan, dan tahun. Pengetahuan = kuasa.
+
+WooCommerce di jam tangan anda
+Dengan Aplikasi WooCommerce Wear OS kami, anda boleh melihat data kedai hari ini dan menjejaki pesanan anda dengan mudah terus dari pergelangan tangan anda. Dengan komplikasi kami, anda juga boleh mendapatkan akses segera ke aplikasi.
+
+WooCommerce ialah platform eCommerce sumber terbuka yang paling boleh disesuaikan di dunia. Sama ada anda melancarkan perniagaan, membawa runcit batu bata dan mortar dalam talian, atau membangunkan tapak untuk pelanggan, gunakan WooCommerce untuk kedai yang dengan kuat menggabungkan kandungan dan perdagangan.
+
+Keperluan: WooCommerce v3.5+.
+
+Lihat Notis Privasi untuk pengguna California di https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

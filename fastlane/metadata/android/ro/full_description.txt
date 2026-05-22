@@ -1,0 +1,30 @@
+Gestionează-ți magazinul de oriunde
+
+Administrează-ți afacerea în mișcare cu aplicația mobilă WooCommerce. Adaugă produse, creează comenzi, acceptă plăți rapide și monitorizează vânzările noi și statisticile cheie în timp real.
+
+Adaugă și editează produse cu atingerea degetului
+Pornește în câteva secunde! Creează, grupează și publică produse direct din telefonul sau tableta Android. Captează creativitatea în momentul în care apare – transformă ideile în produse imediat, sau salvează-le ca schițe pentru mai târziu.
+
+Creează comenzi pe loc
+Odată ce ai creat niște produse, e simplu. Alege articole din catalogul tău, adaugă livrarea, apoi completează detaliile clientului pentru a crea rapid o comandă care se sincronizează cu inventarul tău.
+
+Acceptă plăți în persoană
+Colectează plăți fizice folosind WooCommerce In-Person Payments și un cititor de carduri (disponibil în SUA, Marea Britanie și Canada), Tap to Pay, sau un portofel digital, cum ar fi Apple Pay. Pornește o comandă nouă — sau găsește una existentă care așteaptă plată – apoi acceptă plata fără probleme.
+
+De la clicuri la magazine fizice
+Transformă orice tablă într-un punct de vânzare puternic cu WooCommerce POS. Caută produse, scanează coduri de bare, aplică coduri promo și trimite chitanțe prin email, cu toate vânzările tale online și fizice sincronizate în timp real. Disponibil în SUA și Marea Britanie.
+
+Fii notificat la fiecare vânzare
+Acum că vinzi activ, nu rata nicio comandă sau recenzie. Rămâi la curent activând alertele în timp real – și ascultă sunetul captivant "cha-ching" care vine cu fiecare vânzare nouă!
+
+Urmărește vânzările și produsele bestseller
+Vezi care produse sunt câștigătoare dintr-o privire. Monitorizează veniturile totale, numărul de comenzi și datele vizitatorilor pe săptămână, lună și an. Cunoașterea = putere.
+
+WooCommerce pe ceasul tău
+Cu aplicația noastră WooCommerce Wear OS, poți vedea cu ușurință datele magazinului de astazi și urmări comenzile tale direct de pe încheietura mâinii. Cu complicațiile noastre, poți obține și acces instant la aplicație.
+
+WooCommerce este cea mai personalizabilă platformă de comerț electronic open-source din lume. Indiferent dacă lansezi o afacere, duci comerțul cu amănuntul tradițional online, sau dezvolți site-uri pentru clienți, folosește WooCommerce pentru un magazin care amestecă puternic conținutul și comerțul.
+
+Cerințe: WooCommerce v3.5+.
+
+Vizualizează Notificarea de confidențialitate pentru utilizatorii din California la https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

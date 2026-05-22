@@ -516338,5 +516338,332 @@
     }
   },
   "metadata": {
+    "title": {
+      "locales": {
+        "pl-PL": {
+          "origin": "ai",
+          "cache_key": "1715e7fd1cf1f50ab30276a7920c326c8727c4a0c60f4b55bb40031b3408ec02",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:53:47Z"
+        },
+        "pt-PT": {
+          "origin": "ai",
+          "cache_key": "79a534c001a53446b1a51012b755ca38d0b2fec09fd268b75c796b4fbea7ce56",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:03Z"
+        },
+        "cs-CZ": {
+          "origin": "ai",
+          "cache_key": "6140b3b031ea237b8d8116aff4fa4d3b9273d483c17a93daab502988bde0751b",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:16Z"
+        },
+        "da-DK": {
+          "origin": "ai",
+          "cache_key": "2c25bfd6c72bbadf1105228ad04f108595219b953b22ca1ec16698c7a3520d5d",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:33Z"
+        },
+        "nb-NO": {
+          "origin": "ai",
+          "cache_key": "5be0261ee64f185e093945c33d7e56d9cb70b13c01b98fd1ecf1f5410a7db2fe",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:45Z"
+        },
+        "fi-FI": {
+          "origin": "ai",
+          "cache_key": "1036bd602e246d460b934022cc2629a239ad5067841316050b10f500ba853280",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:55:03Z"
+        },
+        "el-GR": {
+          "origin": "ai",
+          "cache_key": "45d30f60f2bf5747f959dfe4e9d1dc8ef670f80b84885e6852352af0f5b49052",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:55:32Z"
+        },
+        "hu-HU": {
+          "origin": "ai",
+          "cache_key": "d22c68e77a18f111535a7f5c70a1da790e3a73a0a15cb3761008b2acf2e9018b",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:05Z"
+        },
+        "ro": {
+          "origin": "ai",
+          "cache_key": "0dcbeaf74a3306a6bfa6509a6745a8dccf970dbf2fdf6624eae1f41b3275636f",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:25Z"
+        },
+        "uk": {
+          "origin": "ai",
+          "cache_key": "c15b4ea27b3acdfb93960290ab69c16258c623e859270adc6d7850e3a9cefbac",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:42Z"
+        },
+        "bg": {
+          "origin": "ai",
+          "cache_key": "a10163d47231e60c2f99e0e26cd1a9b8bfe3128d4666888e1ffd6bc56d60f802",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:03Z"
+        },
+        "th": {
+          "origin": "ai",
+          "cache_key": "e23fafb9872ceb571019d87b8684ce72e8eb3355528a0f710abe2e9854e96b1c",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:23Z"
+        },
+        "vi": {
+          "origin": "ai",
+          "cache_key": "c80452ea25f8a9562b09abaa488d977cac603f03d5fcb5a683fc9f892f35bb8d",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:56Z"
+        },
+        "hi-IN": {
+          "origin": "ai",
+          "cache_key": "c2e1aea0ca4ddcd83ccd926b0784e4c4938dd3375761ed4ddd6b017d28e75407",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:58:19Z"
+        },
+        "ms": {
+          "origin": "ai",
+          "cache_key": "8da70e93ffbd44efcdca1b24a291e1532ef5c606f2735cc5d99b0b067066b65d",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:58:43Z"
+        }
+      }
+    },
+    "short_description": {
+      "locales": {
+        "pl-PL": {
+          "origin": "ai",
+          "cache_key": "a689d42920b9c4e6958ac40a6278b93475de3392ee4c75b5a9ad23cde2c594d6",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:53:52Z"
+        },
+        "pt-PT": {
+          "origin": "ai",
+          "cache_key": "9fae02db11fb59c8ac90695c9f5cbee6e5206887b4f9cb1ed47f55ca7f6258d3",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:08Z"
+        },
+        "cs-CZ": {
+          "origin": "ai",
+          "cache_key": "95d4a5475b06fce47a53c8149f3dbacdb7203b517463a4384b371376c72d9175",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:21Z"
+        },
+        "da-DK": {
+          "origin": "ai",
+          "cache_key": "9e7409bd546d0e95f38c90a9861e4e87aa05957cc44a3715fb40ea29b6aee93a",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:35Z"
+        },
+        "nb-NO": {
+          "origin": "ai",
+          "cache_key": "8b9f93c0f59481bf04691c70bbd50b1c65cdb2fecf5fede6bf14b15d7aeae7bc",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:52Z"
+        },
+        "fi-FI": {
+          "origin": "ai",
+          "cache_key": "39b73c19e87c40ebfdedb88a515ed6e4061e93876c1fbb726a1b213b3deb7b08",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:55:09Z"
+        },
+        "el-GR": {
+          "origin": "ai",
+          "cache_key": "187a5fe683097110211904d5431db1ed3e6cb6c9b5ed3412a968bb98936175eb",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:55:40Z"
+        },
+        "hu-HU": {
+          "origin": "ai",
+          "cache_key": "c15512f094107bbd6e113f9995218ca73e65bd2f0829a300ae86703a047748ac",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:10Z"
+        },
+        "ro": {
+          "origin": "ai",
+          "cache_key": "e1ac7c9492ac19ce3e9c18140f165d9cfaeb5fa87946ebcac800e3fad2742eaa",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:30Z"
+        },
+        "uk": {
+          "origin": "ai",
+          "cache_key": "7c8c6e550365fce2336a6f87fa0b4ebdef48330cedf635fb677ca4b98372ffc7",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:49Z"
+        },
+        "bg": {
+          "origin": "ai",
+          "cache_key": "05bda788313030146b9c444ef86409c8dda92a52f2e488b9522fe09d4bfdc3b7",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:08Z"
+        },
+        "th": {
+          "origin": "ai",
+          "cache_key": "df5de53038f42de933e878aa1718bc01d2b945c2fa959c40f866e7ab94a9ee35",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:31Z"
+        },
+        "vi": {
+          "origin": "ai",
+          "cache_key": "111333438b7a6a00cfe0b9d604df45a27c4dfd1ceb5fcb51f6aa2625649456a8",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:59Z"
+        },
+        "hi-IN": {
+          "origin": "ai",
+          "cache_key": "0fa07a564731254b9655f09b6c468fbfdb7647116430e5579dac211723ba5a11",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:58:29Z"
+        },
+        "ms": {
+          "origin": "ai",
+          "cache_key": "062d9260e0497c907ca1ddf0192e608e2cb1cbb411b2966df00124a937cb0a36",
+          "model": "claude-opus-4-7",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:58:51Z"
+        }
+      }
+    },
+    "full_description": {
+      "locales": {
+        "pt-PT": {
+          "origin": "ai",
+          "cache_key": "a674b79163a6adbe5e1591a417e80ee87dd1ca47ad13d18e67fe55a22106c32a",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:14Z"
+        },
+        "da-DK": {
+          "origin": "ai",
+          "cache_key": "a4fb76a08ebad21bef3de4dbdc9985357c17140dd12b1499ae3610bb7e748587",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:54:44Z"
+        },
+        "nb-NO": {
+          "origin": "ai",
+          "cache_key": "20a031e1e02a1858b8af0b8e5a9d64ead9430c588180cfa3a9e96dfd5e239b8c",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:55:01Z"
+        },
+        "fi-FI": {
+          "origin": "ai",
+          "cache_key": "c93fbe7fd8a2edd8d4b9a397f19fc624a7db74e468b2e56d0275a50ebe67b8b3",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:55:30Z"
+        },
+        "el-GR": {
+          "origin": "ai",
+          "cache_key": "605dd54b6199188cc6fe33cd4e8e81b99be9e7f5aa9adca613b0b6b95fc475d1",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:01Z"
+        },
+        "hu-HU": {
+          "origin": "ai",
+          "cache_key": "152c70a59b24dfa410e1bc47c229d056c17da6093e20ce1ce9023f4035e299ba",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:23Z"
+        },
+        "ro": {
+          "origin": "ai",
+          "cache_key": "2de5b0932b2176378c6009c179ab897268bf47a449599cca42f6ada74404d274",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:56:39Z"
+        },
+        "uk": {
+          "origin": "ai",
+          "cache_key": "475b0a8ed08d4f3d9d3d4fdd9743f10317d8ef4f773d952728762f8e0eb7fbb7",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:01Z"
+        },
+        "bg": {
+          "origin": "ai",
+          "cache_key": "985cd19d81c7ed6c202c8069c0a59e4e2395dd30df998b5eb3af6dacd4a32f04",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:21Z"
+        },
+        "th": {
+          "origin": "ai",
+          "cache_key": "d19a33b1bb5a85dc084ced26c4d5a6877fd74847fa6107375f02672ce6e67222",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:57:53Z"
+        },
+        "vi": {
+          "origin": "ai",
+          "cache_key": "d45b1bacbb1f134ccf72b818de17aadfe9a26fb21bfb88d5bebe3d609681942f",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:58:11Z"
+        },
+        "hi-IN": {
+          "origin": "ai",
+          "cache_key": "ba5c63e9407478cf0a36ca4735837f809ad634805567f119eb6d0a4a07306d17",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:58:41Z"
+        },
+        "ms": {
+          "origin": "ai",
+          "cache_key": "2f8d3080ce4fc7d0bff5b66012426cf2d37333d5f698761b2306f0cb0bf1f5e7",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T12:59:00Z"
+        },
+        "pl-PL": {
+          "origin": "ai",
+          "cache_key": "d57afe39c509b99ea59b325ee458fb309c2c275c64f516506dbf67c83be3b047",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T13:09:05Z"
+        },
+        "cs-CZ": {
+          "origin": "ai",
+          "cache_key": "8b7e613e4d86f426ce782f06dbe72af082ebddc2f06ce8d38b086d15c1fb74f6",
+          "model": "claude-haiku-4-5",
+          "prompt_version": "2026-05-19.1",
+          "updated": "2026-05-22T13:09:14Z"
+        }
+      }
+    }
   }
 }

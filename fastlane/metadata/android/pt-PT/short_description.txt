@@ -1,0 +1,1 @@
+Gerir encomendas, notificações, métricas e pagamentos presenciais.
