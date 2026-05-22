@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
@@ -53,13 +54,21 @@ class ProductsGetToolHandlerTest {
     )
 
     @Test
-    fun `given descriptor, when inspected, then variation and card-rendering guidance is aligned`() {
+    fun `given descriptor, when inspected, then iOS-aligned fetch guidance is exposed`() {
         val description = handler.descriptor.description
+        val properties = handler.descriptor.inputSchema.getValue("properties").jsonObject
 
-        assertThat(description).contains("use product_variations_list only when")
-        assertThat(description).contains("explicitly asks about variations, sizes, colors, options")
-        assertThat(description).contains("Do NOT call this tool to render a card after products_list")
-        assertThat(description).contains("`show_cards` re-fetches product detail")
+        assertThat(description).contains("full description")
+        assertThat(description).contains("categories")
+        assertThat(description).contains("fields not shown on product cards")
+        assertThat(description).contains("prior-turn product position/reference")
+        assertThat(description).contains("use product_variations_list instead")
+        assertThat(description).contains("variations, sizes, colors")
+        assertThat(description).contains("Do not call just to re-render an existing product card")
+        assertThat(description).doesNotContain("Do NOT call this tool to render a card")
+        assertThat(properties.keys).containsExactly("id")
+        assertThat(handler.descriptor.inputSchema.getValue("required").jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("id")
     }
 
     @Test
