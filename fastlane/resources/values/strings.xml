@@ -4119,7 +4119,6 @@
 
     <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
     <string name="woopos_eligibility_retry_check_label">Retry</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Please make sure the WooCommerce plugin is installed and activated from your WordPress admin. If there is still an issue, please contact support for assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
     <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>

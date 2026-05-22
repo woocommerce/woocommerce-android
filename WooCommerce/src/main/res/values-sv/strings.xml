@@ -610,7 +610,6 @@ Language: sv_SE
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS-systemet är inte tillgängligt för din butiks valuta. I %1$s stöder den för närvarande endast %2$s. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
     <string name="woopos_eligibility_reason_check_connection">Kontrollera din internetanslutning och prova att starta om appen. Om problemet kvarstår, kontakta supporten.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Din WooCommerce-version stöds inte. POS-systemet kräver WooCommerce-version %1$s eller senare. Uppdatera till den senaste versionen av WooCommerce.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Se till att WooCommerce-tillägget installeras och aktiveras från din WordPress-adminpanel. Om du fortfarande upplever problem, kontakta supporten för att få hjälp.</string>
     <string name="orderfilters_sales_channel_filter">Försäljningskanal</string>
     <string name="barcode_ean13_content_description">Streckkod EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Ytterligare hantering</string>

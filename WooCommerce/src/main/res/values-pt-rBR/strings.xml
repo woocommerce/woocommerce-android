@@ -610,7 +610,6 @@ Language: pt_BR
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">O sistema PDV não está disponível para a moeda da sua loja. No %1$s, ele só é compatível com %2$s. Verifique as configurações de moeda da sua loja ou entre em contato com o suporte para obter ajuda.</string>
     <string name="woopos_eligibility_reason_check_connection">Verifique sua conexão com a Internet e tente reiniciar o aplicativo. Se o problema persistir, entre em contato com o suporte.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Sua versão do WooCommerce não é compatível. O sistema PDV requer o WooCommerce na versão %1$s ou posterior. Atualize o WooCommerce para a versão mais recente.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Instale e ative o plugin do WooCommerce pela administração do WordPress. Entre em contato com o suporte para obter ajuda.</string>
     <string name="orderfilters_sales_channel_filter">Canal de vendas</string>
     <string name="barcode_ean13_content_description">Código de barras EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Manuseio extra</string>

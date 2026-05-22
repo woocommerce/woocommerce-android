@@ -149,7 +149,7 @@ class WooPosEligibilityViewModelTest {
     fun `given retry results in different ineligible reason, then IneligibleUIShown event is tracked for new reason`() = runTest {
         // GIVEN
         val initialReason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
-        val retryReason = WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
+        val retryReason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(retryReason))
         val sut = WooPosEligibilityViewModel(

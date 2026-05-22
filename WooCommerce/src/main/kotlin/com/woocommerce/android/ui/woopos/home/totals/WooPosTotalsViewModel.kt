@@ -312,6 +312,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun launchTapToPayConnect(orderId: Long) {
+        if (cardPaymentEnabledForCountry == false) return
         if (isTapToPayPayment) return
         isTapToPayPayment = true
         setTapToPayInProgress(true)
@@ -551,6 +552,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
+        if (cardPaymentEnabledForCountry == false) return
         if (!networkStatus.isConnected()) {
             viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(
@@ -578,7 +580,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun collectPaymentRemote(orderOverride: Order? = null) {
-        if (remotePaymentJob?.isActive == true) return
+        if (cardPaymentEnabledForCountry == false || remotePaymentJob?.isActive == true) return
         if (!networkStatus.isConnected()) {
             viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(

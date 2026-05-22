@@ -610,7 +610,6 @@ Language: es
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">El sistema de POS no está disponible para la moneda de tu tienda. En %1$s, en estos momentos solo se admiten %2$s. Comprueba los ajustes de moneda de tu tienda o ponte en contacto con el servicio de soporte para obtener ayuda.</string>
     <string name="woopos_eligibility_reason_check_connection">Comprueba tu conexión a Internet y prueba a reiniciar la aplicación. Si el problema continúa, ponte en contacto con el servicio de soporte.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Tu versión de WooCommerce no es compatible. El sistema de POS requiere la versión %1$s de WooCommerce o una superior. Actualiza WooCommerce a la última versión.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Asegúrate de que el plugin WooCommerce está instalado y activado desde tu administrador de WordPress. Si el problema continúa, ponte en contacto con el servicio de soporte para obtener ayuda.</string>
     <string name="orderfilters_sales_channel_filter">Canal de venta</string>
     <string name="barcode_ean13_content_description">Código de barras EAN-13</string>
     <string name="woo_shipping_rate_option_additional_handling">Gestión adicional</string>

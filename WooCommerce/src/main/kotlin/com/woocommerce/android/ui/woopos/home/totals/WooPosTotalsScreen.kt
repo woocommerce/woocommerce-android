@@ -313,7 +313,7 @@ private fun TotalsLoaded(
 }
 
 @Composable
-private fun CheckoutBottomBar(
+internal fun CheckoutBottomBar(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
 ) {

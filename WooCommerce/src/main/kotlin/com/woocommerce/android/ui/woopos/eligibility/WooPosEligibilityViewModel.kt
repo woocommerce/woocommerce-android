@@ -141,8 +141,6 @@ class WooPosEligibilityViewModel @Inject constructor(
 
     private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
         return when (reason) {
-            WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound ->
-                resourceProvider.getString(R.string.woopos_eligibility_reason_woocommerce_plugin_not_found)
             WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion ->
                 resourceProvider.getString(
                     R.string.woopos_eligibility_reason_unsupported_woocommerce_version,

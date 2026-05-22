@@ -107,7 +107,6 @@ sealed class WooPosLaunchability {
     data class NotLaunchable(val reason: NonLaunchabilityReason) : WooPosLaunchability()
 
     enum class NonLaunchabilityReason {
-        WooCommercePluginNotFound,
         UnsupportedWooCommerceVersion,
         SiteSettingsUnavailable,
         NoSiteSelected,

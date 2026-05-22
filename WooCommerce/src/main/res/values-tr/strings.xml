@@ -610,7 +610,6 @@ Language: tr
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_check_connection">İnternet bağlantınızı kontrol edip uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse lütfen destek ekibine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">WooCommerce sürümünüz desteklenmiyor. POS sistemi için WooCommerce %1$s sürümü veya üzeri gerekiyor. Lütfen WooCommerce\'ün en son sürümüne güncelleyin.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Lütfen WooCommerce eklentisinin kurulduğundan ve WordPress yöneticinizden etkinleştirildiğinden emin olun. Hâlâ bir sorun varsa lütfen yardım için destek birimine başvurun.</string>
     <string name="orderfilters_sales_channel_filter">Satış Kanalı</string>
     <string name="barcode_ean13_content_description">Barkod EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Ek işleme</string>
