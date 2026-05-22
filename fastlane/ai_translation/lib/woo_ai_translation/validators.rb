@@ -34,13 +34,18 @@ module WooAiTranslation
       errors = []
 
       terms.map(&:to_s).reject(&:empty?).uniq.sort_by { |term| -term.length }.each do |term|
-        next unless src.include?(term)
+        term_pattern = glossary_term_pattern(term)
+        next unless src.match?(term_pattern)
 
-        src.gsub!(term, "\u0001" * term.length)
-        errors << "glossary term not preserved: #{term}" unless tx.include?(term)
+        src.gsub!(term_pattern, "\u0001" * term.length)
+        errors << "glossary term not preserved: #{term}" unless tx.match?(term_pattern)
       end
 
       errors
+    end
+
+    def glossary_term_pattern(term)
+      /(?<![[:alnum:]])#{Regexp.escape(term)}(?![[:alnum:]])/
     end
 
     def xml_well_formed(path)
