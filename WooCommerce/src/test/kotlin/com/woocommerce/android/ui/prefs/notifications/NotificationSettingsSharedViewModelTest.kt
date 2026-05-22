@@ -10,6 +10,8 @@ import com.automattic.eventhorizon.NotificationsSettingsLoadFailedEvent
 import com.automattic.eventhorizon.NotificationsSettingsLoadRetryTappedEvent
 import com.automattic.eventhorizon.NotificationsSettingsUpdateFailedEvent
 import com.automattic.eventhorizon.NotificationsSettingsUpdateRetryTappedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateStartedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateSuccessEvent
 import com.automattic.eventhorizon.NotificationsSettingsViewEvent
 import com.automattic.eventhorizon.NotificationsStockOptionToggleEvent
 import com.automattic.eventhorizon.NotificationsTypeToggleEvent
@@ -359,6 +361,18 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
                     isEnabled == false
             }
         )
+        verify(analyticsTracker).track(
+            argThat<Trackable> {
+                this is NotificationsSettingsUpdateStartedEvent &&
+                    notificationType == NotificationTypeValue.StockAlert
+            }
+        )
+        verify(analyticsTracker).track(
+            argThat<Trackable> {
+                this is NotificationsSettingsUpdateSuccessEvent &&
+                    notificationType == NotificationTypeValue.StockAlert
+            }
+        )
     }
 
     @Test
@@ -639,7 +653,12 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             val snackbar = event as Event.ShowActionStringSnackbar
             assertThat(snackbar.message).isEqualTo(resourceProvider.getString(R.string.settings_notifs_error_update))
             assertThat(snackbar.actionText).isEqualTo(resourceProvider.getString(R.string.retry))
-            verify(analyticsTracker).track(NotificationsSettingsUpdateFailedEvent)
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsSettingsUpdateFailedEvent &&
+                        notificationType == NotificationTypeValue.StockAlert
+                }
+            )
         }
 
     @Test
@@ -668,7 +687,12 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             (event as Event.ShowActionStringSnackbar).action.onClick(null)
             advanceUntilIdle()
 
-            verify(analyticsTracker).track(NotificationsSettingsUpdateRetryTappedEvent)
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsSettingsUpdateRetryTappedEvent &&
+                        notificationType == NotificationTypeValue.StockAlert
+                }
+            )
             val preferences = captureLastUpdatePreferences()
             assertThat(preferences.storeStock).isEqualTo(StoreStockPreferences(enabled = false))
         }

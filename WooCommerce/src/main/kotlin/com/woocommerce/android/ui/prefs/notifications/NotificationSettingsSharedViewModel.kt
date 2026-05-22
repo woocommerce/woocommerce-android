@@ -12,6 +12,8 @@ import com.automattic.eventhorizon.NotificationsSettingsLoadFailedEvent
 import com.automattic.eventhorizon.NotificationsSettingsLoadRetryTappedEvent
 import com.automattic.eventhorizon.NotificationsSettingsUpdateFailedEvent
 import com.automattic.eventhorizon.NotificationsSettingsUpdateRetryTappedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateStartedEvent
+import com.automattic.eventhorizon.NotificationsSettingsUpdateSuccessEvent
 import com.automattic.eventhorizon.NotificationsSettingsViewEvent
 import com.automattic.eventhorizon.NotificationsStockOptionToggleEvent
 import com.automattic.eventhorizon.NotificationsTypeToggleEvent
@@ -321,8 +323,10 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         if (updateRequest.isEmpty()) {
             return
         }
+        val updatedNotificationTypes = updateRequest.changedNotificationTypes()
 
         saveInProgressWooPushNotificationPreferences = preferencesToSave
+        updatedNotificationTypes.forEach(::trackNotificationSettingsUpdateStarted)
         savedPreferences.storeOrder?.minAmount?.let { savedMinAmount ->
             updateRequest.storeOrder?.minAmount?.takeIf { it != savedMinAmount }?.let {
                 trackNotificationDetailFilterValueChange(NotificationType.NEW_ORDERS, it.toDouble())
@@ -340,25 +344,29 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             )
         }.onSuccess {
             savedWooPushNotificationPreferences = preferencesToSave
+            updatedNotificationTypes.forEach(::trackNotificationSettingsUpdateSuccess)
         }.onFailure {
+            updatedNotificationTypes.forEach(::trackNotificationSettingsUpdateFailed)
             if (wooPushNotificationPreferences.value != preferencesToSave) {
                 // User changed preferences after this save started, so don't rollback over the newer state.
                 return@onFailure
             }
             rollbackNotificationPreferences()
-            showUpdateError(preferencesToSave)
+            showUpdateError(preferencesToSave, updatedNotificationTypes)
         }
         saveInProgressWooPushNotificationPreferences = null
     }
 
-    private fun showUpdateError(preferencesToSave: WooPushNotificationPreferences) {
-        analyticsTracker.track(NotificationsSettingsUpdateFailedEvent)
+    private fun showUpdateError(
+        preferencesToSave: WooPushNotificationPreferences,
+        notificationTypes: List<NotificationType>
+    ) {
         triggerEvent(
             MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.settings_notifs_error_update),
                 actionText = resourceProvider.getString(R.string.retry),
             ) {
-                analyticsTracker.track(NotificationsSettingsUpdateRetryTappedEvent)
+                notificationTypes.forEach(::trackNotificationSettingsUpdateRetryTapped)
                 applyDisplayedWooPushNotificationPreferences(preferencesToSave)
                 saveNotificationPreferencesTrigger.tryEmit(0L)
             }
@@ -419,6 +427,36 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     private fun WooPushNotificationPreferences.isEmpty(): Boolean =
         storeOrder == null && storeReview == null && storeStock == null
+
+    private fun WooPushNotificationPreferences.changedNotificationTypes(): List<NotificationType> = buildList {
+        if (storeOrder != null) add(NotificationType.NEW_ORDERS)
+        if (storeReview != null) add(NotificationType.NEW_REVIEWS)
+        if (storeStock != null) add(NotificationType.STOCK)
+    }
+
+    private fun trackNotificationSettingsUpdateStarted(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateStartedEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationSettingsUpdateSuccess(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateSuccessEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationSettingsUpdateFailed(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateFailedEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
+
+    private fun trackNotificationSettingsUpdateRetryTapped(type: NotificationType) {
+        analyticsTracker.track(
+            NotificationsSettingsUpdateRetryTappedEvent(notificationType = type.toEventHorizonValue())
+        )
+    }
 
     private fun trackNotificationTypeToggle(type: NotificationType, isEnabled: Boolean) {
         analyticsTracker.track(
