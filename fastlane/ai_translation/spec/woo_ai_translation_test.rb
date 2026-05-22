@@ -832,6 +832,19 @@ class TranslatorRecoverableErrorsTest < Minitest::Test
     assert_equal({}, result)
   end
 
+  def test_non_string_json_values_return_empty_do_not_raise
+    bad_json = '{"k1":["not a string"],"k2":{"text":"also wrong"}}'
+    stub = Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) do |model:, system_blocks:, user_content:, max_tokens: 8192|
+        bad_json
+      end
+    end.new
+    t = WooAiTranslation::Translator.new(client: stub)
+    result = t.translate(locale: 'pl', items: items(2), model: 'sonnet')
+    assert_equal({}, result)
+  end
+
   def test_unknown_error_class_still_propagates
     # NoMethodError, SystemCallError, etc. are NOT in the rescue list because
     # they indicate engine bugs we want to surface, not transient failures.
@@ -865,6 +878,7 @@ class AnthropicClientTransportErrorsTest < Minitest::Test
 
     client = WooAiTranslation::AnthropicClient.new(api_key: 'dummy', http: http)
     client.define_singleton_method(:backoff_seconds) { |_attempt| 0 }
+    client.define_singleton_method(:sleep) { |_seconds| nil }
 
     error = assert_raises(WooAiTranslation::AnthropicClient::Error) do
       client.complete(model: 'haiku', system_blocks: ['rules'], user_content: '[]')
