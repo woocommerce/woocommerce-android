@@ -135,7 +135,7 @@ fun WooPosIssueRefundScreen(
 
     val currentState = state
     val isProcessing = currentState is WooPosRefundState.Content &&
-        currentState.step == WooPosRefundState.Content.RefundStep.Processing
+        currentState.step.isNonCancelable()
 
     Column(
         modifier = modifier
@@ -210,7 +210,12 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String {
             WooPosRefundState.Content.RefundStep.ReviewRefund ->
                 stringResource(R.string.woopos_orders_review_refund)
             WooPosRefundState.Content.RefundStep.ConfirmRefund,
-            WooPosRefundState.Content.RefundStep.Processing ->
+            WooPosRefundState.Content.RefundStep.Processing,
+            WooPosRefundState.Content.RefundStep.PreparingReader,
+            WooPosRefundState.Content.RefundStep.ReaderDisconnected,
+            is WooPosRefundState.Content.RefundStep.ReadyForRefund,
+            WooPosRefundState.Content.RefundStep.ProcessingRefund,
+            WooPosRefundState.Content.RefundStep.NotifyingStore ->
                 stringResource(R.string.woopos_orders_confirm_refund_title, state.formattedTotal)
         }
         is WooPosRefundState.Error,
@@ -333,6 +338,35 @@ private fun RefundScreenButtons(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+                WooPosRefundState.Content.RefundStep.PreparingReader,
+                is WooPosRefundState.Content.RefundStep.ReadyForRefund -> {
+                    WooPosOutlinedButton(
+                        text = stringResource(R.string.cancel),
+                        onClick = onDismiss,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                WooPosRefundState.Content.RefundStep.ReaderDisconnected -> {
+                    WooPosButton(
+                        text = stringResource(R.string.retry),
+                        onClick = { onEvent(WooPosRefundUIEvent.ConnectReaderClicked) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    WooPosOutlinedButton(
+                        text = stringResource(R.string.cancel),
+                        onClick = onDismiss,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                WooPosRefundState.Content.RefundStep.ProcessingRefund,
+                WooPosRefundState.Content.RefundStep.NotifyingStore -> {
+                    WooPosButton(
+                        text = stringResource(R.string.woopos_orders_yes_proceed),
+                        onClick = {},
+                        state = WooPosButtonState.LOADING,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             is WooPosRefundState.Error -> {
                 WooPosButton(
@@ -417,6 +451,11 @@ private fun ContentStateHandler(
             when (step) {
                 WooPosRefundState.Content.RefundStep.ConfirmRefund,
                 WooPosRefundState.Content.RefundStep.Processing -> "confirm"
+                WooPosRefundState.Content.RefundStep.PreparingReader -> "reader_preparing"
+                WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
+                is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "reader_ready"
+                WooPosRefundState.Content.RefundStep.ProcessingRefund -> "reader_processing"
+                WooPosRefundState.Content.RefundStep.NotifyingStore -> "notifying_store"
                 else -> step
             }
         },
@@ -448,6 +487,14 @@ private fun ContentStateHandler(
 
             WooPosRefundState.Content.RefundStep.ConfirmRefund,
             WooPosRefundState.Content.RefundStep.Processing -> {
+                ConfirmRefundContent(state = state)
+            }
+
+            WooPosRefundState.Content.RefundStep.PreparingReader,
+            WooPosRefundState.Content.RefundStep.ReaderDisconnected,
+            is WooPosRefundState.Content.RefundStep.ReadyForRefund,
+            WooPosRefundState.Content.RefundStep.ProcessingRefund,
+            WooPosRefundState.Content.RefundStep.NotifyingStore -> {
                 ConfirmRefundContent(state = state)
             }
         }
@@ -959,6 +1006,20 @@ private fun ConfirmRefundContent(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+private fun WooPosRefundState.Content.RefundStep.isNonCancelable(): Boolean {
+    return when (this) {
+        WooPosRefundState.Content.RefundStep.Processing,
+        WooPosRefundState.Content.RefundStep.ProcessingRefund,
+        WooPosRefundState.Content.RefundStep.NotifyingStore -> true
+        WooPosRefundState.Content.RefundStep.SelectItems,
+        WooPosRefundState.Content.RefundStep.ReviewRefund,
+        WooPosRefundState.Content.RefundStep.ConfirmRefund,
+        WooPosRefundState.Content.RefundStep.PreparingReader,
+        WooPosRefundState.Content.RefundStep.ReaderDisconnected,
+        is WooPosRefundState.Content.RefundStep.ReadyForRefund -> false
     }
 }
 
