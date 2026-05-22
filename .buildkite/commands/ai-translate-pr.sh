@@ -82,7 +82,7 @@ install_gems
 
 echo '--- :globe_with_meridians: AI translate (PR delta)'
 set +e
-bundle exec fastlane ai_translate mode:prtime only_keys:"${CHANGED_KEYS}" strict:true
+bundle exec fastlane ai_translate mode:prtime only_keys:"${CHANGED_KEYS}"
 TRANSLATE_EXIT=$?
 set -e
 
@@ -95,9 +95,9 @@ fi
 CHANGED=$(git status --porcelain -- 'WooCommerce/src/main/res/values-*/strings.xml' 'fastlane/ai_translation/translation-manifest.json')
 
 if [ -z "${CHANGED}" ]; then
-  echo "No translation changes — no commit, no retrigger."
-  comment_on_pr --id ai-translations --if-exist delete || true
-  exit 0
+  comment_failure "The job found changed source strings but the translation engine did not produce any file changes:
+\`${CHANGED_KEYS}\`"
+  exit 1
 fi
 
 echo '--- :memo: Commit translations back to the PR branch'
