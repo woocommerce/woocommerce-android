@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.eventhorizon.NotificationFilterOptionValue
 import com.automattic.eventhorizon.NotificationTypeValue
+import com.automattic.eventhorizon.NotificationsDetailFilterOptionSelectEvent
 import com.automattic.eventhorizon.NotificationsDetailFilterValueChangeEvent
 import com.automattic.eventhorizon.NotificationsDetailPushToggleEvent
 import com.automattic.eventhorizon.NotificationsDetailViewEvent
@@ -410,6 +412,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
                         isEnabled == false
                 }
             )
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewOrder &&
+                        filterOption == NotificationFilterOptionValue.Filtered
+                }
+            )
         }
 
     @Test
@@ -433,6 +442,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
             assertThat(orderViewState.thresholdAmount).isEqualTo(BigDecimal(50))
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewOrder &&
+                        filterOption == NotificationFilterOptionValue.All
+                }
+            )
         }
 
     @Test
@@ -473,6 +489,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
                         isEnabled == false
                 }
             )
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewReview &&
+                        filterOption == NotificationFilterOptionValue.Filtered
+                }
+            )
         }
 
     @Test
@@ -498,6 +521,13 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val reviewViewState = viewModel.newReviewNotificationSettingsViewState.captureValues().last()
             assertThat(reviewViewState.selectedRating).isEqualTo(3)
+            verify(analyticsTracker).track(
+                argThat<Trackable> {
+                    this is NotificationsDetailFilterOptionSelectEvent &&
+                        notificationType == NotificationTypeValue.NewReview &&
+                        filterOption == NotificationFilterOptionValue.All
+                }
+            )
         }
 
     @Test

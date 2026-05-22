@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.prefs.notifications
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.automattic.eventhorizon.NotificationFilterOptionValue
+import com.automattic.eventhorizon.NotificationsDetailFilterOptionSelectEvent
 import com.automattic.eventhorizon.NotificationsDetailFilterValueChangeEvent
 import com.automattic.eventhorizon.NotificationsDetailPushToggleEvent
 import com.automattic.eventhorizon.NotificationsDetailViewEvent
@@ -169,7 +171,6 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onNewOrderNotificationPreferenceChanged(preference: NewOrderNotificationPreference) {
         val preferences = wooPushNotificationPreferences.value ?: return
-        // TODO: Track notifications_detail_filter_option_select when available in EventHorizon.
         val minAmount = when (preference) {
             NewOrderNotificationPreference.AllOrders -> null
             NewOrderNotificationPreference.HighValueOrders -> displayedOrderThresholdAmount.value
@@ -182,6 +183,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
                 )
             )
         )
+        trackNotificationDetailFilterOptionSelect(NotificationType.NEW_ORDERS, preference.toEventHorizonValue())
     }
 
     fun onNewOrderThresholdAmountChanged(amount: BigDecimal) {
@@ -205,13 +207,13 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun onNewReviewNotificationPreferenceChanged(preference: NewReviewNotificationPreference) {
         val preferences = wooPushNotificationPreferences.value ?: return
-        // TODO: Track notifications_detail_filter_option_select when available in EventHorizon.
         val updatedViewState = preferences.toNewReviewNotificationSettingsViewState(
             displayedRating = displayedReviewRating.value
         ).copy(notificationPreference = preference)
         updateDisplayedWooPushNotificationPreferences(
             preferences.copy(storeReview = updatedViewState.toStoreReviewPreferences())
         )
+        trackNotificationDetailFilterOptionSelect(NotificationType.NEW_REVIEWS, preference.toEventHorizonValue())
     }
 
     fun onNewReviewSelectedRatingChanged(rating: Int) {
@@ -441,6 +443,18 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             NotificationsDetailFilterValueChangeEvent(
                 notificationType = type.toEventHorizonValue(),
                 filterValue = value
+            )
+        )
+    }
+
+    private fun trackNotificationDetailFilterOptionSelect(
+        type: NotificationType,
+        option: NotificationFilterOptionValue
+    ) {
+        analyticsTracker.track(
+            NotificationsDetailFilterOptionSelectEvent(
+                notificationType = type.toEventHorizonValue(),
+                filterOption = option
             )
         )
     }
