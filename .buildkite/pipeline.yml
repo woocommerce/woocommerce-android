@@ -57,6 +57,8 @@ steps:
         # Eased in: keep soft_fail until the PR-time job is proven stable, then
         # remove this line to make it a hard (required) check.
         soft_fail: true
+        agents:
+          queue: "mac-metal"
         plugins: [$CI_TOOLKIT]
 
       - label: "Dependency Tree Diff"
