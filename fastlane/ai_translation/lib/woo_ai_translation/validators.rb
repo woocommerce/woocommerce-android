@@ -45,7 +45,14 @@ module WooAiTranslation
     end
 
     def glossary_term_pattern(term)
-      /(?<![[:alnum:]])#{Regexp.escape(term)}(?![[:alnum:]])/
+      escaped = Regexp.escape(term)
+      return /(?<![[:alnum:]])#{escaped}(?![[:alnum:]])/ if boundary_required_glossary_term?(term)
+
+      /#{escaped}/
+    end
+
+    def boundary_required_glossary_term?(term)
+      term.length <= 3 || term.match?(/\A[A-Z0-9 -]+\z/)
     end
 
     def xml_well_formed(path)
