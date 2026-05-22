@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.updatePadding
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -60,6 +61,8 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var selectedSite: SelectedSite
 
     @Inject lateinit var featureFlagRepository: FeatureFlagRepository
+
+    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -257,10 +260,14 @@ class HelpActivity : AppCompatActivity() {
         )
 
     private fun showAiSupportChat() {
+        val preLogin = shouldUsePreLoginAiSupportChat()
+        val siteAddress = selectedSite.getIfExists()?.url
+            ?: appPrefsWrapper.getLoginSiteAddress().takeIf { preLogin }
         startActivity(
             AiSupportChatActivity.createIntent(
                 context = this,
-                preLogin = shouldUsePreLoginAiSupportChat()
+                preLogin = preLogin,
+                siteAddress = siteAddress
             )
         )
     }

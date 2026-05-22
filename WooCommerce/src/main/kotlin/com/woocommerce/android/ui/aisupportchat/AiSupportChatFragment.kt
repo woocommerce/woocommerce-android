@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
@@ -134,9 +135,29 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
 
     private fun handleContactHumanSupport(event: ContactHumanSupport) {
         when (event.mode) {
-            HumanSupportContactMode.DIRECT_CREATE -> createTicketDirectly(event)
-            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event)
+            HumanSupportContactMode.DIRECT_CREATE -> showTranscriptConsentDialog(event)
+            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event, includeTranscript = false)
         }
+    }
+
+    private fun showTranscriptConsentDialog(event: ContactHumanSupport) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_ai_support_chat_escalation_consent, null)
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<View>(R.id.send_request).setOnClickListener {
+            dialog.dismiss()
+            createTicketDirectly(event)
+        }
+        dialogView.findViewById<View>(R.id.contact_form).setOnClickListener {
+            dialog.dismiss()
+            openSupportRequestForm(event, includeTranscript = false)
+        }
+        dialogView.findViewById<View>(R.id.cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     private fun createTicketDirectly(event: ContactHumanSupport) {
@@ -150,7 +171,7 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 subject = requireNotNull(event.subject),
                 description = event.description,
                 extraTags = event.extraTags,
-                siteAddress = selectedSite.getIfExists()?.url.orEmpty()
+                siteAddress = event.siteAddress
             ).collect { result ->
                 hideProgressDialog()
                 result
@@ -168,13 +189,13 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                             context = event.ticketAnalyticsContext,
                             error = error
                         )
-                        openSupportRequestForm(event)
+                        openSupportRequestForm(event, includeTranscript = true)
                     }
             }
         }
     }
 
-    private fun openSupportRequestForm(event: ContactHumanSupport) {
+    private fun openSupportRequestForm(event: ContactHumanSupport, includeTranscript: Boolean) {
         supportRequestLauncher.launch(
             SupportRequestFormActivity.createIntent(
                 context = requireContext(),
@@ -182,8 +203,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 extraTags = ArrayList(event.extraTags),
                 preselectedTicketType = event.ticketType,
                 prefilledSubject = event.subject,
-                prefilledMessage = event.description,
-                prefilledSiteAddress = selectedSite.getIfExists()?.url.orEmpty(),
+                prefilledMessage = event.description.takeIf { includeTranscript },
+                prefilledSiteAddress = event.siteAddress,
                 aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext
             )
         )

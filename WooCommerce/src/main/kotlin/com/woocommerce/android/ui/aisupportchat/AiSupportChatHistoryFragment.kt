@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -17,6 +18,8 @@ class AiSupportChatHistoryFragment : Fragment() {
     private val viewModel: AiSupportChatHistoryViewModel by viewModels()
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject lateinit var selectedSite: SelectedSite
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         composeView {
@@ -31,7 +34,8 @@ class AiSupportChatHistoryFragment : Fragment() {
                             botSlug = bookmark.botSlug,
                             sessionId = bookmark.sessionId,
                             hasCreatedTicket = bookmark.hasCreatedTicket,
-                            isResolved = bookmark.isResolved
+                            isResolved = bookmark.isResolved,
+                            siteAddress = selectedSite.getIfExists()?.url
                         )
                     )
                 }

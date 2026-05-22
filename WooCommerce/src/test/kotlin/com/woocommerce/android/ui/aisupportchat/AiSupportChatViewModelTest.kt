@@ -35,6 +35,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
@@ -90,7 +91,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
 
-            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
 
             val state = viewModel.viewState.value
             assertThat(state.input).isEmpty()
@@ -109,7 +110,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
 
-            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
             viewModel.onSendClicked()
 
@@ -125,6 +126,21 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given pre-login launch mode with site address, when message sent, then context includes site address`() =
+        testBlocking {
+            whenever(contextProvider.buildInitialContext(siteAddress = SITE_URL)).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse(messages = listOf(createMessage(2L, SupportChatRole.BOT)))))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin(siteAddress = SITE_URL))
+            viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
+            viewModel.onSendClicked()
+
+            verify(contextProvider).buildInitialContext(siteAddress = SITE_URL)
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, FOLLOW_UP_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
     fun `given pre-login chat exists, when follow up message sent, then bookmark is not touched`() =
         testBlocking {
             whenever(contextProvider.buildInitialContext()).thenReturn(CONTEXT)
@@ -133,7 +149,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, BOT_RESPONSE, JsonObject(), CHAT_ID, SESSION_ID))
                 .thenReturn(Result.success(createResponse(messages = listOf(createMessage(3L, SupportChatRole.BOT)))))
 
-            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
             viewModel.onInputChanged(FOLLOW_UP_MESSAGE)
             viewModel.onSendClicked()
             viewModel.onInputChanged(BOT_RESPONSE)
@@ -1074,14 +1090,14 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given high confidence support area and identity, when contact support is clicked, then direct event is emitted`() =
+    fun `given high confidence support area identity and site address, when contact support is clicked, then direct event is emitted`() =
         testBlocking {
             val supportArea = createSupportArea(
                 area = "woopayments",
                 topic = "woo_mobile_issue_payments",
                 confidence = "high"
             )
-            givenStartedChatWithSupportArea(supportArea)
+            givenStartedChatWithSupportArea(supportArea, siteAddress = SITE_URL)
             val events = mutableListOf<MultiLiveEvent.Event>()
             viewModel.event.observeForever { events.add(it) }
 
@@ -1094,6 +1110,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(event.mode).isEqualTo(HumanSupportContactMode.DIRECT_CREATE)
             assertThat(event.ticketType).isEqualTo(TicketType.Payments)
             assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_woo_payments)
+            assertThat(event.siteAddress).isEqualTo(SITE_URL)
             assertThat(event.extraTags).containsExactly(
                 "in_app_support_escalate",
                 "ai_skip",
@@ -1102,9 +1119,29 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given high confidence support area and identity without site address, when contact support is clicked, then form event is emitted`() =
+        testBlocking {
+            givenStartedChatWithSupportArea(createSupportArea(area = "woopayments", confidence = "high"))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = true
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+            assertThat(event.siteAddress).isEmpty()
+        }
+
+    @Test
     fun `given high confidence support area without identity, when contact support is clicked, then form event is emitted`() =
         testBlocking {
-            givenStartedChatWithSupportArea(createSupportArea(area = "card-reader", confidence = "high"))
+            givenStartedChatWithSupportArea(
+                supportArea = createSupportArea(area = "card-reader", confidence = "high"),
+                siteAddress = SITE_URL
+            )
             val events = mutableListOf<MultiLiveEvent.Event>()
             viewModel.event.observeForever { events.add(it) }
 
@@ -1117,6 +1154,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
             assertThat(event.ticketType).isEqualTo(TicketType.InPersonPayments)
             assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_card_reader)
+            assertThat(event.siteAddress).isEqualTo(SITE_URL)
         }
 
     @Test
@@ -1264,7 +1302,12 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 ConnectivityCheckCardData(ConnectivityCheckType.STORE, ConnectivityCheckStatus.NotStarted),
                 ConnectivityCheckCardData(ConnectivityCheckType.ORDERS, ConnectivityCheckStatus.InProgress)
             )
-            whenever(contextProvider.buildInitialContext(any())).thenReturn(CONTEXT)
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse()))
 
@@ -1282,7 +1325,10 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting
             )
-            verify(contextProvider, never()).buildInitialContext(any())
+            verify(contextProvider, never()).buildInitialContext(
+                diagnosticResult = any(),
+                siteAddress = anyOrNull()
+            )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
 
             viewModel.onInputChanged(ISSUE_DETAILS)
@@ -1292,7 +1338,10 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(updatedState.hasStartedChat).isTrue()
             assertThat(updatedState.sessionId).isEqualTo(SESSION_ID)
             val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
-            verify(contextProvider).buildInitialContext(diagnosticResultCaptor.capture())
+            verify(contextProvider).buildInitialContext(
+                diagnosticResult = diagnosticResultCaptor.capture(),
+                siteAddress = anyOrNull()
+            )
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Passed,
                 TestStatus.Failed()
@@ -1343,6 +1392,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.isLoadingHistory).isFalse()
         assertThat(state.showSendError).isFalse()
         assertThat(state.showLoadHistoryError).isFalse()
+        assertThat(state.canContactHumanSupportFromToolbar).isTrue
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Text(ISSUE_DETAILS),
             AiSupportChatMessageContent.Text(BOT_RESPONSE)
@@ -1608,6 +1658,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isTrue()
+            assertThat(state.canContactHumanSupportFromToolbar).isFalse()
             verify(repository, never()).registerChat(any(), any(), any(), any())
         }
 
@@ -1625,7 +1676,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given pre-login launch mode, when loaded, then entry point analytics are tracked`() = testBlocking {
-        viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin)
+        viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.PreLogin())
 
         verify(analyticsTracker).trackEntryPointTapped(
             entryPoint = AiSupportChatEntryPoint.PRE_LOGIN,
@@ -1907,10 +1958,23 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         viewModel.onSendClicked()
     }
 
-    private suspend fun givenStartedChatWithSupportArea(supportArea: SupportChatSupportArea) {
+    private suspend fun givenStartedChatWithSupportArea(
+        supportArea: SupportChatSupportArea,
+        siteAddress: String? = null
+    ) {
         val result = createSuccessDiagnosticResult()
         whenever(diagnosticsService.runDiagnostics(SupportIssueType.LOADING_ORDERS)).thenReturn(flowOf(result))
-        whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        if (siteAddress != null) {
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.Help(siteAddress = siteAddress))
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = result,
+                    siteAddress = siteAddress
+                )
+            ).thenReturn(CONTEXT)
+        } else {
+            whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
+        }
         whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
             .thenReturn(
                 Result.success(
@@ -2071,6 +2135,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val BOT_MESSAGE_ID = 2L
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."
+        const val SITE_URL = "https://example.com"
 
         val CONTEXT = JsonObject().apply {
             addProperty("selectedSiteId", 20L)

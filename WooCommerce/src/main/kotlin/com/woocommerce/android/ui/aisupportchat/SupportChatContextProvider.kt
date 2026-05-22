@@ -15,8 +15,12 @@ class SupportChatContextProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val buildConfigWrapper: BuildConfigWrapper
 ) {
-    fun buildInitialContext(diagnosticResult: DiagnosticResult? = null): JsonObject {
+    fun buildInitialContext(
+        diagnosticResult: DiagnosticResult? = null,
+        siteAddress: String? = null
+    ): JsonObject {
         val site = selectedSite.getIfExists()
+        val resolvedSiteAddress = siteAddress?.takeIf { it.isNotBlank() } ?: site?.url
         return JsonObject().apply {
             addProperty("platform", "android")
             addProperty("app_version", buildConfigWrapper.versionName)
@@ -24,8 +28,8 @@ class SupportChatContextProvider @Inject constructor(
                 if (it.siteId > 0L) {
                     addProperty("selectedSiteId", it.siteId)
                 }
-                addProperty("site_url", it.url)
             }
+            resolvedSiteAddress?.let { addProperty("site_url", it) }
             diagnosticResult?.toTroubleshootingResults()?.let { troubleshootingResults ->
                 addProperty("troubleshootingResults", troubleshootingResults)
             }
