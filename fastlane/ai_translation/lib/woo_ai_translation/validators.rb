@@ -52,7 +52,7 @@ module WooAiTranslation
     end
 
     def boundary_required_glossary_term?(term)
-      term.length <= 3 || term.match?(/\A[A-Z0-9 -]+\z/)
+      term.match?(/\A[A-Z0-9 -]+\z/)
     end
 
     def xml_well_formed(path)
