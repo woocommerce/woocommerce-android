@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -59,6 +60,33 @@ class WooPosScanToPayRepositoryTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         verify(orderStore).updateOrderStatus(orderId = eq(orderId), site = eq(site), newStatus = eq(statusModel))
+    }
+
+    @Test
+    fun `given no cached status model, when promoteOrderToPending, then fallback Pending model is used`() = runTest {
+        // GIVEN
+        val orderId = 123L
+        val site: SiteModel = mock()
+        val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
+
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Pending.value)).thenReturn(null)
+        whenever(orderStore.updateOrderStatus(orderId = eq(orderId), site = eq(site), newStatus = any()))
+            .thenReturn(flowOf(updateResult))
+
+        // WHEN
+        val result = repository.promoteOrderToPending(orderId)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        val statusCaptor = argumentCaptor<WCOrderStatusModel>()
+        verify(orderStore).updateOrderStatus(
+            orderId = eq(orderId),
+            site = eq(site),
+            newStatus = statusCaptor.capture(),
+        )
+        assertThat(statusCaptor.firstValue.statusKey).isEqualTo(Order.Status.Pending.value)
+        assertThat(statusCaptor.firstValue.label).isEqualTo(Order.Status.Pending.value)
     }
 
     @Test

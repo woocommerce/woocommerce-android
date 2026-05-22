@@ -5,7 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 const val SCAN_TO_PAY_ROUTE_ORDER_ID_KEY = "orderId"
 
-@Parcelize
 sealed class WooPosScanToPayState : Parcelable {
     @Parcelize
     data object Loading : WooPosScanToPayState()
