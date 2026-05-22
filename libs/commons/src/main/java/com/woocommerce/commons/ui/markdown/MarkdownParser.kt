@@ -1,4 +1,4 @@
-package com.woocommerce.android.aiassistant.ui.markdown
+package com.woocommerce.commons.ui.markdown
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -10,7 +10,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withLink
 
-internal object AssistantMarkdownParser {
+internal object MarkdownParser {
     fun parse(
         markdown: String,
         linkStyles: TextLinkStyles? = null,

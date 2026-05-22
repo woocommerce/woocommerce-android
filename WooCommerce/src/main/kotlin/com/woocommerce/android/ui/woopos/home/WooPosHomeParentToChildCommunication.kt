@@ -52,7 +52,9 @@ sealed class ParentToChildrenEvent {
     data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
         enum class PaymentMethod {
             CARD,
-            CASH
+            CASH,
+            SCAN_TO_PAY,
+            EXTERNAL,
         }
     }
 

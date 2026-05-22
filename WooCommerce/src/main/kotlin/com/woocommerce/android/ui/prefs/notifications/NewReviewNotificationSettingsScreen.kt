@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +33,7 @@ import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsShared
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.Companion.MIN_REVIEW_RATING
 import com.woocommerce.android.ui.prefs.notifications.compose.EnableNotificationsCard
 import com.woocommerce.android.ui.prefs.notifications.compose.NotificationPreferenceOption
+import com.woocommerce.android.util.StringUtils.getQuantityString
 
 @Composable
 fun NewReviewNotificationSettingsScreen(sharedViewModel: NotificationSettingsSharedViewModel) {
@@ -121,10 +121,10 @@ private fun RatingSelector(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = pluralStringResource(
-                id = R.plurals.settings_notifs_new_reviews_selected_rating,
-                count = selectedRating,
-                selectedRating
+            text = getQuantityString(
+                quantity = selectedRating,
+                default = R.string.settings_notifs_new_reviews_selected_rating,
+                one = R.string.settings_notifs_new_reviews_selected_rating_one
             ),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary.let {
@@ -163,10 +163,10 @@ private fun RatingStar(
             imageVector = ImageVector.vectorResource(
                 id = if (isSelected) R.drawable.ic_star_filled_24dp else R.drawable.ic_star_24dp
             ),
-            contentDescription = pluralStringResource(
-                id = R.plurals.settings_notifs_new_reviews_selected_rating,
-                count = rating,
-                rating
+            contentDescription = getQuantityString(
+                quantity = rating,
+                default = R.string.settings_notifs_new_reviews_selected_rating,
+                one = R.string.settings_notifs_new_reviews_selected_rating_one
             ),
             tint = ratingStarColor(isSelected = isSelected, enabled = enabled),
             modifier = Modifier.size(40.dp)
