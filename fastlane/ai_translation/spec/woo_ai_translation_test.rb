@@ -515,6 +515,42 @@ class EngineTest < Minitest::Test
     end
   end
 
+  # Verbose locales (de/fi/hu/pl) routinely overflow Play's title/short caps on
+  # the first pass. This locks the re-prompt-to-fit SUCCESS path: attempt 1 is
+  # over cap, the tighter retry comes back under cap, and the engine ships the
+  # tightened translation -- NOT the English fallback, and NOT flagged.
+  def test_metadata_over_cap_field_is_fixed_by_tighter_reprompt_not_english_fallback
+    Dir.mktmpdir do |dir|
+      src = File.join(dir, 'en-US')
+      FileUtils.mkdir_p(src)
+      File.write(File.join(src, 'short_description.txt'), 'Run your store from anywhere')
+      out = File.join(dir, 'out')
+      mpath = File.join(dir, 'm.json')
+
+      # First call overflows the 80-char short_description cap; the second call
+      # (the tightened re-prompt) returns a value that fits. The stub ignores
+      # the prompt itself, so we simulate "tighter" purely by call ordering.
+      call = 0
+      over = "[de-DE] #{'W' * 90}" # 98 chars -> over cap
+      under = '[de-DE] Verkaufe ueberall' # well under cap
+      client = StubClient.new do |_loc, _src|
+        call += 1
+        call == 1 ? over : under
+      end
+
+      eng = MetadataEngine.new(translator: Translator.new(client: client),
+                               manifest: Manifest.load(mpath), manifest_path: mpath)
+      r = eng.run(source_dir: src, out_base: out, locales: %w[de-DE],
+                  include_release_notes: false).first
+
+      assert_equal under, File.read(File.join(out, 'de-DE', 'short_description.txt')),
+                   'tightened re-prompt result is shipped, not English fallback'
+      assert_empty r.fallback, 'a field rescued by the retry must not be flagged as fallback'
+      assert_equal 1, r.translated
+      assert_equal 2, client.calls, 'engine must re-prompt exactly once after the first over-cap result'
+    end
+  end
+
   def test_baseline_import_preserves_human_strings_and_ai_fills_gaps
     Dir.mktmpdir do |dir|
       FileUtils.mkdir_p(File.join(dir, 'values-fr'))
