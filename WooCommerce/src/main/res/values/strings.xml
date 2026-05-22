@@ -2440,6 +2440,10 @@
     <string name="ai_support_chat_mark_resolved_cancel">Cancel</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
     <string name="ai_support_chat_mark_resolved_confirmation_message">This will close the chat actions for this conversation.</string>
+    <string name="ai_support_chat_escalation_consent_title">Send this chat to support?</string>
+    <string name="ai_support_chat_escalation_consent_message">We can create a support request using this chat transcript, or you can open the contact form and enter the details yourself.</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Send Request</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Contact Form</string>
     <string name="ai_support_chat_escalation_transcript_header">Following is the transcript of an in-app AI support chat session:</string>
     <string name="ai_support_chat_support_request_subject_mobile_app">Mobile App Support Request</string>
     <string name="ai_support_chat_support_request_subject_card_reader">Card Reader Support Request</string>

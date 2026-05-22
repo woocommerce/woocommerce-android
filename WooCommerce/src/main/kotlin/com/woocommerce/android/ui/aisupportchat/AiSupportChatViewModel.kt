@@ -60,7 +60,12 @@ class AiSupportChatViewModel @Inject constructor(
         if (launchModeLoaded) return
         launchModeLoaded = true
         val entryPoint = launchMode.entryPoint
-        _viewState.update { it.copy(entryPoint = entryPoint) }
+        _viewState.update {
+            it.copy(
+                entryPoint = entryPoint,
+                siteAddress = launchMode.siteAddress
+            )
+        }
         analyticsTracker.trackEntryPointTapped(
             entryPoint = entryPoint,
             isAuthenticated = accountRepository.isUserLoggedIn(),
@@ -68,8 +73,8 @@ class AiSupportChatViewModel @Inject constructor(
         )
 
         when (launchMode) {
-            AiSupportChatLaunchMode.Help -> Unit
-            AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
+            is AiSupportChatLaunchMode.Help -> Unit
+            is AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
             is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
@@ -532,7 +537,10 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         val context = if (chatId == null) {
-            contextProvider.buildInitialContext(diagnosticResult = state.diagnosticResult)
+            contextProvider.buildInitialContext(
+                diagnosticResult = state.diagnosticResult,
+                siteAddress = state.siteAddress
+            )
         } else {
             JsonObject()
         }
@@ -881,7 +889,12 @@ class AiSupportChatViewModel @Inject constructor(
         supportArea: SupportChatSupportArea?,
         canCreateTicketDirectly: Boolean
     ): ContactHumanSupport {
-        val mode = if (supportArea != null && supportArea.isHighConfidence && canCreateTicketDirectly) {
+        val siteAddress = _viewState.value.siteAddress.orEmpty()
+        val canDirectCreate = supportArea != null &&
+            supportArea.isHighConfidence &&
+            canCreateTicketDirectly &&
+            siteAddress.isNotBlank()
+        val mode = if (canDirectCreate) {
             HumanSupportContactMode.DIRECT_CREATE
         } else {
             HumanSupportContactMode.OPEN_FORM
@@ -894,6 +907,7 @@ class AiSupportChatViewModel @Inject constructor(
             ticketType = supportArea?.ticketType,
             subjectResId = supportArea?.subjectResId,
             extraTags = supportArea.extraTags(),
+            siteAddress = siteAddress,
             ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint)
         )
     }
@@ -984,6 +998,7 @@ class AiSupportChatViewModel @Inject constructor(
 
 data class AiSupportChatViewState(
     val entryPoint: AiSupportChatEntryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+    val siteAddress: String? = null,
     val input: String = "",
     val messages: List<AiSupportChatMessage> = emptyList(),
     val chatId: Long? = null,
@@ -1085,6 +1100,7 @@ data class ContactHumanSupport(
     val ticketType: TicketType?,
     val subjectResId: Int?,
     val extraTags: List<String>,
+    val siteAddress: String,
     val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext
 ) : Event()
 
@@ -1140,8 +1156,8 @@ private fun greetingMessage(): AiSupportChatMessage =
 
 private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
     get() = when (this) {
-        AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
-        AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
+        is AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
+        is AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
         is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
         is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
     }

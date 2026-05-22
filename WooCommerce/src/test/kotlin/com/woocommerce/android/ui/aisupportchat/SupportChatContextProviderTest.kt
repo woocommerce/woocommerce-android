@@ -72,6 +72,17 @@ class SupportChatContextProviderTest {
     }
 
     @Test
+    fun `given launch site address without selected site, when building context, then site url is included`() {
+        whenever(selectedSite.getIfExists()).thenReturn(null)
+        whenever(buildConfigWrapper.versionName).thenReturn(APP_VERSION)
+
+        val result = contextProvider.buildInitialContext(siteAddress = SITE_URL)
+
+        assertThat(result.has("selectedSiteId")).isFalse
+        assertThat(result.get("site_url").asString).isEqualTo(SITE_URL)
+    }
+
+    @Test
     fun `given diagnostics, when context is built, then troubleshooting results are formatted as string`() {
         val diagnostics = DiagnosticResult(
             issueType = SupportIssueType.LOADING_ORDERS,

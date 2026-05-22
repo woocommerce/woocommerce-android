@@ -48,9 +48,14 @@ class AiSupportChatActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun createIntent(context: Context, preLogin: Boolean = false): Intent =
+        fun createIntent(
+            context: Context,
+            preLogin: Boolean = false,
+            siteAddress: String? = null
+        ): Intent =
             Intent(context, AiSupportChatActivity::class.java).apply {
                 putExtra(EXTRA_PRE_LOGIN, preLogin)
+                putSiteAddressExtra(siteAddress)
             }
 
         fun createResumeIntent(
@@ -59,37 +64,47 @@ class AiSupportChatActivity : AppCompatActivity() {
             botSlug: String,
             sessionId: String?,
             hasCreatedTicket: Boolean = false,
-            isResolved: Boolean = false
+            isResolved: Boolean = false,
+            siteAddress: String? = null
         ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
             putExtra(EXTRA_CHAT_ID, chatId)
             putExtra(EXTRA_BOT_SLUG, botSlug)
             putExtra(EXTRA_SESSION_ID, sessionId)
             putExtra(EXTRA_HAS_CREATED_TICKET, hasCreatedTicket)
             putExtra(EXTRA_IS_RESOLVED, isResolved)
+            putSiteAddressExtra(siteAddress)
         }
 
         fun createConnectivityToolIntent(
             context: Context,
-            checks: List<ConnectivityCheckCardData>
+            checks: List<ConnectivityCheckCardData>,
+            siteAddress: String? = null
         ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
             putParcelableArrayListExtra(EXTRA_CONNECTIVITY_CHECKS, ArrayList(checks))
+            putSiteAddressExtra(siteAddress)
         }
 
         fun launchModeFrom(intent: Intent): AiSupportChatLaunchMode {
-            val extras = intent.extras ?: return AiSupportChatLaunchMode.Help
+            val extras = intent.extras ?: return AiSupportChatLaunchMode.Help()
             val checks = extras.parcelableArrayList<ConnectivityCheckCardData>(EXTRA_CONNECTIVITY_CHECKS)
+            val siteAddress = extras.getString(EXTRA_SITE_ADDRESS)?.takeIf { it.isNotBlank() }
             return when {
-                !checks.isNullOrEmpty() -> AiSupportChatLaunchMode.ConnectivityTool(checks)
-                extras.getBoolean(EXTRA_PRE_LOGIN, false) -> AiSupportChatLaunchMode.PreLogin
+                !checks.isNullOrEmpty() -> AiSupportChatLaunchMode.ConnectivityTool(checks, siteAddress)
+                extras.getBoolean(EXTRA_PRE_LOGIN, false) -> AiSupportChatLaunchMode.PreLogin(siteAddress)
                 extras.containsKey(EXTRA_CHAT_ID) -> AiSupportChatLaunchMode.Resume(
                     chatId = extras.getLong(EXTRA_CHAT_ID),
                     botSlug = extras.getString(EXTRA_BOT_SLUG) ?: AiSupportChatViewModel.DEFAULT_BOT_SLUG,
                     sessionId = extras.getString(EXTRA_SESSION_ID),
                     hasCreatedTicket = extras.getBoolean(EXTRA_HAS_CREATED_TICKET, false),
-                    isResolved = extras.getBoolean(EXTRA_IS_RESOLVED, false)
+                    isResolved = extras.getBoolean(EXTRA_IS_RESOLVED, false),
+                    siteAddress = siteAddress
                 )
-                else -> AiSupportChatLaunchMode.Help
+                else -> AiSupportChatLaunchMode.Help(siteAddress)
             }
+        }
+
+        private fun Intent.putSiteAddressExtra(siteAddress: String?) {
+            siteAddress?.takeIf { it.isNotBlank() }?.let { putExtra(EXTRA_SITE_ADDRESS, it) }
         }
 
         private const val EXTRA_CONNECTIVITY_CHECKS = "extra_connectivity_checks"
@@ -99,5 +114,6 @@ class AiSupportChatActivity : AppCompatActivity() {
         private const val EXTRA_SESSION_ID = "extra_session_id"
         private const val EXTRA_HAS_CREATED_TICKET = "extra_has_created_ticket"
         private const val EXTRA_IS_RESOLVED = "extra_is_resolved"
+        private const val EXTRA_SITE_ADDRESS = "extra_site_address"
     }
 }
