@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -48,42 +52,48 @@ internal fun WooPosAllPaymentMethodsBottomSheet(
     methods: List<WooPosPaymentMethod>,
     onMethodClicked: (WooPosPaymentMethod) -> Unit,
     onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     BackHandler(enabled = isVisible) { onDismissRequest() }
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter,
+    AnimatedVisibility(
+        visible = isVisible,
+        modifier = Modifier.fillMaxSize(),
+        enter = EnterTransition.None,
+        exit = ExitTransition.None,
     ) {
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION_MS)),
-            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION_MS)),
+        val scrimDescription = stringResource(
+            R.string.woopos_payment_method_picker_bottom_sheet_scrim_content_description
+        )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter,
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .animateEnterExit(
+                        enter = fadeIn(animationSpec = tween(ANIMATION_DURATION_MS)),
+                        exit = fadeOut(animationSpec = tween(ANIMATION_DURATION_MS)),
+                    )
                     .background(MaterialTheme.colorScheme.scrim.copy(alpha = SCRIM_ALPHA))
+                    .semantics { contentDescription = scrimDescription }
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = onDismissRequest,
                     ),
             )
-        }
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = slideInVertically(
-                animationSpec = tween(ANIMATION_DURATION_MS),
-                initialOffsetY = { it },
-            ),
-            exit = slideOutVertically(
-                animationSpec = tween(ANIMATION_DURATION_MS),
-                targetOffsetY = { it },
-            ),
-        ) {
             Surface(
                 modifier = Modifier
+                    .animateEnterExit(
+                        enter = slideInVertically(
+                            animationSpec = tween(ANIMATION_DURATION_MS),
+                            initialOffsetY = { it },
+                        ),
+                        exit = slideOutVertically(
+                            animationSpec = tween(ANIMATION_DURATION_MS),
+                            targetOffsetY = { it },
+                        ),
+                    )
                     .padding(horizontal = WooPosSpacing.Small.value)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(
@@ -110,8 +120,11 @@ private fun PaymentMethodsBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.XLarge.value)
-            .padding(top = WooPosSpacing.XLarge.value)
+            .padding(
+                start = WooPosSpacing.XLarge.value,
+                end = WooPosSpacing.XLarge.value,
+                top = WooPosSpacing.XLarge.value,
+            )
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

@@ -4,7 +4,7 @@
 
 24.9
 -----
-- [*] Woo POS: "Other payment methods" in Checkout now opens as a bottom sheet instead of a fullscreen page (phone) or centered dialog (tablet)
+- [*] Woo POS: "Other payment methods" in Checkout now opens as a bottom sheet instead of a fullscreen page (phone) or centered dialog (tablet) [https://github.com/woocommerce/woocommerce-android/pull/15931]
 
 24.8
 -----

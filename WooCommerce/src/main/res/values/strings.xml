@@ -3900,6 +3900,7 @@
     <string name="woopos_payment_method_scan_to_pay_label">Scan to pay</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Mark order as paid</string>
     <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Pay with Tap to pay</string>
