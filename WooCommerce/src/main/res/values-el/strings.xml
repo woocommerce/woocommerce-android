@@ -396,7 +396,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Δεν ήταν δυνατή η φόρτωση αναφορών αποθέματος</string>
     <string name="dashboard_product_stock_empty_products">Δεν βρέθηκαν προϊόντα για την επιλεγμένη κατάσταση αποθέματος</string>
     <string name="dashboard_google_ads_card_no_campaign_heading">Αύξηση πωλήσεων και επισκεψιμότητας με Google Ads</string>
-    <string name="dashboard_google_ads_card_no_campaign_description">Διαφήμισε τα προϊόντα σου στη Αναζήτηση, Αγορές, YouTube, Gmail και αλλού.</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Διαφήμισε τα προϊόντα σου στο Google Search, Shopping, YouTube, Gmail και αλλού.</string>
     <string name="dashboard_google_ads_card_has_campaign_heading">Απόδοση πληρωμένης καμπάνιας</string>
     <string name="dashboard_google_ads_card_has_campaign_impressions">Εμφανίσεις</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Κλικ</string>
@@ -2074,7 +2074,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="plugin_state_inactive">Ανενεργό</string>
     <string name="plugins_error_message">Παρουσιάστηκε σφάλμα κατά τη φόρτωση των εγκατεστημένων πρόσθετων</string>
     <string name="settings_enable_jetpack_app_passwords_title">Κωδικοί εφαρμογής</string>
-    <string name="settings_enable_jetpack_app_passwords_message">Ενεργοποίησε τους κωδικούς εφαρμογής για να επιτρέπεται στην εφαρμογή η άμεση ανάκτηση δεδομένων από τον ιστότοπό σου αντί μέσω της σύνδεσης Jetpack.</string>
+    <string name="settings_enable_jetpack_app_passwords_message">Ενεργοποίησε τους κωδικούς εφαρμογής για να επιτρέπεται στην εφαρμογή η άμεση ανάκτηση δεδομένων από τον ιστότοπό σου WooCommerce αντί μέσω της σύνδεσης Jetpack.</string>
     <string name="enable_card_reader">Ενεργοποίηση προσομοιωμένου αναγνώστη καρτών</string>
     <string name="update_simulated_reader">Ενημέρωση προσομοιωμένου αναγνώστη καρτών</string>
     <string name="always_update_reader">Πάντα</string>

@@ -2538,7 +2538,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="coupon_conditions_products_edit_products_title">Rediger produkter (%d)</string>
     <string name="product_selector_select_product_label">Vælg produkt %s</string>
     <string name="product_selector_select_variation_label">Vælg variant %s</string>
-    <string name="product_selector_sku_value">Varenr.: %s</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
     <string name="product_selector_select_button_title_default">Vælg %d produkter</string>
     <string name="product_selector_select_button_title_one">Vælg %d produkt</string>
     <string name="product_selector_clear_button_title">Ryd valg</string>

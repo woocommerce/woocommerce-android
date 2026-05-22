@@ -3093,7 +3093,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="login_error_security_key">Probléma merült fel a biztonsági kulcsos bejelentkezéssel</string>
     <string name="notification_security_key_needed">Kérjük, add meg a biztonsági kulcsodat a folytatáshoz.</string>
 
-    <string name="scan_to_update_inventory_unable_to_find_product">A(z) %s cikkszámú termék nem található. Kérjük, próbáld újra.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">A(z) SKU: %s termék nem található. Kérjük, próbáld újra.</string>
     <string name="scan_to_update_inventory_increment_quantity_button">Mennyiség + 1</string>
     <string name="scan_to_update_inventory_update_quantity_button">Mennyiség frissítése</string>
     <string name="scan_to_update_inventory_product_details_button">Termék részleteinek megtekintése</string>

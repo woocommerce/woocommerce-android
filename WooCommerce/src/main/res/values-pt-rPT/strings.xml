@@ -3354,7 +3354,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="woopos_orders_title">Encomendas</string>
     <string name="woopos_order_title">Encomenda %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Fechar</string>
-    <string name="woopos_exit_dialog_confirmation_title">Sair do modo Ponto de Venda?</string>
+    <string name="woopos_exit_dialog_confirmation_title">Sair do modo Point of Sale?</string>
     <string name="woopos_exit_dialog_confirmation_message">Todas as encomendas em curso serão perdidas.</string>
     <string name="woopos_exit_dialog_confirmation_confirm_button">Sair</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">Fundo escurecido. Toca para fechar a caixa de diálogo.</string>

@@ -1566,7 +1566,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="product_tax_status_none">Немає</string>
     <string name="product_tax_status_taxable">Оподатковується</string>
     <string name="product_tax_status_shipping">Доставка</string>
-    <string name="product_sku">Артикул</string>
+    <string name="product_sku">SKU</string>
     <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
     <string name="product_sku_summary">Допомагає легко ідентифікувати цей товар</string>
     <string name="product_global_unique_id_summary">Введи штрих-код або інший унікальний ідентифікатор товару. Це допоможе розміщувати товар на інших каналах або маркетплейсах.</string>
@@ -2524,7 +2524,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
 
     <string name="product_selector_select_product_label">Вибрати товар %s</string>
     <string name="product_selector_select_variation_label">Вибрати варіацію %s</string>
-    <string name="product_selector_sku_value">Артикул: %s</string>
+    <string name="product_selector_sku_value">SKU: %s</string>
     <string name="product_selector_select_button_title_default">Вибрати %d товарів</string>
     <string name="product_selector_select_button_title_one">Вибрати %d товар</string>
     <string name="product_selector_clear_button_title">Скинути вибір</string>
@@ -3120,7 +3120,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="login_error_security_key">Виникла проблема з входом через ключ безпеки</string>
     <string name="notification_security_key_needed">Надай ключ безпеки для продовження.</string>
 
-    <string name="scan_to_update_inventory_unable_to_find_product">Товар з артикулом: %s не знайдено. Спробуй ще раз.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Товар з SKU: %s не знайдено. Спробуй ще раз.</string>
     <string name="scan_to_update_inventory_increment_quantity_button">Кількість + 1</string>
     <string name="scan_to_update_inventory_update_quantity_button">Оновити кількість</string>
     <string name="scan_to_update_inventory_product_details_button">Переглянути деталі товару</string>

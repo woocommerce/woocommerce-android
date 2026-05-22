@@ -3319,7 +3319,7 @@ Warning: Machine-translated. Spot-checked, non-blocking review.
     <string name="woopos_orders_title">Tilaukset</string>
     <string name="woopos_order_title">Tilaus %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Sulje</string>
-    <string name="woopos_exit_dialog_confirmation_title">Poistutaanko kassatilasta?</string>
+    <string name="woopos_exit_dialog_confirmation_title">Poistutaanko Point of Sale -tilasta?</string>
     <string name="woopos_exit_dialog_confirmation_message">Keskeneräiset tilaukset menetetään.</string>
     <string name="woopos_exit_dialog_confirmation_confirm_button">Poistu</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">Himmennetty tausta. Sulje valintaikkuna napauttamalla.</string>
