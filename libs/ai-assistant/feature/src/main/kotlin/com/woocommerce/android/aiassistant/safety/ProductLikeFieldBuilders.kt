@@ -29,10 +29,9 @@ internal fun variationFields(
 
 internal fun productUpdateTitle(
     id: Long,
-    currentValues: Map<String, String>?,
+    displayName: String?,
 ): ConfirmationPreviewText =
-    currentValues?.get("name")
-        ?.takeIf { it.isNotBlank() }
+    displayName
         ?.let { name ->
             string(
                 R.string.ai_assistant_confirmation_product_update_title_with_name,

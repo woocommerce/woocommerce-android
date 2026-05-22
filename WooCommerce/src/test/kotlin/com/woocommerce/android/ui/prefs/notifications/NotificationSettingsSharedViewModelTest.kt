@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NewOrderNotificationPreference
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NotificationType
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -19,6 +22,8 @@ import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
@@ -36,8 +41,31 @@ import java.math.BigDecimal
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
     private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+        on { getString(any()) } doAnswer { invocation ->
+            when (invocation.arguments[0] as Int) {
+                R.string.settings_notifs_new_orders_subtitle -> "All orders"
+                R.string.settings_notifs_new_reviews_subtitle -> "All reviews"
+                R.string.settings_notifs_stock_subtitle -> "All stock alerts"
+                else -> invocation.arguments[0].toString()
+            }
+        }
+        on { getString(any(), anyVararg()) } doAnswer { invocation ->
+            when (invocation.arguments[0] as Int) {
+                R.string.settings_notifs_new_orders_high_value_subtitle -> "Orders over ${invocation.arguments[1]}"
+                else -> invocation.arguments[0].toString()
+            }
+        }
+        on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
+            val quantity = invocation.arguments[0] as Int
+            "$quantity ${if (quantity == 1) "star" else "stars"} and below"
+        }
+    }
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on { formatCurrency(any<BigDecimal>(), anyOrNull(), any()) } doAnswer {
+            "$${it.getArgument<BigDecimal>(0).toPlainString()}"
+        }
     }
     private val defaultNotificationPreferences = WooPushNotificationPreferences(
         storeOrder = StoreOrderPreferences(enabled = true),
@@ -54,11 +82,19 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
         )
         mockSuccessfulFetch(defaultNotificationPreferences)
         mockSuccessfulUpdate()
+        with(notificationChannelsHandler) {
+            NotificationChannelType.entries.forEach {
+                whenever(notificationChannelsHandler.isNotificationChannelEnabled(it)).thenReturn(true)
+                whenever(it.getChannelId()).thenReturn(it.name)
+            }
+        }
         prepareMocks()
         viewModel = NotificationSettingsSharedViewModel(
             savedStateHandle = SavedStateHandle(),
             pushNotificationRepository = pushNotificationRepository,
             resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter,
+            notificationChannelsHandler = notificationChannelsHandler,
             coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
     }
@@ -88,6 +124,35 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             NotificationType.STOCK
         )
     }
+
+    @Test
+    fun `given notification channel is disabled, when view model is loaded, then expose disabled channel state`() =
+        testBlocking {
+            setup {
+                whenever(notificationChannelsHandler.isNotificationChannelEnabled(NotificationChannelType.REVIEW))
+                    .thenReturn(false)
+            }
+
+            val reviewItem = viewModel.notificationTypeItems.captureValues().last()
+                .first { it.type == NotificationType.NEW_REVIEWS }
+
+            assertThat(reviewItem.isNotificationChannelEnabled).isFalse()
+        }
+
+    @Test
+    fun `when device notification channel settings may have changed, then update notification channel state`() =
+        testBlocking {
+            setup {
+                whenever(notificationChannelsHandler.isNotificationChannelEnabled(NotificationChannelType.NEW_ORDER))
+                    .thenReturn(false, true)
+            }
+
+            viewModel.refreshNotificationChannelSettings()
+            val orderItem = viewModel.notificationTypeItems.captureValues().last()
+                .first { it.type == NotificationType.NEW_ORDERS }
+
+            assertThat(orderItem.isNotificationChannelEnabled).isTrue()
+        }
 
     @Test
     fun `when view model is loaded, then fetch notification preferences`() = testBlocking {
@@ -202,9 +267,17 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
 
-            assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_ORDERS }.isEnabled).isFalse()
-            assertThat(notificationTypeItems.first { it.type == NotificationType.NEW_REVIEWS }.isEnabled).isFalse()
-            assertThat(notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled).isFalse()
+            val orderItem = notificationTypeItems.first { it.type == NotificationType.NEW_ORDERS }
+            assertThat(orderItem.isEnabled).isFalse()
+            assertThat(orderItem.subtitle).isEqualTo("Orders over $50")
+
+            val reviewItem = notificationTypeItems.first { it.type == NotificationType.NEW_REVIEWS }
+            assertThat(reviewItem.isEnabled).isFalse()
+            assertThat(reviewItem.subtitle).isEqualTo("3 stars and below")
+
+            val stockItem = notificationTypeItems.first { it.type == NotificationType.STOCK }
+            assertThat(stockItem.isEnabled).isFalse()
+            assertThat(stockItem.subtitle).isEqualTo("All stock alerts")
 
             val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
             assertThat(orderViewState.notificationsEnabled).isFalse()
@@ -552,6 +625,26 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
         assertThat(event).isInstanceOf(NotificationSettingsSharedViewModel.OpenStockNotificationSettings::class.java)
     }
+
+    @Test
+    fun `given notification channel is disabled, when notification type is clicked, then open channel settings`() =
+        testBlocking {
+            val channelId = "review-channel-id"
+            setup {
+                whenever(notificationChannelsHandler.isNotificationChannelEnabled(NotificationChannelType.REVIEW))
+                    .thenReturn(false)
+                with(notificationChannelsHandler) {
+                    whenever(NotificationChannelType.REVIEW.getChannelId()).thenReturn(channelId)
+                }
+            }
+            advanceUntilIdle()
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onNotificationTypeClicked(NotificationType.NEW_REVIEWS)
+            }.last()
+
+            assertThat(event).isEqualTo(NotificationSettingsSharedViewModel.OpenNotificationChannelSettings(channelId))
+        }
 
     private suspend fun captureUpdatePreferences(): WooPushNotificationPreferences {
         val preferencesCaptor = argumentCaptor<WooPushNotificationPreferences>()

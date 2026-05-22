@@ -4,8 +4,11 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -35,6 +38,8 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val pushNotificationRepository: PushNotificationRepository,
     private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter,
+    private val notificationChannelsHandler: NotificationChannelsHandler,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     private val wooPushNotificationPreferences = MutableStateFlow<WooPushNotificationPreferences?>(null)
@@ -54,20 +59,23 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             NotificationTypeItem(
                 type = NotificationType.NEW_ORDERS,
                 title = R.string.settings_notifs_new_orders,
-                subtitle = R.string.settings_notifs_new_orders_subtitle,
-                isEnabled = true
+                subtitle = resourceProvider.getString(R.string.settings_notifs_new_orders_subtitle),
+                isEnabled = true,
+                isNotificationChannelEnabled = NotificationType.NEW_ORDERS.isNotificationChannelEnabled()
             ),
             NotificationTypeItem(
                 type = NotificationType.NEW_REVIEWS,
                 title = R.string.settings_notifs_new_reviews,
-                subtitle = R.string.settings_notifs_new_reviews_subtitle,
-                isEnabled = true
+                subtitle = resourceProvider.getString(R.string.settings_notifs_new_reviews_subtitle),
+                isEnabled = true,
+                isNotificationChannelEnabled = NotificationType.NEW_REVIEWS.isNotificationChannelEnabled()
             ),
             NotificationTypeItem(
                 type = NotificationType.STOCK,
                 title = R.string.settings_notifs_stock,
-                subtitle = R.string.settings_notifs_stock_subtitle,
-                isEnabled = true
+                subtitle = resourceProvider.getString(R.string.settings_notifs_stock_subtitle),
+                isEnabled = true,
+                isNotificationChannelEnabled = NotificationType.STOCK.isNotificationChannelEnabled()
             )
         )
     )
@@ -119,6 +127,14 @@ class NotificationSettingsSharedViewModel @Inject constructor(
 
     fun savePendingNotificationPreferences() {
         saveNotificationPreferencesTrigger.tryEmit(0L)
+    }
+
+    fun refreshNotificationChannelSettings() {
+        _notificationTypeItems.update { items ->
+            items.map { item ->
+                item.copy(isNotificationChannelEnabled = item.type.isNotificationChannelEnabled())
+            }
+        }
     }
 
     fun onNewOrderNotificationsEnabledChanged(isEnabled: Boolean) {
@@ -204,6 +220,11 @@ class NotificationSettingsSharedViewModel @Inject constructor(
     }
 
     fun onNotificationTypeClicked(type: NotificationType) {
+        if (!type.isNotificationChannelEnabled()) {
+            triggerEvent(OpenNotificationChannelSettings(type.getNotificationChannelId()))
+            return
+        }
+
         when (type) {
             NotificationType.NEW_ORDERS -> triggerEvent(OpenNewOrderNotificationSettings)
             NotificationType.NEW_REVIEWS -> triggerEvent(OpenNewReviewNotificationSettings)
@@ -321,7 +342,10 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         preferences.storeReview?.maxRating?.let { displayedReviewRating.value = it }
         _notificationTypeItems.update { items ->
             items.map { item ->
-                item.copy(isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled)
+                item.copy(
+                    subtitle = getSubtitle(preferences, item.type),
+                    isEnabled = preferences.isEnabled(item.type) ?: item.isEnabled
+                )
             }
         }
     }
@@ -402,15 +426,57 @@ class NotificationSettingsSharedViewModel @Inject constructor(
             NotificationType.STOCK -> storeStock?.enabled
         }
 
+    private fun getSubtitle(preferences: WooPushNotificationPreferences, type: NotificationType): String =
+        when (type) {
+            NotificationType.NEW_ORDERS -> preferences.storeOrder?.getOrderSubtitle().orEmpty()
+            NotificationType.NEW_REVIEWS -> preferences.storeReview?.getReviewSubtitle().orEmpty()
+            NotificationType.STOCK -> resourceProvider.getString(R.string.settings_notifs_stock_subtitle)
+        }
+
+    private fun StoreOrderPreferences.getOrderSubtitle(): String {
+        return minAmount?.let {
+            resourceProvider.getString(
+                R.string.settings_notifs_new_orders_high_value_subtitle,
+                currencyFormatter.formatCurrency(it)
+            )
+        } ?: resourceProvider.getString(R.string.settings_notifs_new_orders_subtitle)
+    }
+
+    private fun StoreReviewPreferences.getReviewSubtitle(): String {
+        return maxRating?.let {
+            resourceProvider.getQuantityString(
+                quantity = it,
+                default = R.string.settings_notifs_new_reviews_selected_rating,
+                one = R.string.settings_notifs_new_reviews_selected_rating_one
+            )
+        } ?: resourceProvider.getString(R.string.settings_notifs_new_reviews_subtitle)
+    }
+
+    private fun NotificationType.isNotificationChannelEnabled(): Boolean {
+        return notificationChannelsHandler.isNotificationChannelEnabled(toNotificationChannelType())
+    }
+
+    private fun NotificationType.getNotificationChannelId(): String =
+        with(notificationChannelsHandler) { toNotificationChannelType().getChannelId() }
+
+    private fun NotificationType.toNotificationChannelType(): NotificationChannelType =
+        when (this) {
+            NotificationType.NEW_ORDERS -> NotificationChannelType.NEW_ORDER
+            NotificationType.NEW_REVIEWS -> NotificationChannelType.REVIEW
+            NotificationType.STOCK -> NotificationChannelType.STOCK
+        }
+
     object OpenNewOrderNotificationSettings : MultiLiveEvent.Event()
     object OpenNewReviewNotificationSettings : MultiLiveEvent.Event()
     object OpenStockNotificationSettings : MultiLiveEvent.Event()
+    data class OpenNotificationChannelSettings(val channelId: String) : MultiLiveEvent.Event()
 
     data class NotificationTypeItem(
         val type: NotificationType,
         @StringRes val title: Int,
-        @StringRes val subtitle: Int,
-        val isEnabled: Boolean
+        val subtitle: String,
+        val isEnabled: Boolean,
+        val isNotificationChannelEnabled: Boolean = true
     )
 
     data class NewOrderNotificationSettingsViewState(

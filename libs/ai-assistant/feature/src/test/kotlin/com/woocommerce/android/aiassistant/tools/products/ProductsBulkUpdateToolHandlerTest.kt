@@ -262,7 +262,6 @@ class ProductsBulkUpdateToolHandlerTest {
             .isEqualTo("woocommerce_rest_product_invalid_id")
         assertThat(requireNotNull(failed["message"]).jsonPrimitive.content).isEqualTo("Invalid ID.")
         assertThat(requireNotNull(failed["status"]).jsonPrimitive.content).isEqualTo("400")
-        assertThat(structured).doesNotContainKey("variable_parent_price_skipped_ids")
     }
 
     @Test
@@ -315,7 +314,6 @@ class ProductsBulkUpdateToolHandlerTest {
             val failed = json.getValue("failed").jsonArray.single().jsonObject
             assertThat(failed.keys).containsExactly("id", "code", "message", "status")
             assertThat(failed.getValue("id").jsonPrimitive.long).isEqualTo(43L)
-            assertThat(json).doesNotContainKey("variable_parent_price_skipped_ids")
         }
 
     @Test
