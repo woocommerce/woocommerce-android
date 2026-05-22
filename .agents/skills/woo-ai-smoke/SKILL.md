@@ -20,10 +20,8 @@ WOO_WPCOM_USERNAME=
 WOO_WPCOM_PASSWORD=
 ```
 
-Do not add `WOO_SITE_ID`. The smoke harness resolves the WPCOM site id after WordPress.com auth by
-matching `WOO_SITE_URL` in the authenticated account's `/me/sites` response. Any `/sites/<url>`
-lookup is fallback/diagnostic only. The target store must be Jetpack-connected and connected to the
-same WordPress.com account used by `WOO_WPCOM_USERNAME`.
+The target store must be Jetpack-connected and connected to the same WordPress.com account used by
+`WOO_WPCOM_USERNAME`.
 
 `WOO_WPCOM_PASSWORD` may be a WordPress.com Application Password when the account requires 2FA. The
 smoke harness does not implement an interactive 2FA challenge.
@@ -140,8 +138,8 @@ failed hard-check set. Preserved known-failure approvals do not write `sampleExp
 assistant responses.
 
 If live auth fails with a 2FA-required message, tell the operator to use a WordPress.com
-Application Password as `WOO_WPCOM_PASSWORD`. If site resolution fails, verify the site is present
-in the same account's `/me/sites` response and is Jetpack-connected.
+Application Password as `WOO_WPCOM_PASSWORD`. If site resolution fails, verify the target store is
+connected to the same WordPress.com account and is Jetpack-connected.
 
 After reviewer inspection:
 

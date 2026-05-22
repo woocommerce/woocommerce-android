@@ -269,11 +269,6 @@ WOO_WPCOM_USERNAME=
 WOO_WPCOM_PASSWORD=
 ```
 
-Do not provide `WOO_SITE_ID`. After WordPress.com auth, the harness resolves the site id by finding
-`WOO_SITE_URL` in the authenticated account's `/me/sites` response. Any `/sites/<url>` lookup is
-fallback/diagnostic only; it is not a substitute for proving the site belongs to the same
-WordPress.com account.
-
 `WOO_WPCOM_PASSWORD` is the password used for WordPress.com AccountStore authentication. If the
 account requires 2FA, use a WordPress.com Application Password for this value; the smoke harness
 does not implement an interactive 2FA challenge.

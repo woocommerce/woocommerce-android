@@ -121,10 +121,9 @@ explicitly.
 - Keys: `WOO_SITE_URL`, `WOO_WPCOM_USERNAME`, `WOO_WPCOM_PASSWORD`.
 - Loaded into env vars before the test runs; consumed by `WooAiSmokeLiveEnvRule`.
 
-`WOO_SITE_ID` is intentionally absent. The live bridge authenticates to WordPress.com first, then
-uses `SiteStore.fetchSites(FetchSitesPayload())` to find `WOO_SITE_URL` in the authenticated
-account's `/me/sites` response. Any `/sites/<url>` lookup is fallback/diagnostic only; the smoke
-contract still requires the configured store to belong to the same WordPress.com account.
+The live bridge authenticates to WordPress.com first, then resolves `WOO_SITE_URL` to a
+same-account WPCOM REST site before selected-site bootstrap. The smoke contract requires the
+configured store to be Jetpack-connected and connected to the same WordPress.com account.
 
 `WOO_WPCOM_PASSWORD` may be a normal WordPress.com password. If the account requires 2FA, use a
 WordPress.com Application Password for this value because the harness intentionally does not
