@@ -1,11 +1,9 @@
 package com.woocommerce.android.aiassistant.di
 
 import com.woocommerce.android.aiassistant.auth.AccessTokenWpComOAuthTokenProvider
-import com.woocommerce.android.aiassistant.auth.WpComJetpackAiTokenProvider
 import com.woocommerce.android.aiassistant.auth.WpComOAuthTokenProvider
-import com.woocommerce.android.aiassistant.chat.JetpackAiChatService.Companion.DEFAULT_BASE_URL
 import com.woocommerce.android.aiassistant.chat.WooMobileAiChatService
-import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
+import com.woocommerce.android.aiassistant.chat.WooMobileAiChatService.Companion.DEFAULT_BASE_URL
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import dagger.Binds
 import dagger.Module
@@ -29,10 +27,6 @@ internal abstract class AssistantNetworkModule {
     @Binds
     @Singleton
     internal abstract fun bindWpComOAuthTokenProvider(impl: AccessTokenWpComOAuthTokenProvider): WpComOAuthTokenProvider
-
-    @Binds
-    @Singleton
-    internal abstract fun bindJwtTokenProvider(impl: WpComJetpackAiTokenProvider): JwtTokenProvider
 
     companion object {
         private const val SSE_CALL_TIMEOUT_SECONDS = 60L
