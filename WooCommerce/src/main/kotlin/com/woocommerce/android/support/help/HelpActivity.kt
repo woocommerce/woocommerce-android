@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.updatePadding
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -19,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_F
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -60,6 +62,8 @@ class HelpActivity : AppCompatActivity() {
 
     @Inject lateinit var featureFlagRepository: FeatureFlagRepository
 
+    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
+
     private lateinit var binding: ActivityHelpBinding
 
     private val originFromExtras by lazy {
@@ -93,7 +97,12 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        val isAiSupportChatAvailable = isAiSupportChatAvailable()
+        if (HelpAiSupportChatEntryPoint.shouldShowContactSupport(isAiSupportChatAvailable)) {
+            binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        } else {
+            binding.contactContainer.hide()
+        }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.MobileApp) }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
@@ -111,7 +120,7 @@ class HelpActivity : AppCompatActivity() {
             binding.ssrContainer.setOnClickListener { showSSR() }
         }
 
-        if (isAiSupportChatAvailable()) {
+        if (isAiSupportChatAvailable) {
             binding.aiSupportChatContainer.show()
             binding.aiSupportChatContainer.setOnClickListener { showAiSupportChat() }
             binding.aiSupportChatHistoryContainer.show()
@@ -251,10 +260,14 @@ class HelpActivity : AppCompatActivity() {
         )
 
     private fun showAiSupportChat() {
+        val preLogin = shouldUsePreLoginAiSupportChat()
+        val siteAddress = selectedSite.getIfExists()?.url
+            ?: appPrefsWrapper.getLoginSiteAddress().takeIf { preLogin }
         startActivity(
             AiSupportChatActivity.createIntent(
                 context = this,
-                preLogin = shouldUsePreLoginAiSupportChat()
+                preLogin = preLogin,
+                siteAddress = siteAddress
             )
         )
     }

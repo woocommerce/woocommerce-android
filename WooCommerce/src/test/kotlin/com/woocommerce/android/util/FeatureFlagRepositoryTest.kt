@@ -50,6 +50,15 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given ai support chat feature flag, when inspected, then local value is enabled`() {
+        // WHEN
+        val localValue = FeatureFlag.AI_SUPPORT_CHAT.localValue
+
+        // THEN
+        assertThat(localValue).isTrue()
+    }
+
+    @Test
     fun `given assistant feature flag, when inspected, then remote key matches release key`() {
         // WHEN
         val remoteFlagKey = FeatureFlag.AI_ASSISTANT.remoteFlagKey

@@ -8,8 +8,8 @@ class WooAiSmokeRedactorTest {
     fun `given configured secrets, when text is redacted, then no secret remains`() {
         val redactor = WooAiSmokeRedactor(
             siteUrl = "https://store.example",
-            username = "merchant@example.com",
-            appPassword = "app password",
+            wpComUsername = "merchant@example.com",
+            wpComPassword = "app password",
         )
         val basicValue = "Basic bWVyY2hhbnRAZXhhbXBsZS5jb206YXBwIHBhc3N3b3Jk"
         val jwtValue = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZXJjaGFudCJ9.signature"
@@ -31,8 +31,8 @@ class WooAiSmokeRedactorTest {
     fun `given artifact customer data, when text is redacted, then common pii is removed`() {
         val redactor = WooAiSmokeRedactor(
             siteUrl = "",
-            username = "",
-            appPassword = "",
+            wpComUsername = "",
+            wpComPassword = "",
         )
 
         val redacted = redactor.redact(

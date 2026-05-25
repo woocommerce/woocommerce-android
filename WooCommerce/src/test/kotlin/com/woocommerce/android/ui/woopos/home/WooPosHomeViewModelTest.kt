@@ -114,6 +114,26 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `when OrderSuccessfullyPaidExternally received, then OrderSuccessfullyPaid with EXTERNAL is sent and sound played`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaidExternally)
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)
+            )
+            verify(soundHelper).playChaChing()
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
+        }
+
+    @Test
     fun `given state is Checkout NotPaid, when ExitConfirmationDialogDismissed passed, then exit confirmation dialog should be dismissed`() =
         runTest {
             // GIVEN

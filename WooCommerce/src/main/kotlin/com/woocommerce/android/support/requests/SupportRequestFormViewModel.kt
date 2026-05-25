@@ -13,6 +13,9 @@ import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetEx
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatAnalyticsTracker
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketRoute
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -31,6 +34,7 @@ class SupportRequestFormViewModel @Inject constructor(
     private val zendeskSettings: ZendeskSettings,
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
+    private val aiSupportChatAnalyticsTracker: AiSupportChatAnalyticsTracker,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = savedState.getStateFlow(
@@ -86,7 +90,8 @@ class SupportRequestFormViewModel @Inject constructor(
         extraTags: List<String>,
         diagnosticLog: String?,
         selectedEmail: String,
-        selectedName: String
+        selectedName: String,
+        aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
     ) {
         zendeskSettings.supportEmail = selectedEmail
         zendeskSettings.supportName = selectedName
@@ -95,7 +100,8 @@ class SupportRequestFormViewModel @Inject constructor(
             context = context,
             helpOrigin = helpOrigin,
             extraTags = extraTags,
-            diagnosticLog = diagnosticLog
+            diagnosticLog = diagnosticLog,
+            aiSupportChatTicketAnalyticsContext = aiSupportChatTicketAnalyticsContext
         )
     }
 
@@ -103,7 +109,8 @@ class SupportRequestFormViewModel @Inject constructor(
         context: Context,
         helpOrigin: HelpOrigin,
         extraTags: List<String>,
-        diagnosticLog: String? = null
+        diagnosticLog: String? = null,
+        aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
     ) {
         val ticketType = viewState.value.ticketType ?: return
 
@@ -119,7 +126,7 @@ class SupportRequestFormViewModel @Inject constructor(
                 extraTags,
                 viewState.value.siteAddress,
                 diagnosticLog
-            ).collect { it.handleCreateRequestResult() }
+            ).collect { it.handleCreateRequestResult(aiSupportChatTicketAnalyticsContext) }
         }
     }
 
@@ -132,19 +139,37 @@ class SupportRequestFormViewModel @Inject constructor(
         )
     }
 
-    private fun Result<Request?>.handleCreateRequestResult() {
+    private fun Result<Request?>.handleCreateRequestResult(
+        aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext?
+    ) {
         viewState.update { it.copy(isLoading = false) }
         fold(
             onSuccess = {
                 triggerEvent(RequestCreationSucceeded)
                 tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
+                aiSupportChatTicketAnalyticsContext?.let {
+                    aiSupportChatAnalyticsTracker.trackTicketCreated(
+                        route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                        context = it
+                    )
+                }
             },
-            onFailure = ::handleRequestCreationFailure
+            onFailure = { error -> handleRequestCreationFailure(error, aiSupportChatTicketAnalyticsContext) }
         )
     }
 
-    private fun handleRequestCreationFailure(error: Throwable) {
+    private fun handleRequestCreationFailure(
+        error: Throwable,
+        aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext?
+    ) {
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+        aiSupportChatTicketAnalyticsContext?.let {
+            aiSupportChatAnalyticsTracker.trackTicketCreationFailed(
+                route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                context = it,
+                error = error
+            )
+        }
         when (error) {
             is IdentityNotSetException -> handleEmptyCredentials()
             else -> triggerEvent(RequestCreationFailed)

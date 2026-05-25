@@ -50,6 +50,7 @@ class NewStockNotificationSettingsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        sharedViewModel.onNotificationDetailShown(NotificationSettingsSharedViewModel.NotificationType.STOCK)
         AnalyticsTracker.trackViewShown(this)
     }
 

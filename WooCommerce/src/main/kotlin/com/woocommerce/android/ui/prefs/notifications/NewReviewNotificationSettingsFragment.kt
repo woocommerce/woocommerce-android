@@ -37,6 +37,7 @@ class NewReviewNotificationSettingsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        sharedViewModel.onNotificationDetailShown(NotificationSettingsSharedViewModel.NotificationType.NEW_REVIEWS)
         AnalyticsTracker.trackViewShown(this)
     }
 

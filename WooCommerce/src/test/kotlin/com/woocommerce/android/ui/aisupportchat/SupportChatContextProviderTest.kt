@@ -72,6 +72,17 @@ class SupportChatContextProviderTest {
     }
 
     @Test
+    fun `given launch site address without selected site, when building context, then site url is included`() {
+        whenever(selectedSite.getIfExists()).thenReturn(null)
+        whenever(buildConfigWrapper.versionName).thenReturn(APP_VERSION)
+
+        val result = contextProvider.buildInitialContext(siteAddress = SITE_URL)
+
+        assertThat(result.has("selectedSiteId")).isFalse
+        assertThat(result.get("site_url").asString).isEqualTo(SITE_URL)
+    }
+
+    @Test
     fun `given diagnostics, when context is built, then troubleshooting results are formatted as string`() {
         val diagnostics = DiagnosticResult(
             issueType = SupportIssueType.LOADING_ORDERS,
@@ -81,6 +92,7 @@ class SupportChatContextProviderTest {
                     test = DiagnosticTest.WPCOM_SERVERS,
                     status = TestStatus.Failed(technicalDetails = "WPCom 503")
                 ),
+                DiagnosticStatus(DiagnosticTest.ANALYTICS_SETTING, TestStatus.Passed),
                 DiagnosticStatus(DiagnosticTest.STORE_CONNECTION, TestStatus.Pending)
             )
         )
@@ -103,6 +115,9 @@ class SupportChatContextProviderTest {
             ## 2. Connecting to WordPress.com Servers
             Result: Failed
             Details: WPCom 503
+
+            ## 3. Checking analytics setting
+            Result: Success
             """.trimIndent()
         )
         assertThat(result.has("diagnostics")).isFalse

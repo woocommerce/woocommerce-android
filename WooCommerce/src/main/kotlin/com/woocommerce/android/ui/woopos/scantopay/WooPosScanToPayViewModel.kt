@@ -38,6 +38,10 @@ class WooPosScanToPayViewModel @Inject constructor(
 ) : ViewModel() {
     private val orderId: Long = requireNotNull(savedState[SCAN_TO_PAY_ROUTE_ORDER_ID_KEY])
 
+    // `replay = 1` so the init-time `GoBack` emitted from a restored `PaymentDetected` state still
+    // reaches a collector that subscribes after the VM has been constructed (e.g. on process
+    // restart with restored saved state). Sibling POS payment VMs don't need replay because they
+    // don't emit navigation events from init.
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(replay = 1)
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
@@ -83,13 +87,13 @@ class WooPosScanToPayViewModel @Inject constructor(
     private suspend fun prepareAndShowQr() {
         val promote = repository.promoteOrderToPending(orderId)
         if (promote.isFailure) {
-            _state.value = failedState()
+            failAndTrack()
             return
         }
 
         val paymentUrl = readPaymentUrlWithRetry()
         if (paymentUrl.isNullOrBlank()) {
-            _state.value = failedState()
+            failAndTrack()
             return
         }
 
@@ -102,9 +106,16 @@ class WooPosScanToPayViewModel @Inject constructor(
     }
 
     private suspend fun readPaymentUrlWithRetry(): String? {
-        repository.fetchOrderSnapshot(orderId)?.paymentUrl?.takeIf { it.isNotBlank() }?.let { return it }
-        delay(POST_PROMOTION_DELAY_MS)
-        return repository.fetchOrderSnapshot(orderId)?.paymentUrl?.takeIf { it.isNotBlank() }
+        repeat(MAX_PAYMENT_URL_ATTEMPTS) { attempt ->
+            if (attempt > 0) delay(PAYMENT_URL_RETRY_DELAY_MS)
+            repository.fetchOrderSnapshot(orderId)?.paymentUrl?.takeIf { it.isNotBlank() }?.let { return it }
+        }
+        return null
+    }
+
+    private suspend fun failAndTrack() {
+        analyticsTracker.track(ScanToPayPaymentFailed)
+        _state.value = failedState()
     }
 
     private fun startPolling() {
@@ -120,8 +131,7 @@ class WooPosScanToPayViewModel @Inject constructor(
                     return@launch
                 }
             }
-            analyticsTracker.track(ScanToPayPaymentFailed)
-            _state.value = failedState()
+            failAndTrack()
         }
     }
 
@@ -142,7 +152,10 @@ class WooPosScanToPayViewModel @Inject constructor(
         message = resourceProvider.getString(R.string.woopos_scan_to_pay_error_message),
     )
 
-    private fun Order.isPaid(): Boolean = datePaid != null || status in PAID_STATUSES
+    // `isOrderPaid` only checks `datePaid`; treat Processing/Completed as paid even when the
+    // backend hasn't populated `datePaid` yet, so polling can detect payment as soon as the
+    // status transitions.
+    private fun Order.isPaid(): Boolean = isOrderPaid || status in PAID_STATUSES
 
     override fun onCleared() {
         pollingJob?.cancel()
@@ -151,7 +164,8 @@ class WooPosScanToPayViewModel @Inject constructor(
 
     private companion object {
         const val STATE_KEY = "woo_pos_scan_to_pay_state"
-        const val POST_PROMOTION_DELAY_MS = 1_000L
+        const val PAYMENT_URL_RETRY_DELAY_MS = 1_000L
+        const val MAX_PAYMENT_URL_ATTEMPTS = 3
         const val FAST_POLL_INTERVAL_MS = 2_000L
         const val SLOW_POLL_INTERVAL_MS = 5_000L
         const val FAST_POLL_ATTEMPTS = 15

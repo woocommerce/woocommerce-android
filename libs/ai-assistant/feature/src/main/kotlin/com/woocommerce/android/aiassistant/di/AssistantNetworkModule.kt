@@ -1,8 +1,10 @@
 package com.woocommerce.android.aiassistant.di
 
+import com.woocommerce.android.aiassistant.auth.AccessTokenWpComOAuthTokenProvider
 import com.woocommerce.android.aiassistant.auth.WpComJetpackAiTokenProvider
-import com.woocommerce.android.aiassistant.chat.JetpackAiChatService
+import com.woocommerce.android.aiassistant.auth.WpComOAuthTokenProvider
 import com.woocommerce.android.aiassistant.chat.JetpackAiChatService.Companion.DEFAULT_BASE_URL
+import com.woocommerce.android.aiassistant.chat.WooMobileAiChatService
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import dagger.Binds
@@ -10,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.CookieJar
 import okhttp3.OkHttpClient
 import org.wordpress.android.fluxc.network.UserAgent
 import java.util.concurrent.TimeUnit
@@ -21,7 +24,11 @@ import javax.inject.Singleton
 internal abstract class AssistantNetworkModule {
     @Binds
     @Singleton
-    internal abstract fun bindChatService(impl: JetpackAiChatService): ChatService
+    internal abstract fun bindChatService(impl: WooMobileAiChatService): ChatService
+
+    @Binds
+    @Singleton
+    internal abstract fun bindWpComOAuthTokenProvider(impl: AccessTokenWpComOAuthTokenProvider): WpComOAuthTokenProvider
 
     @Binds
     @Singleton
@@ -45,6 +52,7 @@ internal abstract class AssistantNetworkModule {
         ): OkHttpClient = base.newBuilder()
             .readTimeout(0, TimeUnit.MILLISECONDS)
             .callTimeout(SSE_CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .cookieJar(CookieJar.NO_COOKIES)
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                     .header("User-Agent", userAgent.apiUserAgent)
