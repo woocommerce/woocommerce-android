@@ -34,9 +34,9 @@ source:
     - "**/*Tests.kt"
 
 llm:
-  # Haiku is plenty for context extraction (and ~5x cheaper than Sonnet).
+  # Keep context extraction on the same model family as app-string translation.
   provider: anthropic
-  model: claude-haiku-4-5
+  model: claude-sonnet-4-6
 
 processing:
   # Parallelism is bounded by the Anthropic API rate limit on the user's account.
