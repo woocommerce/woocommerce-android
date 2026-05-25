@@ -60,6 +60,7 @@ module WooAiTranslation
     def translate_locale(source_units, locale, origin)
       out_path = File.join(@res_dir, "values-#{locale}", 'strings.xml')
       existing = load_existing(out_path)
+      before_names = existing.values.select(&:translatable?).map(&:name)
       # Read the sidecar baseline once per locale; the writer attaches preserved
       # blocks for keys whose manifest origin is still glotpress-import. Empty
       # hash when no sidecar exists for this locale (the 15 AI-backfilled
@@ -77,22 +78,37 @@ module WooAiTranslation
 
       ordered = source_units.map { |u| plan[:units][u.name] }
       attach_preserved_xml(ordered, locale, baseline_raw)
-      AndroidResources::Writer.write(out_path, ordered, locale)
+      write_output(out_path, ordered, locale)
 
       malformed = Validators.xml_well_formed(out_path)
       raise "Generated #{out_path} is not well-formed: #{malformed.first}" unless malformed.empty?
 
-      output_names = ordered.select(&:fully_translated?).map(&:name)
+      output_doc = AndroidResources::Parser.parse_file(out_path)
+      output_names = output_doc.translatable_names
       output_name_set = output_names.to_set
-      source_names = source_units.map(&:name).select do |name|
+      all_source_names = source_units.map(&:name)
+      source_names = all_source_names.select do |name|
         @only_names.nil? || @only_names.include?(name) || output_name_set.include?(name)
       end
-      output_plurals_qs = ordered.select { |u| u.fully_translated? && u.type == :plurals }
-                                 .to_h { |u| [u.name, u.entries.map { |e| e[:quantity] }] }
-      gate_errors = Validators.key_parity(source_names: source_names, output_names: output_names) +
+      parity_source_names = parity_source_names(all_source_names, output_names)
+      output_plurals_qs = output_doc.translatable_units
+                                     .select { |u| u.type == :plurals && validate_output_unit?(u.name) }
+                                     .to_h { |u| [u.name, u.entries.map { |e| e[:quantity] }] }
+      gate_errors = Validators.key_parity(
+        source_names: parity_source_names,
+        output_names: output_names,
+        require_all: require_full_key_parity?(baseline_raw)
+      ) +
                     Validators.plural_pair_integrity(source_names: source_names, output_names: output_names) +
                     Validators.plural_form_coverage(output_plurals_quantities: output_plurals_qs,
                                                     required: CldrPlurals.quantities_for(locale))
+      if @only_names
+        gate_errors += Validators.no_unselected_key_loss(
+          before_names: before_names,
+          output_names: output_names,
+          selected_names: @only_names.to_a
+        )
+      end
       gate_errors.each { |e| @logger.call("GATE [#{locale}] #{e}") }
 
       Report.new(
@@ -146,6 +162,35 @@ module WooAiTranslation
     end
 
     def should_translate?(name)
+      @only_names.nil? || @only_names.include?(name)
+    end
+
+    def write_output(out_path, ordered, locale)
+      if @only_names
+        AndroidResources::PartialWriter.write(out_path, ordered, locale, selected_names: @only_names)
+      else
+        AndroidResources::Writer.write(out_path, ordered, locale)
+      end
+    end
+
+    def parity_source_names(all_source_names, output_names)
+      return all_source_names unless @only_names
+
+      # In partial mode, unrelated existing extras should not block the PR-time
+      # run. Selected deleted keys are still checked because they are excluded
+      # from this allowance and must be removed by the patch writer.
+      allowed_existing = output_names.reject { |name| @only_names.include?(name) }
+      (all_source_names + allowed_existing).uniq
+    end
+
+    def require_full_key_parity?(baseline_raw)
+      # AI-backfilled locales are intended to be complete. Human GlotPress imports
+      # retain their historical fallback gaps, and PR-time partial runs validate
+      # only the touched delta plus the no-loss invariant.
+      @only_names.nil? && baseline_raw.empty?
+    end
+
+    def validate_output_unit?(name)
       @only_names.nil? || @only_names.include?(name)
     end
 
