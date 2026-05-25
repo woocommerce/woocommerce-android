@@ -23,7 +23,6 @@ sealed class CardReaderConfigForSupportedCountry(
     // Remove the CA exclusion once Interac is supported in POS. CA is a fully-supported
     // IPP country (external reader + TTP) for the rest of the app, but POS card payments
     // are blocked here until Interac lands.
-    @Suppress("ForbiddenComment")
     override val isPosCardPaymentEnabled: Boolean
         get() = countryCode != POS_DISABLED_COUNTRY_CA
 
