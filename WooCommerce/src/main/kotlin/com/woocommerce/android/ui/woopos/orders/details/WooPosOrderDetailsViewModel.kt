@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -8,7 +7,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
@@ -43,7 +41,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosOrderDetailsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val ordersDataSource: WooPosOrdersDataSource,
     private val resourceProvider: ResourceProvider,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
@@ -55,14 +52,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
 ) : ViewModel() {
-
-    private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
-
-    val isSingleOrderMode: Boolean = singleOrderId != null
-
-    private val _state = MutableStateFlow<WooPosOrderDetailsState>(
-        if (singleOrderId != null) WooPosOrderDetailsState.Loading else WooPosOrderDetailsState.Idle
-    )
+    private val _state = MutableStateFlow<WooPosOrderDetailsState>(WooPosOrderDetailsState.Idle)
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(extraBufferCapacity = 1)
@@ -75,11 +65,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private var lastRequestedOrderId: Long? = null
 
     init {
-        if (singleOrderId != null) {
-            loadOrder(singleOrderId)
-        } else {
-            observeSelectedOrder()
-        }
+        observeSelectedOrder()
     }
 
     private fun observeSelectedOrder() {

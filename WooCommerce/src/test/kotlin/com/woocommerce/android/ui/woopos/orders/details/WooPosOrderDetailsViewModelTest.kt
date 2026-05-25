@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
@@ -9,7 +8,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.orders.ORDERS_ROUTE_ORDER_ID_KEY
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
@@ -156,53 +154,6 @@ class WooPosOrderDetailsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(WooPosOrderDetailsState.Idle)
-    }
-
-    // endregion
-
-    // region Single Order Mode
-
-    @Test
-    fun `given single order mode, when init, then order is loaded automatically`() = runTest {
-        // GIVEN
-        doReturn(Result.success(order(42L))).whenever(dataSource).getOrderById(42L)
-        val savedStateHandle = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to 42L))
-
-        // WHEN
-        viewModel = createViewModel(savedStateHandle)
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(viewModel.isSingleOrderMode).isTrue()
-        val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosOrderDetailsState.Loaded::class.java)
-        assertThat((state as WooPosOrderDetailsState.Loaded).details.id).isEqualTo(42L)
-    }
-
-    @Test
-    fun `given single order mode with fetch failure, when init, then state is Error`() = runTest {
-        // GIVEN
-        doReturn(Result.failure<Order>(RuntimeException("not found")))
-            .whenever(dataSource).getOrderById(42L)
-        val savedStateHandle = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to 42L))
-
-        // WHEN
-        viewModel = createViewModel(savedStateHandle)
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosOrderDetailsState.Error::class.java)
-    }
-
-    @Test
-    fun `given no single order mode, when init, then state is Idle`() = runTest {
-        // WHEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosOrderDetailsState.Idle)
-        assertThat(viewModel.isSingleOrderMode).isFalse()
     }
 
     // endregion
@@ -385,11 +336,8 @@ class WooPosOrderDetailsViewModelTest {
         datePaid = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z")
     )
 
-    private fun createViewModel(
-        savedStateHandle: SavedStateHandle = SavedStateHandle()
-    ): WooPosOrderDetailsViewModel {
+    private fun createViewModel(): WooPosOrderDetailsViewModel {
         return WooPosOrderDetailsViewModel(
-            savedStateHandle = savedStateHandle,
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
             childrenToParentEventSender = childrenToParentEventSender,
@@ -513,25 +461,6 @@ class WooPosOrderDetailsViewModelTest {
     // endregion
 
     // region Retry
-
-    @Test
-    fun `given single order mode error, when retryLoadOrder called, then order reloaded`() = runTest {
-        // GIVEN
-        doReturn(Result.failure<Order>(RuntimeException("network error")))
-            .whenever(dataSource).getOrderById(42L)
-        val savedStateHandle = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to 42L))
-        viewModel = createViewModel(savedStateHandle)
-        advanceUntilIdle()
-        assertThat(viewModel.state.value).isInstanceOf(WooPosOrderDetailsState.Error::class.java)
-
-        // WHEN
-        doReturn(Result.success(order(42L))).whenever(dataSource).getOrderById(42L)
-        viewModel.retryLoadOrder()
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosOrderDetailsState.Loaded::class.java)
-    }
 
     @Test
     fun `given no lastRequestedOrderId, when retryLoadOrder called, then nothing happens`() = runTest {
