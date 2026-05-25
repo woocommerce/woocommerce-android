@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromMarkAsPaid
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidFailed
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidNotePostFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -124,10 +123,7 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
 
             val outcome = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
             when (outcome) {
-                MarkOrderAsCompleteOutcome.SuccessWithFailedNote -> {
-                    analyticsTracker.track(MarkAsPaidNotePostFailed)
-                    onMarkAsPaidSucceeded()
-                }
+                MarkOrderAsCompleteOutcome.SuccessWithFailedNote,
                 MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded()
                 MarkOrderAsCompleteOutcome.Failure -> {
                     analyticsTracker.track(MarkAsPaidFailed)

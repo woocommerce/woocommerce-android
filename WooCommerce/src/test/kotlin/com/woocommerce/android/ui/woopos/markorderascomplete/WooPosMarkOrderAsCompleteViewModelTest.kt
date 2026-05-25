@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromMarkAsPaid
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidFailed
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidNotePostFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -26,7 +25,6 @@ import org.junit.Test
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -187,7 +185,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     }
 
     @Test
-    fun `given repo succeeds with failed note, when confirm clicked, then MarkAsPaidNotePostFailed tracked`() = runTest {
+    fun `given repo succeeds with failed note, when confirm clicked, then success path same as Success`() = runTest {
         // GIVEN
         whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
             .thenReturn(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
@@ -198,25 +196,11 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
-        verify(tracker).track(MarkAsPaidNotePostFailed)
         verify(tracker).track(MarkAsPaidSuccess)
+        verify(childrenToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.OrderSuccessfullyPaidExternally),
+        )
     }
-
-    @Test
-    fun `given repo succeeds without failed note, when confirm clicked, then MarkAsPaidNotePostFailed not tracked`() =
-        runTest {
-            // GIVEN
-            whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-                .thenReturn(MarkOrderAsCompleteOutcome.Success)
-            val viewModel = createViewModel()
-
-            // WHEN / THEN
-            viewModel.navigationEvent.test {
-                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
-                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
-            }
-            verify(tracker, never()).track(MarkAsPaidNotePostFailed)
-        }
 
     @Test
     fun `given saved state has LOADING button, when VM restored, then button is reset to ENABLED`() = runTest {
