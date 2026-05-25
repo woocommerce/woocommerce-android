@@ -29,24 +29,22 @@ class WooAiSmokeCredentialConfigTest {
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Invalid::class.java)
         val message = (result as WooAiSmokeCredentialParseResult.Invalid).message
         assertThat(message).contains("WOO_SITE_URL")
-        assertThat(message).contains("WOO_SITE_ID")
-        assertThat(message).contains("WOO_USERNAME")
-        assertThat(message).contains("WOO_APP_PASSWORD")
+        assertThat(message).contains("WOO_WPCOM_USERNAME")
+        assertThat(message).contains("WOO_WPCOM_PASSWORD")
+        assertThat(message).doesNotContain("WOO_SITE_ID")
         assertThat(message).doesNotContain("username")
         assertThat(message).doesNotContain("password123")
     }
 
     @Test
-    fun `given invalid site id, when parsing credentials, then parsing fails before network access`() {
+    fun `given obsolete site id, when parsing credentials, then parser ignores it`() {
         val result = WooAiSmokeCredentialSource.fromEnvironment(
             environment = validEnvironment() + ("WOO_SITE_ID" to "not-a-number"),
             defaultOutputDirectory = File("build/woo-ai-smoke/live/latest"),
             runLiveEnabled = true,
         )
 
-        assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Invalid::class.java)
-        assertThat((result as WooAiSmokeCredentialParseResult.Invalid).message)
-            .contains("WOO_SITE_ID must be a positive numeric remote site id")
+        assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Valid::class.java)
     }
 
     @Test
@@ -61,9 +59,8 @@ class WooAiSmokeCredentialConfigTest {
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Valid::class.java)
         val config = (result as WooAiSmokeCredentialParseResult.Valid).config
         assertThat(config.siteUrl).isEqualTo("https://store.example")
-        assertThat(config.siteId).isEqualTo(2922L)
-        assertThat(config.username).isEqualTo("merchant@example.com")
-        assertThat(config.appPassword).isEqualTo("app password")
+        assertThat(config.wpComUsername).isEqualTo("merchant@example.com")
+        assertThat(config.wpComPassword).isEqualTo("app password")
         assertThat(config.storeLabel).isEqualTo("redacted-store")
         assertThat(config.outputDirectory).isEqualTo(outputDirectory)
         assertThat(config.sampleCount).isEqualTo(1)
@@ -128,19 +125,18 @@ class WooAiSmokeCredentialConfigTest {
     fun `given app password contains spaces, when parsing credentials, then password is preserved exactly`() {
         val password = " abcd efgh ijkl mnop "
         val result = WooAiSmokeCredentialSource.fromEnvironment(
-            environment = validEnvironment() + ("WOO_APP_PASSWORD" to password),
+            environment = validEnvironment() + ("WOO_WPCOM_PASSWORD" to password),
             defaultOutputDirectory = File("build/woo-ai-smoke/live/latest"),
             runLiveEnabled = true,
         )
 
         assertThat(result).isInstanceOf(WooAiSmokeCredentialParseResult.Valid::class.java)
-        assertThat((result as WooAiSmokeCredentialParseResult.Valid).config.appPassword).isEqualTo(password)
+        assertThat((result as WooAiSmokeCredentialParseResult.Valid).config.wpComPassword).isEqualTo(password)
     }
 
     private fun validEnvironment() = mapOf(
         "WOO_SITE_URL" to "https://store.example",
-        "WOO_SITE_ID" to "2922",
-        "WOO_USERNAME" to "merchant@example.com",
-        "WOO_APP_PASSWORD" to "app password",
+        "WOO_WPCOM_USERNAME" to "merchant@example.com",
+        "WOO_WPCOM_PASSWORD" to "app password",
     )
 }

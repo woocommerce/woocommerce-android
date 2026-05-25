@@ -157,6 +157,8 @@ internal class WooCommerceAssistantSystemPromptProvider @Inject constructor() : 
             change-over-time signal, not "how many of X this week" unless the list filters on the specific dimension
             the question asks about. If a merchant asks for a metric that requires a dimension your tools don't
             filter on, refuse honestly rather than presenting a list count as the answer.
+            Do not use order analytics for new-customer, returning-customer, customer-growth, or customer-cohort
+            questions. Order analytics measures orders and revenue, not customer acquisition.
 
             # Worked examples (patterns, not specific calls)
 

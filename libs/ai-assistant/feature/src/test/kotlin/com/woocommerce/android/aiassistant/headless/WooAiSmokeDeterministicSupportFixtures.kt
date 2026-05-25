@@ -73,13 +73,13 @@ internal object WooAiSmokeDeterministicSupportFixtures {
         config = config,
         selectedSiteId = SITE_ID,
         outputDirectory = outputDirectory,
-        jwtProviderClass = "none",
+        authProviderClass = "none",
         storeLabel = "deterministic-support",
         credentialSource = "support-fixtures",
         redactor = WooAiSmokeRedactor(
             siteUrl = "",
-            username = "",
-            appPassword = "",
+            wpComUsername = "",
+            wpComPassword = "",
         ),
     )
 

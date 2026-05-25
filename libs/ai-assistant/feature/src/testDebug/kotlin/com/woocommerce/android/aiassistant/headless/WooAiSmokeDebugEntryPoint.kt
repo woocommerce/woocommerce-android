@@ -11,7 +11,8 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import kotlin.time.TimeSource
 
@@ -28,7 +29,10 @@ internal interface WooAiSmokeDebugEntryPoint {
     fun json(): Json
     fun timeSource(): TimeSource
     fun selectedSite(): SelectedSite
+    fun dispatcher(): Dispatcher
+    fun accountStore(): AccountStore
     fun siteStore(): SiteStore
-    fun applicationPasswordsStore(): ApplicationPasswordsStore
+    fun wpComAuthenticator(): WooAiSmokeWpComAuthenticator
+    fun wpComSiteResolver(): WooAiSmokeWpComSiteResolver
     fun liveChatServiceFactory(): WooAiSmokeLiveChatServiceFactory
 }
