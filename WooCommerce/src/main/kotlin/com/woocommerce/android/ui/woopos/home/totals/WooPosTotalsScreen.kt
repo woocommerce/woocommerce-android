@@ -298,6 +298,23 @@ private fun TotalsLoaded(
 
         CheckoutBottomBar(state = state, onUIEvent = onUIEvent)
     }
+
+    // Sibling of the Column so the phone fullscreen overlays the totals chrome
+    // instead of laying out below the bottom bar.
+    WooPosAllPaymentMethodsDialog(
+        isVisible = state.isAllPaymentMethodsDialogVisible,
+        methods = buildAllPaymentMethods(
+            readerStatus = state.readerStatus,
+            isTapToPayAvailable = state.isTapToPayAvailable,
+            isScanToPayEnabled = state.isScanToPayEnabled,
+            isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
+        ),
+        onMethodClicked = { method ->
+            onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+            method.toUIEvent()?.let(onUIEvent)
+        },
+        onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
+    )
 }
 
 @Composable
@@ -316,21 +333,6 @@ internal fun CheckoutBottomBar(
             buttonsState = state.paymentButtonsState,
         )
     }
-
-    WooPosAllPaymentMethodsDialog(
-        isVisible = state.isAllPaymentMethodsDialogVisible,
-        methods = buildAllPaymentMethods(
-            readerStatus = state.readerStatus,
-            isTapToPayAvailable = state.isTapToPayAvailable,
-            isScanToPayEnabled = state.isScanToPayEnabled,
-            isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
-        ),
-        onMethodClicked = { method ->
-            onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
-            method.toUIEvent()?.let(onUIEvent)
-        },
-        onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
-    )
 }
 
 @Composable
