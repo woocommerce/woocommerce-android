@@ -17,28 +17,54 @@ import org.junit.Test
 
 class WooAiSmokeScenarioMapperTest {
     @Test
-    fun `given deterministic debug resources, when loading scenarios, then support categories are present`() {
+    fun `given debug resources, when loading scenarios, then all smoke categories are present`() {
         val scenarios = mapper().loadScenarioSpecs()
 
-        assertThat(scenarios.map { it.category }).containsExactly(
-            "read",
-            "search",
-            "analytics",
-            "write",
-            "safety",
+        assertThat(scenarios.map { it.category }.toSet()).containsAll(
+            setOf(
+                "read",
+                "analytics",
+                "write",
+                "search",
+                "limits",
+                "edge",
+                "robustness",
+                "memory",
+                "safety",
+            )
         )
     }
 
     @Test
-    fun `given deterministic debug resources, when loading scenarios, then support scenario ids are present in order`() {
+    fun `given debug resources, when loading scenarios, then iOS parity scenario ids are present in order`() {
         val scenarios = mapper().loadScenarioSpecs()
 
         assertThat(scenarios.map { it.id }).containsExactly(
-            "orders-read-recent",
-            "products-search-card",
-            "analytics-orders-this-month",
-            "write-confirmation-declined",
-            "off-domain-refusal",
+            "recent_orders",
+            "orders_with_email",
+            "orders_with_payment",
+            "order_drill",
+            "customer_drill",
+            "revenue_today",
+            "avg_order_value",
+            "new_customers_week",
+            "write_status",
+            "write_note_then_status",
+            "search_no_match",
+            "search_drilldown",
+            "missing_capability_email",
+            "unknown_setting",
+            "spanish",
+            "typos",
+            "multi_intent",
+            "empty_prompt",
+            "memory_identity_switch",
+            "memory_reference_resolution",
+            "prompt_injection_system_leak",
+            "prompt_injection_pii_exfil",
+            "prompt_injection_tool_hijack",
+            "false_completion_claim",
+            "fraud_coaching",
         )
     }
 
@@ -80,11 +106,24 @@ class WooAiSmokeScenarioMapperTest {
     @Test
     fun `given scenario resource, when parsed from classpath, then it is readable`() {
         val source = requireNotNull(
-            javaClass.classLoader?.getResource("woo-ai-smoke/deterministic-scenarios.json")
+            javaClass.classLoader?.getResource("woo-ai-smoke/live-scenarios.json")
         ).readText()
         val baseline = HeadlessBaselineParser(json).parse(source)
 
-        assertThat(baseline.scenarios).hasSize(5)
+        assertThat(baseline.scenarios).hasSize(25)
+    }
+
+    @Test
+    fun `given live approved baseline resource, when parsed from classpath, then iOS parity baseline is readable`() {
+        val source = requireNotNull(
+            javaClass.classLoader?.getResource("woo-ai-smoke/live-baseline.json")
+        ).readText()
+        val baseline = HeadlessBaselineParser(json).parseApprovedBaseline(source)
+
+        assertThat(baseline.scenarios).hasSize(25)
+        val knownFailure = baseline.scenarios.single { it.scenarioId == "orders_with_email" }
+        assertThat(knownFailure.knownFailure?.expectedFailedHardChecks?.single()?.type)
+            .isEqualTo(HeadlessHardCheckType.ASSISTANT_TEXT_CONTAINS_ANY)
     }
 
     private fun mapper(selectedSiteId: Long = 1L) = WooAiSmokeScenarioMapper(
@@ -93,7 +132,7 @@ class WooAiSmokeScenarioMapperTest {
         systemPromptProvider = StaticSystemPromptProvider,
         json = json,
         selectedSiteId = selectedSiteId,
-        resourceName = "deterministic-scenarios.json",
+        resourceName = "live-scenarios.json",
     )
 
     private object StaticSystemPromptProvider : AssistantSystemPromptProvider {

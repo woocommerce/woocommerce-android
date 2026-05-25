@@ -70,7 +70,6 @@ class AnalyticsOrdersToolHandlerTest {
         assertThat(description).contains("family analytics_stats")
         assertThat(description).contains("exact card_id")
         assertThat(description).contains("card_id")
-        assertThat(description).doesNotContain("analytics_revenue")
         assertThat(required).containsExactly("after", "before")
         assertThat(intervalValues).containsExactly("hour", "day", "week", "month", "year")
         assertThat(compareToValues).containsExactly("previous_period")

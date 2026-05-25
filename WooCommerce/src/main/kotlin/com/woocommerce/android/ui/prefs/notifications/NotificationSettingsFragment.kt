@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +53,10 @@ class NotificationSettingsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshNotificationSettings()
+        if (navArgs.showSmarterNotifications) {
+            sharedViewModel.refreshNotificationChannelSettings()
+            sharedViewModel.onNotificationSettingsShown()
+        }
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -82,6 +87,8 @@ class NotificationSettingsFragment : BaseFragment() {
                 is NotificationSettingsSharedViewModel.OpenNewReviewNotificationSettings ->
                     openNewReviewNotificationSettings()
                 is NotificationSettingsSharedViewModel.OpenStockNotificationSettings -> openStockNotificationSettings()
+                is NotificationSettingsSharedViewModel.OpenNotificationChannelSettings ->
+                    openNotificationChannelSettings(event.channelId)
                 is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
                     event.actionText,
@@ -95,6 +102,15 @@ class NotificationSettingsFragment : BaseFragment() {
         val intent = Intent().apply {
             action = "android.settings.APP_NOTIFICATION_SETTINGS"
             putExtra("android.provider.extra.APP_PACKAGE", requireActivity().packageName)
+        }
+        requireActivity().startActivity(intent)
+    }
+
+    private fun openNotificationChannelSettings(channelId: String) {
+        val intent = Intent().apply {
+            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+            putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().packageName)
+            putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
         }
         requireActivity().startActivity(intent)
     }

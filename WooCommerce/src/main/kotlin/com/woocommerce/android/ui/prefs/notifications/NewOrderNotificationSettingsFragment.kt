@@ -43,6 +43,7 @@ class NewOrderNotificationSettingsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshNotificationSettings()
+        sharedViewModel.onNotificationDetailShown(NotificationSettingsSharedViewModel.NotificationType.NEW_ORDERS)
         AnalyticsTracker.trackViewShown(this)
     }
 
