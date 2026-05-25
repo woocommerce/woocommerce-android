@@ -31,6 +31,15 @@ object WooPermissionUtils {
         context.startActivity(intent)
     }
 
+    fun showAppNotificationSettings(context: Context, openInNewStack: Boolean = true) {
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        if (openInNewStack) {
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
+    }
+
     fun hasFineLocationPermission(context: Context) = context.checkIfPermissionGiven(ACCESS_FINE_LOCATION)
 
     fun shouldShowFineLocationPermissionRationale(activity: Activity): Boolean {

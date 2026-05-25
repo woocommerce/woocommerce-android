@@ -38,6 +38,7 @@ sealed class ChildToParentEvent {
     data object ReturnedFromCardReaderPaymentToCheckout : ChildToParentEvent()
     data object GoBackToCheckoutAfterFailedPayment : ChildToParentEvent()
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
+    data object OrderSuccessfullyPaidExternally : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
     data object SetupBarcodeScannerClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()

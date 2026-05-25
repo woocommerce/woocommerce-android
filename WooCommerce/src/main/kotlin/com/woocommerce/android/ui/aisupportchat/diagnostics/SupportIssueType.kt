@@ -14,6 +14,12 @@ enum class SupportIssueType(@StringRes val displayLabel: Int) {
     OTHER(R.string.ai_support_chat_issue_other);
 
     companion object {
-        val selectableEntries = listOf(LOADING_ORDERS, LOADING_PRODUCTS, LOADING_ANALYTICS, OTHER)
+        val selectableEntries = listOf(
+            LOADING_ORDERS,
+            LOADING_PRODUCTS,
+            LOADING_ANALYTICS,
+            RECEIVING_NOTIFICATIONS,
+            OTHER
+        )
     }
 }

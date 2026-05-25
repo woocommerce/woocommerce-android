@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -170,6 +171,7 @@ class WooPosTotalsViewModelTest {
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val builtInReaderConnector: WooPosBuiltInReaderConnector = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
@@ -2600,6 +2602,7 @@ class WooPosTotalsViewModelTest {
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
         isTapToPayAvailable = isTapToPayAvailable,
+        featureFlagRepository = featureFlagRepository,
         tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
         paymentsFlowTracker = tracker,
         builtInReaderConnector = builtInReaderConnector,

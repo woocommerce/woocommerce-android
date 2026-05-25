@@ -5,6 +5,8 @@
 24.9
 -----
 - [*] Woo POS: "Other payment methods" in Checkout now opens as a bottom sheet instead of a fullscreen page (phone) or centered dialog (tablet) [https://github.com/woocommerce/woocommerce-android/pull/15931]
+- [Internal] Added WOO_POS_SCAN_TO_PAY and WOO_POS_MARK_ORDER_AS_COMPLETE feature flags (off in production) for the upcoming Woo POS Scan to Pay and Mark Order as Complete payment methods [https://github.com/woocommerce/woocommerce-android/pull/15928]
+- [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
 
 24.8
 -----
