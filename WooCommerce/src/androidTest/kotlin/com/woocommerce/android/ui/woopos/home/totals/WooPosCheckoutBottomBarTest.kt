@@ -32,7 +32,7 @@ class WooPosCheckoutBottomBarTest {
     }
 
     @Test
-    fun `given card payments disabled, then renders only Cash button`() {
+    fun `given card payments disabled, then renders Cash and Other Payment Methods buttons`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
@@ -43,7 +43,7 @@ class WooPosCheckoutBottomBarTest {
         }
 
         composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON).assertIsDisplayed()
     }
 
     private fun checkoutState(isCardPaymentEnabledForCountry: Boolean) = WooPosTotalsViewState.Checkout(

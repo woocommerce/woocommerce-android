@@ -404,6 +404,14 @@ private fun NoCardCheckoutPaymentButtons(
             state = buttonState,
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
         )
+        WooPosOutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+            text = stringResource(R.string.woopos_payment_method_other_methods_label),
+            state = buttonState,
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+        )
     }
 }
 
