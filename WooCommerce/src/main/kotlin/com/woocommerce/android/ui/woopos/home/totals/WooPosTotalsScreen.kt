@@ -308,7 +308,7 @@ private fun TotalsLoaded(
             readerStatus = state.readerStatus,
             isTapToPayAvailable = state.isTapToPayAvailable,
             isScanToPayEnabled = state.isScanToPayEnabled,
-            isMarkOrderAsCompleteEnabled = state.isMarkOrderAsCompleteEnabled,
+            isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
         ),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
@@ -363,7 +363,7 @@ private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) 
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
     WooPosPaymentMethod.SCAN_TO_PAY -> null
-    WooPosPaymentMethod.MARK_ORDER_AS_PAID -> null
+    WooPosPaymentMethod.MARK_ORDER_AS_PAID -> WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked
 }
 
 @Composable

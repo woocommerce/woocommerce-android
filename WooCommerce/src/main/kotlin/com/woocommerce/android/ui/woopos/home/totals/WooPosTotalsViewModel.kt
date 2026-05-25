@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
@@ -244,6 +245,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnTapToPayClicked -> startTapToPayPayment()
 
+            WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked -> handleMarkOrderAsPaidClicked()
+
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
 
@@ -286,6 +289,16 @@ class WooPosTotalsViewModel @Inject constructor(
         childrenToParentEventSender.sendToParent(
             ToCashPayment(dataState.value.orderId)
         )
+    }
+
+    private fun handleMarkOrderAsPaidClicked() = viewModelScope.launch {
+        val orderId = dataState.value.orderId
+        if (orderId == EMPTY_ORDER_ID) {
+            wooPosLogWrapper.e("Mark order as complete tapped before order draft was created")
+            return@launch
+        }
+        totalsAnalyticsTracker.trackCheckoutMarkAsPaidTapped()
+        childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
     }
 
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
@@ -1106,7 +1119,7 @@ class WooPosTotalsViewModel @Inject constructor(
             readerStatus = readerStatus,
             isTapToPayAvailable = isTapToPayAvailable(),
             isScanToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SCAN_TO_PAY),
-            isMarkOrderAsCompleteEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MARK_ORDER_AS_COMPLETE),
+            isMarkOrderAsPaidEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MARK_ORDER_AS_PAID),
         )
     }
 
