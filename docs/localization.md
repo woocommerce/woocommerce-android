@@ -43,7 +43,7 @@ The engine's re-translation rule is deliberately narrow: **only an English sourc
 |---|---|
 | English source text changed | ✅ Yes — that (key, locale) re-translates |
 | New locale added (no file yet) | ✅ Yes — all keys translate for the new locale |
-| Model bump (e.g. Haiku → Opus) | ❌ No — existing translations keep their original model |
+| Model bump (e.g. Sonnet → Opus) | ❌ No — existing translations keep their original model |
 | Prompt rewrite | ❌ No — existing translations keep their original prompt output |
 | XML comment / AINFRA-1707 context edit | ❌ No — context is dev-authored guidance, not invalidation |
 | Adding/removing an attribute (`formatted="false"`, `translatable`, etc.) | ❌ No — attributes don't drive invalidation |
