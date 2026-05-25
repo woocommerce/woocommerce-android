@@ -1106,7 +1106,7 @@ class WooPosTotalsViewModel @Inject constructor(
             readerStatus = readerStatus,
             isTapToPayAvailable = isTapToPayAvailable(),
             isScanToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SCAN_TO_PAY),
-            isMarkOrderAsCompleteEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MARK_ORDER_AS_COMPLETE),
+            isMarkOrderAsPaidEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MARK_ORDER_AS_PAID),
         )
     }
 

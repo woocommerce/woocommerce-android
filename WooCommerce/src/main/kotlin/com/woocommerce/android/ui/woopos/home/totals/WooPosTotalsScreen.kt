@@ -308,7 +308,7 @@ private fun TotalsLoaded(
             readerStatus = state.readerStatus,
             isTapToPayAvailable = state.isTapToPayAvailable,
             isScanToPayEnabled = state.isScanToPayEnabled,
-            isMarkOrderAsCompleteEnabled = state.isMarkOrderAsCompleteEnabled,
+            isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
         ),
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))

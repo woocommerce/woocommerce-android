@@ -58,7 +58,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                     PaymentSuccessSource.CARD_BOOKINGS -> R.string.woopos_totals_success_payment_card
                     PaymentSuccessSource.CASH_BOOKINGS -> R.string.woopos_totals_success_payment_cash
                     PaymentSuccessSource.SCAN_TO_PAY -> R.string.woopos_totals_success_payment_qr
-                    PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> R.string.woopos_totals_success_payment_external
+                    PaymentSuccessSource.MARK_ORDER_AS_PAID -> R.string.woopos_totals_success_payment_external
                 }
                 resourceProvider.getString(stringRes, priceText)
             } else {
@@ -74,7 +74,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                         }
                 PaymentSuccessSource.CASH_BOOKINGS,
                 PaymentSuccessSource.SCAN_TO_PAY,
-                PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> null
+                PaymentSuccessSource.MARK_ORDER_AS_PAID -> null
             }
             _state.value = PaymentSuccessViewState(
                 orderTotalText = orderTotalText,
@@ -113,7 +113,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
         when (source) {
             PaymentSuccessSource.CARD_CHECKOUT,
             PaymentSuccessSource.SCAN_TO_PAY,
-            PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> {
+            PaymentSuccessSource.MARK_ORDER_AS_PAID -> {
                 _navigationEvent.emit(WooPosNavigationEvent.GoBack)
             }
             PaymentSuccessSource.CARD_BOOKINGS,

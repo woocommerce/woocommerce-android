@@ -23,7 +23,7 @@ enum class PaymentSuccessSource {
     CARD_BOOKINGS,
     CASH_BOOKINGS,
     SCAN_TO_PAY,
-    MARK_ORDER_AS_COMPLETE,
+    MARK_ORDER_AS_PAID,
 }
 
 fun NavController.navigateToPaymentSuccessScreen(

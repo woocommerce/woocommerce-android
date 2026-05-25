@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.markorderascomplete
+package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -28,7 +28,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 
-class WooPosMarkOrderAsCompleteRepositoryTest {
+class WooPosMarkOrderAsPaidRepositoryTest {
 
     private val selectedSite: SelectedSite = mock()
     private val orderStore: WCOrderStore = mock()
@@ -36,12 +36,12 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     private val site: SiteModel = mock()
     private val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
 
-    private lateinit var repository: WooPosMarkOrderAsCompleteRepository
+    private lateinit var repository: WooPosMarkOrderAsPaidRepository
 
     @Before
     fun setUp() {
         runBlocking {
-            repository = WooPosMarkOrderAsCompleteRepository(selectedSite, orderStore, orderMapper)
+            repository = WooPosMarkOrderAsPaidRepository(selectedSite, orderStore, orderMapper)
             whenever(selectedSite.get()).thenReturn(site)
             whenever(
                 orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)
@@ -60,16 +60,16 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     }
 
     @Test
-    fun `given remote update succeeds, when markOrderAsComplete with blank note, then payment method 'other' and no note posted`() =
+    fun `given remote update succeeds, when markOrderAsPaid with blank note, then payment method 'other' and no note posted`() =
         runTest {
             // GIVEN
             val orderId = 123L
 
             // WHEN
-            val result = repository.markOrderAsComplete(orderId, customerNote = null)
+            val result = repository.markOrderAsPaid(orderId, customerNote = null)
 
             // THEN
-            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Success)
+            assertThat(result).isEqualTo(MarkOrderAsPaidOutcome.Success)
             verify(orderStore).updateOrderStatusAndPaymentDetails(
                 orderId = eq(orderId),
                 site = eq(site),
@@ -87,7 +87,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         }
 
     @Test
-    fun `given remote update succeeds, when markOrderAsComplete with note, then note posted as non-customer note`() =
+    fun `given remote update succeeds, when markOrderAsPaid with note, then note posted as non-customer note`() =
         runTest {
             // GIVEN
             val orderId = 123L
@@ -107,10 +107,10 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             )
 
             // WHEN
-            val result = repository.markOrderAsComplete(orderId, customerNote = note)
+            val result = repository.markOrderAsPaid(orderId, customerNote = note)
 
             // THEN
-            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Success)
+            assertThat(result).isEqualTo(MarkOrderAsPaidOutcome.Success)
             verify(orderStore).postOrderNote(
                 site = eq(site),
                 orderId = eq(orderId),
@@ -120,7 +120,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         }
 
     @Test
-    fun `given remote update succeeds and note post fails, when markOrderAsComplete, then outcome flags failed note`() =
+    fun `given remote update succeeds and note post fails, when markOrderAsPaid, then outcome flags failed note`() =
         runTest {
             // GIVEN
             val orderId = 123L
@@ -130,14 +130,14 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             ).thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, original = mock())))
 
             // WHEN
-            val result = repository.markOrderAsComplete(orderId, customerNote = note)
+            val result = repository.markOrderAsPaid(orderId, customerNote = note)
 
             // THEN
-            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
+            assertThat(result).isEqualTo(MarkOrderAsPaidOutcome.SuccessWithFailedNote)
         }
 
     @Test
-    fun `given remote update fails, when markOrderAsComplete, then result is failure and no note posted`() = runTest {
+    fun `given remote update fails, when markOrderAsPaid, then result is failure and no note posted`() = runTest {
         // GIVEN
         val orderId = 123L
         whenever(
@@ -158,10 +158,10 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         )
 
         // WHEN
-        val result = repository.markOrderAsComplete(orderId, customerNote = "Bank transfer")
+        val result = repository.markOrderAsPaid(orderId, customerNote = "Bank transfer")
 
         // THEN
-        assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Failure)
+        assertThat(result).isEqualTo(MarkOrderAsPaidOutcome.Failure)
         verify(orderStore, never()).postOrderNote(
             site = any(),
             orderId = any(),
@@ -171,16 +171,16 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     }
 
     @Test
-    fun `given no fluxc status for completed, when markOrderAsComplete, then falls back to a synthetic status`() =
+    fun `given no fluxc status for completed, when markOrderAsPaid, then falls back to a synthetic status`() =
         runTest {
             // GIVEN
             val orderId = 321L
             whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(null)
 
             // WHEN
-            val result = repository.markOrderAsComplete(orderId, customerNote = null)
+            val result = repository.markOrderAsPaid(orderId, customerNote = null)
 
             // THEN
-            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Success)
+            assertThat(result).isEqualTo(MarkOrderAsPaidOutcome.Success)
         }
 }

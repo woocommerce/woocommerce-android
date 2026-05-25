@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.markorderascomplete
+package com.woocommerce.android.ui.woopos.markorderaspaid
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -13,7 +13,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
-class WooPosMarkOrderAsCompleteRepository @Inject constructor(
+class WooPosMarkOrderAsPaidRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val orderMapper: OrderMapper,
@@ -22,10 +22,10 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let { orderMapper.toAppModel(it) }
     }
 
-    suspend fun markOrderAsComplete(
+    suspend fun markOrderAsPaid(
         orderId: Long,
         customerNote: String?,
-    ): MarkOrderAsCompleteOutcome = withContext(Dispatchers.IO) {
+    ): MarkOrderAsPaidOutcome = withContext(Dispatchers.IO) {
         val statusModel = orderStore.getOrderStatusForSiteAndKey(
             selectedSite.get(),
             Order.Status.Completed.value,
@@ -46,11 +46,11 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
 
         if (updateResult.event.isError) {
             WooLog.e(T.POS, "Mark order as complete failed - ${updateResult.event.error.message}")
-            return@withContext MarkOrderAsCompleteOutcome.Failure
+            return@withContext MarkOrderAsPaidOutcome.Failure
         }
 
         val trimmedNote = customerNote?.takeIf { it.isNotBlank() }
-            ?: return@withContext MarkOrderAsCompleteOutcome.Success
+            ?: return@withContext MarkOrderAsPaidOutcome.Success
 
         val noteResult = orderStore.postOrderNote(
             site = selectedSite.get(),
@@ -60,9 +60,9 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
         )
         if (noteResult.isError) {
             WooLog.e(T.POS, "Mark order as complete note post failed - ${noteResult.error?.message}")
-            MarkOrderAsCompleteOutcome.SuccessWithFailedNote
+            MarkOrderAsPaidOutcome.SuccessWithFailedNote
         } else {
-            MarkOrderAsCompleteOutcome.Success
+            MarkOrderAsPaidOutcome.Success
         }
     }
 
@@ -72,8 +72,8 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
     }
 }
 
-sealed class MarkOrderAsCompleteOutcome {
-    data object Success : MarkOrderAsCompleteOutcome()
-    data object SuccessWithFailedNote : MarkOrderAsCompleteOutcome()
-    data object Failure : MarkOrderAsCompleteOutcome()
+sealed class MarkOrderAsPaidOutcome {
+    data object Success : MarkOrderAsPaidOutcome()
+    data object SuccessWithFailedNote : MarkOrderAsPaidOutcome()
+    data object Failure : MarkOrderAsPaidOutcome()
 }
