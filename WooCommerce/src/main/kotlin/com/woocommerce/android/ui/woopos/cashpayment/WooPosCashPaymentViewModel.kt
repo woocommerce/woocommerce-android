@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
@@ -134,14 +133,6 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
                 when (source) {
-                    CashPaymentSource.BOOKINGS -> {
-                        _navigationEvent.emit(
-                            WooPosNavigationEvent.OpenPaymentSuccess(
-                                orderId = orderId,
-                                source = PaymentSuccessSource.CASH_BOOKINGS,
-                            )
-                        )
-                    }
                     CashPaymentSource.CHECKOUT -> _navigationEvent.emit(
                         WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment
                     )
