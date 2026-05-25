@@ -278,25 +278,10 @@ private fun TotalsLoaded(
             }
         }
 
-        CheckoutBottomBar(state = state, onUIEvent = onUIEvent)
-    }
-}
-
-@Composable
-internal fun CheckoutBottomBar(
-    state: WooPosTotalsViewState.Checkout,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
-) {
-    if (state.isCardPaymentEnabledForCountry) {
-        CheckoutPaymentButtons(
+        CheckoutBottomBar(
+            state = state,
             onUIEvent = onUIEvent,
-            buttonsState = state.paymentButtonsState,
-            showTopShadow = showButtonsTopShadow,
-        )
-    } else {
-        NoCardCheckoutPaymentButtons(
-            onUIEvent = onUIEvent,
-            buttonsState = state.paymentButtonsState,
+            showButtonsTopShadow = showButtonsTopShadow,
         )
     }
 
@@ -314,6 +299,26 @@ internal fun CheckoutBottomBar(
         },
         onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
     )
+}
+
+@Composable
+internal fun CheckoutBottomBar(
+    state: WooPosTotalsViewState.Checkout,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    showButtonsTopShadow: Boolean = false,
+) {
+    if (state.isCardPaymentEnabledForCountry) {
+        CheckoutPaymentButtons(
+            onUIEvent = onUIEvent,
+            buttonsState = state.paymentButtonsState,
+            showTopShadow = showButtonsTopShadow,
+        )
+    } else {
+        NoCardCheckoutPaymentButtons(
+            onUIEvent = onUIEvent,
+            buttonsState = state.paymentButtonsState,
+        )
+    }
 }
 
 @Composable
@@ -419,6 +424,14 @@ private fun NoCardCheckoutPaymentButtons(
             text = stringResource(R.string.woopos_payment_take_cash_payment_label),
             state = buttonState,
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+        )
+        WooPosOutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+            text = stringResource(R.string.woopos_payment_method_other_methods_label),
+            state = buttonState,
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
         )
     }
 }
