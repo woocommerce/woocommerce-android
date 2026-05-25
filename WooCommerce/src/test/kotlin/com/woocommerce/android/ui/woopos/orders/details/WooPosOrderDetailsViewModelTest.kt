@@ -51,7 +51,6 @@ class WooPosOrderDetailsViewModelTest {
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
-    private val bookingInfoMapper: WooPosBookingInfoMapper = mock()
     private val getProductById: WooPosGetProductById = mock()
     private val coordinator = WooPosOrdersCoordinator()
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
@@ -345,7 +344,6 @@ class WooPosOrderDetailsViewModelTest {
             ordersAnalyticsTracker = ordersAnalyticsTracker,
             orderDetailsMapper = orderDetailsMapper,
             refundInfoBuilder = refundInfoBuilder,
-            bookingInfoMapper = bookingInfoMapper,
             formatPrice = formatPrice,
             coordinator = coordinator,
         )
@@ -402,7 +400,6 @@ class WooPosOrderDetailsViewModelTest {
             orderStatusMapper,
             refundInfoBuilder,
             orderActionsProvider,
-            bookingInfoMapper,
             WooPosGetNonRefundedItems(),
             WooPosGroupRefundedItems(),
         )

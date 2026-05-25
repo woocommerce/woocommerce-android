@@ -12,8 +12,6 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
@@ -24,9 +22,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -48,7 +43,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
     private val orderDetailsMapper: WooPosOrderDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
-    private val bookingInfoMapper: WooPosBookingInfoMapper,
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
 ) : ViewModel() {
@@ -230,47 +224,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
                         refundedLineItems = LineItemsState.Loaded(refundedLineItems)
                     )
                 )
-
-                val updatedLoaded = _state.value as? WooPosOrderDetailsState.Loaded
-                if (updatedLoaded != null) {
-                    sideLoadBookings(orderId, updatedLoaded.details)
-                }
             }
-        }
-    }
-
-    private fun sideLoadBookings(
-        orderId: Long,
-        details: Details
-    ) {
-        val loadedItems = (details.lineItems as? LineItemsState.Loaded)?.items ?: return
-        val loadingItems = loadedItems.filter { it.bookingInfo is BookingInfo.Loading }
-        if (loadingItems.isEmpty()) return
-
-        viewModelScope.launch {
-            val results = coroutineScope {
-                loadingItems.map { item ->
-                    async {
-                        val bookingId = (item.bookingInfo as BookingInfo.Loading).bookingId
-                        item.id to bookingInfoMapper.fetchBookingInfo(bookingId)
-                    }
-                }.awaitAll()
-            }.toMap()
-
-            val currentLoaded = _state.value as? WooPosOrderDetailsState.Loaded ?: return@launch
-            if (currentLoaded.details.id != orderId) return@launch
-
-            val currentItems = (currentLoaded.details.lineItems as? LineItemsState.Loaded)?.items
-                ?: return@launch
-            _state.value = currentLoaded.copy(
-                details = currentLoaded.details.copy(
-                    lineItems = LineItemsState.Loaded(
-                        currentItems.map { lineItem ->
-                            results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
-                        }
-                    )
-                )
-            )
         }
     }
 
