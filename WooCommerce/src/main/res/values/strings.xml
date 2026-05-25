@@ -3922,6 +3922,9 @@
     <string name="woopos_mark_order_as_paid_confirm_button">Mark as paid</string>
     <string name="woopos_mark_order_as_paid_error_message">Couldn\'t update the order. Try again.</string>
     <string name="woopos_mark_order_as_paid_order_not_found">Order could not be loaded. Go back and try again.</string>
+    <string name="woopos_scan_to_pay_total">Order total: %1$s</string>
+    <string name="woopos_scan_to_pay_error_message">We couldn\'t prepare the payment. Please try again.</string>
+    <string name="woopos_scan_to_pay_order_note">Customer paid via Scan to Pay</string>
     <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
     <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
