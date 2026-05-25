@@ -285,8 +285,6 @@ private fun TotalsLoaded(
         )
     }
 
-    // Sibling of the Column so the phone fullscreen overlays the totals chrome
-    // instead of laying out below the bottom bar.
     WooPosAllPaymentMethodsBottomSheet(
         isVisible = state.isAllPaymentMethodsBottomSheetVisible,
         methods = buildAllPaymentMethods(
