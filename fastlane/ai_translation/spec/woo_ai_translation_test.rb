@@ -1055,7 +1055,7 @@ class AnthropicClientTransportErrorsTest < Minitest::Test
     client.define_singleton_method(:sleep) { |_seconds| nil }
 
     error = assert_raises(WooAiTranslation::AnthropicClient::Error) do
-      client.complete(model: 'haiku', system_blocks: ['rules'], user_content: '[]')
+      client.complete(model: 'test-model', system_blocks: ['rules'], user_content: '[]')
     end
 
     assert_equal WooAiTranslation::AnthropicClient::MAX_RETRIES + 1, http.calls
@@ -1068,8 +1068,8 @@ class ManifestInvalidationTest < Minitest::Test
 
   def test_invalidate_clears_recorded_locales_for_a_key
     m = M.new
-    m.record(name: 'app_name', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
-    m.record(name: 'app_name', locale: 'fr', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'app_name', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'app_name', locale: 'fr', model: 'test-model', origin: 'ai', source_sha: 'sha')
 
     cleared = m.invalidate(name: 'app_name', locales: %w[pl])
     assert_equal 1, cleared
@@ -1084,8 +1084,8 @@ class ManifestInvalidationTest < Minitest::Test
 
   def test_known_keys_reports_recorded_names
     m = M.new
-    m.record(name: 'a', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
-    m.record(name: 'b', locale: 'pl', model: 'haiku', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'a', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'sha')
+    m.record(name: 'b', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'sha')
     assert_equal %w[a b].sort, m.known_keys.sort
   end
 end
