@@ -64,11 +64,24 @@ module WooAiTranslation
 
     # Localized files must not introduce keys that are not translatable in
     # source (extra), and should not silently lose keys (missing reported).
-    def key_parity(source_names:, output_names:)
+    def key_parity(source_names:, output_names:, require_all: false)
       errors = []
       extra = output_names - source_names
+      missing = source_names - output_names
       errors << "extra keys not in source: #{extra.sort.inspect}" unless extra.empty?
+      errors << "missing keys from output: #{missing.sort.inspect}" if require_all && !missing.empty?
       errors
+    end
+
+    # PR-time partial writes must never delete unrelated existing translations.
+    # Selected keys may legitimately disappear when they were removed from source
+    # or failed validation and should fall back to default resources.
+    def no_unselected_key_loss(before_names:, output_names:, selected_names:)
+      selected = selected_names.to_set
+      lost = before_names - output_names - selected.to_a
+      return [] if lost.empty?
+
+      ["unselected keys dropped from output: #{lost.sort.inspect}"]
     end
 
     # The real, blocking plural gate. Only enforced for pairs that BOTH exist in

@@ -367,9 +367,29 @@ class ValidatorsTest < Minitest::Test
   def test_key_parity_and_char_cap
     assert_empty V.key_parity(source_names: %w[a b], output_names: %w[a b])
     refute_empty V.key_parity(source_names: %w[a b], output_names: %w[a b c])
+    assert_empty V.key_parity(source_names: %w[a b], output_names: %w[a])
+    refute_empty V.key_parity(source_names: %w[a b], output_names: %w[a], require_all: true)
     assert_empty V.char_cap(field: 'title.txt', text: 'short', cap: 50)
     assert_empty V.char_cap(field: 'full_description.txt', text: 'x' * 9999, cap: 0)
     refute_empty V.char_cap(field: 'title.txt', text: 'x' * 51, cap: 50)
+  end
+
+  def test_no_unselected_key_loss
+    assert_empty V.no_unselected_key_loss(
+      before_names: %w[existing touched],
+      output_names: %w[existing touched new],
+      selected_names: %w[touched new]
+    )
+    assert_empty V.no_unselected_key_loss(
+      before_names: %w[existing touched],
+      output_names: %w[existing],
+      selected_names: %w[touched]
+    )
+    refute_empty V.no_unselected_key_loss(
+      before_names: %w[existing touched],
+      output_names: %w[touched],
+      selected_names: %w[touched]
+    )
   end
 end
 
@@ -695,6 +715,76 @@ class EngineTest < Minitest::Test
       assert_equal 'Woo humain', doc.find('app_name').entries.first[:source]
       assert_equal '[fr] Hello %1$s, you have %2$d items', doc.find('greeting').entries.first[:source]
       assert_nil doc.find('raw_percent'), 'unselected missing keys must remain gaps'
+    end
+  end
+
+  def test_only_names_preserves_existing_file_order_and_header
+    Dir.mktmpdir do |dir|
+      localized = File.join(dir, 'values-fr', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(localized))
+      File.write(localized, <<~XML)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!--
+        Generator: GlotPress/2.4.0-alpha
+        Language: fr
+        -->
+        <resources xmlns:tools="http://schemas.android.com/tools">
+            <string name="raw_percent" formatted="false">50 % de réduction</string>
+            <string name="app_name">Woo humain</string>
+        </resources>
+      XML
+      before = File.read(localized)
+
+      report = build(dir, client: StubClient.new, only_names: %w[greeting]).run_strings(locales: %w[fr]).first
+
+      assert_equal 1, report.translated
+      assert_empty report.gate_errors
+      after = File.read(localized)
+      assert_includes after, "Generator: GlotPress/2.4.0-alpha\n"
+      assert_includes after, %(    <string name="raw_percent" formatted="false">50 % de réduction</string>\n)
+      assert_includes after, %(    <string name="app_name">Woo humain</string>\n)
+      assert_includes after, %(    <string name="greeting">[fr] Hello %1$s, you have %2$d items</string>\n)
+      assert_operator after.index('raw_percent'), :<, after.index('app_name')
+      assert_equal before.lines[0, 7], after.lines[0, 7], 'unrelated file prefix must stay byte-for-byte'
+    end
+  end
+
+  def test_only_names_does_not_drop_unselected_plural_that_cannot_be_reused
+    Dir.mktmpdir do |dir|
+      localized = File.join(dir, 'values-pl', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(localized))
+      raw_plural = <<~XML.chomp
+            <plurals name="cart_items">
+                <item quantity="one">%d artykuł</item>
+                <item quantity="other">%d artykułów</item>
+            </plurals>
+      XML
+      File.write(localized, <<~XML)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources>
+        #{raw_plural}
+            <string name="app_name">Woo człowiek</string>
+        </resources>
+      XML
+
+      report = build(dir, client: StubClient.new, only_names: %w[greeting]).run_strings(locales: %w[pl]).first
+
+      assert_equal 1, report.translated
+      assert_empty report.gate_errors
+      after = File.read(localized)
+      assert_includes after, raw_plural
+      assert_includes after, %(    <string name="app_name">Woo człowiek</string>\n)
+      assert_includes after, %(    <string name="greeting">[pl] Hello %1$s, you have %2$d items</string>\n)
+    end
+  end
+
+  def test_full_generated_locale_reports_missing_key_parity
+    Dir.mktmpdir do |dir|
+      bad = StubClient.new { |loc, src| "[#{loc}] #{src.gsub('%2$d', '')}" }
+      report = build(dir, client: bad).run_strings(locales: %w[fr]).first
+
+      assert(report.failed.any? { |f| f.start_with?('greeting') })
+      assert(report.gate_errors.any? { |e| e.include?('missing keys from output') })
     end
   end
 

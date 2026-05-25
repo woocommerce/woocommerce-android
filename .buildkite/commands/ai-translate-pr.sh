@@ -82,7 +82,7 @@ install_gems
 
 echo '--- :globe_with_meridians: AI translate (PR delta)'
 set +e
-bundle exec fastlane ai_translate mode:prtime only_keys:"${CHANGED_KEYS}"
+bundle exec fastlane ai_translate mode:prtime only_keys:"${CHANGED_KEYS}" strict:true
 TRANSLATE_EXIT=$?
 set -e
 

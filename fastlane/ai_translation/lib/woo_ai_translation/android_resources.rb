@@ -3,6 +3,7 @@
 require 'rexml/document'
 require 'digest'
 require 'fileutils'
+require 'set'
 
 module WooAiTranslation
   # Order-preserving reader/writer for Android `strings.xml` resources.
@@ -328,6 +329,69 @@ module WooAiTranslation
         return unit.preserved_xml.chomp if unit.preserved_xml
 
         render_unit(unit)
+      end
+    end
+
+    # Patch writer for PR-time `--only-keys` runs. Unlike Writer.write, this does
+    # not reorder the whole localized file to match the English source. It edits
+    # only selected top-level resource blocks and preserves every unrelated line
+    # byte-for-byte so PR diffs stay scoped to the source strings that changed.
+    module PartialWriter
+      module_function
+
+      def write(path, units, locale, selected_names:)
+        selected = selected_names.to_set
+        rendered = units.select { |u| selected.include?(u.name) && u.fully_translated? }
+                        .to_h { |u| [u.name, Writer.emit_unit(u)] }
+
+        unless File.exist?(path)
+          Writer.write(path, units.select { |u| selected.include?(u.name) && u.fully_translated? }, locale)
+          return
+        end
+
+        lines = File.readlines(path)
+        out = []
+        replaced = Set.new
+        i = 0
+
+        while i < lines.size
+          match = lines[i].match(BaselineReader::OPEN_LINE)
+          if match && selected.include?(match[2])
+            name = match[2]
+            block_end = unit_block_end(lines, i, match[1])
+            if rendered.key?(name)
+              out << with_trailing_newline(rendered[name])
+              replaced << name
+            end
+            i = block_end + 1
+            next
+          end
+
+          out << lines[i]
+          i += 1
+        end
+
+        insert_missing_blocks(out, rendered.reject { |name, _| replaced.include?(name) })
+        File.write(path, out.join)
+      end
+
+      def unit_block_end(lines, start, kind)
+        return start if kind == 'string' && lines[start].match?(BaselineReader::STRING_CLOSE_ON_SAME_LINE)
+
+        close = /^\s*<\/#{Regexp.escape(kind)}>\s*$/
+        found = (start...lines.size).find { |i| lines[i].match?(close) }
+        found || start
+      end
+
+      def insert_missing_blocks(lines, blocks)
+        return if blocks.empty?
+
+        insert_at = lines.rindex { |line| line.match?(%r{^\s*</resources>\s*$}) } || lines.size
+        lines.insert(insert_at, *blocks.values.map { |block| with_trailing_newline(block) })
+      end
+
+      def with_trailing_newline(block)
+        block.end_with?("\n") ? block : "#{block}\n"
       end
     end
   end
