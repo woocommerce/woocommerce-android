@@ -53,7 +53,7 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             val orderTotalText = if (order != null) {
                 val priceText = priceFormat(order.total)
                 val stringRes = when (source) {
-                    PaymentSuccessSource.CARD_CHECKOUT,
+                    PaymentSuccessSource.CARD_CHECKOUT -> R.string.woopos_totals_success_payment_card
                     PaymentSuccessSource.SCAN_TO_PAY -> R.string.woopos_totals_success_payment_qr
                     PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> R.string.woopos_totals_success_payment_external
                 }
@@ -62,7 +62,12 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 resourceProvider.getString(R.string.woopos_payment_successful_label)
             }
             val receiptSentMessage = when (source) {
-                PaymentSuccessSource.CARD_CHECKOUT,
+                PaymentSuccessSource.CARD_CHECKOUT ->
+                    order?.billingAddress?.email
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { email ->
+                            resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
+                        }
                 PaymentSuccessSource.SCAN_TO_PAY,
                 PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> null
             }
