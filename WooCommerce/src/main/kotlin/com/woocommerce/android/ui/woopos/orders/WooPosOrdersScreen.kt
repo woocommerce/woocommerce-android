@@ -157,6 +157,7 @@ fun WooPosOrdersScreen(
         if (shouldOpenIssueRefundInDetailPane && issueRefundAction != null) {
             detailPaneIssueRefundInstanceId += 1
             detailPaneIssueRefundOrderId = issueRefundAction.orderId
+            detailPaneIssueRefundDismissRequestToken = 0
             detailPaneIssueRefundHasPendingChanges = false
             pendingOrderSelectionAfterRefundDismiss = null
             pendingOrderSelectionConfirmation = null

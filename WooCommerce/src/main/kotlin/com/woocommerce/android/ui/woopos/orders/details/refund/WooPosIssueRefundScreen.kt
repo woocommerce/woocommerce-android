@@ -199,10 +199,12 @@ fun WooPosIssueRefundScreen(
         }
     }
 
+    var lastDismissRequestToken by remember(viewModelKey) { mutableStateOf(dismissRequestToken) }
     LaunchedEffect(dismissRequestToken) {
-        if (dismissRequestToken > 0) {
+        if (dismissRequestToken != lastDismissRequestToken && dismissRequestToken > 0) {
             handleDismiss()
         }
+        lastDismissRequestToken = dismissRequestToken
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
