@@ -60,7 +60,12 @@ class AiSupportChatViewModel @Inject constructor(
         if (launchModeLoaded) return
         launchModeLoaded = true
         val entryPoint = launchMode.entryPoint
-        _viewState.update { it.copy(entryPoint = entryPoint) }
+        _viewState.update {
+            it.copy(
+                entryPoint = entryPoint,
+                siteAddress = launchMode.siteAddress
+            )
+        }
         analyticsTracker.trackEntryPointTapped(
             entryPoint = entryPoint,
             isAuthenticated = accountRepository.isUserLoggedIn(),
@@ -68,8 +73,8 @@ class AiSupportChatViewModel @Inject constructor(
         )
 
         when (launchMode) {
-            AiSupportChatLaunchMode.Help -> Unit
-            AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
+            is AiSupportChatLaunchMode.Help -> Unit
+            is AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
             is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
@@ -271,6 +276,7 @@ class AiSupportChatViewModel @Inject constructor(
                             selectedIssueType = issueType,
                             selectedIssueLabel = issueLabel,
                             diagnosticResult = result,
+                            diagnosticSuggestedActionOverride = null,
                             isRunningDiagnostics = !result.isComplete && !hasFailure,
                             showSendError = false,
                             messages = diagnosticsMessages(result, issueLabel)
@@ -300,7 +306,17 @@ class AiSupportChatViewModel @Inject constructor(
 
         when (action) {
             SuggestedFixAction.EnableAnalytics -> enableAnalytics()
+            SuggestedFixAction.OpenNotificationSettings -> openNotificationSettings()
+            SuggestedFixAction.RegisterPushNotifications -> registerPushNotifications()
+            SuggestedFixAction.RerunDiagnostics -> rerunDiagnostics()
         }
+    }
+
+    private fun openNotificationSettings() {
+        _viewState.update {
+            it.copy(diagnosticSuggestedActionOverride = SuggestedFixAction.RerunDiagnostics)
+        }
+        triggerEvent(OpenAppNotificationSettings)
     }
 
     fun onContinueAfterDiagnosticsClicked() {
@@ -334,6 +350,32 @@ class AiSupportChatViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     WooLog.e(WooLog.T.AI, "Enabling WooCommerce Analytics failed", error)
+                    _viewState.update {
+                        it.copy(
+                            isExecutingFixAction = false,
+                            showSuggestedFixActionError = true
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun registerPushNotifications() {
+        launch {
+            _viewState.update {
+                it.copy(
+                    isExecutingFixAction = true,
+                    showSuggestedFixActionError = false
+                )
+            }
+
+            diagnosticsService.registerPushNotifications()
+                .onSuccess {
+                    _viewState.update { it.copy(isExecutingFixAction = false) }
+                    rerunDiagnostics()
+                }
+                .onFailure { error ->
+                    WooLog.e(WooLog.T.AI, "Registering push notifications failed", error)
                     _viewState.update {
                         it.copy(
                             isExecutingFixAction = false,
@@ -495,7 +537,10 @@ class AiSupportChatViewModel @Inject constructor(
         }
 
         val context = if (chatId == null) {
-            contextProvider.buildInitialContext(diagnosticResult = state.diagnosticResult)
+            contextProvider.buildInitialContext(
+                diagnosticResult = state.diagnosticResult,
+                siteAddress = state.siteAddress
+            )
         } else {
             JsonObject()
         }
@@ -830,6 +875,11 @@ class AiSupportChatViewModel @Inject constructor(
             DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
             DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
             DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
+            DiagnosticTest.NOTIFICATION_PERMISSION -> "Checking notification permission"
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED -> "Checking app notification settings"
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED -> "Checking notification channels"
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "Checking push notification token"
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "Checking push registration"
         }
 
     private fun createContactHumanSupportEvent(
@@ -839,7 +889,12 @@ class AiSupportChatViewModel @Inject constructor(
         supportArea: SupportChatSupportArea?,
         canCreateTicketDirectly: Boolean
     ): ContactHumanSupport {
-        val mode = if (supportArea != null && supportArea.isHighConfidence && canCreateTicketDirectly) {
+        val siteAddress = _viewState.value.siteAddress.orEmpty()
+        val canDirectCreate = supportArea != null &&
+            supportArea.isHighConfidence &&
+            canCreateTicketDirectly &&
+            siteAddress.isNotBlank()
+        val mode = if (canDirectCreate) {
             HumanSupportContactMode.DIRECT_CREATE
         } else {
             HumanSupportContactMode.OPEN_FORM
@@ -852,6 +907,7 @@ class AiSupportChatViewModel @Inject constructor(
             ticketType = supportArea?.ticketType,
             subjectResId = supportArea?.subjectResId,
             extraTags = supportArea.extraTags(),
+            siteAddress = siteAddress,
             ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint)
         )
     }
@@ -942,6 +998,7 @@ class AiSupportChatViewModel @Inject constructor(
 
 data class AiSupportChatViewState(
     val entryPoint: AiSupportChatEntryPoint = AiSupportChatEntryPoint.HELP_AND_SUPPORT,
+    val siteAddress: String? = null,
     val input: String = "",
     val messages: List<AiSupportChatMessage> = emptyList(),
     val chatId: Long? = null,
@@ -952,6 +1009,7 @@ data class AiSupportChatViewState(
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
     val diagnosticResult: DiagnosticResult? = null,
+    val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
     val isSending: Boolean = false,
@@ -992,6 +1050,9 @@ data class AiSupportChatViewState(
             return (canUseDiagnosticActions || isExecutingFixAction) &&
                 (result.firstFailure != null || result.isComplete)
         }
+
+    val currentDiagnosticSuggestedAction: SuggestedFixAction?
+        get() = diagnosticSuggestedActionOverride ?: diagnosticResult?.suggestedAction
 
     val canContactHumanSupportFromToolbar: Boolean
         get() = canSendMessages && completedUserMessageResponseCount >= MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR
@@ -1039,8 +1100,11 @@ data class ContactHumanSupport(
     val ticketType: TicketType?,
     val subjectResId: Int?,
     val extraTags: List<String>,
+    val siteAddress: String,
     val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext
 ) : Event()
+
+data object OpenAppNotificationSettings : Event()
 
 data class AiSupportChatMessage(
     val id: String,
@@ -1092,8 +1156,8 @@ private fun greetingMessage(): AiSupportChatMessage =
 
 private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
     get() = when (this) {
-        AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
-        AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
+        is AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
+        is AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
         is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
         is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
     }

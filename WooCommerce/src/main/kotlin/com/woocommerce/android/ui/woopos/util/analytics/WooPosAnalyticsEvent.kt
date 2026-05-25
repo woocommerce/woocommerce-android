@@ -103,6 +103,46 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "cash_payment_failed"
         }
 
+        data object CheckoutScanToPayPaymentTapped : Event() {
+            override val name: String = "checkout_scan_to_pay_payment_tapped"
+        }
+
+        data object ScanToPayPaymentDetectedViaPolling : Event() {
+            override val name: String = "scan_to_pay_payment_detected_via_polling"
+        }
+
+        data object ScanToPayCollectPaymentSuccess : Event() {
+            override val name: String = "scan_to_pay_collect_payment_success"
+        }
+
+        data object ScanToPayPaymentFailed : Event() {
+            override val name: String = "scan_to_pay_payment_failed"
+        }
+
+        data object BackToCheckoutFromScanToPay : Event() {
+            override val name: String = "back_to_checkout_from_scan_to_pay"
+        }
+
+        data object CheckoutMarkAsPaidTapped : Event() {
+            override val name: String = "checkout_mark_as_paid_tapped"
+        }
+
+        data object MarkAsPaidConfirmed : Event() {
+            override val name: String = "mark_as_paid_confirmed"
+        }
+
+        data object MarkAsPaidSuccess : Event() {
+            override val name: String = "mark_as_paid_success"
+        }
+
+        data object MarkAsPaidFailed : Event() {
+            override val name: String = "mark_as_paid_failed"
+        }
+
+        data object BackToCheckoutFromMarkAsPaid : Event() {
+            override val name: String = "back_to_checkout_from_mark_as_paid"
+        }
+
         data class CheckoutTapped(val productsInCart: Int, val couponsInCart: Int) : Event() {
             override val name: String = "checkout_tapped"
 
