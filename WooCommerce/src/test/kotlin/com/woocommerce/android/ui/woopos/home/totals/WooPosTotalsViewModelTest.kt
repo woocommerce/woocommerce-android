@@ -756,9 +756,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
 
             // THEN
-            verify(analyticsTracker).track(
-                com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped,
-            )
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped)
             verify(childrenToParentEventSender).sendToParent(
                 isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
             )
@@ -778,6 +776,39 @@ class WooPosTotalsViewModelTest {
         // THEN
         verify(childrenToParentEventSender, never()).sendToParent(
             isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
+        )
+    }
+
+    @Test
+    fun `given order draft created, when OnScanToPayClicked, then track analytic and emit ToScanToPay`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutScanToPayPaymentTapped)
+        verify(childrenToParentEventSender).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToScanToPay>(),
+        )
+    }
+
+    @Test
+    fun `given no order draft, when OnScanToPayClicked, then do not emit navigation event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
+        val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
+
+        // THEN
+        verify(childrenToParentEventSender, never()).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToScanToPay>(),
         )
     }
 
@@ -2255,7 +2286,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when OnAllPaymentMethodsVisibilityChanged true, then dialog flag flips to visible`() = runTest {
+    fun `when OnAllPaymentMethodsVisibilityChanged true, then bottom sheet flag flips to visible`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
 
@@ -2264,11 +2295,11 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isAllPaymentMethodsDialogVisible).isTrue()
+        assertThat(state.isAllPaymentMethodsBottomSheetVisible).isTrue()
     }
 
     @Test
-    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() =
+    fun `given bottom sheet visible, when OnAllPaymentMethodsVisibilityChanged false, then flag flips back`() =
         runTest {
             // GIVEN
             val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -2279,7 +2310,7 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-            assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
+            assertThat(state.isAllPaymentMethodsBottomSheetVisible).isFalse()
         }
 
     @Test

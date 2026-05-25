@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.headless
 
 import android.content.Context
 import com.automattic.eventhorizon.Trackable
+import com.woocommerce.android.aiassistant.BuildConfig
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryTracker
 import dagger.Module
 import dagger.Provides
@@ -29,7 +30,7 @@ object WooAiSmokeFeatureAppBindingsModule {
     fun provideUserAgent(context: Context): UserAgent = UserAgent(context, USER_AGENT_APP_NAME)
 
     @Provides
-    fun provideAppSecrets(): AppSecrets = AppSecrets("", "")
+    fun provideAppSecrets(): AppSecrets = AppSecrets(BuildConfig.OAUTH_APP_ID, BuildConfig.OAUTH_APP_SECRET)
 
     @Provides
     fun provideAssistantTelemetryTracker(): AssistantTelemetryTracker =

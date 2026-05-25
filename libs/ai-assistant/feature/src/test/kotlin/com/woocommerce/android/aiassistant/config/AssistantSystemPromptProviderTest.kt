@@ -51,6 +51,7 @@ class AssistantSystemPromptProviderTest {
         assertThat(prompt).contains("List rows aren't aggregates")
         assertThat(prompt).contains("not a cohort measurement")
         assertThat(prompt).contains("unless the list filters on the specific dimension")
+        assertThat(prompt).contains("Do not use order analytics for new-customer")
     }
 
     @Test

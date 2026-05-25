@@ -1,9 +1,10 @@
 package com.woocommerce.android.aiassistant.headless
 
+import com.woocommerce.android.aiassistant.auth.WpComOAuthTokenProvider
 import com.woocommerce.android.aiassistant.chat.ChatStreamParser
-import com.woocommerce.android.aiassistant.chat.JetpackAiChatService
 import com.woocommerce.android.aiassistant.chat.TransportDiagnosticsFactory
-import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
+import com.woocommerce.android.aiassistant.chat.WooMobileAiChatService
+import com.woocommerce.android.aiassistant.chat.woomobileai.WooMobileAiWrapperErrorMapper
 import com.woocommerce.android.aiassistant.core.chat.ChatService
 import com.woocommerce.android.aiassistant.di.AiAssistantJson
 import com.woocommerce.android.aiassistant.di.AssistantBaseUrl
@@ -18,28 +19,16 @@ internal class WooAiSmokeLiveChatServiceFactory @Inject constructor(
     @AiAssistantJson private val json: Json,
     @AssistantBaseUrl private val baseUrl: String,
     private val transportDiagnosticsFactory: TransportDiagnosticsFactory,
+    private val tokenProvider: WpComOAuthTokenProvider,
+    private val wrapperErrorMapper: WooMobileAiWrapperErrorMapper,
 ) {
-    fun createTokenProvider(
-        credentials: WooAiSmokeCredentialConfig,
-        redactor: WooAiSmokeRedactor,
-    ): JwtTokenProvider = WooAiSmokeDirectJwtTokenProvider(
+    fun create(): ChatService = WooMobileAiChatService(
         httpClient = httpClient,
-        json = json,
-        siteUrl = credentials.siteUrl,
-        username = credentials.username,
-        appPassword = credentials.appPassword,
-        redactor = redactor,
-    )
-
-    fun create(
-        credentials: WooAiSmokeCredentialConfig,
-        redactor: WooAiSmokeRedactor,
-    ): ChatService = JetpackAiChatService(
-        httpClient = httpClient,
-        tokenProvider = createTokenProvider(credentials, redactor),
+        tokenProvider = tokenProvider,
         streamParser = streamParser,
         json = json,
         baseUrl = baseUrl,
         transportDiagnosticsFactory = transportDiagnosticsFactory,
+        wrapperErrorMapper = wrapperErrorMapper,
     )
 }

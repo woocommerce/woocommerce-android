@@ -4,6 +4,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.zendesk.ZendeskException
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
+import com.woocommerce.android.ui.aisupportchat.diagnostics.SupportIssueType
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatSupportArea
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -95,6 +97,24 @@ class AiSupportChatAnalyticsTrackerTest {
                 AnalyticsTracker.KEY_SUPPORT_CHAT_SUPPORT_AREA_CONFIDENCE to "high",
                 AnalyticsTracker.KEY_SUPPORT_CHAT_CHAT_TOPIC to "woo_mobile_issue_mobile_app",
                 AnalyticsTracker.KEY_ERROR_TYPE to "request_timeout"
+            )
+        )
+    }
+
+    @Test
+    fun `given notification diagnostic failure, when troubleshooting is tracked, then failed test is emitted`() {
+        tracker.trackTroubleshootingCompleted(
+            issueType = SupportIssueType.RECEIVING_NOTIFICATIONS,
+            result = TroubleshootingResult.FAILED,
+            failedTest = DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION
+        )
+
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.SUPPORT_CHAT_TROUBLESHOOTING_COMPLETED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SUPPORT_CHAT_ISSUE_TYPE to "receiving_notifications",
+                AnalyticsTracker.KEY_RESULT to "failed",
+                AnalyticsTracker.KEY_SUPPORT_CHAT_FAILED_TEST to "push_notification_registration"
             )
         )
     }

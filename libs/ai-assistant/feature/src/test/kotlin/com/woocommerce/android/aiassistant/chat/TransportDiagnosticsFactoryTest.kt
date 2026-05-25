@@ -227,7 +227,7 @@ class TransportDiagnosticsFactoryTest {
         body: ResponseBody? = null,
     ): Response {
         val builder = Response.Builder()
-            .request(Request.Builder().url("https://example.com/wpcom/v2/jetpack-ai-query").build())
+            .request(Request.Builder().url("https://example.com/wpcom/v2/woo-mobile-ai/chat/completions").build())
             .protocol(Protocol.HTTP_1_1)
             .code(code)
             .message("Bad Request")

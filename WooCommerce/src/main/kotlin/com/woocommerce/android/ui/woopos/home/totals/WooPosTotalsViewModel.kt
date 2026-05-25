@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToScanToPay
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
@@ -258,6 +259,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked -> handleMarkOrderAsPaidClicked()
 
+            WooPosTotalsUIEvent.OnScanToPayClicked -> handleScanToPayClicked()
+
             is WooPosTotalsUIEvent.OnFineLocationPermissionResult ->
                 onFineLocationPermissionResult(event.granted)
 
@@ -312,9 +315,19 @@ class WooPosTotalsViewModel @Inject constructor(
         childrenToParentEventSender.sendToParent(ToMarkOrderAsPaid(orderId))
     }
 
+    private fun handleScanToPayClicked() = viewModelScope.launch {
+        val orderId = dataState.value.orderId
+        if (orderId == EMPTY_ORDER_ID) {
+            wooPosLogWrapper.e("Scan to pay tapped before order draft was created")
+            return@launch
+        }
+        totalsAnalyticsTracker.trackCheckoutScanToPayPaymentTapped()
+        childrenToParentEventSender.sendToParent(ToScanToPay(orderId))
+    }
+
     private fun handleAllPaymentMethodsVisibilityChanged(isVisible: Boolean) {
         val checkout = uiState.value as? WooPosTotalsViewState.Checkout ?: return
-        uiState.value = checkout.copy(isAllPaymentMethodsDialogVisible = isVisible)
+        uiState.value = checkout.copy(isAllPaymentMethodsBottomSheetVisible = isVisible)
     }
 
     private fun startTapToPayPayment() {

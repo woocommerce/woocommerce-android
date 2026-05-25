@@ -24,9 +24,12 @@ internal class OrdersGetToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "orders_get",
-        description = "Fetch a single order with full detail (line items, billing/shipping, status, customer_id). " +
-            "Use when the merchant references a specific order by ID. The customer_id can chain into " +
-            "customers_list for follow-up questions about the buyer.",
+        description = "Fetch a single order with full detail including line items, products, order contents, " +
+            "billing/shipping, status, and customer_id. Use when the merchant references a specific order by ID or " +
+            "by a prior-turn order position/reference once its ID is known, especially for contents that order " +
+            "cards do not show. The customer_id can chain into customers_list for follow-up questions about the " +
+            "buyer. Do not call just to re-render an existing order card; show_cards can use existing order " +
+            "references.",
         inputSchema = inputSchema {
             integer("id", description = "The order ID.", required = true)
         },

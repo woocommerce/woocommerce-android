@@ -16,7 +16,7 @@ internal object WooAiSmokeSummaryRenderer {
         appendLine("Prompt: ${suite.metadata.promptVersion}")
         appendLine("Tool catalog: ${suite.metadata.toolCatalogVersion}")
         appendLine("ChatService: ${suite.metadata.chatServiceClass}")
-        appendLine("JwtProvider: ${suite.metadata.jwtProviderClass}")
+        appendLine("AuthProvider: ${suite.metadata.authProviderClass}")
         appendLine("ToolRegistry: ${suite.metadata.toolRegistryClass}")
         appendLine("Safety: ${suite.metadata.safetyPolicy}")
         appendLine("Store label: ${suite.metadata.smokeStoreLabel}")
