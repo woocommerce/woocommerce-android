@@ -21,7 +21,6 @@ const val CARD_PAYMENT_ROUTE =
 
 enum class CardPaymentSource {
     CHECKOUT,
-    BOOKINGS,
 }
 
 fun NavController.navigateToCardPaymentScreen(

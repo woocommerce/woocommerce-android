@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -55,8 +54,6 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
                 val priceText = priceFormat(order.total)
                 val stringRes = when (source) {
                     PaymentSuccessSource.CARD_CHECKOUT,
-                    PaymentSuccessSource.CARD_BOOKINGS -> R.string.woopos_totals_success_payment_card
-                    PaymentSuccessSource.CASH_BOOKINGS -> R.string.woopos_totals_success_payment_cash
                     PaymentSuccessSource.SCAN_TO_PAY -> R.string.woopos_totals_success_payment_qr
                     PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> R.string.woopos_totals_success_payment_external
                 }
@@ -66,13 +63,6 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             }
             val receiptSentMessage = when (source) {
                 PaymentSuccessSource.CARD_CHECKOUT,
-                PaymentSuccessSource.CARD_BOOKINGS ->
-                    order?.billingAddress?.email
-                        ?.takeIf { it.isNotBlank() }
-                        ?.let { email ->
-                            resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
-                        }
-                PaymentSuccessSource.CASH_BOOKINGS,
                 PaymentSuccessSource.SCAN_TO_PAY,
                 PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> null
             }
@@ -115,15 +105,6 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             PaymentSuccessSource.SCAN_TO_PAY,
             PaymentSuccessSource.MARK_ORDER_AS_COMPLETE -> {
                 _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            }
-            PaymentSuccessSource.CARD_BOOKINGS,
-            PaymentSuccessSource.CASH_BOOKINGS -> {
-                _navigationEvent.emit(
-                    WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                        BOOKING_PAYMENT_FLOW_FINISHED_KEY,
-                        true
-                    )
-                )
             }
         }
     }

@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
-import com.woocommerce.android.ui.woopos.bookings.BOOKINGS_ROUTE
-import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
-import com.woocommerce.android.ui.woopos.bookings.note.navigateToBookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.navigateToWebViewScreen
@@ -73,22 +70,9 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.OpenOrderDetails ->
             navigateToOrderDetailsScreen(event.orderId)
 
-        is WooPosNavigationEvent.OpenBookings ->
-            navigateToBookingsScreen()
-
         is WooPosNavigationEvent.NavigateToCashPayment -> {
             navigateToCashPaymentScreen(event.orderId, event.source)
         }
-
-        is WooPosNavigationEvent.NavigateBackToBookingsAfterPayment -> {
-            getBackStackEntry(BOOKINGS_ROUTE)
-                .savedStateHandle
-                .set(event.key, event.value)
-            popBackStack(BOOKINGS_ROUTE, inclusive = false)
-        }
-
-        is WooPosNavigationEvent.OpenBookingNote ->
-            navigateToBookingNoteScreen(event.bookingId)
 
         is WooPosNavigationEvent.OpenPaymentSuccess ->
             navigateToPaymentSuccessScreen(

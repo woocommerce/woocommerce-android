@@ -19,7 +19,6 @@ const val CASH_ROUTE =
 
 enum class CashPaymentSource {
     CHECKOUT,
-    BOOKINGS,
 }
 
 fun NavController.navigateToCashPaymentScreen(
