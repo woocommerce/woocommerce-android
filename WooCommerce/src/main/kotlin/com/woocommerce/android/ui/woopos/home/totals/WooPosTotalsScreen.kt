@@ -378,7 +378,7 @@ private fun ScrollEdgeShadow(
 private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
-    WooPosPaymentMethod.SCAN_TO_PAY -> null
+    WooPosPaymentMethod.SCAN_TO_PAY -> WooPosTotalsUIEvent.OnScanToPayClicked
     WooPosPaymentMethod.MARK_ORDER_AS_PAID -> WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked
 }
 
