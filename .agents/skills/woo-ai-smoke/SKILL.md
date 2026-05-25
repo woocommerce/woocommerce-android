@@ -16,18 +16,27 @@ can fill it in outside the repo:
 
 ```text
 WOO_SITE_URL=
-WOO_SITE_ID=
-WOO_USERNAME=
-WOO_APP_PASSWORD=
+WOO_WPCOM_USERNAME=
+WOO_WPCOM_PASSWORD=
 ```
 
-Never print the file contents, expanded env, username, app password, JWTs, Basic auth headers,
-cookies, or raw credential config.
+The target store must be Jetpack-connected and connected to the same WordPress.com account used by
+`WOO_WPCOM_USERNAME`.
+
+`WOO_WPCOM_PASSWORD` may be a WordPress.com Application Password when the account requires 2FA. The
+smoke harness does not implement an interactive 2FA challenge.
+
+Live chat routes through the WPCOM wrapper endpoint
+`/wpcom/v2/woo-mobile-ai/chat/completions` with a WordPress.com OAuth bearer. Store tools still
+target `WOO_SITE_URL` through the WPCOM REST / Jetpack-connected path.
+
+Never print the file contents, expanded env, WPCOM username, WPCOM password/Application Passwords,
+WPCOM bearer tokens, cookies, or raw credential config.
 
 ```bash
 while IFS='=' read -r key value; do
   case "$key" in
-    WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
+    WOO_SITE_URL|WOO_WPCOM_USERNAME|WOO_WPCOM_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 ./gradlew -PwooAiSmokeRunLive=true :libs:ai-assistant:feature:testDebugUnitTest \
@@ -63,8 +72,8 @@ libs/ai-assistant/feature/build/outputs/woo-ai-smoke/live/latest
 After the run, always read `run.json`, `turns.jsonl`, and `baseline-comparison.json` from that
 directory and include a scenario recap plus an iOS-style `Rubric` table in the final response. The
 recap must show every scenario, the run result, sampled classification when present, and the
-comparison against the checked-in baseline. Do not paste raw `turns.jsonl`, credentials, JWTs,
-Basic auth headers, cookies, or expanded environment values.
+comparison against the checked-in baseline. Do not paste raw `turns.jsonl`, credentials, WPCOM
+bearer tokens, cookies, or expanded environment values.
 
 `KNOWN_FAILURE` in the baseline column is an accepted, explicitly documented live failure; include
 it in the recap instead of converting it to PASS. `KNOWN_FAILURE_FIXED` is non-blocking but means the
@@ -112,7 +121,7 @@ include the failure reason instead.
 ```bash
 while IFS='=' read -r key value; do
   case "$key" in
-    WOO_SITE_URL|WOO_SITE_ID|WOO_USERNAME|WOO_APP_PASSWORD) export "$key=$value" ;;
+    WOO_SITE_URL|WOO_WPCOM_USERNAME|WOO_WPCOM_PASSWORD) export "$key=$value" ;;
   esac
 done < "$HOME/.woo-ai-smoke/store.env"
 WOO_AI_SMOKE_SAMPLES=3 \
@@ -127,6 +136,10 @@ an existing `knownFailure` is being preserved because every failing sample has t
 failed hard-check set. Preserved known-failure approvals do not write `sampleExpectation`. Approved
 `FLAKY` is separate from `knownFailure`; it does not accept failed outcomes, turn errors, or blank
 assistant responses.
+
+If live auth fails with a 2FA-required message, tell the operator to use a WordPress.com
+Application Password as `WOO_WPCOM_PASSWORD`. If site resolution fails, verify the target store is
+connected to the same WordPress.com account and is Jetpack-connected.
 
 After reviewer inspection:
 

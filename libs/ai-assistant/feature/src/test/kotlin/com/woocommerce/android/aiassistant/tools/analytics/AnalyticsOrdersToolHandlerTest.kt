@@ -61,6 +61,8 @@ class AnalyticsOrdersToolHandlerTest {
         assertThat(description).contains("revenue")
         assertThat(description).contains("order")
         assertThat(description).contains("average order value")
+        assertThat(description).contains("not customer cohorts")
+        assertThat(description).contains("new customers")
         assertThat(description).contains("analytics_orders")
         assertThat(description).contains("show_cards")
         assertThat(description).contains("grouping grain with a date window")

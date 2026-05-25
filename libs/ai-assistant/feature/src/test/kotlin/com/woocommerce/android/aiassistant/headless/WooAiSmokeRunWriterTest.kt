@@ -125,8 +125,8 @@ class WooAiSmokeRunWriterTest {
             promptVersion = "1.0.0",
             toolCatalogVersion = "1.0.0",
             startedAtIso8601 = "2026-05-15T00:00:00Z",
-            chatServiceClass = "JetpackAiChatService",
-            jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
+            chatServiceClass = "WooMobileAiChatService",
+            authProviderClass = "AccessTokenWpComOAuthTokenProvider",
             toolRegistryClass = "WooCommerceToolRegistry",
             safetyPolicy = "ScriptedHeadlessSafetyOrchestrator(default=CANCELLED)",
             smokeStoreLabel = "store",
@@ -245,8 +245,8 @@ class WooAiSmokeRunWriterTest {
         approvedBaselineFileName = "approved-baseline.json",
         redactor = WooAiSmokeRedactor(
             siteUrl = "https://store.example",
-            username = "merchant@example.com",
-            appPassword = "app password",
+            wpComUsername = "merchant@example.com",
+            wpComPassword = "app password",
         ),
         usePerRunDirectory = usePerRunDirectory,
     )

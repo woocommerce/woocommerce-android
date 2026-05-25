@@ -8,7 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.Diagnostics
  * Endpoint-specific error mapping hook for the shared SSE client.
  *
  * Generic HTTP/network failures are handled by [OpenAiSseChatService]. Mappers only translate backend-specific
- * HTTP bodies or SSE payloads, such as legacy Jetpack AI errors or WPCOM REST envelopes.
+ * HTTP bodies or SSE payloads, such as WPCOM REST envelopes.
  */
 internal interface OpenAiSseErrorMapper {
     fun mapHttpError(
@@ -41,5 +41,4 @@ internal data class OpenAiSseStreamErrorContext(
 internal data class OpenAiSseMappedError(
     val kind: ChatStreamError,
     val diagnostics: Diagnostics = Diagnostics(),
-    val retryableAuthFailure: Boolean = false,
 )

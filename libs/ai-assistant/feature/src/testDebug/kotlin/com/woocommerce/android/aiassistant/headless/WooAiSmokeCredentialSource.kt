@@ -6,9 +6,8 @@ import java.net.URI
 object WooAiSmokeCredentialSource {
     private val requiredKeys = listOf(
         "WOO_SITE_URL",
-        "WOO_SITE_ID",
-        "WOO_USERNAME",
-        "WOO_APP_PASSWORD",
+        "WOO_WPCOM_USERNAME",
+        "WOO_WPCOM_PASSWORD",
     )
 
     fun fromEnvironment(
@@ -47,7 +46,6 @@ object WooAiSmokeCredentialSource {
 
     private fun Map<String, String>.toCredentialConfig(outputDirectory: File): WooAiSmokeCredentialConfig {
         val siteUrl = getValue("WOO_SITE_URL").trim().trimEnd('/')
-        val siteId = parseSiteId()
         val scenarioIds = parseScenarioIds(this["WOO_AI_SMOKE_SCENARIO_ID"]).getOrThrow()
 
         require(siteUrl.isHttpsUrl()) {
@@ -56,23 +54,14 @@ object WooAiSmokeCredentialSource {
 
         return WooAiSmokeCredentialConfig(
             siteUrl = siteUrl,
-            siteId = siteId,
-            username = getValue("WOO_USERNAME"),
-            appPassword = getValue("WOO_APP_PASSWORD"),
+            wpComUsername = getValue("WOO_WPCOM_USERNAME"),
+            wpComPassword = getValue("WOO_WPCOM_PASSWORD"),
             storeLabel = this["WOO_AI_SMOKE_STORE_LABEL"]?.ifBlank { null } ?: "redacted-store",
             outputDirectory = outputDirectory,
             credentialSource = "environment",
             sampleCount = parseSampleCount(this["WOO_AI_SMOKE_SAMPLES"]).getOrThrow(),
             scenarioIds = scenarioIds,
         )
-    }
-
-    private fun Map<String, String>.parseSiteId(): Long {
-        val siteId = getValue("WOO_SITE_ID").toLongOrNull()
-        require(siteId != null && siteId > 0L) {
-            "WOO_SITE_ID must be a positive numeric remote site id."
-        }
-        return siteId
     }
 
     private fun String.isHttpsUrl(): Boolean =

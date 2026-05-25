@@ -398,7 +398,11 @@
             },
             {
               "type": "ASSISTANT_TEXT_CONTAINS_ANY",
-              "value": "new customers|can't|isn't available|not currently|don't have|no tool"
+              "value": "new customers|new-customer|new-vs-returning|customer counts|customer analytics"
+            },
+            {
+              "type": "ASSISTANT_TEXT_CONTAINS_ANY",
+              "value": "can't|can’t|cannot|can't pull|can’t pull|cannot pull|can't access|can’t access|cannot access|not available|don't have|from here|no tool"
             }
           ]
         },
