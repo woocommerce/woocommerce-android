@@ -285,8 +285,8 @@ private fun TotalsLoaded(
         )
     }
 
-    WooPosAllPaymentMethodsDialog(
-        isVisible = state.isAllPaymentMethodsDialogVisible,
+    WooPosAllPaymentMethodsBottomSheet(
+        isVisible = state.isAllPaymentMethodsBottomSheetVisible,
         methods = buildAllPaymentMethods(
             readerStatus = state.readerStatus,
             isTapToPayAvailable = state.isTapToPayAvailable,
