@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.troubleshooting.FailureType
 import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreNotificationsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
@@ -34,6 +35,7 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
     private val storeOrdersCheck: StoreOrdersCheckUseCase = mock()
     private val storeProductsCheck: StoreProductsCheckUseCase = mock()
     private val storeAnalyticsCheck: StoreAnalyticsCheckUseCase = mock()
+    private val storeNotificationsCheck: StoreNotificationsCheckUseCase = mock()
 
     private val service = SupportDiagnosticsService(
         internetConnectionCheck = internetCheck,
@@ -41,7 +43,8 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         storeConnectionCheck = storeConnectionCheck,
         storeOrdersCheck = storeOrdersCheck,
         storeProductsCheck = storeProductsCheck,
-        storeAnalyticsCheck = storeAnalyticsCheck
+        storeAnalyticsCheck = storeAnalyticsCheck,
+        storeNotificationsCheck = storeNotificationsCheck
     )
 
     @Test
@@ -185,14 +188,42 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given RECEIVING_NOTIFICATIONS, when run, then only the three connectivity checks run`() = testBlocking {
+    fun `given RECEIVING_NOTIFICATIONS, when run, then notification checks run after connectivity checks`() = testBlocking {
         stubAll(success = true)
 
         val initial = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().first()
 
         assertThat(initial.statuses.map(DiagnosticStatus::test))
-            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION)
+            .containsExactly(
+                INTERNET_CONNECTION,
+                STORE_CONNECTION,
+                DiagnosticTest.NOTIFICATION_PERMISSION,
+                DiagnosticTest.APP_NOTIFICATIONS_ENABLED,
+                DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED,
+                DiagnosticTest.PUSH_NOTIFICATION_TOKEN,
+                DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION
+            )
     }
+
+    @Test
+    fun `given notification setting fails, when run for RECEIVING_NOTIFICATIONS, then settings action is suggested`() =
+        testBlocking {
+            stubNotificationPermissionFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.OpenNotificationSettings)
+        }
+
+    @Test
+    fun `given push registration fails, when run for RECEIVING_NOTIFICATIONS, then register action is suggested`() =
+        testBlocking {
+            stubPushRegistrationFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RegisterPushNotifications)
+        }
 
     @Test
     fun `given analytics setting passes, when run for LOADING_ANALYTICS, then final status is passed`() = testBlocking {
@@ -290,6 +321,16 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
             assertThat(thrown).isSameAs(cancellation)
         }
 
+    @Test
+    fun `given registering push succeeds, when registerPushNotifications called, then result is success`() =
+        testBlocking {
+            whenever(storeNotificationsCheck.registerPushNotifications()).thenReturn(Result.success(Unit))
+
+            val result = service.registerPushNotifications()
+
+            assertThat(result.isSuccess).isTrue()
+        }
+
     private fun stubAll(success: Boolean) {
         val outcome: ConnectivityCheckStatus = if (success) {
             ConnectivityCheckStatus.Success()
@@ -302,6 +343,11 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
         whenever(storeOrdersCheck.invoke()).thenReturn(flowOf(outcome))
         whenever(storeProductsCheck.invoke()).thenReturn(flowOf(outcome))
         whenever(storeAnalyticsCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkPermission()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkAppNotificationsEnabled()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkNotificationChannelsEnabled()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkPushToken()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkPushRegistration()).thenReturn(flowOf(outcome))
     }
 
     private fun stubWpComFailure() {
@@ -351,5 +397,40 @@ class SupportDiagnosticsServiceTest : BaseUnitTest() {
                 error("Analytics unavailable")
             }
         )
+    }
+
+    private fun stubNotificationPermissionFailure() {
+        stubConnectivitySuccess()
+        whenever(storeNotificationsCheck.checkPermission()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    technicalDetails = StoreNotificationsCheckUseCase.ERROR_NOTIFICATION_PERMISSION_DENIED
+                )
+            )
+        )
+    }
+
+    private fun stubPushRegistrationFailure() {
+        stubConnectivitySuccess()
+        whenever(storeNotificationsCheck.checkPermission()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeNotificationsCheck.checkAppNotificationsEnabled()).thenReturn(
+            flowOf(ConnectivityCheckStatus.Success())
+        )
+        whenever(storeNotificationsCheck.checkNotificationChannelsEnabled()).thenReturn(
+            flowOf(ConnectivityCheckStatus.Success())
+        )
+        whenever(storeNotificationsCheck.checkPushToken()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeNotificationsCheck.checkPushRegistration()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    technicalDetails = StoreNotificationsCheckUseCase.ERROR_PUSH_NOTIFICATIONS_UNREGISTERED
+                )
+            )
+        )
+    }
+
+    private fun stubConnectivitySuccess() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
     }
 }

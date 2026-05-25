@@ -298,18 +298,6 @@ private fun TotalsLoaded(
 
         CheckoutBottomBar(state = state, onUIEvent = onUIEvent)
     }
-
-    if (state.isCardPaymentEnabledForCountry) {
-        WooPosAllPaymentMethodsDialog(
-            isVisible = state.isAllPaymentMethodsDialogVisible,
-            methods = buildAllPaymentMethods(state.readerStatus, state.isTapToPayAvailable),
-            onMethodClicked = { method ->
-                onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
-                method.toUIEvent()?.let(onUIEvent)
-            },
-            onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
-        )
-    }
 }
 
 @Composable
@@ -328,6 +316,21 @@ internal fun CheckoutBottomBar(
             buttonsState = state.paymentButtonsState,
         )
     }
+
+    WooPosAllPaymentMethodsDialog(
+        isVisible = state.isAllPaymentMethodsDialogVisible,
+        methods = buildAllPaymentMethods(
+            readerStatus = state.readerStatus,
+            isTapToPayAvailable = state.isTapToPayAvailable,
+            isScanToPayEnabled = state.isScanToPayEnabled,
+            isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
+        ),
+        onMethodClicked = { method ->
+            onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+            method.toUIEvent()?.let(onUIEvent)
+        },
+        onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
+    )
 }
 
 @Composable
@@ -408,7 +411,7 @@ private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) 
     WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
     WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
     WooPosPaymentMethod.SCAN_TO_PAY -> null
-    WooPosPaymentMethod.MARK_ORDER_AS_PAID -> null
+    WooPosPaymentMethod.MARK_ORDER_AS_PAID -> WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked
 }
 
 @Composable
