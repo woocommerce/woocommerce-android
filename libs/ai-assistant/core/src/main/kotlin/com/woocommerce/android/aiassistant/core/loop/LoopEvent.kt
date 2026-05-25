@@ -21,7 +21,7 @@ sealed interface LoopEvent {
     data class Failed(val error: AssistantError) : LoopEvent
     data class Finished(
         val outcome: LoopOutcome,
-        val updatedHistory: List<AssistantMessage>,
+        val modelTurnMessages: List<AssistantMessage>,
         val retryAffordance: RetryAffordance = RetryAffordance.None,
         val error: AssistantError? = null,
     ) : LoopEvent

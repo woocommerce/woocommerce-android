@@ -4,11 +4,13 @@ import com.automattic.eventhorizon.AiAssistantErrorKindValue
 import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
@@ -46,12 +48,24 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
     private val cardParser: AssistantCardUiStructuredParser,
     private val systemPromptProvider: AssistantSystemPromptProvider,
+    private val modelRequestHistoryBuilder: ModelRequestHistoryBuilder,
+    private val sessionHistoryMapper: AssistantSessionHistoryMapper,
     @AiAssistantJson private val json: Json,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
 
     override fun retryTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
+
+    override fun buildCancelledTurnHistory(
+        baseSessionHistory: AssistantSessionHistory,
+        pendingUserMessage: String,
+        partialAssistantText: String?,
+    ): AssistantSessionHistory = sessionHistoryMapper.appendCancelledTurn(
+        baseHistory = baseSessionHistory,
+        userMessage = pendingUserMessage,
+        assistantText = partialAssistantText,
+    )
 
     override suspend fun cancelTurn(conversationId: String) = Unit
 
@@ -64,6 +78,7 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
             AssistantRuntimeConfirmationDispatchResult.Deferred
         }
 
+    @Suppress("LongMethod")
     private fun runTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = flow {
         val context = SessionContext(
             siteId = request.siteId,
@@ -71,11 +86,15 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         )
         var pendingError: AssistantError? = null
         val toolNamesById = mutableMapOf<String, String>()
+        val modelHistory = modelRequestHistoryBuilder.build(
+            systemPrompt = systemPromptProvider.systemPrompt(),
+            sessionHistory = request.sessionHistory,
+            currentUserMessage = request.userMessage,
+        )
 
         agenticLoop.runTurn(
             conversationId = request.conversationId,
-            userMessage = request.userMessage,
-            history = request.history.withFreshSystemPrompt(systemPromptProvider.systemPrompt()),
+            modelHistory = modelHistory,
             context = context,
         ).collect { event ->
             when (event) {
@@ -94,10 +113,15 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 }
                 is LoopEvent.Finished -> {
                     val error = event.error ?: pendingError
+                    val updatedSessionHistory = sessionHistoryMapper.appendTurn(
+                        baseHistory = request.sessionHistory,
+                        modelTurnMessages = event.modelTurnMessages,
+                        error = error,
+                    )
                     emit(
                         AssistantRuntimeEvent.Finished(
                             outcome = event.outcome,
-                            updatedHistory = event.updatedHistory,
+                            updatedSessionHistory = updatedSessionHistory,
                             retryAffordance = event.retryAffordance,
                             error = error,
                         )
@@ -121,9 +145,6 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
             }
         }
     }
-
-    private fun List<AssistantMessage>.withFreshSystemPrompt(prompt: String): List<AssistantMessage> =
-        listOf(AssistantMessage.System(prompt)) + filterNot { it is AssistantMessage.System }
 
     private fun LoopEvent.ToolCallStarted.toRuntimeEvent(
         toolNamesById: MutableMap<String, String>,

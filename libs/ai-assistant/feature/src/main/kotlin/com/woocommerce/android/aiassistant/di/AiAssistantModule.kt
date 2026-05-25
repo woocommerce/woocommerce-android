@@ -11,6 +11,8 @@ import com.woocommerce.android.aiassistant.core.loop.SlidingWindowHistoryBudgete
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.tools.DefaultToolCatalogSelector
 import dagger.Module
 import dagger.Provides
@@ -39,7 +41,6 @@ internal object AiAssistantModule {
         chatService: ChatService,
         toolRegistry: ToolRegistry,
         retryPolicy: RetryPolicy,
-        historyBudgeter: HistoryBudgeter,
         safetyOrchestrator: SafetyOrchestrator,
         @AiAssistantJson json: Json,
         timeSource: TimeSource,
@@ -47,7 +48,6 @@ internal object AiAssistantModule {
         chatService,
         toolRegistry,
         retryPolicy,
-        historyBudgeter,
         safetyOrchestrator,
         json,
         timeSource,
@@ -63,7 +63,16 @@ internal object AiAssistantModule {
 
     @Provides
     @Singleton
-    fun provideHistoryBudgeter(): HistoryBudgeter = SlidingWindowHistoryBudgeter(windowSize = 10)
+    fun provideHistoryBudgeter(): HistoryBudgeter = SlidingWindowHistoryBudgeter()
+
+    @Provides
+    @Singleton
+    fun provideModelRequestHistoryBuilder(historyBudgeter: HistoryBudgeter): ModelRequestHistoryBuilder =
+        ModelRequestHistoryBuilder(historyBudgeter)
+
+    @Provides
+    @Singleton
+    fun provideAssistantSessionHistoryMapper(): AssistantSessionHistoryMapper = AssistantSessionHistoryMapper()
 
     @Provides
     @Singleton

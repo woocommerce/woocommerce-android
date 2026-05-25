@@ -3,7 +3,7 @@ package com.woocommerce.android.aiassistant.runtime
 import com.automattic.eventhorizon.AiAssistantErrorKindValue
 import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.loop.LoopOutcome
 import com.woocommerce.android.aiassistant.core.loop.RetryAffordance
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
@@ -19,6 +19,12 @@ internal interface AssistantRuntime {
 
     fun retryTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent>
 
+    fun buildCancelledTurnHistory(
+        baseSessionHistory: AssistantSessionHistory,
+        pendingUserMessage: String,
+        partialAssistantText: String?,
+    ): AssistantSessionHistory
+
     suspend fun cancelTurn(conversationId: String)
 
     suspend fun resolveConfirmation(result: ConfirmationResult): AssistantRuntimeConfirmationDispatchResult
@@ -30,7 +36,7 @@ internal data class AssistantTurnRequest(
     val siteId: Long,
     val toolScope: ToolScope,
     val userMessage: String,
-    val history: List<AssistantMessage>,
+    val sessionHistory: AssistantSessionHistory,
 )
 
 internal sealed interface AssistantRuntimeEvent {
@@ -70,7 +76,7 @@ internal sealed interface AssistantRuntimeEvent {
 
     data class Finished(
         val outcome: LoopOutcome,
-        val updatedHistory: List<AssistantMessage>,
+        val updatedSessionHistory: AssistantSessionHistory,
         val retryAffordance: RetryAffordance = RetryAffordance.None,
         val error: AssistantError? = null,
     ) : AssistantRuntimeEvent

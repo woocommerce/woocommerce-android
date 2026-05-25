@@ -1,7 +1,6 @@
 package com.woocommerce.android.aiassistant.headless
 
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
@@ -100,7 +99,8 @@ class WooAiSmokeScenarioMapperTest {
         )
 
         assertThat(scenario.context.siteId).isEqualTo(SELECTED_SITE_ID)
-        assertThat(scenario.initialHistory.single()).isEqualTo(AssistantMessage.System("System prompt"))
+        assertThat(scenario.systemPrompt).isEqualTo("System prompt")
+        assertThat(scenario.initialSessionHistory.messages).isEmpty()
     }
 
     @Test

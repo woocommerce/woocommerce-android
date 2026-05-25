@@ -2,7 +2,7 @@
 
 package com.woocommerce.android.aiassistant.core.headless
 
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolScope
 import kotlinx.serialization.Serializable
@@ -24,7 +24,8 @@ data class HeadlessScenarioSpec(
 data class HeadlessScenario(
     val id: String,
     val turns: List<HeadlessTurnSpec>,
-    val initialHistory: List<AssistantMessage>,
+    val systemPrompt: String,
+    val initialSessionHistory: AssistantSessionHistory,
     val context: SessionContext,
 )
 

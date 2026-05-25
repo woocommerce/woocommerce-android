@@ -7,6 +7,8 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistoryMapper
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistoryBuilder
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoopImpl
 import com.woocommerce.android.aiassistant.core.loop.HistoryBudgeter
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
@@ -30,26 +32,35 @@ class WooAssistantHeadless(
     private val safetyOrchestrator: SafetyOrchestrator = ScriptedHeadlessSafetyOrchestrator(),
 ) {
     suspend fun runScenario(scenario: HeadlessScenario): HeadlessRunResult {
-        var history = scenario.initialHistory
+        var sessionHistory = scenario.initialSessionHistory
+        val modelRequestHistoryBuilder = ModelRequestHistoryBuilder(historyBudgeter)
+        val sessionHistoryMapper = AssistantSessionHistoryMapper()
         val turns = scenario.turns.mapIndexed { index, turn ->
             val loop = AgenticLoopImpl(
                 chatService = chatService,
                 toolRegistry = toolRegistry,
                 retryPolicy = retryPolicy,
-                historyBudgeter = historyBudgeter,
                 safetyOrchestrator = safetyOrchestrator,
                 json = json,
                 timeSource = timeSource,
             )
+            val modelHistory = modelRequestHistoryBuilder.build(
+                systemPrompt = scenario.systemPrompt,
+                sessionHistory = sessionHistory,
+                currentUserMessage = turn.userMessage,
+            )
             val events = loop.runTurn(
                 conversationId = scenario.id,
-                userMessage = turn.userMessage,
-                history = history,
+                modelHistory = modelHistory,
                 context = scenario.context,
             ).toList()
             val finished = events.filterIsInstance<LoopEvent.Finished>().lastOrNull()
             if (finished != null) {
-                history = finished.updatedHistory
+                sessionHistory = sessionHistoryMapper.appendTurn(
+                    baseHistory = sessionHistory,
+                    modelTurnMessages = finished.modelTurnMessages,
+                    error = finished.error,
+                )
             }
             HeadlessTurnResult(
                 turnIndex = index,

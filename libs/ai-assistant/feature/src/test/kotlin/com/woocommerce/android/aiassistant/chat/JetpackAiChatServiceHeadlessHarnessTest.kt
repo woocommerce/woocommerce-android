@@ -1,10 +1,10 @@
 package com.woocommerce.android.aiassistant.chat
 
 import com.woocommerce.android.aiassistant.core.auth.JwtTokenProvider
-import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.headless.HeadlessScenario
 import com.woocommerce.android.aiassistant.core.headless.HeadlessTurnSpec
 import com.woocommerce.android.aiassistant.core.headless.WooAssistantHeadless
+import com.woocommerce.android.aiassistant.core.history.AssistantSessionHistory
 import com.woocommerce.android.aiassistant.core.loop.BudgetedHistory
 import com.woocommerce.android.aiassistant.core.loop.CatalogSnapshot
 import com.woocommerce.android.aiassistant.core.loop.ConservativeRetryPolicy
@@ -75,7 +75,8 @@ class JetpackAiChatServiceHeadlessHarnessTest {
                             hardChecks = emptyList(),
                         )
                     ),
-                    initialHistory = listOf(AssistantMessage.System("You are helpful.")),
+                    systemPrompt = "You are helpful.",
+                    initialSessionHistory = AssistantSessionHistory.Empty,
                     context = SessionContext(
                         siteId = 1L,
                         catalogSnapshot = CatalogSnapshot(ToolScope.GLOBAL, emptyList()),

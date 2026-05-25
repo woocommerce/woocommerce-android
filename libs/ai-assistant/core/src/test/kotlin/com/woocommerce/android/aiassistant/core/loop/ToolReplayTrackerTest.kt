@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.history.ModelRequestHistory
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestratorImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -109,15 +110,30 @@ class ToolReplayTrackerTest {
             chatService = service,
             toolRegistry = registry,
             retryPolicy = ConservativeRetryPolicy,
-            historyBudgeter = passThroughBudgeter(),
             safetyOrchestrator = SafetyOrchestratorImpl(),
             json = json,
             timeSource = TimeSource.Monotonic,
         )
     }
 
-    private fun passThroughBudgeter(): HistoryBudgeter = HistoryBudgeter { system, transcript, user ->
-        BudgetedHistory(messages = listOf(system) + transcript + user)
+    private fun AgenticLoopImpl.runTurn(
+        conversationId: String,
+        userMessage: String,
+        history: List<AssistantMessage>,
+        context: SessionContext,
+    ): Flow<LoopEvent> {
+        val currentUserTurn = AssistantMessage.User(userMessage)
+        val systemPrompt = history.filterIsInstance<AssistantMessage.System>().firstOrNull()
+            ?: AssistantMessage.System("")
+        val rawTranscript = history.filterNot { it is AssistantMessage.System }
+        return runTurn(
+            conversationId = conversationId,
+            modelHistory = ModelRequestHistory(
+                messages = listOf(systemPrompt) + rawTranscript + currentUserTurn,
+                currentUserTurn = currentUserTurn,
+            ),
+            context = context,
+        )
     }
 
     private fun safeEchoDescriptor() = ToolDescriptor(
