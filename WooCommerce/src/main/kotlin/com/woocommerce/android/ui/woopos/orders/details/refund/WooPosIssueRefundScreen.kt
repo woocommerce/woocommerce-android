@@ -148,7 +148,8 @@ private fun WooPosRefundState.hasPendingChanges(): Boolean {
 
 private enum class RefundHeaderNavigationIcon {
     Back,
-    Close
+    Close,
+    None
 }
 
 @Composable
@@ -224,19 +225,49 @@ fun WooPosIssueRefundScreen(
     val modalIsProcessing = modalState.isNonCancelableModal()
     var showCardReaderConnectionDialog by remember { mutableStateOf(false) }
 
-    val handleModalDismiss = {
+    val handleCancelRefundFlow = {
         val currentState = state
         if (currentState is WooPosRefundState.Content && !currentState.step.isNonCancelable()) {
             viewModel.onUIEvent(WooPosRefundUIEvent.CancelRefund)
-            viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+            handleDismiss()
         } else if (!modalIsProcessing) {
             handleDismiss()
         }
     }
 
+    val handleModalBack = {
+        when (val currentState = state) {
+            is WooPosRefundState.Content -> when (currentState.step) {
+                WooPosRefundState.Content.RefundStep.SelectItems ->
+                    handleDismiss()
+                WooPosRefundState.Content.RefundStep.ReviewRefund ->
+                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+                WooPosRefundState.Content.RefundStep.ConfirmRefund ->
+                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
+                WooPosRefundState.Content.RefundStep.PreparingReader,
+                WooPosRefundState.Content.RefundStep.ReaderDisconnected,
+                is WooPosRefundState.Content.RefundStep.ReadyForRefund -> {
+                    if (!currentState.step.isNonCancelable()) {
+                        viewModel.onUIEvent(WooPosRefundUIEvent.CancelRefund)
+                        viewModel.onUIEvent(WooPosRefundUIEvent.BackToConfirmRefundClicked)
+                    }
+                }
+                WooPosRefundState.Content.RefundStep.Processing,
+                WooPosRefundState.Content.RefundStep.ProcessingRefund,
+                WooPosRefundState.Content.RefundStep.NotifyingStore -> Unit
+            }
+            is WooPosRefundState.Error,
+            is WooPosRefundState.RefundSuccess ->
+                handleCancelRefundFlow()
+            is WooPosRefundState.Loading,
+            is WooPosRefundState.NoRefundableItems ->
+                handleDismiss()
+        }
+    }
+
     BackHandler {
         if (modalState != null) {
-            handleModalDismiss()
+            handleModalBack()
         } else {
             handleDismiss()
         }
@@ -263,7 +294,8 @@ fun WooPosIssueRefundScreen(
                 state = modalState,
                 orderId = orderId,
                 onDismiss = handleDismiss,
-                onModalDismiss = handleModalDismiss,
+                onModalBack = handleModalBack,
+                onCancelRefundFlow = handleCancelRefundFlow,
                 closeButtonEnabled = !modalIsProcessing,
                 onEvent = viewModel::onUIEvent,
                 onConnectReaderClicked = {
@@ -283,7 +315,7 @@ fun WooPosIssueRefundScreen(
         Dialog(
             onDismissRequest = {
                 if (!modalIsProcessing) {
-                    handleModalDismiss()
+                    handleModalBack()
                 }
             },
             properties = DialogProperties(
@@ -302,7 +334,8 @@ fun WooPosIssueRefundScreen(
                     state = modalState,
                     orderId = orderId,
                     onDismiss = handleDismiss,
-                    onModalDismiss = handleModalDismiss,
+                    onModalBack = handleModalBack,
+                    onCancelRefundFlow = handleCancelRefundFlow,
                     closeButtonEnabled = !modalIsProcessing,
                     onEvent = viewModel::onUIEvent,
                     onConnectReaderClicked = {
@@ -365,7 +398,7 @@ private fun RefundSelectionLayer(
     ) {
         RefundScreenHeader(
             title = resolveToolbarTitle(state),
-            onCloseClicked = onDismiss,
+            onNavigationIconClicked = onDismiss,
             closeButtonEnabled = true,
             navigationIcon = RefundHeaderNavigationIcon.Back,
         )
@@ -405,7 +438,7 @@ private fun RefundSelectionLayer(
             RefundScreenButtons(
                 state = state,
                 onDismiss = onDismiss,
-                onModalDismiss = onDismiss,
+                onCancelRefundFlow = onDismiss,
                 onEvent = onEvent,
                 onConnectReaderClicked = {},
                 onNavigationEvent = onNavigationEvent,
@@ -420,7 +453,8 @@ private fun RefundModalLayer(
     state: WooPosRefundState,
     orderId: Long,
     onDismiss: () -> Unit,
-    onModalDismiss: () -> Unit,
+    onModalBack: () -> Unit,
+    onCancelRefundFlow: () -> Unit,
     closeButtonEnabled: Boolean,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onConnectReaderClicked: () -> Unit,
@@ -449,11 +483,16 @@ private fun RefundModalLayer(
             .background(MaterialTheme.colorScheme.surface)
             .then(contentInsetsModifier)
     ) {
+        val navigationIcon = state.modalNavigationIcon()
         RefundScreenHeader(
             title = null,
-            onCloseClicked = onModalDismiss,
+            onNavigationIconClicked = when (navigationIcon) {
+                RefundHeaderNavigationIcon.Back -> onModalBack
+                RefundHeaderNavigationIcon.Close -> onCancelRefundFlow
+                RefundHeaderNavigationIcon.None -> ({})
+            },
             closeButtonEnabled = closeButtonEnabled,
-            navigationIcon = RefundHeaderNavigationIcon.Close,
+            navigationIcon = navigationIcon,
         )
 
         Column(
@@ -490,7 +529,7 @@ private fun RefundModalLayer(
             RefundScreenButtons(
                 state = state,
                 onDismiss = onDismiss,
-                onModalDismiss = onModalDismiss,
+                onCancelRefundFlow = onCancelRefundFlow,
                 onEvent = onEvent,
                 onConnectReaderClicked = onConnectReaderClicked,
                 onNavigationEvent = onNavigationEvent,
@@ -541,10 +580,35 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String? {
     }
 }
 
+private fun WooPosRefundState.modalNavigationIcon(): RefundHeaderNavigationIcon {
+    return when (this) {
+        is WooPosRefundState.Content -> when (step) {
+            WooPosRefundState.Content.RefundStep.ConfirmRefund,
+            WooPosRefundState.Content.RefundStep.PreparingReader,
+            WooPosRefundState.Content.RefundStep.ReaderDisconnected,
+            is WooPosRefundState.Content.RefundStep.ReadyForRefund ->
+                if (step.isNonCancelable()) {
+                    RefundHeaderNavigationIcon.None
+                } else {
+                    RefundHeaderNavigationIcon.Back
+                }
+            WooPosRefundState.Content.RefundStep.SelectItems,
+            WooPosRefundState.Content.RefundStep.ReviewRefund,
+            WooPosRefundState.Content.RefundStep.Processing,
+            WooPosRefundState.Content.RefundStep.ProcessingRefund,
+            WooPosRefundState.Content.RefundStep.NotifyingStore -> RefundHeaderNavigationIcon.None
+        }
+        is WooPosRefundState.Error,
+        is WooPosRefundState.RefundSuccess -> RefundHeaderNavigationIcon.Close
+        is WooPosRefundState.Loading,
+        is WooPosRefundState.NoRefundableItems -> RefundHeaderNavigationIcon.None
+    }
+}
+
 @Composable
 private fun RefundScreenHeader(
     title: String?,
-    onCloseClicked: () -> Unit,
+    onNavigationIconClicked: () -> Unit,
     modifier: Modifier = Modifier,
     closeButtonEnabled: Boolean = true,
     navigationIcon: RefundHeaderNavigationIcon = RefundHeaderNavigationIcon.Close,
@@ -561,7 +625,7 @@ private fun RefundScreenHeader(
             RefundHeaderNavigationIcon.Back -> {
                 WooPosBackButton(
                     contentDescription = backContentDescription,
-                    onClick = onCloseClicked,
+                    onClick = onNavigationIconClicked,
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .padding(start = WooPosSpacing.Small.value)
@@ -569,7 +633,7 @@ private fun RefundScreenHeader(
             }
             RefundHeaderNavigationIcon.Close -> {
                 IconButton(
-                    onClick = onCloseClicked,
+                    onClick = onNavigationIconClicked,
                     enabled = closeButtonEnabled,
                     modifier = Modifier
                         .align(Alignment.CenterStart)
@@ -582,6 +646,7 @@ private fun RefundScreenHeader(
                     )
                 }
             }
+            RefundHeaderNavigationIcon.None -> Unit
         }
 
         if (title != null) {
@@ -605,7 +670,7 @@ private fun RefundScreenHeader(
 private fun RefundScreenButtons(
     state: WooPosRefundState,
     onDismiss: () -> Unit,
-    onModalDismiss: () -> Unit,
+    onCancelRefundFlow: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onConnectReaderClicked: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -623,7 +688,7 @@ private fun RefundScreenButtons(
             )
             is WooPosRefundState.Content -> RefundContentStepButtons(
                 state = state,
-                onModalDismiss = onModalDismiss,
+                onCancelRefundFlow = onCancelRefundFlow,
                 onEvent = onEvent,
                 onConnectReaderClicked = onConnectReaderClicked,
                 disablePartialRefund = disablePartialRefund,
@@ -631,7 +696,7 @@ private fun RefundScreenButtons(
             is WooPosRefundState.Error -> RefundErrorButtons(
                 state = state,
                 onDismiss = onDismiss,
-                onModalDismiss = onModalDismiss,
+                onCancelRefundFlow = onCancelRefundFlow,
                 onEvent = onEvent,
             )
             is WooPosRefundState.NoRefundableItems -> {
@@ -653,7 +718,7 @@ private fun RefundScreenButtons(
 @Composable
 private fun RefundContentStepButtons(
     state: WooPosRefundState.Content,
-    onModalDismiss: () -> Unit,
+    onCancelRefundFlow: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onConnectReaderClicked: () -> Unit,
     disablePartialRefund: Boolean,
@@ -673,7 +738,7 @@ private fun RefundContentStepButtons(
             )
             if (!disablePartialRefund) {
                 WooPosOutlinedButton(
-                    text = stringResource(R.string.woopos_orders_edit_refund),
+                    text = stringResource(R.string.back),
                     onClick = {
                         onEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
                     },
@@ -688,10 +753,8 @@ private fun RefundContentStepButtons(
                 modifier = Modifier.fillMaxWidth()
             )
             WooPosOutlinedButton(
-                text = stringResource(R.string.back),
-                onClick = {
-                    onEvent(WooPosRefundUIEvent.BackToReviewClicked)
-                },
+                text = stringResource(R.string.cancel),
+                onClick = onCancelRefundFlow,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -703,7 +766,7 @@ private fun RefundContentStepButtons(
                 modifier = Modifier.fillMaxWidth()
             )
             WooPosOutlinedButton(
-                text = stringResource(R.string.back),
+                text = stringResource(R.string.cancel),
                 onClick = {},
                 state = WooPosButtonState.DISABLED,
                 modifier = Modifier.fillMaxWidth()
@@ -711,11 +774,13 @@ private fun RefundContentStepButtons(
         }
         WooPosRefundState.Content.RefundStep.PreparingReader,
         is WooPosRefundState.Content.RefundStep.ReadyForRefund -> {
-            WooPosOutlinedButton(
-                text = stringResource(R.string.cancel),
-                onClick = onModalDismiss,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (!state.step.isNonCancelable()) {
+                WooPosOutlinedButton(
+                    text = stringResource(R.string.cancel),
+                    onClick = onCancelRefundFlow,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
         WooPosRefundState.Content.RefundStep.ReaderDisconnected -> {
             WooPosButton(
@@ -725,7 +790,7 @@ private fun RefundContentStepButtons(
             )
             WooPosOutlinedButton(
                 text = stringResource(R.string.cancel),
-                onClick = onModalDismiss,
+                onClick = onCancelRefundFlow,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -750,7 +815,7 @@ private fun RefundContentStepButtons(
 private fun RefundErrorButtons(
     state: WooPosRefundState.Error,
     onDismiss: () -> Unit,
-    onModalDismiss: () -> Unit,
+    onCancelRefundFlow: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
 ) {
     if (state.canRetry) {
@@ -770,7 +835,7 @@ private fun RefundErrorButtons(
         )
         WooPosOutlinedButton(
             text = stringResource(R.string.cancel),
-            onClick = onModalDismiss,
+            onClick = onCancelRefundFlow,
             modifier = Modifier.fillMaxWidth()
         )
     } else {

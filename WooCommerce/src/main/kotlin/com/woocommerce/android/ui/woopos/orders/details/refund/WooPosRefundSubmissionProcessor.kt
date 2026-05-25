@@ -314,7 +314,13 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
             stateJob.cancel()
             eventJob.cancel()
             refundSessionState.exitFallbackJob?.cancel()
-            controller.stop()
+            runCatching { controller.stop() }.onFailure {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "WooPosRefund: failed to stop Interac reader refund controller orderId=${request.orderId}",
+                    it
+                )
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.model.Address
@@ -17,11 +18,13 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -137,6 +140,14 @@ class WooPosRefundViewModelTest {
                 WooPosRefundSubmissionState.Success
             )
         )
+    }
+
+    @After
+    fun tearDown() {
+        if (::viewModel.isInitialized) {
+            viewModel.viewModelScope.cancel()
+            coroutineTestRule.testDispatcher.scheduler.advanceUntilIdle()
+        }
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
@@ -805,6 +816,88 @@ class WooPosRefundViewModelTest {
 
             verify(refundSubmissionProcessor, times(2)).submit(any())
             assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.RefundSuccess::class.java)
+        }
+
+    @Test
+    fun `given interac refund requires reader connection, when returning to confirm, then pending refund is cleared`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired)
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val disconnectedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(disconnectedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReaderDisconnected)
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.CancelRefund)
+            viewModel.onUIEvent(WooPosRefundUIEvent.BackToConfirmRefundClicked)
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            advanceUntilIdle()
+
+            val confirmState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+            verify(refundSubmissionProcessor, times(1)).submit(any())
+        }
+
+    @Test
+    fun `given reader asks to remove card, when dismiss requested, then dismissal is blocked`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.WaitingForCard(
+                        R.string.card_reader_payment_remove_card_prompt
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val state = viewModel.state.value as WooPosRefundState.Content
+            assertThat(state.step).isEqualTo(
+                WooPosRefundState.Content.RefundStep.ReadyForRefund(
+                    R.string.card_reader_payment_remove_card_prompt
+                )
+            )
+            assertThat(viewModel.onDismissRequest()).isFalse()
         }
 
     @Test

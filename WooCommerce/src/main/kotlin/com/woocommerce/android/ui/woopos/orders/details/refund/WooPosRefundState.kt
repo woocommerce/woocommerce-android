@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.woocommerce.android.R
 import java.math.BigDecimal
 
 @Immutable
@@ -33,16 +34,16 @@ sealed class WooPosRefundState {
         @Immutable
         sealed class RefundStep {
             fun isNonCancelable(): Boolean {
-                return when (this) {
+                return when (val step = this) {
                     Processing,
                     ProcessingRefund,
                     NotifyingStore -> true
+                    is ReadyForRefund -> step.cardReaderHint == R.string.card_reader_payment_remove_card_prompt
                     SelectItems,
                     ReviewRefund,
                     ConfirmRefund,
                     PreparingReader,
-                    ReaderDisconnected,
-                    is ReadyForRefund -> false
+                    ReaderDisconnected -> false
                 }
             }
 

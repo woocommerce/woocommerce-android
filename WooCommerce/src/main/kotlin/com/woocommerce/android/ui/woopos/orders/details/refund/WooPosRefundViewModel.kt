@@ -291,6 +291,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(refundReason = event.reason)
             WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
+            WooPosRefundUIEvent.BackToConfirmRefundClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
             WooPosRefundUIEvent.BackToReviewClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.ConnectReaderClicked -> handleConnectReaderClicked()

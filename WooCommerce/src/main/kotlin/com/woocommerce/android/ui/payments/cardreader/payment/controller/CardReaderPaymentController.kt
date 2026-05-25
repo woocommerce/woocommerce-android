@@ -787,11 +787,16 @@ class CardReaderPaymentController(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun stop() {
         paymentDataForRetry?.let {
             cardReaderManager.cancelPayment(it)
         }
-        scope.cancel()
+        try {
+            scope.cancel()
+        } catch (e: RuntimeException) {
+            WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
+        }
     }
 
     fun onBackPressed() {
