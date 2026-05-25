@@ -11,7 +11,6 @@ import kotlinx.serialization.encodeToString
 import java.io.File
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 object WooAiSmokeDebugBridge {
     @Suppress("LongMethod")
@@ -26,8 +25,8 @@ object WooAiSmokeDebugBridge {
         val entryPoint = EntryPoints.get(application, WooAiSmokeDebugEntryPoint::class.java)
         val redactor = WooAiSmokeRedactor(
             siteUrl = credentials.siteUrl,
-            username = credentials.username,
-            appPassword = credentials.appPassword,
+            wpComUsername = credentials.wpComUsername,
+            wpComPassword = credentials.wpComPassword,
         )
         val outputDirectory = credentials.outputDirectory
         return runCatching {
@@ -35,23 +34,22 @@ object WooAiSmokeDebugBridge {
                 credentials = credentials,
                 mode = mode,
             )
-            runPhase("jwt_mint", JWT_MINT_TIMEOUT) {
-                entryPoint.liveChatServiceFactory()
-                    .createTokenProvider(credentials, redactor)
-                    .provide()
+            runPhase("wpcom_auth", WPCOM_AUTH_TIMEOUT) {
+                entryPoint.wpComAuthenticator().authenticate(credentials)
             }
-            WooAiSmokeApplicationPasswordStore.installRobolectricPreferences(
-                context = application,
-                applicationPasswordsStore = entryPoint.applicationPasswordsStore(),
-            )
-
+            val resolvedSite = runPhase("wpcom_site_resolution", WPCOM_SITE_RESOLUTION_TIMEOUT) {
+                entryPoint.wpComSiteResolver().resolve(credentials)
+            }
             val bootstrap = runPhase("selected_site_and_tool_preflight", BOOTSTRAP_TIMEOUT) {
                 WooAiSmokeCredentialBootstrap(
                     siteStore = entryPoint.siteStore(),
                     selectedSite = entryPoint.selectedSite(),
-                    applicationPasswordsStore = entryPoint.applicationPasswordsStore(),
                     toolRegistry = entryPoint.toolRegistry(),
-                ).bootstrap(credentials)
+                ).bootstrap(
+                    credentials = credentials,
+                    resolvedSite = resolvedSite,
+                    wpComAccessTokenPresent = entryPoint.accountStore().hasAccessToken(),
+                )
             }
 
             outputDirectory.mkdirs()
@@ -64,7 +62,7 @@ object WooAiSmokeDebugBridge {
             }
             val exit = runPhase("live_scenarios", LIVE_SCENARIOS_TIMEOUT * credentials.sampleCount) {
                 WooAiSmokeRunner(
-                    chatService = entryPoint.liveChatServiceFactory().create(credentials, redactor),
+                    chatService = entryPoint.liveChatServiceFactory().create(),
                     toolRegistry = entryPoint.toolRegistry(),
                     toolCatalogSelector = entryPoint.toolCatalogSelector(),
                     retryPolicy = entryPoint.retryPolicy(),
@@ -85,7 +83,7 @@ object WooAiSmokeDebugBridge {
                     ),
                     selectedSiteId = bootstrap.site.siteId,
                     outputDirectory = outputDirectory,
-                    jwtProviderClass = "WooAiSmokeDirectJwtTokenProvider",
+                    authProviderClass = "AccessTokenWpComOAuthTokenProvider",
                     storeLabel = credentials.storeLabel,
                     credentialSource = credentials.credentialSource,
                     redactor = redactor,
@@ -116,8 +114,8 @@ object WooAiSmokeDebugBridge {
     ): WooAiSmokeRunExit {
         val redactor = WooAiSmokeRedactor(
             siteUrl = credentials.siteUrl,
-            username = credentials.username,
-            appPassword = credentials.appPassword,
+            wpComUsername = credentials.wpComUsername,
+            wpComPassword = credentials.wpComPassword,
         )
         return WooAiSmokeRunExit(
             artifactsDirectory = credentials.outputDirectory,
@@ -146,8 +144,9 @@ object WooAiSmokeDebugBridge {
         error("PHASE_TIMEOUT: $phaseName")
     }
 
-    private val JWT_MINT_TIMEOUT = 30.seconds
     private val BOOTSTRAP_TIMEOUT = 3.minutes
+    private val WPCOM_AUTH_TIMEOUT = 1.minutes
+    private val WPCOM_SITE_RESOLUTION_TIMEOUT = 1.minutes
     private val LIVE_SCENARIOS_TIMEOUT = 5.minutes
     private const val PREFLIGHT_FILE_NAME = "preflight.json"
 }

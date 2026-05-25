@@ -12,7 +12,7 @@ sealed class WooPosTotalsViewState : Parcelable {
         val readerStatus: ReaderStatus,
         val isTapToPayAvailable: Boolean = false,
         val isScanToPayEnabled: Boolean = false,
-        val isMarkOrderAsCompleteEnabled: Boolean = false,
+        val isMarkOrderAsPaidEnabled: Boolean = false,
         val isAllPaymentMethodsBottomSheetVisible: Boolean = false,
         // UI-only rendering hint covering the TTP loading window. `Preparing` is the
         // pre-overlay phase (location lookup + SDK init + reader connect); `SdkActive`

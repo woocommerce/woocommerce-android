@@ -5,17 +5,17 @@ import java.net.URI
 
 class WooAiSmokeRedactor(
     private val siteUrl: String,
-    private val username: String,
-    private val appPassword: String,
+    private val wpComUsername: String,
+    private val wpComPassword: String,
 ) {
     fun redact(value: String): String {
         val explicitSecrets = listOfNotNull(
             siteUrl,
             siteUrl.trimEnd('/'),
             siteUrl.hostOrNull(),
-            username,
-            appPassword,
-            "$username:$appPassword".encodeUtf8().base64(),
+            wpComUsername,
+            wpComPassword,
+            "$wpComUsername:$wpComPassword".encodeUtf8().base64(),
         ).filter { it.isNotBlank() }
 
         return explicitSecrets

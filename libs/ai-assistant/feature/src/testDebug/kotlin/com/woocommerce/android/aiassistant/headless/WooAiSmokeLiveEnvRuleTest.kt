@@ -4,6 +4,7 @@ package com.woocommerce.android.aiassistant.headless
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.AssumptionViolatedException
 import org.junit.Test
 import org.junit.runner.Description
@@ -42,25 +43,26 @@ class WooAiSmokeLiveEnvRuleTest {
             runLiveEnabled = true,
         )
 
-        assertThatThrownBy {
+        val error = catchThrowable {
             rule.apply(noOpStatement(), Description.EMPTY).evaluate()
-        }.hasMessageContaining("WOO_SITE_URL")
-            .hasMessageContaining("WOO_SITE_ID")
-            .hasMessageContaining("WOO_USERNAME")
-            .hasMessageContaining("WOO_APP_PASSWORD")
+        }
+        assertThat(error).hasMessageContaining("WOO_SITE_URL")
+            .hasMessageContaining("WOO_WPCOM_USERNAME")
+            .hasMessageContaining("WOO_WPCOM_PASSWORD")
+        assertThat(error.message).doesNotContain("WOO_SITE_ID")
     }
 
     @Test
-    fun `given invalid site id, when rule evaluates, then validation fails`() {
+    fun `given obsolete site id, when rule evaluates, then credentials are still valid`() {
         val rule = WooAiSmokeLiveEnvRule(
             environment = validEnvironment() + ("WOO_SITE_ID" to "-1"),
             defaultOutputDirectory = File("build/outputs/woo-ai-smoke/live/latest"),
             runLiveEnabled = true,
         )
 
-        assertThatThrownBy {
-            rule.apply(noOpStatement(), Description.EMPTY).evaluate()
-        }.hasMessageContaining("WOO_SITE_ID must be a positive numeric remote site id")
+        rule.apply(noOpStatement(), Description.EMPTY).evaluate()
+
+        assertThat(rule.requireValidCredentials().wpComUsername).isEqualTo("merchant@example.com")
     }
 
     @Test
@@ -73,7 +75,7 @@ class WooAiSmokeLiveEnvRuleTest {
 
         rule.apply(noOpStatement(), Description.EMPTY).evaluate()
 
-        assertThat(rule.requireValidCredentials().siteId).isEqualTo(SITE_ID)
+        assertThat(rule.requireValidCredentials().wpComPassword).isEqualTo("app password")
     }
 
     private fun noOpStatement() = object : Statement() {
@@ -82,12 +84,7 @@ class WooAiSmokeLiveEnvRuleTest {
 
     private fun validEnvironment() = mapOf(
         "WOO_SITE_URL" to "https://store.example",
-        "WOO_SITE_ID" to SITE_ID.toString(),
-        "WOO_USERNAME" to "merchant@example.com",
-        "WOO_APP_PASSWORD" to "app password",
+        "WOO_WPCOM_USERNAME" to "merchant@example.com",
+        "WOO_WPCOM_PASSWORD" to "app password",
     )
-
-    private companion object {
-        const val SITE_ID = 2922L
-    }
 }

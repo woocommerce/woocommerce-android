@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromMarkAsPaid
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidFailed
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidNotePostFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -61,11 +60,11 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
             if (current !is WooPosMarkOrderAsCompleteState.Initiating) return@launch
 
             val order = repository.getOrderById(orderId)
-            val buttonText = resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button)
+            val buttonText = resourceProvider.getString(R.string.woopos_mark_order_as_paid_confirm_button)
             _state.value = if (order != null) {
                 WooPosMarkOrderAsCompleteState.Confirming(
                     totalText = resourceProvider.getString(
-                        R.string.woopos_mark_order_as_complete_total,
+                        R.string.woopos_mark_order_as_paid_message,
                         priceFormat(order.total),
                     ),
                     note = "",
@@ -80,7 +79,7 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
                     totalText = "",
                     note = "",
                     errorMessage = resourceProvider.getString(
-                        R.string.woopos_mark_order_as_complete_order_not_found,
+                        R.string.woopos_mark_order_as_paid_order_not_found,
                     ),
                     button = WooPosMarkOrderAsCompleteState.Confirming.Button(
                         text = buttonText,
@@ -124,15 +123,12 @@ class WooPosMarkOrderAsCompleteViewModel @Inject constructor(
 
             val outcome = repository.markOrderAsComplete(orderId, current.note.takeIf { it.isNotBlank() })
             when (outcome) {
-                MarkOrderAsCompleteOutcome.SuccessWithFailedNote -> {
-                    analyticsTracker.track(MarkAsPaidNotePostFailed)
-                    onMarkAsPaidSucceeded()
-                }
+                MarkOrderAsCompleteOutcome.SuccessWithFailedNote,
                 MarkOrderAsCompleteOutcome.Success -> onMarkAsPaidSucceeded()
                 MarkOrderAsCompleteOutcome.Failure -> {
                     analyticsTracker.track(MarkAsPaidFailed)
                     _state.value = current.copy(
-                        errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message),
+                        errorMessage = resourceProvider.getString(R.string.woopos_mark_order_as_paid_error_message),
                         button = current.button.copy(
                             status = WooPosMarkOrderAsCompleteState.Confirming.Button.Status.ENABLED,
                         ),
