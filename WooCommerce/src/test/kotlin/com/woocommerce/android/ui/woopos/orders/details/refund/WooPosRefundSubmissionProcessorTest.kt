@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosLoadPaymentGateway
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -202,6 +203,70 @@ class WooPosRefundSubmissionProcessorTest {
         }
 
     @Test
+    fun `given charge metadata lookup fails, when submitted, then backend refund is created directly`() = runTest {
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
+        )
+
+        processor.submit(request).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            awaitComplete()
+        }
+
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
+        verify(refundStore).createItemsRefund(
+            site = eq(site),
+            orderId = eq(order.id),
+            amount = eq(refundAmount),
+            reason = eq("Customer request"),
+            restockItems = eq(true),
+            autoRefund = eq(true),
+            items = eq(refundItems)
+        )
+    }
+
+    @Test
+    fun `given selected site lookup fails, when submitted, then generic failure is emitted`() = runTest {
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "visa",
+                cardLast4 = "1234",
+                paymentMethodType = CARD_PRESENT
+            )
+        )
+        whenever(selectedSite.get()).thenThrow(IllegalStateException("missing site"))
+
+        processor.submit(request).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+            assertThat(awaitItem()).isEqualTo(
+                WooPosRefundSubmissionState.Failure("Something went wrong")
+            )
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `given submission is cancelled, when submitted, then cancellation is rethrown`() = runTest {
+        val cancellation = CancellationException("cancelled")
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "visa",
+                cardLast4 = "1234",
+                paymentMethodType = CARD_PRESENT
+            )
+        )
+        whenever(selectedSite.get()).thenThrow(cancellation)
+
+        processor.submit(request).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+            assertThat(awaitError())
+                .isInstanceOf(CancellationException::class.java)
+                .hasMessage("cancelled")
+        }
+    }
+
+    @Test
     fun `given interac refund, when reader succeeds, then backend is notified once`() = runTest {
         val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
             CardReaderInteracRefundState.LoadingData {}
@@ -233,13 +298,14 @@ class WooPosRefundSubmissionProcessorTest {
         }
 
         verify(controller).start()
+        verify(loadPaymentGateway, never()).invoke(any())
         verify(refundStore).createItemsRefund(
             site = eq(site),
             orderId = eq(order.id),
             amount = eq(refundAmount),
             reason = eq("Customer request"),
             restockItems = eq(true),
-            autoRefund = eq(true),
+            autoRefund = eq(false),
             items = eq(refundItems)
         )
     }
@@ -323,10 +389,12 @@ class WooPosRefundSubmissionProcessorTest {
             assertThat(failure.canRetry).isFalse()
             awaitComplete()
         }
+
+        verify(loadPaymentGateway, never()).invoke(any())
     }
 
     @Test
-    fun `given backend-only retry request, when submitted, then card reader is not started`() = runTest {
+    fun `given backend-only notification request, when submitted, then card reader is not started`() = runTest {
         val retryRequest = request.copy(cardRefundAlreadySucceeded = true)
 
         processor.submit(retryRequest).test {
@@ -337,6 +405,16 @@ class WooPosRefundSubmissionProcessorTest {
 
         verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
         verify(paymentChargeRepository, never()).fetchCardDataUsedForOrderPayment(any())
+        verify(loadPaymentGateway, never()).invoke(any())
+        verify(refundStore).createItemsRefund(
+            site = eq(site),
+            orderId = eq(order.id),
+            amount = eq(refundAmount),
+            reason = eq("Customer request"),
+            restockItems = eq(true),
+            autoRefund = eq(false),
+            items = eq(refundItems)
+        )
     }
 
     @Test
@@ -370,6 +448,7 @@ class WooPosRefundSubmissionProcessorTest {
             assertThat(failure.message).isEqualTo("Reader failed")
             assertThat(failure.retryBackendNotificationOnly).isFalse()
             assertThat(failure.retryCardRefund).isTrue()
+            assertThat(failure.canRetry).isTrue()
             awaitComplete()
         }
 
@@ -377,17 +456,52 @@ class WooPosRefundSubmissionProcessorTest {
     }
 
     @Test
-    fun `given controller exit arrives before error event, when submitted, then failure is emitted without crashing`() =
+    fun `given non retryable interac reader failure, when submitted, then failure cannot retry card refund`() = runTest {
+        val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+            CardReaderInteracRefundState.LoadingData {}
+        )
+        val controller = mockController(paymentState)
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "interac",
+                cardLast4 = "1234",
+                paymentMethodType = INTERAC_PRESENT
+            )
+        )
+        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+            .thenReturn(controller)
+        whenever(uiStringParser.asString(InteracRefundFlowError.Generic.message)).thenReturn("Reader failed")
+
+        processor.submit(request).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.PreparingReader)
+
+            paymentState.value = CardReaderInteracRefundState.InteracRefundFailure.Cancelable(
+                amountWithCurrencyLabel = "$22.00",
+                errorType = InteracRefundFlowError.Generic,
+                onRetry = null,
+                onCancel = {},
+            )
+
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("Reader failed")
+            assertThat(failure.retryBackendNotificationOnly).isFalse()
+            assertThat(failure.retryCardRefund).isFalse()
+            assertThat(failure.canRetry).isFalse()
+            awaitComplete()
+        }
+
+        verify(refundStore, never()).createItemsRefund(any(), any(), any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given controller exit arrives without error, when submitted, then non retryable failure is emitted`() =
         runTest {
             val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderInteracRefundState.LoadingData {}
+                CardReaderPaymentState.LoadingData {}
             )
             val controller = mockController(
                 paymentState = paymentState,
-                eventFlow = flowOf(
-                    CardReaderPaymentEvent.Exit,
-                    CardReaderPaymentEvent.ShowErrorMessage(R.string.error_generic)
-                )
+                eventFlow = flowOf(CardReaderPaymentEvent.Exit)
             )
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
                 PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
@@ -400,16 +514,42 @@ class WooPosRefundSubmissionProcessorTest {
                 .thenReturn(controller)
 
             processor.submit(request).test {
-                val firstItem = awaitItem()
-                val failure = if (firstItem is WooPosRefundSubmissionState.Failure) {
-                    firstItem
-                } else {
-                    awaitItem() as WooPosRefundSubmissionState.Failure
-                }
-
+                advanceUntilIdle()
+                val failure = awaitItem() as WooPosRefundSubmissionState.Failure
                 assertThat(failure.message).isEqualTo("Something went wrong")
-                assertThat(failure.retryBackendNotificationOnly).isFalse()
-                assertThat(failure.retryCardRefund).isFalse()
+                assertThat(failure.canRetry).isFalse()
+                awaitComplete()
+            }
+        }
+
+    @Test
+    fun `given controller exit arrives before reader not connected error, when submitted, then reader connection is required`() =
+        runTest {
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderPaymentState.LoadingData {}
+            )
+            val controller = mockController(
+                paymentState = paymentState,
+                eventFlow = flowOf(
+                    CardReaderPaymentEvent.Exit,
+                    CardReaderPaymentEvent.ShowErrorMessage(R.string.card_reader_payment_reader_not_connected)
+                )
+            )
+            whenever(
+                resourceProvider.getString(R.string.card_reader_payment_reader_not_connected)
+            ).thenReturn("Please make sure that the card reader is connected.")
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "interac",
+                    cardLast4 = "1234",
+                    paymentMethodType = INTERAC_PRESENT
+                )
+            )
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+                .thenReturn(controller)
+
+            processor.submit(request).test {
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.ReaderConnectionRequired)
                 awaitComplete()
             }
         }

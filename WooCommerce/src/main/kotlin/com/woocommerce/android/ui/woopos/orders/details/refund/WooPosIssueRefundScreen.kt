@@ -370,20 +370,22 @@ private fun RefundScreenButtons(
                 }
             }
             is WooPosRefundState.Error -> {
-                WooPosButton(
-                    text = stringResource(R.string.retry),
-                    onClick = {
-                        onEvent(
-                            when (state.errorType) {
-                                WooPosRefundState.Error.ErrorType.Loading ->
-                                    WooPosRefundUIEvent.RetryLoadRefundableItems
-                                WooPosRefundState.Error.ErrorType.Processing ->
-                                    WooPosRefundUIEvent.RetryCreateRefund
-                            }
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if (state.canRetry) {
+                    WooPosButton(
+                        text = stringResource(R.string.retry),
+                        onClick = {
+                            onEvent(
+                                when (state.errorType) {
+                                    WooPosRefundState.Error.ErrorType.Loading ->
+                                        WooPosRefundUIEvent.RetryLoadRefundableItems
+                                    WooPosRefundState.Error.ErrorType.Processing ->
+                                        WooPosRefundUIEvent.RetryCreateRefund
+                                }
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 WooPosOutlinedButton(
                     text = stringResource(R.string.cancel),
                     onClick = {

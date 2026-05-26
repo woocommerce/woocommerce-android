@@ -63,7 +63,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var cachedTaxRoundAtSubtotal: Boolean? = null
     private var contentStateBeforeRefund: WooPosRefundState.Content? = null
     private var refundJob: Job? = null
-    private var backendNotificationRetryRequest: WooPosRefundSubmissionRequest? = null
     private var pendingReaderConnectionRefund: PendingReaderConnectionRefund? = null
 
     init {
@@ -229,11 +228,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.RefundFlowDismissed -> handleRefundFlowDismissed()
             WooPosRefundUIEvent.RetryLoadRefundableItems -> loadRefundableItems()
             WooPosRefundUIEvent.RetryCreateRefund -> {
-                val retryRequest = backendNotificationRetryRequest
                 val contentState = contentStateBeforeRefund
-                if (retryRequest != null && contentState != null) {
-                    submitRefund(contentState, retryRequest)
-                } else if (contentState != null) {
+                if (contentState != null) {
                     processRefund(contentState)
                 } else {
                     WooLog.w(
@@ -388,7 +384,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             contentStateBeforeRefund = contentState
-            backendNotificationRetryRequest = null
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
             analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted)
@@ -479,7 +474,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     }
 
                     WooPosRefundSubmissionState.Success -> {
-                        backendNotificationRetryRequest = null
                         analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
                         val receiptSentMessage = request.order.billingAddress.email
                             .takeIf { it.isNotBlank() }
@@ -496,14 +490,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     }
 
                     is WooPosRefundSubmissionState.Failure -> {
-                        backendNotificationRetryRequest = if (
-                            submissionState.retryBackendNotificationOnly &&
-                            submissionState.canRetry
-                        ) {
-                            request.copy(cardRefundAlreadySucceeded = true)
-                        } else {
-                            null
-                        }
                         analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
                         _state.value = WooPosRefundState.Error(
                             message = submissionState.message,
