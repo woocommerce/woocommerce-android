@@ -542,20 +542,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         )
     }
 
-    private fun WooPosRefundState.Content.RefundStep.isNonCancelable(): Boolean {
-        return when (this) {
-            WooPosRefundState.Content.RefundStep.Processing,
-            WooPosRefundState.Content.RefundStep.ProcessingRefund,
-            WooPosRefundState.Content.RefundStep.NotifyingStore -> true
-            WooPosRefundState.Content.RefundStep.SelectItems,
-            WooPosRefundState.Content.RefundStep.ReviewRefund,
-            WooPosRefundState.Content.RefundStep.ConfirmRefund,
-            WooPosRefundState.Content.RefundStep.PreparingReader,
-            WooPosRefundState.Content.RefundStep.ReaderDisconnected,
-            is WooPosRefundState.Content.RefundStep.ReadyForRefund -> false
-        }
-    }
-
     private data class PendingReaderConnectionRefund(
         val contentState: WooPosRefundState.Content,
         val request: WooPosRefundSubmissionRequest,

@@ -1010,20 +1010,6 @@ private fun ConfirmRefundContent(
     }
 }
 
-private fun WooPosRefundState.Content.RefundStep.isNonCancelable(): Boolean {
-    return when (this) {
-        WooPosRefundState.Content.RefundStep.Processing,
-        WooPosRefundState.Content.RefundStep.ProcessingRefund,
-        WooPosRefundState.Content.RefundStep.NotifyingStore -> true
-        WooPosRefundState.Content.RefundStep.SelectItems,
-        WooPosRefundState.Content.RefundStep.ReviewRefund,
-        WooPosRefundState.Content.RefundStep.ConfirmRefund,
-        WooPosRefundState.Content.RefundStep.PreparingReader,
-        WooPosRefundState.Content.RefundStep.ReaderDisconnected,
-        is WooPosRefundState.Content.RefundStep.ReadyForRefund -> false
-    }
-}
-
 @WooPosPreview
 @Composable
 fun SelectItemsContentPreview() {

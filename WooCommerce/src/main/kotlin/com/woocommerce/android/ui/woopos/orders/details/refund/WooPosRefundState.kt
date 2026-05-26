@@ -32,6 +32,20 @@ sealed class WooPosRefundState {
 
         @Immutable
         sealed class RefundStep {
+            fun isNonCancelable(): Boolean {
+                return when (this) {
+                    Processing,
+                    ProcessingRefund,
+                    NotifyingStore -> true
+                    SelectItems,
+                    ReviewRefund,
+                    ConfirmRefund,
+                    PreparingReader,
+                    ReaderDisconnected,
+                    is ReadyForRefund -> false
+                }
+            }
+
             @Immutable
             data object SelectItems : RefundStep()
 
