@@ -232,7 +232,7 @@
     <string name="login_view_connected_stores">Переглянути підключені магазини</string>
     <string name="login_jetpack_what_is">Що таке Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack — це безкоштовний плагін WordPress, який підключає ваш магазин до інструментів для найкращого мобільного досвіду, включаючи push-сповіщення та статистику</string>
-    <string name="login_jetpack_not_found">Jetpack не знайдено. Будь ласка, спробуйте ще раз</string>
+    <string name="login_jetpack_not_found">Jetpack не знайдено. Спробуйте ще раз</string>
     <string name="login_jetpack_install">Встановити Jetpack</string>
     <string name="login_need_help_finding_email">Потрібна допомога з пошуком потрібної електронної пошти?</string>
     <string name="login_email_help_title">Яку електронну пошту використовувати для входу?</string>
@@ -243,7 +243,7 @@
     <string name="login_troubleshooting_tips">Читати поради з усунення несправностей</string>
     <string name="login_no_wpcom_account_found">Ваша електронна пошта не пов\'язана з обліковим записом WordPress.com.</string>
     <string name="user_role_access_error_user_roles_null">Цей застосунок підтримує лише ролі Адміністратора та Менеджера магазину. Нам не вдалося отримати ролі користувача для вашого облікового запису. Будь ласка, зверніться до служби підтримки.</string>
-    <string name="user_role_access_error_fetch_failed">Нам не вдалося підтвердити вашу роль у цьому магазині. Будь ласка, спробуйте ще раз. Якщо проблема не зникає, зверніться до служби підтримки.</string>
+    <string name="user_role_access_error_fetch_failed">Нам не вдалося підтвердити вашу роль у цьому магазині. Спробуйте ще раз. Якщо проблема не зникає, зверніться до служби підтримки.</string>
     <string name="user_role_access_error_msg">Цей застосунок підтримує лише ролі Адміністратора та Менеджера магазину. Будь ласка, зверніться до власника магазину для підвищення вашої ролі.</string>
     <string name="user_role_access_error_link">Дізнайтеся більше про ролі та дозволи</string>
     <string name="user_role_access_error_retry">У вас немає правильної ролі користувача</string>
@@ -274,7 +274,7 @@
     <string name="login_jetpack_connection_steps_screen_title">Підключення Jetpack</string>
     <string name="login_jetpack_connection_steps_screen_title_done">Jetpack підключено</string>
     <string name="login_jetpack_installation_steps_screen_title_done">Jetpack встановлено</string>
-    <string name="login_jetpack_steps_screen_subtitle">Будь ласка, зачекайте, поки ми підключаємо ваш магазин &lt;b&gt;%1$s&lt;/b&gt; до Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Зачекайте, поки ми підключаємо ваш магазин &lt;b&gt;%1$s&lt;/b&gt; до Jetpack.</string>
     <string name="login_jetpack_steps_screen_subtitle_done">Ваш магазин &lt;b&gt;%1$s&lt;/b&gt; тепер підключено до Jetpack.</string>
     <string name="login_jetpack_installation_error_code_template">Код помилки %1$s</string>
     <string name="login_jetpack_installation_error">Помилка</string>
@@ -287,7 +287,7 @@
     <string name="login_jetpack_installation_error_connection_message">Виникла помилка під час зв\'язку з вашим сайтом.</string>
     <string name="login_jetpack_installation_error_connection_suggestion">Будь ласка, підключіть Jetpack через сторінку адміністратора у браузері або зверніться до служби підтримки.</string>
     <string name="login_jetpack_installation_error_generic_message">Виникла помилка під час зв\'язку з вашим сайтом.</string>
-    <string name="login_jetpack_installation_error_generic_suggestion">Будь ласка, спробуйте ще раз і зверніться до служби підтримки, якщо помилка повторюється.</string>
+    <string name="login_jetpack_installation_error_generic_suggestion">Спробуйте ще раз і зверніться до служби підтримки, якщо помилка повторюється.</string>
     <string name="login_jetpack_installation_get_support">Отримати підтримку</string>
     <string name="login_jetpack_installation_retry_installing">Спробувати встановити знову</string>
     <string name="login_jetpack_installation_retry_activating">Спробувати активувати знову</string>
@@ -305,7 +305,7 @@
     <string name="login_jetpack_connection_enter_wpcom_password">Введіть пароль від вашого облікового запису WordPress.com для підключення до Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Введіть пароль від вашого облікового запису WordPress.com для встановлення Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Або продовжити за допомогою Magic Link</string>
-    <string name="login_jetpack_installation_magic_link_failure">Під час отримання даних вашого сайту сталася помилка, будь ласка, спробуйте ще раз!</string>
+    <string name="login_jetpack_installation_magic_link_failure">Під час отримання даних вашого сайту сталася помилка, спробуйте ще раз!</string>
     <string name="login_site_credentials_invalid_response">Вхід не вдався через неочікувану відповідь від вашого сайту.</string>
     <string name="login_site_credentials_custom_login_url">Неможливо увійти, оскільки не вдалося визначити URL-адресу входу вашого магазину</string>
     <string name="login_site_credentials_custom_admin_url">Неможливо увійти, оскільки не вдалося визначити URL-адресу адміністратора вашого магазину</string>
@@ -335,7 +335,7 @@
     <string name="site_picker_edit_store_current_site_header">Поточний магазин</string>
     <string name="site_picker_edit_store_current_site_footer">Будь ласка, перейдіть до іншого магазину, якщо хочете приховати цей.</string>
     <string name="site_picker_edit_store_list_header">Інші магазини</string>
-    <string name="site_picker_edit_store_list_error_title">Під час оновлення налаштувань сповіщень сталася помилка. Будь ласка, спробуйте ще раз</string>
+    <string name="site_picker_edit_store_list_error_title">Під час оновлення налаштувань сповіщень сталася помилка. Спробуйте ще раз</string>
 
     <!--
         My Store View
@@ -357,7 +357,7 @@
     <string name="dashboard_stats_placed_orders_description">Рахувати замовлення за датою їх розміщення або створення.</string>
     <string name="dashboard_stats_completed_orders_description">Рахувати замовлення за датою їх позначення як виконаних.</string>
     <string name="dashboard_stats_order_date_type_sheet_footer">Це загальне налаштування магазину, яке також керує параметром «Тип дати» в налаштуваннях аналітики адміністратора WooCommerce.</string>
-    <string name="dashboard_stats_order_date_type_update_error">Не вдалося оновити тип замовлення. Будь ласка, спробуйте ще раз.</string>
+    <string name="dashboard_stats_order_date_type_update_error">Не вдалося оновити тип замовлення. Спробуйте ще раз.</string>
     <string name="dashboard_stats_conversion">Конверсія</string>
     <string name="dashboard_state_no_data">Немає доходу за цей період</string>
     <string name="dashboard_stats_error">Помилка отримання даних</string>
@@ -409,7 +409,7 @@
 
     <string name="dashboard_reviews_card_header_title">Статус</string>
     <string name="dashboard_reviews_card_empty_title_filtered">Відгуків не знайдено</string>
-    <string name="dashboard_reviews_card_empty_message_filtered">Жоден відгук не відповідає вибраному фільтру, будь ласка, спробуйте змінити фільтр</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Жоден відгук не відповідає вибраному фільтру, спробуйте змінити фільтр</string>
     <string name="dashboard_reviews_card_view_all_button">Переглянути всі відгуки</string>
 
     <string name="dashboard_coupons_card_header_coupons">Купони</string>
@@ -508,7 +508,7 @@
 
 
     <string name="analytics_banner_title">Подобається аналітика?</string>
-    <string name="analytics_banner_message">Будь ласка, оцініть свій досвід використання аналітики</string>
+    <string name="analytics_banner_message">Оцініть свій досвід використання аналітики</string>
     <!--
         Order List View
     -->
@@ -524,10 +524,10 @@
     <string name="orderlist_mark_completed_success">Замовлення №%1$d позначено як виконане</string>
     <string name="orderlist_updating_order_error">Помилка оновлення замовлення №%1$d</string>
     <string name="orderlist_parsing_error_title">Не вдалося завантажити ваші дані.</string>
-    <string name="orderlist_parsing_error_message">Це може бути пов\'язано з конфліктом з плагіном. Будь ласка, спробуйте пізніше або зверніться до нас — ми з радістю допоможемо!</string>
+    <string name="orderlist_parsing_error_message">Це може бути пов\'язано з конфліктом з плагіном. Спробуйте пізніше або зверніться до нас — ми з радістю допоможемо!</string>
     <string name="error_troubleshooting">Усунення неполадок</string>
     <string name="orderlist_timeout_error_title">Ваш сайт надто довго не відповідає</string>
-    <string name="orderlist_timeout_error_message">Будь ласка, спробуйте пізніше або зверніться до нас — ми з радістю допоможемо</string>
+    <string name="orderlist_timeout_error_message">Спробуйте пізніше або зверніться до нас — ми з радістю допоможемо</string>
     <string name="orderlist_connectivity_tool_title">Усунення неполадок з\'єднання</string>
     <string name="orderlist_connectivity_tool_subtitle">Зачекайте, поки ми намагаємося визначити проблему з\'єднання.</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Підключення до інтернету</string>
@@ -558,9 +558,9 @@
     <string name="orderlist_selection_menu_update_status">Оновити статус</string>
     <string name="orderlist_bulk_update_status_updated">Статус оновлено!</string>
     <string name="orderlist_bulk_update_maximum_reached">Досягнуто максимальну кількість вибраних елементів (%d).</string>
-    <string name="orderlist_bulk_update_result_no_orders_updated">Жодне замовлення не оновлено. Будь ласка, спробуйте ще раз.</string>
-    <string name="orderlist_bulk_update_result_all_failed">Не вдалося оновити замовлення. Будь ласка, спробуйте ще раз.</string>
-    <string name="orderlist_bulk_update_result_partial_success">%d замовлень(ня) оновлено, %d замовлень(ня) не вдалося оновити. Будь ласка, спробуйте ще раз.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Жодне замовлення не оновлено. Спробуйте ще раз.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Не вдалося оновити замовлення. Спробуйте ще раз.</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d замовлень(ня) оновлено, %d замовлень(ня) не вдалося оновити. Спробуйте ще раз.</string>
 
     <!--
          Simple Payments
@@ -613,7 +613,7 @@
          Order Creation
     -->
     <string name="orderlist_create_order_button_description">Створити замовлення</string>
-    <string name="order_list_barcode_scanning_scanning_failed">Сканування не вдалося. Будь ласка, спробуйте пізніше</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Сканування не вдалося. Спробуйте пізніше</string>
     <string name="order_creation_fragment_title">Нове замовлення</string>
     <string name="order_creation_tablet_mode_fragment_title">Підсумок замовлення</string>
     <string name="order_creation_price_after_discount">Ціна після знижки</string>
@@ -661,7 +661,7 @@
     <string name="order_creation_payment_products">Товари</string>
     <string name="order_creation_payment_order_total">Загальна сума замовлення</string>
     <string name="order_creation_loading_dialog_title">Створення вашого замовлення</string>
-    <string name="order_creation_loading_dialog_message">Будь ласка, зачекайте…</string>
+    <string name="order_creation_loading_dialog_message">Зачекайте…</string>
     <string name="order_creation_failure_snackbar">Не вдалося створити замовлення</string>
     <string name="order_creation_success_snackbar">Замовлення створено</string>
     <string name="order_creation_payment_tax_label">Податки</string>
@@ -669,7 +669,7 @@
     <string name="order_creation_shipping_title_add">Додати доставку</string>
     <string name="order_creation_shipping_title_edit">Редагувати доставку</string>
     <string name="order_creation_shipping_methods_title">Спосіб</string>
-    <string name="order_creation_shipping_methods_error">Помилка під час отримання способів доставки. Будь ласка, спробуйте ще раз</string>
+    <string name="order_creation_shipping_methods_error">Помилка під час отримання способів доставки. Спробуйте ще раз</string>
     <string name="order_creation_shipping_add">Додати доставку</string>
     <string name="order_creation_shipping_edit">Редагувати доставку</string>
     <string name="order_creation_add_shipping">Додати доставку</string>
@@ -924,7 +924,7 @@
     <string name="shipping_label_refund_amount_title">Сума, що підлягає поверненню</string>
     <string name="shipping_label_refund_button">Повернути кошти за мітку (-%1$s)</string>
     <string name="shipping_label_refund_success">Запит на повернення коштів успішно надіслано</string>
-    <string name="shipping_label_refund_progress_message">Ваш запит на повернення коштів обробляється. Будь ласка, зачекайте…</string>
+    <string name="shipping_label_refund_progress_message">Ваш запит на повернення коштів обробляється. Зачекайте…</string>
     <string name="shipping_label_refund_expired">Мітки старші 30 днів не підлягають поверненню коштів</string>
     <!--
         Fulfill order
@@ -993,7 +993,7 @@
     <string name="shipping_label_create_mark_order_complete">Позначити це замовлення як виконане та сповістити покупця</string>
     <string name="shipping_label_create_purchase">Придбати мітку доставки</string>
     <string name="shipping_label_create_purchase_progress_title">Придбання мітки</string>
-    <string name="shipping_label_create_purchase_progress_message">Будь ласка, зачекайте…</string>
+    <string name="shipping_label_create_purchase_progress_message">Зачекайте…</string>
     <string name="shipping_label_create_purchase_error">Помилка придбання міток</string>
     <string name="shipping_label_create_purchase_fulfill_error">Не вдалося позначити замовлення як виконане</string>
     <string name="shipping_label_selected_payment_description">Кредитна картка, що закінчується на %1$s</string>
@@ -1011,7 +1011,7 @@
     <string name="shipping_label_edit_address_use_address_as_is">Використати адресу як введено</string>
     <string name="shipping_label_edit_address_validation_progress_title">Перевірка адреси</string>
     <string name="shipping_label_edit_address_loading_progress_title">Завантаження даних адреси</string>
-    <string name="shipping_label_edit_address_progress_message">Будь ласка, зачекайте…</string>
+    <string name="shipping_label_edit_address_progress_message">Зачекайте…</string>
     <string name="shipping_label_edit_address_validation_error">Перевірка адреси не пройдена</string>
     <string name="shipping_label_edit_origin_address_error_warning">Нам не вдалося автоматично підтвердити адресу відправника. Перегляньте її в Google Maps, щоб переконатися, що адреса правильна.</string>
     <string name="shipping_label_edit_address_error_warning">Нам не вдалося автоматично підтвердити адресу доставки. Перевірте її в Google Maps або зв\'яжіться з покупцем, щоб переконатися, що адреса правильна.</string>
@@ -1119,7 +1119,7 @@
     <string name="shipping_label_purchased_in_progress_title">Вашу етикетку для відправлення обробляється</string>
     <string name="shipping_label_purchased_in_progress_message">Після завершення ви зможете надрукувати етикетку з вибраним розміром паперу</string>
     <string name="shipping_label_purchased_failure_title">Нам не вдалося обробити вашу етикетку для відправлення</string>
-    <string name="shipping_label_purchased_failure_message">Будь ласка, спробуйте пізніше</string>
+    <string name="shipping_label_purchased_failure_message">Спробуйте пізніше</string>
     <string name="shipping_label_purchased_note">Примітка: повторне використання надрукованої етикетки є порушенням наших умов надання послуг і може призвести до кримінальної відповідальності.</string>
     <string name="shipping_label_purchased_learn_how_to_print">Дізнайтеся, як друкувати з мобільного пристрою</string>
     <string name="shipping_label_purchased_track_shipment">Відстежити відправлення</string>
@@ -1157,7 +1157,7 @@
     <string name="shipping_label_create_custom_package_field_empty_hint">Це поле є обов\'язковим.</string>
     <string name="shipping_label_create_custom_package_field_invalid_hint">Недійсне значення.</string>
     <string name="shipping_label_create_custom_package_saving_progress_title">Створення нової упаковки</string>
-    <string name="shipping_label_create_package_saving_progress_message">Будь ласка, зачекайте…</string>
+    <string name="shipping_label_create_package_saving_progress_message">Зачекайте…</string>
     <string name="shipping_label_create_custom_package_api_failure">Помилка створення упаковки: %1$s</string>
     <string name="shipping_label_create_custom_package_api_unknown_failure">Помилка створення упаковки: невідома проблема API.</string>
     <string name="shipping_label_create_custom_package_success_message">\"%1$s\" збережено</string>
@@ -1172,7 +1172,7 @@
     <string name="shipping_label_payments_email_receipts_checkbox">Надсилати квитанції про придбання етикеток на %1$s (%2$s) за адресою %3$s</string>
     <string name="shipping_label_payments_expiration_date">Закінчується %1$s</string>
     <string name="shipping_label_payments_saving_dialog_title">Збереження налаштувань</string>
-    <string name="shipping_label_payments_saving_dialog_message">Будь ласка, зачекайте…</string>
+    <string name="shipping_label_payments_saving_dialog_message">Зачекайте…</string>
     <string name="shipping_label_payments_saving_error">Помилка під час збереження налаштувань</string>
     <string name="shipping_label_payment_method_added">Спосіб оплати додано</string>
     <string name="shipping_label_shipping_carriers_title">Перевізники та тарифи</string>
@@ -1266,10 +1266,10 @@
     <string name="order_refunds_manual_refund">Ручне відшкодування</string>
     <string name="order_refunds_credit_card_refund">Кредитна картка</string>
     <string name="order_refunds_quote_image_description">Значок цитати</string>
-    <string name="order_refunds_amount_refund_progress_message">Ваше відшкодування на суму %s обробляється. Будь ласка, зачекайте…</string>
+    <string name="order_refunds_amount_refund_progress_message">Ваше відшкодування на суму %s обробляється. Зачекайте…</string>
     <string name="order_refunds_amount_refund_confirmation_message">Очікування підтвердження відшкодування…</string>
     <string name="order_refunds_amount_refund_successful">Відшкодування успішно надіслано.</string>
-    <string name="order_refunds_amount_refund_error">Під час відшкодування сталася помилка. Будь ласка, спробуйте ще раз.</string>
+    <string name="order_refunds_amount_refund_error">Під час відшкодування сталася помилка. Спробуйте ще раз.</string>
     <string name="order_refunds_refund_manual_refund_note">Спосіб оплати не підтримує автоматичні відшкодування. Виконайте відшкодування, перерахувавши кошти покупцю вручну.</string>
     <string name="order_refunds_items_select_all">Вибрати все</string>
     <string name="order_refunds_items_select_none">Зняти вибір</string>
@@ -1297,7 +1297,7 @@
     <string name="add_order_note_added">Нотатку до замовлення додано</string>
     <string name="add_order_note_error">Не вдалося додати нотатку</string>
     <string name="add_order_note_progress_title">Додавання нотатки</string>
-    <string name="add_order_note_progress_message">Будь ласка, зачекайте</string>
+    <string name="add_order_note_progress_message">Зачекайте</string>
 
     <!--
     Order List Tab Labels
@@ -1333,7 +1333,7 @@
     <string name="order_shipment_tracking_custom_provider_section_title">Власний</string>
     <string name="order_shipment_tracking_custom_provider_section_name">Власний перевізник</string>
     <string name="order_shipment_tracking_progress_title">Додавання відстеження</string>
-    <string name="order_shipment_tracking_progress_message">Будь ласка, зачекайте</string>
+    <string name="order_shipment_tracking_progress_message">Зачекайте</string>
 
     <!--
             Card Reader Upsell Banner
@@ -1397,7 +1397,7 @@
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Спробуйте платіж на %s своєю дебетовою або кредитною карткою.\nПлатіж буде повернуто після завершення тесту.</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find">Виберіть Tap to Pay у параметрах «Отримати платіж» у\nДеталях замовлення або Меню &gt; Платежі.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Спробувати платіж</string>
-    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Щось пішло не так. Будь ласка, спробуйте пізніше.</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Щось пішло не так. Спробуйте пізніше.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Повернення тестового платежу…</string>
     <string name="card_reader_tap_to_pay_explanation_refund_failed">Повернення не вдалося. Спробуйте здійснити його вручну</string>
     <string name="card_reader_tap_to_pay_test_payment_note">Тестовий платіж Tap To Pay</string>
@@ -1702,7 +1702,7 @@
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Хочете додати «Оплата при отриманні» до онлайн-оформлення замовлення?</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Увімкнення «Оплата при отриманні» дозволяє покупцям сплачувати онлайн-замовлення при доставці готівкою або карткою.\n\nЗамовлення можна створювати вручну і без увімкнення цієї функції.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Увімкнути «Оплата при отриманні»</string>
-    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не вдалося увімкнути оплату при доставці. Будь ласка, спробуйте пізніше.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не вдалося увімкнути оплату при доставці. Спробуйте пізніше.</string>
 
     <!--
         Card reader tutorial
@@ -2030,7 +2030,7 @@
     <string name="product_creation_ai_tone_formal">Офіційний</string>
     <string name="product_creation_ai_tone_flowery">Квітчастий</string>
     <string name="product_creation_ai_tone_convincing">Переконливий</string>
-    <string name="product_creation_ai_generation_failure_message">Генерація товару не вдалася. Будь ласка, спробуйте ще раз</string>
+    <string name="product_creation_ai_generation_failure_message">Генерація товару не вдалася. Спробуйте ще раз</string>
     <string name="product_creation_package_photo_no_text_detected">Текст не виявлено. Будь ласка, виберіть інше фото упаковки або введіть деталі товару вручну.</string>
     <string name="product_filter_explore_plugin">Ознайомитися!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Сканувати штрих-код для оновлення запасів</string>
@@ -2048,7 +2048,7 @@
     <string name="ai_product_creation_image_scan_subtitle">Додати текст, відсканований із фото</string>
     <string name="ai_product_creation_image_selected_subtitle">Текст із фото додано до початкових даних</string>
     <string name="ai_product_creation_scanning_image">Сканування зображення</string>
-    <string name="ai_product_creation_scanning_photo_error">Помилка під час сканування тексту з фото. Будь ласка, спробуйте ще раз</string>
+    <string name="ai_product_creation_scanning_photo_error">Помилка під час сканування тексту з фото. Спробуйте ще раз</string>
     <string name="ai_product_creation_prompt_suggestion_initial">Введіть назву товару та ключові функції, переваги чи характеристики, щоб допомогти знайти його онлайн.</string>
     <string name="ai_product_creation_prompt_suggestion_add_more_details"><![CDATA[<b>Додайте більше деталей.</b> Що більше деталей ви надасте, то кращими будуть згенеровані відомості.]]></string>
     <string name="ai_product_creation_prompt_suggestion_getting_better"><![CDATA[<b>Стає краще.</b> Чи можете ви описати посадку та будь-які відмінні особливості товару?]]></string>
@@ -2102,7 +2102,7 @@
     <string name="variations_bulk_update_price_info">Ціну буде оновлено для %d варіацій</string>
     <string name="variations_bulk_update_current_price">Поточна ціна: %s</string>
     <string name="variations_bulk_update_current_prices_mixed">Поточні ціни змішані</string>
-    <string name="variations_bulk_update_error">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+    <string name="variations_bulk_update_error">Щось пішло не так. Спробуйте ще раз.</string>
     <string name="variations_bulk_update_regular_prices_success">Звичайні ціни оновлено.</string>
     <string name="variations_bulk_update_sale_prices_success">Ціни зі знижкою оновлено.</string>
     <string name="variations_bulk_update_sale_prices_dialog_title">Оновлення цін зі знижкою</string>
@@ -2486,7 +2486,7 @@
 
     <string name="requesting_otp">Запит коду підтвердження через SMS.</string>
     <string name="requesting_sms_otp_success">SMS надіслано, перевірте повідомлення для отримання коду.</string>
-    <string name="requesting_sms_otp_failure">Не вдалося надіслати SMS. Будь ласка, спробуйте ще раз.</string>
+    <string name="requesting_sms_otp_failure">Не вдалося надіслати SMS. Спробуйте ще раз.</string>
 
 
     <string name="password_incorrect">Схоже, цей пароль неправильний. Перевірте введені дані та спробуйте ще раз.</string>
@@ -2571,7 +2571,7 @@
     <string name="notification_logged_in">Торкніться для продовження.</string>
 
     <string name="notification_login_title_in_progress">Виконується вхід…</string>
-    <string name="notification_logging_in">Будь ласка, зачекайте, виконується вхід.</string>
+    <string name="notification_logging_in">Зачекайте, виконується вхід.</string>
 
     <string name="notification_login_title_stopped">Вхід зупинено</string>
     <string name="notification_error_wrong_password">Перевірте пароль для продовження.</string>
@@ -2667,7 +2667,7 @@
     <string name="feedback_request_like_it">Мені подобається</string>
     <string name="feedback_survey_request_title">Як ми можемо покращитися?</string>
     <string name="web_view_loading_title">Завантаження</string>
-    <string name="web_view_loading_message">Будь ласка, зачекайте…</string>
+    <string name="web_view_loading_message">Зачекайте…</string>
     <string name="feedback_completed_title">Відгук надіслано</string>
     <string name="feedback_completed_title_message">Дякуємо, що поділилися своїми\n думками з нами</string>
     <string name="feedback_completed_description">Майте на увазі, що це не заявка до служби підтримки, і ми не зможемо відреагувати на індивідуальний відгук.\n\nПотрібна допомога? %1$s</string>
@@ -2732,7 +2732,7 @@
     <string name="woo_push_notifications_connection_steps_error_connection_permission_message">У вас немає дозволу на підключення цього магазину до WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_go_to_my_store">Перейти до мого магазину</string>
     <string name="woo_push_notifications_connection_steps_retry">Спробувати знову</string>
-    <string name="woo_push_notifications_connection_steps_generic_error">Під час виконання запиту сталася помилка.\nБудь ласка, спробуйте ще раз або зверніться до служби підтримки, якщо ця помилка повторюється.</string>
+    <string name="woo_push_notifications_connection_steps_generic_error">Під час виконання запиту сталася помилка.\nСпробуйте ще раз або зверніться до служби підтримки, якщо ця помилка повторюється.</string>
     <string name="woo_push_notifications_connection_steps_error_plugin_update_required">Поточна версія плагіна WooCommerce %1$s потребує оновлення для повноцінного підключення вашого магазину до WordPress.com.</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Оновити плагін</string>
 
@@ -2750,7 +2750,7 @@
     <string name="jetpack_install_progress_failed_reason_installation">встановлення</string>
     <string name="jetpack_install_progress_failed_reason_activation">активації</string>
     <string name="jetpack_install_progress_failed_reason_connection">підключення</string>
-    <string name="jetpack_install_progress_failed_try">Будь ласка, спробуйте ще раз.</string>
+    <string name="jetpack_install_progress_failed_try">Спробуйте ще раз.</string>
     <string name="jetpack_install_progress_failed_alternative">Крім того, ви можете %s Jetpack у WP Admin.</string>
     <string name="jetpack_install_progress_failed_alternative_install">встановити</string>
     <string name="jetpack_install_progress_failed_alternative_activate">активувати</string>
@@ -3137,7 +3137,7 @@
     <string name="support_request_success_message">Ваш запит до служби підтримки успішно отримано. Ми відповімо електронною поштою якнайшвидше.</string>
     <string name="support_request_dialog_action">Зрозуміло!</string>
     <string name="support_request_error_title">Щось пішло не так</string>
-    <string name="support_request_error_message">На жаль, зараз неможливо створити запит до підтримки. Будь ласка, спробуйте пізніше.</string>
+    <string name="support_request_error_message">На жаль, зараз неможливо створити запит до підтримки. Спробуйте пізніше.</string>
 
     <!--
     Free trial
@@ -3334,7 +3334,7 @@
     <string name="product_sharing_regenerate">Написати ще раз</string>
     <string name="product_sharing_generating">Пишемо…</string>
     <string name="product_sharing_optional_message_label">Додати необов\'язкове повідомлення</string>
-    <string name="product_sharing_ai_generating_failure">Не вдалося згенерувати повідомлення для поширення. Будь ласка, спробуйте ще раз!</string>
+    <string name="product_sharing_ai_generating_failure">Не вдалося згенерувати повідомлення для поширення. Спробуйте ще раз!</string>
 
     <!--
     AI Product description
@@ -3350,7 +3350,7 @@
     <string name="ai_product_description_note_dialog_confirmation">Зрозуміло</string>
     <string name="ai_product_description_learn_more_link">Працює на ШІ. &lt;a href=\'\'&gt;&lt;u&gt;Дізнатися більше&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="ai_product_description_label">Опис, згенерований ШІ</string>
-    <string name="ai_product_description_error">Виникла проблема зі створенням опису товару. Будь ласка, спробуйте пізніше.</string>
+    <string name="ai_product_description_error">Виникла проблема зі створенням опису товару. Спробуйте пізніше.</string>
     <string name="ai_product_toolbar_button_tooltip">Згенерувати опис за допомогою ШІ</string>
     <string name="ai_product_description_tooltip_title">✨ Написати за допомогою ШІ</string>
     <string name="ai_product_description_tooltip_message">Використовуйте наш інструмент на основі ШІ для швидкого створення описів товарів. Просто введіть ключові слова, а решту зробимо ми!</string>
@@ -3393,7 +3393,7 @@
     Blaze campaign list
     -->
     <string name="blaze_campaign_list_title">Кампанії Blaze</string>
-    <string name="blaze_campaign_list_error_fetching_campaigns">Під час оновлення списку кампаній сталася помилка. Будь ласка, спробуйте пізніше.</string>
+    <string name="blaze_campaign_list_error_fetching_campaigns">Під час оновлення списку кампаній сталася помилка. Спробуйте пізніше.</string>
 
     <!--
     Blaze campaign creation intro
@@ -3520,7 +3520,7 @@
     <string name="blaze_campaign_creation_product_selector_title">Готово до просування</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Просувати</string>
     <string name="blaze_campaign_creation_location_search_message">Почніть вводити країну, штат або місто, щоб побачити доступні варіанти</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Пошук не вдався.\nБудь ласка, спробуйте ще раз</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Пошук не вдався.\nСпробуйте ще раз</string>
 
     <!--
     Blaze edit ad destination
@@ -3547,7 +3547,7 @@
     <string name="blaze_campaign_creation_loading">Створення вашої кампанії</string>
     <string name="blaze_campaign_creation_error_title">Помилка створення кампанії</string>
     <string name="blaze_campaign_creation_error_payment_hint">Помилка створення кампанії</string>
-    <string name="blaze_campaign_creation_error_help_hint">Будь ласка, спробуйте ще раз або зверніться до служби підтримки.</string>
+    <string name="blaze_campaign_creation_error_help_hint">Спробуйте ще раз або зверніться до служби підтримки.</string>
     <string name="blaze_campaign_creation_error_get_support">Звернутися до підтримки</string>
     <string name="blaze_campaign_creation_error_cancel">Скасувати кампанію</string>
     <string name="blaze_campaign_creation_error_media_upload">Не вдалося завантажити зображення кампанії.</string>
@@ -3611,13 +3611,13 @@
     <!--
     Scan to update inventory
     -->
-    <string name="scan_to_update_inventory_unable_to_find_product">Товар із SKU: %s не знайдено. Будь ласка, спробуйте ще раз.</string>
+    <string name="scan_to_update_inventory_unable_to_find_product">Товар із SKU: %s не знайдено. Спробуйте ще раз.</string>
     <string name="scan_to_update_inventory_increment_quantity_button">Кількість + 1</string>
     <string name="scan_to_update_inventory_update_quantity_button">Оновити кількість</string>
     <string name="scan_to_update_inventory_product_details_button">Переглянути деталі товару</string>
     <string name="scan_to_update_inventory_success_snackbar">Кількість оновлено: %s</string>
     <string name="scan_to_update_inventory_undo_snackbar">Оновлення кількості скасовано</string>
-    <string name="scan_to_update_inventory_failure_snackbar">Щось пішло не так. Будь ласка, спробуйте ще раз</string>
+    <string name="scan_to_update_inventory_failure_snackbar">Щось пішло не так. Спробуйте ще раз</string>
     <string name="scan_to_update_inventory_original_quantity_label">Початкова кількість</string>
     <string name="scan_to_update_inventory_quantity_label">Кількість</string>
     <string name="scan_to_update_inventory_product_label">Товар</string>
@@ -3678,9 +3678,9 @@
     <string name="product_update_stock_status_managed_products">Товари з керованими запасами не можна оновити</string>
     <string name="product_update_stock_status_variable_products">Варіативні товари не можна оновити</string>
     <string name="product_update_stock_status_completed">Статуси запасів оновлено</string>
-    <string name="product_update_stock_status_error">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+    <string name="product_update_stock_status_error">Щось пішло не так. Спробуйте ще раз.</string>
     <string name="product_update_stock_status_dialog_title">Оновлення статусів запасів</string>
-    <string name="product_update_stock_status_dialog_subtitle">Будь ласка, зачекайте…</string>
+    <string name="product_update_stock_status_dialog_subtitle">Зачекайте…</string>
 
     <string name="empty_order_detail_title">Деталей замовлення ще немає</string>
     <string name="empty_order_detail_message">Деталі вашого замовлення з\'являться тут після оформлення замовлення.</string>
@@ -3876,7 +3876,7 @@
     <string name="woopos_payment_method_mark_order_as_paid_label">Позначити замовлення як оплачене</string>
     <string name="woopos_mark_order_as_complete_total">Сума замовлення: %1$s</string>
     <string name="woopos_mark_order_as_complete_confirm_button">Позначити замовлення як виконане</string>
-    <string name="woopos_mark_order_as_complete_error_message">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_mark_order_as_complete_error_message">Щось пішло не так. Спробуйте ще раз.</string>
     <string name="woopos_mark_order_as_complete_order_not_found">Не вдалося завантажити замовлення. Поверніться назад і спробуйте ще раз.</string>
     <string name="woopos_payment_method_picker_dialog_title">Оберіть спосіб оплати</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
@@ -3885,7 +3885,7 @@
     <string name="woopos_tap_to_pay_promoted_image_description">Ілюстрація Tap to Pay на телефоні</string>
     <string name="woopos_tap_to_pay_preparing_title">Підготовка</string>
     <string name="woopos_tap_to_pay_preparing_subtitle">Підготовка Tap to Pay</string>
-    <string name="woopos_tap_to_pay_payment_failed_message">Не вдалося запустити Tap to Pay. Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Не вдалося запустити Tap to Pay. Спробуйте ще раз.</string>
     <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Не вдалося запустити Tap to Pay: %1$s</string>
     <string name="woopos_tap_to_pay_missing_location_permission_message">Надайте дозвіл на визначення місцезнаходження для використання Tap to Pay.</string>
     <string name="woopos_totals_main_error_label">Не вдалося завантажити підсумки</string>
@@ -3899,7 +3899,7 @@
     <string name="woopos_products_empty_list_title">Підтримуваних товарів не знайдено</string>
     <string name="woopos_products_empty_list_message">POS наразі підтримує лише прості, варіативні та віртуальні товари – \nстворіть один, щоб почати.</string>
     <string name="woopos_products_loading_error_title">Не вдалося завантажити товари</string>
-    <string name="woopos_products_loading_error_message">Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_products_loading_error_message">Спробуйте ще раз.</string>
 
     <string name="woopos_coupons_empty_list_image_description">Немає купонів</string>
     <string name="woopos_coupons_empty_list_title">Купонів не знайдено</string>
@@ -3950,7 +3950,7 @@
     <string name="woo_pos_payment_failed_go_back">Назад</string>
 
     <string name="woopos_remote_payment_failed_connection_lost">З\'єднання з телефонним зчитувачем перервано. Підключіться знову і спробуйте ще раз.</string>
-    <string name="woopos_remote_payment_failed_generic">Щось пішло не так. Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_remote_payment_failed_generic">Щось пішло не так. Спробуйте ще раз.</string>
 
     <string name="woopos_card_payment_done_button">Готово</string>
 
@@ -3985,7 +3985,7 @@
     <string name="woopos_orders_loading_error_message">Перевірте підключення і спробуйте ще раз.</string>
     <string name="woopos_orders_loading_error_retry_button">Повторити</string>
     <string name="woopos_orders_pagination_error_title">Не вдалося завантажити більше замовлень</string>
-    <string name="woopos_orders_pagination_error_content_description">Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_orders_pagination_error_content_description">Спробуйте ще раз.</string>
     <string name="woopos_orders_pagination_try_again_label">Повторити</string>
 
     <string name="woopos_orders_email_receipt">Надіслати чек на email</string>
@@ -4016,7 +4016,7 @@
     <string name="woopos_orders_yes_proceed">Так, продовжити</string>
     <string name="woopos_refund_loading_error_title">Не вдалося завантажити товари для повернення</string>
     <string name="woopos_refund_creating_error_title">Не вдалося створити повернення</string>
-    <string name="woopos_refund_error_subtitle">Будь ласка, спробуйте ще раз</string>
+    <string name="woopos_refund_error_subtitle">Спробуйте ще раз</string>
     <string name="woopos_orders_refund_complete">Повернення виконано</string>
     <string name="woopos_orders_refund_success_message">Ви повернули %1$s через %2$s.</string>
     <string name="woopos_orders_details_placeholder_title">Виберіть замовлення</string>
@@ -4102,7 +4102,7 @@
     <string name="woopos_bookings_cancel_dialog_keep">Ні, залишити</string>
     <string name="woopos_bookings_cancel_dialog_background">Фон діалогу скасування бронювання</string>
     <string name="woopos_bookings_cancel_dialog_unknown_customer">невідомий клієнт</string>
-    <string name="woopos_bookings_cancel_error">Не вдалося скасувати бронювання. Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_bookings_cancel_error">Не вдалося скасувати бронювання. Спробуйте ще раз.</string>
     <string name="woopos_bookings_note_screen_title_add">Додати нотатку</string>
     <string name="woopos_bookings_note_screen_title_edit">Редагувати нотатку</string>
     <string name="woopos_bookings_note_screen_hint">Введіть нотатку до бронювання</string>
@@ -4117,7 +4117,7 @@
     <string name="woopos_bookings_loading_error_message">Перевірте підключення і спробуйте ще раз.</string>
     <string name="woopos_bookings_empty_image_description">Немає бронювань</string>
     <string name="woopos_bookings_pagination_error_title">Не вдалося завантажити більше бронювань</string>
-    <string name="woopos_bookings_pagination_error_description">Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_bookings_pagination_error_description">Спробуйте ще раз.</string>
 
     <string name="woopos_cash_payment_title">Оплата готівкою</string>
     <string name="woopos_complete_cash_order_button">Позначити оплату як завершену</string>
@@ -4150,9 +4150,9 @@
     <string name="woopos_search_items_error_title">Не вдалося завантажити товари</string>
     <string name="woopos_search_coupons_error_title">Не вдалося завантажити купони</string>
     <string name="woopos_search_orders_error_title">Не вдалося завантажити замовлення</string>
-    <string name="woopos_search_items_error_description">Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_search_items_error_description">Спробуйте ще раз.</string>
 
-    <string name="woopos_search_orders_error_description">Будь ласка, спробуйте ще раз.</string>
+    <string name="woopos_search_orders_error_description">Спробуйте ще раз.</string>
 
     <string name="woopos_eligibility_exit_pos_label">Вийти з POS</string>
     <string name="woopos_eligibility_retry_check_label">Повторити</string>
@@ -4318,7 +4318,7 @@
     <string name="custom_fields_list_loading_error">Помилка завантаження користувацьких полів</string>
     <string name="custom_fields_list_progress_dialog_title">Збереження змін</string>
     <string name="custom_fields_list_saving_succeeded">Зміни збережено</string>
-    <string name="custom_fields_list_saving_failed">Не вдалося зберегти зміни, будь ласка, спробуйте ще раз</string>
+    <string name="custom_fields_list_saving_failed">Не вдалося зберегти зміни, спробуйте ще раз</string>
     <string name="custom_fields_list_field_deleted">Користувацьке поле видалено</string>
     <string name="custom_fields_list_top_banner_title">Перегляд і редагування користувацьких полів</string>
     <string name="custom_fields_list_top_banner_message">Зміни в користувацьких полях після збереження набувають чинності негайно.</string>
@@ -4441,15 +4441,15 @@
     <string name="woo_shipping_label_email">Електронна пошта</string>
     <string name="woo_shipping_label_phone">Телефон</string>
     <string name="woo_shipping_field_required_error">Це поле є обов\'язковим.</string>
-    <string name="woo_shipping_fetching_countries_and_states_failed">Не вдалося отримати інформацію про країни та регіони. Будь ласка, спробуйте ще раз.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Не вдалося отримати інформацію про країни та регіони. Спробуйте ще раз.</string>
     <string name="woo_shipping_fetching_countries_and_states">Завантаження країн і регіонів.</string>
     <string name="woo_shipping_address_verified">Адресу підтверджено</string>
     <string name="woo_shipping_address_unverified">Адресу не підтверджено</string>
     <string name="woo_shipping_address_missing_info">Відсутня інформація</string>
     <string name="woo_shipping_address_missing">Адреса відсутня</string>
     <string name="woo_shipping_address_unsaved_changes">Незбережені зміни</string>
-    <string name="woo_shipping_verifying_address_failed">Перевірку адреси не вдалося виконати. Будь ласка, спробуйте ще раз.</string>
-    <string name="woo_shipping_updating_address_failed">Не вдалося оновити адресу. Будь ласка, спробуйте ще раз.</string>
+    <string name="woo_shipping_verifying_address_failed">Перевірку адреси не вдалося виконати. Спробуйте ще раз.</string>
+    <string name="woo_shipping_updating_address_failed">Не вдалося оновити адресу. Спробуйте ще раз.</string>
 
     <string name="woo_shipping_address_notification_destination_unverified">Адресу отримувача не підтверджено</string>
     <string name="woo_shipping_address_notification_origin_unverified">Адресу відправника не підтверджено</string>
@@ -4465,11 +4465,11 @@
     <string name="woo_shipping_labels_loading_order_error">Не вдалося завантажити замовлення</string>
     <string name="woo_shipping_labels_package_removing_error">Не вдалося видалити посилку</string>
     <string name="woo_shipping_labels_package_saving_error">Не вдалося зберегти посилку</string>
-    <string name="woo_shipping_labels_purchase_error">Не вдалося придбати транспортну мітку. Будь ласка, спробуйте ще раз.</string>
+    <string name="woo_shipping_labels_purchase_error">Не вдалося придбати транспортну мітку. Спробуйте ще раз.</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Не вдалося придбати транспортну мітку. Будь ласка, заповніть адресу відправника.</string>
     <string name="woo_shipping_labels_purchase_phone_error">Не вдалося придбати транспортну мітку. Будь ласка, додайте дійсний номер телефону до адреси доставки.</string>
     <string name="woo_shipping_labels_order_completion_error">Не вдалося позначити замовлення як виконане</string>
-    <string name="woo_shipping_split_shipment_error">Не вдалося розділити відправлення. Будь ласка, спробуйте ще раз.</string>
+    <string name="woo_shipping_split_shipment_error">Не вдалося розділити відправлення. Спробуйте ще раз.</string>
     <string name="woo_shipping_labels_loading_error">Не вдалося завантажити дані</string>
     <string name="woo_shipping_address_save_changes">Зберегти зміни</string>
 
@@ -4798,12 +4798,12 @@
     <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">Асистент не зміг отримати доступ до вашого магазину. Увійдіть знову, а потім знову відкрийте асистент.</string>
     <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">Асистент зараз зайнятий. Спробуйте ще раз за мить.</string>
     <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">Час запиту вийшов. Спробуйте ще раз.</string>
-    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">Службі асистента не вдалося завершити цю відповідь. Будь ласка, спробуйте пізніше.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">Службі асистента не вдалося завершити цю відповідь. Спробуйте пізніше.</string>
     <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">Асистент не зміг виконати цю дію в магазині.</string>
     <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">Асистент не зміг виконати цей запит.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Я не впевнений, чи було застосовано цю зміну. Будь ласка, перевірте у своєму магазині, перш ніж робити щось інше.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Запит зупинено.</string>
-    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Підтвердження ще недоступне. Будь ласка, спробуйте ще раз у чаті.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Підтвердження ще недоступне. Спробуйте ще раз у чаті.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Асистент не зміг завершити завдання після кількох спроб.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Під час роботи асистента сталася помилка.</string>
 </resources>
