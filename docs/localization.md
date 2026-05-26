@@ -114,6 +114,6 @@ val message = if (downloadableFileCount == 1) {
 
 ## Open questions
 
-- **Play Console locale codes for the 15 new locales** (`SUPPORTED_LOCALES` in `fastlane/Fastfile`) still need confirmation against the Play Console supported list — especially `ms`, `bg`, `uk`. A locale Play Console doesn't support still ships app strings; it just gets no localized store listing (English fallback). Adjust the `google_play` codes once confirmed.
+- **Store metadata locale support can differ from Android resources.** `SUPPORTED_LOCALES` keeps separate Android resource qualifiers and Google Play metadata codes. For example, Norwegian uses Android `nb` resources, but Google Play metadata uses `no-NO`.
 - **WPCOM import cron retirement.** `wpcom/bin/i18n/import-github-originals.php` imported the frozen `strings.xml` into GlotPress. With GlotPress gone it must be retired — an Apps Infra handoff, outside this repo.
 - **Screenshots stay English** for all locales (existing 16 included). Localized screenshots (assets + overlay text) are a separate content-ops follow-up; the AI pipeline never touches `promo_screenshot_*.txt`.
