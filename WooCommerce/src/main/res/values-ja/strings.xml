@@ -608,10 +608,8 @@ Language: ja_JP
     <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">続行するには POS を有効にする必要があります。 「WooCommerce 設定」&gt;「高度な設定」&gt;「機能」の WordPress 管理画面から POS 機能を有効にしてください。</string>
     <string name="woopos_eligibility_reason_check_connection">インターネット接続を確認してアプリを再起動してください。問題が解消されない場合はサポートにご連絡ください。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">お使いの WooCommerce バージョンはサポートされていません。 POS システムには WooCommerce バージョン %1$s以上が必要です。 最新バージョンの WooCommerce に更新してください。</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">WordPress 管理画面から WooCommerce プラグインをインストールおよび有効化してください。 問題が解決しない場合は、サポートにご連絡ください。</string>
     <string name="orderfilters_sales_channel_filter">販売経路</string>
     <string name="barcode_ean13_content_description">バーコード EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">追加の処理</string>

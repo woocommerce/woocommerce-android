@@ -608,10 +608,8 @@ Language: nl
     <string name="woopos_eligibility_screen_unable_to_load">Kan niet laden</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. In %1$sondersteunt het momenteel alleen %2$s. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale moet ingeschakeld zijn om door te gaan. Schakel de POS-functie in vanuit je WordPress-beheer onder WooCommerce-instellingen &gt; Geavanceerd &gt; Functies.</string>
     <string name="woopos_eligibility_reason_check_connection">Controleer je internetverbinding en probeer de app opnieuw te starten. Neem contact op met de ondersteuning als het probleem zich blijft voordoen.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Je WooCommerce-versie wordt niet ondersteund. Het POS-systeem vereist WooCommerce-versie %1$s of hoger. Werk WooCommerce bij naar de nieuwste versie.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Zorg ervoor dat de WooCommerce-plugin is geïnstalleerd en geactiveerd vanuit je WordPress-beheer. Neem contact op met ondersteuning voor assistentie als het probleem blijft bestaan.</string>
     <string name="orderfilters_sales_channel_filter">Verkoopkanaal</string>
     <string name="barcode_ean13_content_description">Streepjescode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Extra verwerking</string>

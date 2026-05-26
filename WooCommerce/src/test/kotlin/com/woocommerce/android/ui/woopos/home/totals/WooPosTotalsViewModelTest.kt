@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardpayment.WooPosIsCardPaymentEnabledForCountry
 import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -172,6 +173,9 @@ class WooPosTotalsViewModelTest {
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
+    private val isCardPaymentEnabledForCountry: WooPosIsCardPaymentEnabledForCountry = mock {
+        on { invoke() } doReturn true
+    }
     private val featureFlagRepository: FeatureFlagRepository = mock()
     private val builtInReaderConnector: WooPosBuiltInReaderConnector = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
@@ -2185,6 +2189,35 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given country without card payment support, when checkout shown, then reader is Unavailable and TTP forced off`() = runTest {
+        // GIVEN
+        whenever(isCardPaymentEnabledForCountry.invoke()).thenReturn(false)
+        whenever(isTapToPayAvailable.invoke()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isCardPaymentEnabledForCountry).isFalse()
+        assertThat(state.readerStatus).isEqualTo(WooPosTotalsViewState.ReaderStatus.Unavailable)
+        assertThat(state.isTapToPayAvailable).isFalse()
+    }
+
+    @Test
+    fun `given country with card payment support, when checkout shown, then state flag is true`() = runTest {
+        // GIVEN
+        whenever(isCardPaymentEnabledForCountry.invoke()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isCardPaymentEnabledForCountry).isTrue()
+    }
+
+    @Test
     fun `when OnTapToPayClicked, then track checkout TTP analytics`() = runTest {
         // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(true)
@@ -2670,6 +2703,7 @@ class WooPosTotalsViewModelTest {
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
         isTapToPayAvailable = isTapToPayAvailable,
+        isCardPaymentEnabledForCountry = isCardPaymentEnabledForCountry,
         featureFlagRepository = featureFlagRepository,
         tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
         paymentsFlowTracker = tracker,

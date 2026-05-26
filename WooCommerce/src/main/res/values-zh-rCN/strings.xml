@@ -608,10 +608,8 @@ Language: zh_CN
     <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">必须启用销售点才能继续。 请通过您的 WordPress 管理员在“WooCommerce 设置 &gt; 高级 &gt; 功能”下启用 POS 功能。</string>
     <string name="woopos_eligibility_reason_check_connection">请检查您的互联网连接并尝试重新启动应用程序。如果问题仍然存在，请联系支持人员。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">您的 WooCommerce 版本不受支持。 POS 系统需要 WooCommerce %1$s 或更高版本。 请将 WooCommerce 更新到最新版本。</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">请确保您的 WordPress 管理员已安装并激活 WooCommerce 插件。 如果问题仍然存在，请联系支持人员寻求帮助。</string>
     <string name="orderfilters_sales_channel_filter">销售渠道</string>
     <string name="barcode_ean13_content_description">条形码 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">特殊处理</string>
