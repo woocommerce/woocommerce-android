@@ -493,7 +493,7 @@ platform :android do
   # bundle exec fastlane ai_translate mode:sweep locales:"pl,cs,da" strict:true
   #####################################################################################
   desc 'Translate app strings with the AI engine (GlotPress replacement; shadow-capable)'
-  lane :ai_translate do |mode: 'prtime', locales: nil, strict: false|
+  lane :ai_translate do |mode: 'prtime', locales: nil, only_keys: nil, strict: false|
     target_locales = locales || SUPPORTED_LOCALES.map { |h| h[:android] }.join(',')
     tool = File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'bin', 'woo-ai-translate')
     args = [
@@ -504,6 +504,7 @@ platform :android do
       '--locales', target_locales,
       '--mode', mode
     ]
+    args += ['--only-keys', only_keys] unless only_keys.to_s.empty?
     args << '--strict' if strict
     # The engine uses only the Ruby stdlib, so it runs outside fastlane's bundle.
     sh('ruby', tool, *args)
@@ -535,6 +536,49 @@ platform :android do
     ]
     args << '--include-release-notes' if include_release_notes
     sh('ruby', tool, *args)
+  end
+
+  #####################################################################################
+  # ai_translate_backfill
+  # -----------------------------------------------------------------------------------
+  # ONE-TIME baseline (rollout step 2). For the existing locales it imports the
+  # human translations already committed in values-*/strings.xml as-is (origin
+  # `glotpress-import`, no re-translation, near-zero cost) and AI-fills only the
+  # keys GlotPress never translated. For the 15 new locales it is a full AI
+  # backfill. Run outside the PR path; land as a dedicated PR.
+  #
+  # NOTE: requires a funded ANTHROPIC_API_KEY + budget sign-off (largest cost).
+  # Use `mode:import` for a no-spend dry run that only seeds the manifest from
+  # the existing files.
+  #
+  # Usage:
+  # bundle exec fastlane ai_translate_backfill
+  # bundle exec fastlane ai_translate_backfill mode:import   # no spend
+  #####################################################################################
+  desc 'One-time baseline: import existing + AI-fill gaps + backfill new locales'
+  lane :ai_translate_backfill do |mode: 'backfill', strict: false|
+    ai_translate(mode: mode, strict: strict)
+  end
+
+  #####################################################################################
+  # ai_translate_shadow
+  # -----------------------------------------------------------------------------------
+  # Rollout step 3: generate AI translations into a throwaway dir and diff them
+  # against the committed (human) values-*/strings.xml WITHOUT touching the
+  # repo. Emits fastlane/ai_translation/shadow-diff.md for review before cutover.
+  #####################################################################################
+  desc 'Shadow-mode diff: AI vs committed translations (no repo changes)'
+  lane :ai_translate_shadow do |locales: nil|
+    target_locales = locales || SUPPORTED_LOCALES.map { |h| h[:android] }.join(',')
+    tool = File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'bin', 'woo-ai-translate')
+    sh('ruby', tool,
+       '--mode', 'shadow-diff',
+       '--source', MAIN_STRINGS_PATH,
+       '--res-dir', File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH),
+       '--manifest', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'translation-manifest.json'),
+       '--context', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'context', 'strings_context.json'),
+       '--report', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'shadow-diff.md'),
+       '--locales', target_locales)
   end
 
   # This lane downloads the latest translations and commits them

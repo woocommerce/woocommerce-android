@@ -19,6 +19,11 @@ ruby fastlane/ai_translation/bin/woo-ai-translate \
 # Automattic AI gateway):
 bundle exec fastlane ai_translate mode:prtime
 bundle exec fastlane ai_translate mode:sweep locales:"pl,cs,da" strict:true
+
+# Or, if you have a Claude Pro/Max account but no separate API key, shell out
+# to the local Claude Code CLI (same path the hack-week experiment used):
+ruby fastlane/ai_translation/bin/woo-ai-translate --claude-cli \
+  --locales pl,cs,da --mode backfill
 ```
 
 Modes (`prtime | ondemand | sweep | backfill`) select operational policy
@@ -29,14 +34,20 @@ the code-freeze sweep safety net.
 ## How it works
 
 1. Parse source `strings.xml` (order-preserving; `<string>`, `<string-array>`,
-   `<plurals>`; `translatable="false"` excluded).
+   `<plurals>`; `translatable="false"` excluded). The immediately-preceding
+   `<!-- comment -->` is captured and sticky-propagated to every string in the
+   section — on the real repo this gives **~100% of translatable keys** dev-
+   authored context for free (existing section headers like
+   *"Android O notification channels…"*).
 2. For each key×locale compute `cache_key = sha(source + context + locale +
    model + prompt_version)`. Unchanged ⇒ reused from the existing localized
    file (no model call). Changed/missing ⇒ queued.
-3. Attach per-key context (AINFRA-1707 seam — see `context_provider.rb`).
-4. Batch the queued keys into structured JSON in/out calls. Sonnet by default,
-   Opus escalation for marketing/store-metadata keys. `temperature: 0`,
-   pinned model, prompt-cached system prefix.
+3. Attach per-key context (XML comment + optional AINFRA-1707 entry).
+4. Batch the queued keys into structured JSON in/out calls. The cached prompt
+   prefix is: hard rules + brand/domain glossary (`context/glossary.json`) +
+   per-locale style notes (`context/style/<locale>.md`). Sonnet 4.6 by default;
+   Opus 4.7 reserved for marketing and store-metadata copy. `temperature: 0`,
+   pinned model.
 5. **Blocking gates**: placeholder parity, XML well-formedness, key parity,
    plural-pair *output* integrity. A key that fails is left untranslated
    (Android falls back to English) and reported — never shipped broken.

@@ -92,7 +92,7 @@ module WooAiTranslation
         next if tighten && field[:cap].to_i.zero?
 
         out = @translator.translate(
-          locale: locale, model: model, style: tighten,
+          locale: locale, model: model, style: tighten, raw_text: true,
           items: [{ id: field[:name], source: source_text, context: field[:name] }]
         )
         text = out[field[:name]]
