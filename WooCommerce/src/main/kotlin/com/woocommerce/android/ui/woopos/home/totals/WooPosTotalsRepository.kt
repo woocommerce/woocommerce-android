@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.common.data.getName
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
@@ -32,6 +34,8 @@ class WooPosTotalsRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val resourceProvider: ResourceProvider,
     private val variationMapper: WooPosVariationMapper,
+    private val featureFlagRepository: FeatureFlagRepository,
+    private val storeApiCheckoutUseCase: PosStoreApiCheckoutUseCase,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -45,8 +49,15 @@ class WooPosTotalsRepository @Inject constructor(
         return withContext(IO) {
             check(itemClickedDataList.all { it.id >= 0 }) { "Invalid item ID" }
             val job = async {
-                val order = createOrder(itemClickedDataList)
-                orderCreateEditRepository.createOrUpdateOrder(order, source = OrderCreationSource.POINT_OF_SALE)
+                if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_STORE_API_CHECKOUT)) {
+                    storeApiCheckoutUseCase(itemClickedDataList)
+                } else {
+                    val order = createOrder(itemClickedDataList)
+                    orderCreateEditRepository.createOrUpdateOrder(
+                        order,
+                        source = OrderCreationSource.POINT_OF_SALE
+                    )
+                }
             }
             orderCreationJob = job
             job.await()
