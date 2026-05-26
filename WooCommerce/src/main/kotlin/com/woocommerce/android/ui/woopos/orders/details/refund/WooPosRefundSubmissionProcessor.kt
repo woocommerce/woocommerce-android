@@ -49,7 +49,10 @@ sealed class WooPosRefundSubmissionState {
     data object Processing : WooPosRefundSubmissionState()
     data object PreparingReader : WooPosRefundSubmissionState()
     data object ReaderConnectionRequired : WooPosRefundSubmissionState()
-    data class WaitingForCard(@StringRes val cardReaderHint: Int? = null) : WooPosRefundSubmissionState()
+    data class WaitingForCard(
+        @StringRes val cardReaderHint: Int? = null,
+        val isDismissBlocked: Boolean = false,
+    ) : WooPosRefundSubmissionState()
     data object ProcessingReaderRefund : WooPosRefundSubmissionState()
     data object NotifyingStore : WooPosRefundSubmissionState()
     data object Success : WooPosRefundSubmissionState()
@@ -371,7 +374,12 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
                     "WooPosRefund: reader refund collecting card " +
                         "orderId=${request.orderId}, hint=${state.cardReaderHint}"
                 )
-                trySendState(WooPosRefundSubmissionState.WaitingForCard(state.cardReaderHint))
+                trySendState(
+                    WooPosRefundSubmissionState.WaitingForCard(
+                        cardReaderHint = state.cardReaderHint,
+                        isDismissBlocked = state.isDismissBlocked,
+                    )
+                )
             }
 
             is CardReaderInteracRefundState.ProcessingInteracRefund -> {

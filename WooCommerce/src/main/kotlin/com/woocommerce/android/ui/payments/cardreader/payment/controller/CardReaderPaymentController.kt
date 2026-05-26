@@ -643,7 +643,8 @@ class CardReaderPaymentController(
         when (val state = _paymentState.value) {
             is CardReaderInteracRefundState.CollectingInteracRefund -> {
                 _paymentState.value = state.copy(
-                    cardReaderHint = cardReaderHint.toHintLabel(true)
+                    cardReaderHint = cardReaderHint.toHintLabel(true),
+                    isDismissBlocked = cardReaderHint == REMOVE_CARD,
                 )
             }
 
@@ -789,13 +790,18 @@ class CardReaderPaymentController(
 
     @Suppress("TooGenericExceptionCaught")
     fun stop() {
-        paymentDataForRetry?.let {
-            cardReaderManager.cancelPayment(it)
-        }
         try {
-            scope.cancel()
-        } catch (e: RuntimeException) {
-            WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
+            paymentDataForRetry?.let {
+                cardReaderManager.cancelPayment(it)
+            }
+        } catch (e: Exception) {
+            WooLog.e(WooLog.T.CARD_READER, "Failed to cancel card reader payment", e)
+        } finally {
+            try {
+                scope.cancel()
+            } catch (e: Exception) {
+                WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
+            }
         }
     }
 

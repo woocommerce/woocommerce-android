@@ -466,7 +466,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             is WooPosRefundSubmissionState.WaitingForCard -> {
                 _state.value = contentState.copy(
                     step = WooPosRefundState.Content.RefundStep.ReadyForRefund(
-                        submissionState.cardReaderHint
+                        cardReaderHint = submissionState.cardReaderHint,
+                        isDismissBlocked = submissionState.isDismissBlocked,
                     )
                 )
             }

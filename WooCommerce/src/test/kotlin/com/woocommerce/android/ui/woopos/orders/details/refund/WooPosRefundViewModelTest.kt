@@ -879,7 +879,8 @@ class WooPosRefundViewModelTest {
             whenever(refundSubmissionProcessor.submit(any())).thenReturn(
                 flowOf(
                     WooPosRefundSubmissionState.WaitingForCard(
-                        R.string.card_reader_payment_remove_card_prompt
+                        cardReaderHint = R.string.card_reader_payment_remove_card_prompt,
+                        isDismissBlocked = true,
                     )
                 )
             )
@@ -894,7 +895,8 @@ class WooPosRefundViewModelTest {
             val state = viewModel.state.value as WooPosRefundState.Content
             assertThat(state.step).isEqualTo(
                 WooPosRefundState.Content.RefundStep.ReadyForRefund(
-                    R.string.card_reader_payment_remove_card_prompt
+                    cardReaderHint = R.string.card_reader_payment_remove_card_prompt,
+                    isDismissBlocked = true,
                 )
             )
             assertThat(viewModel.onDismissRequest()).isFalse()
