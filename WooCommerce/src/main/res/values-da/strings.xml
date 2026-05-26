@@ -374,7 +374,7 @@
 
     <string name="dashboard_action_view_all_messages">Se alle beskeder</string>
 
-    <string name="my_store_stats_plugin_inactive_title">Vi kan\'t vise din\n butiks analyser</string>
+    <string name="my_store_stats_plugin_inactive_title">Vi kan ikke vise din\n butiks analyser</string>
     <string name="my_store_custom_range_content_description">Tilføj statistik for brugerdefineret datointerval</string>
     <string name="my_store_custom_range_granularity_label">%s-interval</string>
     <string name="my_store_custom_range_granularity_hour">Pr. time</string>
