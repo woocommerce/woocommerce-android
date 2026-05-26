@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -145,8 +146,8 @@ fun WooPosOrdersScreen(
     }
 
     var detailPaneIssueRefundOrderId by rememberSaveable { mutableStateOf<Long?>(null) }
-    var detailPaneIssueRefundInstanceId by rememberSaveable { mutableStateOf(0) }
-    var detailPaneIssueRefundDismissRequestToken by rememberSaveable { mutableStateOf(0) }
+    var detailPaneIssueRefundInstanceId by rememberSaveable { mutableIntStateOf(0) }
+    var detailPaneIssueRefundDismissRequestToken by rememberSaveable { mutableIntStateOf(0) }
     var detailPaneIssueRefundHasPendingChanges by rememberSaveable { mutableStateOf(false) }
     var pendingOrderSelectionAfterRefundDismiss by rememberSaveable { mutableStateOf<Long?>(null) }
     var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
