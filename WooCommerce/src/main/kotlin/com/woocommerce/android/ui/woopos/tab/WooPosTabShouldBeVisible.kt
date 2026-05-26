@@ -16,6 +16,7 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private val selectedSite: SelectedSite,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val isCountryAllowed: WooPosIsCountryAllowed,
     private val wooPosLog: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(forceRefresh: Boolean = false): Result<Boolean> = withContext(Dispatchers.IO) {
@@ -37,6 +38,13 @@ class WooPosTabShouldBeVisible @Inject constructor(
             appPrefs.clearPOSTabVisibilityForSite(site.id)
             return@withContext Result.success(false).also {
                 wooPosLog.i("POS Tab Not visible reason: Screen size is not allowed")
+            }
+        }
+
+        if (!isCountryAllowed()) {
+            appPrefs.clearPOSTabVisibilityForSite(site.id)
+            return@withContext Result.success(false).also {
+                wooPosLog.i("POS Tab Not visible reason: Store country is not in the supported list")
             }
         }
 

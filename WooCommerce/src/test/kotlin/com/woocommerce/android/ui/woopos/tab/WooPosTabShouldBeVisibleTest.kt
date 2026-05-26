@@ -28,6 +28,9 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isFeatureUnsupported(CIABAffectedFeature.POS) } doReturn false
     }
+    private val isCountryAllowed: WooPosIsCountryAllowed = mock {
+        on { invoke() } doReturn true
+    }
 
     private lateinit var sut: WooPosTabShouldBeVisible
     private lateinit var siteModel: SiteModel
@@ -44,6 +47,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
             selectedSite = selectedSite,
             isScreenSizeAllowed = isScreenSizeAllowed,
             ciabSiteGateKeeper = ciabSiteGateKeeper,
+            isCountryAllowed = isCountryAllowed,
             wooPosLog = mock()
         )
     }
@@ -110,4 +114,16 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
         assertFalse(r.getOrThrow())
         verify(appPrefs).clearPOSTabVisibilityForSite(siteModel.id)
     }
+
+    @Test
+    fun `given country is not allowed, when invoked with forceRefresh, then return success false and clear cache`() =
+        testBlocking {
+            whenever(isCountryAllowed()).thenReturn(false)
+
+            val r = sut(forceRefresh = true)
+
+            assertTrue(r.isSuccess)
+            assertFalse(r.getOrThrow())
+            verify(appPrefs).clearPOSTabVisibilityForSite(siteModel.id)
+        }
 }
