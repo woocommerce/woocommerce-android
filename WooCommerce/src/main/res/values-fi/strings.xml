@@ -2688,7 +2688,7 @@
     <string name="jetpack_benefits_bottom_banner_title">Tilausilmoitukset ja paljon muuta</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Pysy ajan tasalla ja paranna kaupan turvallisuutta. Tutustu Jetpackiin nyt.</string>
     <string name="jetpack_benefits_modal_title">Hyödynnä kauppasi täysi potentiaali</string>
-    <string name="jetpack_benefits_modal_subtitle">Asenna ilmainen Jetpack-lisäosa parhaan mobiilikokeluksen saavuttamiseksi.</string>
+    <string name="jetpack_benefits_modal_subtitle">Asenna ilmainen Jetpack-lisäosa parhaan mobiilikokemuksen saavuttamiseksi.</string>
     <string name="jetpack_benefits_modal_push_notifications_title">Push-ilmoitukset</string>
     <string name="jetpack_benefits_modal_push_notifications_subtitle">Vastaanota push-ilmoituksia uusista tilauksista, arvosteluista jne. laitteeseesi.</string>
     <string name="jetpack_benefits_modal_analytics_title">Analytiikka</string>

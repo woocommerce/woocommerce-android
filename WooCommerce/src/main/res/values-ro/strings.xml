@@ -213,7 +213,7 @@
     <string name="login_verifying_site">Se verifică site-ul…</string>
     <string name="login_verifying_site_error">Imposibil de conectat la %s</string>
     <string name="login_verifying_site_jetpack_timeout_error_title">Eroare de conectare</string>
-    <string name="login_verifying_site_jetpack_timeout_error_description">Nu am putut ne conecta la site-ul dvs. Vă rugăm contactați asistența pentru a depana problema.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Nu am putut să ne conectăm la site-ul dvs. Vă rugăm contactați asistența pentru a depana problema.</string>
     <string name="login_update_required_title">Actualizați magazinul la WooCommerce 3.5</string>
     <string name="login_update_required_desc">Acest magazin folosește o versiune mai veche a WooCommerce. Vă rugăm să actualizați magazinul la WooCommerce 3.5 sau o versiune mai recentă pentru a-l utiliza cu această aplicație.</string>
     <string name="login_avatar_content_description">Fotografia dvs. de profil</string>

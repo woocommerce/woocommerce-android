@@ -175,7 +175,7 @@
     <string name="error_cant_open_url">Odkaz nelze otevřít</string>
     <string name="error_please_choose_browser">Chyba při otevírání výchozího webového prohlížeče. Vyberte prosím jinou aplikaci:</string>
     <string name="error_no_phone_app">Nebyla nalezena žádná telefonní aplikace</string>
-    <string name="error_no_gmaps_app">Aplikace Google Maps byla nalezena</string>
+    <string name="error_no_gmaps_app">Aplikace Google Maps nebyla nalezena</string>
     <string name="error_no_email_app">Nebyla nalezena žádná e-mailová aplikace</string>
     <string name="error_no_sms_app">Nebyla nalezena žádná aplikace pro SMS</string>
     <!--
