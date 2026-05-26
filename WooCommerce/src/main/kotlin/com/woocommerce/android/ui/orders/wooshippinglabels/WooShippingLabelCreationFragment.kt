@@ -102,6 +102,7 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                 is NavigateToCustomsFormEdit -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
+                            originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
                             customsData = event.customData,
                             storeOptions = event.storeOptions
