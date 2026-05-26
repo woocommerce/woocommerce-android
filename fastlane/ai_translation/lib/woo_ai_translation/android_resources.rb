@@ -3,6 +3,7 @@
 require 'rexml/document'
 require 'digest'
 require 'fileutils'
+require 'set'
 
 module WooAiTranslation
   # Order-preserving reader/writer for Android `strings.xml` resources.
@@ -26,6 +27,11 @@ module WooAiTranslation
     class Unit
       attr_reader :type, :name, :attributes
       attr_accessor :entries, :comment # entries: [{ id:, source:, value:, quantity? }]
+      # When set, the Writer emits this verbatim instead of calling render_unit.
+      # Populated by the Engine for keys with origin=glotpress-import and
+      # unchanged source, sourced from fastlane/ai_translation/baseline/. This
+      # is the preserved-line writer's only contract.
+      attr_accessor :preserved_xml
 
       def initialize(type:, name:, attributes:, comment: '')
         @type = type
@@ -33,6 +39,7 @@ module WooAiTranslation
         @attributes = attributes
         @entries = []
         @comment = comment.to_s
+        @preserved_xml = nil
       end
 
       def translatable?
@@ -64,6 +71,29 @@ module WooAiTranslation
       def dup_shell
         copy = Unit.new(type: @type, name: @name, attributes: @attributes.dup, comment: @comment)
         copy.entries = @entries.map { |e| e.dup.tap { |x| x[:value] = nil } }
+        copy
+      end
+
+      # An output-side copy where, for `:plurals` units, the entries are
+      # reshaped to match the target locale's CLDR-required quantity categories
+      # (`one`, `few`, `many`, `other`, …). Source quantities that aren't in
+      # `quantities` are dropped; required quantities not present in source are
+      # added, seeded with the source's `other` entry (or the first available)
+      # so the model has the meaning to work from. For non-plural units this
+      # behaves exactly like {#dup_shell}.
+      def dup_shell_for_locale(quantities)
+        return dup_shell if @type != :plurals
+        return dup_shell if quantities.nil? || quantities.empty?
+
+        seed = @entries.find { |e| e[:quantity] == 'other' } || @entries.first
+        new_entries = quantities.map do |q|
+          existing = @entries.find { |e| e[:quantity] == q }
+          src = (existing || seed)[:source]
+          { id: "#{@name}{#{q}}", quantity: q, source: src, value: nil }
+        end
+
+        copy = Unit.new(type: @type, name: @name, attributes: @attributes.dup, comment: @comment)
+        copy.entries = new_entries
         copy
       end
     end
@@ -147,8 +177,13 @@ module WooAiTranslation
       end
 
       def attrs(node)
+        # Use expanded_name so namespace-prefixed attributes (e.g. `tools:override`)
+        # keep their prefix. Without this REXML returns just the local name
+        # (`override`), the Writer reflects that on output, and Android Lint flags
+        # `<string name="copy" override="true">` as a private-symbol override that
+        # doesn't actually opt out of the lint check.
         h = {}
-        node.attributes.each_attribute { |a| h[a.name] = a.value }
+        node.attributes.each_attribute { |a| h[a.expanded_name] = a.value }
         h
       end
 
@@ -164,6 +199,56 @@ module WooAiTranslation
           c.is_a?(REXML::CData) ? c.value : (c.respond_to?(:value) ? c.value : c.to_s)
         end.join
         Writer.unescape(raw)
+      end
+    end
+
+    # Reads a baseline strings.xml as raw text and returns { name => raw_xml_block }
+    # for every top-level translatable unit. The raw block includes the start
+    # tag, all content (whitespace, escapes, etc.), and the end tag, exactly as
+    # they appear in the file. Empty when the file does not exist.
+    #
+    # The format we rely on is the convention used by the committed
+    # values-<locale>/strings.xml files: top-level units indented with 4 spaces,
+    # <string>...</string> always on a single line, <string-array> and <plurals>
+    # spanning multiple lines with <item> children at 8-space indent, no CDATA,
+    # no inline child elements inside <string>. The 16 baseline locales captured
+    # in fastlane/ai_translation/baseline/ all follow this convention.
+    module BaselineReader
+      module_function
+
+      # Line patterns are anchored at the 4-space indent so we ignore nested
+      # <item> children of arrays/plurals which sit at 8-space indent.
+      OPEN_LINE = /^    <(string|string-array|plurals)\s+[^>]*\bname="([^"]+)"/.freeze
+      STRING_CLOSE_ON_SAME_LINE = /<\/string>\s*$/.freeze
+
+      def read(path)
+        return {} unless path && File.exist?(path)
+
+        blocks = {}
+        in_unit = nil # { name:, kind:, start_idx: }
+        lines = File.readlines(path)
+
+        lines.each_with_index do |line, i|
+          if in_unit
+            blocks[in_unit[:name]] = lines[in_unit[:start_idx]..i].join if line.start_with?("    </#{in_unit[:kind]}>")
+            in_unit = nil if line.start_with?("    </#{in_unit[:kind]}>")
+            next
+          end
+
+          m = line.match(OPEN_LINE)
+          next unless m
+
+          kind = m[1]
+          name = m[2]
+          # Single-line <string> elements close on the same line; capture and move on.
+          if kind == 'string' && line.match?(STRING_CLOSE_ON_SAME_LINE)
+            blocks[name] = line
+          else
+            in_unit = { name: name, kind: kind, start_idx: i }
+          end
+        end
+
+        blocks
       end
     end
 
@@ -228,10 +313,85 @@ module WooAiTranslation
 
       # `units` must already carry translated values; only fully-translated
       # units are written (Android falls back to the default resource).
+      # Units with `preserved_xml` set are emitted byte-for-byte from that
+      # string -- the preserved-line path used for keys that are still
+      # origin=glotpress-import. Everything else goes through `render_unit`.
       def write(path, units, locale)
-        body = units.select(&:fully_translated?).map { |u| render_unit(u) }.join("\n")
+        body = units.select(&:fully_translated?).map { |u| emit_unit(u) }.join("\n")
         FileUtils.mkdir_p(File.dirname(path))
         File.write(path, "#{header(locale)}#{body}\n</resources>\n")
+      end
+
+      # The preserved block, when present, may carry a trailing newline (because
+      # we captured whole lines from the baseline); strip it so the join("\n")
+      # in `write` produces uniform single-newline separators.
+      def emit_unit(unit)
+        return unit.preserved_xml.chomp if unit.preserved_xml
+
+        render_unit(unit)
+      end
+    end
+
+    # Patch writer for PR-time `--only-keys` runs. Unlike Writer.write, this does
+    # not reorder the whole localized file to match the English source. It edits
+    # only selected top-level resource blocks and preserves every unrelated line
+    # byte-for-byte so PR diffs stay scoped to the source strings that changed.
+    module PartialWriter
+      module_function
+
+      def write(path, units, locale, selected_names:)
+        selected = selected_names.to_set
+        rendered = units.select { |u| selected.include?(u.name) && u.fully_translated? }
+                        .to_h { |u| [u.name, Writer.emit_unit(u)] }
+
+        unless File.exist?(path)
+          Writer.write(path, units.select { |u| selected.include?(u.name) && u.fully_translated? }, locale)
+          return
+        end
+
+        lines = File.readlines(path)
+        out = []
+        replaced = Set.new
+        i = 0
+
+        while i < lines.size
+          match = lines[i].match(BaselineReader::OPEN_LINE)
+          if match && selected.include?(match[2])
+            name = match[2]
+            block_end = unit_block_end(lines, i, match[1])
+            if rendered.key?(name)
+              out << with_trailing_newline(rendered[name])
+              replaced << name
+            end
+            i = block_end + 1
+            next
+          end
+
+          out << lines[i]
+          i += 1
+        end
+
+        insert_missing_blocks(out, rendered.reject { |name, _| replaced.include?(name) })
+        File.write(path, out.join)
+      end
+
+      def unit_block_end(lines, start, kind)
+        return start if kind == 'string' && lines[start].match?(BaselineReader::STRING_CLOSE_ON_SAME_LINE)
+
+        close = /^\s*<\/#{Regexp.escape(kind)}>\s*$/
+        found = (start...lines.size).find { |i| lines[i].match?(close) }
+        found || start
+      end
+
+      def insert_missing_blocks(lines, blocks)
+        return if blocks.empty?
+
+        insert_at = lines.rindex { |line| line.match?(%r{^\s*</resources>\s*$}) } || lines.size
+        lines.insert(insert_at, *blocks.values.map { |block| with_trailing_newline(block) })
+      end
+
+      def with_trailing_newline(block)
+        block.end_with?("\n") ? block : "#{block}\n"
       end
     end
   end

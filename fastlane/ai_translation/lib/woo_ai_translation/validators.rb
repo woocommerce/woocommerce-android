@@ -64,11 +64,24 @@ module WooAiTranslation
 
     # Localized files must not introduce keys that are not translatable in
     # source (extra), and should not silently lose keys (missing reported).
-    def key_parity(source_names:, output_names:)
+    def key_parity(source_names:, output_names:, require_all: false)
       errors = []
       extra = output_names - source_names
+      missing = source_names - output_names
       errors << "extra keys not in source: #{extra.sort.inspect}" unless extra.empty?
+      errors << "missing keys from output: #{missing.sort.inspect}" if require_all && !missing.empty?
       errors
+    end
+
+    # PR-time partial writes must never delete unrelated existing translations.
+    # Selected keys may legitimately disappear when they were removed from source
+    # or failed validation and should fall back to default resources.
+    def no_unselected_key_loss(before_names:, output_names:, selected_names:)
+      selected = selected_names.to_set
+      lost = before_names - output_names - selected.to_a
+      return [] if lost.empty?
+
+      ["unselected keys dropped from output: #{lost.sort.inspect}"]
     end
 
     # The real, blocking plural gate. Only enforced for pairs that BOTH exist in
@@ -112,6 +125,32 @@ module WooAiTranslation
       return [] if cap.to_i.zero? || text.to_s.length <= cap
 
       ["#{field} exceeds cap #{cap} (#{text.length})"]
+    end
+
+    # Output `<plurals>` blocks must cover exactly the CLDR-required quantity
+    # categories for the target locale. Missing categories are a hard Android
+    # Lint error (e.g. Polish without `few`/`many`); categories the locale
+    # doesn't use (e.g. `one` for Thai) are a warning. Both are real bugs and
+    # we treat them as blocking gates so they cannot ship.
+    #
+    # `output_plurals_quantities`: Hash<String, Array<String>> mapping the
+    # output unit's name to the list of `quantity` values it ships. Caller
+    # restricts this to fully-translated units.
+    # `required`: the locale's CLDR list (from CldrPlurals.quantities_for).
+    # `nil`/empty means "no enforcement"; the gate is skipped.
+    def plural_form_coverage(output_plurals_quantities:, required:)
+      return [] if required.nil? || required.empty?
+
+      req_set = required.to_set
+      errors = []
+      output_plurals_quantities.each do |name, quantities|
+        have = quantities.to_set
+        missing = req_set - have
+        extra   = have - req_set
+        errors << "plural #{name} missing CLDR quantities: #{missing.to_a.sort.inspect}" unless missing.empty?
+        errors << "plural #{name} has irrelevant quantities: #{extra.to_a.sort.inspect}" unless extra.empty?
+      end
+      errors
     end
   end
 end
