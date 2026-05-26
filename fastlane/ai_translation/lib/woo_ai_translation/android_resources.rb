@@ -19,16 +19,20 @@ module WooAiTranslation
     UNIT_SEPARATOR = "␟"
 
     # A single translatable resource entry: a <string>, <string-array> or
-    # <plurals>. `entries` is the ordered list of translatable text fragments.
+    # <plurals>. `entries` is the ordered list of translatable text fragments;
+    # `comment` is the immediately-preceding XML comment (sticky within a
+    # section, propagating to subsequent strings until the next comment) -- the
+    # cheapest form of per-string translator context, dev-authored.
     class Unit
       attr_reader :type, :name, :attributes
-      attr_accessor :entries # [{ id:, source:, value:, quantity? }]
+      attr_accessor :entries, :comment # entries: [{ id:, source:, value:, quantity? }]
 
-      def initialize(type:, name:, attributes:)
+      def initialize(type:, name:, attributes:, comment: '')
         @type = type
         @name = name
         @attributes = attributes
         @entries = []
+        @comment = comment.to_s
       end
 
       def translatable?
@@ -58,7 +62,7 @@ module WooAiTranslation
 
       # An output-side copy with the same shape but no translated values yet.
       def dup_shell
-        copy = Unit.new(type: @type, name: @name, attributes: @attributes.dup)
+        copy = Unit.new(type: @type, name: @name, attributes: @attributes.dup, comment: @comment)
         copy.entries = @entries.map { |e| e.dup.tap { |x| x[:value] = nil } }
         copy
       end
@@ -97,33 +101,44 @@ module WooAiTranslation
         root = doc.root
         raise ArgumentError, 'No <resources> root element' if root.nil? || root.name != 'resources'
 
+        # Walk children in document order so we can attach the most recent XML
+        # comment as per-string context. Comments stick across whitespace and
+        # propagate to subsequent strings until the next comment (so section
+        # headers like `<!-- Payment methods -->` apply to every string in the
+        # section, not only the first).
         units = []
-        root.elements.each do |node|
-          case node.name
-          when 'string' then units << string_unit(node)
-          when 'string-array' then units << array_unit(node)
-          when 'plurals' then units << plurals_unit(node)
+        last_comment = ''
+        root.children.each do |node|
+          case node
+          when REXML::Comment
+            last_comment = node.string.to_s.strip
+          when REXML::Element
+            case node.name
+            when 'string'        then units << string_unit(node, last_comment)
+            when 'string-array'  then units << array_unit(node, last_comment)
+            when 'plurals'       then units << plurals_unit(node, last_comment)
+            end
           end
         end
         Document.new(units)
       end
 
-      def string_unit(node)
-        u = Unit.new(type: :string, name: node.attributes['name'], attributes: attrs(node))
+      def string_unit(node, comment)
+        u = Unit.new(type: :string, name: node.attributes['name'], attributes: attrs(node), comment: comment)
         u.entries = [{ id: node.attributes['name'], source: text_of(node), value: nil }]
         u
       end
 
-      def array_unit(node)
-        u = Unit.new(type: :array, name: node.attributes['name'], attributes: attrs(node))
+      def array_unit(node, comment)
+        u = Unit.new(type: :array, name: node.attributes['name'], attributes: attrs(node), comment: comment)
         u.entries = node.get_elements('item').each_with_index.map do |item, i|
           { id: "#{u.name}[#{i}]", source: text_of(item), value: nil }
         end
         u
       end
 
-      def plurals_unit(node)
-        u = Unit.new(type: :plurals, name: node.attributes['name'], attributes: attrs(node))
+      def plurals_unit(node, comment)
+        u = Unit.new(type: :plurals, name: node.attributes['name'], attributes: attrs(node), comment: comment)
         u.entries = node.get_elements('item').map do |item|
           q = item.attributes['quantity']
           { id: "#{u.name}{#{q}}", quantity: q, source: text_of(item), value: nil }

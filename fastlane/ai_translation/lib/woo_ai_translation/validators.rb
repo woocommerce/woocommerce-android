@@ -25,6 +25,36 @@ module WooAiTranslation
       ["placeholder mismatch: source=#{s.inspect} translation=#{t.inspect}"]
     end
 
+    # Brand/glossary safety check. For every preserve=true glossary term that
+    # appears in the source, the exact same term must appear in the translation.
+    # Longest-match-wins prevents WooCommerce from also requiring Woo.
+    def glossary_preservation(source, translation, terms)
+      src = source.to_s.dup
+      tx = translation.to_s
+      errors = []
+
+      terms.map(&:to_s).reject(&:empty?).uniq.sort_by { |term| -term.length }.each do |term|
+        term_pattern = glossary_term_pattern(term)
+        next unless src.match?(term_pattern)
+
+        src.gsub!(term_pattern, "\u0001" * term.length)
+        errors << "glossary term not preserved: #{term}" unless tx.match?(term_pattern)
+      end
+
+      errors
+    end
+
+    def glossary_term_pattern(term)
+      escaped = Regexp.escape(term)
+      return /(?<![[:alnum:]])#{escaped}(?![[:alnum:]])/ if boundary_required_glossary_term?(term)
+
+      /#{escaped}/
+    end
+
+    def boundary_required_glossary_term?(term)
+      term.match?(/\A[A-Z0-9 -]+\z/)
+    end
+
     def xml_well_formed(path)
       REXML::Document.new(File.read(path))
       []

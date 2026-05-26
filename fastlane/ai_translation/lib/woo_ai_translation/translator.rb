@@ -24,14 +24,19 @@ module WooAiTranslation
       - Do NOT merge or "fix" singular/plural variants. Each item is translated
         independently and literally for its grammatical number as given.
       - Keep brand names (WooCommerce, Woo, WordPress.com, Jetpack) untranslated.
-      - Match the tone of concise mobile UI copy. Do not add notes or quotes.
+      - Match the tone of concise mobile UI copy: prefer the shortest natural
+        phrasing that fits a phone screen. Do not add notes, quotes, or trailing
+        punctuation that the source does not have.
+      - If an item carries a non-empty "context" field, treat it as ground truth
+        about where/how the string is used and translate accordingly.
 
       Respond with ONLY a single minified JSON object mapping each input "id" to
       its translated string. No prose, no code fences.
     RULES
 
-    def initialize(client:, batch_size: DEFAULT_BATCH, logger: nil)
+    def initialize(client:, glossary: '', batch_size: DEFAULT_BATCH, logger: nil)
       @client = client
+      @glossary = glossary.to_s
       @batch_size = batch_size
       @logger = logger
     end
@@ -74,9 +79,14 @@ module WooAiTranslation
     end
 
     def system_blocks(locale, style)
-      # First block: constant rules. Last block: per-locale style guide. The
-      # client cache-flags the last block so the whole prefix is prompt-cached.
-      [SYSTEM_RULES, "Target locale: #{locale}.\n#{style || default_style(locale)}"]
+      # Constant rules + (optional) brand/domain glossary + per-locale style
+      # guide. The client cache-flags the last block; Anthropic prompt-caching
+      # treats that marker as a breakpoint covering the entire prefix, so the
+      # whole constant prologue is cached across every batched call.
+      blocks = [SYSTEM_RULES]
+      blocks << @glossary unless @glossary.empty?
+      blocks << "Target locale: #{locale}.\n#{style.to_s.empty? ? default_style(locale) : style}"
+      blocks
     end
 
     def default_style(locale)

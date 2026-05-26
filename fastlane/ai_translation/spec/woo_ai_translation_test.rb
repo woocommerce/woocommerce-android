@@ -64,6 +64,85 @@ class AndroidResourcesTest < Minitest::Test
   end
 end
 
+class XmlCommentContextTest < Minitest::Test
+  P = WooAiTranslation::AndroidResources::Parser
+
+  def test_preceding_comment_is_attached_sticky_until_next_comment
+    doc = P.parse_file(FIXTURE)
+    # First comment "Greetings on the main dashboard." applies to every string
+    # up to (but not including) the next comment.
+    assert_equal 'Greetings on the main dashboard.', doc.find('app_name').comment
+    assert_equal 'Greetings on the main dashboard.', doc.find('greeting').comment
+    assert_equal 'Greetings on the main dashboard.', doc.find('raw_percent').comment
+    # New comment switches the context for everything below.
+    assert_equal 'Help & support strings.', doc.find('html_note').comment
+    assert_equal 'Help & support strings.', doc.find('possessive').comment
+    assert_equal 'Help & support strings.', doc.find('cart_items').comment
+    assert_equal 'Help & support strings.', doc.find('files_value_multiple').comment
+  end
+end
+
+class GlossaryAndStyleTest < Minitest::Test
+  def test_glossary_text_renders_when_file_present
+    Dir.mktmpdir do |dir|
+      g = File.join(dir, 'glossary.json')
+      File.write(g, JSON.generate('terms' => [
+                                    { 'term' => 'Woo', 'rule' => 'Brand; never translate.', 'preserve' => true },
+                                    { 'term' => 'SKU', 'rule' => 'Keep as SKU.' }
+                                  ]))
+      ctx = WooAiTranslation::ContextProvider.from_file(nil, glossary_path: g)
+      text = ctx.glossary_text
+      assert_includes text, 'Brand & domain glossary'
+      assert_includes text, '- Woo: Brand; never translate. [hard gate: preserve exact term]'
+      assert_includes text, '- SKU: Keep as SKU.'
+    end
+  end
+
+  def test_preserved_terms_returns_only_hard_gated_terms
+    ctx = WooAiTranslation::ContextProvider.new({}, glossary: {
+                                                  'terms' => [
+                                                    { 'term' => 'WooPayments', 'preserve' => true },
+                                                    { 'term' => 'Coupon', 'rule' => 'Translate naturally.' },
+                                                    { 'term' => 'SKU', 'preserve' => true }
+                                                  ]
+                                                })
+    assert_equal %w[WooPayments SKU], ctx.preserved_terms
+  end
+
+  def test_glossary_text_is_empty_when_absent
+    assert_equal '', WooAiTranslation::ContextProvider.new({}).glossary_text
+  end
+
+  def test_style_for_reads_locale_markdown
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, 'de.md'), 'Use informal Du.')
+      ctx = WooAiTranslation::ContextProvider.new({}, style_dir: dir)
+      assert_equal 'Use informal Du.', ctx.style_for('de')
+      assert_equal '', ctx.style_for('xx')
+    end
+  end
+
+  def test_translator_includes_glossary_as_cached_system_block
+    captured = []
+    client = Class.new do
+      define_method(:available?) { true }
+      define_method(:complete) do |model:, system_blocks:, user_content:, max_tokens: 8192|
+        captured << system_blocks.dup
+        '{}'
+      end
+    end.new
+
+    t = WooAiTranslation::Translator.new(client: client, glossary: 'Brand & domain glossary (applies to every locale):\n- Woo: Brand; never translate.')
+    t.translate(locale: 'fr', items: [{ id: 'k', source: 's', context: '' }], model: WooAiTranslation::DEFAULT_MODEL, style: 'fr style.')
+
+    blocks = captured.first
+    assert_equal 3, blocks.size, 'rules + glossary + per-locale style'
+    assert_includes blocks[0], 'professional software localizer'
+    assert_includes blocks[1], 'Brand & domain glossary'
+    assert_includes blocks[2], 'fr style.'
+  end
+end
+
 class ManifestTest < Minitest::Test
   M = WooAiTranslation::Manifest
 
@@ -104,6 +183,20 @@ class ValidatorsTest < Minitest::Test
     refute_empty V.placeholder_parity('Plain', 'Now %d')
   end
 
+  def test_glossary_preservation_uses_longest_match_wins
+    terms = %w[Woo WooCommerce WooPayments SKU PIN]
+    assert_empty V.glossary_preservation('Use WooCommerce SKU', 'Utiliser WooCommerce SKU', terms)
+    assert_empty V.glossary_preservation('Use WooPayments', 'Utiliser WooPayments', terms)
+    assert_empty V.glossary_preservation('Connect Jetpack', 'Yhdistä Jetpackin', %w[Jetpack])
+    assert_empty V.glossary_preservation('SHIPPING', 'LIVRAISON', terms)
+
+    errors = V.glossary_preservation('Use WooCommerce SKU', 'Utiliser Woo commerce UGS', terms)
+    assert_includes errors, 'glossary term not preserved: WooCommerce'
+    assert_includes errors, 'glossary term not preserved: SKU'
+    refute_includes errors, 'glossary term not preserved: Woo'
+    assert_empty V.glossary_preservation('Use Woo', 'Pidätkö Woosta?', terms)
+  end
+
   def test_plural_pairs_is_informational_only
     assert_empty V.plural_pairs(%w[x_single x_multiple y])
     refute_empty V.plural_pairs(%w[x_single y])
@@ -132,14 +225,14 @@ end
 class EngineTest < Minitest::Test
   include WooAiTranslation
 
-  def build(dir, source: FIXTURE, client: StubClient.new)
+  def build(dir, source: FIXTURE, client: StubClient.new, context: ContextProvider.new({}))
     Engine.new(
       source_path: source,
       res_dir: dir,
       manifest: Manifest.load(File.join(dir, 'manifest.json')),
       manifest_path: File.join(dir, 'manifest.json'),
       translator: Translator.new(client: client),
-      context: ContextProvider.new({})
+      context: context
     )
   end
 
@@ -262,6 +355,30 @@ class EngineTest < Minitest::Test
     end
   end
 
+  def test_changing_an_xml_comment_only_retranslates_its_section
+    Dir.mktmpdir do |dir|
+      mpath = File.join(dir, 'm.json')
+
+      # Initial run seeds everything.
+      c1 = StubClient.new
+      build(dir, client: c1).run_strings(locales: %w[fr])
+
+      # Rewrite the source: change ONLY the first comment ("Greetings ...").
+      # Sticky propagation means the 3 strings in that section invalidate;
+      # the 6 strings under the second comment must reuse.
+      modified = File.join(dir, 'modified.xml')
+      File.write(modified, File.read(FIXTURE).sub('Greetings on the main dashboard.',
+                                                  'Dashboard greetings, shown above the order list.'))
+
+      c2 = StubClient.new
+      report = build(dir, source: modified, client: c2).run_strings(locales: %w[fr]).first
+
+      assert_equal 3, report.translated, 'only the section above the changed comment retranslates'
+      assert_equal 6, report.reused
+      assert_equal 1, c2.calls
+    end
+  end
+
   def test_placeholder_failure_is_dropped_not_shipped
     Dir.mktmpdir do |dir|
       bad = StubClient.new { |loc, src| "[#{loc}] #{src.gsub('%2$d', '')}" }
@@ -274,6 +391,26 @@ class EngineTest < Minitest::Test
 
       manifest = Manifest.load(File.join(dir, 'manifest.json'))
       assert_nil manifest.origin(name: 'greeting', locale: 'fr')
+    end
+  end
+
+  def test_glossary_preservation_failure_is_dropped_not_shipped
+    Dir.mktmpdir do |dir|
+      context = ContextProvider.new({}, glossary: {
+                                      'terms' => [
+                                        { 'term' => 'Woo', 'rule' => 'Brand; never translate.', 'preserve' => true }
+                                      ]
+                                    })
+      bad = StubClient.new { |loc, src| "[#{loc}] #{src.gsub('Woo', 'Oua')}" }
+      report = build(dir, client: bad, context: context).run_strings(locales: %w[fr]).first
+      assert(report.failed.any? { |f| f.start_with?('app_name') })
+
+      doc = AndroidResources::Parser.parse_file(File.join(dir, 'values-fr', 'strings.xml'))
+      assert_nil doc.find('app_name'), 'brand-unsafe translation must be omitted, not shipped'
+      assert_equal '[fr] Hello %1$s, you have %2$d items', doc.find('greeting').entries.first[:source]
+
+      manifest = Manifest.load(File.join(dir, 'manifest.json'))
+      assert_nil manifest.origin(name: 'app_name', locale: 'fr')
     end
   end
 end
