@@ -1345,7 +1345,7 @@
     <string name="card_reader_upsell_card_reader_banner_title">Dễ dàng chấp nhận thanh toán</string>
     <string name="card_reader_upsell_card_reader_banner_description">Bắt đầu bán hàng trực tiếp trong vòng dưới 20 phút với đầu đọc thẻ của chúng tôi.</string>
 
-    <string name="card_reader_upsell_card_reader_banner_cta">Mua Đầu Đọc Thẻ</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Mua đầu đọc thẻ</string>
 
     <!--
             Card Reader Hub
@@ -1515,7 +1515,7 @@
     <string name="card_reader_mode_waiting_header">Đã ghép nối với máy tính bảng</string>
     <string name="card_reader_mode_waiting_subtitle">Đang chờ thanh toán…</string>
     <string name="card_reader_mode_cancel">Hủy</string>
-    <string name="card_reader_mode_settings_row_label">Chế Độ Đầu Đọc Thẻ</string>
+    <string name="card_reader_mode_settings_row_label">Chế độ đầu đọc thẻ</string>
     <string name="card_reader_mode_starting_header">Đang Khởi Động Chế Độ Đầu Đọc Thẻ</string>
     <string name="card_reader_mode_starting_subtitle">Đang thiết lập tính năng khám phá trên mạng nội bộ…</string>
     <string name="card_reader_mode_error_header">Chế Độ Đầu Đọc Thẻ không khởi động được</string>
@@ -1633,7 +1633,7 @@
     <!--
         Card Reader Onboarding
     -->
-    <string name="card_reader_onboarding_title">Thanh Toán Trực Tiếp</string>
+    <string name="card_reader_onboarding_title">Thanh toán trực tiếp</string>
     <string name="card_reader_onboarding_loading">Đang kết nối với tài khoản của bạn</string>
 
     <string name="card_reader_onboarding_country_not_supported_header">Chúng tôi không hỗ trợ Thanh Toán Trực Tiếp bằng thẻ tại %1$s</string>
@@ -1831,7 +1831,7 @@
     <string name="product_ratings_count_zero">•  chưa có đánh giá nào được phê duyệt</string>
     <string name="product_reviews">Đánh giá</string>
     <string name="product_downloadable_files">Tệp có thể tải xuống</string>
-    <string name="product_custom_fields">Trường Tùy Chỉnh</string>
+    <string name="product_custom_fields">Trường tùy chỉnh</string>
     <string name="product_custom_fields_desc">Xem và chỉnh sửa các trường tùy chỉnh</string>
     <string name="product_share_dialog_title">Chia sẻ sản phẩm của bạn</string>
     <string name="product_view_in_store">Xem sản phẩm trên cửa hàng</string>
@@ -4371,7 +4371,7 @@
     <string name="woo_shipping_labels_package_creation_error_message">Bạn có muốn tiếp tục mà không lưu không?</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">Tiếp tục</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Hủy</string>
-    <string name="woo_shipping_labels_customs_add_missing_information">Thêm Thông Tin Còn Thiếu</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Thêm thông tin còn thiếu</string>
     <string name="woo_shipping_labels_customs_content_type_label">Loại Nội Dung</string>
     <string name="woo_shipping_labels_customs_restriction_type_label">Loại Hạn Chế</string>
     <string name="woo_shipping_labels_customs_itn_label">Số Giao Dịch Quốc Tế</string>
