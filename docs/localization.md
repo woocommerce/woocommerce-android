@@ -30,6 +30,8 @@ To help ease the translation process we ask that you mark alias string resources
 You shouldn't need to touch the `strings.xml` for the other languages. **GlotPress is retired.** Translations are produced by the self-contained AI translation engine in [`fastlane/ai_translation`](../fastlane/ai_translation/README.md):
 
 - A **PR-time CI check** translates only the keys your PR adds/changes (delta vs `fastlane/ai_translation/translation-manifest.json`) for every supported locale, and a bot commits the resulting `values-[lang_code]/strings.xml` + manifest back to your PR branch so the change is reviewable inline and `trunk` stays fully translated.
+- For newly added strings, the same PR-time job first tries to add an AI-generated XML context comment to
+  `values/strings.xml`. If context generation fails, translation continues with the existing comments.
 - A **code-freeze reconciliation sweep** re-checks every key × every locale (the safety net) and translates per-release Play Store notes.
 - AI ships by default; human review is sampled and **non-blocking**. Hard, blocking gates run on every translation: placeholder parity, XML well-formedness, key parity, and plural-pair output integrity.
 
