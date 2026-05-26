@@ -40,7 +40,7 @@ class HelpViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site doesnt exist, when on contact clicked, then create event triggered`() {
+    fun `given site doesn't exist, when on contact clicked, then create event triggered`() {
         // GIVEN
         whenever(selectedSite.exists()).thenReturn(false)
 
