@@ -508,7 +508,7 @@
 
 
     <string name="analytics_banner_title">Liker du analyser?</string>
-    <string name="analytics_banner_message">Vennligst vurder din analyseopplevelse</string>
+    <string name="analytics_banner_message">Vurder din analyseopplevelse</string>
     <!--
         Order List View
     -->
@@ -661,7 +661,7 @@
     <string name="order_creation_payment_products">Produkter</string>
     <string name="order_creation_payment_order_total">Bestillingstotal</string>
     <string name="order_creation_loading_dialog_title">Oppretter bestillingen din</string>
-    <string name="order_creation_loading_dialog_message">Vennligst vent…</string>
+    <string name="order_creation_loading_dialog_message">Vent litt…</string>
     <string name="order_creation_failure_snackbar">Oppretting av bestilling mislyktes</string>
     <string name="order_creation_success_snackbar">Bestilling opprettet</string>
     <string name="order_creation_payment_tax_label">Skatter</string>
@@ -924,7 +924,7 @@
     <string name="shipping_label_refund_amount_title">Beløp som kan refunderes</string>
     <string name="shipping_label_refund_button">Refunder etikett (-%1$s)</string>
     <string name="shipping_label_refund_success">Refusjonsforespørselen ble sendt inn</string>
-    <string name="shipping_label_refund_progress_message">Refusjonen din behandles. Vennligst vent…</string>
+    <string name="shipping_label_refund_progress_message">Refusjonen din behandles. Vent litt…</string>
     <string name="shipping_label_refund_expired">Etiketter eldre enn 30 dager kan ikke refunderes</string>
     <!--
         Fulfill order
@@ -993,7 +993,7 @@
     <string name="shipping_label_create_mark_order_complete">Merk denne bestillingen som fullført og varsle kunden</string>
     <string name="shipping_label_create_purchase">Kjøp fraktetikett</string>
     <string name="shipping_label_create_purchase_progress_title">Kjøper etikett</string>
-    <string name="shipping_label_create_purchase_progress_message">Vennligst vent…</string>
+    <string name="shipping_label_create_purchase_progress_message">Vent litt…</string>
     <string name="shipping_label_create_purchase_error">Feil ved kjøp av etiketter</string>
     <string name="shipping_label_create_purchase_fulfill_error">Kunne ikke merke bestillingen som fullført</string>
     <string name="shipping_label_selected_payment_description">Kredittkort som slutter på %1$s</string>
@@ -1011,7 +1011,7 @@
     <string name="shipping_label_edit_address_use_address_as_is">Bruk adressen som oppgitt</string>
     <string name="shipping_label_edit_address_validation_progress_title">Adressevalidering pågår</string>
     <string name="shipping_label_edit_address_loading_progress_title">Laster adressedata</string>
-    <string name="shipping_label_edit_address_progress_message">Vennligst vent…</string>
+    <string name="shipping_label_edit_address_progress_message">Vent litt…</string>
     <string name="shipping_label_edit_address_validation_error">Adressevalidering mislyktes</string>
     <string name="shipping_label_edit_origin_address_error_warning">Vi kunne ikke automatisk bekrefte opprinnelsesadressen. Se den på Google Maps for å forsikre deg om at adressen er korrekt.</string>
     <string name="shipping_label_edit_address_error_warning">Vi kunne ikke automatisk bekrefte leveringsadressen. Se den på Google Maps eller prøv å kontakte kunden for å forsikre deg om at adressen er korrekt.</string>
@@ -1359,7 +1359,7 @@
     <string name="card_reader_manage_payment_provider">Endre betalingsleverandør</string>
     <string name="card_reader_icon_content_description">Bilde av kortleser</string>
     <string name="card_reader_onboarding_not_finished">Vi har lagt merke til at du ikke har fullført oppsettet av Betal personlig. &lt;a href=\'\'&gt;Fortsett oppsettet&lt;/a&gt;</string>
-    <string name="card_reader_onboarding_with_pending_requirements">Det er et problem som krever oppmerksomheten din. Vennligst &lt;a href=\'\'&gt;ta en titt&lt;/a&gt;</string>
+    <string name="card_reader_onboarding_with_pending_requirements">Det er et problem som krever oppmerksomheten din. &lt;a href=\'\'&gt;Ta en titt&lt;/a&gt;</string>
     <string name="card_reader_test_tap_to_pay">Prøv Tap to Pay</string>
     <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
     <string name="card_reader_about_tap_to_pay">Om Tap to Pay</string>
@@ -1610,7 +1610,7 @@
     <string name="card_reader_detail_connected_battery_percentage">%s%% batteri</string>
     <string name="card_reader_detail_connected_firmware_version">Fastvare: %s</string>
     <string name="card_reader_detail_connected_update_software">Oppdater leserens programvare</string>
-    <string name="card_reader_detail_connected_enforced_update_software">Vennligst oppdater programvaren for kortleseren for å fortsette å akseptere betalinger</string>
+    <string name="card_reader_detail_connected_enforced_update_software">Oppdater programvaren for kortleseren for å fortsette å akseptere betalinger</string>
     <string name="card_reader_detail_connected_disconnect_reader">Koble fra kortleser</string>
     <string name="card_reader_detail_connected_reader_unknown">UKJENT KORTLESERENS NAVN</string>
     <string name="card_reader_detail_connected_update_success">Leserens programvare er oppdatert</string>
@@ -1622,7 +1622,7 @@
     -->
     <string name="card_reader_software_update_description">Kortleserens programvare må oppdateres for å fortsette å fungere problemfritt</string>
     <string name="card_reader_software_update_title">Programvareoppdatering</string>
-    <string name="card_reader_software_update_title_battery_low">Vennligst lad kortleseren</string>
+    <string name="card_reader_software_update_title_battery_low">Lad kortleseren</string>
     <string name="card_reader_software_update_in_progress_title">Oppdaterer leserens programvare</string>
     <string name="card_reader_software_update_progress_description_low_battery">Oppdatering av programvaren mislyktes fordi leserens batteri er %1$s%% ladet. Lad kortleseren over 50%% før du prøver igjen.</string>
     <string name="card_reader_software_update_progress_description_low_battery_level_unknown">Oppdatering av programvaren mislyktes fordi leserens batteri er utilstrekkelig ladet. Lad kortleseren over 50%% før du prøver igjen.</string>
@@ -1674,7 +1674,7 @@
     <string name="card_reader_onboarding_account_under_review_hint">Du vil kunne akseptere betalinger på stedet så snart vi er ferdige med å gjennomgå kontoen din.</string>
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">Betalinger på stedet er for øyeblikket utilgjengelig</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Du har minst ett forfalt krav på kontoen din. Vennligst ta hånd om det for å gjenoppta betalinger på stedet.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Du har minst ett forfalt krav på kontoen din. Ta hånd om det for å gjenoppta betalinger på stedet.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Løs nå</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Kontoen din har ventende krav</string>
@@ -1882,7 +1882,7 @@
     <string name="product_short_description">Kort beskrivelse</string>
     <string name="product_save_dialog_title">Lagrer produktet ditt</string>
     <string name="product_delete_dialog_title">Sletter produkt</string>
-    <string name="product_update_dialog_message">Vennligst vent…</string>
+    <string name="product_update_dialog_message">Vent litt…</string>
     <string name="product_detail_update_product_error">Feil ved oppdatering av produkt</string>
     <string name="product_detail_save_product_success">Produkt lagret</string>
     <string name="product_detail_update_product_password_error">Feil ved oppdatering av passord</string>
@@ -1900,7 +1900,7 @@
     <string name="product_duplicate">Dupliser</string>
     <string name="product_duplicate_error">Kan ikke duplisere produkt</string>
     <string name="product_duplicate_progress_title">Dupliserer produktet ditt…</string>
-    <string name="product_duplicate_progress_body">Vennligst vent mens vi lagrer en kopi av dette produktet i butikken din</string>
+    <string name="product_duplicate_progress_body">Vent mens vi lagrer en kopi av dette produktet i butikken din</string>
     <string name="product_duplicate_copied_product_name">%1$s Kopi</string>
     <string name="product_trash">Flytt produkt til papirkurv</string>
     <string name="product_confirm_trash">Vil du flytte dette produktet til papirkurven?</string>
@@ -1954,7 +1954,7 @@
     <string name="product_add_category_dialog_title">Legger til kategori</string>
     <string name="product_update_category_dialog_title">Oppdaterer kategori</string>
     <string name="product_removing_category_dialog_title">Fjerner kategori</string>
-    <string name="product_add_category_dialog_message">Vennligst vent…</string>
+    <string name="product_add_category_dialog_message">Vent litt…</string>
     <string name="product_tag_empty">Legg til etikett</string>
     <string name="product_tags">Etiketter</string>
     <string name="product_tag_list_empty_title">Legg til din første etikett</string>
@@ -2030,7 +2030,7 @@
     <string name="product_creation_ai_tone_formal">Formell</string>
     <string name="product_creation_ai_tone_flowery">Blomstrende</string>
     <string name="product_creation_ai_tone_convincing">Overbevisende</string>
-    <string name="product_creation_ai_generation_failure_message">Produktgenerering mislyktes. Vennligst prøv igjen</string>
+    <string name="product_creation_ai_generation_failure_message">Produktgenerering mislyktes. Prøv igjen</string>
     <string name="product_creation_package_photo_no_text_detected">Ingen tekst oppdaget. Velg et annet emballasjebilde eller skriv inn produktdetaljer manuelt.</string>
     <string name="product_filter_explore_plugin">Utforsk!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Skann strekkode for å oppdatere lagerbeholdning</string>
@@ -2480,13 +2480,13 @@
     <string name="next">Neste</string>
     <string name="open_mail">Åpne e-post</string>
 
-    <string name="enter_verification_code">Nesten der! Vennligst oppgi bekreftelseskoden for WordPress.com fra autentiseringsappen din.</string>
-    <string name="enter_verification_code_sms">Vi sendte en tekstmelding til telefonnummeret som slutter på %s. Vennligst oppgi bekreftelseskoden i SMS-en.</string>
+    <string name="enter_verification_code">Nesten der! Oppgi bekreftelseskoden for WordPress.com fra autentiseringsappen din.</string>
+    <string name="enter_verification_code_sms">Vi sendte en tekstmelding til telefonnummeret som slutter på %s. Oppgi bekreftelseskoden i SMS-en.</string>
     <string name="login_use_wpcom_username_instead">Bruk brukernavn og passord i stedet</string>
 
     <string name="requesting_otp">Ber om en bekreftelseskode via SMS.</string>
     <string name="requesting_sms_otp_success">SMS forespurt, sjekk meldingene dine for koden.</string>
-    <string name="requesting_sms_otp_failure">SMS-forespørselen mislyktes. Vennligst prøv igjen.</string>
+    <string name="requesting_sms_otp_failure">SMS-forespørselen mislyktes. Prøv igjen.</string>
 
 
     <string name="password_incorrect">Det ser ut til at dette passordet er feil. Kontroller opplysningene dine og prøv igjen.</string>
@@ -2495,7 +2495,7 @@
 
     <string name="login_magic_link_email_requesting">Ber om innloggings-e-post</string>
     <string name="login_magic_link_token_updating">Kobler til nettstedet ditt…</string>
-    <string name="magic_link_unavailable_error_message">Ikke tilgjengelig for øyeblikket. Vennligst oppgi passordet ditt</string>
+    <string name="magic_link_unavailable_error_message">Ikke tilgjengelig for øyeblikket. Oppgi passordet ditt</string>
     <string name="magic_link_update_error">Det har oppstått en feil. Logg inn for å fortsette</string>
     <string name="magic_link_fetch_account_error">Det oppstod et problem med å hente kontoen din. Du kan prøve på nytt nå eller lukke og prøve igjen senere.</string>
     <string name="enter_wpcom_password">Oppgi WordPress.com-passordet ditt.</string>
@@ -2511,9 +2511,9 @@
     <string name="login_error_while_adding_site">Feil ved tillegg av nettsted. Feilkode: %s</string>
     <string name="login_log_in_for_deeplink">Logg inn på WordPress.com for å få tilgang til innlegget.</string>
     <string name="login_log_in_for_share_intent">Logg inn på WordPress.com for å dele innholdet.</string>
-    <string name="login_empty_username">Vennligst oppgi et brukernavn</string>
-    <string name="login_empty_password">Vennligst oppgi et passord</string>
-    <string name="login_empty_2fa">Vennligst oppgi en bekreftelseskode</string>
+    <string name="login_empty_username">Oppgi et brukernavn</string>
+    <string name="login_empty_password">Oppgi et passord</string>
+    <string name="login_empty_2fa">Oppgi en bekreftelseskode</string>
     <string name="login_email_client_not_found">Kan ikke oppdage e-postklientappen din</string>
     <string name="login_error_button">Lukk</string>
     <string name="login_error_email_not_found_v2">Det finnes ingen WordPress.com-konto som samsvarer med denne Google-kontoen.</string>
@@ -2563,7 +2563,7 @@
     <string name="xmlrpc_endpoint_forbidden_error">Kunne ikke koble til. Vi mottok en 403-feil ved forsøk på å nå
         XMLRPC-endepunktet til nettstedet ditt. Appen trenger det for å kommunisere med nettstedet ditt. Kontakt vertskapet ditt for å løse
         dette problemet.</string>
-    <string name="enter_wpcom_or_jetpack_site">Vennligst oppgi et WordPress.com-nettsted eller et selvhostet WordPress-nettsted tilkoblet Jetpack</string>
+    <string name="enter_wpcom_or_jetpack_site">Oppgi et WordPress.com-nettsted eller et selvhostet WordPress-nettsted tilkoblet Jetpack</string>
 
     <string name="error_generic_network">En nettverksfeil oppstod. Kontroller tilkoblingen din og prøv igjen.</string>
 
@@ -2571,11 +2571,11 @@
     <string name="notification_logged_in">Trykk for å fortsette.</string>
 
     <string name="notification_login_title_in_progress">Innlogging pågår…</string>
-    <string name="notification_logging_in">Vennligst vent mens du logger inn.</string>
+    <string name="notification_logging_in">Vent mens du logger inn.</string>
 
     <string name="notification_login_title_stopped">Innlogging stoppet</string>
     <string name="notification_error_wrong_password">Kontroller passordet ditt for å fortsette.</string>
-    <string name="notification_2fa_needed">Vennligst oppgi en autentiseringskode for å fortsette.</string>
+    <string name="notification_2fa_needed">Oppgi en autentiseringskode for å fortsette.</string>
     <string name="notification_login_failed">Det har oppstått en feil.</string>
     <string name="email_or_username">E-postadresse eller brukernavn</string>
 
@@ -2667,7 +2667,7 @@
     <string name="feedback_request_like_it">Jeg liker den</string>
     <string name="feedback_survey_request_title">Hvordan kan vi forbedre oss?</string>
     <string name="web_view_loading_title">Laster inn</string>
-    <string name="web_view_loading_message">Vennligst vent…</string>
+    <string name="web_view_loading_message">Vent litt…</string>
     <string name="feedback_completed_title">Tilbakemelding sendt</string>
     <string name="feedback_completed_title_message">Takk for at du delte dine\n tanker med oss</string>
     <string name="feedback_completed_description">Husk at dette ikke er en støttesak, og vi vil ikke kunne svare på individuelle tilbakemeldinger.\n\nTrenger du hjelp? %1$s</string>
@@ -2710,7 +2710,7 @@
     <string name="woo_push_notifications_introduction_continue">Fortsett</string>
     <string name="woo_push_notifications_introduction_not_now">Ikke nå</string>
     <string name="woo_push_notifications_introduction_error_title">Noe gikk galt</string>
-    <string name="woo_push_notifications_introduction_error_body">Vi kunne ikke fullføre oppsettet av push-varsler. Vennligst kontakt brukerstøtte for hjelp.</string>
+    <string name="woo_push_notifications_introduction_error_body">Vi kunne ikke fullføre oppsettet av push-varsler. Kontakt brukerstøtte for hjelp.</string>
     <string name="woo_push_notifications_introduction_error_forbidden_body">Kontoen din har ikke tillatelse til å fullføre oppsettet av push-varsler. Be butikkadministratoren din om å håndtere dette.</string>
     <string name="woo_push_notifications_introduction_connected_title">Få push-varsler for butikken din</string>
     <string name="woo_push_notifications_introduction_connected_body">Du er ett steg unna å motta varsler for nye bestillinger, anmeldelser og mer.</string>
@@ -2718,9 +2718,9 @@
     <string name="woo_push_notifications_introduction_update_required_body">Butikken din er allerede koblet til WordPress.com, men du må oppdatere WooCommerce-plugin-en for å aktivere push-varsler for nye bestillinger, anmeldelser og mer.</string>
     <string name="woo_push_notifications_introduction_update_plugin">Oppdater plugin</string>
     <string name="woo_push_notifications_connection_steps_title_connect">Koble til WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_body_connect">Vennligst vent mens vi fullfører tilkoblingen av butikken din &lt;b&gt;%1$s&lt;/b&gt; til WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_body_connect">Vent mens vi fullfører tilkoblingen av butikken din &lt;b&gt;%1$s&lt;/b&gt; til WordPress.com.</string>
     <string name="woo_push_notifications_connection_steps_title_setup">Konfigurer push-varsler</string>
-    <string name="woo_push_notifications_connection_steps_body_setup">Vennligst vent mens vi konfigurerer push-varsler for &lt;b&gt;%1$s&lt;/b&gt;.</string>
+    <string name="woo_push_notifications_connection_steps_body_setup">Vent mens vi konfigurerer push-varsler for &lt;b&gt;%1$s&lt;/b&gt;.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Koble butikk til WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Sjekk plugin-kompatibilitet</string>
     <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Aktiver push-varsler</string>
@@ -3000,13 +3000,13 @@
     <string name="product_downloadable_files_add_title">Legg til nedlastbar fil</string>
     <string name="product_downloadable_files_upload_failed">Feil ved opplasting av filen</string>
     <string name="product_downloadable_files_upload_dialog_title">Laster opp filer</string>
-    <string name="product_downloadable_files_upload_dialog_message">Vennligst vent…</string>
+    <string name="product_downloadable_files_upload_dialog_message">Vent litt…</string>
     <string name="product_downloadable_files_url_invalid">Kontroller at URL-en som er angitt, er gyldig</string>
     <string name="product_downloadable_files_add_media_from_device">Bilder og videoer på enheten</string>
     <string name="product_downloadable_files_add_documents_from_device">Dokumenter og andre filer på enheten</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress-mediebibliotek</string>
     <string name="product_downloadable_files_add_manually">Skriv inn fil-URL</string>
-    <string name="product_downloadable_files_name_invalid">Vennligst oppgi et gyldig navn</string>
+    <string name="product_downloadable_files_name_invalid">Oppgi et gyldig navn</string>
     <string name="product_downloadable_files_download_settings">Nedlastingsinnstillinger</string>
     <string name="shipping_label_payments_cant_edit_warning">Bare nettstedseiern kan administrere betalingsmetodene for fraktetiketter. Ta kontakt med butikkeieren %1$s (%2$s) for å administrere betalingsmetoder.</string>
     <string name="magic_link_not_meaning_to_create_account">Mente du ikke å opprette en ny konto? Gå tilbake for å angi e-postadressen din på nytt.</string>
@@ -3041,7 +3041,7 @@
     <string name="theme_picker_current_theme_title">Gjeldende tema</string>
     <string name="theme_picker_carousel_info_item_title">Leter du etter mer?</string>
     <string name="theme_picker_carousel_info_item_description_settings">Du finner det perfekte temaet i WooCommerce-temabutikken.</string>
-    <string name="theme_picker_carousel_error_placeholder_message">Beklager, det ser ut til å være et problem med innlastingen av malen. Vennligst %1$s for en live-demo.</string>
+    <string name="theme_picker_carousel_error_placeholder_message">Beklager, det ser ut til å være et problem med innlastingen av malen. %1$s for en live-demo.</string>
     <string name="theme_picker_carousel_error_placeholder_message_cta">trykk her</string>
     <string name="theme_picker_error_message">Kunne ikke laste inn temaer.</string>
     <string name="theme_picker_loading_current_theme_failed">Kunne ikke laste inn gjeldende tema</string>
@@ -3132,7 +3132,7 @@
     <string name="support_request_help_plugins">WooCommerce-plugin</string>
     <string name="support_request_help_other">Annen utvidelse / plugin</string>
     <string name="support_request_loading_title">Sender forespørselen din</string>
-    <string name="support_request_loading_message">Vennligst vent…</string>
+    <string name="support_request_loading_message">Vent litt…</string>
     <string name="support_request_success_title">Forespørsel sendt!</string>
     <string name="support_request_success_message">Støtteforespørselen din har landet trygt i innboksen vår. Vi svarer via e-post så raskt vi kan.</string>
     <string name="support_request_dialog_action">Forstått!</string>
@@ -3942,7 +3942,7 @@
     <string name="woopos_totals_reader_ready_for_payment_subtitle">Trykk, sveip eller sett inn kort</string>
 
     <string name="woopos_success_totals_payment_processing_title">Behandler betaling</string>
-    <string name="woopos_success_totals_payment_processing_subtitle">Vennligst vent…</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">Vent litt…</string>
     <string name="woopos_success_totals_payment_failed_title">Betaling mislyktes</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Prøv en annen betalingsmetode</string>
     <string name="woo_pos_payment_failed_try_again">Prøv betaling igjen</string>
@@ -3950,7 +3950,7 @@
     <string name="woo_pos_payment_failed_go_back">Gå tilbake</string>
 
     <string name="woopos_remote_payment_failed_connection_lost">Tilkoblingen til kortleseren ble brutt. Koble til på nytt og prøv igjen.</string>
-    <string name="woopos_remote_payment_failed_generic">Noe gikk galt. Vennligst prøv igjen.</string>
+    <string name="woopos_remote_payment_failed_generic">Noe gikk galt. Prøv igjen.</string>
 
     <string name="woopos_card_payment_done_button">Ferdig</string>
 
@@ -3985,7 +3985,7 @@
     <string name="woopos_orders_loading_error_message">Sjekk tilkoblingen din og prøv igjen.</string>
     <string name="woopos_orders_loading_error_retry_button">Prøv igjen</string>
     <string name="woopos_orders_pagination_error_title">Kan ikke laste inn flere bestillinger</string>
-    <string name="woopos_orders_pagination_error_content_description">Vennligst prøv igjen.</string>
+    <string name="woopos_orders_pagination_error_content_description">Prøv igjen.</string>
     <string name="woopos_orders_pagination_try_again_label">Prøv igjen</string>
 
     <string name="woopos_orders_email_receipt">Send kvittering på e-post</string>
@@ -4014,7 +4014,7 @@
     <string name="woopos_orders_yes_proceed">Ja, fortsett</string>
     <string name="woopos_refund_loading_error_title">Kunne ikke laste inn refusjonsvarer</string>
     <string name="woopos_refund_creating_error_title">Kunne ikke opprette refusjon</string>
-    <string name="woopos_refund_error_subtitle">Vennligst prøv igjen</string>
+    <string name="woopos_refund_error_subtitle">Prøv igjen</string>
     <string name="woopos_orders_refund_complete">Refusjon fullført</string>
     <string name="woopos_orders_refund_success_message">Du refunderte %1$s via %2$s.</string>
     <string name="woopos_orders_details_placeholder_title">Velg en bestilling</string>
@@ -4100,7 +4100,7 @@
     <string name="woopos_bookings_cancel_dialog_keep">Nei, behold den</string>
     <string name="woopos_bookings_cancel_dialog_background">Bakgrunn for dialogen for avbrutt reservasjon</string>
     <string name="woopos_bookings_cancel_dialog_unknown_customer">ukjent kunde</string>
-    <string name="woopos_bookings_cancel_error">Kunne ikke avbryte reservasjonen. Vennligst prøv igjen.</string>
+    <string name="woopos_bookings_cancel_error">Kunne ikke avbryte reservasjonen. Prøv igjen.</string>
     <string name="woopos_bookings_note_screen_title_add">Legg til notat</string>
     <string name="woopos_bookings_note_screen_title_edit">Rediger notat</string>
     <string name="woopos_bookings_note_screen_hint">Skriv inn reservasjonsnotat</string>
@@ -4115,7 +4115,7 @@
     <string name="woopos_bookings_loading_error_message">Sjekk tilkoblingen din og prøv igjen.</string>
     <string name="woopos_bookings_empty_image_description">Ingen reservasjoner</string>
     <string name="woopos_bookings_pagination_error_title">Kan ikke laste inn flere reservasjoner</string>
-    <string name="woopos_bookings_pagination_error_description">Vennligst prøv igjen.</string>
+    <string name="woopos_bookings_pagination_error_description">Prøv igjen.</string>
 
     <string name="woopos_cash_payment_title">Kontantbetaling</string>
     <string name="woopos_complete_cash_order_button">Merk betaling som fullført</string>
@@ -4148,7 +4148,7 @@
     <string name="woopos_search_items_error_title">Kan ikke laste inn produkter</string>
     <string name="woopos_search_coupons_error_title">Kan ikke laste inn kuponger</string>
     <string name="woopos_search_orders_error_title">Kan ikke laste inn bestillinger</string>
-    <string name="woopos_search_items_error_description">Vennligst prøv igjen.</string>
+    <string name="woopos_search_items_error_description">Prøv igjen.</string>
 
     <string name="woopos_search_orders_error_description">Prøv igjen.</string>
 
