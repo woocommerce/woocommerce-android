@@ -17,7 +17,7 @@ class WooPosCheckoutBottomBarTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `given card payments enabled and other methods present, then renders Cash and Other buttons`() {
+    fun `cardEnabled_otherMethodsPresent_rendersCashAndOther`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
@@ -33,7 +33,7 @@ class WooPosCheckoutBottomBarTest {
     }
 
     @Test
-    fun `given card payments enabled and no other methods, then renders only Cash button`() {
+    fun `cardEnabled_noOtherMethods_rendersOnlyCash`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
@@ -49,7 +49,7 @@ class WooPosCheckoutBottomBarTest {
     }
 
     @Test
-    fun `given card payments disabled and other methods present, then renders Cash and Other buttons`() {
+    fun `cardDisabled_otherMethodsPresent_rendersCashAndOther`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
@@ -65,7 +65,7 @@ class WooPosCheckoutBottomBarTest {
     }
 
     @Test
-    fun `given card payments disabled and no other methods, then renders only Cash button`() {
+    fun `cardDisabled_noOtherMethods_rendersOnlyCash`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
