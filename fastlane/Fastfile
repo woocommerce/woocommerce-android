@@ -20,8 +20,8 @@ APP_DISPLAY_NAMES = {
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 VERSIONS_CATALOG_FILE = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
-# The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
-# add `PROJECT_ROOT_FOLDER` to the beginning of this path
+# Resource dir, repo-relative. The AI translation lane joins this with
+# `PROJECT_ROOT_FOLDER` when passing `--res-dir` to the engine.
 RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
 MAIN_STRINGS_PATH = File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH, 'values', 'strings.xml')
 VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
@@ -62,10 +62,8 @@ LOCAL_LIBRARIES_STRINGS_PATHS = [
   { library: 'AI Assistant Feature', strings_path: './libs/ai-assistant/feature/src/main/res/values/strings.xml', source_id: 'module:ai-assistant-feature' }
 ].freeze
 
-# URL of the GlotPress project containing the app's strings
-GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
-# URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
-GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = "#{GLOTPRESS_APP_STRINGS_PROJECT_URL}/release-notes/".freeze
+# GlotPress is retired: app strings and Play Store metadata are translated by
+# the self-contained AI engine in `fastlane/ai_translation` (see docs/localization.md).
 
 APP_PACKAGE_NAME = 'com.woocommerce.android'
 GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
@@ -98,23 +96,46 @@ GITHUB_REPO = "#{GH_ORG_NAME}/#{REPOSITORY_NAME}".freeze
 
 UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
 
+# GlotPress codes were dropped with the GlotPress retirement. `android` is the
+# resource qualifier (values-<android>); `google_play` is the Play Console
+# listing dir. The 15 new locales use `promo_config: false` (English-fallback
+# screenshots; localized screenshots are a deferred content-ops follow-up).
+#
+# Google Play's store-listing language list uses `no-NO` for Norwegian, while Android
+# app resources still use the more specific `nb` qualifier.
 SUPPORTED_LOCALES = [
-  { glotpress: 'ar', android: 'ar', google_play: 'ar', promo_config: {} },
-  { glotpress: 'de', android: 'de', google_play: 'de-DE',  promo_config: {} },
-  { glotpress: 'es', android: 'es', google_play: 'es-ES',  promo_config: {} },
-  { glotpress: 'fr', android: 'fr', google_play: 'fr-FR',  promo_config: {} },
-  { glotpress: 'he', android: 'he', google_play: 'iw-IL',  promo_config: {} },
-  { glotpress: 'id', android: 'id', google_play: 'id', promo_config: {} },
-  { glotpress: 'it', android: 'it', google_play: 'it-IT',  promo_config: {} },
-  { glotpress: 'ja', android: 'ja', google_play: 'ja-JP',  promo_config: {} },
-  { glotpress: 'ko', android: 'ko', google_play: 'ko-KR',  promo_config: {} },
-  { glotpress: 'nl', android: 'nl', google_play: 'nl-NL',  promo_config: {} },
-  { glotpress: 'pt-br', android: 'pt-rBR', google_play: 'pt-BR', promo_config: {} },
-  { glotpress: 'ru', android: 'ru', google_play: 'ru-RU',  promo_config: {} },
-  { glotpress: 'sv', android: 'sv', google_play: 'sv-SE',  promo_config: {} },
-  { glotpress: 'tr', android: 'tr', google_play: 'tr-TR',  promo_config: {} },
-  { glotpress: 'zh-cn', android: 'zh-rCN', google_play: 'zh-CN',  promo_config: {} },
-  { glotpress: 'zh-tw', android: 'zh-rTW', google_play: 'zh-TW',  promo_config: {} }
+  { android: 'ar', google_play: 'ar', promo_config: {} },
+  { android: 'de', google_play: 'de-DE', promo_config: {} },
+  { android: 'es', google_play: 'es-ES', promo_config: {} },
+  { android: 'fr', google_play: 'fr-FR', promo_config: {} },
+  { android: 'he', google_play: 'iw-IL', promo_config: {} },
+  { android: 'id', google_play: 'id', promo_config: {} },
+  { android: 'it', google_play: 'it-IT', promo_config: {} },
+  { android: 'ja', google_play: 'ja-JP', promo_config: {} },
+  { android: 'ko', google_play: 'ko-KR', promo_config: {} },
+  { android: 'nl', google_play: 'nl-NL', promo_config: {} },
+  { android: 'pt-rBR', google_play: 'pt-BR', promo_config: {} },
+  { android: 'ru', google_play: 'ru-RU', promo_config: {} },
+  { android: 'sv', google_play: 'sv-SE', promo_config: {} },
+  { android: 'tr', google_play: 'tr-TR', promo_config: {} },
+  { android: 'zh-rCN', google_play: 'zh-CN', promo_config: {} },
+  { android: 'zh-rTW', google_play: 'zh-TW', promo_config: {} },
+  # --- 15 new locales (AI-translated) ---
+  { android: 'pl', google_play: 'pl-PL', promo_config: false },
+  { android: 'pt-rPT', google_play: 'pt-PT', promo_config: false },
+  { android: 'cs', google_play: 'cs-CZ', promo_config: false },
+  { android: 'da', google_play: 'da-DK', promo_config: false },
+  { android: 'nb', google_play: 'no-NO', promo_config: false },
+  { android: 'fi', google_play: 'fi-FI', promo_config: false },
+  { android: 'el', google_play: 'el-GR', promo_config: false },
+  { android: 'hu', google_play: 'hu-HU', promo_config: false },
+  { android: 'ro', google_play: 'ro', promo_config: false },
+  { android: 'uk', google_play: 'uk', promo_config: false },
+  { android: 'bg', google_play: 'bg', promo_config: false },
+  { android: 'th', google_play: 'th', promo_config: false },
+  { android: 'vi', google_play: 'vi', promo_config: false },
+  { android: 'hi', google_play: 'hi-IN', promo_config: false },
+  { android: 'ms', google_play: 'ms', promo_config: false }
 ].freeze
 
 platform :android do
@@ -260,12 +281,13 @@ platform :android do
     create_backmerge_pr
   end
 
-  # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
+  # Metadata housekeeping at code freeze. GlotPress is retired, so there is no
+  # more `PlayStoreStrings.pot` to generate/import: `fastlane/metadata/.../en-US`
+  # is the source of truth and the AI engine (`ai_translate_metadata`) produces
+  # the localized files. This lane now only prunes obsolete versioned changelog
+  # files and asserts the English source exists.
   #
-  # The `PlayStoreStrings.pot` file is imported into GlotPress regularly via a WPCOM cron job
-  # See https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#35-40
-  #
-  # @param [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
+  # @param [String] version The current `x.y` version of the app. Optional.
   #
   # @example Running the lane
   #          bundle exec fastlane update_play_store_strings version:10.3
@@ -273,34 +295,16 @@ platform :android do
   lane :update_play_store_strings do |version: release_version_current|
     ensure_git_status_clean
 
-    app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
-    files = {
-      release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[MOBILE_APP],
-      wear_release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[WEAR_APP],
-      play_store_promo: File.join(app_metadata_source_path, 'short_description.txt'),
-      play_store_desc: File.join(app_metadata_source_path, 'full_description.txt'),
-      play_store_app_title: File.join(app_metadata_source_path, 'title.txt'),
-      play_store_screenshot_1: File.join(app_metadata_source_path, 'promo_screenshot_1.txt'),
-      play_store_screenshot_2: File.join(app_metadata_source_path, 'promo_screenshot_2.txt'),
-      play_store_screenshot_3: File.join(app_metadata_source_path, 'promo_screenshot_3.txt'),
-      play_store_screenshot_4: File.join(app_metadata_source_path, 'promo_screenshot_4.txt'),
-      play_store_screenshot_5: File.join(app_metadata_source_path, 'promo_screenshot_5.txt')
-    }
-
-    po_path = File.join('fastlane', 'metadata', 'PlayStoreStrings.pot')
-
-    an_update_metadata_source(
-      po_file_path: po_path,
-      source_files: files,
-      release_version: version
-    )
+    en_us_changelog = METADATA_SOURCE_CHANGELOG_FILE_PATH[MOBILE_APP]
+    UI.user_error!("Missing English metadata source: #{en_us_changelog}") unless File.exist?(en_us_changelog)
 
     deleted_files = delete_old_changelogs
+    next if deleted_files.empty?
 
-    git_add(path: [po_path, *deleted_files])
+    git_add(path: deleted_files)
     git_commit(
-      path: [po_path, *deleted_files],
-      message: "Update `PlayStoreStrings.po` for #{version}",
+      path: deleted_files,
+      message: "Prune obsolete changelog files for #{version}",
       allow_nothing_to_commit: true
     )
   end
@@ -462,26 +466,22 @@ platform :android do
   #####################################################################################
   # download_translations
   # -----------------------------------------------------------------------------------
-  # This lane downloads the string translations from GlotPress
+  # Full-sweep app-strings translation (every supported locale) via the AI
+  # engine. Replaces the GlotPress `android_download_translations` download.
   # -----------------------------------------------------------------------------------
   # Usage:
   # bundle exec fastlane download_translations
   #####################################################################################
-  desc 'Download the latest app translations from GlotPress and update the strings.xml files accordingly'
+  desc 'Translate every supported locale with the AI engine (GlotPress replacement)'
   lane :download_translations do
-    android_download_translations(
-      res_dir: RES_DIR_PATH,
-      glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
-      locales: SUPPORTED_LOCALES
-    )
+    ai_translate(mode: 'sweep')
   end
 
   #####################################################################################
   # ai_translate
   # -----------------------------------------------------------------------------------
   # Translates the app strings with the self-contained AI engine
-  # (fastlane/ai_translation), the GlotPress replacement. Additive for now:
-  # GlotPress still runs, so this can be exercised in shadow mode before cutover.
+  # (fastlane/ai_translation) -- the GlotPress replacement.
   #
   # Only missing/changed keys (vs translation-manifest.json) are sent to the
   # model; a bot commits the resulting values-*/strings.xml + manifest.
@@ -509,6 +509,34 @@ platform :android do
     sh('ruby', tool, *args)
   end
 
+  #####################################################################################
+  # ai_translate_metadata
+  # -----------------------------------------------------------------------------------
+  # Play Store metadata translation via the AI engine -- the GlotPress
+  # `gp_downloadmetadata` / PlayStoreStrings.pot replacement (workstream 3c).
+  # Static listing (title/short/full description) is always eligible; release
+  # notes (changelogs/default.txt) only when include_release_notes:true (the
+  # code-freeze sweep), never at PR-time.
+  #
+  # Usage:
+  # bundle exec fastlane ai_translate_metadata version:10.3 include_release_notes:true
+  #####################################################################################
+  desc 'Translate Play Store metadata with the AI engine (GlotPress replacement)'
+  lane :ai_translate_metadata do |version: release_version_current, include_release_notes: false, app: MOBILE_APP|
+    gp_locales = SUPPORTED_LOCALES.map { |h| h[:google_play] }.join(',')
+    tool = File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'bin', 'woo-ai-translate')
+    args = [
+      '--mode', 'metadata',
+      '--manifest', File.join(PROJECT_ROOT_FOLDER, 'fastlane', 'ai_translation', 'translation-manifest.json'),
+      '--metadata-source', METADATA_SOURCE_DIR_PATH[app],
+      '--metadata-out', METADATA_DIR_PATH[app],
+      '--gp-locales', gp_locales,
+      '--version', version.to_s
+    ]
+    args << '--include-release-notes' if include_release_notes
+    sh('ruby', tool, *args)
+  end
+
   # This lane downloads the latest translations and commits them
   #
   # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
@@ -527,13 +555,14 @@ platform :android do
 
     configure_apply(force: is_ci)
 
-    # Don't check translation coverage in CI
-    check_translation_progress_all unless is_ci
+    # Full reconciliation sweep: every key x every locale (the safety net for
+    # anything the PR-time job missed). The manifest + blocking validation
+    # gates supersede the old GlotPress coverage check.
     download_translations
 
-    # Download metadata strings for both apps
-    download_metadata_strings(version: release_version_current, app: MOBILE_APP)
-    download_metadata_strings(version: release_version_current, app: WEAR_APP) if include_wear_app
+    # Metadata incl. per-release notes (code-freeze only) for both apps.
+    ai_translate_metadata(version: release_version_current, include_release_notes: true, app: MOBILE_APP)
+    ai_translate_metadata(version: release_version_current, include_release_notes: true, app: WEAR_APP) if include_wear_app
 
     UI.important('Pushing changes to remote')
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless is_ci || UI.confirm('Do you want to continue?')
@@ -650,26 +679,10 @@ platform :android do
     delete_remote_git_branch!(current_branch)
   end
 
-  lane :check_translation_progress_all do
-    check_translation_progress_strings
-    check_translation_progress_release_notes
-  end
-
-  lane :check_translation_progress_strings do
-    UI.message('Checking app strings translation status...')
-    check_translation_progress(
-      glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
-      abort_on_violations: false
-    )
-  end
-
-  lane :check_translation_progress_release_notes do
-    UI.message('Checking release notes strings translation status...')
-    check_translation_progress(
-      glotpress_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
-      abort_on_violations: false
-    )
-  end
+  # GlotPress translation-coverage checks were removed: the AI engine's
+  # translation-manifest.json plus the blocking validation gates (placeholder
+  # parity, XML well-formedness, key parity, plural-pair output integrity)
+  # supersede them.
 
   #####################################################################################
   # build_and_upload_google_play
@@ -883,41 +896,21 @@ platform :android do
     )
   end
 
-  # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
+  # Backward-compatible alias: the GlotPress metadata download is replaced by
+  # the AI engine. Translates metadata (incl. per-release notes) and commits.
   #
-  # @param [String] version the version for which to download metadata
-  # @param [String] app (default: WooCommerce) The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  # @param [String] version the version for which to translate metadata
+  # @param [String] app (default: WooCommerce) MOBILE_APP or WEAR_APP
   #
   # @example Running the lane
   #          bundle exec fastlane download_metadata_strings version:10.3 app:'WooCommerce-Wear'
   #
   lane :download_metadata_strings do |version:, app: MOBILE_APP|
-    values = version.split('.')
+    UI.user_error!("Unknown app parameter: #{app}. Must be one of #{MOBILE_APP} or #{WEAR_APP}") unless [MOBILE_APP, WEAR_APP].include?(app)
 
-    files = case app
-            when MOBILE_APP
-              {
-                "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 500 },
-                play_store_promo: { desc: 'short_description.txt', max_size: 80 },
-                play_store_desc: { desc: 'full_description.txt', max_size: 0 },
-                play_store_app_title: { desc: 'title.txt', max_size: 50 }
-              }
-            when WEAR_APP
-              { wear_release_note: { desc: 'changelogs/default.txt', max_size: 500 } }
-            else
-              UI.user_error!("Unknown app parameter: #{app}. Must me one of #{MOBILE_APP} or #{WEAR_APP}")
-            end
+    ai_translate_metadata(version: version, include_release_notes: true, app: app)
 
     download_path = METADATA_DIR_PATH[app]
-    gp_downloadmetadata(
-      project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
-      target_files: files,
-      locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] },
-      download_path: download_path
-    )
-
-    # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
-    # That's because we might have new files, that the commit command would otherwise miss.
     git_add(path: download_path)
     git_commit(
       path: download_path,
@@ -1000,8 +993,8 @@ platform :android do
                 # Depending on how automated this is, possibly on whether we wipe the
                 # emulator before running or not, the zh-CN locale might break due to
                 # Pinwin Keyboard wanting contacts access. If that's the case, you can
-                # skip it by uncommeting the following line.
-                # .reject { |locale| locale[:glotpress] == 'zh-cn' }
+                # skip it by uncommenting the following line.
+                # .reject { |locale| locale[:google_play] == 'zh-CN' }
               end
 
     UI.message("Attempting screenshots for locales: #{locales}")
@@ -1123,28 +1116,11 @@ platform :android do
     )
   end
 
-  # This lane downloads the translated promo strings from the translation system.
-  #
-  lane :download_promo_strings do
-    # "<key in .po file>" => { desc: "<name of txt file>" }
-    files = {
-      play_store_screenshot_1: { desc: 'promo_screenshot_1.txt' },
-      play_store_screenshot_2: { desc: 'promo_screenshot_2.txt' },
-      play_store_screenshot_3: { desc: 'promo_screenshot_3.txt' },
-      play_store_screenshot_4: { desc: 'promo_screenshot_4.txt' },
-      play_store_screenshot_5: { desc: 'promo_screenshot_5.txt' }
-    }
-
-    locales = SUPPORTED_LOCALES
-              .reject { |hsh| hsh[:promo_config] == false }
-              .map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
-
-    gp_downloadmetadata(project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
-                        target_files: files,
-                        locales: locales,
-                        source_locale: 'en-US',
-                        download_path: METADATA_DIR_PATH[MOBILE_APP])
-  end
+  # `download_promo_strings` was removed: promo-screenshot overlay text stays
+  # English for all locales. The AI pipeline never translates
+  # `promo_screenshot_*.txt`; localized screenshots (assets + text) are a
+  # deferred content-ops follow-up. Existing localized screenshot assets in the
+  # repo are left untouched.
 
   #####################################################################################
   # build_and_instrumented_test
@@ -1518,15 +1494,14 @@ platform :android do
     )
   end
 
-  # Copy the original English `strings.xml` file into the location from where the WPCOM job will pick them
+  # Snapshot the English `strings.xml` at code freeze. This is now purely the
+  # internal baseline for the AI code-freeze reconciliation sweep -- it freezes
+  # the source as of code freeze so post-freeze `trunk` edits are not pulled
+  # into the release.
   #
-  # The reason for the WPCOM job to import the file from `FROZEN_STRINGS_PATH` and not `MAIN_STRINGS_PATH` is so
-  # that it picks the file's content as it was at the time of code freeze, and does not risk picking up changes
-  # that could be made to the `MAIN_STRINGS_PATH` file on `trunk` _after_ code freeze, by devs working on features.
-  #
-  # A WPCOM job is responsible to import the `FROZEN_STRINGS_PATH` file into GlotPress (as opposed to e.g. us sending them via API).
-  # Note: If you decide to change the path to `FROZEN_STRINGS_PATH` at some point, ensure you also update it in the WPCOM job:
-  #       https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#33
+  # GlotPress is retired, so the WPCOM cron that imported this file
+  # (wpcom/bin/i18n/import-github-originals.php) must be retired too. That is an
+  # Apps Infra handoff (out of this repo); see docs/localization.md.
   #
   private_lane :freeze_strings_for_translation do
     FileUtils.mkdir_p(File.dirname(FROZEN_STRINGS_PATH))

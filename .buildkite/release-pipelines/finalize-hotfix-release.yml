@@ -13,6 +13,12 @@ steps:
       echo '--- :ruby: Setup Ruby Tools'
       install_gems
 
+      echo '--- :globe_with_meridians: AI Translations (hotfix sweep)'
+      # A hotfix never has to wait for a PR-time run: reconcile + commit
+      # translations on the hotfix branch before finalizing (mirrors how the
+      # code-freeze sweep sits in the normal release flow).
+      bundle exec fastlane download_release_translations skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
+
       echo '--- :fire: Finalize Hotfix Release'
       bundle exec fastlane finalize_hotfix_release skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:
