@@ -516368,7 +516368,7 @@
           "prompt_version": "2026-05-19.1",
           "updated": "2026-05-22T12:54:33Z"
         },
-        "nb-NO": {
+        "no-NO": {
           "origin": "ai",
           "cache_key": "5be0261ee64f185e093945c33d7e56d9cb70b13c01b98fd1ecf1f5410a7db2fe",
           "model": "claude-opus-4-7",
@@ -516477,7 +516477,7 @@
           "prompt_version": "2026-05-19.1",
           "updated": "2026-05-22T12:54:35Z"
         },
-        "nb-NO": {
+        "no-NO": {
           "origin": "ai",
           "cache_key": "8b9f93c0f59481bf04691c70bbd50b1c65cdb2fecf5fede6bf14b15d7aeae7bc",
           "model": "claude-opus-4-7",
@@ -516572,7 +516572,7 @@
           "prompt_version": "2026-05-19.1",
           "updated": "2026-05-22T12:54:44Z"
         },
-        "nb-NO": {
+        "no-NO": {
           "origin": "ai",
           "cache_key": "20a031e1e02a1858b8af0b8e5a9d64ead9430c588180cfa3a9e96dfd5e239b8c",
           "model": "claude-haiku-4-5",
