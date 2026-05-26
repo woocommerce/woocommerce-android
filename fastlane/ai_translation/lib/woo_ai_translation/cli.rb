@@ -85,8 +85,7 @@ module WooAiTranslation
 
       reports = engine.run_strings(locales: opts[:locales], origin: 'ai')
       print_summary(reports, opts[:mode])
-      problems = reports.sum { |r| r.failed.size + r.gate_errors.size }
-      opts[:strict] && problems.positive? ? 1 : 0
+      strict_exit_code(reports, mode: opts[:mode], strict: opts[:strict])
     end
 
     def run_import(opts, manifest, context, logger)
@@ -193,6 +192,17 @@ module WooAiTranslation
         r.failed.first(10).each { |f| warn("    - #{f}") }
         r.gate_errors.first(10).each { |g| warn("    ! #{g}") }
       end
+    end
+
+    def strict_exit_code(reports, mode:, strict:)
+      return 0 unless strict
+
+      problems = if mode == 'prtime'
+                   reports.sum { |r| r.gate_errors.size }
+                 else
+                   reports.sum { |r| r.failed.size + r.gate_errors.size }
+                 end
+      problems.positive? ? 1 : 0
     end
   end
 end

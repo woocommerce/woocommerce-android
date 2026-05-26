@@ -54,9 +54,9 @@ steps:
         command: .buildkite/commands/ai-translate-pr.sh
         key: ai-translations
         if: "build.pull_request.id != null"
-        # Eased in: keep soft_fail until the PR-time job is proven stable, then
-        # remove this line to make it a hard (required) check.
-        soft_fail: true
+        concurrency: 1
+        concurrency_group: "woocommerce-android/ai-translations/${BUILDKITE_PULL_REQUEST}"
+        concurrency_method: eager
         agents:
           queue: "mac-metal"
         plugins: [$CI_TOOLKIT]
