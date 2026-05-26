@@ -101,8 +101,8 @@ UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-a
 # listing dir. The 15 new locales use `promo_config: false` (English-fallback
 # screenshots; localized screenshots are a deferred content-ops follow-up).
 #
-# NOTE: some Play Console codes for the new locales still need confirmation
-# (esp. ms / bg / uk). See docs/localization.md "Open questions".
+# Google Play's store-listing language list uses `no-NO` for Norwegian, while Android
+# app resources still use the more specific `nb` qualifier.
 SUPPORTED_LOCALES = [
   { android: 'ar', google_play: 'ar', promo_config: {} },
   { android: 'de', google_play: 'de-DE', promo_config: {} },
@@ -125,7 +125,7 @@ SUPPORTED_LOCALES = [
   { android: 'pt-rPT', google_play: 'pt-PT', promo_config: false },
   { android: 'cs', google_play: 'cs-CZ', promo_config: false },
   { android: 'da', google_play: 'da-DK', promo_config: false },
-  { android: 'nb', google_play: 'nb-NO', promo_config: false },
+  { android: 'nb', google_play: 'no-NO', promo_config: false },
   { android: 'fi', google_play: 'fi-FI', promo_config: false },
   { android: 'el', google_play: 'el-GR', promo_config: false },
   { android: 'hu', google_play: 'hu-HU', promo_config: false },
