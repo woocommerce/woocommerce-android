@@ -17,12 +17,13 @@ class WooPosCheckoutBottomBarTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `given card payments enabled, then renders Cash and Other Payment Methods buttons`() {
+    fun `given card payments enabled and other methods present, then renders Cash and Other buttons`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
                     state = checkoutState(isCardPaymentEnabledForCountry = true),
                     onUIEvent = {},
+                    hasOtherPaymentMethods = true,
                 )
             }
         }
@@ -32,18 +33,51 @@ class WooPosCheckoutBottomBarTest {
     }
 
     @Test
-    fun `given card payments disabled, then renders Cash and Other Payment Methods buttons`() {
+    fun `given card payments enabled and no other methods, then renders only Cash button`() {
+        composeTestRule.setContent {
+            WooPosTheme {
+                CheckoutBottomBar(
+                    state = checkoutState(isCardPaymentEnabledForCountry = true),
+                    onUIEvent = {},
+                    hasOtherPaymentMethods = false,
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON).assertDoesNotExist()
+    }
+
+    @Test
+    fun `given card payments disabled and other methods present, then renders Cash and Other buttons`() {
         composeTestRule.setContent {
             WooPosTheme {
                 CheckoutBottomBar(
                     state = checkoutState(isCardPaymentEnabledForCountry = false),
                     onUIEvent = {},
+                    hasOtherPaymentMethods = true,
                 )
             }
         }
 
         composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON).assertIsDisplayed()
         composeTestRule.onNodeWithTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON).assertIsDisplayed()
+    }
+
+    @Test
+    fun `given card payments disabled and no other methods, then renders only Cash button`() {
+        composeTestRule.setContent {
+            WooPosTheme {
+                CheckoutBottomBar(
+                    state = checkoutState(isCardPaymentEnabledForCountry = false),
+                    onUIEvent = {},
+                    hasOtherPaymentMethods = false,
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON).assertDoesNotExist()
     }
 
     private fun checkoutState(isCardPaymentEnabledForCountry: Boolean) = WooPosTotalsViewState.Checkout(

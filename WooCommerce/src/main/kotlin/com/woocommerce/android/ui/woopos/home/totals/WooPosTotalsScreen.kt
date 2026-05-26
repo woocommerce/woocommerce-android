@@ -220,6 +220,12 @@ private fun TotalsLoaded(
     val showButtonsTopShadow by remember {
         derivedStateOf { scrollState.canScrollForward }
     }
+    val otherPaymentMethods = buildAllPaymentMethods(
+        readerStatus = state.readerStatus,
+        isTapToPayAvailable = state.isTapToPayAvailable,
+        isScanToPayEnabled = state.isScanToPayEnabled,
+        isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -282,17 +288,15 @@ private fun TotalsLoaded(
             state = state,
             onUIEvent = onUIEvent,
             showButtonsTopShadow = showButtonsTopShadow,
+            hasOtherPaymentMethods = otherPaymentMethods.isNotEmpty(),
         )
     }
 
+    // Sibling of the Column so the phone fullscreen overlays the totals chrome
+    // instead of laying out below the bottom bar.
     WooPosAllPaymentMethodsBottomSheet(
         isVisible = state.isAllPaymentMethodsBottomSheetVisible,
-        methods = buildAllPaymentMethods(
-            readerStatus = state.readerStatus,
-            isTapToPayAvailable = state.isTapToPayAvailable,
-            isScanToPayEnabled = state.isScanToPayEnabled,
-            isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
-        ),
+        methods = otherPaymentMethods,
         onMethodClicked = { method ->
             onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
             method.toUIEvent()?.let(onUIEvent)
@@ -306,17 +310,20 @@ internal fun CheckoutBottomBar(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
     showButtonsTopShadow: Boolean = false,
+    hasOtherPaymentMethods: Boolean = false,
 ) {
     if (state.isCardPaymentEnabledForCountry) {
         CheckoutPaymentButtons(
             onUIEvent = onUIEvent,
             buttonsState = state.paymentButtonsState,
             showTopShadow = showButtonsTopShadow,
+            hasOtherPaymentMethods = hasOtherPaymentMethods,
         )
     } else {
         NoCardCheckoutPaymentButtons(
             onUIEvent = onUIEvent,
             buttonsState = state.paymentButtonsState,
+            hasOtherPaymentMethods = hasOtherPaymentMethods,
         )
     }
 }
@@ -326,6 +333,7 @@ private fun CheckoutPaymentButtons(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
     buttonsState: WooPosTotalsViewState.PaymentButtonsState,
     showTopShadow: Boolean,
+    hasOtherPaymentMethods: Boolean,
 ) {
     val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     val outerPaddingModifier = if (isPhone) {
@@ -354,14 +362,16 @@ private fun CheckoutPaymentButtons(
                 state = buttonState,
                 onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             )
-            WooPosOutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
-                text = stringResource(R.string.woopos_payment_method_other_methods_label),
-                state = buttonState,
-                onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
-            )
+            if (hasOtherPaymentMethods) {
+                WooPosOutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+                    text = stringResource(R.string.woopos_payment_method_other_methods_label),
+                    state = buttonState,
+                    onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+                )
+            }
         }
     }
 }
@@ -399,6 +409,7 @@ private fun ScrollEdgeShadow(
 private fun NoCardCheckoutPaymentButtons(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
     buttonsState: WooPosTotalsViewState.PaymentButtonsState,
+    hasOtherPaymentMethods: Boolean,
 ) {
     val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
     val outerPaddingModifier = if (isPhone) {
@@ -425,14 +436,16 @@ private fun NoCardCheckoutPaymentButtons(
             state = buttonState,
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
         )
-        WooPosOutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
-            text = stringResource(R.string.woopos_payment_method_other_methods_label),
-            state = buttonState,
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
-        )
+        if (hasOtherPaymentMethods) {
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+                text = stringResource(R.string.woopos_payment_method_other_methods_label),
+                state = buttonState,
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+            )
+        }
     }
 }
 
