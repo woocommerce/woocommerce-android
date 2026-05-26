@@ -270,6 +270,7 @@ private fun RefundScreenHeader(
 }
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 private fun RefundScreenButtons(
     state: WooPosRefundState,
     onDismiss: () -> Unit,
