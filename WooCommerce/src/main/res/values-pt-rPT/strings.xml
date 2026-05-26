@@ -1368,10 +1368,10 @@
     <string name="card_reader_tap_to_pay_description">Use o seu telemóvel para aceitar\npagamentos com cartão. Experimente agora.</string>
     <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Verificar Requisitos</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay não está disponível</string>
-    <string name="card_reader_tap_to_pay_not_available_error_nfc">Para usar o Tap To Pay no Android, o seu dispositivo precisa de um chip NFC. Para aceitar pagamentos presenciais, por favor compre um leitor de cartão Bluetooth.</string>
-    <string name="card_reader_tap_to_pay_not_available_error_android_version">Para usar o Tap To Pay no Android, precisa do Android 10 ou mais recente. Para aceitar pagamentos presenciais, por favor atualize o Android ou compre um leitor de cartão Bluetooth.</string>
-    <string name="card_reader_tap_to_pay_not_available_error_gms">Para usar o Tap To Pay no Android, o seu dispositivo precisa dos Serviços Google Play. Para aceitar pagamentos presenciais, por favor instale os Serviços Google Play ou compre um leitor de cartão Bluetooth.</string>
-    <string name="card_reader_tap_to_pay_not_available_error_country">Infelizmente, o Tap To Pay no Android ainda não está disponível no seu país. Fique atento!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Para usar o Tap to Pay no Android, o seu dispositivo precisa de um chip NFC. Para aceitar pagamentos presenciais, por favor compre um leitor de cartão Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Para usar o Tap to Pay no Android, precisa do Android 10 ou mais recente. Para aceitar pagamentos presenciais, por favor atualize o Android ou compre um leitor de cartão Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Para usar o Tap to Pay no Android, o seu dispositivo precisa dos Serviços Google Play. Para aceitar pagamentos presenciais, por favor instale os Serviços Google Play ou compre um leitor de cartão Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Infelizmente, o Tap to Pay no Android ainda não está disponível no seu país. Fique atento!</string>
     <string name="card_reader_hub_payout_summary_available_funds">Fundos disponíveis</string>
     <string name="card_reader_hub_payout_summary_pending_funds">Fundos pendentes</string>
     <string name="card_reader_hub_payout_summary_funds_available_after_plural">Os fundos ficam disponíveis após um período de espera de %d dias.</string>
@@ -1390,9 +1390,9 @@
     <string name="card_reader_hub_payout_summary_status_failed">Falhado</string>
     <string name="card_reader_hub_payout_summary_status_unknown">Desconhecido</string>
     <!--
-           Card Reader Tap To Pay Explanation
+           Card Reader Tap to Pay Explanation
         -->
-    <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tap to Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Receba pagamentos com cartão\ncom o seu telemóvel</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Aceite todos os tipos de pagamentos presenciais, diretamente\nno seu telemóvel. Sem hardware adicional necessário.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">É fácil, seguro e privado.</string>
@@ -1402,15 +1402,15 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Algo correu mal. Por favor, tente novamente mais tarde.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">A reembolsar pagamento de teste…</string>
     <string name="card_reader_tap_to_pay_explanation_refund_failed">O reembolso falhou. Tente reembolsar manualmente</string>
-    <string name="card_reader_tap_to_pay_test_payment_note">Pagamento de Teste Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_successful_refund_message">O pagamento de teste do Tap To Pay foi reembolsado com sucesso</string>
+    <string name="card_reader_tap_to_pay_test_payment_note">Pagamento de Teste Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">O pagamento de teste do Tap to Pay foi reembolsado com sucesso</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">Ver Encomenda</string>
-    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Saiba mais&lt;/a&gt; sobre como aceitar pagamentos com Tap To Pay no Android</string>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Saiba mais&lt;/a&gt; sobre como aceitar pagamentos com Tap to Pay no Android</string>
 
     <!--
-           Card Reader Tap To Pay About
+           Card Reader Tap to Pay About
         -->
-    <string name="card_reader_tap_to_pay_about_title">Sobre o Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_about_title">Sobre o Tap to Pay</string>
     <string name="card_reader_tap_to_pay_about_header">O que é o Tap to Pay?</string>
     <string name="card_reader_tap_to_pay_about_description">O Tap to Pay permite-lhe aceitar todos os tipos de pagamentos sem contacto – desde cartões de débito e crédito físicos, a carteiras digitais – sem necessidade de comprar um leitor de cartão físico.</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">Informação importante</string>
@@ -1430,11 +1430,11 @@
     <!--
             Card Reader Type Selection
         -->
-    <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
+    <string name="card_reader_type_selection_tap_to_pay">Tap to Pay</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Aceite pagamentos sem contacto de forma segura diretamente a partir do seu telemóvel.</string>
     <string name="card_reader_type_selection_bluetooth_reader">Leitor de Cartão</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">O leitor de cartão aceita pagamentos por aproximação, chip e deslize com cartões de débito e crédito.</string>
-    <string name="tap_to_pay_refund_reason">Reembolso automático de pagamento de teste Tap To Pay</string>
+    <string name="tap_to_pay_refund_reason">Reembolso automático de pagamento de teste Tap to Pay</string>
     <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
 
 
@@ -1504,7 +1504,7 @@
     <string name="card_reader_payment_failed_invalid_amount">O valor do pagamento não é permitido para o cartão apresentado</string>
     <string name="card_reader_payment_failed_pin_required">Este cartão requer um código PIN e, por isso, não pode ser processado</string>
     <string name="card_reader_payment_failed_incorrect_pin">Foi introduzido um PIN incorreto. Tente novamente ou use outro método de pagamento</string>
-    <string name="card_reader_payment_failed_pin_required_tap_to_pay">É necessário um código PIN, mas o Tap To Pay ainda não o suporta. Considere usar um leitor de cartão externo</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">É necessário um código PIN, mas o Tap to Pay ainda não o suporta. Considere usar um leitor de cartão externo</string>
     <string name="card_reader_payment_failed_too_many_pin_tries">Foi introduzido um PIN incorreto demasiadas vezes</string>
     <string name="card_reader_payment_failed_test_card">Os cartões de teste do sistema não são permitidos para pagamento</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Foi usado um cartão real num site em modo de teste</string>
@@ -4752,7 +4752,7 @@
     <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Retroceder</string>
     <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Iniciar nova conversa</string>
     <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">Ir para o mais recente</string>
-    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Você: %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Si: %1$s</string>
     <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Assistente: %1$s</string>
     <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">O assistente está a pensar</string>
     <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">A verificar encomendas</string>
