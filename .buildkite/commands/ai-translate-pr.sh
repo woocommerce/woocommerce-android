@@ -13,6 +13,7 @@
 # carries `[skip ai-translate]` so the follow-up build does not loop.
 
 BOT_SKIP_MARKER="[skip ai-translate]"
+SKIP_LABEL="skip-ai-translation"
 MAIN_STRINGS="WooCommerce/src/main/res/values/strings.xml"
 
 changed_source_keys() {
@@ -50,19 +51,60 @@ comment_failure() {
 
 ${message}
 
-The Buildkite step is currently soft-failed, so check the AI Translations job log before relying on this PR's localization diff." || true
+Check the AI Translations job log before relying on this PR's localization diff." || true
 }
+
+github_repo() {
+  git config --get remote.origin.url |
+    sed -E 's#^git@github.com:##; s#^https://github.com/##; s#\.git$##'
+}
+
+github_token() {
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    echo "${GITHUB_TOKEN}"
+  elif [ -n "${AUTOMATTIC_GITHUB_TOKEN_READ_ONLY:-}" ]; then
+    echo "${AUTOMATTIC_GITHUB_TOKEN_READ_ONLY}"
+  fi
+}
+
+pr_has_skip_label() {
+  local pr="${BUILDKITE_PULL_REQUEST:-}"
+  [ -n "${pr}" ] && [ "${pr}" != "false" ] || return 1
+
+  local token
+  token="$(github_token)"
+  if [ -z "${token}" ]; then
+    echo "No GitHub token available to check for ${SKIP_LABEL}; continuing without bypass."
+    return 1
+  fi
+
+  local repo
+  repo="$(github_repo)"
+  curl -fsSL \
+    -H "Authorization: Bearer ${token}" \
+    -H "Accept: application/vnd.github+json" \
+    "https://api.github.com/repos/${repo}/issues/${pr}/labels" |
+    ruby -rjson -e 'labels = JSON.parse($stdin.read).map { |l| l.fetch("name") }; exit(labels.include?(ARGV.fetch(0)) ? 0 : 1)' "${SKIP_LABEL}" 2>/dev/null
+}
+
+# Don't re-process our own bot commit.
+if git log -1 --pretty=%B | grep -qF "${BOT_SKIP_MARKER}"; then
+  echo "HEAD is a bot translation commit — nothing to do."
+  exit 0
+fi
+
+if pr_has_skip_label; then
+  echo "PR has ${SKIP_LABEL}; skipping AI translation."
+  comment_on_pr --id ai-translations "## :globe_with_meridians: AI translations skipped
+
+This PR is labeled \`${SKIP_LABEL}\`, so the required AI translation job was bypassed intentionally." || true
+  exit 0
+fi
 
 # Fork PRs / no-secret builds: no API key is injected. Skip cleanly; the
 # code-freeze sweep is the safety net for these deltas.
 if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
   echo "ANTHROPIC_API_KEY not available (fork PR or no secret) — skipping AI translation."
-  exit 0
-fi
-
-# Don't re-process our own bot commit.
-if git log -1 --pretty=%B | grep -qF "${BOT_SKIP_MARKER}"; then
-  echo "HEAD is a bot translation commit — nothing to do."
   exit 0
 fi
 

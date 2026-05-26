@@ -1066,6 +1066,29 @@ end
 class ManifestInvalidationTest < Minitest::Test
   M = WooAiTranslation::Manifest
 
+  def test_source_change_invalidation_is_per_locale_for_legacy_key_level_manifests
+    m = M.new(
+      {
+        'keys' => {
+          'app_name' => {
+            'source_sha' => 'old-sha',
+            'locales' => {
+              'pl' => { 'origin' => 'ai' },
+              'cs' => { 'origin' => 'ai' }
+            }
+          }
+        },
+        'metadata' => {}
+      }
+    )
+
+    assert m.stale?(name: 'app_name', locale: 'pl', expected_source_sha: 'new-sha')
+    m.record(name: 'app_name', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'new-sha')
+
+    refute m.stale?(name: 'app_name', locale: 'pl', expected_source_sha: 'new-sha')
+    assert m.stale?(name: 'app_name', locale: 'cs', expected_source_sha: 'new-sha')
+  end
+
   def test_invalidate_clears_recorded_locales_for_a_key
     m = M.new
     m.record(name: 'app_name', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'sha')
@@ -1087,6 +1110,34 @@ class ManifestInvalidationTest < Minitest::Test
     m.record(name: 'a', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'sha')
     m.record(name: 'b', locale: 'pl', model: 'test-model', origin: 'ai', source_sha: 'sha')
     assert_equal %w[a b].sort, m.known_keys.sort
+  end
+end
+
+class CliStrictModeTest < Minitest::Test
+  Report = WooAiTranslation::Engine::Report
+
+  def test_prtime_strict_allows_recoverable_translation_failures
+    reports = [
+      Report.new(locale: 'pl', translated: 0, reused: 0, written: 0, failed: ['app_name'], gate_errors: [])
+    ]
+
+    assert_equal 0, WooAiTranslation::CLI.strict_exit_code(reports, mode: 'prtime', strict: true)
+  end
+
+  def test_prtime_strict_blocks_gate_errors
+    reports = [
+      Report.new(locale: 'pl', translated: 0, reused: 0, written: 0, failed: [], gate_errors: ['missing keys'])
+    ]
+
+    assert_equal 1, WooAiTranslation::CLI.strict_exit_code(reports, mode: 'prtime', strict: true)
+  end
+
+  def test_non_prtime_strict_still_blocks_recoverable_translation_failures
+    reports = [
+      Report.new(locale: 'pl', translated: 0, reused: 0, written: 0, failed: ['app_name'], gate_errors: [])
+    ]
+
+    assert_equal 1, WooAiTranslation::CLI.strict_exit_code(reports, mode: 'sweep', strict: true)
   end
 end
 
