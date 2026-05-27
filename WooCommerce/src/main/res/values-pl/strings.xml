@@ -4804,4 +4804,23 @@
     <string name="product_filter_explore_plugin">Odkryj!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Skanuj kod kreskowy, aby zaktualizować stan magazynowy</string>
     <string name="product_creation_survey_title">Twoja opinia jest dla nas ważna!</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Niski stan magazynowy</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Zapisano %1$s z SKU %2$s i %3$d szt. w magazynie.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Cena promocyjna %1$s jest o %2$d%% niższa od ceny regularnej i obowiązuje od %3$s do %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Oszczędź 20% na produktach w zestawie i zachowaj 100% formatowania SKU.</string>
+    <string name="ai_translation_test_product_html_link">Sprawdź &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;progi stanów magazynowych&lt;/u&gt;&lt;/a&gt; przed włączeniem zamówień zaległych.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; jest gotowy do publikacji. Sprawdź cenę, stan magazynowy i wysyłkę przed opublikowaniem.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produkt %1$s jest niedostępny.\nUzupełnij %2$d szt. lub oznacz jako zamówienie zaległe.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d wariant wybrany do edycji zbiorczej</item>
+        <item quantity="few">%1$d warianty wybrane do edycji zbiorczej</item>
+        <item quantity="many">%1$d wariantów wybranych do edycji zbiorczej</item>
+        <item quantity="other">%1$d wariantów wybranych do edycji zbiorczej</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Produkt prosty</item>
+        <item>Produkt zmienny</item>
+        <item>Produkt subskrypcyjny</item>
+    </string-array>
 </resources>

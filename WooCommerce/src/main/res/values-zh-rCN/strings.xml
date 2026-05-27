@@ -3900,4 +3900,20 @@ Language: zh_CN
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小计（共 %d 件商品）</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">库存不足</string>
+    <string name="ai_translation_test_product_placeholder_inventory">已保存 %1$s，SKU 为 %2$s，库存 %3$d 件。</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">促销价 %1$s 比原价低 %2$d%%，活动时间为 %3$s 至 %4$s。</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">捆绑商品立省20%，SKU格式100%保持不变。</string>
+    <string name="ai_translation_test_product_html_link">启用缺货订购前，请查看&lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;库存阈值&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; 已准备好发布。上线前请检查价格、库存和配送信息。</string>
+    <string name="ai_translation_test_product_multiline_backorder">商品 %1$s 已缺货。\n请补货 %2$d 件或将其标记为缺货可订购。</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">已选择 %1$d 个变体进行批量编辑</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>简单商品</item>
+        <item>可变商品</item>
+        <item>订阅商品</item>
+    </string-array>
 </resources>

@@ -4804,4 +4804,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Vahvistus ei ole vielä saatavilla. Yritä uudelleen chatissa.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Avustaja ei pystynyt suorittamaan tehtävää useiden vaiheiden jälkeen.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Jokin meni pieleen avustajan työskennellessä.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Vähän varastossa</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Tallennettu %1$s SKU:lla %2$s ja %3$d yksikköä varastossa.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Alennushinta %1$s on %2$d%% alempi kuin normaalihinta ja on voimassa %3$s–%4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Säästä 20% pakettituotteista ja säilytä 100% SKU-muotoilustasi.</string>
+    <string name="ai_translation_test_product_html_link">Tarkista &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;varastorajat&lt;/u&gt;&lt;/a&gt; ennen jälkitilausten käyttöönottoa.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; on valmis julkaistavaksi. Tarkista hinta, varasto ja toimitus ennen julkaisua.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Tuote %1$s on loppu varastosta.\nTäydennä %2$d yksikköä tai merkitse jälkitilattavaksi.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variaatio valittu massamuokkaukseen</item>
+        <item quantity="other">%1$d variaatiota valittu massamuokkaukseen</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Yksinkertainen tuote</item>
+        <item>Muuttuva tuote</item>
+        <item>Tilaustuote</item>
+    </string-array>
 </resources>

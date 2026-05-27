@@ -4804,4 +4804,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Bekreftelse er ikke tilgjengelig ennå. Prøv igjen fra chatten.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Assistenten klarte ikke å fullføre etter flere forsøk.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Noe gikk galt mens assistenten jobbet.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Lavt lager</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Lagret %1$s med SKU %2$s og %3$d enheter på lager.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Salgspris %1$s er %2$d%% lavere enn ordinær pris og gjelder fra %3$s til %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Spar 20% på pakkeprodukter og behold 100% av SKU-formateringen.</string>
+    <string name="ai_translation_test_product_html_link">Se gjennom &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;lagerterskler&lt;/u&gt;&lt;/a&gt; før du aktiverer restordre.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; er klar til publisering. Sjekk pris, lager og frakt før den publiseres.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produkt %1$s er utsolgt.\nFyll på %2$d enheter eller merk det som restordre.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variant valgt for masseredigering</item>
+        <item quantity="other">%1$d varianter valgt for masseredigering</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Enkelt produkt</item>
+        <item>Variabelt produkt</item>
+        <item>Abonnementsprodukt</item>
+    </string-array>
 </resources>

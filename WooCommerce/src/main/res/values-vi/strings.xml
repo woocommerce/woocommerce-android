@@ -4803,4 +4803,20 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Xác nhận chưa có sẵn. Vui lòng thử lại từ cuộc trò chuyện.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Trợ lý không thể hoàn thành sau nhiều bước.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Đã xảy ra lỗi trong khi trợ lý đang làm việc.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Sản phẩm sắp hết hàng</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Đã lưu %1$s với SKU %2$s và %3$d đơn vị trong kho.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Giá khuyến mãi %1$s thấp hơn %2$d%% so với giá gốc và áp dụng từ %3$s đến %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Tiết kiệm 20% cho sản phẩm theo gói và giữ nguyên 100% định dạng SKU của bạn.</string>
+    <string name="ai_translation_test_product_html_link">Xem lại &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;ngưỡng tồn kho&lt;/u&gt;&lt;/a&gt; trước khi bật đặt hàng trước.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; đã sẵn sàng để đăng. Kiểm tra giá, tồn kho và vận chuyển trước khi xuất bản.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Sản phẩm %1$s đã hết hàng.\nNhập thêm %2$d đơn vị hoặc đánh dấu là đặt hàng trước.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">%1$d biến thể được chọn để chỉnh sửa hàng loạt</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Sản phẩm đơn giản</item>
+        <item>Sản phẩm biến thể</item>
+        <item>Sản phẩm đăng ký</item>
+    </string-array>
 </resources>

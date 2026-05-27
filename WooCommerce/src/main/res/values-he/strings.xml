@@ -3901,4 +3901,23 @@ Language: he_IL
         <item quantity="many">סכום ביניים (%d פריטים)</item>
         <item quantity="other">סכום ביניים (%d פריטים)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">מק\"ט</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">מוצר במלאי נמוך</string>
+    <string name="ai_translation_test_product_placeholder_inventory">נשמר %1$s עם מק\"ט %2$s ו-%3$d יחידות במלאי.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">מחיר המבצע %1$s נמוך ב-%2$d%% מהמחיר הרגיל ותקף מ-%3$s עד %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">חסכו 20% על מוצרים בחבילה ושמרו 100% על עיצוב המק\"ט שלכם.</string>
+    <string name="ai_translation_test_product_html_link">סקרו &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;סף מלאי&lt;/u&gt;&lt;/a&gt; לפני הפעלת הזמנות לוג.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; מוכן לפרסום. בדקו מחיר, מלאי ומשלוח לפני שיפורסם.</string>
+    <string name="ai_translation_test_product_multiline_backorder">המוצר %1$s אזל מהמלאי.\nחדשו %2$d יחידות או סמנו אותו כהזמנה לוג.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">וריאציה %1$d נבחרה לעריכה קבוצתית</item>
+        <item quantity="two">%1$d וריאציות נבחרו לעריכה קבוצתית</item>
+        <item quantity="many">%1$d וריאציות נבחרו לעריכה קבוצתית</item>
+        <item quantity="other">%1$d וריאציות נבחרו לעריכה קבוצתית</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>מוצר פשוט</item>
+        <item>מוצר משתנה</item>
+        <item>מוצר מנוי</item>
+    </string-array>
 </resources>

@@ -4801,4 +4801,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">पुष्टि अभी उपलब्ध नहीं है। कृपया चैट से पुनः प्रयास करें।</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">सहायक कई चरणों के बाद समाप्त नहीं कर सका।</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">सहायक काम करते समय कुछ गलत हो गया।</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">कम स्टॉक उत्पाद</string>
+    <string name="ai_translation_test_product_placeholder_inventory">%1$s को SKU %2$s और %3$d यूनिट स्टॉक के साथ सहेजा गया।</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">सेल मूल्य %1$s नियमित मूल्य से %2$d%% कम है और %3$s से %4$s तक चलता है।</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">बंडल उत्पादों पर 20% बचाएं और अपना SKU फ़ॉर्मेटिंग 100% बनाए रखें।</string>
+    <string name="ai_translation_test_product_html_link">बैकऑर्डर सक्षम करने से पहले &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;इन्वेंटरी सीमाएं&lt;/u&gt;&lt;/a&gt; देखें।</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; प्रकाशित करने के लिए तैयार है। लाइव होने से पहले मूल्य, इन्वेंटरी और शिपिंग जांचें।</string>
+    <string name="ai_translation_test_product_multiline_backorder">उत्पाद %1$s स्टॉक में नहीं है।\n%2$d यूनिट फिर से स्टॉक करें या बैकऑर्डर के रूप में चिह्नित करें।</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">बल्क संपादन के लिए %1$d वेरिएशन चुना गया</item>
+        <item quantity="other">बल्क संपादन के लिए %1$d वेरिएशन चुने गए</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>सरल उत्पाद</item>
+        <item>वेरिएबल उत्पाद</item>
+        <item>सब्सक्रिप्शन उत्पाद</item>
+    </string-array>
 </resources>

@@ -3901,4 +3901,22 @@ Language: fr
         <item quantity="one">Sous-total des articles (%d article)</item>
         <item quantity="other">Sous-total des articles (%d articles)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Produit en stock limité</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Enregistré %1$s avec le SKU %2$s et %3$d unités en stock.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Le prix promotionnel %1$s est %2$d%% inférieur au prix normal et est valable du %3$s au %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Économisez 20% sur les produits groupés et conservez 100% de votre formatage SKU.</string>
+    <string name="ai_translation_test_product_html_link">Consultez les &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;seuils de stock&lt;/u&gt;&lt;/a&gt; avant d\'activer les commandes en rupture.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; est prêt à être publié. Vérifiez le prix, le stock et la livraison avant la mise en ligne.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Le produit %1$s est en rupture de stock.\nRéapprovisionnez %2$d unités ou marquez-le en commande différée.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variation sélectionnée pour la modification en masse</item>
+        <item quantity="many">%1$d variations sélectionnées pour la modification en masse</item>
+        <item quantity="other">%1$d variations sélectionnées pour la modification en masse</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Produit simple</item>
+        <item>Produit variable</item>
+        <item>Produit par abonnement</item>
+    </string-array>
 </resources>

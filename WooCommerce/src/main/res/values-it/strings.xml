@@ -3901,4 +3901,22 @@ Language: it
         <item quantity="one">Subtotale elementi (%d elemento)</item>
         <item quantity="other">Subtotale elementi: (%d elementi)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Scorte in esaurimento</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Salvato %1$s con SKU %2$s e %3$d unità in magazzino.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Il prezzo scontato %1$s è del %2$d%% inferiore al prezzo normale e vale dal %3$s al %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Risparmia il 20% sui prodotti in bundle e mantieni il 100% della formattazione SKU.</string>
+    <string name="ai_translation_test_product_html_link">Rivedi le &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;soglie di inventario&lt;/u&gt;&lt;/a&gt; prima di abilitare gli ordini arretrati.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; è pronto per la pubblicazione. Controlla prezzo, inventario e spedizione prima di procedere.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Il prodotto %1$s è esaurito.\nRifornisci %2$d unità o contrassegnalo come in arretrato.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variante selezionata per la modifica in blocco</item>
+        <item quantity="many">%1$d varianti selezionate per la modifica in blocco</item>
+        <item quantity="other">%1$d varianti selezionate per la modifica in blocco</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Prodotto semplice</item>
+        <item>Prodotto variabile</item>
+        <item>Prodotto in abbonamento</item>
+    </string-array>
 </resources>

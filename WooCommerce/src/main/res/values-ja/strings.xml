@@ -3900,4 +3900,20 @@ Language: ja_JP
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小計 (%d点の商品)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">在庫わずか</string>
+    <string name="ai_translation_test_product_placeholder_inventory">%1$s（SKU: %2$s）を保存しました。在庫数: %3$d点</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">セール価格%1$sは通常価格より%2$d%%安く、%3$sから%4$sまで適用されます。</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">バンドル商品が20%オフ。SKUフォーマットは100%そのまま維持されます。</string>
+    <string name="ai_translation_test_product_html_link">バックオーダーを有効にする前に&lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;在庫しきい値&lt;/u&gt;&lt;/a&gt;を確認してください。</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt;を公開する準備ができました。公開前に価格、在庫、配送を確認してください。</string>
+    <string name="ai_translation_test_product_multiline_backorder">商品%1$sは在庫切れです。\n%2$d点を補充するか、入荷待ちに設定してください。</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">%1$d件のバリエーションを一括編集用に選択中</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>シンプル商品</item>
+        <item>バリアブル商品</item>
+        <item>サブスクリプション商品</item>
+    </string-array>
 </resources>

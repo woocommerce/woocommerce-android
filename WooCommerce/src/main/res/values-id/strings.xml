@@ -3899,4 +3899,20 @@ Language: id
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">Subtotal item (%d item)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Stok menipis</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Menyimpan %1$s dengan SKU %2$s dan %3$d unit dalam stok.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Harga jual %1$s lebih rendah %2$d%% dari harga normal dan berlaku dari %3$s hingga %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Hemat 20% untuk produk bundel dan pertahankan 100% format SKU Anda.</string>
+    <string name="ai_translation_test_product_html_link">Tinjau &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;batas inventaris&lt;/u&gt;&lt;/a&gt; sebelum mengaktifkan pemesanan backorder.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; siap dipublikasikan. Tinjau harga, inventaris, dan pengiriman sebelum ditayangkan.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produk %1$s kehabisan stok.\nIsi ulang %2$d unit atau tandai sebagai backorder.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">%1$d variasi dipilih untuk pengeditan massal</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Produk sederhana</item>
+        <item>Produk variabel</item>
+        <item>Produk langganan</item>
+    </string-array>
 </resources>

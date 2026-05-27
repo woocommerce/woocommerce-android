@@ -3901,4 +3901,20 @@ Language: tr
         <item quantity="one">Ürün alt toplamı (%d ürün)</item>
         <item quantity="other">Ürün alt toplamı (%d ürün)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Düşük stoklu ürün</string>
+    <string name="ai_translation_test_product_placeholder_inventory">%1$s, SKU %2$s ile kaydedildi ve stokta %3$d adet var.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Paket ürünlerde %20 tasarruf edin ve SKU biçimlendirmenizin %100\'ünü koruyun.</string>
+    <string name="ai_translation_test_product_html_link">Arka siparişleri etkinleştirmeden önce &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;stok eşiklerini&lt;/u&gt;&lt;/a&gt; inceleyin.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; yayınlanmaya hazır. Yayına girmeden önce fiyat, stok ve kargo bilgilerini kontrol edin.</string>
+    <string name="ai_translation_test_product_multiline_backorder">%1$s ürünü stokta yok.\n%2$d adet yeniden stokla veya ön sipariş olarak işaretle.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">Toplu düzenleme için %1$d varyasyon seçildi</item>
+        <item quantity="other">Toplu düzenleme için %1$d varyasyon seçildi</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Basit ürün</item>
+        <item>Değişken ürün</item>
+        <item>Abonelik ürünü</item>
+    </string-array>
 </resources>

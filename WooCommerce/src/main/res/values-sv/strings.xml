@@ -3901,4 +3901,21 @@ Language: sv_SE
         <item quantity="one">Delsumma artiklar (%d artikel)</item>
         <item quantity="other">Delsumma artiklar (%d artiklar)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Lågt lager</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Sparade %1$s med SKU %2$s och %3$d enheter i lager.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Kampanjpriset %1$s är %2$d%% lägre än ordinarie pris och gäller från %3$s till %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Spara 20% på paketprodukter och behåll 100% av din SKU-formatering.</string>
+    <string name="ai_translation_test_product_html_link">Granska &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;lagertrösklar&lt;/u&gt;&lt;/a&gt; innan du aktiverar restorder.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; är redo att publiceras. Granska pris, lager och frakt innan den publiceras.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produkten %1$s är slut i lager.\nFyll på %2$d enheter eller markera den som restorder.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variant vald för massredigering</item>
+        <item quantity="other">%1$d varianter valda för massredigering</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Enkel produkt</item>
+        <item>Variabel produkt</item>
+        <item>Prenumerationsprodukt</item>
+    </string-array>
 </resources>

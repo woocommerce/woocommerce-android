@@ -4803,4 +4803,20 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Pengesahan belum tersedia. Sila cuba semula dari sembang.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Pembantu tidak dapat menyelesaikan selepas beberapa langkah.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Sesuatu telah berlaku semasa pembantu sedang bekerja.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Produk stok rendah</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Disimpan %1$s dengan SKU %2$s dan %3$d unit dalam stok.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Harga jualan %1$s adalah %2$d%% lebih rendah daripada harga biasa dan berlangsung dari %3$s hingga %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Jimat 20% pada produk bundle dan kekalkan 100% format SKU anda.</string>
+    <string name="ai_translation_test_product_html_link">Semak &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;ambang inventori&lt;/u&gt;&lt;/a&gt; sebelum mengaktifkan pesanan belakang.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; sedia untuk diterbitkan. Semak harga, inventori, dan penghantaran sebelum ia disiarkan.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produk %1$s kehabisan stok.\nIsi semula %2$d unit atau tandakan sebagai pesanan belakang.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">%1$d variasi dipilih untuk pengeditan pukal</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Produk mudah</item>
+        <item>Produk variabel</item>
+        <item>Produk langganan</item>
+    </string-array>
 </resources>

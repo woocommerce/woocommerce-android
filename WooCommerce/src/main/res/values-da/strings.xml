@@ -4806,4 +4806,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Bekræftelse er endnu ikke tilgængelig. Prøv igen fra chatten.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Assistenten kunne ikke afslutte efter flere trin.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Noget gik galt, mens assistenten arbejdede.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Lavt lager</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Gemte %1$s med SKU %2$s og %3$d enheder på lager.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Tilbudspris %1$s er %2$d%% lavere end normalprisen og gælder fra %3$s til %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Spar 20% på bundtede produkter og behold 100% af din SKU-formatering.</string>
+    <string name="ai_translation_test_product_html_link">Gennemgå &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;lagertærskler&lt;/u&gt;&lt;/a&gt; inden du aktiverer restordrer.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; er klar til publicering. Gennemgå pris, lager og forsendelse, inden det går live.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produkt %1$s er ikke på lager.\nGenopfyld %2$d enheder, eller markér det som restordre.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variation valgt til masseredigering</item>
+        <item quantity="other">%1$d variationer valgt til masseredigering</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Simpelt produkt</item>
+        <item>Variabelt produkt</item>
+        <item>Abonnementsprodukt</item>
+    </string-array>
 </resources>

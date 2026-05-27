@@ -4804,4 +4804,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Η επιβεβαίωση δεν είναι ακόμα διαθέσιμη. Δοκιμάστε ξανά από τη συνομιλία.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Ο βοηθός δεν μπόρεσε να ολοκληρώσει μετά από αρκετά βήματα.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Παρουσιάστηκε σφάλμα κατά τη λειτουργία του βοηθού.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Προϊόν με χαμηλό απόθεμα</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Αποθηκεύτηκε %1$s με SKU %2$s και %3$d μονάδες σε απόθεμα.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Η τιμή προσφοράς %1$s είναι %2$d%% χαμηλότερη από την κανονική τιμή και ισχύει από %3$s έως %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Εξοικονομήστε 20% σε πακέτα προϊόντων και διατηρήστε 100% της μορφοποίησης SKU σας.</string>
+    <string name="ai_translation_test_product_html_link">Ελέγξτε τα &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;όρια αποθέματος&lt;/u&gt;&lt;/a&gt; πριν ενεργοποιήσετε τις παραγγελίες σε αναμονή.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">Το &lt;b&gt;%1$s&lt;/b&gt; είναι έτοιμο για δημοσίευση. Ελέγξτε τιμή, απόθεμα και αποστολή πριν δημοσιευτεί.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Το προϊόν %1$s είναι εξαντλημένο.\nΑνεφοδιάστε %2$d μονάδες ή επισημάνετε το ως σε αναμονή.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d παραλλαγή επιλέχθηκε για μαζική επεξεργασία</item>
+        <item quantity="other">%1$d παραλλαγές επιλέχθηκαν για μαζική επεξεργασία</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Απλό προϊόν</item>
+        <item>Μεταβλητό προϊόν</item>
+        <item>Προϊόν συνδρομής</item>
+    </string-array>
 </resources>
