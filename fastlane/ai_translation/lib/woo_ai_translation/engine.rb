@@ -46,7 +46,7 @@ module WooAiTranslation
       @logger.call("source has #{asymmetry.size} unpaired manual-plural keys (informational)") unless asymmetry.empty?
 
       reports = locales.map do |loc|
-        r = translate_locale(source_units, loc, origin)
+        r = translate_locale(doc, source_units, loc, origin)
         # Save after every locale so a long-running backfill survives Ctrl-C /
         # a CLI hiccup: next run resumes from where we stopped.
         @manifest.save(@manifest_path)
@@ -57,7 +57,7 @@ module WooAiTranslation
 
     private
 
-    def translate_locale(source_units, locale, origin)
+    def translate_locale(source_doc, source_units, locale, origin)
       out_path = File.join(@res_dir, "values-#{locale}", 'strings.xml')
       existing = load_existing(out_path)
       before_names = existing.values.select(&:translatable?).map(&:name)
@@ -101,7 +101,11 @@ module WooAiTranslation
       ) +
                     Validators.plural_pair_integrity(source_names: source_names, output_names: output_names) +
                     Validators.plural_form_coverage(output_plurals_quantities: output_plurals_qs,
-                                                    required: CldrPlurals.quantities_for(locale))
+                                                    required: CldrPlurals.quantities_for(locale)) +
+                    Validators.non_translatable_string_reference_integrity(
+                      source_names: source_doc.units.map(&:name),
+                      output_units: output_doc.units
+                    )
       if @only_names
         gate_errors += Validators.no_unselected_key_loss(
           before_names: before_names,

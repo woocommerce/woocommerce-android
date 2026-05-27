@@ -943,6 +943,38 @@ class PluralCoverageValidatorTest < Minitest::Test
   end
 end
 
+class NonTranslatableStringReferenceValidatorTest < Minitest::Test
+  P = WooAiTranslation::AndroidResources::Parser
+  V = WooAiTranslation::Validators
+
+  def test_non_translatable_string_references_must_exist_in_source
+    source_doc = P.parse(<<~XML)
+      <resources>
+          <string name="date_timeframe_last_quarter">Last Quarter</string>
+          <string-array name="timeframe_titles" translatable="false">
+              <item>@string/date_timeframe_last_quarter</item>
+          </string-array>
+      </resources>
+    XML
+    output_doc = P.parse(<<~XML)
+      <resources>
+          <string-array name="timeframe_titles" translatable="false">
+              <item>@string/date_timeframe_quarter</item>
+          </string-array>
+      </resources>
+    XML
+
+    errors = V.non_translatable_string_reference_integrity(
+      source_names: source_doc.units.map(&:name),
+      output_units: output_doc.units
+    )
+
+    assert_equal [
+      'non-translatable timeframe_titles references missing source string: @string/date_timeframe_quarter'
+    ], errors
+  end
+end
+
 class AttributePreservationTest < Minitest::Test
   P = WooAiTranslation::AndroidResources::Parser
   W = WooAiTranslation::AndroidResources::Writer

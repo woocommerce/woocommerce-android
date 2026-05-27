@@ -73,6 +73,22 @@ module WooAiTranslation
       errors
     end
 
+    def non_translatable_string_reference_integrity(source_names:, output_units:)
+      source = source_names.to_set
+      errors = []
+
+      output_units.reject(&:translatable?).each do |unit|
+        unit.entries.each do |entry|
+          referenced = entry[:source].to_s[/\A@string\/([^\s\/]+)\z/, 1]
+          next if referenced.nil? || source.include?(referenced)
+
+          errors << "non-translatable #{unit.name} references missing source string: @string/#{referenced}"
+        end
+      end
+
+      errors
+    end
+
     # PR-time partial writes must never delete unrelated existing translations.
     # Selected keys may legitimately disappear when they were removed from source
     # or failed validation and should fall back to default resources.
