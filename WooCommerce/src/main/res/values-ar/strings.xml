@@ -3918,4 +3918,12 @@ Language: ar
         <item>منتج متغير</item>
         <item>منتج اشتراك</item>
     </string-array>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="zero">تم تحديد %1$d متغيرات للتعديل الجماعي</item>
+        <item quantity="one">تم تحديد %1$d متغير للتعديل الجماعي</item>
+        <item quantity="two">تم تحديد %1$d متغيرين للتعديل الجماعي</item>
+        <item quantity="few">تم تحديد %1$d متغيرات للتعديل الجماعي</item>
+        <item quantity="many">تم تحديد %1$d متغيرًا للتعديل الجماعي</item>
+        <item quantity="other">تم تحديد %1$d متغير للتعديل الجماعي</item>
+    </plurals>
 </resources>
