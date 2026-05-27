@@ -23,7 +23,7 @@
   "pl": ["one", "few", "many", "other"],
   "pt": ["one", "many", "other"],
   "pt-rBR": ["one", "many", "other"],
-  "pt-rPT": ["one", "other"],
+  "pt-rPT": ["one", "many", "other"],
   "ro": ["one", "few", "other"],
   "ru": ["one", "few", "many", "other"],
   "sv": ["one", "other"],

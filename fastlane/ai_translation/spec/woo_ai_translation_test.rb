@@ -8,6 +8,15 @@ require_relative '../lib/woo_ai_translation'
 
 FIXTURE = File.join(__dir__, 'fixtures', 'strings_sample.xml')
 
+class SourceEncodingTest < Minitest::Test
+  def test_ai_translation_ruby_sources_do_not_contain_null_bytes
+    paths = Dir.glob(File.expand_path('../**/*.rb', __dir__))
+    offenders = paths.select { |path| File.binread(path).include?("\u0000") }
+
+    assert_empty offenders
+  end
+end
+
 class AndroidResourcesTest < Minitest::Test
   P = WooAiTranslation::AndroidResources::Parser
   W = WooAiTranslation::AndroidResources::Writer
@@ -820,6 +829,10 @@ class CldrPluralsTest < Minitest::Test
 
   def test_quantities_for_returns_full_cldr_list_for_polish
     assert_equal %w[one few many other], CP.quantities_for('pl')
+  end
+
+  def test_quantities_for_portuguese_portugal_includes_many
+    assert_equal %w[one many other], CP.quantities_for('pt-rPT')
   end
 
   def test_quantities_for_thai_is_only_other

@@ -98,7 +98,7 @@ output = []
 changed = false
 
 lines.each do |line|
-  if (match = line.match(/^(\s*)<string\s+name="([^"]+)"/))
+  if (match = line.match(/^(\s*)<(?:string|string-array|plurals)\s+name="([^"]+)"/))
     indent = match[1]
     key = match[2]
     description = contexts[key]
