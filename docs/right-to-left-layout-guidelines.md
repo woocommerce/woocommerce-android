@@ -13,7 +13,7 @@ Writing direction also affects time flow direction -> some asymmetric images/ico
 In order to have consistencty on text aligment when suporting RTL locales keep in mind the following:
 
 - Never test text using device developer setting: "Force RTL layout". It does not work well with `android:gravity="start"`. When testing we recommend setting your device language to an RTL locale such as Arabic or Hebrew. 
-- The recommended way to align text on xml layout is using `gravity="start"`. Most of the defined styles for texts existing in the app already set gravity and textAligment. Example: 
+- The recommended way to align text on xml layout is using `gravity="start"`. Most of the defined styles for texts existing in the app already set gravity and textAlignment. Example: 
 ```xml
 <style name="Woo.TextView.Subtitle2">
     <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
