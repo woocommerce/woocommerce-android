@@ -4004,6 +4004,7 @@
     <string name="woopos_orders_issue_refund">Emitir reembolso</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotal dos itens (%d item)</item>
+        <item quantity="many">Subtotal dos itens (%d itens)</item>
         <item quantity="other">Subtotal dos itens (%d itens)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Total do reembolso</string>
