@@ -227,7 +227,7 @@ class WooPosRefundSubmissionProcessorTest {
     }
 
     @Test
-    fun `given selected site lookup fails, when submitted, then generic failure is emitted`() = runTest {
+    fun `given selected site lookup fails during normal refund, when submitted, then exception is propagated`() = runTest {
         whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
                 cardBrand = "visa",
@@ -239,10 +239,9 @@ class WooPosRefundSubmissionProcessorTest {
 
         processor.submit(request).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-            assertThat(awaitItem()).isEqualTo(
-                WooPosRefundSubmissionState.Failure("Something went wrong")
-            )
-            awaitComplete()
+            assertThat(awaitError())
+                .isInstanceOf(IllegalStateException::class.java)
+                .hasMessage("missing site")
         }
     }
 
@@ -415,6 +414,27 @@ class WooPosRefundSubmissionProcessorTest {
             autoRefund = eq(false),
             items = eq(refundItems)
         )
+    }
+
+    @Test
+    fun `given backend-only notification throws, when submitted, then backend retry failure is emitted`() = runTest {
+        val retryRequest = request.copy(cardRefundAlreadySucceeded = true)
+        whenever(selectedSite.get()).thenThrow(IllegalStateException("missing site"))
+
+        processor.submit(retryRequest).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
+
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("Something went wrong")
+            assertThat(failure.retryBackendNotificationOnly).isTrue()
+            assertThat(failure.retryCardRefund).isFalse()
+            assertThat(failure.canRetry).isFalse()
+            awaitComplete()
+        }
+
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
+        verify(paymentChargeRepository, never()).fetchCardDataUsedForOrderPayment(any())
+        verify(loadPaymentGateway, never()).invoke(any())
     }
 
     @Test

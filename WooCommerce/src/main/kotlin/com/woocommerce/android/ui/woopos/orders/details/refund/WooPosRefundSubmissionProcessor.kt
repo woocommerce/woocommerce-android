@@ -76,51 +76,35 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
 ) : WooPosRefundSubmissionProcessor {
-    @Suppress("TooGenericExceptionCaught")
     override fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState> = channelFlow {
-        try {
-            logSubmissionStarted(request)
+        logSubmissionStarted(request)
 
-            if (request.cardRefundAlreadySucceeded) {
+        if (request.cardRefundAlreadySucceeded) {
+            WooLog.i(
+                WooLog.T.POS,
+                "WooPosRefund: card refund already succeeded; notifying backend only " +
+                    "orderId=${request.orderId}"
+            )
+            notifyBackend(request, retryBackendNotificationOnly = true)
+            return@channelFlow
+        }
+
+        when (val submissionPath = resolveSubmissionPath(request)) {
+            RefundSubmissionPath.Interac -> {
                 WooLog.i(
                     WooLog.T.POS,
-                    "WooPosRefund: card refund already succeeded; notifying backend only " +
-                        "orderId=${request.orderId}"
+                    "WooPosRefund: routing Interac refund through reader orderId=${request.orderId}"
                 )
-                notifyBackend(request, retryBackendNotificationOnly = true)
-                return@channelFlow
+                submitInteracRefund(request)
             }
-
-            when (val submissionPath = resolveSubmissionPath(request)) {
-                RefundSubmissionPath.Interac -> {
-                    WooLog.i(
-                        WooLog.T.POS,
-                        "WooPosRefund: routing Interac refund through reader orderId=${request.orderId}"
-                    )
-                    submitInteracRefund(request)
-                }
-                is RefundSubmissionPath.Backend -> {
-                    WooLog.i(
-                        WooLog.T.POS,
-                        "WooPosRefund: using backend refund path " +
-                            "orderId=${request.orderId}, paymentMethodType=${submissionPath.paymentMethodType}"
-                    )
-                    notifyBackend(request, retryBackendNotificationOnly = false)
-                }
-            }
-        } catch (exception: CancellationException) {
-            throw exception
-        } catch (exception: Exception) {
-            WooLog.e(
-                WooLog.T.POS,
-                "WooPosRefund: submission failed unexpectedly orderId=${request.orderId}",
-                exception
-            )
-            trySendState(
-                WooPosRefundSubmissionState.Failure(
-                    message = resourceProvider.getString(R.string.error_generic),
+            is RefundSubmissionPath.Backend -> {
+                WooLog.i(
+                    WooLog.T.POS,
+                    "WooPosRefund: using backend refund path " +
+                        "orderId=${request.orderId}, paymentMethodType=${submissionPath.paymentMethodType}"
                 )
-            )
+                notifyBackend(request, retryBackendNotificationOnly = false)
+            }
         }
     }
 
@@ -197,6 +181,10 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
         } catch (exception: CancellationException) {
             throw exception
         } catch (exception: Exception) {
+            if (!retryBackendNotificationOnly) {
+                throw exception
+            }
+            // The Terminal refund already succeeded; expose this as backend-only retry so POS never re-runs it.
             WooLog.e(
                 WooLog.T.POS,
                 "WooPosRefund: backend refund creation failed unexpectedly " +
