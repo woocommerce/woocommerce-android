@@ -4805,4 +4805,22 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Confirmarea nu este disponibilă încă. Te rugăm să încerci din nou din chat.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Asistentul nu a putut finaliza după mai mulți pași.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">A apărut o eroare în timp ce asistentul lucra.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Produs cu stoc redus</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Salvat %1$s cu SKU %2$s și %3$d unități în stoc.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Prețul promoțional %1$s este cu %2$d%% mai mic decât prețul obișnuit și este valabil din %3$s până în %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Economisești 20% la produsele din pachet și păstrezi 100% din formatarea SKU.</string>
+    <string name="ai_translation_test_product_html_link">Verifică &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;pragurile de inventar&lt;/u&gt;&lt;/a&gt; înainte de a activa comenzile în așteptare.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; este gata de publicare. Verifică prețul, inventarul și livrarea înainte de a fi publicat.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produsul %1$s este epuizat.\nReaprovizionează cu %2$d unități sau marchează-l ca în așteptare.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variație selectată pentru editare în masă</item>
+        <item quantity="few">%1$d variații selectate pentru editare în masă</item>
+        <item quantity="other">%1$d variații selectate pentru editare în masă</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Produs simplu</item>
+        <item>Produs variabil</item>
+        <item>Produs cu abonament</item>
+    </string-array>
 </resources>

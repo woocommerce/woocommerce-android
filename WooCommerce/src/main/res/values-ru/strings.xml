@@ -3902,4 +3902,23 @@ Language: ru
         <item quantity="few">Промежуточный итог по товарам (позиций: %d)</item>
         <item quantity="many">Промежуточный итог по товарам (позиций: %d)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Мало на складе</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Сохранено %1$s с SKU %2$s и %3$d ед. на складе.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Цена со скидкой %1$s на %2$d%% ниже обычной и действует с %3$s по %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Сэкономьте 20% на комплектах и сохраните 100% форматирования SKU.</string>
+    <string name="ai_translation_test_product_html_link">Проверьте &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;пороги запасов&lt;/u&gt;&lt;/a&gt; перед включением предзаказа.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; готов к публикации. Проверьте цену, запасы и доставку перед публикацией.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Товар %1$s отсутствует на складе.\nПополните запас на %2$d ед. или отметьте как предзаказ.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d вариация выбрана для массового редактирования</item>
+        <item quantity="few">%1$d вариации выбраны для массового редактирования</item>
+        <item quantity="many">%1$d вариаций выбрано для массового редактирования</item>
+        <item quantity="other">%1$d вариации выбраны для массового редактирования</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Простой товар</item>
+        <item>Вариативный товар</item>
+        <item>Товар с подпиской</item>
+    </string-array>
 </resources>

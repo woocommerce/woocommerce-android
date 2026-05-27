@@ -4800,4 +4800,20 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">ยังไม่สามารถยืนยันได้ในขณะนี้ กรุณาลองอีกครั้งจากแชท</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">ผู้ช่วยไม่สามารถดำเนินการเสร็จสิ้นได้หลังจากหลายขั้นตอน</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">เกิดข้อผิดพลาดขณะที่ผู้ช่วยกำลังทำงาน</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">สินค้าใกล้หมด</string>
+    <string name="ai_translation_test_product_placeholder_inventory">บันทึก %1$s ด้วย SKU %2$s และสินค้าคงเหลือ %3$d ชิ้น</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">ราคาลด %1$s ต่ำกว่าราคาปกติ %2$d%% และมีผลตั้งแต่ %3$s ถึง %4$s</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">ประหยัด 20% สำหรับสินค้าแบบบันเดิลและรักษารูปแบบ SKU ของคุณ 100%</string>
+    <string name="ai_translation_test_product_html_link">ตรวจสอบ &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;เกณฑ์สินค้าคงคลัง&lt;/u&gt;&lt;/a&gt; ก่อนเปิดใช้การสั่งจองล่วงหน้า</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; พร้อมเผยแพร่แล้ว ตรวจสอบราคา สินค้าคงคลัง และการจัดส่งก่อนเปิดตัว</string>
+    <string name="ai_translation_test_product_multiline_backorder">สินค้า %1$s หมดสต็อก\nเติมสต็อก %2$d ชิ้น หรือทำเครื่องหมายว่าสั่งจองล่วงหน้า</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">เลือก %1$d รูปแบบสำหรับแก้ไขจำนวนมาก</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>สินค้าธรรมดา</item>
+        <item>สินค้าแบบตัวแปร</item>
+        <item>สินค้าแบบสมัครสมาชิก</item>
+    </string-array>
 </resources>
