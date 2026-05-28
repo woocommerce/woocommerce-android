@@ -608,10 +608,8 @@ Language: ko_KR
     <string name="woopos_eligibility_screen_unable_to_load">로드할 수 없음</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. %1$s에서는 현재 %2$s만 지원됩니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">계속하려면 판매 지점을 활성화해야 합니다. 우커머스 설정 &gt; 고급 &gt; 기능에서 워드프레스 관리자의 POS 기능을 활성화하세요.</string>
     <string name="woopos_eligibility_reason_check_connection">인터넷 연결을 확인하고 앱을 다시 시작해 보세요. 문제가 계속 발생하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">회원님의 우커머스 버전은 지원되지 않습니다. POS 시스템에는 우커머스 버전 %1$s 이상이 필요합니다. 우커머스를 최신 버전으로 업데이트하세요.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">워드프레스 관리자에서 우커머스 플러그인이 설치되고 활성화되었는지 확인하세요. 문제가 계속 발생하는 경우 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="orderfilters_sales_channel_filter">판매 채널</string>
     <string name="barcode_ean13_content_description">바코드 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">추가 처리</string>

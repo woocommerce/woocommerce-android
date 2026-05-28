@@ -1439,10 +1439,7 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
-        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound -> "unknown_wc_plugin"
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
-        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"

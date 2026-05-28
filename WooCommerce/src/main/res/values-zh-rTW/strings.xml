@@ -608,10 +608,8 @@ Language: zh_TW
     <string name="woopos_eligibility_screen_unable_to_load">無法載入</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系統不支援商店的幣別。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系統不支援商店的幣別。 「%1$s」地區目前僅支援：%2$s。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">必須啟用「銷售時點情報系統」才能繼續。 請依序前往「WooCommerce 設定」&gt;「進階」&gt;「功能」，然後從下方的 WordPress 管理員啟用 POS 功能。</string>
     <string name="woopos_eligibility_reason_check_connection">請檢查網際網路連線，並嘗試重新啟動應用程式。萬一問題持續發生，請聯絡支援團隊。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">系統不支援你的 WooCommerce 版本。 POS 系統僅適用於 WooCommerce %1$s 以上版本。 請更新至最新版本的 WooCommerce。</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">請確認是否安裝 WooCommerce 外掛程式，然後從 WordPress 管理員啟用程式。 萬一還是遇到問題，請聯絡支援團隊尋求協助。</string>
     <string name="orderfilters_sales_channel_filter">銷售通路</string>
     <string name="barcode_ean13_content_description">條碼 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">額外處理</string>

@@ -49,32 +49,14 @@ internal class OpenAiSseChatService(
 ) : ChatService {
 
     override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> = flow {
-        var attempt = 0
-        while (true) {
-            val outcome = collectOnce(request, ::emit)
-
-            if (shouldRetryAuthFailure(outcome, attempt)) {
-                config.authProvider.invalidate()
-                attempt++
-                continue
-            }
-            outcome.failure?.let { emit(it) }
-            return@flow
-        }
+        collectOnce(request, ::emit)?.let { emit(it) }
     }
-
-    private fun shouldRetryAuthFailure(outcome: TurnOutcome, attempt: Int): Boolean =
-        outcome.retryableAuthFailure &&
-            config.retryOnUnauthorizedBeforeOutput &&
-            attempt == 0 &&
-            outcome.eventsEmitted == 0
 
     @Suppress("TooGenericExceptionCaught")
     private suspend fun collectOnce(
         request: ChatRequest,
         emitEvent: suspend (AssistantEvent) -> Unit,
-    ): TurnOutcome {
-        var eventsEmitted = 0
+    ): AssistantEvent.Failed? {
         var failed: AssistantEvent.Failed? = null
         try {
             streamParser.parse(openStream(request)).collect { event ->
@@ -82,24 +64,15 @@ internal class OpenAiSseChatService(
                     failed = event
                 } else {
                     emitEvent(event)
-                    eventsEmitted++
                 }
             }
         } catch (ce: CancellationException) {
             throw ce
         } catch (e: Exception) {
             val mapped = mapError(e)
-            return TurnOutcome(
-                eventsEmitted = eventsEmitted,
-                failure = AssistantEvent.Failed(mapped.kind, mapped.cause, mapped.diagnostics),
-                retryableAuthFailure = mapped.retryableAuthFailure,
-            )
+            return AssistantEvent.Failed(mapped.kind, mapped.cause, mapped.diagnostics)
         }
-        return TurnOutcome(
-            eventsEmitted = eventsEmitted,
-            failure = failed,
-            retryableAuthFailure = false,
-        )
+        return failed
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -259,7 +232,6 @@ internal class OpenAiSseChatService(
         return StreamFailure(
             kind = kind,
             cause = null,
-            retryableAuthFailure = response.code == HTTP_UNAUTHORIZED,
             diagnostics = Diagnostics(
                 transport = transportDiagnosticsFactory.fromRawHttp(
                     statusCode = response.code,
@@ -303,20 +275,12 @@ internal class OpenAiSseChatService(
     private fun OpenAiSseMappedError.toFailure(): StreamFailure = StreamFailure(
         kind = kind,
         cause = null,
-        retryableAuthFailure = retryableAuthFailure,
         diagnostics = diagnostics,
-    )
-
-    private data class TurnOutcome(
-        val eventsEmitted: Int,
-        val failure: AssistantEvent.Failed?,
-        val retryableAuthFailure: Boolean,
     )
 
     private data class StreamFailure(
         val kind: ChatStreamError,
         val cause: Throwable?,
-        val retryableAuthFailure: Boolean = false,
         val diagnostics: Diagnostics = Diagnostics(),
     ) {
         fun toException() = StreamFailureException(this)

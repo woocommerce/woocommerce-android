@@ -18,7 +18,7 @@ enum class FeatureFlag(
     LOCAL_NOTIFICATION_STORE_CREATION_READY("woo_notification_store_creation_ready"),
     LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES("woo_notification_1d_before_free_trial_expires"),
     LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES("woo_notification_1d_after_free_trial_expires"),
-    WOO_POS("woo_pos"),
+    WOO_POS_ALL_COUNTRIES("woo_pos_all_countries", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_PHONE("woo_pos_phone", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_TAP_TO_PAY("woo_pos_tap_to_pay", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_SCAN_TO_PAY("woo_pos_scan_to_pay", localValue = PackageUtils.isDebugBuild()),

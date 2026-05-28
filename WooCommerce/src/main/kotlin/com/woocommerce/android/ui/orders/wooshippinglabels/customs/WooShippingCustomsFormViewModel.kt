@@ -35,6 +35,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
+    private val originCountryCode = navArgs.originCountryCode
     private val destinationCountryCode = navArgs.destinationCountryCode
     private val storeOptions = navArgs.storeOptions
 
@@ -97,7 +98,9 @@ class WooShippingCustomsFormViewModel @Inject constructor(
                 WooShippingCustomsProductUIModel(
                     productId = item.productID,
                     name = item.description,
-                    description = validateAsInputValue(item.description, customsValidator::validateProductDescription),
+                    description = validateAsInputValue(item.description) {
+                        customsValidator.validateProductDescription(it, originCountryCode, destinationCountryCode)
+                    },
                     tariffNumber = validateAsInputValue(item.hsTariffNumber) {
                         customsValidator.validateHSTariffNumber(it, destinationCountryCode)
                     },
@@ -184,7 +187,11 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     fun onShippableProductDescriptionChanged(itemIndex: Int, newValue: String) {
         updateShippingProductsAt(itemIndex) { item ->
-            item.copy(description = validateAsInputValue(newValue, customsValidator::validateProductDescription))
+            item.copy(
+                description = validateAsInputValue(newValue) {
+                    customsValidator.validateProductDescription(it, originCountryCode, destinationCountryCode)
+                }
+            )
         }
     }
 

@@ -72,6 +72,23 @@ class OrdersGetToolHandlerTest {
     )
 
     @Test
+    fun `given descriptor, when inspected, then iOS-aligned order detail guidance is exposed`() {
+        val description = handler.descriptor.description
+        val properties = handler.descriptor.inputSchema.getValue("properties").jsonObject
+
+        assertThat(description).contains("line items")
+        assertThat(description).contains("products")
+        assertThat(description).contains("order contents")
+        assertThat(description).contains("prior-turn order position/reference")
+        assertThat(description).contains("cards do not show")
+        assertThat(description).contains("customer_id can chain into customers_list")
+        assertThat(description).contains("Do not call just to re-render an existing order card")
+        assertThat(properties.keys).containsExactly("id")
+        assertThat(handler.descriptor.inputSchema.getValue("required").jsonArray.map { it.jsonPrimitive.content })
+            .containsExactly("id")
+    }
+
+    @Test
     fun `given a valid id, when execute is called, then structured JSON contains iOS-aligned fields`() =
         runTest {
             val order = makeOrder()

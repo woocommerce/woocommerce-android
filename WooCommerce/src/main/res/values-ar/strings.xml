@@ -608,10 +608,8 @@ Language: ar
     <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">لا يتوافر نظام نقطة البيع لعملة متجرك. ُيرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">يجب تمكين نقطة البيع للمتابعة. يُرجى تمكين ميزة نقطة البيع من مشرفك في WordPress ضمن إعدادات WooCommerce &gt; الإعدادات المتقدمة &gt; الميزات.</string>
     <string name="woopos_eligibility_reason_check_connection">تحقق من اتصالك بالإنترنت وحاول إعادة تشغيل التطبيق. إذا استمرت المشكلة، فيرجى التواصل مع الدعم.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">إصدارك من WooCommerce غير مدعوم. يتطلب نظام نقطة البيع الإصدار ⁦%1$s⁩ من WooCommerce أو إصدار أحدث. يُرجى التحديث إلى آخر إصدار من WooCommerce.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">يُرجى التأكد من تثبيت إضافة WooCommerce وتفعيلها من مشرفك في WordPress. يرجى التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="orderfilters_sales_channel_filter">قناة المبيعات</string>
     <string name="barcode_ean13_content_description">الرمز الشريطي EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">معالجة إضافية</string>
