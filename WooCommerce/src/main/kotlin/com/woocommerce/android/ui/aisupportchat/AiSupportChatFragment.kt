@@ -24,8 +24,8 @@ import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
