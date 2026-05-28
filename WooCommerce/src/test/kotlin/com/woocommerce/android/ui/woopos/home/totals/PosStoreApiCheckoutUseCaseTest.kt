@@ -9,14 +9,17 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.Header
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -56,8 +59,8 @@ class PosStoreApiCheckoutUseCaseTest {
 
     @Test
     fun `given simple products, when invoked, then add-item called once per distinct id with summed quantity`() = runTest {
-        whenever(restClient.addToCart(any(), any(), any(), any())) doReturn WooPayload(Unit)
-        whenever(restClient.checkout(site)) doReturn WooPayload(checkoutResponse(orderId = 42L))
+        givenAddToCartSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
         givenOrderFetchSucceeds(orderId = 42L)
 
         sut(
@@ -72,31 +75,33 @@ class PosStoreApiCheckoutUseCaseTest {
             site = eq(site),
             productId = eq(1L),
             quantity = eq(2),
-            variation = eq(emptyList())
+            variation = eq(emptyList()),
+            cartToken = anyOrNull(),
         )
         verify(restClient).addToCart(
             site = eq(site),
             productId = eq(2L),
             quantity = eq(1),
-            variation = eq(emptyList())
+            variation = eq(emptyList()),
+            cartToken = anyOrNull(),
         )
     }
 
     @Test
     fun `given add-item fails, when invoked, then checkout is not called`() = runTest {
-        whenever(restClient.addToCart(any(), any(), any(), any())) doReturn
+        whenever(restClient.addToCart(any(), any(), any(), any(), anyOrNull())) doReturn
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "boom"))
 
         val result = sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
 
         assertThat(result.isFailure).isTrue
-        verify(restClient, never()).checkout(any())
+        verify(restClient, never()).checkout(any(), anyOrNull())
     }
 
     @Test
     fun `given checkout fails, when invoked, then order fetch is not attempted`() = runTest {
-        whenever(restClient.addToCart(any(), any(), any(), any())) doReturn WooPayload(Unit)
-        whenever(restClient.checkout(site)) doReturn
+        givenAddToCartSucceeds()
+        whenever(restClient.checkout(eq(site), anyOrNull())) doReturn
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "checkout boom"))
 
         val result = sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
@@ -108,14 +113,88 @@ class PosStoreApiCheckoutUseCaseTest {
     @Test
     fun `given checkout succeeds, when invoked, then returns mapped Order`() = runTest {
         val mappedOrder: Order = mock()
-        whenever(restClient.addToCart(any(), any(), any(), any())) doReturn WooPayload(Unit)
-        whenever(restClient.checkout(site)) doReturn WooPayload(checkoutResponse(orderId = 99L))
+        givenAddToCartSucceeds()
+        givenCheckoutSucceeds(orderId = 99L)
         givenOrderFetchSucceeds(orderId = 99L, mapsTo = mappedOrder)
 
         val result = sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
 
         assertThat(result.isSuccess).isTrue
         assertThat(result.getOrNull()).isSameAs(mappedOrder)
+    }
+
+    @Test
+    fun `given first add-item returns cart token, when invoked, then it is replayed on subsequent calls and checkout`() = runTest {
+        // First add-item returns Cart-Token in response headers; subsequent add-item
+        // returns the same (or a refreshed) token; checkout should be called with the
+        // latest captured token.
+        whenever(
+            restClient.addToCart(
+                site = eq(site),
+                productId = eq(1L),
+                quantity = any(),
+                variation = anyOrNull(),
+                cartToken = anyOrNull(),
+            )
+        ) doReturn WooPayload(Unit, listOf(Header("Cart-Token", "token-from-first")))
+
+        whenever(
+            restClient.addToCart(
+                site = eq(site),
+                productId = eq(2L),
+                quantity = any(),
+                variation = anyOrNull(),
+                cartToken = anyOrNull(),
+            )
+        ) doReturn WooPayload(Unit, listOf(Header("Cart-Token", "token-from-second")))
+
+        givenCheckoutSucceeds(orderId = 7L, cartTokenHeaderValue = "token-from-second")
+        givenOrderFetchSucceeds(orderId = 7L)
+
+        sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+            )
+        )
+
+        inOrder(restClient) {
+            // First add-item: no token to send yet.
+            verify(restClient).addToCart(
+                site = eq(site),
+                productId = eq(1L),
+                quantity = eq(1),
+                variation = eq(emptyList()),
+                cartToken = eq(null),
+            )
+            // Second add-item: replays the token captured from the first response.
+            verify(restClient).addToCart(
+                site = eq(site),
+                productId = eq(2L),
+                quantity = eq(1),
+                variation = eq(emptyList()),
+                cartToken = eq("token-from-first"),
+            )
+            // Checkout: replays the latest captured token (from the second response).
+            verify(restClient).checkout(eq(site), eq("token-from-second"))
+        }
+    }
+
+    private suspend fun givenAddToCartSucceeds() {
+        whenever(restClient.addToCart(any(), any(), any(), any(), anyOrNull())) doReturn WooPayload(Unit)
+    }
+
+    private suspend fun givenCheckoutSucceeds(
+        orderId: Long,
+        cartTokenHeaderValue: String? = null,
+    ) {
+        val headers = if (cartTokenHeaderValue != null) {
+            listOf(Header("Cart-Token", cartTokenHeaderValue))
+        } else {
+            emptyList()
+        }
+        whenever(restClient.checkout(eq(site), anyOrNull())) doReturn
+            WooPayload(checkoutResponse(orderId), headers)
     }
 
     private fun checkoutResponse(orderId: Long) =

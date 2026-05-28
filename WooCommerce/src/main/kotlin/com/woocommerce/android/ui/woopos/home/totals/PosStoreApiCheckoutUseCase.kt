@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pos.PosStoreApiRestClient
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
@@ -21,6 +22,13 @@ import javax.inject.Inject
  * pending order. The newly-created order is then fetched via the existing
  * orders REST client so the rest of the POS payment flow sees an Order
  * with fully-populated totals.
+ *
+ * Session continuity across the request sequence is maintained by
+ * capturing the `Cart-Token` HTTP response header emitted by the first
+ * call and replaying it (as a `?cart_token=` URL parameter) on all
+ * subsequent calls in the same transaction. The Store API's existing
+ * header-based session swap on the server picks it up so each request
+ * operates on the same server-side cart.
  *
  * Coupons and custom fees are deliberately not supported in this spike;
  * the in-memory WooPosItemsViewModel.ItemClickedData types for those are
@@ -45,15 +53,20 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
         val products = itemClickedDataList
             .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
 
-        addProductsToCart(site, products)
+        // The first add-item call creates the server-side cart; its response carries
+        // the Cart-Token we replay on every subsequent call so we stay on that cart.
+        val cartTokenHolder = CartTokenHolder()
+
+        addProductsToCart(site, products, cartTokenHolder)
             .onFailure { return@withContext Result.failure(it) }
 
-        val checkoutPayload = restClient.checkout(site)
+        val checkoutPayload = restClient.checkout(site, cartToken = cartTokenHolder.value)
         if (checkoutPayload.isError) {
             return@withContext Result.failure(
                 IllegalStateException("Store API checkout failed: ${checkoutPayload.error?.message}")
             )
         }
+        cartTokenHolder.updateFrom(checkoutPayload)
         val orderId = checkoutPayload.result?.orderId
             ?: return@withContext Result.failure(IllegalStateException("Store API checkout returned no order id"))
 
@@ -72,6 +85,7 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
     private suspend fun addProductsToCart(
         site: SiteModel,
         products: List<WooPosItemsViewModel.ItemClickedData.Product>,
+        cartTokenHolder: CartTokenHolder,
     ): Result<Unit> {
         // Group identical scans so we issue one /cart/add-item per distinct line.
         val quantitiesById = products.groupingBy { it.id }.eachCount()
@@ -85,6 +99,7 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
                 productId = item.id,
                 quantity = quantity,
                 variation = variationAttributes,
+                cartToken = cartTokenHolder.value,
             )
             if (payload.isError) {
                 return Result.failure(
@@ -93,6 +108,7 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
                     )
                 )
             }
+            cartTokenHolder.updateFrom(payload)
         }
         return Result.success(Unit)
     }
@@ -108,5 +124,23 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
         return variation.attributes
             .filterNot { it.name.isNullOrEmpty() || it.option.isNullOrEmpty() }
             .map { PosStoreApiRestClient.VariationAttribute(it.name!!, it.option!!) }
+    }
+
+    /**
+     * Transaction-scoped holder of the Cart-Token returned by the server.
+     * Captures the latest non-empty Cart-Token from each response so the
+     * caller can pass it along on the next call.
+     */
+    private class CartTokenHolder {
+        var value: String? = null
+            private set
+
+        fun updateFrom(payload: WooPayload<*>) {
+            payload.headers
+                .firstOrNull { it.key.equals(PosStoreApiRestClient.CART_TOKEN_HEADER, ignoreCase = true) }
+                ?.value
+                ?.takeIf { it.isNotBlank() }
+                ?.let { value = it }
+        }
     }
 }

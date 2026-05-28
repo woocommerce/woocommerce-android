@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import java.net.URLEncoder
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,10 +21,14 @@ import javax.inject.Singleton
  * `plugins/woocommerce/src/Internal/POS/StoreApi/` in woocommerce/woocommerce
  * for the server side.
  *
- * This is a spike client paired with the server-side architectural spike.
- * Session continuity across requests is currently unresolved (see
- * DECISIONS.md alongside the use case); tests mock this client, so unit
- * coverage is unaffected.
+ * **Session continuity.** Each call optionally accepts a `cartToken` returned
+ * by a prior call's `Cart-Token` response header. Mobile passes the token
+ * back via a `?cart_token=` URL parameter (mirroring the URL-parameter
+ * transport agentic commerce uses for `checkout_session_id`); the server
+ * route validates it and injects it as the `HTTP_CART_TOKEN` env so the
+ * Store API's existing header-based session swap picks it up. The URL-
+ * parameter transport is used because `WooNetwork` does not currently
+ * expose a way to add custom request headers per call.
  */
 @Singleton
 class PosStoreApiRestClient @Inject constructor(
@@ -33,14 +38,16 @@ class PosStoreApiRestClient @Inject constructor(
     /**
      * POST /wc/pos/v1/cart/add-item.
      *
-     * Adds one cart line. Currently called once per distinct product/quantity
-     * pair built by the in-memory POS cart.
+     * Adds one cart line. Returns the response together with any
+     * `Cart-Token` header the server emitted, so the caller can replay
+     * it on subsequent calls in the same transaction.
      */
     suspend fun addToCart(
         site: SiteModel,
         productId: Long,
         quantity: Int,
         variation: List<VariationAttribute> = emptyList(),
+        cartToken: String? = null,
     ): WooPayload<Unit> {
         val body = buildMap<String, Any> {
             put("id", productId)
@@ -52,13 +59,13 @@ class PosStoreApiRestClient @Inject constructor(
 
         val response = wooNetwork.executePostGsonRequest(
             site = site,
-            path = ADD_ITEM_PATH,
+            path = appendCartToken(ADD_ITEM_PATH, cartToken),
             clazz = AddItemResponseDto::class.java,
             body = body
         )
 
         return when (response) {
-            is Success -> WooPayload(Unit)
+            is Success -> WooPayload(Unit, response.headers)
             is Error -> WooPayload(response.error.toWooError())
         }
     }
@@ -71,18 +78,27 @@ class PosStoreApiRestClient @Inject constructor(
      * does not attempt to process payment, leaving the existing POS
      * payment flow to take over (WooPayments capture, or cash mark-paid).
      */
-    suspend fun checkout(site: SiteModel): WooPayload<CheckoutResponseDto> {
+    suspend fun checkout(
+        site: SiteModel,
+        cartToken: String? = null,
+    ): WooPayload<CheckoutResponseDto> {
         val response = wooNetwork.executePostGsonRequest(
             site = site,
-            path = CHECKOUT_PATH,
+            path = appendCartToken(CHECKOUT_PATH, cartToken),
             clazz = CheckoutResponseDto::class.java,
             body = emptyMap()
         )
 
         return when (response) {
-            is Success -> WooPayload(response.data)
+            is Success -> WooPayload(response.data, response.headers)
             is Error -> WooPayload(response.error.toWooError())
         }
+    }
+
+    private fun appendCartToken(path: String, cartToken: String?): String {
+        if (cartToken.isNullOrEmpty()) return path
+        val separator = if (path.contains('?')) "&" else "?"
+        return path + separator + CART_TOKEN_PARAM + "=" + URLEncoder.encode(cartToken, Charsets.UTF_8.name())
     }
 
     data class VariationAttribute(
@@ -115,7 +131,16 @@ class PosStoreApiRestClient @Inject constructor(
     )
 
     companion object {
+        /**
+         * Name of the response header the Store API emits carrying the
+         * server-signed cart-token JWT. Callers should look this up
+         * case-insensitively in [WooPayload.headers] and replay the value
+         * on subsequent calls in the same transaction.
+         */
+        const val CART_TOKEN_HEADER = "Cart-Token"
+
         private const val ADD_ITEM_PATH = "/wc/pos/v1/cart/add-item"
         private const val CHECKOUT_PATH = "/wc/pos/v1/checkout"
+        private const val CART_TOKEN_PARAM = "cart_token"
     }
 }
