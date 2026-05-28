@@ -95,13 +95,13 @@ class PosStoreApiCheckoutUseCaseTest {
         val result = sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
 
         assertThat(result.isFailure).isTrue
-        verify(restClient, never()).checkout(any(), anyOrNull())
+        verify(restClient, never()).checkout(any(), anyOrNull(), any(), any())
     }
 
     @Test
     fun `given checkout fails, when invoked, then order fetch is not attempted`() = runTest {
         givenAddToCartSucceeds()
-        whenever(restClient.checkout(eq(site), anyOrNull())) doReturn
+        whenever(restClient.checkout(eq(site), anyOrNull(), any(), any())) doReturn
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "checkout boom"))
 
         val result = sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
@@ -176,7 +176,7 @@ class PosStoreApiCheckoutUseCaseTest {
                 cartToken = eq("token-from-first"),
             )
             // Checkout: replays the latest captured token (from the second response).
-            verify(restClient).checkout(eq(site), eq("token-from-second"))
+            verify(restClient).checkout(eq(site), eq("token-from-second"), any(), any())
         }
     }
 
@@ -193,7 +193,7 @@ class PosStoreApiCheckoutUseCaseTest {
         } else {
             emptyList()
         }
-        whenever(restClient.checkout(eq(site), anyOrNull())) doReturn
+        whenever(restClient.checkout(eq(site), anyOrNull(), any(), any())) doReturn
             WooPayload(checkoutResponse(orderId), headers)
     }
 
