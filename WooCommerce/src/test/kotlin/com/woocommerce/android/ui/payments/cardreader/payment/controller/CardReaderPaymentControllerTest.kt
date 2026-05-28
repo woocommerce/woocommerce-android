@@ -80,6 +80,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -2484,12 +2485,29 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithValidDataForRetry) }
             }
-            whenever(cardReaderManager.cancelPayment(any())).thenThrow(RuntimeException("Cancellation race"))
+            whenever(cardReaderManager.cancelPayment(any())).thenThrow(IllegalStateException("Cancellation race"))
             controller.start()
 
             controller.stop()
 
             verify(cardReaderManager).cancelPayment(any())
+        }
+
+    @Test
+    fun `given user leaves the screen, when scope cancellation handler throws, then stop does not crash`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow<CardPaymentStatus> {
+                    suspendCancellableCoroutine<Unit> { continuation ->
+                        continuation.invokeOnCancellation {
+                            throw IllegalStateException("Cancellation race")
+                        }
+                    }
+                }
+            }
+            controller.start()
+
+            controller.stop()
         }
 
     @Test

@@ -70,8 +70,10 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CompletionHandlerException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -788,18 +790,20 @@ class CardReaderPaymentController(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
+    @OptIn(InternalCoroutinesApi::class)
     fun stop() {
         try {
             paymentDataForRetry?.let {
                 cardReaderManager.cancelPayment(it)
             }
-        } catch (e: Exception) {
+        } catch (e: IllegalStateException) {
             WooLog.e(WooLog.T.CARD_READER, "Failed to cancel card reader payment", e)
         } finally {
             try {
+                // Stripe Terminal can throw from a coroutine cancellation handler while it is waiting for
+                // a network response; coroutines wrap that in CompletionHandlerException.
                 scope.cancel()
-            } catch (e: Exception) {
+            } catch (e: CompletionHandlerException) {
                 WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
             }
         }
