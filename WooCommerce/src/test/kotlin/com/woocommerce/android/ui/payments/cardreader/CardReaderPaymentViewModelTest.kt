@@ -1912,7 +1912,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given unknown error, when contact support clicked, then contact support event emited`() =
+    fun `given unknown error, when contact support clicked, then contact support event emitted`() =
         testBlocking {
             setupViewModelForInteracRefund()
             whenever(
@@ -2663,7 +2663,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesnt start`() =
+    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesn't start`() =
         testBlocking {
             val cardReader: CardReader = mock()
             whenever(cardReaderManager.readerStatus).thenReturn(

@@ -452,7 +452,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given empty list from repo and non email search, when add customer manually clicked, then event doesnt have email`() =
+    fun `given empty list from repo and non email search, when add customer manually clicked, then event doesn't have email`() =
         testBlocking {
             // GIVEN
             whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
@@ -738,7 +738,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given less than page returned from repo, when onEndOfListReached, then next call doesnt load more customers`() =
+    fun `given less than page returned from repo, when onEndOfListReached, then next call doesn't load more customers`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel()
