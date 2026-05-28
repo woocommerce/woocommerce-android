@@ -10,7 +10,7 @@ class CheckWooPluginPushNotificationsSupport @Inject constructor(
     private val getWooCorePluginCachedVersion: GetWooCorePluginCachedVersion
 ) {
     companion object {
-        const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.8.0"
+        const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.9.0"
     }
 
     suspend operator fun invoke(forceRefresh: Boolean): Result {
