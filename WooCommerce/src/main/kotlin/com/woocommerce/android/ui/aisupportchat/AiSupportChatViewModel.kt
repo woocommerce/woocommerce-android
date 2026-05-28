@@ -237,7 +237,7 @@ class AiSupportChatViewModel @Inject constructor(
         shouldTrackIssueSelection: Boolean
     ) {
         val state = _viewState.value
-        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
+        if (!state.canHandleDiagnosticAction) return
         if (shouldTrackIssueSelection) {
             analyticsTracker.trackIssueSelected(issueType = issueType, entryPoint = state.entryPoint)
         }
@@ -1036,7 +1036,11 @@ data class AiSupportChatViewState(
     val messageRatings: Map<Long, AiSupportChatFeedbackRating> = emptyMap()
 ) {
     val canUseDiagnosticActions: Boolean
-        get() = !hasProceededToChat && !isSending && !isExecutingFixAction
+        get() = !hasProceededToChat &&
+            !isSending &&
+            !isExecutingFixAction &&
+            !hasCreatedTicket &&
+            !isChatResolved
 
     val canHandleDiagnosticAction: Boolean
         get() = canUseDiagnosticActions && !isRunningDiagnostics
@@ -1066,8 +1070,7 @@ data class AiSupportChatViewState(
             !isChatResolved &&
             !isSending &&
             !isLoadingHistory &&
-            !showLoadHistoryError &&
-            (isIssuePickerActive || canSendMessages)
+            !showLoadHistoryError
 
     val shouldShowResolvedButton: Boolean
         get() {
@@ -1085,9 +1088,6 @@ data class AiSupportChatViewState(
     private companion object {
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
-
-    private val isIssuePickerActive: Boolean
-        get() = !hasProceededToChat && selectedIssueType == null && !isRunningDiagnostics
 }
 
 enum class HumanSupportContactSource {

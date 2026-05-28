@@ -1294,7 +1294,27 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
             val state = viewModel.viewState.value
             assertThat(state.hasCreatedTicket).isTrue
+            assertThat(state.canUseDiagnosticActions).isFalse()
+            assertThat(state.canHandleDiagnosticAction).isFalse()
             verify(repository, never()).markChatAsTicketCreated(any())
+        }
+
+    @Test
+    fun `given ticket is created while issue picker is shown, when issue selected, then issue picker is ignored`() =
+        testBlocking {
+            viewModel.onSupportTicketCreated()
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasCreatedTicket).isTrue()
+            assertThat(state.hasProceededToChat).isFalse()
+            assertThat(state.selectedIssueType).isNull()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.IssuePicker
+            )
+            verify(diagnosticsService, never()).runDiagnostics(any())
         }
 
     @Test
