@@ -246,8 +246,6 @@ fun WooPosIssueRefundScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .statusBarsPadding()
-            .navigationBarsPadding()
     ) {
         RefundSelectionLayer(
             state = selectionState,
@@ -255,6 +253,9 @@ fun WooPosIssueRefundScreen(
             onEvent = viewModel::onUIEvent,
             onNavigationEvent = onNavigationEvent,
             disablePartialRefund = disablePartialRefund,
+            modifier = Modifier
+                .statusBarsPadding()
+                .navigationBarsPadding(),
         )
 
         if (modalState != null && !presentModalAsDialog) {
@@ -270,6 +271,9 @@ fun WooPosIssueRefundScreen(
                     viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
                 },
                 onNavigationEvent = onNavigationEvent,
+                contentInsetsModifier = Modifier
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
                 disablePartialRefund = disablePartialRefund,
             )
         }
@@ -293,8 +297,6 @@ fun WooPosIssueRefundScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface)
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
             ) {
                 RefundModalLayer(
                     state = modalState,
@@ -308,6 +310,7 @@ fun WooPosIssueRefundScreen(
                         viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
                     },
                     onNavigationEvent = onNavigationEvent,
+                    contentInsetsModifier = Modifier.statusBarsPadding(),
                     disablePartialRefund = disablePartialRefund,
                 )
 
@@ -423,6 +426,7 @@ private fun RefundModalLayer(
     onConnectReaderClicked: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
+    contentInsetsModifier: Modifier = Modifier,
     disablePartialRefund: Boolean = false,
 ) {
     val readerRefundProcessingState = (state as? WooPosRefundState.Content)
@@ -432,7 +436,10 @@ private fun RefundModalLayer(
         }
 
     if (readerRefundProcessingState != null) {
-        RefundPaymentInProgressContent(readerRefundProcessingState)
+        RefundPaymentInProgressContent(
+            state = readerRefundProcessingState,
+            modifier = modifier,
+        )
         return
     }
 
@@ -440,6 +447,7 @@ private fun RefundModalLayer(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
+            .then(contentInsetsModifier)
     ) {
         RefundScreenHeader(
             title = null,
@@ -495,14 +503,17 @@ private fun RefundModalLayer(
 @Composable
 private fun RefundPaymentInProgressContent(
     state: WooPosRefundState.Content,
+    modifier: Modifier = Modifier,
 ) {
-    WooPosPaymentInProgressScreen(
-        state = WooPosTotalsViewState.PaymentInProgress(
-            title = stringResource(R.string.woopos_refund_reader_processing_title),
-            subtitle = state.formattedTotal,
-        ),
-        onUIEvent = {}
-    )
+    Box(modifier = modifier.fillMaxSize()) {
+        WooPosPaymentInProgressScreen(
+            state = WooPosTotalsViewState.PaymentInProgress(
+                title = stringResource(R.string.woopos_refund_reader_processing_title),
+                subtitle = state.formattedTotal,
+            ),
+            onUIEvent = {}
+        )
+    }
 }
 
 @Composable
