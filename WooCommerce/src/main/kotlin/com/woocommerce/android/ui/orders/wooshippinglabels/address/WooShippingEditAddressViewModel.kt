@@ -156,12 +156,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
         .combine(country) { phoneValue, countryValue -> Pair(phoneValue, countryValue) }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { (inputValue, countryValue) ->
             val validatedPhone = if (inputValue.isRequired && inputValue.error == null) {
-                val error = if (countryValue.code == US_COUNTRY_CODE) {
-                    addressValidator.validateUSCustomsPhone(inputValue.value)
-                } else {
-                    addressValidator.validatePhoneNumber(inputValue.value)
-                }
-                inputValue.copy(error = error)
+                inputValue.copy(error = validatePhoneByCountry(inputValue.value, countryValue))
             } else {
                 inputValue
             }
@@ -347,7 +342,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
                     AddressStatus.VerifyFailed(addressValidation.exception)
                 }
 
-                address.hasIncorrectOrMissingData -> AddressStatus.MissingInfo
+                address.hasIncorrectOrMissingData || !isFormValid() -> AddressStatus.MissingInfo
                 hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SaveChanges
                 isSameAddress(address, currentAddress) && isVerified.value -> AddressStatus.Verified
                 navArgs.flow is EditAddressFlow.EditDestinationAddress &&
@@ -367,6 +362,22 @@ class WooShippingEditAddressViewModel @Inject constructor(
             )
         }.collectLatest { viewState.value = it }
     }
+
+    private fun isFormValid(): Boolean {
+        return addressValidator.validateAtLeastOneOf(name.value, company.value) == null &&
+            addressValidator.validateFieldRequired(address.value) == null &&
+            addressValidator.validateFieldRequired(city.value) == null &&
+            addressValidator.validateFieldRequired(postalCode.value) == null &&
+            (!email.isRequired || addressValidator.validateEmail(email.value) == null) &&
+            (!phone.isRequired || validatePhoneByCountry(phone.value, country.value) == null)
+    }
+
+    private fun validatePhoneByCountry(value: String, country: Location): String? =
+        if (country.code == US_COUNTRY_CODE) {
+            addressValidator.validateUSCustomsPhone(value)
+        } else {
+            addressValidator.validatePhoneNumber(value)
+        }
 
     private fun getErrorState(
         countriesState: LocationState,
