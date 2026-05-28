@@ -103,6 +103,15 @@ fun ShipmentDetails(
         }
     }
     val coroutineScope = rememberCoroutineScope()
+    val toggleSheet: () -> Unit = {
+        coroutineScope.launch {
+            if (bottomSheetState.isCollapsed) {
+                bottomSheetState.expand()
+            } else {
+                bottomSheetState.collapse()
+            }
+        }
+    }
     val density = LocalDensity.current
 
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -143,15 +152,7 @@ fun ShipmentDetails(
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable(
-                    onClick = {
-                        coroutineScope.launch {
-                            if (bottomSheetState.isCollapsed) {
-                                bottomSheetState.expand()
-                            } else {
-                                bottomSheetState.collapse()
-                            }
-                        }
-                    },
+                    onClick = toggleSheet,
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 )
@@ -176,7 +177,11 @@ fun ShipmentDetails(
                     Text(
                         text = stringResource(R.string.shipping_label_shipment_details_title),
                         color = MaterialTheme.colors.primary,
-                        modifier = Modifier
+                        modifier = Modifier.clickable(
+                            onClick = toggleSheet,
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        )
                     )
                     NoticeBanner(noticeBannerUiState)
                 }
