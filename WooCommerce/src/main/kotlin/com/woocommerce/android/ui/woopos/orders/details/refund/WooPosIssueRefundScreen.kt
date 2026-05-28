@@ -290,7 +290,13 @@ fun WooPosIssueRefundScreen(
             disablePartialRefund = disablePartialRefund,
             modifier = Modifier
                 .statusBarsPadding()
-                .navigationBarsPadding(),
+                .then(
+                    if (presentModalAsDialog) {
+                        Modifier
+                    } else {
+                        Modifier.navigationBarsPadding()
+                    }
+                ),
         )
 
         if (modalState != null && !presentModalAsDialog) {
