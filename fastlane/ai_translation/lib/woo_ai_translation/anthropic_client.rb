@@ -105,6 +105,8 @@ module WooAiTranslation
 
       json = JSON.parse(res.body)
       Array(json['content']).map { |c| c['text'] }.compact.join
+    rescue JSON::ParserError => e
+      raise Error, "malformed JSON response: #{e.message}"
     end
 
     def http_client(uri)
@@ -138,7 +140,7 @@ module WooAiTranslation
     end
 
     def client_error_no_retry?(error)
-      m = error.message[/HTTP (\d+)/, 1]
+      m = error.message[/\AHTTP (\d{3})(?=:)/, 1]
       return false if m.nil?
 
       code = m.to_i

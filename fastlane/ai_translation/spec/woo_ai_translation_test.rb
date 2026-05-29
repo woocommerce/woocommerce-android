@@ -1138,6 +1138,8 @@ class TranslatorRecoverableErrorsTest < Minitest::Test
 end
 
 class AnthropicClientTransportErrorsTest < Minitest::Test
+  Resp = Struct.new(:code, :body)
+
   def test_transport_errors_are_wrapped_after_retries
     http = Class.new do
       attr_reader :calls
@@ -1162,6 +1164,40 @@ class AnthropicClientTransportErrorsTest < Minitest::Test
 
     assert_equal WooAiTranslation::AnthropicClient::MAX_RETRIES + 1, http.calls
     assert_includes error.message, 'ECONNRESET'
+  end
+
+  def test_malformed_success_json_is_wrapped_and_retried
+    http = Class.new do
+      attr_reader :calls
+
+      def initialize
+        @calls = 0
+      end
+
+      def request(_req)
+        @calls += 1
+        AnthropicClientTransportErrorsTest::Resp.new('200', 'not json')
+      end
+    end.new
+
+    client = WooAiTranslation::AnthropicClient.new(api_key: 'dummy', http: http)
+    client.define_singleton_method(:backoff_seconds) { |_attempt| 0 }
+    client.define_singleton_method(:sleep) { |_seconds| nil }
+
+    error = assert_raises(WooAiTranslation::AnthropicClient::Error) do
+      client.complete(model: 'test-model', system_blocks: ['rules'], user_content: '[]')
+    end
+
+    assert_equal WooAiTranslation::AnthropicClient::MAX_RETRIES + 1, http.calls
+    assert_includes error.message, 'malformed JSON response'
+  end
+
+  def test_client_error_detection_only_reads_http_status_prefix
+    client = WooAiTranslation::AnthropicClient.new(api_key: 'dummy', http: Object.new)
+
+    refute client.send(:client_error_no_retry?, WooAiTranslation::AnthropicClient::Error.new('proxy said HTTP 400'))
+    assert client.send(:client_error_no_retry?, WooAiTranslation::AnthropicClient::Error.new('HTTP 400: bad request'))
+    refute client.send(:client_error_no_retry?, WooAiTranslation::AnthropicClient::Error.new('HTTP 500: upstream HTTP 400'))
   end
 end
 
