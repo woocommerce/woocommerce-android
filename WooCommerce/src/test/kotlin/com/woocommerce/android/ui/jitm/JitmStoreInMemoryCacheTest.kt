@@ -62,7 +62,7 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site doesnt exist, when init, then should not fetch messages`() = testBlocking {
+    fun `given site doesn't exist, when init, then should not fetch messages`() = testBlocking {
         // GIVEN
         whenever(selectedSite.exists()).thenReturn(false)
 

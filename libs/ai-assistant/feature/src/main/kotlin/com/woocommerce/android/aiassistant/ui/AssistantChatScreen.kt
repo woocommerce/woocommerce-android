@@ -84,9 +84,9 @@ import com.woocommerce.android.aiassistant.ui.components.AssistantConfirmationCa
 import com.woocommerce.android.aiassistant.ui.components.AssistantEmptyState
 import com.woocommerce.android.aiassistant.ui.components.AssistantToolActivityPill
 import com.woocommerce.android.aiassistant.ui.components.AssistantTypingIndicator
-import com.woocommerce.android.aiassistant.ui.markdown.AssistantMarkdownText
 import com.woocommerce.android.aiassistant.ui.scroll.AssistantScrollController
 import com.woocommerce.android.aiassistant.ui.scroll.rememberAssistantScrollController
+import com.woocommerce.commons.ui.markdown.MarkdownText
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -656,7 +656,7 @@ private fun AssistantCardGroupSegment(
 @Composable
 private fun AssistantTextBubble(text: String, isUser: Boolean) {
     if (!isUser) {
-        AssistantMarkdownText(
+        MarkdownText(
             text = text,
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.onSurface,

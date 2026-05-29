@@ -39,3 +39,16 @@ updates:
       - dependency-name: "org.wordpress:wellsql"
       - dependency-name: "org.wordpress.wellsql:wellsql-processor"
       - dependency-name: "com.github.PhilJay:MPAndroidChart"
+
+  - package-ecosystem: "bundler"
+    open-pull-requests-limit: 5
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "bot: dependencies update"
+    groups:
+      ruby-minor-and-patch:
+        update-types: [minor, patch]
+    reviewers:
+      - "woocommerce/apps-infra-tooling"

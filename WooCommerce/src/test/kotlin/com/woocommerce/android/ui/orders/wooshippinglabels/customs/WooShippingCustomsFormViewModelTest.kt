@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -41,7 +42,8 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         on { validateITN(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateContentType(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateRestrictionType(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
-        on { validateProductDescription(any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
+        on { validateProductDescription(any(), any(), any()) } doReturn
+            WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateProductValue(any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateProductWeight(any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
         on { validateHSTariffNumber(any(), any()) } doReturn WooShippingCustomsValidator.FieldValidationResult.Valid
@@ -235,7 +237,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
             // Given
             val itemIndex = 0
             val blankDescription = ""
-            whenever(customsValidator.validateProductDescription(blankDescription)).thenReturn(
+            whenever(customsValidator.validateProductDescription(eq(blankDescription), any(), any())).thenReturn(
                 WooShippingCustomsValidator.FieldValidationResult.Invalid(
                     errorMessage = UiString.UiStringRes(
                         R.string.woo_shipping_labels_customs_product_details_description_missing
@@ -485,6 +487,7 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         )
 
         val savedState = WooShippingCustomsFormFragmentArgs(
+            originCountryCode = "US",
             destinationCountryCode = "CA",
             customsData = defaultCustomsData,
             storeOptions = StoreOptionsModel(

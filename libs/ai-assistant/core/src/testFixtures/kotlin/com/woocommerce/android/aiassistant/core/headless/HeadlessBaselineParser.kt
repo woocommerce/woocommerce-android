@@ -7,4 +7,7 @@ class HeadlessBaselineParser(
 ) {
     fun parse(source: String): HeadlessBaseline =
         json.decodeFromString(HeadlessBaseline.serializer(), source)
+
+    fun parseApprovedBaseline(source: String): HeadlessApprovedBaseline =
+        json.decodeFromString(HeadlessApprovedBaseline.serializer(), source)
 }

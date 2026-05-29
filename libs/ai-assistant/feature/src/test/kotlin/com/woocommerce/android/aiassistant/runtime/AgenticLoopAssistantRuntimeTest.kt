@@ -31,15 +31,19 @@ import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewField
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistryImpl
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewText
+import com.woocommerce.android.aiassistant.safety.OrdersConfirmationPreviewProvider
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreviewField
 import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
 import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
+import com.woocommerce.android.aiassistant.tools.CachedLookupResult
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardDetails
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardPayload
 import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsUiStructured
+import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
@@ -59,7 +63,13 @@ import kotlinx.serialization.json.putJsonObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 @RunWith(RobolectricTestRunner::class)
 class AgenticLoopAssistantRuntimeTest {
@@ -209,6 +219,61 @@ class AgenticLoopAssistantRuntimeTest {
             )
         )
     }
+
+    @Test
+    fun `given confirmation preview resolves an order name, when loop requests confirmation, then pending card is emitted once with resolved preview`() =
+        runTest {
+            val request = ConfirmationRequest(
+                id = "confirmation-1",
+                toolCallId = "call-1",
+                toolName = "orders_update",
+                arguments = buildJsonObject {
+                    put("id", 3479)
+                    put("status", "pending")
+                },
+                safetyLevel = ToolSafetyLevel.UNSAFE,
+            )
+            val ordersDataSource: AIOrdersDataSource = mock()
+            whenever(ordersDataSource.getOrders(listOf(3479L))).thenReturn(
+                Result.success(
+                    CachedLookupResult(
+                        items = listOf(
+                            OrderEntity(
+                                localSiteId = LocalId(1),
+                                orderId = 3479L,
+                                billingFirstName = "Jane",
+                                billingLastName = "Doe",
+                            )
+                        ),
+                        cacheHitCount = 1,
+                        cacheMissCount = 0,
+                        fetchAttempted = false,
+                        fetchFailed = false,
+                    )
+                )
+            )
+            val runtime = runtime(
+                agenticLoop = FakeAgenticLoop(events = listOf(LoopEvent.ConfirmationRequested(request))),
+                toolRegistry = FixedToolRegistry(listOf(orderUpdateDescriptor())),
+                confirmationPreviewProviderRegistry = ConfirmationPreviewProviderRegistryImpl(
+                    setOf(OrdersConfirmationPreviewProvider(mock(), ordersDataSource))
+                ),
+            )
+
+            val events = runtime.startTurn(givenTurnRequest()).toList()
+
+            val confirmationEvents = events.filterIsInstance<AssistantRuntimeEvent.AwaitingConfirmation>()
+            assertThat(confirmationEvents).hasSize(1)
+            val confirmation = confirmationEvents.single().confirmation
+            assertThat(confirmation.state).isEqualTo(AssistantConfirmationCardState.PENDING)
+            assertThat(confirmation.preview?.summary).isEqualTo("Update order #3479 (Jane Doe)")
+            val confirmationSummaries = events.mapNotNull {
+                (it as? AssistantRuntimeEvent.AwaitingConfirmation)?.confirmation?.preview?.summary
+            }
+            assertThat(confirmationSummaries).doesNotContain("Update order #3479")
+            verify(ordersDataSource).getOrders(listOf(3479L))
+            verify(ordersDataSource, never()).getOrder(3479L)
+        }
 
     @Test
     fun `given confirmation descriptor is missing, when runtime builds card, then fallback descriptor is used`() =

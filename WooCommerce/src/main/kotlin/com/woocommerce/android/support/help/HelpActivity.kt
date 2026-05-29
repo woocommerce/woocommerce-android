@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.updatePadding
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -19,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_F
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -33,6 +35,7 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatActivity
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatHistoryActivity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.prefs.developer.DevFeatureFlagsActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -58,6 +61,8 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var selectedSite: SelectedSite
 
     @Inject lateinit var featureFlagRepository: FeatureFlagRepository
+
+    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -92,7 +97,12 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        val isAiSupportChatAvailable = isAiSupportChatAvailable()
+        if (HelpAiSupportChatEntryPoint.shouldShowContactSupport(isAiSupportChatAvailable)) {
+            binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        } else {
+            binding.contactContainer.hide()
+        }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.MobileApp) }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
@@ -110,9 +120,11 @@ class HelpActivity : AppCompatActivity() {
             binding.ssrContainer.setOnClickListener { showSSR() }
         }
 
-        if (isAiSupportChatAvailable()) {
+        if (isAiSupportChatAvailable) {
             binding.aiSupportChatContainer.show()
             binding.aiSupportChatContainer.setOnClickListener { showAiSupportChat() }
+            binding.aiSupportChatHistoryContainer.show()
+            binding.aiSupportChatHistoryContainer.setOnClickListener { showAiSupportChatHistory() }
         }
 
         if (!userIsLoggedIn() && featureFlagRepository.isEnabled(FeatureFlag.LOGGED_OUT_FF_PANEL)) {
@@ -243,13 +255,31 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun isAiSupportChatAvailable(): Boolean =
-        userIsLoggedIn() &&
-            featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT) &&
-            selectedSite.getIfExists()?.isJetpackConnected == true
+        HelpAiSupportChatEntryPoint.isAvailable(
+            featureFlagEnabled = featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)
+        )
 
     private fun showAiSupportChat() {
-        startActivity(AiSupportChatActivity.createIntent(this))
+        val preLogin = shouldUsePreLoginAiSupportChat()
+        val siteAddress = selectedSite.getIfExists()?.url
+            ?: appPrefsWrapper.getLoginSiteAddress().takeIf { preLogin }
+        startActivity(
+            AiSupportChatActivity.createIntent(
+                context = this,
+                preLogin = preLogin,
+                siteAddress = siteAddress
+            )
+        )
     }
+
+    private fun showAiSupportChatHistory() {
+        startActivity(AiSupportChatHistoryActivity.createIntent(this))
+    }
+
+    private fun shouldUsePreLoginAiSupportChat(): Boolean =
+        HelpAiSupportChatEntryPoint.shouldUsePreLoginLaunchMode(
+            isUserLoggedIn = userIsLoggedIn()
+        )
 
     private fun showFeatureFlagsOverride() {
         startActivity(DevFeatureFlagsActivity.createIntent(this, skipRemoteLoad = true))

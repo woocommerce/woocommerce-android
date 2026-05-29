@@ -92,6 +92,14 @@
                 app:optionValue="@string/ai_support_chat_help_row_subtitle"
                 android:visibility="gone" />
 
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/aiSupportChatHistoryContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/ai_support_chat_history_row_title"
+                app:optionValue="@string/ai_support_chat_history_row_subtitle"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/developerSection"
                 android:layout_width="match_parent"
