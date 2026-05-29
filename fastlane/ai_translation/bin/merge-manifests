@@ -33,7 +33,14 @@ in_paths.each do |path|
       merged['keys'][name] = entry
     end
   end
-  data.fetch('metadata', {}).each { |k, v| merged['metadata'][k] = v }
+  data.fetch('metadata', {}).each do |name, entry|
+    if merged['metadata'].key?(name)
+      target = (merged['metadata'][name]['locales'] ||= {})
+      entry.fetch('locales', {}).each { |loc, rec| target[loc] = rec }
+    else
+      merged['metadata'][name] = entry
+    end
+  end
 end
 
 abort 'no input manifests found' if merged.nil?

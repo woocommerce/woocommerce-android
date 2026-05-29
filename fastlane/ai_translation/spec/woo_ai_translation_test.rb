@@ -1215,6 +1215,42 @@ class ManifestInvalidationTest < Minitest::Test
   end
 end
 
+class MergeManifestsTest < Minitest::Test
+  SCRIPT = File.expand_path('../bin/merge-manifests', __dir__)
+
+  def test_metadata_buckets_are_deep_merged_by_locale
+    Dir.mktmpdir do |dir|
+      first = File.join(dir, 'first.json')
+      second = File.join(dir, 'second.json')
+      out = File.join(dir, 'out.json')
+      File.write(first, JSON.generate(
+        'keys' => {},
+        'metadata' => {
+          'title' => {
+            'locales' => {
+              'de-DE' => { 'cache_key' => 'de' }
+            }
+          }
+        }
+      ))
+      File.write(second, JSON.generate(
+        'keys' => {},
+        'metadata' => {
+          'title' => {
+            'locales' => {
+              'fr-FR' => { 'cache_key' => 'fr' }
+            }
+          }
+        }
+      ))
+
+      assert system(SCRIPT, out, first, second, out: File::NULL, err: File::NULL), 'merge-manifests should succeed'
+      merged = JSON.parse(File.read(out))
+      assert_equal %w[de-DE fr-FR], merged.dig('metadata', 'title', 'locales').keys.sort
+    end
+  end
+end
+
 class CliStrictModeTest < Minitest::Test
   Report = WooAiTranslation::Engine::Report
 
