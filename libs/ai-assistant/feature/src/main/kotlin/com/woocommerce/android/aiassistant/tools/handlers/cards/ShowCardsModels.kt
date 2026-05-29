@@ -84,7 +84,6 @@ internal data class VariationSummary(
     val id: String,
     @SerialName("product_id") val productId: Long,
     @SerialName("variation_id") val variationId: Long,
-    val name: String? = null,
     val sku: String? = null,
     val price: String? = null,
     @SerialName("stock_status") val stockStatus: String? = null,
@@ -194,7 +193,7 @@ internal sealed interface ShowCardDetails {
     data class Variation(
         @SerialName("product_id") val productId: Long,
         @SerialName("variation_id") val variationId: Long,
-        val name: String? = null,
+        @SerialName("parent_product_name") val parentProductName: String? = null,
         val sku: String? = null,
         val price: String? = null,
         @SerialName("stock_status") val stockStatus: String? = null,

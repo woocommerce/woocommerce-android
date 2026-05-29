@@ -1,0 +1,2 @@
+24.8:
+Ti presentiamo il nuovo Assistente IA: un modo più intelligente di gestire il tuo negozio direttamente dal tuo dispositivo. In fase di rilascio per una selezione di negozi, questa funzionalità ti permette di monitorare le attività del tuo negozio con un semplice tocco. Abbiamo inoltre perfezionato l'elenco degli ordini, eliminando lo sfarfallio che si verificava tornando alla lista dalla schermata dei dettagli di un ordine.
