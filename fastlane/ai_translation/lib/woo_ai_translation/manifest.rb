@@ -1,0 +1,166 @@
+# frozen_string_literal: true
+
+require 'json'
+require 'digest'
+require 'time'
+require 'fileutils'
+
+module WooAiTranslation
+  # Committed delta-detection cache. The invalidation contract is deliberately
+  # narrow: a (key, locale) translation is re-done **only** when the English
+  # source for that key changes. Model bumps, prompt rewrites, context-comment
+  # edits, and attribute changes never auto-invalidate -- they are recorded as
+  # audit metadata but do not drive re-translation.
+  #
+  # The single signal is `source_sha = sha256(source_signature)`, recorded on
+  # each locale entry. Legacy manifests may still carry a key-level marker; that
+  # value is read as a fallback but not used as the shared mutable source of
+  # truth for newly recorded locales.
+  #
+  # On-demand re-translation (e.g. "I just bumped the model and want to migrate
+  # the whole corpus deliberately") is the operator's call -- the CLI exposes
+  # `--keys` and `--key-pattern` which clear matching manifest entries before
+  # the next run so the engine's normal delta logic treats them as stale.
+  #
+  # If the manifest has no record for a (key, locale) but the localized file
+  # already carries a translation, the engine trusts the file (Engine#reuse) and
+  # records origin=ai with the current source_sha on the next pass -- so a lost
+  # or wiped manifest can be safely regenerated from the committed files without
+  # clobbering human work.
+  class Manifest
+    # 2 (post-May 2026 engine changes):
+    #   - app-string invalidation is purely source-driven (see class header)
+    #   - the writer emits `glotpress-import` keys byte-for-byte from
+    #     fastlane/ai_translation/baseline/values-XX/strings.xml
+    # The on-disk JSON layout itself is unchanged from v1; the bump signals
+    # that this engine version understands the source-only + sidecar contract.
+    SCHEMA_VERSION = 2
+    SEP = "\u0000"
+
+    def self.load(path)
+      return new unless path && File.exist?(path)
+
+      raw = File.read(path).strip
+      return new if raw.empty?
+
+      new(JSON.parse(raw))
+    rescue JSON::ParserError
+      # A corrupt/partial manifest must not wedge the pipeline; start fresh and
+      # let the delta logic re-translate. (Files are the real translation store.)
+      new
+    end
+
+    def initialize(data = nil)
+      @data = data || default_data
+      @data['keys'] ||= {}
+      @data['metadata'] ||= {}
+    end
+
+    # Legacy multi-component cache key used by the Play Store metadata path
+    # (record_metadata / metadata_stale?). App-string translations no longer
+    # use this -- they invalidate purely on source change via #stale?.
+    def cache_key(source:, context:, locale:, model:)
+      Digest::SHA256.hexdigest([source, context.to_s, locale, model, PROMPT_VERSION].join(SEP))
+    end
+
+    # True when this (name, locale) needs (re)translation. Three cases:
+    #
+    # 1. No record at all for this key (key entry doesn't exist) -> NOT stale.
+    #    Bootstrap path: manifest is fresh or lost; trust whatever the
+    #    committed values-XX/strings.xml says.
+    #
+    # 2. Key exists but this specific locale has no entry -> stale. Either
+    #    the locale was never recorded for this key, or --keys cleared it
+    #    on purpose. Either way the engine should re-translate.
+    #
+    # 3. Key + locale recorded -> stale iff the recorded source_sha for that
+    #    locale differs from the current source_sha. Model/prompt/context edits
+    #    are not triggers.
+    def stale?(name:, locale:, expected_source_sha:)
+      key_entry = @data.dig('keys', name)
+      return false if key_entry.nil?
+
+      locale_rec = key_entry.dig('locales', locale)
+      return true if locale_rec.nil?
+
+      (locale_rec['source_sha'] || key_entry['source_sha']) != expected_source_sha
+    end
+
+    def record(name:, locale:, model:, origin:, source_sha:)
+      key = (@data['keys'][name] ||= { 'source_sha' => source_sha, 'locales' => {} })
+      key['source_sha'] ||= source_sha
+      key['current_source_sha'] = source_sha
+      # `model` and `prompt_version` are audit metadata only -- recorded so we
+      # can tell which model/prompt produced a given translation, but neither
+      # field invalidates the entry on future runs.
+      (key['locales'] ||= {})[locale] = {
+        'status' => 'translated',
+        'origin' => origin, # 'ai' | 'glotpress-import'
+        'model' => model,
+        'source_sha' => source_sha,
+        'prompt_version' => PROMPT_VERSION,
+        'updated' => Time.now.utc.iso8601
+      }
+    end
+
+    def record_metadata(field:, locale:, cache_key:, model:, origin:, version: nil)
+      bucket = version ? "#{version}:#{field}" : field
+      m = (@data['metadata'][bucket] ||= { 'locales' => {} })
+      m['locales'][locale] = {
+        'origin' => origin, 'cache_key' => cache_key, 'model' => model,
+        'prompt_version' => PROMPT_VERSION, 'updated' => Time.now.utc.iso8601
+      }
+    end
+
+    def metadata_stale?(field:, locale:, expected_cache_key:, version: nil)
+      bucket = version ? "#{version}:#{field}" : field
+      rec = @data.dig('metadata', bucket, 'locales', locale)
+      rec.nil? || rec['cache_key'] != expected_cache_key
+    end
+
+    def origin(name:, locale:)
+      @data.dig('keys', name, 'locales', locale, 'origin')
+    end
+
+    # Drop the recorded translation for `name` in each of `locales`, so the next
+    # engine pass treats those keys as stale and re-translates them. Used by the
+    # `--keys` / `--key-pattern` selective re-translation flags. Returns the
+    # count of (name, locale) entries actually cleared.
+    def invalidate(name:, locales:)
+      rec = @data.dig('keys', name, 'locales')
+      return 0 if rec.nil?
+
+      cleared = 0
+      locales.each do |loc|
+        cleared += 1 if rec.delete(loc)
+      end
+      cleared
+    end
+
+    # Names of every key the manifest currently has any locale record for.
+    def known_keys
+      (@data['keys'] || {}).keys
+    end
+
+    def to_h
+      @data
+    end
+
+    def save(path)
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, "#{JSON.pretty_generate(@data)}\n")
+    end
+
+    private
+
+    def default_data
+      {
+        'schema_version' => SCHEMA_VERSION,
+        'prompt_version' => PROMPT_VERSION,
+        'models' => { 'default' => DEFAULT_MODEL, 'escalated' => ESCALATION_MODEL },
+        'keys' => {},
+        'metadata' => {}
+      }
+    end
+  end
+end

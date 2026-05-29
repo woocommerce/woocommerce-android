@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "_note": "Starter glossary. Add terms incrementally as native-speaker spot-checks surface them. preserve=true terms are hard-gated: if present in source, the exact term must appear unchanged in the translation.",
+  "terms": [
+    { "term": "WooCommerce", "rule": "Brand name; never translate.", "preserve": true },
+    { "term": "Woo",         "rule": "Brand short form; never translate.", "preserve": true },
+    { "term": "WordPress.com", "rule": "Brand; never translate.", "preserve": true },
+    { "term": "Jetpack",     "rule": "Brand; never translate.", "preserve": true },
+    { "term": "WooPayments", "rule": "Product name; never translate.", "preserve": true },
+    { "term": "Stripe",      "rule": "Payment provider brand; never translate.", "preserve": true },
+    { "term": "PayPal",      "rule": "Payment provider brand; never translate.", "preserve": true },
+    { "term": "Apple Pay",   "rule": "Payment provider brand; never translate.", "preserve": true },
+    { "term": "Tap to Pay",  "rule": "Payment feature name; never translate.", "preserve": true },
+    { "term": "Scan to Pay", "rule": "Payment feature name; never translate.", "preserve": true },
+    { "term": "Point of Sale", "rule": "Name of the WooCommerce POS feature. Keep in English as the product name rather than a literal calque; Russian translations of this term as 'point where goods are given' have caused confusion.", "preserve": true },
+    { "term": "POS",         "rule": "Point of Sale acronym. Use the locale's established product shorthand when one exists." },
+    { "term": "SKU",         "rule": "Stock keeping unit. Keep as 'SKU' in all locales.", "preserve": true },
+    { "term": "URL",         "rule": "Technical acronym. Preserve when natural; localized descriptions like 'web address' are acceptable." },
+    { "term": "PIN",         "rule": "Payment/card acronym. Preserve when natural; localized script acronyms are acceptable." },
+    { "term": "REST API",    "rule": "Technical term. Preserve when natural." },
+    { "term": "WP-Admin",    "rule": "Product/admin area name. Preserve when natural." },
+    { "term": "Bluetooth",   "rule": "Technology brand/standard. Preserve when natural." },
+    { "term": "Wi-Fi",       "rule": "Technology brand/standard. Preserve when natural." },
+    { "term": "NFC",         "rule": "Technology acronym. Preserve when natural." },
+    { "term": "HID",         "rule": "Technology acronym. Preserve when natural." },
+    { "term": "DHL",         "rule": "Carrier brand; never translate.", "preserve": true },
+    { "term": "USPS",        "rule": "Carrier brand; never translate.", "preserve": true },
+    { "term": "Google",      "rule": "Brand name; never translate.", "preserve": true },
+    { "term": "Microsoft Outlook", "rule": "Product name; never translate.", "preserve": true },
+    { "term": "Coupon",      "rule": "Use the locale's established commerce term where one exists (e.g. de: Gutschein, fr: Code promo). Do not keep in English by default." },
+    { "term": "HAZMAT",      "rule": "Shipping label flag for hazardous materials. Use the locale's regulated term (e.g. de: Gefahrgut)." }
+  ]
+}

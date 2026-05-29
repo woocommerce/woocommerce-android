@@ -1,6 +1,8 @@
 AllCops:
   Exclude:
     - vendor/**/*
+    # Self-contained AI translation tool with its own structure and test layout.
+    - fastlane/ai_translation/**/*
   NewCops: enable
 
 Metrics/BlockLength:

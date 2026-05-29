@@ -50,6 +50,17 @@ steps:
         artifact_paths:
           - "**/build/reports/lint-results*.*"
 
+      - label: ":globe_with_meridians: AI Translations"
+        command: .buildkite/commands/ai-translate-pr.sh
+        key: ai-translations
+        if: "build.pull_request.id != null"
+        concurrency: 1
+        concurrency_group: "woocommerce-android/ai-translations/${BUILDKITE_PULL_REQUEST}"
+        concurrency_method: eager
+        agents:
+          queue: "mac-metal"
+        plugins: [$CI_TOOLKIT]
+
       - label: "Dependency Tree Diff"
         command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
         if: build.pull_request.id != null
