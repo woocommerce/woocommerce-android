@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 24.9
-Woo POS Checkout just got smoother—"Other payment methods" now opens in a tidy bottom sheet, and we fixed content getting clipped on smaller phones. Need a hand? Support now includes built-in troubleshooting and AI help. We also improved USPS shipping label customs handling for US territories.
+Collect physical payments using WooCommerce In-Person Payments and a card reader in Australia, Austria, Belgium, Canada, Finland, France, Germany, Ireland, Italy, Luxembourg, the Netherlands, New Zealand, Portugal, Singapore, Spain, the UK, and the US. Tap to Pay is available in Canada, the UK, and the US. Start a new order – or find an existing one that’s pending payment – then seamlessly accept payment.
 
 ## 24.8
 Say hello to your new AI Assistant—a smarter way to run your store right from your pocket. Rolling out to selected stores, it helps you stay on top of your shop with a tap. We've also smoothed out the order list so it no longer flashes when you head back from an order's details.
