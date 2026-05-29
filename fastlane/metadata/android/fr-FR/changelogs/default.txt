@@ -1,2 +1,0 @@
-24.8 :
-Découvrez votre nouvel assistant IA : une façon plus intelligente de gérer votre boutique, directement depuis votre téléphone. Déployé progressivement dans certaines boutiques, il vous aide à garder votre activité sous contrôle en un seul geste. Nous avons également corrigé l’affichage de la liste des commandes, qui ne clignote plus lorsque vous quittez la page des détails d’une commande spécifique.
