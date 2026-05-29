@@ -20,8 +20,8 @@ Nyt kun myyt aktiivisesti, älä missaa yhtään tilausta tai arviota. Pysy ajan
 Seuraa myyntiä ja myydyimpiä tuotteita
 Näe mitkä tuotteet menestyvät silmäyksellä. Seuraa kokonaistuloistasi, tilausmäärästä ja kävijätiedoista viikko-, kuukausi- ja vuosittain. Tieto on valtaa.
 
-WooCommerce rannallasi
-WooCommerce Wear OS -sovelluksemme avulla voit vaivattomasti tarkastella tämän päivän kauppatietoja ja seurata tilauksiasi suoraan rannaltasi. Komplikaatioiden avulla voit myös saada välittömän pääsyn sovellukseen.
+WooCommerce ranteessasi
+WooCommerce Wear OS -sovelluksemme avulla voit vaivattomasti tarkastella tämän päivän kauppatietoja ja seurata tilauksiasi suoraan ranteestasi. Komplikaatioiden avulla voit myös saada välittömän pääsyn sovellukseen.
 
 WooCommerce on maailman muokattavin avoimen lähdekoodin verkkokauppaalusta. Riippumatta siitä, käynnistätkö liiketoimintaa, siirrät kivijalkakauppaa verkkoon vai kehität sivustoja asiakkaille, käytä WooCommercea kauppaan, joka yhdistää sisällön ja kaupan tehokkaasti.
 

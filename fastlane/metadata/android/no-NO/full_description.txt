@@ -12,7 +12,7 @@ Ta betalinger personlig
 Samle inn fysiske betalinger ved hjelp av WooCommerce In-Person Payments og en kortleser (tilgjengelig i USA, Storbritannia og Canada), Tap to Pay, eller en digital lommebok som Apple Pay. Start en ny ordre – eller finn en eksisterende som venter på betaling – og godta deretter betaling sømløst.
 
 Gå fra klikk til fysisk butikk
-Gjør hvilket som helst nettbrett til et kraftig salgssted med WooCommerce Point of Sale. Søk etter produkter, skann strekkoder, bruk rabattkoder, og send kvitteringer via e-post, med alle dine nett- og fysiske salg synkronisert i sanntid. Tilgjengelig i USA og Storbritannia.
+Gjør hvilket som helst nettbrett til et kraftig salgssted med WooCommerce POS. Søk etter produkter, skann strekkoder, bruk rabattkoder, og send kvitteringer via e-post, med alle dine nett- og fysiske salg synkronisert i sanntid. Tilgjengelig i USA og Storbritannia.
 
 Få varsler om hvert salg
 Nå som du aktivt selger, skal du aldri gå glipp av en ordre eller anmeldelse. Hold deg oppdatert ved å aktivere sanntidsvarsler – og lytt etter den addiktive "cha-ching"-lyden som kommer med hvert nytt salg!

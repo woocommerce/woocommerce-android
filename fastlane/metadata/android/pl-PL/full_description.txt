@@ -12,10 +12,10 @@ Przyjmuj płatności osobiście
 Zbieraj płatności fizyczne za pomocą WooCommerce In-Person Payments i czytnika kart (dostępne w USA, Wielkiej Brytanii i Kanadzie), Tap to Pay lub portfela cyfrowego, takiego jak Apple Pay. Rozpocznij nowe zamówienie – lub znajdź istniejące, które czeka na płatność – a następnie bezproblemowo zaakceptuj płatność.
 
 Od kliknięć do rzeczywistości
-Zamień dowolny tablet w potężny punkt sprzedaży dzięki WooCommerce Point of Sale. Wyszukuj produkty, skanuj kody kreskowe, stosuj kody promocyjne i wysyłaj potwierdzenia e-mail, ze wszystkimi sprzedażami online i fizycznymi synchronizowanymi w czasie rzeczywistym. Dostępne w USA i Wielkiej Brytanii.
+Zamień dowolny tablet w potężny punkt sprzedaży dzięki WooCommerce POS. Wyszukuj produkty, skanuj kody kreskowe, stosuj kody promocyjne i wysyłaj potwierdzenia e-mail, ze wszystkimi sprzedażami online i fizycznymi synchronizowanymi w czasie rzeczywistym. Dostępne w USA i Wielkiej Brytanii.
 
 Otrzymuj powiadomienia o każdej sprzedaży
-Teraz, gdy aktywnie sprzedajesz, nigdy nie przegap zamówienia ani recenzji. Bądź na bieżąco, włączając powiadomienia w czasie rzeczywistym – i słuchaj tego uzależniającego dźwięku „cha-ching", który towarzyszy każdej nowej sprzedaży!
+Teraz, gdy aktywnie sprzedajesz, nigdy nie przegap zamówienia ani recenzji. Bądź na bieżąco, włączając powiadomienia w czasie rzeczywistym – i słuchaj tego uzależniającego dźwięku „cha-ching“, który towarzyszy każdej nowej sprzedaży!
 
 Śledź sprzedaż i bestsellery
 Sprawdź, które produkty się sprzedają. Monitoruj całkowity przychód, liczbę zamówień i dane o odwiedzających według tygodnia, miesiąca i roku. Wiedza to potęga.
