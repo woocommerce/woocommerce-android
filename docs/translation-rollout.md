@@ -57,10 +57,11 @@ The code-freeze sweep pipeline (`download-release-translations.yml`) already
 calls the repurposed `download_release_translations` (AI sweep + metadata).
 Ship the 15 new locales (Phase 1 config PR). GlotPress is no longer consulted.
 
-## Phase 5 — Enable the PR-time job, then retire GlotPress
+## Phase 5 — Keep PR-time translation required, then retire GlotPress
 
-- The PR-time check (`.buildkite/commands/ai-translate-pr.sh`) starts
-  `soft_fail: true`. Once stable, remove `soft_fail` to make it required.
+- The PR-time check (`.buildkite/commands/ai-translate-pr.sh`) is required.
+  Use the `skip-ai-translation` label only for intentional operator bypasses;
+  fork/no-secret builds still skip before doing any translation work.
 - Retire GlotPress + the WPCOM cron + remaining toolkit GlotPress actions.
   Keep the final GlotPress export archived as the baseline seed (the committed
   `values-*/strings.xml` already is that export).
