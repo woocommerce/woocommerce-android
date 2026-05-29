@@ -16,8 +16,8 @@ module WooAiTranslation
   #   never at PR-time, and tracked per version in the manifest.
   #
   # Hard per-field character cap: on overflow, re-prompt once with a tighter
-  # budget; if still over, fall back to English for that field/locale and flag
-  # it in the report (never ship an over-cap field).
+  # budget; if still over, keep a cap-safe existing value or fall back to
+  # English only when the English source itself is within cap.
   class MetadataEngine
     Report = Struct.new(:locale, :translated, :reused, :fallback, keyword_init: true)
 
@@ -70,16 +70,20 @@ module WooAiTranslation
         end
 
         value = translate_field(f, source_text, locale, model)
+        record = true
         if value.nil?
           fallback << f[:name]
-          value = source_text # English fallback, never over-cap garbage
+          value, record = fallback_field_value(out_base, locale, f, source_text)
+          next if value.nil?
         else
           translated += 1
         end
 
         write_field(out_base, locale, f, value)
-        @manifest.record_metadata(field: f[:name], locale: locale, cache_key: ck,
-                                  model: model, origin: 'ai', version: ver)
+        if record
+          @manifest.record_metadata(field: f[:name], locale: locale, cache_key: ck,
+                                    model: model, origin: 'ai', version: ver)
+        end
       end
 
       Report.new(locale: locale, translated: translated, reused: reused, fallback: fallback)
@@ -105,6 +109,35 @@ module WooAiTranslation
       end
       @logger.call("metadata #{field[:name]} [#{locale}] still over cap -> English fallback")
       nil
+    end
+
+    def fallback_field_value(out_base, locale, field, source_text)
+      existing = read_field(out_base, locale, field)
+      if cap_safe?(field, existing)
+        @logger.call("metadata #{field[:name]} [#{locale}] keeping existing cap-safe value")
+        return [existing, false]
+      end
+
+      if cap_safe?(field, source_text)
+        @logger.call("metadata #{field[:name]} [#{locale}] using English fallback")
+        return [source_text, true]
+      end
+
+      @logger.call("metadata #{field[:name]} [#{locale}] has no cap-safe fallback; leaving unchanged")
+      [nil, false]
+    end
+
+    def read_field(out_base, locale, field)
+      path = File.join(out_base, locale, field[:rel])
+      return nil unless File.exist?(path)
+
+      File.read(path)
+    end
+
+    def cap_safe?(field, text)
+      return false if text.nil?
+
+      Validators.char_cap(field: field[:name], text: text, cap: field[:cap]).empty?
     end
 
     def write_field(out_base, locale, field, value)

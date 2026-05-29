@@ -462,7 +462,7 @@ class EngineTest < Minitest::Test
     Dir.mktmpdir do |dir|
       src = File.join(dir, 'en-US')
       FileUtils.mkdir_p(File.join(src, 'changelogs'))
-      File.write(File.join(src, 'title.txt'), 'X' * 60) # forces over-cap -> English fallback
+      File.write(File.join(src, 'title.txt'), 'X' * 60) # forces over-cap with no cap-safe fallback
       File.write(File.join(src, 'short_description.txt'), 'Sell anywhere')
       File.write(File.join(src, 'full_description.txt'), 'A long description.')
       File.write(File.join(src, 'changelogs', 'default.txt'), 'Bug fixes')
@@ -474,7 +474,7 @@ class EngineTest < Minitest::Test
       r = eng.run(source_dir: src, out_base: out, locales: %w[de-DE],
                   include_release_notes: false).first
 
-      assert_equal 'X' * 60, File.read(File.join(out, 'de-DE', 'title.txt')), 'over-cap -> English fallback'
+      refute File.exist?(File.join(out, 'de-DE', 'title.txt')), 'over-cap fallback must not be written'
       assert_includes r.fallback, 'title'
       assert_equal '[de-DE] Sell anywhere', File.read(File.join(out, 'de-DE', 'short_description.txt'))
       refute File.exist?(File.join(out, 'de-DE', 'changelogs', 'default.txt')), 'release notes not at PR-time'
@@ -482,6 +482,36 @@ class EngineTest < Minitest::Test
       r2 = eng.run(source_dir: src, out_base: out, locales: %w[de-DE], include_release_notes: false).first
       assert_equal 0, r2.translated
       assert r2.reused.positive?
+    end
+  end
+
+  def test_metadata_engine_keeps_existing_value_when_retry_and_english_fallback_are_over_cap
+    Dir.mktmpdir do |dir|
+      src = File.join(dir, 'en-US')
+      FileUtils.mkdir_p(src)
+      File.write(File.join(src, 'title.txt'), 'X' * 60)
+      out = File.join(dir, 'out')
+      FileUtils.mkdir_p(File.join(out, 'de-DE'))
+      File.write(File.join(out, 'de-DE', 'title.txt'), 'Bestehender Titel')
+      mpath = File.join(dir, 'm.json')
+
+      eng = MetadataEngine.new(translator: Translator.new(client: StubClient.new),
+                               manifest: Manifest.load(mpath), manifest_path: mpath)
+      r = eng.run(source_dir: src, out_base: out, locales: %w[de-DE],
+                  include_release_notes: false).first
+
+      assert_equal 'Bestehender Titel', File.read(File.join(out, 'de-DE', 'title.txt'))
+      assert_includes r.fallback, 'title'
+      assert Manifest.load(mpath).metadata_stale?(
+        field: 'title',
+        locale: 'de-DE',
+        expected_cache_key: Manifest.new.cache_key(
+          source: 'X' * 60,
+          context: 'title',
+          locale: 'de-DE',
+          model: WooAiTranslation::ESCALATION_MODEL
+        )
+      ), 'kept fallback should remain stale so a later run can retry translation'
     end
   end
 
