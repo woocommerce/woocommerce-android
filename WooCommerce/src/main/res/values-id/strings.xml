@@ -1,11 +1,213 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-05 11:58:18+0000
+Translation-Revision-Date: 2026-05-19 09:58:25+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Ada yang tidak beres saat asisten bekerja.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Asisten tidak dapat menyelesaikan setelah beberapa langkah.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Konfirmasi belum tersedia. Silakan coba lagi dari obrolan.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Permintaan dihentikan.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Saya tidak yakin apakah perubahan itu diterapkan. Lakukan verifikasi di toko Anda sebelum mencoba yang lainnya.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">Asisten tidak bisa menyelesaikan permintaan.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">Asisten tidak dapat menyelesaikan tindakan toko.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">Layanan asisten tidak dapat menyelesaikan respons ini. Coba lagi nanti.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">Waktu permintaan habis. Coba lagi.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">Saat ini, asisten sedang sibuk. Coba beberapa saat lagi.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">Asisten tidak dapat mengakses toko Anda. Silakan masuk lagi, lalu buka kembali asisten.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">Tidak dapat terhubung. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">Batalkan</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">Konfirmasi</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">Konfirmasi %1$s?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">Coba lagi</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">Atasi perubahan tertunda di atas.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">Hentikan respons</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">Kirim pesan</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">Tentang toko Anda</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">Buka analitik untuk %1$s</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">Tidak tersedia</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">Nilai Pesanan Rata-Rata</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">Total Pesanan</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">Penjualan Bersih</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">Total Penjualan</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">Tutup pemberitahuan akses awal</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">Berikan Masukan</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">Hai! Kami baru saja mulai, dan masih banyak lagi yang akan kami lakukan. Beri tahu kami apa yang kurang dan bantuan apa yang Anda butuhkan!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">AKSES AWAL</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">Kirim saran: %1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">Tampilkan pelanggan terbaru saya. ampilkan hingga 10 pelanggan, diurutkan berdasarkan tanggal registrasi, mulai dari yang terbaru.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">Ada pesanan yang perlu perhatian saya? Tunjukkan pesanan terbaru yang sedang menunggu, ditangguhkan, atau diproses.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">Apa yang stoknya hampir habis? Buat daftar produk yang kehabisan stok atau kekurangan inventaris sehingga saya tahu harus mengisi ulang apa.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">Bagaimana pendapatan saya minggu ini? Tampilkan total penjualan untuk minggu ini dan perbandingannya dengan minggu lalu.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">Siapa saja pelanggan terbaru saya?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">Ada pesanan yang perlu perhatian saya?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">Apa yang stoknya hampir habis?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">Bagaimana pendapatan minggu ini?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">Apa yang dapat saya bantu?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">Kartu</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">Pelanggan</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">Analitik</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">Variasi</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">Produk</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">Pesanan</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">Asisten sedang bekerja: %1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">Memeriksa toko Anda</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">Memeriksa pelanggan</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">Memeriksa analitik</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">Memperbarui produk </string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">Memeriksa produk</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">Memperbarui pesanan</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">Memeriksa pesanan</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">Asisten sedang berpikir</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Asisten: %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Anda: %1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">Lompat ke yang terbaru</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Mulai percakapan baru</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Kembali</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">Asisten</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">+%1$d lainnya</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">Dibatalkan</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">Terkonfirmasi</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Perubahan Tertunda</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Nonaktif</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Diperbarui</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">Status stok</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Stok</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">Obral</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">Harga</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">Nama</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">E-mail Penagihan</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">Catatan pelanggan</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">Status</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">Ulasan %1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">Perbarui variasi #%1$s untuk produk #%2$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">Memperbarui variasi produk</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Perbarui produk %1$d</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Perbarui produk %1$d</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Perbarui banyak produk</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Perbarui produk %1$s (#%2$s)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">Perbarui produk #%1$s</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">Perbarui produk</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan %1$d: kirim email ke pelanggan</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan %1$d: kirim email ke pelanggan</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Perbarui status pesanan %1$d</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan %1$d</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Perbarui banyak pesanan</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan #%1$s: kirim email ke pelanggan</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan #%1$s</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Saya paham</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Gunakan Wi-Fi yang sama dan masuk ke toko yang sama pada kedua perangkat. Ponsel Anda membutuhkan dukungan Android 13 atau yang lebih baru, NFC, dan Ketuk untuk Bayar.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Periksa kompatibilitas</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">Buka Woo di ponsel, lalu buka Pengaturan → Pembayaran → Mode Pembaca Kartu.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">Siapkan telepon Anda</string>
+    <string name="woopos_remote_ttp_explainer_intro">Gunakan aplikasi Woo di ponsel Anda untuk menerima pembayaran kartu.</string>
+    <string name="woopos_remote_ttp_explainer_title">Tidak ada pembaca kartu? Tidak masalah!</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Gunakan ponsel Android sebagai pembaca kartu</string>
+    <string name="woopos_card_reader_unknown_reader_name">Pembaca tidak dikenal</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Pembaca bluetooth</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Pembaca telepon</string>
+    <string name="woopos_remote_payment_failed_generic">Terjadi masalah. Coba lagi.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">Sambungan ke pembaca telepon terputus. Harap sambungkan kembali lalu coba lagi.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Berikan izin lokasi untuk menggunakan Ketuk untuk Bayar.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Ketuk untuk Bayar tidak dapat memulai: %1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Ketuk untuk Bayar tidak dapat memulai. Coba lagi.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Menyiapkan Ketuk untuk Bayar di iPhone</string>
+    <string name="woopos_tap_to_pay_preparing_title">Menyiapkan</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Ketuk untuk Bayar di ilustrasi telepon</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Bayar dengan Ketuk untuk Bayar</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">Gunakan perangkat ini untuk menerima pembayaran menggunakan kartu nirsentuh.</string>
+    <string name="woopos_tap_to_pay_promoted_title">Ketuk untuk bayar</string>
+    <string name="woopos_payment_method_picker_dialog_title">Pilih cara pembayaran</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">Tandai sebagai dibayar</string>
+    <string name="woopos_payment_method_scan_to_pay_label">Pindai untuk membayar</string>
+    <string name="woopos_payment_method_other_methods_label">Metode pembayaran lain</string>
+    <string name="woopos_payment_method_all_methods_label">Semua metode pembayaran</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Ketuk untuk Bayar</string>
+    <string name="woopos_payment_method_card_reader_label">Pembaca Kartu</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Sidik jari</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">Angkutan</string>
+    <string name="woopos_settings_card_reader_disconnect_button">Putuskan</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Koneksi gagal</string>
+    <string name="ai_assistant_variation_card_id_title">Variasi %1$d</string>
+    <string name="ai_support_chat_connectivity_action">Hubungi dukungan</string>
+    <string name="ai_support_chat_connectivity_initial_message">Bantu saya memecahkan masalah sambungan toko.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">Gagal</string>
+    <string name="ai_support_chat_diagnostics_status_passed">Lolos</string>
+    <string name="ai_support_chat_diagnostics_status_running">Menjalankan</string>
+    <string name="ai_support_chat_diagnostics_status_pending">Tertunda</string>
+    <string name="ai_support_chat_diagnostics_continue">Lanjutkan ke Obrolan</string>
+    <string name="ai_support_chat_diagnostics_retry">Coba lagi</string>
+    <string name="ai_support_chat_diagnostics_failure">Beberapa pemeriksaan gagal. Anda dapat mencoba lagi atau terus mengobrol dengan hasil ini.</string>
+    <string name="ai_support_chat_diagnostics_success">Diagnostik selesai</string>
+    <string name="ai_support_chat_diagnostics_title">Memeriksa toko Anda…</string>
+    <string name="ai_support_chat_issue_other">Hal Lainnya</string>
+    <string name="ai_support_chat_issue_receiving_notifications">Saya tidak menerima pemberitahuan</string>
+    <string name="ai_support_chat_issue_loading_analytics">Analitik saya tidak dimuat</string>
+    <string name="ai_support_chat_issue_loading_products">Saya tidak dapat melihat produk saya</string>
+    <string name="ai_support_chat_issue_loading_orders">Saya tidak bisa melihat pesanan saya</string>
+    <string name="ai_support_chat_issue_picker_title">Masalah apa yang ingin Anda atasi?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">Jelaskan masalahnya secara lebih rinci agar saya dapat membantu.</string>
+    <string name="ai_support_chat_typing">Berpikir…</string>
+    <string name="ai_support_chat_send_error">Tidak dapat mengirim pesan. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="ai_support_chat_send">Kirim</string>
+    <string name="ai_support_chat_input_hint">Pesan Pemecahan Masalah AI</string>
+    <string name="ai_support_chat_greeting">Hai! Ceritakan apa yang terjadi pada toko Anda, dan saya akan membantu memecahkan masalahnya.</string>
+    <string name="ai_support_chat_placeholder">Segera hadir</string>
+    <string name="ai_support_chat_screen_title">Pemecahan masalah AI</string>
+    <string name="ai_support_chat_help_row_subtitle">Hubungi asisten AI kami untuk mendiagnosis masalah toko</string>
+    <string name="ai_support_chat_help_row_title">Pemecahan masalah AI</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Pilih peringkat tertinggi yang akan dikirimi pemberitahuan.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Ulasan hingga rating</string>
+    <string name="settings_notifs_new_reviews_all_description">Ping untuk setiap ulasan, apa pun rating-nya.</string>
+    <string name="settings_notifs_new_reviews_all_title">Semua ulasan baru</string>
+    <string name="settings_notifs_new_reviews_enable_description">Dapatkan pemberitahuan saat ada yang meninggalkan ulasan untuk salah satu produk Anda.</string>
+    <string name="settings_notifs_stock_backorder_description">Saat pelanggan memesan item yang saat ini tidak tersedia.</string>
+    <string name="settings_notifs_stock_backorder_title">Dalam order tunda</string>
+    <string name="settings_notifs_stock_out_of_stock_description">Jika varian produk mencapai nol.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">Stok habis</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Tidak dapat memuat ambang batas seluruh toko</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Produk dapat menggunakan ambang batasnya sendiri atau ambang batas seluruh toko. &lt;a href=\'\'&gt;Lihat ambang batas seluruh toko&lt;/a&gt; untuk melihat nilai saat ini.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Produk-produk dapat menggunakan ambang batasnya sendiri atau ambang batas seluruh toko &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Ubah ambang batas seluruh produk&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">Saat varian produk mencapai ambang batas stok yang rendah.</string>
+    <string name="settings_notifs_stock_low_stock_title">Stok menipis</string>
+    <string name="settings_notifs_stock_enable_description">Dapatkan pemberitahuan saat ada perubahan stok produk yang perlu Anda perhatikan.</string>
+    <string name="settings_notifs_stock_enable_title">Aktifkan notifikasi stok rendah</string>
+    <string name="settings_notifs_new_orders_threshold">Ambang batas (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_description">Saring ke pesanan di atas ambang batas Anda.</string>
+    <string name="settings_notifs_new_orders_high_value_title">Hanya pesanan bernilai tinggi</string>
+    <string name="settings_notifs_new_orders_all_description">Ping untuk semua pesanan, berapa pun nilainya.</string>
+    <string name="settings_notifs_new_orders_all_title">Semua pesanan baru</string>
+    <string name="settings_notifs_notify_me_for">Beri tahu saya untuk</string>
+    <string name="settings_notifs_new_orders_enable_description">Dapatkan pemberitahuan saat ada pesanan di toko Anda.</string>
+    <string name="settings_notifs_error_update">Terjadi error saat memperbarui pengaturan pemberitahuan.</string>
+    <string name="settings_notifs_error_fetch">Terjadi error saat mengambil pengaturan pemberitahuan.</string>
+    <string name="settings_notifs_enable_title">Aktifkan pemberitahuan</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">Untuk menerima pemberitahuan di perangkat ini, aktifkan &lt;a href=\'\'&gt;Pengaturan Pemberitahuan&lt;/a&gt;.</string>
+    <string name="card_reader_mode_location_permission_open_settings">Buka Pengaturan</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">Izin akses Lokasi diblokir. Buka Pengaturan dan berikan izin Lokasi untuk menggunakan ketuk untuk bayar di telepon ini.</string>
+    <string name="card_reader_mode_location_permission_continue">Lanjutkan</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android memerlukan akses lokasi untuk menggunakan ketuk untuk bayar di telepon ini. Lokasi Anda tetap berada di perangkat ini.</string>
+    <string name="card_reader_mode_location_permission_header">Izin lokasi diperlukan</string>
+    <string name="card_reader_mode_error_close">Tutup</string>
+    <string name="card_reader_mode_error_subtitle">Periksa koneksi Wi-Fi Anda dan coba lagi.</string>
+    <string name="card_reader_mode_error_header">Mode Pembaca Kartu gagal dimulai</string>
+    <string name="card_reader_mode_starting_subtitle">Sedang menyiapkan pencarian di jaringan lokal…</string>
+    <string name="card_reader_mode_starting_header">Memulai Mode Pembaca Kartu</string>
+    <string name="card_reader_mode_settings_row_label">Mode Pembaca Kartu</string>
+    <string name="card_reader_mode_cancel">Batalkan</string>
+    <string name="card_reader_mode_waiting_subtitle">Menunggu pembayaran…</string>
+    <string name="card_reader_mode_waiting_header">Dipasangkan dengan tablet</string>
+    <string name="card_reader_mode_ready_to_pair_store">Toko: %1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">Buka Woo POS di tablet Anda dan pilih ponsel ini.</string>
+    <string name="card_reader_mode_ready_to_pair_header">Siap dipasangkan</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">Buka Asisten AI</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Tentang toko Anda…</string>
+    <string name="notification_channel_stock_title">Peringatan stok</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">Daya baterai pembaca %d%%, terlalu rendah untuk menginstal pembaruan ini. Isi daya pembaca Anda hingga setidaknya 50%%, lalu coba lagi.</string>
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">Daya baterai pembaca terlalu rendah untuk menginstal pembaruan ini. Isi daya pembaca Anda hingga setidaknya 50%, lalu coba lagi.</string>
     <string name="woopos_card_reader_update_failed_title">Pembaruan gagal</string>
@@ -607,10 +809,8 @@ Language: id
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale harus diaktifkan untuk melanjutkan. Aktifkan fitur POS dari admin WordPress Anda di pengaturan WooCommerce &gt; Lanjutan &gt; Fitur.</string>
     <string name="woopos_eligibility_reason_check_connection">Periksa sambungan internet, lalu coba luncurkan ulang aplikasi. Jika kendala ini terus berlanjut, hubungi bagian dukungan.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Versi WooCommerce Anda tidak didukung. Sistem POS memerlukan WooCommerce versi %1$s atau yang lebih tinggi. Harap perbarui WooCommerce dengan versi terbaru.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Pastikan plugin WooCommerce telah diinstal dan diaktifkan dari admin WordPress Anda. Jika masalah berlanjut, silakan hubungi dukungan untuk mendapatkan bantuan.</string>
     <string name="orderfilters_sales_channel_filter">Kanal Penjualan</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Penanganan tambahan</string>
@@ -3896,6 +4096,9 @@ Language: id
         <item>Paket khusus</item>
         <item>Paket layanan</item>
     </string-array>
+    <plurals name="settings_notifs_new_reviews_selected_rating">
+        <item quantity="other">%1$d bintang atau di bawahnya</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">Subtotal item (%d item)</item>
     </plurals>

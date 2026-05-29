@@ -1,11 +1,213 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-06 08:54:14+0000
+Translation-Revision-Date: 2026-05-19 13:56:54+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Une erreur s’est produite pendant le fonctionnement de l’assistant.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">L’assistant n’a pas pu terminer sa tâche après plusieurs étapes.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">La confirmation n’est pas encore disponible. Veuillez réessayer depuis le chat.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">La requête a été interrompue.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Je ne sais pas si cette modification a été appliquée. Veuillez vérifier dans votre boutique avant toute autre tentative.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">L’assistant n’a pas pu traiter cette requête.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">L’assistant n’a pas pu effectuer cette action de la boutique.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">L’assistant n’a pas pu terminer cette réponse. Veuillez réessayer plus tard.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">La requête a expiré. Veuillez réessayer.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">L’assistant est occupé actuellement. Veuillez réessayer dans un instant.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">L’assistant n’a pas pu accéder à votre boutique. Veuillez vous reconnecter, puis rouvrir l’assistant.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">Connexion impossible. Vérifiez votre connexion, puis réessayez.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">Annuler</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">Confirmer</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">Confirmer %1$s ?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">Réessayer</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">Résolvez la modification en attente ci-dessus.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">Arrêter la réponse</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">Envoyer un message</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">Demandez des informations sur votre boutique</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">Accéder aux statistiques de %1$s</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">Indisponible</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">Valeur moyenne des commandes</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">Commandes totales</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">Ventes nettes</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">Total des ventes</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">Ignorer la notification d’accès anticipé</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">Donner votre avis</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">Bonjour ! Nous débutons à peine, et d’autres fonctionnalités arrivent très bientôt. Faites-nous part de vos besoins et dites-nous comment nous pouvons vous aider.</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">ACCÈS ANTICIPÉ</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">Envoyer la suggestion : %1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">Montre-moi mes nouveaux clients. Dresse la liste de 10 clients triés par date d’inscription, du plus récent au plus ancien.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">Y a-t-il des commandes qui requièrent mon attention ? Montre-moi les commandes récentes en attente ou en cours de traitement.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">Quels sont les produits qui commencent à manquer ? Fais la liste des produits en rupture de stock ou dont le stock est faible afin que je sache ce qu’il faut réapprovisionner.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">Quel est mon chiffre d’affaires cette semaine ? Montre-moi le total des ventes de cette semaine et compare-le à celui de la semaine dernière.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">Qui sont mes nouveaux clients ?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">Y a-t-il des commandes qui requièrent mon attention ?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">Quels sont les produits qui commencent à manquer ?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">Quel est mon chiffre d’affaires cette semaine ?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">Que puis-je faire de plus ?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">Cartes</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">Clients</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">Statistiques</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">Variantes</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">Produits</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">Commandes</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">L’assistant est en cours d’exécution : %1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">Vérification de votre boutique</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">Vérification des clients</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">Vérification des statistiques</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">Mise à jour des produits</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">Vérification des produits</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">Mise à jour des commandes</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">Vérification des commandes</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">L’assistant réfléchit</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Assistant : %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Vous : %1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">Accéder au dernier message</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Démarrer une nouvelle conversation</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Retour</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">Assistant</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">%1$d de plus</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">Annulé</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">Confirmé</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Modifications en attente</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Désactivé</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Mis à jour</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">UGS</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">État du stock</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Stock</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">Promo</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">Prix</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">Nom</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">E-mail de facturation</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">Note client</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">État</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">Avis %1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">Mettre à jour la variante n° %1$s pour le produit n° %2$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">Mettre à jour une variante de produit</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Mettre à jour %1$d produits</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Mettre à jour %1$d produit</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Mettre à jour plusieurs produits</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Mettre à jour le produit %1$s (n° %2$s)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">Mettre à jour le produit n° %1$s</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">Mettre à jour un produit</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">Mettre à jour %1$d commandes : envoyer les e-mails aux clients concernés</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">Mettre à jour %1$d commande : envoyer un e-mail au client concerné</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Modifier %1$d commandes</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Modifier %1$d commande</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Mettre à jour plusieurs commandes</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">Mettre à jour la commande n° %1$s : envoyer un e-mail au client concerné</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">Mettre à jour la commande n° %1$s</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">Mettre à jour une commande</string>
+    <string name="woopos_remote_ttp_explainer_got_it">J’ai compris</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Utilisez le même réseau Wi-Fi et connectez-vous à la même boutique sur les deux appareils. Votre téléphone doit être équipé d’Android 13 ou une version ultérieure, de la technologie NFC et de Tap to Pay.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Vérifier la compatibilité</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">Ouvrez Woo sur votre téléphone, puis accédez à Réglages → Paiements → Mode lecteur de carte.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">Configurer votre téléphone</string>
+    <string name="woopos_remote_ttp_explainer_intro">Utilisez l’application Woo sur votre téléphone pour accepter les paiements par carte.</string>
+    <string name="woopos_remote_ttp_explainer_title">Pas de lecteur de carte ? Aucun problème !</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Utilisez un téléphone Android comme lecteur de carte</string>
+    <string name="woopos_card_reader_unknown_reader_name">Lecteur inconnu</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Lecteur Bluetooth</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Lecteur de téléphone</string>
+    <string name="woopos_remote_payment_failed_generic">Une erreur s’est produite. Veuillez réessayer.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">La connexion au lecteur de téléphone a été interrompue. Veuillez vous reconnecter et réessayer.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Autorisez l’accès à la localisation pour utiliser Tap to Pay.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Impossible de démarrer Tap to Pay : %1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Impossible de démarrer Tap to Pay. Veuillez réessayer.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Préparation de Tap to Pay</string>
+    <string name="woopos_tap_to_pay_preparing_title">Préparation</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Illustration de la fonctionnalité Tap to Pay sur téléphone</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Payer avec Tap to Pay</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">Utilisez cet appareil pour accepter les paiements par carte sans contact.</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
+    <string name="woopos_payment_method_picker_dialog_title">Choisissez un mode de paiement</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">Marquer la commande comme payée</string>
+    <string name="woopos_payment_method_scan_to_pay_label">Scan to Pay</string>
+    <string name="woopos_payment_method_other_methods_label">Autres moyens de paiement</string>
+    <string name="woopos_payment_method_all_methods_label">Tous les moyens de paiement</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay</string>
+    <string name="woopos_payment_method_card_reader_label">Lecteur de carte</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Empreinte digitale</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">Transport</string>
+    <string name="woopos_settings_card_reader_disconnect_button">Déconnecter</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Échec de la connexion</string>
+    <string name="ai_assistant_variation_card_id_title">Variante %1$d</string>
+    <string name="ai_support_chat_connectivity_action">Assistance par live chat</string>
+    <string name="ai_support_chat_connectivity_initial_message">Aidez-moi à résoudre ce problème de connexion à ma boutique</string>
+    <string name="ai_support_chat_diagnostics_status_failed">Échec</string>
+    <string name="ai_support_chat_diagnostics_status_passed">Succès</string>
+    <string name="ai_support_chat_diagnostics_status_running">En cours d’exécution</string>
+    <string name="ai_support_chat_diagnostics_status_pending">En attente</string>
+    <string name="ai_support_chat_diagnostics_continue">Continuer la conversation</string>
+    <string name="ai_support_chat_diagnostics_retry">Réessayer</string>
+    <string name="ai_support_chat_diagnostics_failure">Certaines vérifications ont échoué. Vous pouvez réessayer ou poursuivre la conversation avec ces résultats.</string>
+    <string name="ai_support_chat_diagnostics_success">Diagnostic terminé</string>
+    <string name="ai_support_chat_diagnostics_title">Vérification de votre boutique…</string>
+    <string name="ai_support_chat_issue_other">Autre chose</string>
+    <string name="ai_support_chat_issue_receiving_notifications">Je ne reçois pas de notifications</string>
+    <string name="ai_support_chat_issue_loading_analytics">Mes statistiques ne se chargent pas</string>
+    <string name="ai_support_chat_issue_loading_products">Je ne vois pas mes produits</string>
+    <string name="ai_support_chat_issue_loading_orders">Je ne vois pas mes commandes</string>
+    <string name="ai_support_chat_issue_picker_title">Quel problème rencontrez-vous ?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">Veuillez décrire votre problème plus en détail afin que je puisse vous aider.</string>
+    <string name="ai_support_chat_typing">En cours de réflexion…</string>
+    <string name="ai_support_chat_send_error">Impossible d’envoyer le message. Vérifiez votre connexion, puis réessayez.</string>
+    <string name="ai_support_chat_send">Envoyer</string>
+    <string name="ai_support_chat_input_hint">Résolution de problème par IA - Messagerie</string>
+    <string name="ai_support_chat_greeting">Bonjour ! Dites-moi ce qui se passe avec votre boutique, et je vous aiderai à résoudre le problème.</string>
+    <string name="ai_support_chat_placeholder">Prochainement</string>
+    <string name="ai_support_chat_screen_title">Résolution de problème par IA</string>
+    <string name="ai_support_chat_help_row_subtitle">Discutez avec notre assistant IA pour diagnostiquer les problèmes de votre boutique</string>
+    <string name="ai_support_chat_help_row_title">Résolution de problème par IA</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Définissez la note maximale pour l’envoi d’une notification.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Avis jusqu’à une certaine note</string>
+    <string name="settings_notifs_new_reviews_all_description">Recevez une notification pour chaque avis, quelle que soit sa note.</string>
+    <string name="settings_notifs_new_reviews_all_title">Tous les nouveaux avis</string>
+    <string name="settings_notifs_new_reviews_enable_description">Recevez une notification lorsqu’un avis est publié sur l’un de vos produits.</string>
+    <string name="settings_notifs_stock_backorder_description">Lorsqu’un client commande un article en rupture de stock.</string>
+    <string name="settings_notifs_stock_backorder_title">En réapprovisionnement</string>
+    <string name="settings_notifs_stock_out_of_stock_description">Lorsqu’une variante de produit est en rupture de stock.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">Rupture de stock</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Impossible de charger le seuil à l’échelle de la boutique</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Les produits peuvent utiliser leur propre seuil ou le seuil à l’échelle de la boutique. &lt;a href=\'\'&gt;Consultez le seuil à l’échelle de la boutique&lt;/a&gt; pour connaître la valeur actuelle.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Les produits peuvent utiliser leur propre seuil ou le seuil à l’échelle de la boutique de  &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Modifier le seuil à l’échelle de la boutique&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">Lorsqu’une variante de produit atteint le niveau de stock minimum défini.</string>
+    <string name="settings_notifs_stock_low_stock_title">Stock faible</string>
+    <string name="settings_notifs_stock_enable_description">Recevez une notification lorsque les niveaux de stock de vos produits nécessitent votre attention.</string>
+    <string name="settings_notifs_stock_enable_title">Activer les notifications de stock</string>
+    <string name="settings_notifs_new_orders_threshold">Seuil (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_description">Recez une notification uniquement pour les commandes au-dessus de votre seuil.</string>
+    <string name="settings_notifs_new_orders_high_value_title">Uniquement les commandes à forte valeur</string>
+    <string name="settings_notifs_new_orders_all_description">Recevez une notification pour chaque commande, quelle que soit sa valeur.</string>
+    <string name="settings_notifs_new_orders_all_title">Toutes les nouvelles commandes</string>
+    <string name="settings_notifs_notify_me_for">Notifications</string>
+    <string name="settings_notifs_new_orders_enable_description">Recevez une notification lorsqu’une commande est passée dans votre boutique.</string>
+    <string name="settings_notifs_error_update">Une erreur s’est produite lors de la mise à jour des réglages relatifs aux notifications.</string>
+    <string name="settings_notifs_error_fetch">Une erreur s’est produite lors de la récupération des réglages relatifs aux notifications.</string>
+    <string name="settings_notifs_enable_title">Activer les notifications</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Activez les notifications&lt;/a&gt; dans les réglages de votre appareil pour recevoir les notifications de la boutique.</string>
+    <string name="card_reader_mode_location_permission_open_settings">Ouvrir les réglages</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">L’accès à la localisation est bloqué. Activez la localisation dans les paramètres pour utiliser Tap to Pay sur ce téléphone.</string>
+    <string name="card_reader_mode_location_permission_continue">Continuer</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android nécessite l’accès à la localisation pour utiliser Tap to Pay sur ce téléphone. Votre position reste stockée sur cet appareil.</string>
+    <string name="card_reader_mode_location_permission_header">Accès à la localisation requis</string>
+    <string name="card_reader_mode_error_close">Fermer</string>
+    <string name="card_reader_mode_error_subtitle">Vérifiez votre connexion Wi-Fi et réessayez.</string>
+    <string name="card_reader_mode_error_header">Le mode Lecteur de carte n’a pas pu démarrer.</string>
+    <string name="card_reader_mode_starting_subtitle">Configuration de la découverte sur le réseau local…</string>
+    <string name="card_reader_mode_starting_header">Démarrage du mode Lecteur de carte</string>
+    <string name="card_reader_mode_settings_row_label">Mode Lecteur de carte</string>
+    <string name="card_reader_mode_cancel">Annuler</string>
+    <string name="card_reader_mode_waiting_subtitle">En attente de paiement…</string>
+    <string name="card_reader_mode_waiting_header">Associé à une tablette</string>
+    <string name="card_reader_mode_ready_to_pair_store">Boutique : %1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">Ouvrez Woo POS sur votre tablette et sélectionnez ce téléphone.</string>
+    <string name="card_reader_mode_ready_to_pair_header">Prêt pour l’appairage</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">Ouvrir l’assistant IA</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Demandez des informations sur votre boutique…</string>
+    <string name="notification_channel_stock_title">Alertes de stock</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">La batterie du lecteur est à %d%%, ce qui est trop faible pour installer cette mise à jour. Veuillez recharger votre lecteur jusqu’à au moins 50%% et réessayez.</string>
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">La batterie du lecteur est trop faible pour installer cette mise à jour. Veuillez recharger votre lecteur jusqu’à au moins 50 % et réessayez.</string>
     <string name="woopos_card_reader_update_failed_title">Échec de la mise à jour</string>
@@ -608,10 +810,8 @@ Language: fr
     <string name="woopos_eligibility_screen_unable_to_load">Chargement impossible</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Le système PDV n’est pas disponible pour la devise de votre boutique. Veuillez vérifier les réglages de devise de votre boutique ou contacter l’assistance pour obtenir de l’aide.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Le système PDV n’est pas disponible pour la devise de votre boutique. %1$s, il ne prend actuellement en charge que %2$s. Veuillez vérifier les réglages de devise de votre boutique ou contacter l’assistance pour obtenir de l’aide.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point de vente doit être activé pour continuer. Veuillez activer la fonctionnalité PDV depuis votre interface d’administration WordPress dans Réglages WooCommerce &gt; Avancé &gt; Fonctionnalités.</string>
     <string name="woopos_eligibility_reason_check_connection">Vérifiez votre connexion Internet et essayez de relancer l’application. Si le problème persiste, veuillez contacter l’assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Votre version de WooCommerce n’est pas prise en charge. Le système PDV nécessite WooCommerce version %1$s ou supérieure. Veuillez procéder à la mise à jour de WooCommerce vers la dernière version.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Veuillez vous assurer que l’extension WooCommerce est installée et activée dans votre interface d’administration WordPress. Si le problème persiste, veuillez contacter l’assistance pour obtenir de l’aide.</string>
     <string name="orderfilters_sales_channel_filter">Canal de vente</string>
     <string name="barcode_ean13_content_description">Code-barres EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Prise en charge supplémentaire</string>
@@ -3897,6 +4097,10 @@ Language: fr
         <item>Colis personnalisé</item>
         <item>Ensemble de services</item>
     </string-array>
+    <plurals name="settings_notifs_new_reviews_selected_rating">
+        <item quantity="one">%1$d étoile ou moins</item>
+        <item quantity="other">%1$d étoiles ou moins</item>
+    </plurals>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Sous-total des articles (%d article)</item>
         <item quantity="other">Sous-total des articles (%d articles)</item>
