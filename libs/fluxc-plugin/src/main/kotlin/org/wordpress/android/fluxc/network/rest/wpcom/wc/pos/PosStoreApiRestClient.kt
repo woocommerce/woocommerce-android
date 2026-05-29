@@ -73,35 +73,28 @@ class PosStoreApiRestClient @Inject constructor(
     /**
      * POST /wc/pos/v1/checkout.
      *
-     * Finalises the in-progress cart into an order. No `payment_method` is
-     * supplied — the Store API creates the order in `pending` status and
-     * does not attempt to process payment, leaving the existing POS
-     * payment flow to take over (WooPayments capture, or cash mark-paid).
+     * Finalises the in-progress cart into an order. The body is empty:
+     * no payment_method, no billing_address, no shipping_address. The POS
+     * route on the server opts out of all three Store API guards that
+     * would otherwise reject this for web checkout. The order is created
+     * in `pending` status, and the existing POS payment flow takes over
+     * (WooPayments terminal capture for cards, cash mark-paid endpoint).
      *
-     * Billing and shipping addresses are sent as placeholders by the use
-     * case caller. The POS route relaxes the schema-level requirement on
-     * those fields, but a deeper pipeline-layer validation in
-     * OrderController still enforces per-field rules driven by store
-     * settings (postcode, phone, etc.) — sending placeholders is the
-     * simplest way to satisfy those today. Smarter cart-aware logic that
-     * only requires fields the products in the cart actually need is a
-     * planned follow-up.
+     * For product types that genuinely need address/email data (gift
+     * cards delivered by email, downloadables, shipped goods sold for
+     * delivery), the cashier will capture those fields and the request
+     * shape will grow to carry them. Today the API accepts what's sent
+     * and the order can be edited later via admin if needed.
      */
     suspend fun checkout(
         site: SiteModel,
         cartToken: String? = null,
-        billingAddress: Map<String, String> = placeholderAddress(),
-        shippingAddress: Map<String, String> = placeholderAddress(),
     ): WooPayload<CheckoutResponseDto> {
-        val body = buildMap<String, Any> {
-            put("billing_address", billingAddress)
-            put("shipping_address", shippingAddress)
-        }
         val response = wooNetwork.executePostGsonRequest(
             site = site,
             path = appendCartToken(CHECKOUT_PATH, cartToken),
             clazz = CheckoutResponseDto::class.java,
-            body = body
+            body = emptyMap()
         )
 
         return when (response) {
@@ -109,26 +102,6 @@ class PosStoreApiRestClient @Inject constructor(
             is Error -> WooPayload(response.error.toWooError())
         }
     }
-
-    /**
-     * Placeholder address fields that satisfy WC's per-field validation
-     * for in-store retail sales where the cashier doesn't have customer
-     * address info to capture. The order is created with this address and
-     * the cashier can edit it later via the orders admin if needed.
-     */
-    private fun placeholderAddress(): Map<String, String> = mapOf(
-        "first_name" to "POS",
-        "last_name" to "Customer",
-        "company" to "",
-        "address_1" to "In-store sale",
-        "address_2" to "",
-        "city" to "In-store sale",
-        "state" to "",
-        "postcode" to "00000",
-        "country" to "US",
-        "email" to "",
-        "phone" to "0000000000",
-    )
 
     private fun appendCartToken(path: String, cartToken: String?): String {
         if (cartToken.isNullOrEmpty()) return path
