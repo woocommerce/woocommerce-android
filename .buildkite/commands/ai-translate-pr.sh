@@ -78,14 +78,19 @@ strings_path, context_json = ARGV
 data = JSON.parse(File.read(context_json))
 contexts = {}
 
+def safe_xml_comment(text)
+  description = text.to_s.gsub(/\s+/, ' ').strip
+  description.gsub!('--', '- -') while description.include?('--')
+  return nil if description.empty? || description.end_with?('-') || description.include?('--')
+
+  description
+end
+
 data.fetch('entries', []).each do |entry|
   next unless entry['error'].to_s.empty?
 
   key = entry['key'].to_s.sub(/:[a-z]+\z/, '').sub(/\[\d+\]\z/, '')
-  description = entry.dig('context', 'description').to_s
-    .gsub('--', '- -')
-    .gsub(/\s+/, ' ')
-    .strip
+  description = safe_xml_comment(entry.dig('context', 'description'))
   next if key.empty? || description.empty?
 
   contexts[key] ||= description
