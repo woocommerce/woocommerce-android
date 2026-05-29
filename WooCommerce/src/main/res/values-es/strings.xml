@@ -4097,10 +4097,8 @@ Language: es
         <item>Paquete personalizado</item>
         <item>Paquete de servicios</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d estrella o menos</item>
-        <item quantity="other">%1$d estrellas o menos</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d estrellas o menos</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d estrella o menos</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotal de artículos (%d artículo)</item>
         <item quantity="other">Subtotal de artículos (%d artículos)</item>

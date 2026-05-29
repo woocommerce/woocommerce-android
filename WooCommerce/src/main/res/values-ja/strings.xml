@@ -4097,9 +4097,8 @@ Language: ja_JP
         <item>カスタムパッケージ</item>
         <item>サービスパッケージ</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="other">%1$d つ星以下</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d つ星以下</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d つ星以下</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小計 (%d点の商品)</item>
     </plurals>

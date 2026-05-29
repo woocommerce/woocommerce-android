@@ -4096,9 +4096,8 @@ Language: id
         <item>Paket khusus</item>
         <item>Paket layanan</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="other">%1$d bintang atau di bawahnya</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d bintang atau di bawahnya</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d bintang atau di bawahnya</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">Subtotal item (%d item)</item>
     </plurals>

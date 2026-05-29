@@ -4097,10 +4097,8 @@ Language: sv_SE
         <item>Anpassat paket</item>
         <item>Tjänstepaket</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d stjärna eller under</item>
-        <item quantity="other">%1$d stjärnor eller under</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d stjärnor eller under</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d stjärna eller under</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Delsumma artiklar (%d artikel)</item>
         <item quantity="other">Delsumma artiklar (%d artiklar)</item>

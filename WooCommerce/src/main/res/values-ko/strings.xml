@@ -4097,9 +4097,8 @@ Language: ko_KR
         <item>사용자 정의 패키지</item>
         <item>서비스 패키지</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="other">별 %1$d개 이하</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">별 %1$d개 이하</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">별 %1$d개 이하</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">품목 소계(%d개 품목)</item>
     </plurals>

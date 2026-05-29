@@ -2331,10 +2331,8 @@
     <string name="settings_notifs_new_reviews_all_description">Ping for every review, regardless of rating.</string>
     <string name="settings_notifs_new_reviews_rating_filter_title">Reviews up to a rating</string>
     <string name="settings_notifs_new_reviews_rating_filter_description">Choose the highest rating that should send a notification.</string>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d star or below</item>
-        <item quantity="other">%1$d stars or below</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d stars or below</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d star or below</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
