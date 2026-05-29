@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'fileutils'
 require 'set'
 
 module WooAiTranslation
@@ -78,12 +79,23 @@ module WooAiTranslation
 
       ordered = source_units.map { |u| plan[:units][u.name] }
       attach_preserved_xml(ordered, locale, baseline_raw)
-      write_output(out_path, ordered, locale)
+      temp_path = write_output_temp(out_path, ordered, locale)
 
-      malformed = Validators.xml_well_formed(out_path)
-      raise "Generated #{out_path} is not well-formed: #{malformed.first}" unless malformed.empty?
+      malformed = Validators.xml_well_formed(temp_path)
+      unless malformed.empty?
+        error = "generated #{out_path} is not well-formed: #{malformed.first}"
+        @logger.call("GATE [#{locale}] #{error}")
+        return Report.new(
+          locale: locale,
+          translated: translated.size,
+          reused: plan[:reused].size,
+          failed: failed,
+          written: before_names.size,
+          gate_errors: [error]
+        )
+      end
 
-      output_doc = AndroidResources::Parser.parse_file(out_path)
+      output_doc = AndroidResources::Parser.parse_file(temp_path)
       output_names = output_doc.translatable_names
       output_name_set = output_names.to_set
       all_source_names = source_units.map(&:name)
@@ -115,6 +127,9 @@ module WooAiTranslation
       end
       gate_errors.each { |e| @logger.call("GATE [#{locale}] #{e}") }
 
+      FileUtils.mv(temp_path, out_path)
+      temp_path = nil
+
       Report.new(
         locale: locale,
         translated: translated.size,
@@ -123,6 +138,8 @@ module WooAiTranslation
         written: output_names.size,
         gate_errors: gate_errors
       )
+    ensure
+      FileUtils.rm_f(temp_path) if temp_path
     end
 
     # Decide, per source unit, whether to reuse the existing translation or
@@ -175,6 +192,16 @@ module WooAiTranslation
       else
         AndroidResources::Writer.write(out_path, ordered, locale)
       end
+    end
+
+    def write_output_temp(out_path, ordered, locale)
+      temp_path = "#{out_path}.tmp-#{$PROCESS_ID}"
+      if @only_names && File.exist?(out_path)
+        FileUtils.mkdir_p(File.dirname(temp_path))
+        FileUtils.cp(out_path, temp_path)
+      end
+      write_output(temp_path, ordered, locale)
+      temp_path
     end
 
     def parity_source_names(all_source_names, output_names)

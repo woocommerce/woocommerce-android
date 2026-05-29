@@ -797,6 +797,33 @@ class EngineTest < Minitest::Test
     end
   end
 
+  def test_malformed_generated_xml_is_reported_without_replacing_existing_file
+    Dir.mktmpdir do |dir|
+      localized = File.join(dir, 'values-fr', 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(localized))
+      File.write(localized, <<~XML)
+        <?xml version="1.0" encoding="UTF-8"?>
+        <resources>
+            <string name="app_name">Woo humain</string>
+        </resources>
+      XML
+      before = File.read(localized)
+
+      writer = lambda do |path, _units, _locale|
+        FileUtils.mkdir_p(File.dirname(path))
+        File.write(path, '<resources><string name="broken">unterminated')
+      end
+
+      report = nil
+      WooAiTranslation::AndroidResources::Writer.stub(:write, writer) do
+        report = build(dir, client: StubClient.new).run_strings(locales: %w[fr]).first
+      end
+
+      assert(report.gate_errors.any? { |e| e.include?('not well-formed') })
+      assert_equal before, File.read(localized), 'bad temp output must not replace existing translations'
+    end
+  end
+
   def test_source_text_change_invalidates_only_the_changed_key
     # The single auto-invalidation rule: an English source text change for
     # ONE key re-translates exactly that one key, leaves the other 8 untouched.
