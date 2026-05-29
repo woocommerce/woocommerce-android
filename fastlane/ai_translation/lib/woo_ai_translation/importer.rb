@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'digest'
+require 'fileutils'
 require 'set'
 
 module WooAiTranslation
@@ -19,11 +20,12 @@ module WooAiTranslation
   class Importer
     Report = Struct.new(:locale, :imported, :gaps, keyword_init: true)
 
-    def initialize(source_path:, res_dir:, manifest:, context:, logger: nil)
+    def initialize(source_path:, res_dir:, manifest:, context:, baseline_dir: nil, logger: nil)
       @source_path = source_path
       @res_dir = res_dir
       @manifest = manifest
       @context = context
+      @baseline_dir = baseline_dir
       @logger = logger || ->(_m) {}
     end
 
@@ -38,6 +40,7 @@ module WooAiTranslation
     def import_locale(source_units, locale)
       path = File.join(@res_dir, "values-#{locale}", 'strings.xml')
       existing = existing_names(path)
+      copy_baseline(path, locale) if @baseline_dir && File.exist?(path) && !existing.empty?
       imported = 0
       gaps = 0
 
@@ -57,6 +60,12 @@ module WooAiTranslation
 
       @logger.call("import #{locale}: #{imported} human keys preserved, #{gaps} gaps to AI-fill")
       Report.new(locale: locale, imported: imported, gaps: gaps)
+    end
+
+    def copy_baseline(path, locale)
+      dest = File.join(@baseline_dir, "values-#{locale}", 'strings.xml')
+      FileUtils.mkdir_p(File.dirname(dest))
+      FileUtils.cp(path, dest)
     end
 
     # Names fully present (every entry) in the existing localized file.

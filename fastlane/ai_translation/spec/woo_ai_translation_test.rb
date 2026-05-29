@@ -558,14 +558,19 @@ class EngineTest < Minitest::Test
                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<resources>\n" \
                  "    <string name=\"app_name\">Woo!</string>\n</resources>\n")
       mpath = File.join(dir, 'm.json')
+      baseline_dir = File.join(dir, 'baseline')
 
       seed = Manifest.new
       imp = Importer.new(source_path: FIXTURE, res_dir: dir,
-                         manifest: seed, context: ContextProvider.new({}))
+                         manifest: seed, context: ContextProvider.new({}),
+                         baseline_dir: baseline_dir)
       rep = imp.import(locales: %w[fr pl]).find { |r| r.locale == 'fr' }
       assert_equal 1, rep.imported
       assert rep.gaps.positive?
       assert_equal 'glotpress-import', seed.origin(name: 'app_name', locale: 'fr')
+      assert_equal File.read(File.join(dir, 'values-fr', 'strings.xml')),
+                   File.read(File.join(baseline_dir, 'values-fr', 'strings.xml')),
+                   'import should refresh the sidecar baseline from the committed localized file'
       seed.save(mpath)
 
       stub = StubClient.new
