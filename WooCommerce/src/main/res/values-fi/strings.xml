@@ -4270,8 +4270,8 @@
     <string name="woopos_card_reader_cancel_anyway_button">Peruuta silti</string>
     <string name="woopos_card_reader_update_completed_title">Ohjelmisto päivitetty</string>
     <string name="woopos_card_reader_update_failed_title">Päivitys epäonnistui</string>
-    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Lukijan akku on liian tyhjä tämän päivityksen asentamiseksi. Lataa lukijasi vähintään 50 prosenttiin ja yritä uudelleen.</string>
-    <string name="woopos_card_reader_update_battery_low_message_with_level">Lukijan akku on %d%%, mikä on liian vähän tämän päivityksen asentamiseksi. Lataa lukijasi vähintään 50 prosenttiin ja yritä uudelleen.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Lukijan akku on liian tyhjä tämän päivityksen asentamiseksi. Lataa lukijasi vähintään 50 % ja yritä uudelleen.</string>
+    <string name="woopos_card_reader_update_battery_low_message_with_level">Lukijan akku on %d%%, mikä on liian vähän tämän päivityksen asentamiseksi. Lataa lukijasi vähintään 50 %% ja yritä uudelleen.</string>
 
     <string name="woopos_remote_ttp_hint_strip_text">Käytä Android-puhelinta kortinlukijana</string>
     <string name="woopos_remote_ttp_explainer_title">Ei kortinlukijaa? Ei hätää</string>
