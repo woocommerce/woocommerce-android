@@ -4804,4 +4804,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">A megerősítés még nem érhető el. Kérem, próbálja újra a chatből.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Az asszisztens több lépés után sem tudta befejezni a feladatot.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Valami hiba történt, miközben az asszisztens dolgozott.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Alacsony készletű termék</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Mentve: %1$s, SKU: %2$s, készleten: %3$d egység.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Az akciós ár %1$s %2$d%%-kal alacsonyabb a normál árnál, és %3$s-tól %4$s-ig érvényes.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Spórolj 20%-ot a csomagtermékeken, és tartsd meg 100%-ban az SKU-formázást.</string>
+    <string name="ai_translation_test_product_html_link">Tekintsd át a &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;készletküszöböket&lt;/u&gt;&lt;/a&gt; a visszarendelés engedélyezése előtt.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; készen áll a közzétételre. Ellenőrizd az árat, a készletet és a szállítást, mielőtt élesbe kerül.</string>
+    <string name="ai_translation_test_product_multiline_backorder">A(z) %1$s termék elfogyott.\nTöltsd fel %2$d egységgel, vagy jelöld visszarendelhetőként.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variáció kiválasztva tömeges szerkesztéshez</item>
+        <item quantity="other">%1$d variáció kiválasztva tömeges szerkesztéshez</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Egyszerű termék</item>
+        <item>Változó termék</item>
+        <item>Előfizetéses termék</item>
+    </string-array>
 </resources>

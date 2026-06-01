@@ -3901,4 +3901,22 @@ Language: es
         <item quantity="one">Subtotal de artículos (%d artículo)</item>
         <item quantity="other">Subtotal de artículos (%d artículos)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Producto con poco stock</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Se guardó %1$s con SKU %2$s y %3$d unidades en stock.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">El precio de oferta %1$s es un %2$d%% menor que el precio regular y va del %3$s al %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Ahorra un 20% en productos en paquete y mantén el 100% del formato de tu SKU.</string>
+    <string name="ai_translation_test_product_html_link">Revisa los &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;umbrales de inventario&lt;/u&gt;&lt;/a&gt; antes de activar los pedidos pendientes.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; está listo para publicar. Revisa el precio, el inventario y el envío antes de publicarlo.</string>
+    <string name="ai_translation_test_product_multiline_backorder">El producto %1$s está agotado.\nReabastece %2$d unidades o márcalo como pedido pendiente.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variación seleccionada para edición masiva</item>
+        <item quantity="many">%1$d variaciones seleccionadas para edición masiva</item>
+        <item quantity="other">%1$d variaciones seleccionadas para edición masiva</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Producto simple</item>
+        <item>Producto variable</item>
+        <item>Producto de suscripción</item>
+    </string-array>
 </resources>

@@ -4804,4 +4804,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Потвърждението все още не е налично. Моля, опитайте отново от чата.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Асистентът не можа да завърши след няколко стъпки.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Нещо се обърка, докато асистентът работеше.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Продукт с малко наличност</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Запазено %1$s със SKU %2$s и %3$d бр. в наличност.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Промоционалната цена %1$s е с %2$d%% по-ниска от редовната и важи от %3$s до %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Спестете 20% от пакетни продукти и запазете 100% от форматирането на SKU.</string>
+    <string name="ai_translation_test_product_html_link">Прегледайте &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;праговете на инвентара&lt;/u&gt;&lt;/a&gt; преди да разрешите поръчки при изчерпан запас.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; е готов за публикуване. Прегледайте цена, инвентар и доставка преди публикуване.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Продукт %1$s е изчерпан.\nДопълнете %2$d бр. или го маркирайте като поръчан предварително.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d вариация избрана за групово редактиране</item>
+        <item quantity="other">%1$d вариации избрани за групово редактиране</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Прост продукт</item>
+        <item>Продукт с вариации</item>
+        <item>Абонаментен продукт</item>
+    </string-array>
 </resources>

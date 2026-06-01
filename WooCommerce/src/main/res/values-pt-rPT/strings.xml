@@ -4810,4 +4810,21 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">A confirmação ainda não está disponível. Por favor, tente novamente a partir do chat.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">O assistente não conseguiu concluir após vários passos.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Ocorreu um erro enquanto o assistente estava a trabalhar.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Produto com stock baixo</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Guardado %1$s com SKU %2$s e %3$d unidades em stock.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">O preço de promoção %1$s é %2$d%% inferior ao preço normal e decorre de %3$s a %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Poupe 20% em produtos agrupados e mantenha 100% da formatação do SKU.</string>
+    <string name="ai_translation_test_product_html_link">Reveja os &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;limites de inventário&lt;/u&gt;&lt;/a&gt; antes de ativar as encomendas pendentes.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; está pronto para publicar. Reveja o preço, inventário e envio antes de ficar disponível.</string>
+    <string name="ai_translation_test_product_multiline_backorder">O produto %1$s está esgotado.\nReponha %2$d unidades ou marque-o como encomenda pendente.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variação selecionada para edição em massa</item>
+        <item quantity="other">%1$d variações selecionadas para edição em massa</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Produto simples</item>
+        <item>Produto variável</item>
+        <item>Produto de subscrição</item>
+    </string-array>
 </resources>

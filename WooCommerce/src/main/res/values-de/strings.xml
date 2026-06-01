@@ -3901,4 +3901,21 @@ Language: de
         <item quantity="one">Teilsumme Artikel (%d Artikel)</item>
         <item quantity="other">Teilsumme Artikel (%d Artikel)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Produkt mit niedrigem Lagerbestand</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Gespeichert: %1$s mit SKU %2$s und %3$d Einheiten auf Lager.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Aktionspreis %1$s ist %2$d%% günstiger als der reguläre Preis und gilt von %3$s bis %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Spare 20% auf Bundle-Produkte und behalte 100% deiner SKU-Formatierung.</string>
+    <string name="ai_translation_test_product_html_link">&lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;Lagerbestandsgrenzen&lt;/u&gt;&lt;/a&gt; vor der Aktivierung von Rückbestellungen prüfen.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; ist bereit zur Veröffentlichung. Preis, Lagerbestand und Versand vor der Veröffentlichung prüfen.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produkt %1$s ist nicht vorrätig.\nAuffüllen mit %2$d Einheiten oder als Rückbestellung markieren.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d Variante für die Massenbearbeitung ausgewählt</item>
+        <item quantity="other">%1$d Varianten für die Massenbearbeitung ausgewählt</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Einfaches Produkt</item>
+        <item>Variables Produkt</item>
+        <item>Abonnementprodukt</item>
+    </string-array>
 </resources>

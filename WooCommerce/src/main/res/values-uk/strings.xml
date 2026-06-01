@@ -4806,4 +4806,23 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Підтвердження ще недоступне. Спробуйте ще раз у чаті.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Асистент не зміг завершити завдання після кількох спроб.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Під час роботи асистента сталася помилка.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Товар із низьким запасом</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Збережено %1$s з SKU %2$s та %3$d одиниць на складі.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Ціна зі знижкою %1$s на %2$d%% нижча за звичайну і діє з %3$s по %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Заощаджуйте 20% на комплектних товарах і зберігайте 100% форматування SKU.</string>
+    <string name="ai_translation_test_product_html_link">Перегляньте &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;порогові значення запасів&lt;/u&gt;&lt;/a&gt; перед увімкненням беклогу.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; готовий до публікації. Перевірте ціну, запаси та доставку перед публікацією.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Товар %1$s відсутній на складі.\nПоповніть %2$d одиниць або позначте як беклог.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d варіацію вибрано для масового редагування</item>
+        <item quantity="few">%1$d варіації вибрано для масового редагування</item>
+        <item quantity="many">%1$d варіацій вибрано для масового редагування</item>
+        <item quantity="other">%1$d варіацій вибрано для масового редагування</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Простий товар</item>
+        <item>Варіативний товар</item>
+        <item>Товар із підпискою</item>
+    </string-array>
 </resources>

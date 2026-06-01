@@ -3331,6 +3331,33 @@
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <!-- Context: Helper text displayed below the 'Product Global Unique Id' input field on the product inventory screen, guiding users to enter a barcode or product identifier that can be used for multi-channel product listings. The text appears as secondary guidance in an editable text field next to a barcode scanner button. -->
     <string name="product_global_unique_id_summary">Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_medium_low_stock_badge">Low stock product</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_placeholder_inventory">Saved %1$s with SKU %2$s and %3$d units in stock.</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_placeholder_sale_window">Sale price %1$s is %2$d%% lower than the regular price and runs from %3$s to %4$s.</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Save 20% on bundled products and keep 100% of your SKU formatting.</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_html_link">Review &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;inventory thresholds&lt;/u&gt;&lt;/a&gt; before enabling backorders.</string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_cdata_confirmation"><![CDATA[<b>%1$s</b> is ready to publish. Review price, inventory, and shipping before it goes live.]]></string>
+    <!-- No usage found in source code -->
+    <string name="ai_translation_test_product_multiline_backorder">Product %1$s is out of stock.\nRestock %2$d units or mark it as backordered.</string>
+    <!-- No usage found in source code -->
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variation selected for bulk editing</item>
+        <item quantity="other">%1$d variations selected for bulk editing</item>
+    </plurals>
+    <!-- No usage found in source code -->
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Simple product</item>
+        <item>Variable product</item>
+        <item>Subscription product</item>
+    </string-array>
     <!-- Context: A dialog title used in the product inventory management screen when selecting a product's stock status (in stock, out of stock, on backorder). This appears as the header of a selector dialog that allows users to choose and update the stock status for a product. -->
     <string name="product_stock_status">Stock status</string>
     <!-- Context: This is a section title label used in a product preview/details view that displays product information. It serves as the heading for a property card showing the specific product type (Virtual, Downloadable, Physical, Variable, Grouped, External, or Subscription). -->

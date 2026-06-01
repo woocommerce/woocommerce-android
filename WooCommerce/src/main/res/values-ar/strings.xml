@@ -3905,4 +3905,25 @@ Language: ar
         <item quantity="many">الإجمالي الفرعي للعناصر (%d من العناصر)</item>
         <item quantity="other">الإجمالي الفرعي للعناصر (%d من العناصر)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">منتج منخفض المخزون</string>
+    <string name="ai_translation_test_product_placeholder_inventory">تم حفظ %1$s بـ SKU %2$s و%3$d وحدة في المخزون.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">سعر البيع %1$s أقل بنسبة %2$d%% من السعر العادي ويمتد من %3$s إلى %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">وفّر 20% على المنتجات المجمّعة واحتفظ بـ 100% من تنسيق SKU.</string>
+    <string name="ai_translation_test_product_html_link">راجع &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;حدود المخزون&lt;/u&gt;&lt;/a&gt; قبل تفعيل الطلبات المسبقة.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; جاهز للنشر. راجع السعر والمخزون والشحن قبل النشر.</string>
+    <string name="ai_translation_test_product_multiline_backorder">المنتج %1$s غير متوفر في المخزون.\nأعد تخزين %2$d وحدة أو ضعه كطلب مسبق.</string>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>منتج بسيط</item>
+        <item>منتج متغير</item>
+        <item>منتج اشتراك</item>
+    </string-array>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="zero">تم تحديد %1$d متغيرات للتعديل الجماعي</item>
+        <item quantity="one">تم تحديد %1$d متغير للتعديل الجماعي</item>
+        <item quantity="two">تم تحديد %1$d متغيرين للتعديل الجماعي</item>
+        <item quantity="few">تم تحديد %1$d متغيرات للتعديل الجماعي</item>
+        <item quantity="many">تم تحديد %1$d متغيرًا للتعديل الجماعي</item>
+        <item quantity="other">تم تحديد %1$d متغير للتعديل الجماعي</item>
+    </plurals>
 </resources>

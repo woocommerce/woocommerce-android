@@ -3901,4 +3901,21 @@ Language: nl
         <item quantity="one">Subtotaal artikelen (%d artikel)</item>
         <item quantity="other">Subtotaal artikelen (%d artikelen)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Product met lage voorraad</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Opgeslagen %1$s met SKU %2$s en %3$d eenheden op voorraad.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Actieprijs %1$s is %2$d%% lager dan de reguliere prijs en loopt van %3$s tot %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Bespaar 20% op gebundelde producten en behoud 100% van je SKU-opmaak.</string>
+    <string name="ai_translation_test_product_html_link">Bekijk &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;voorraaddrempels&lt;/u&gt;&lt;/a&gt; voordat je nabestellingen inschakelt.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; is klaar om te publiceren. Controleer prijs, voorraad en verzending voordat het live gaat.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Product %1$s is niet op voorraad.\nBestel %2$d eenheden bij of markeer het als nabestelling.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d variatie geselecteerd voor bulkbewerking</item>
+        <item quantity="other">%1$d variaties geselecteerd voor bulkbewerking</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Eenvoudig product</item>
+        <item>Variabel product</item>
+        <item>Abonnementsproduct</item>
+    </string-array>
 </resources>

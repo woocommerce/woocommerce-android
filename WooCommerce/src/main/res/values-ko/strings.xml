@@ -3900,4 +3900,20 @@ Language: ko_KR
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">품목 소계(%d개 품목)</item>
     </plurals>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">재고 부족 상품</string>
+    <string name="ai_translation_test_product_placeholder_inventory">SKU %2$s, 재고 %3$d개인 %1$s이(가) 저장되었습니다.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">할인가 %1$s은(는) 정가보다 %2$d%% 낮으며 %3$s부터 %4$s까지 적용됩니다.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">번들 상품 20% 할인 혜택을 누리고 SKU 형식은 100% 유지하세요.</string>
+    <string name="ai_translation_test_product_html_link">백오더를 활성화하기 전에 &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;재고 임계값&lt;/u&gt;&lt;/a&gt;을 검토하세요.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt;을(를) 게시할 준비가 되었습니다. 게시 전에 가격, 재고, 배송을 확인하세요.</string>
+    <string name="ai_translation_test_product_multiline_backorder">상품 %1$s의 재고가 없습니다.\n%2$d개를 재입고하거나 백오더로 표시하세요.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="other">%1$d개의 변형이 일괄 편집을 위해 선택되었습니다</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>단순 상품</item>
+        <item>가변 상품</item>
+        <item>구독 상품</item>
+    </string-array>
 </resources>

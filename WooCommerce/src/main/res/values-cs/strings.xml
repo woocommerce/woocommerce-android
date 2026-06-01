@@ -4811,4 +4811,23 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Potvrzení ještě není k dispozici. Zkuste to prosím znovu z chatu.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Asistent nemohl dokončit úkol po několika krocích.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Při práci asistenta se něco pokazilo.</string>
+    <string name="ai_translation_test_product_short_sku">SKU</string>
+    <string name="ai_translation_test_product_medium_low_stock_badge">Produkt s nízkým skladem</string>
+    <string name="ai_translation_test_product_placeholder_inventory">Uloženo %1$s se SKU %2$s a %3$d kusů na skladě.</string>
+    <string name="ai_translation_test_product_placeholder_sale_window">Akční cena %1$s je o %2$d%% nižší než běžná cena a platí od %3$s do %4$s.</string>
+    <string name="ai_translation_test_product_formatted_false_discount" formatted="false">Ušetřete 20 % na balíčkových produktech a zachovejte 100 % formátování SKU.</string>
+    <string name="ai_translation_test_product_html_link">Zkontrolujte &lt;a href=\'inventory-threshold\'&gt;&lt;u&gt;limity skladu&lt;/u&gt;&lt;/a&gt; před povolením objednávek na dotaz.</string>
+    <string name="ai_translation_test_product_cdata_confirmation">&lt;b&gt;%1$s&lt;/b&gt; je připraven k publikování. Před zveřejněním zkontrolujte cenu, sklad a dopravu.</string>
+    <string name="ai_translation_test_product_multiline_backorder">Produkt %1$s není skladem.\nDoplňte %2$d kusů nebo označte jako objednávku na dotaz.</string>
+    <plurals name="ai_translation_test_product_variations_selected">
+        <item quantity="one">%1$d varianta vybrána pro hromadnou úpravu</item>
+        <item quantity="few">%1$d varianty vybrány pro hromadnou úpravu</item>
+        <item quantity="many">%1$d varianty vybrány pro hromadnou úpravu</item>
+        <item quantity="other">%1$d variant vybráno pro hromadnou úpravu</item>
+    </plurals>
+    <string-array name="ai_translation_test_product_type_filters">
+        <item>Jednoduchý produkt</item>
+        <item>Variabilní produkt</item>
+        <item>Produkt s předplatným</item>
+    </string-array>
 </resources>
