@@ -38,9 +38,8 @@ class WooAiSmokeDebugBridgeTest {
         val exit = WooAiSmokeDebugBridge.redactedFailureExit(
             credentials = WooAiSmokeCredentialConfig(
                 siteUrl = "https://leaky-store.example",
-                siteId = 2922L,
-                username = "merchant@example.com",
-                appPassword = "app password",
+                wpComUsername = "merchant@example.com",
+                wpComPassword = "app password",
                 storeLabel = "store",
                 outputDirectory = outputDirectory,
                 credentialSource = "test",
@@ -64,9 +63,8 @@ class WooAiSmokeDebugBridgeTest {
     fun `given approval mode with scenario filter, when validating live request, then request is rejected`() {
         val credentials = WooAiSmokeCredentialConfig(
             siteUrl = "https://store.example",
-            siteId = 2922L,
-            username = "merchant@example.com",
-            appPassword = "app password",
+            wpComUsername = "merchant@example.com",
+            wpComPassword = "app password",
             storeLabel = "store",
             outputDirectory = temporaryFolder.newFolder("live-output"),
             credentialSource = "test",

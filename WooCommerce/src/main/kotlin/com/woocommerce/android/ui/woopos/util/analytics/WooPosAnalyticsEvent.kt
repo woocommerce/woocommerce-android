@@ -107,10 +107,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "mark_as_paid_failed"
         }
 
-        data object MarkAsPaidNotePostFailed : Event() {
-            override val name: String = "mark_as_paid_note_post_failed"
-        }
-
         data object BackToCheckoutFromMarkAsPaid : Event() {
             override val name: String = "back_to_checkout_from_mark_as_paid"
         }
@@ -1351,10 +1347,7 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
-        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound -> "unknown_wc_plugin"
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
-        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"

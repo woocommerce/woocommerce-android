@@ -44,7 +44,9 @@ internal class WooMobileAiChatService @Inject constructor(
     override fun streamTurn(request: ChatRequest): Flow<AssistantEvent> =
         delegate.streamTurn(request)
 
-    private companion object {
+    internal companion object {
+        const val DEFAULT_BASE_URL = "https://public-api.wordpress.com"
+
         private const val WOO_MOBILE_AI_CHAT_COMPLETIONS_PATH = "/wpcom/v2/woo-mobile-ai/chat/completions"
     }
 }

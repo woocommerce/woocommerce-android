@@ -62,12 +62,8 @@ internal fun AssistantCard.Variation.toVariationSummaryRowModel(
         attributes
             .mapNotNull { attribute ->
                 val name = attribute.name.takeIf { it.isNotBlank() }
-                val option = attribute.option.takeIf { it.isNotBlank() }
-                if (name != null && option != null) {
-                    "$name: $option"
-                } else {
-                    null
-                }
+                val option = attribute.option.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                if (name != null) "$name: $option" else option
             }
             .takeIf { it.isNotEmpty() }
             ?.joinToString(separator = " \u2022 ")
@@ -94,8 +90,8 @@ internal fun AssistantCard.Variation.toVariationSummaryRowModel(
     val skuText = sku
         .takeIf { it.isNotBlank() }
         ?.let { context.getString(R.string.orderdetail_product_lineitem_sku_value, it) }
-    val title = name
-        .takeIf { it.isNotBlank() }
+    val attributesTitle = attributesText()
+    val title = attributesTitle
         ?: skuText
         ?: context.getString(R.string.ai_assistant_variation_card_id_title, variationId)
 
@@ -103,9 +99,9 @@ internal fun AssistantCard.Variation.toVariationSummaryRowModel(
         title = title,
         imageUrl = imageUrl,
         supportingTexts = listOfNotNull(
-            attributesText(),
+            parentProductName.takeIf { it.isNotBlank() },
             statusStockPriceText(),
-            skuText.takeIf { name.isNotBlank() },
+            skuText.takeIf { it != title },
         ),
     )
 }

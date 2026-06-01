@@ -75,20 +75,18 @@ internal object AssistantCardPayloadParser {
         return AssistantCard.Variation(
             parentProductId = parentProductId,
             variationId = variationId,
-            name = details.name.orEmpty(),
+            parentProductName = details.parentProductName.orEmpty(),
             sku = details.sku.orEmpty(),
             price = details.price.orEmpty(),
             stockStatus = details.stockStatus.orEmpty(),
             status = details.status.orEmpty(),
             imageUrl = details.imageUrl.orEmpty(),
             attributes = details.attributes.mapNotNull { attribute ->
-                val name = attribute.name?.takeIf { it.isNotBlank() }
-                val option = attribute.option?.takeIf { it.isNotBlank() }
-                if (name != null && option != null) {
-                    AssistantCard.Variation.Attribute(name = name, option = option)
-                } else {
-                    null
-                }
+                val option = attribute.option?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                AssistantCard.Variation.Attribute(
+                    name = attribute.name.orEmpty(),
+                    option = option,
+                )
             },
         )
     }

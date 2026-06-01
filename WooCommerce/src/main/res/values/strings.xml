@@ -3916,11 +3916,21 @@
     <string name="woopos_payment_method_other_methods_label">Other payment methods</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scan to pay</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Mark order as paid</string>
-    <string name="woopos_mark_order_as_complete_total">Order total: %1$s</string>
-    <string name="woopos_mark_order_as_complete_confirm_button">Mark order as complete</string>
-    <string name="woopos_mark_order_as_complete_error_message">Something went wrong. Please try again.</string>
-    <string name="woopos_mark_order_as_complete_order_not_found">Order could not be loaded. Go back and try again.</string>
-    <string name="woopos_payment_method_picker_dialog_title">Choose payment method</string>
+    <string name="woopos_mark_order_as_paid_title">Mark order as paid?</string>
+    <string name="woopos_mark_order_as_paid_message">This will mark the %1$s order as completed. Use this only if you\'ve already collected payment another way.</string>
+    <string name="woopos_mark_order_as_paid_note_hint">e.g. Bank transfer from Maria, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Mark as paid</string>
+    <string name="woopos_mark_order_as_paid_error_message">Couldn\'t update the order. Try again.</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Order could not be loaded. Go back and try again.</string>
+    <string name="woopos_scan_to_pay_title">Scan to pay</string>
+    <string name="woopos_scan_to_pay_subtitle">Show this code to the customer to let them pay from their phone.</string>
+    <string name="woopos_scan_to_pay_total">Order total: %1$s</string>
+    <string name="woopos_scan_to_pay_error_message">We couldn\'t prepare the payment. Please try again.</string>
+    <string name="woopos_scan_to_pay_retry">Try again</string>
+    <string name="woopos_scan_to_pay_cancel">Cancel</string>
+    <string name="woopos_scan_to_pay_order_note">Customer paid via Scan to Pay</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Pay with Tap to pay</string>
@@ -4133,12 +4143,8 @@
 
     <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
     <string name="woopos_eligibility_retry_check_label">Retry</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Please make sure the WooCommerce plugin is installed and activated from your WordPress admin. If there is still an issue, please contact support for assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
     <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale must be enabled to proceed. Please enable the POS feature from your WordPress admin under WooCommerce settings &gt; Advanced &gt; Features.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">The POS system is not available for your store’s currency. Please check your store currency settings or contact support for assistance.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
     <string name="woopos_eligibility_ciab_title">Pro plan required</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
@@ -4378,6 +4384,7 @@
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Description must be %1$s characters or fewer.</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS tariff number</string>
     <string name="woo_shipping_labels_customs_product_details_tariff_invalid">The tariff number must be between 6 and 12 digits long</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
@@ -4781,4 +4788,9 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Confirmation isn\'t available yet. Please try again from the chat.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">The assistant couldn\'t finish after several steps.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Something went wrong while the assistant was working.</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update order #%1$s (%2$s)</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Update order #%1$s (%2$s): emails the customer</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Guest</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Customer #%1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update variation %1$s (#%2$s) for product #%3$s</string>
 </resources>

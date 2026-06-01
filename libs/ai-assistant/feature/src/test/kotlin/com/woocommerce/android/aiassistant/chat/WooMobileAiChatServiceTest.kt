@@ -81,6 +81,7 @@ class WooMobileAiChatServiceTest {
         newService().streamTurn(simpleRequest()).toList()
 
         val body = Json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject
+        assertThat(body.getValue("model").jsonPrimitive.content).isEqualTo("gpt-5.1")
         assertThat(body.getValue("model").jsonPrimitive.content).isEqualTo(AssistantConfig.MODEL_ID)
         assertThat(body.getValue("stream").jsonPrimitive.boolean).isTrue()
         assertThat(body).doesNotContainKey("stream_options")

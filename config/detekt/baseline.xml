@@ -2314,11 +2314,6 @@
     <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings succeeds, the success returned`()</ID>
     <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun testGetWooCommerceSites()</ID>
     <ID>UnitTestNamingRule:WooLogFileProviderTest.kt$WooLogFileProviderTest$@Test fun `should provide a valid log file`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given empty feature list when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given error result when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given feature enabled remotely when invoked then returns true`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given feature not in list when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given null result when invoked then returns false`()</ID>
     <ID>UnitTestNamingRule:WooPosCartItemsUpdaterTest.kt$WooPosCartItemsUpdaterTest$@Test fun `given cart with multiple coupons, then relevant coupons are updated`()</ID>
     <ID>UnitTestNamingRule:WooPosCartViewModelTest.kt$WooPosCartViewModelTest$@Test fun `given empty cart, then button should not be visible`()</ID>
     <ID>UnitTestNamingRule:WooPosCashPaymentViewModelTest.kt$WooPosCashPaymentViewModelTest$@Test fun `given valid amount,when onUIEvent AmountChanged , then button is enabled and changeDue is updated`()</ID>

@@ -51,7 +51,8 @@ style:
     ignorePropertyDeclaration: true
     ignoreAnnotated: [ 'Composable' ]
   UnusedPrivateMember:
-    ignoreAnnotated: [ 'Preview', 'LightDarkThemePreviews', 'OrientationPreviews', 'FontScalePreviews', 'LayoutDirectionPreviews' ]
+    # WooPosPreview is a meta-annotation that wraps @Preview; detekt does not follow meta-annotations transitively.
+    ignoreAnnotated: [ 'Preview', 'LightDarkThemePreviews', 'OrientationPreviews', 'FontScalePreviews', 'LayoutDirectionPreviews', 'WooPosPreview' ]
   MaxLineLength:
     active: false
 

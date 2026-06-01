@@ -2,10 +2,18 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.0
+-----
+
+
 24.9
 -----
+- [*] Woo POS: "Other payment methods" in Checkout now opens as a bottom sheet instead of a fullscreen page (phone) or centered dialog (tablet) [https://github.com/woocommerce/woocommerce-android/pull/15931]
+- [*] Fixed POS Checkout screen clipping content on small phones and in phone landscape [https://github.com/woocommerce/woocommerce-android/pull/15953]
 - [Internal] Added WOO_POS_SCAN_TO_PAY and WOO_POS_MARK_ORDER_AS_COMPLETE feature flags (off in production) for the upcoming Woo POS Scan to Pay and Mark Order as Complete payment methods [https://github.com/woocommerce/woocommerce-android/pull/15928]
 - [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
+- [*] Fixed USPS shipping label customs handling for US territories and added a 30-character limit on customs item descriptions [https://github.com/woocommerce/woocommerce-android/pull/15999]
+- [Internal] Enabled local flag for self-driven push notifications [https://github.com/woocommerce/woocommerce-android/pull/15997]
 
 24.8
 -----

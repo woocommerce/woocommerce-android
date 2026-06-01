@@ -6,17 +6,22 @@ import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardRenderer
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 
 class WooAssistantCardRenderer internal constructor(
     currencyFormatter: AiAssistantCurrencyFormatter,
+    dateUtils: DateUtils,
 ) : AssistantCardRenderer {
-    private val orderCardRenderer = AiAssistantOrderCardRenderer(currencyFormatter)
+    private val orderCardRenderer = AiAssistantOrderCardRenderer(currencyFormatter, dateUtils)
     private val productCardRenderer = AiAssistantProductCardRenderer(currencyFormatter)
     private val variationCardRenderer = AiAssistantVariationCardRenderer(currencyFormatter)
     private val statsCardRenderer = AiAssistantStatsCardRenderer(currencyFormatter)
     private val customerCardRenderer = AiAssistantCustomerCardRenderer()
 
-    constructor(currencyFormatter: CurrencyFormatter) : this(WooAiAssistantCurrencyFormatter(currencyFormatter))
+    constructor(
+        currencyFormatter: CurrencyFormatter,
+        dateUtils: DateUtils,
+    ) : this(WooAiAssistantCurrencyFormatter(currencyFormatter), dateUtils)
 
     @Composable
     override fun Card(

@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardpayment.WooPosIsCardPaymentEnabledForCountry
 import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -85,6 +86,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -171,6 +173,9 @@ class WooPosTotalsViewModelTest {
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable = mock()
+    private val isCardPaymentEnabledForCountry: WooPosIsCardPaymentEnabledForCountry = mock {
+        on { invoke() } doReturn true
+    }
     private val featureFlagRepository: FeatureFlagRepository = mock()
     private val builtInReaderConnector: WooPosBuiltInReaderConnector = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
@@ -739,6 +744,73 @@ class WooPosTotalsViewModelTest {
             // THEN
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
         }
+
+    @Test
+    fun `given order draft created, when OnMarkOrderAsPaidClicked, then track analytic and emit ToMarkOrderAsPaid`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
+
+            // THEN
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutMarkAsPaidTapped)
+            verify(childrenToParentEventSender).sendToParent(
+                isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
+            )
+        }
+
+    @Test
+    fun `given no order draft, when OnMarkOrderAsPaidClicked, then do not emit navigation event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
+        val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked)
+
+        // THEN
+        verify(childrenToParentEventSender, never()).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid>(),
+        )
+    }
+
+    @Test
+    fun `given order draft created, when OnScanToPayClicked, then track analytic and emit ToScanToPay`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CheckoutScanToPayPaymentTapped)
+        verify(childrenToParentEventSender).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToScanToPay>(),
+        )
+    }
+
+    @Test
+    fun `given no order draft, when OnScanToPayClicked, then do not emit navigation event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
+        val viewModel = createViewModel(parentToChildrenEventReceiver = parentToChildrenEventReceiver)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnScanToPayClicked)
+
+        // THEN
+        verify(childrenToParentEventSender, never()).sendToParent(
+            isA<ChildToParentEvent.NavigationEvent.ToScanToPay>(),
+        )
+    }
 
     @Test
     fun `given order draft created, when reader connects, then start payment automatically`() = runTest {
@@ -2117,6 +2189,35 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `given country without card payment support, when checkout shown, then reader is Unavailable and TTP forced off`() = runTest {
+        // GIVEN
+        whenever(isCardPaymentEnabledForCountry.invoke()).thenReturn(false)
+        whenever(isTapToPayAvailable.invoke()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isCardPaymentEnabledForCountry).isFalse()
+        assertThat(state.readerStatus).isEqualTo(WooPosTotalsViewState.ReaderStatus.Unavailable)
+        assertThat(state.isTapToPayAvailable).isFalse()
+    }
+
+    @Test
+    fun `given country with card payment support, when checkout shown, then state flag is true`() = runTest {
+        // GIVEN
+        whenever(isCardPaymentEnabledForCountry.invoke()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assertThat(state.isCardPaymentEnabledForCountry).isTrue()
+    }
+
+    @Test
     fun `when OnTapToPayClicked, then track checkout TTP analytics`() = runTest {
         // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(true)
@@ -2185,7 +2286,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when OnAllPaymentMethodsVisibilityChanged true, then dialog flag flips to visible`() = runTest {
+    fun `when OnAllPaymentMethodsVisibilityChanged true, then bottom sheet flag flips to visible`() = runTest {
         // GIVEN
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
 
@@ -2194,11 +2295,11 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-        assertThat(state.isAllPaymentMethodsDialogVisible).isTrue()
+        assertThat(state.isAllPaymentMethodsBottomSheetVisible).isTrue()
     }
 
     @Test
-    fun `given dialog visible, when OnAllPaymentMethodsVisibilityChanged false, then dialog flag flips back`() =
+    fun `given bottom sheet visible, when OnAllPaymentMethodsVisibilityChanged false, then flag flips back`() =
         runTest {
             // GIVEN
             val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
@@ -2209,7 +2310,7 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-            assertThat(state.isAllPaymentMethodsDialogVisible).isFalse()
+            assertThat(state.isAllPaymentMethodsBottomSheetVisible).isFalse()
         }
 
     @Test
@@ -2602,6 +2703,7 @@ class WooPosTotalsViewModelTest {
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
         isTapToPayAvailable = isTapToPayAvailable,
+        isCardPaymentEnabledForCountry = isCardPaymentEnabledForCountry,
         featureFlagRepository = featureFlagRepository,
         tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
         paymentsFlowTracker = tracker,

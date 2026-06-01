@@ -1,11 +1,213 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-07 13:58:50+0000
+Translation-Revision-Date: 2026-05-19 09:55:38+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Er is iets fout gegaan terwijl de assistent aan het werk was.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">De assistent kon na verschillende stappen niet voltooien.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Bevestiging is nog niet beschikbaar. Probeer het opnieuw via de chat.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Aanvraag gestopt.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Ik weet niet zeker of die wijziging is doorgevoerd. Verifieer in je winkel voordat je iets anders probeert.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">De assistent kon het verzoek niet voltooien.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">De assistent kon die winkelactie niet voltooien.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">De assistent-service kon deze reactie niet voltooien. Probeer het later opnieuw.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">Time-out van de aanvraag. Probeer het opnieuw.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">De assistent is momenteel bezig. Probeer het later opnieuw.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">De assistent heeft geen toegang tot je winkel. Log opnieuw in en heropen de assistent.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">Kan geen verbinding maken. Controleer je verbinding en probeer het nogmaals.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">Annuleren</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">Bevestigen</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">%1$s bevestigen?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">Opnieuw proberen</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">Voltooi de bovenstaande wachtende wijziging.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">Reactie stoppen</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">Bericht versturen</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">Vraag over je winkel</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">Analyses openen voor %1$s</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">Niet beschikbaar</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">Gemiddelde bestellingswaarde</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">Totaalaantal bestellingen</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">Netto-omzet</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">Totale omzet</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">Verberg melding over vroegtijdige toegang</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">Geef feedback</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">Hallo! We zijn nog maar net begonnen, er is meer onderweg. Laat ons weten wat er ontbreekt en waar je graag hulp bij zou willen!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">VROEGE TOEGANG</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">Stuur suggesties: %1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">Laat mijn nieuwste klanten zien. Lijst met maximaal 10 klanten gesorteerd op registratiedatum, nieuwste eerst.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">Heb je bestellingen die mijn aandacht vereisen? Laat me recente bestellingen zien die in behandeling zijn, onderbroken zijn of verwerkt worden.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">Wat is er bijna op? Vermeld de producten die niet op voorraad zijn of weinig op voorraad zijn, zodat ik weet wat ik moet aanvullen.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">Hoe is mijn omzet deze week? Laat me de totale verkoop van deze week zien en hoe het zich verhoudt tot vorige week.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">Wie zijn mijn nieuwste klanten?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">Heb je bestellingen die mijn aandacht vereisen?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">Wat is er bijna op?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">Hoe is de omzet deze week?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">Waarmee kan ik helpen?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">Kaarten</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">Klanten</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">Analyses</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">Variaties</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">Producten</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">Bestellingen</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">Assistant werkt: %1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">Je winkel wordt gecontroleerd</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">Klanten aan het controleren</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">Analyses controleren</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">Producten bijwerken</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">Producten controleren</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">Bestellingen bijwerken</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">Bestelling controleren</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">Assistent is aan het denken</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Assistent: %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Jij: %1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">Ga naar nieuwste</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Nieuw gesprek beginnen</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Terug</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">Assistent</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">Meer dan %1$d</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">Geannuleerd</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">Bevestigd</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Wijziging in behandeling</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Uit</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Bijgewerkt</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">Voorraadstatus</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Voorraad</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">Verkoop</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">Prijs</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">Naam</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">E-mailadres voor facturering</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">Klantnotitie</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">Status</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">Beoordeling %1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">Variatienummer %1$s voor productnummer %2$s bijwerken</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">Productvariatie bijwerken</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d product bijwerken</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">%1$d producten bijwerken</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Veel producten bijwerken</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Product %1$s (#%2$s) bijwerken</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">Product #%1$s bijwerken</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">Een product bijwerken</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d bestellingen bijwerken: e-mails klanten</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">%1$d bestelling bijwerken: e-mails aan de klant</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d bestellingen bijwerken</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">%1$d bestelling bijwerken</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Veel bestellingen bijwerken</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">Bestelnummer %1$s bijwerken : e-mails aan de klant</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">Bestelnummer %1$s bijwerken</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">Een bestelling bijwerken</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Ik snap het</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Gebruik dezelfde wifi en meld je aan bij dezelfde winkel op beide apparaten. Je telefoon heeft Android 13 of nieuwer, NFC en Tap-to-Pay-ondersteuning nodig.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Compatibiliteit controleren</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">Open Woo op je telefoon en ga vervolgens naar Instellingen → Betalingen → Modus kaartlezer.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">Je telefoon instellen</string>
+    <string name="woopos_remote_ttp_explainer_intro">Gebruik de Woo-app op je telefoon om kaartbetalingen aan te nemen.</string>
+    <string name="woopos_remote_ttp_explainer_title">Geen kaartlezer? Geen probleem!</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Gebruik een Android-telefoon als kaartlezer</string>
+    <string name="woopos_card_reader_unknown_reader_name">Onbekende lezer</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Lezer met bluetooth</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Telefoonlezer</string>
+    <string name="woopos_remote_payment_failed_generic">Er is iets misgegaan. Probeer het nog eens.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">De verbinding met de telefoonlezer is verbroken. Maak opnieuw verbinding en probeer het opnieuw.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Geef locatie toestemming om Tap to Pay te gebruiken.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Tap to Pay kon niet starten: %1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Tap to Pay kon niet starten. Probeer het nog eens.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Tap to Pay voorbereiden</string>
+    <string name="woopos_tap_to_pay_preparing_title">Gereedmaken</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Afbeelding Tap to Pay op telefoon</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Betaal met Tap to Pay</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">Gebruik dit apparaat om contactloze kaartbetalingen aan te nemen.</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
+    <string name="woopos_payment_method_picker_dialog_title">Kies betaalmethode</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">Bestelling markeren als betaald</string>
+    <string name="woopos_payment_method_scan_to_pay_label">Scan om te betalen</string>
+    <string name="woopos_payment_method_other_methods_label">Andere betaalmethoden</string>
+    <string name="woopos_payment_method_all_methods_label">Alle betaalmethoden</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay</string>
+    <string name="woopos_payment_method_card_reader_label">Kaartlezer</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Vingerafdruk</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">Transport</string>
+    <string name="woopos_settings_card_reader_disconnect_button">knop Loskoppelen</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Verbinding is mislukt</string>
+    <string name="ai_assistant_variation_card_id_title">Variatie %1$d</string>
+    <string name="ai_support_chat_connectivity_action">Chat met het ondersteuningsteam</string>
+    <string name="ai_support_chat_connectivity_initial_message">Help me problemen met de verbinding van mijn winkel op te lossen.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">Mislukt</string>
+    <string name="ai_support_chat_diagnostics_status_passed">Geslaagd</string>
+    <string name="ai_support_chat_diagnostics_status_running">Uitvoeren</string>
+    <string name="ai_support_chat_diagnostics_status_pending">In behandeling</string>
+    <string name="ai_support_chat_diagnostics_continue">Doorgaan met chatten</string>
+    <string name="ai_support_chat_diagnostics_retry">Opnieuw proberen</string>
+    <string name="ai_support_chat_diagnostics_failure">Sommige controles zijn mislukt. Je kunt het opnieuw proberen of doorgaan met chatten met deze resultaten.</string>
+    <string name="ai_support_chat_diagnostics_success">Diagnose voltooid</string>
+    <string name="ai_support_chat_diagnostics_title">Je winkel wordt gecontroleerd …</string>
+    <string name="ai_support_chat_issue_other">Iets anders</string>
+    <string name="ai_support_chat_issue_receiving_notifications">Ik ontvang geen meldingen</string>
+    <string name="ai_support_chat_issue_loading_analytics">Mijn analyses worden niet geladen</string>
+    <string name="ai_support_chat_issue_loading_products">Ik kan mijn producten niet zien</string>
+    <string name="ai_support_chat_issue_loading_orders">Ik kan mijn bestellingen niet zien</string>
+    <string name="ai_support_chat_issue_picker_title">Wat wil je oplossen?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">Beschrijf je probleem in meer detail, zodat ik kan helpen.</string>
+    <string name="ai_support_chat_typing">Aan het denken …</string>
+    <string name="ai_support_chat_send_error">Kan je bericht niet verzenden. Controleer je verbinding en probeer het nogmaals.</string>
+    <string name="ai_support_chat_send">Verzenden</string>
+    <string name="ai_support_chat_input_hint">Probleemoplossing via AI berichten</string>
+    <string name="ai_support_chat_greeting">Hallo! Vertel me wat er met je winkel gebeurt en ik help je om het probleem op te lossen.</string>
+    <string name="ai_support_chat_placeholder">Binnenkort beschikbaar</string>
+    <string name="ai_support_chat_screen_title">AI-probleemoplossing</string>
+    <string name="ai_support_chat_help_row_subtitle">Chat met onze AI-assistent om winkelproblemen te diagnosticeren</string>
+    <string name="ai_support_chat_help_row_title">AI-probleemoplossing</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Kies de hoogste waardering die een melding moet verzenden.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Beoordelingen tot een beoordeling</string>
+    <string name="settings_notifs_new_reviews_all_description">Ping voor elke beoordeling, ongeacht de beoordeling.</string>
+    <string name="settings_notifs_new_reviews_all_title">Alle nieuwe beoordelingen</string>
+    <string name="settings_notifs_new_reviews_enable_description">Ontvang een melding wanneer iemand een beoordeling over een van je producten achterlaat.</string>
+    <string name="settings_notifs_stock_backorder_description">Wanneer een klant een artikel bestelt dat momenteel niet op voorraad is.</string>
+    <string name="settings_notifs_stock_backorder_title">In nabestelling</string>
+    <string name="settings_notifs_stock_out_of_stock_description">Wanneer een productvariant op nul komt.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">Niet op voorraad</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Kan drempel voor de hele winkel niet laden</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Producten kunnen hun eigen drempel of de winkelbrede drempel gebruiken. &lt;a href=\'\'&gt;Bekijk de drempelwaarde voor de hele winkel&lt;/a&gt; om de huidige waarde te zien.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Producten kunnen hun eigen drempelwaarde gebruiken of de winkelbrede drempelwaarde van &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Winkelbrede drempel bewerken&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">Wanneer een productvariant zijn lage voorraaddrempel bereikt.</string>
+    <string name="settings_notifs_stock_low_stock_title">Lage voorraad</string>
+    <string name="settings_notifs_stock_enable_description">Ontvang een melding wanneer wijzigingen in de productvoorraad je aandacht vereisen.</string>
+    <string name="settings_notifs_stock_enable_title">Voorraadmeldingen inschakelen</string>
+    <string name="settings_notifs_new_orders_threshold">Drempel (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filter om bestellingen boven je drempel te plaatsen.</string>
+    <string name="settings_notifs_new_orders_high_value_title">Alleen bestellingen van hoge waarde</string>
+    <string name="settings_notifs_new_orders_all_description">Ping voor elke bestelling, ongeacht de waarde.</string>
+    <string name="settings_notifs_new_orders_all_title">Alle bestellingen</string>
+    <string name="settings_notifs_notify_me_for">Houd me op de hoogte voor</string>
+    <string name="settings_notifs_new_orders_enable_description">Ontvang een melding wanneer een bestelling in je winkel wordt geplaatst.</string>
+    <string name="settings_notifs_error_update">Er is een fout opgetreden bij het bijwerken van je notificatie-instellingen.</string>
+    <string name="settings_notifs_error_fetch">Er is een fout opgetreden bij het ophalen van je notificatie-instellingen.</string>
+    <string name="settings_notifs_enable_title">Meldingen inschakelen</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Schakel meldingen in&lt;/a&gt; in je apparaatinstellingen om winkelmeldingen te ontvangen.</string>
+    <string name="card_reader_mode_location_permission_open_settings">Instellingen openen</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">Locatietoestemming is geblokkeerd. Open Instellingen en geef Locatie om Tap-to-Pay op deze telefoon te gebruiken.</string>
+    <string name="card_reader_mode_location_permission_continue">Doorgaan</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android vereist toegang tot de locatie om Tap-to-Pay op deze telefoon te gebruiken. Je locatie blijft op dit apparaat.</string>
+    <string name="card_reader_mode_location_permission_header">Locatietoestemming vereist</string>
+    <string name="card_reader_mode_error_close">Sluiten</string>
+    <string name="card_reader_mode_error_subtitle">Controleer je Wi-Fi-verbinding en probeer het nogmaals.</string>
+    <string name="card_reader_mode_error_header">Start kaartlezermodus mislukt</string>
+    <string name="card_reader_mode_starting_subtitle">Ontdekken instellen op het lokale netwerk …</string>
+    <string name="card_reader_mode_starting_header">Modus kaartlezer starten</string>
+    <string name="card_reader_mode_settings_row_label">Modus kaartlezer</string>
+    <string name="card_reader_mode_cancel">Annuleren</string>
+    <string name="card_reader_mode_waiting_subtitle">Wachten op betaling …</string>
+    <string name="card_reader_mode_waiting_header">Gekoppeld aan tablet</string>
+    <string name="card_reader_mode_ready_to_pair_store">Winkel: %1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">Open Woo POS op je tablet en kies deze telefoon.</string>
+    <string name="card_reader_mode_ready_to_pair_header">Klaar om te koppelen</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">AI-assistent openen</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Vraag over je winkel …</string>
+    <string name="notification_channel_stock_title">Voorraadmeldingen</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">Het batterijniveau van de lezer is %d%%, wat te laag is om deze update te installeren. Laad je lezer op tot minstens 50%% en probeer het opnieuw.</string>
     <string name="woopos_card_reader_update_failed_title">Bijwerken mislukt</string>
     <string name="woopos_card_reader_update_completed_title">Software bijgewerkt</string>
@@ -608,10 +810,8 @@ Language: nl
     <string name="woopos_eligibility_screen_unable_to_load">Kan niet laden</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. In %1$sondersteunt het momenteel alleen %2$s. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale moet ingeschakeld zijn om door te gaan. Schakel de POS-functie in vanuit je WordPress-beheer onder WooCommerce-instellingen &gt; Geavanceerd &gt; Functies.</string>
     <string name="woopos_eligibility_reason_check_connection">Controleer je internetverbinding en probeer de app opnieuw te starten. Neem contact op met de ondersteuning als het probleem zich blijft voordoen.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Je WooCommerce-versie wordt niet ondersteund. Het POS-systeem vereist WooCommerce-versie %1$s of hoger. Werk WooCommerce bij naar de nieuwste versie.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Zorg ervoor dat de WooCommerce-plugin is geïnstalleerd en geactiveerd vanuit je WordPress-beheer. Neem contact op met ondersteuning voor assistentie als het probleem blijft bestaan.</string>
     <string name="orderfilters_sales_channel_filter">Verkoopkanaal</string>
     <string name="barcode_ean13_content_description">Streepjescode EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Extra verwerking</string>
@@ -3897,6 +4097,8 @@ Language: nl
         <item>Aangepast pakket</item>
         <item>Servicepakket</item>
     </string-array>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d sterren of lager</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d ster of lager</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotaal artikelen (%d artikel)</item>
         <item quantity="other">Subtotaal artikelen (%d artikelen)</item>

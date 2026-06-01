@@ -22,8 +22,6 @@ internal fun AssistantMessage.toOpenAi(): OpenAiMessage = when (this) {
     is AssistantMessage.System -> OpenAiMessage.System(content = content)
     is AssistantMessage.User -> OpenAiMessage.User(content = content)
     is AssistantMessage.Assistant -> OpenAiMessage.Assistant(
-        // Jetpack AI rejects assistant tool-call replay messages when content is omitted/null.
-        // send an empty string instead.
         content = content ?: "",
         toolCalls = toolCalls.takeIf { it.isNotEmpty() }?.map(ToolCall::toOpenAi),
     )

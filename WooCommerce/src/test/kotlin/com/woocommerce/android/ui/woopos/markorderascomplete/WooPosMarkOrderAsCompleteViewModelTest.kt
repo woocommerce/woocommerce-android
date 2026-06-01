@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromMarkAsPaid
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidFailed
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidNotePostFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -26,7 +25,6 @@ import org.junit.Test
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -56,11 +54,11 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         val testOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
         whenever(repository.getOrderById(orderId)).thenReturn(testOrder)
         whenever(priceFormat(BigDecimal("42.00"))).thenReturn("$42.00")
-        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_total, "$42.00"))
+        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_message, "$42.00"))
             .thenReturn("Order total: $42.00")
-        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_confirm_button))
+        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_confirm_button))
             .thenReturn("Mark order as complete")
-        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_error_message))
+        whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_error_message))
             .thenReturn("Something went wrong. Please try again.")
     }
 
@@ -78,7 +76,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         runTest {
             // GIVEN
             whenever(repository.getOrderById(orderId)).thenReturn(null)
-            whenever(resourceProvider.getString(R.string.woopos_mark_order_as_complete_order_not_found))
+            whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_order_not_found))
                 .thenReturn("Order could not be loaded. Go back and try again.")
 
             // WHEN
@@ -187,7 +185,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     }
 
     @Test
-    fun `given repo succeeds with failed note, when confirm clicked, then MarkAsPaidNotePostFailed tracked`() = runTest {
+    fun `given repo succeeds with failed note, when confirm clicked, then success path same as Success`() = runTest {
         // GIVEN
         whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
             .thenReturn(MarkOrderAsCompleteOutcome.SuccessWithFailedNote)
@@ -198,25 +196,11 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
-        verify(tracker).track(MarkAsPaidNotePostFailed)
         verify(tracker).track(MarkAsPaidSuccess)
+        verify(childrenToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.OrderSuccessfullyPaidExternally),
+        )
     }
-
-    @Test
-    fun `given repo succeeds without failed note, when confirm clicked, then MarkAsPaidNotePostFailed not tracked`() =
-        runTest {
-            // GIVEN
-            whenever(repository.markOrderAsComplete(eq(orderId), anyOrNull()))
-                .thenReturn(MarkOrderAsCompleteOutcome.Success)
-            val viewModel = createViewModel()
-
-            // WHEN / THEN
-            viewModel.navigationEvent.test {
-                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
-                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
-            }
-            verify(tracker, never()).track(MarkAsPaidNotePostFailed)
-        }
 
     @Test
     fun `given saved state has LOADING button, when VM restored, then button is reset to ENABLED`() = runTest {

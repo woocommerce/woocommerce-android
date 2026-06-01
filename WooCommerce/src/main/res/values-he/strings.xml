@@ -1,11 +1,213 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-04 13:57:45+0000
+Translation-Revision-Date: 2026-05-19 09:55:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">משהו השתבש במהלך פעולת הסייען.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">הסייען לא הצליח לסיים את הפעולה לאחר מספר שלבים.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">האישור עדיין אינו זמין. יש לנסות שוב מהצ\'אט.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">הבקשה הופסקה.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">אני לא בטוח אם השינוי הוחל. יש לאמת בחנות לפני ניסיון לבצע פעולה אחרת.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">לא הצלחנו להשלים בקשה זו.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">הסייען לא הצליח להשלים פעולת חנות זו.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">שירות הסייען לא הצליח להשלים תגובה זו. יש לנסות שוב מאוחר יותר.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">תם הזמן הקצוב לבקשה. יש לנסות שוב.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">הסייען עסוק כרגע. יש להמתין רגע ולנסות שוב.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">לסייען לא הייתה אפשרות לגשת לחנות שלך. יש להיכנס שוב ולאחר מכן לפתוח מחדש את הסייען.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">לא ניתן היה להתחבר. יש לבדוק את החיבור ולנסות שוב.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">ביטול</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">אישור</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">האם לאשר ⁦%1$s⁩?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">לנסות שוב</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">יש לטפל בשינוי הממתין שלעיל.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">הפסקת התגובה</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">שליחת הודעה</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">מידע לגבי החנות שלך</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">פתיחת נתונים אנליטיים עבור ⁦%1$s⁩</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">לא זמין</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">ערך הזמנה ממוצע</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">סך כל ההזמנות</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">סכום מכירות נטו</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">סך כל המכירות</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">התעלמות מההודעה</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">הענקת משוב</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">שלום! אנחנו רק מתחילים, ויש עוד אפשרויות בדרך. נשמח לדעת מה חסר ובמה היית רוצה לקבל סיוע!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">גישה מוקדמת</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">שליחת הצעה: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">אני רוצה להציג את הלקוחות החדשים ביותר שלי. אני רוצה להציג רשימה של עד 10 לקוחות, ממוינים לפי תאריך הרשמה, מהחדש ביותר לישן ביותר.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">האם יש הזמנות שמצריכות את תשומת הלב שלי? אני רוצה להציג הזמנות שבוצעו לאחרונה שנמצאות בהמתנה, בהשהיה או בטיפול.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">מה עומד להיגמר? אני רוצה להציג רשימה של המוצרים שאזלו מהמלאי או שעומדים להיגמר, כדי שאדע איזה מלאי כדאי לי לחדש.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">איך ההכנסות שלי השבוע? אני רוצה להציג את סך כל המכירות לשבוע הזה ולהשוות אותו לשבוע שעבר.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">מי הם הלקוחות החדשים ביותר שלי?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">האם יש הזמנות שמצריכות את תשומת הלב שלי?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">מה עומד להיגמר?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">איך ההכנסות השבוע?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">במה אוכל לעזור?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">כרטיסים</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">לקוחות</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">נתונים אנליטיים</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">וריאציות</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">מוצרים</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">הזמנות</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">הסייען עובד: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">בודק את החנות שלך</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">בודק לקוחות</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">בודק נתונים אנליטיים</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">מעדכן מוצרים</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">בודק מוצרים</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">מעדכן הזמנות</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">בודק הזמנות</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">הסייען חושב</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">סייען: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">את/ה: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">דילוג לאחרונים</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">התחלת שיחה חדשה</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">חזרה</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">סייען</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">ועוד ⁦%1$d⁩ נוספים</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">בוטל</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">אושר</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">שינוי בהמתנה</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">כבוי</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">עודכן</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">סטטוס מלאי</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">מלאי</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">מבצע</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">מחיר</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">שם</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">אימייל לחיוב</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">הערת לקוח</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">סטטוס</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">ביקורת ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">עדכון וריאציה מס\' ⁦%1$s⁩ של מוצר מס\' ⁦%2$s⁩</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">עדכון וריאציה של מוצר</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">עדכון ⁦%1$d⁩ מוצרים</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">עדכון מוצר ⁦%1$d⁩</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">עדכון מוצרים רבים</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">עדכון מוצר⁦%1$s⁩ (מס\' ⁦%2$s⁩)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">עדכון מוצר מס\' ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">עדכון מוצר</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">עדכון ⁦%1$d⁩ הזמנות: שולח הודעות אימייל ללקוחות</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה ⁦%1$d⁩: שולח הודעת אימייל ללקוח</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">עדכון ⁦%1$d⁩ הזמנות</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה ⁦%1$d⁩</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנות רבות</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה מס\' ⁦%1$s⁩: שולח הודעת אימייל ללקוח</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה מס\' ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה</string>
+    <string name="woopos_remote_ttp_explainer_got_it">הבנתי</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">יש להשתמש באותו Wi-Fi ולהיכנס לאותה חנות בשני המכשירים. הטלפון חייב להיות עם Android 13 ומעלה, ותמיכה ב-NFC וב-Tap-to-Pay.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">בדיקת תאימות</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">יש לפתוח את Woo בטלפון ולאחר מכן לעבור אל \'הגדרות\' ← \'תשלומים\' ← \'מצב קורא כרטיסים\'.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">הגדרת הטלפון שלך</string>
+    <string name="woopos_remote_ttp_explainer_intro">יש להשתמש באפליקציה של WooCommerce בטלפון שלך כדי לקבל תשלומים בכרטיס.</string>
+    <string name="woopos_remote_ttp_explainer_title">אין לך קורא כרטיסים? אין בעיה</string>
+    <string name="woopos_remote_ttp_hint_strip_text">אפשר להשתמש בטלפון Android כקורא כרטיסים</string>
+    <string name="woopos_card_reader_unknown_reader_name">קורא לא מוכר</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">קורא Bluetooth</string>
+    <string name="woopos_card_reader_phone_icon_content_description">קורא בטלפון</string>
+    <string name="woopos_remote_payment_failed_generic">משהו השתבש. יש לנסות שוב.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">החיבור אל הקורא בטלפון נותק. יש להתחבר מחדש ולנסות שוב.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">הענק הרשאות מיקום לשימוש ב-Tap To Pay.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">לא ניתן היה להפעיל את Tap To Pay: ⁦%1$s⁩</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">לא ניתן היה להפעיל את Tap To Pay. יש לנסות שוב.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">מכין את Tap To Pay</string>
+    <string name="woopos_tap_to_pay_preparing_title">מתכוננים</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">איור של Tap To Pay בטלפון</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">תשלום באמצעות Tap To Pay</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">אפשר להשתמש במכשיר זה כדי לקבל תשלומים בכרטיס ללא מגע.</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
+    <string name="woopos_payment_method_picker_dialog_title">יש לבחור את אמצעי התשלום</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">סימון הזמנה כ\'שולמה\'</string>
+    <string name="woopos_payment_method_scan_to_pay_label">סריקה לתשלום</string>
+    <string name="woopos_payment_method_other_methods_label">אמצעי תשלום אחרים</string>
+    <string name="woopos_payment_method_all_methods_label">כל אמצעי תשלום</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay</string>
+    <string name="woopos_payment_method_card_reader_label">קורא כרטיסים</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">טביעת אצבע</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">הובלה</string>
+    <string name="woopos_settings_card_reader_disconnect_button">התנתקות</string>
+    <string name="woopos_remote_reader_connect_failed_generic">החיבור נכשל</string>
+    <string name="ai_assistant_variation_card_id_title">וריאציה ⁦%1$d⁩</string>
+    <string name="ai_support_chat_connectivity_action">שיחה עם התמיכה בצ\'אט</string>
+    <string name="ai_support_chat_connectivity_initial_message">עזרו לי לפתור בעיות בחיבור של החנות שלי.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">נכשל</string>
+    <string name="ai_support_chat_diagnostics_status_passed">עבר</string>
+    <string name="ai_support_chat_diagnostics_status_running">מופעל</string>
+    <string name="ai_support_chat_diagnostics_status_pending">בהמתנה</string>
+    <string name="ai_support_chat_diagnostics_continue">המשך לצ\'אט</string>
+    <string name="ai_support_chat_diagnostics_retry">לנסות שוב</string>
+    <string name="ai_support_chat_diagnostics_failure">חלק מהבדיקות נכשלו. אפשר לנסות שוב או להמשיך לשוחח עם התוצאות האלה.</string>
+    <string name="ai_support_chat_diagnostics_success">האבחון הושלם</string>
+    <string name="ai_support_chat_diagnostics_title">בודק את החנות שלך…</string>
+    <string name="ai_support_chat_issue_other">משהו אחר</string>
+    <string name="ai_support_chat_issue_receiving_notifications">לא מתקבלות אצלי הודעות</string>
+    <string name="ai_support_chat_issue_loading_analytics">הנתונים האנליטיים שלי אינם נטענים</string>
+    <string name="ai_support_chat_issue_loading_products">המוצרים שלי אינם מוצגים</string>
+    <string name="ai_support_chat_issue_loading_orders">ההזמנות שלי אינן מוצגות</string>
+    <string name="ai_support_chat_issue_picker_title">באיזה נושא ברצונך לפתור בעיות?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">יש לתאר את הבעיה שלך בפירוט רב יותר כדי שאוכל לעזור.</string>
+    <string name="ai_support_chat_typing">מנסה למצוא תשובה…</string>
+    <string name="ai_support_chat_send_error">לא ניתן לשלוח את ההודעה. יש לבדוק את החיבור ולנסות שוב.</string>
+    <string name="ai_support_chat_send">שליחה</string>
+    <string name="ai_support_chat_input_hint">פתרון בעיות באמצעות בינה מלאכותית</string>
+    <string name="ai_support_chat_greeting">שלום! אני רוצה לדעת מה קורה בחנות שלך ולעזור לך לפתור את הבעיה.</string>
+    <string name="ai_support_chat_placeholder">בקרוב</string>
+    <string name="ai_support_chat_screen_title">פתרון בעיות באמצעות בינה מלאכותית</string>
+    <string name="ai_support_chat_help_row_subtitle">אפשר לשוחח עם סייען הבינה המלאכותית כדי לאבחן בעיות בחנות</string>
+    <string name="ai_support_chat_help_row_title">פתרון בעיות באמצעות בינה מלאכותית</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">יש לבחור את הדירוג הגבוה ביותר שיביא לשליחת הודעה.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">חוות דעת עד דירוג</string>
+    <string name="settings_notifs_new_reviews_all_description">פינג לכל ביקורת, בלי קשר לדירוג.</string>
+    <string name="settings_notifs_new_reviews_all_title">כל הביקורות החדשות</string>
+    <string name="settings_notifs_new_reviews_enable_description">אפשר לקבל הודעות כאשר מישהו כותב ביקורת על אחד מהמוצרים שלך.</string>
+    <string name="settings_notifs_stock_backorder_description">כאשר לקוח מזמין פריט שכרגע אזל מהמלאי.</string>
+    <string name="settings_notifs_stock_backorder_title">בהזמנה משלימה</string>
+    <string name="settings_notifs_stock_out_of_stock_description">כאשר וריאציה של מוצר מגיעה לאפס.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">לא במלאי</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">אין אפשרות לטעון את הסף הכולל של החנות</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">מוצרים יכולים להשתמש בסף שלהם או בסף הגלובלי של החנות. אפשר &lt;a href=\'\'&gt;להציג סף גלובלי לחנות&lt;/a&gt; כדי לראות את הערך הנוכחי.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">מוצרים יכולים להשתמש בסף שלהם או בסף גלובלי של החנות,  &lt;b&gt;%1$s&lt;/b&gt;. סף גלובלי לחנות (&lt;a href=\'\'&gt;)&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">כאשר וריאציה של מוצר מגיעה לסף המלאי הנמוך שלה.</string>
+    <string name="settings_notifs_stock_low_stock_title">מלאי נמוך</string>
+    <string name="settings_notifs_stock_enable_description">אפשר לקבל הודעות כאשר שינויים במלאי המוצרים דורשים תשומת לב.</string>
+    <string name="settings_notifs_stock_enable_title">הפעלת התראה כאשר המלאי נמוך</string>
+    <string name="settings_notifs_new_orders_threshold">סף (⁦%1$s⁩)</string>
+    <string name="settings_notifs_new_orders_high_value_description">סינון לפי הזמנות מעל הסף.</string>
+    <string name="settings_notifs_new_orders_high_value_title">רק הזמנות בעלות ערך גבוה</string>
+    <string name="settings_notifs_new_orders_all_description">פינג לכל הזמנה, ללא קשר לערך.</string>
+    <string name="settings_notifs_new_orders_all_title">כל ההזמנות החדשות</string>
+    <string name="settings_notifs_notify_me_for">הודע לי על</string>
+    <string name="settings_notifs_new_orders_enable_description">אפשר לקבל הודעות כאשר מתבצעת הזמנה בחנות שלך.</string>
+    <string name="settings_notifs_error_update">אירעה שגיאה בעת עדכון הגדרות ההודעות.</string>
+    <string name="settings_notifs_error_fetch">אירעה שגיאה בעת אחזור הגדרות ההודעות.</string>
+    <string name="settings_notifs_enable_title">הפעלת הודעות</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">כדי לקבל הודעות למכשיר זה, יש &lt;a href=\'\'&gt;להפעיל את הגדרות ההודעות&lt;/a&gt;.</string>
+    <string name="card_reader_mode_location_permission_open_settings">פתיחת ההגדרות</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">הרשאת המיקום חסומה. יש לפתוח את ההגדרות ולהעניק את ההרשאה \'מיקום\' כדי להשתמש ב-tap-to-pay בטלפון זה.</string>
+    <string name="card_reader_mode_location_permission_continue">המשך</string>
+    <string name="card_reader_mode_location_permission_subtitle">ל-Android נדרשת גישה למיקום כדי להשתמש ב-tap-to-pay בטלפון זה. המיקום שלך נשאר במכשיר זה</string>
+    <string name="card_reader_mode_location_permission_header">נדרשת ההרשאה \'מיקום\'</string>
+    <string name="card_reader_mode_error_close">סגירה</string>
+    <string name="card_reader_mode_error_subtitle">יש לבדוק את החיבור שלך ל-Wi-Fi ולנסות שוב.</string>
+    <string name="card_reader_mode_error_header">ההפעלה של \'מצב קורא כרטיסים\' נכשלה</string>
+    <string name="card_reader_mode_starting_subtitle">מגדיר את הגילוי ברשת המקומית…</string>
+    <string name="card_reader_mode_starting_header">מפעיל את \'מצב קורא כרטיסים\'</string>
+    <string name="card_reader_mode_settings_row_label">מצב קורא כרטיסים</string>
+    <string name="card_reader_mode_cancel">ביטול</string>
+    <string name="card_reader_mode_waiting_subtitle">ממתין לתשלום…</string>
+    <string name="card_reader_mode_waiting_header">משויך לטאבלט</string>
+    <string name="card_reader_mode_ready_to_pair_store">חנות: ⁦%1$s⁩</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">יש לפתוח את Woo POS בטאבלט ולבחור את טלפון זה.</string>
+    <string name="card_reader_mode_ready_to_pair_header">מוכן לשיוך</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">פתיחת סייען הבינה המלאכותית</string>
+    <string name="dashboard_ai_assistant_entry_point_label">שאלה לגבי החנות שלך…</string>
+    <string name="notification_channel_stock_title">התראות מלאי</string>
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">רמת הטעינה של הסוללה בקורא נמוכה מדי להתקנה של עדכון זה. יש לטעון את הקורא ל-50% לפחות ולנסות שוב.</string>
     <string name="woopos_card_reader_update_failed_title">העדכון נכשל</string>
     <string name="woopos_card_reader_update_completed_title">התוכנה עודכנה</string>
@@ -606,10 +808,8 @@ Language: he_IL
     <string name="woopos_eligibility_screen_unable_to_load">לא ניתן לטעון</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">מערכת POS לא זמינה במטבע של החנות שלך. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">מערכת POS לא זמינה במטבע של החנות שלך. ב-⁦%1$s⁩, כרגע המערכת תומכת רק ב-⁦%2$s⁩. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">כדי להמשיך, יש להפעיל את \'נקודת מכירה\'. יש להפעיל את האפשרות של POS ממנהל המערכת של WordPress במקטע \'הגדרות WooCommerce\' &gt; \'מתקדם\' &gt; \'אפשרויות\'.</string>
     <string name="woopos_eligibility_reason_check_connection">יש לבדוק את החיבור לאינטרנט ולנסות להפעיל מחדש את האפליקציה. אם הבעיה נמשכת, ניתן ליצור קשר עם התמיכה.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">הגרסה של WooCommerce שברשותך לא נתמכת. למערכת POS נדרשת גרסת WooCommerce של ⁦%1$s⁩ ומעלה. עליך לעדכן את WooCommerce לגרסה האחרונה.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">יש לוודא שהתוסף של WooCommerce הותקן והופעל ממנהל המערכת של WordPress. אם עדיין קיימת בעיה, יש ליצור קשר עם התמיכה לעזרה.</string>
     <string name="orderfilters_sales_channel_filter">ערוץ מכירות</string>
     <string name="barcode_ean13_content_description">ברקוד של EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">טיפול נוסף</string>
@@ -3895,6 +4095,8 @@ Language: he_IL
         <item>חבילות מותאמות אישית</item>
         <item>חבילת שירות</item>
     </string-array>
+    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ כוכבים ומטה</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">כוכב ⁦%1$d⁩ ומטה</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">סכום ביניים (פריט %d)</item>
         <item quantity="two">סכום ביניים (%d פריטים)</item>
