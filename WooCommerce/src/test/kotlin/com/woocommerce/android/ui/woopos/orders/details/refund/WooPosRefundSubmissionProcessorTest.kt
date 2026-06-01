@@ -124,7 +124,7 @@ class WooPosRefundSubmissionProcessorTest {
             )
         ).thenReturn(WooResult(refundModel))
 
-        processor = WooPosRefundSubmissionProcessorImpl(
+        processor = WooPosRefundSubmissionProcessor(
             refundStore = refundStore,
             selectedSite = selectedSite,
             paymentChargeRepository = paymentChargeRepository,
@@ -151,7 +151,7 @@ class WooPosRefundSubmissionProcessorTest {
             awaitComplete()
         }
 
-        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
         verify(refundStore).createItemsRefund(
             site = eq(site),
             orderId = eq(order.id),
@@ -204,31 +204,44 @@ class WooPosRefundSubmissionProcessorTest {
         }
 
     @Test
-    fun `given charge metadata lookup fails, when submitted, then backend refund is created directly`() = runTest {
+    fun `given charge metadata lookup fails, when submitted, then failure is emitted`() = runTest {
         whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error
         )
 
         processor.submit(request).test {
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("Something went wrong")
+            assertThat(failure.retryBackendNotificationOnly).isFalse()
+            assertThat(failure.canRetry).isTrue()
             awaitComplete()
         }
 
-        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
-        verify(refundStore).createItemsRefund(
-            site = eq(site),
-            orderId = eq(order.id),
-            amount = eq(refundAmount),
-            reason = eq("Customer request"),
-            restockItems = eq(true),
-            autoRefund = eq(true),
-            items = eq(refundItems)
-        )
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
+        verify(refundStore, never()).createItemsRefund(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
-    fun `given selected site lookup fails during normal refund, when submitted, then exception is propagated`() = runTest {
+    fun `given card refund has no charge id, when submitted, then failure is emitted`() = runTest {
+        val requestWithoutChargeId = request.copy(
+            order = order.copy(chargeId = null, paymentMethod = "woocommerce_payments")
+        )
+
+        processor.submit(requestWithoutChargeId).test {
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("Something went wrong")
+            assertThat(failure.retryBackendNotificationOnly).isFalse()
+            assertThat(failure.canRetry).isTrue()
+            awaitComplete()
+        }
+
+        verify(paymentChargeRepository, never()).fetchCardDataUsedForOrderPayment(any())
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
+        verify(refundStore, never()).createItemsRefund(any(), any(), any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `given selected site lookup fails during normal refund, when submitted, then failure is emitted`() = runTest {
         whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
                 cardBrand = "visa",
@@ -240,9 +253,11 @@ class WooPosRefundSubmissionProcessorTest {
 
         processor.submit(request).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-            assertThat(awaitError())
-                .isInstanceOf(IllegalStateException::class.java)
-                .hasMessage("missing site")
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("Something went wrong")
+            assertThat(failure.retryBackendNotificationOnly).isFalse()
+            assertThat(failure.canRetry).isTrue()
+            awaitComplete()
         }
     }
 
@@ -279,7 +294,7 @@ class WooPosRefundSubmissionProcessorTest {
                 paymentMethodType = INTERAC_PRESENT
             )
         )
-        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
             .thenReturn(controller)
 
         processor.submit(request).test {
@@ -324,7 +339,7 @@ class WooPosRefundSubmissionProcessorTest {
                     paymentMethodType = INTERAC_PRESENT
                 )
             )
-            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
                 .thenReturn(controller)
 
             processor.submit(request).test {
@@ -354,7 +369,7 @@ class WooPosRefundSubmissionProcessorTest {
                 paymentMethodType = INTERAC_PRESENT
             )
         )
-        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
             .thenReturn(controller)
         whenever(
             refundStore.createItemsRefund(
@@ -403,7 +418,7 @@ class WooPosRefundSubmissionProcessorTest {
             awaitComplete()
         }
 
-        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
         verify(paymentChargeRepository, never()).fetchCardDataUsedForOrderPayment(any())
         verify(loadPaymentGateway, never()).invoke(any())
         verify(refundStore).createItemsRefund(
@@ -433,7 +448,7 @@ class WooPosRefundSubmissionProcessorTest {
             awaitComplete()
         }
 
-        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any(), any(), any())
+        verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
         verify(paymentChargeRepository, never()).fetchCardDataUsedForOrderPayment(any())
         verify(loadPaymentGateway, never()).invoke(any())
     }
@@ -451,7 +466,7 @@ class WooPosRefundSubmissionProcessorTest {
                 paymentMethodType = INTERAC_PRESENT
             )
         )
-        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
             .thenReturn(controller)
         whenever(uiStringParser.asString(InteracRefundFlowError.Generic.message)).thenReturn("Reader failed")
 
@@ -489,7 +504,7 @@ class WooPosRefundSubmissionProcessorTest {
                 paymentMethodType = INTERAC_PRESENT
             )
         )
-        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+        whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
             .thenReturn(controller)
         whenever(uiStringParser.asString(InteracRefundFlowError.Generic.message)).thenReturn("Reader failed")
 
@@ -531,7 +546,7 @@ class WooPosRefundSubmissionProcessorTest {
                     paymentMethodType = INTERAC_PRESENT
                 )
             )
-            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
                 .thenReturn(controller)
 
             processor.submit(request).test {
@@ -566,7 +581,7 @@ class WooPosRefundSubmissionProcessorTest {
                     paymentMethodType = INTERAC_PRESENT
                 )
             )
-            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
                 .thenReturn(controller)
 
             processor.submit(request).test {
@@ -598,7 +613,7 @@ class WooPosRefundSubmissionProcessorTest {
                     paymentMethodType = INTERAC_PRESENT
                 )
             )
-            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
                 .thenReturn(controller)
 
             processor.submit(request).test {
