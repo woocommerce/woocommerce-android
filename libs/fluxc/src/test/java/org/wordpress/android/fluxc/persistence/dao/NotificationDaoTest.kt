@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -22,7 +21,7 @@ class NotificationDaoTest {
 
     @Rule
     @JvmField
-    val databaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Before
     fun setUp() {

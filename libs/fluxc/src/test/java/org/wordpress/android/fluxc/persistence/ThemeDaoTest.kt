@@ -16,9 +16,7 @@ import org.wordpress.android.fluxc.utils.createTestTheme
 class ThemeDaoTest {
     @Rule
     @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(
-        ApplicationProvider.getApplicationContext()
-    )
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var dao: ThemeDao
 
