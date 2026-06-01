@@ -1,0 +1,30 @@
+Kør din butik fra hvor som helst
+
+Håndter din virksomhed på farten med WooCommerce-mobilappen. Tilføj produkter, opret ordrer, modtag hurtige betalinger, og hold øje med nye salg og vigtige statistikker i realtid.
+
+Tilføj og rediger produkter med et tryk
+Kom i gang på få sekunder! Opret, gruppér og udgiv produkter direkte fra din Android-telefon eller tablet. Fang din kreativitet i det øjeblik, det slår dig – gør dine idéer til produkter med det samme, eller gem dem som kladder til senere.
+
+Opret ordrer på stedet
+Når du har oprettet nogle produkter, er det enkelt. Vælg varer fra dit katalog, tilføj forsendelse, og udfyld derefter kundeoplysninger for hurtigt at oprette en ordre, der synkroniseres med dit lager.
+
+Modtag betalinger personligt
+Indsaml fysiske betalinger ved hjælp af WooCommerce In-Person Payments og en kortlæser (tilgængelig i USA, UK og Canada), Tap to Pay eller en digital tegnebog som Apple Pay. Start en ny ordre – eller find en eksisterende, der afventer betaling – og accepter derefter betaling problemfrit.
+
+Gå fra klik til fysisk butik
+Gør enhver tablet til et kraftfuldt Point of Sale-system med WooCommerce POS. Søg produkter, scan stregkoder, anvend rabatkoder, og send kvitteringer via e-mail, med alle dine online- og fysiske salg synkroniseret i realtid. Tilgængelig i USA og UK.
+
+Få besked om hvert salg
+Nu hvor du aktivt sælger, skal du aldrig gå glip af en ordre eller anmeldelse. Hold dig orienteret ved at aktivere realtidsmeddelelser – og lyt efter det vanedannende "cha-ching"-lyd, der kommer med hvert nyt salg!
+
+Spor salg og bestsellere
+Se hvilke produkter, der vinder på et øjeblik. Hold styr på din samlede omsætning, ordreantal og besøgsdata efter uge, måned og år. Viden = magt.
+
+WooCommerce på dit ur
+Med vores WooCommerce Wear OS-app kan du ubesværet se dine butikdata for i dag og spore dine ordrer direkte fra dit håndled. Med vores komplikationer kan du også få øjeblikkelig adgang til appen.
+
+WooCommerce er verdens mest tilpasselige open source-eCommerce-platform. Uanset om du lancerer en virksomhed, tager fysisk detailhandel online, eller udvikler websteder for kunder, skal du bruge WooCommerce til en butik, der kraftfuldt blander indhold og handel.
+
+Krav: WooCommerce v3.5+.
+
+Se privatlivserklæringen for californiske brugere på https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

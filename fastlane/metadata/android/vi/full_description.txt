@@ -1,0 +1,30 @@
+Quản lý cửa hàng của bạn từ bất kỳ đâu
+
+Quản lý kinh doanh của bạn khi đang di chuyển với Ứng dụng Di động WooCommerce. Thêm sản phẩm, tạo đơn hàng, nhận thanh toán nhanh chóng và theo dõi các bán hàng mới cũng như thống kê chính trong thời gian thực.
+
+Thêm và chỉnh sửa sản phẩm chỉ bằng một chạm
+Bắt đầu trong vài giây! Tạo, nhóm và xuất bản sản phẩm trực tiếp từ điện thoại hoặc máy tính bảng Android của bạn. Ghi lại ý tưởng của bạn ngay khi có – chuyển đổi ý tưởng thành sản phẩm ngay lập tức hoặc lưu chúng dưới dạng bản nháp để sử dụng sau.
+
+Tạo đơn hàng nhanh chóng
+Sau khi bạn đã tạo một số sản phẩm, mọi việc rất đơn giản. Chọn mục từ danh mục của bạn, thêm vận chuyển, sau đó điền thông tin khách hàng để nhanh chóng tạo đơn hàng đồng bộ với kho hàng của bạn.
+
+Nhận thanh toán trực tiếp
+Thu thập thanh toán vật lý bằng WooCommerce In-Person Payments và thiết bị đọc thẻ (có sẵn ở Mỹ, Anh và Canada), Tap to Pay hoặc ví kỹ thuật số như Apple Pay. Bắt đầu đơn hàng mới — hoặc tìm đơn hàng hiện có đang chờ thanh toán – sau đó chấp nhận thanh toán một cách liền mạch.
+
+Từ nhấp chuột đến cửa hàng thực tế
+Chuyển đổi bất kỳ máy tính bảng nào thành điểm bán hàng mạnh mẽ với WooCommerce POS. Tìm kiếm sản phẩm, quét mã vạch, áp dụng mã giảm giá và gửi biên lai qua email, với tất cả bán hàng trực tuyến và vật lý được đồng bộ hóa trong thời gian thực. Có sẵn ở Mỹ và Anh.
+
+Nhận thông báo về mỗi lần bán hàng
+Bây giờ bạn đang bán hàng tích cực, đừng bao giờ bỏ lỡ đơn hàng hoặc đánh giá. Cập nhật thông tin bằng cách bật cảnh báo thời gian thực – và lắng nghe âm thanh "cha-ching" gây nghiện đi kèm với mỗi lần bán hàng mới!
+
+Truy vết bán hàng và sản phẩm bán chạy
+Xem sản phẩm nào đang thắng một cách nhanh chóng. Theo dõi tổng doanh thu, số lượng đơn hàng và dữ liệu khách truy cập theo tuần, tháng và năm. Kiến thức = Sức mạnh.
+
+WooCommerce trên đồng hồ của bạn
+Với Ứng dụng WooCommerce Wear OS của chúng tôi, bạn có thể dễ dàng xem dữ liệu cửa hàng hôm nay và theo dõi đơn hàng của bạn ngay từ cổ tay. Với các phức tạp của chúng tôi, bạn cũng có thể truy cập nhanh vào ứng dụng.
+
+WooCommerce là nền tảng thương mại điện tử mã nguồn mở có thể tùy chỉnh nhất trên thế giới. Cho dù bạn đang khởi động kinh doanh, đưa bán lẻ truyền thống trực tuyến hay phát triển trang web cho khách hàng, hãy sử dụng WooCommerce cho cửa hàng kết hợp mạnh mẽ nội dung và thương mại.
+
+Yêu cầu: WooCommerce v3.5+.
+
+Xem Thông báo Quyền riêng tư dành cho người dùng California tại https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

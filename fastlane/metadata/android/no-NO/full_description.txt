@@ -1,0 +1,30 @@
+Kjør butikken din fra hvor som helst
+
+Håndter virksomheten din mens du er på farten med WooCommerce-mobilappen. Legg til produkter, opprett ordrer, ta raske betalinger, og overvåk nye salg og viktige statistikker i sanntid.
+
+Legg til og rediger produkter med en berøring
+Kom i gang på sekunder! Opprett, grupper og publiser produkter direkte fra Android-telefonen eller -nettbrettet ditt. Fang kreativiteten din i øyeblikket den oppstår – gjør ideene dine om til produkter umiddelbart, eller lagre dem som kladder til senere.
+
+Opprett ordrer på farten
+Når du har opprettet noen produkter, er det enkelt. Velg varer fra katalogen din, legg til frakt, og fyll deretter inn kundedetaljer for raskt å opprette en ordre som synkroniseres med lagerbeholdningen din.
+
+Ta betalinger personlig
+Samle inn fysiske betalinger ved hjelp av WooCommerce In-Person Payments og en kortleser (tilgjengelig i USA, Storbritannia og Canada), Tap to Pay, eller en digital lommebok som Apple Pay. Start en ny ordre – eller finn en eksisterende som venter på betaling – og godta deretter betaling sømløst.
+
+Gå fra klikk til fysisk butikk
+Gjør hvilket som helst nettbrett til et kraftig salgssted med WooCommerce POS. Søk etter produkter, skann strekkoder, bruk rabattkoder, og send kvitteringer via e-post, med alle dine nett- og fysiske salg synkronisert i sanntid. Tilgjengelig i USA og Storbritannia.
+
+Få varsler om hvert salg
+Nå som du aktivt selger, skal du aldri gå glipp av en ordre eller anmeldelse. Hold deg oppdatert ved å aktivere sanntidsvarsler – og lytt etter den addiktive "cha-ching"-lyden som kommer med hvert nytt salg!
+
+Spor salg og bestselgende produkter
+Se hvilke produkter som vinner med et blikk. Overvåk den totale inntekten, ordreantallet og besøksdata etter uke, måned og år. Kunnskap = kraft.
+
+WooCommerce på klokken din
+Med WooCommerce Wear OS-appen vår kan du enkelt se dagens butikkdata og spore ordrene dine direkte fra håndleddet. Med våre komplikasjoner kan du også få øyeblikkelig tilgang til appen.
+
+WooCommerce er verdens mest tilpassbare åpen kildekode-ehandelsplattform. Enten du lanserer en virksomhet, tar fysisk detaljhandel på nett, eller utvikler nettsteder for klienter, bruker du WooCommerce for en butikk som kraftig blander innhold og handel.
+
+Krav: WooCommerce v3.5+.
+
+Se personvernerklæringen for californiske brukere på https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

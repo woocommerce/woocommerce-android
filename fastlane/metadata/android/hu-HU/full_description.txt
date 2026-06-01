@@ -1,0 +1,30 @@
+Üzemeltesse üzletét bárhonnan
+
+Kezelje vállalkozását útközben a WooCommerce mobilalkalmazással. Adjon hozzá termékeket, hozzon létre rendeléseket, fogadjon gyors kifizetéseket, és figyelje az új értékesítéseket és főbb statisztikákat valós időben.
+
+Termékek hozzáadása és szerkesztése egyetlen érintéssel
+Kezdjen el másodpercek alatt! Hozzon létre, csoportosítson és tegyen közzé termékeket közvetlenül Android telefonjáról vagy táblagépéről. Rögzítse kreativitását a pillanatban – azonnal alakítsa ötleteit termékekké, vagy mentse őket később feldolgozásra.
+
+Rendelések létrehozása menet közben
+Miután létrehozta az első termékeket, már egyszerű. Válasszon elemeket katalógusából, adjon hozzá szállítást, majd töltse ki az ügyfél adatait, hogy gyorsan létrehozzon egy rendelést, amely szinkronizálódik a készletével.
+
+Fogadjon személyes kifizetéseket
+Gyűjtse be a fizikai kifizetéseket a WooCommerce In-Person Payments és egy kártyaolvasó (az USA-ban, az Egyesült Királyságban és Kanadában elérhető), Tap to Pay vagy digitális pénztárca, például az Apple Pay segítségével. Indítson új rendelést – vagy keresse meg a függőben lévő kifizetésre váró meglévő rendelést – majd zökkenőmentesen fogadja el a kifizetést.
+
+Az online világból a valódi üzletbe
+Akármelyik táblagépet erőteljes pénztári rendszerré alakíthatja a WooCommerce POS segítségével. Keressen termékeket, olvassa be a vonalkódokat, alkalmazza a kuponokat, és küldjön e-mail nyugtákat, miközben az összes online és fizikai értékesítés valós időben szinkronizálódik. Az USA-ban és az Egyesült Királyságban elérhető.
+
+Kapjon értesítést minden értékesítésről
+Most, hogy aktívan értékesít, soha ne hagyjon ki egy rendelést vagy értékelést. Maradjon a képben azáltal, hogy engedélyezi a valós idejű riasztásokat – és hallgassa meg azt az addiktív "cha-ching" hangot, amely minden új értékesítéssel jár!
+
+Kövesse nyomon az értékesítéseket és a legjobban fogyó termékeket
+Látja egy pillantásra, mely termékek nyernek. Figyelje meg teljes bevételét, rendelésszámát és látogatottsági adatait heti, havi és éves bontásban. A tudás hatalom.
+
+WooCommerce az Ön karórájában
+A WooCommerce Wear OS alkalmazásunkkal könnyedén megtekintheti mai üzletadatait és nyomon követheti rendeléseit közvetlenül csuklójáról. Komplikációink segítségével azonnali hozzáférést is kaphat az alkalmazáshoz.
+
+A WooCommerce a világ leginkább testreszabható nyílt forráskódú e-kereskedelmi platformja. Akár új vállalkozást indít, akár hagyományos kiskereskedelmet helyez online, akár ügyféleknek készít webhelyeket, használja a WooCommerce-t egy olyan üzlethez, amely erőteljesen ötvözi a tartalmat és a kereskedelmet.
+
+Követelmények: WooCommerce v3.5+.
+
+A kaliforniai felhasználók adatvédelmi nyilatkozatát a https://automattic.com/privacy/#california-consumer-privacy-act-ccpa címen tekintheti meg.

@@ -1,0 +1,30 @@
+Spravujte svůj obchod odkudkoli
+
+Spravujte svůj podnik na cestách pomocí mobilní aplikace WooCommerce. Přidávejte produkty, vytvářejte objednávky, přijímejte rychlé platby a sledujte nové prodeje a klíčové statistiky v reálném čase.
+
+Přidávejte a upravujte produkty jedním dotykem
+Začněte během sekund! Vytvářejte, seskupujte a publikujte produkty přímo z vašeho telefonu nebo tabletu se systémem Android. Zachyťte svou kreativitu v okamžiku, kdy vás napadne – převeďte své nápady na produkty okamžitě, nebo je uložte jako koncepty na později.
+
+Vytvářejte objednávky za chodu
+Jakmile máte vytvořené produkty, je to jednoduché. Vyberte položky z katalogu, přidejte dopravu a vyplňte údaje zákazníka, abyste rychle vytvořili objednávku, která se synchronizuje s vaší zásobou.
+
+Přijímejte platby osobně
+Sbírejte fyzické platby pomocí WooCommerce In-Person Payments a čtečky karet (dostupné v USA, Velké Británii a Kanadě), Tap to Pay nebo digitální peněženky, jako je Apple Pay. Spusťte novou objednávku – nebo najděte existující objednávku, která čeká na platbu – a bezproblémově přijměte platbu.
+
+Od kliknutí k fyzickému obchodu
+Přeměňte libovolný tablet na výkonný pokladní systém s WooCommerce POS. Vyhledávejte produkty, skenujte čárové kódy, aplikujte kupóny a posílejte e-mailové účtenky, přičemž všechny vaše online a fyzické prodeje se synchronizují v reálném čase. Dostupné v USA a Velké Británii.
+
+Dostávejte oznámení o každém prodeji
+Nyní, když aktivně prodáváte, nikdy si nezmešlete objednávku ani recenzi. Zůstaňte v obraze povolením upozornění v reálném čase – a poslouchejte ten návykový zvuk „cha-ching“, který přichází s každým novým prodejem!
+
+Sledujte prodeje a nejprodávanější produkty
+Podívejte se na první pohled, které produkty vítězí. Sledujte svůj celkový příjem, počet objednávek a data o návštěvnících podle týdne, měsíce a roku. Znalost = síla.
+
+WooCommerce na vašich hodinkách
+S naší aplikací WooCommerce Wear OS můžete bez námahy zobrazit data svého obchodu a sledovat své objednávky přímo z vašeho zápěstí. Pomocí našich komplikací máte také okamžitý přístup k aplikaci.
+
+WooCommerce je nejflexibilnější open-source platforma pro elektronický obchod na světě. Ať už spouštíte podnik, přenášíte maloobchodní prodej do online prostředí nebo vyvíjíte weby pro klienty, používejte WooCommerce pro obchod, který mocně kombinuje obsah a obchod.
+
+Požadavky: WooCommerce v3.5+.
+
+Prohlášení o ochraně osobních údajů pro uživatele z Kalifornie naleznete na adrese https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.
