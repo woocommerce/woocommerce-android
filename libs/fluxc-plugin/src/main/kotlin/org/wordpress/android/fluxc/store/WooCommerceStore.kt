@@ -477,6 +477,21 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchAnalyticsScheduledImportEnabled(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsScheduledImportEnabled") {
+            wcCoreRestClient.fetchAnalyticsScheduledImportEnabled(site).asWooResult()
+        }
+    }
+
+    suspend fun updateAnalyticsScheduledImportEnabled(
+        site: SiteModel,
+        enabled: Boolean
+    ): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "updateAnalyticsScheduledImportEnabled") {
+            wcCoreRestClient.updateAnalyticsScheduledImportEnabled(site, enabled).asWooResult()
+        }
+    }
+
     suspend fun fetchPosSettings(site: SiteModel): WooResult<Map<String, String>> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchPosSettings") {
             val response = systemRestClient.fetchPosSettings(site)

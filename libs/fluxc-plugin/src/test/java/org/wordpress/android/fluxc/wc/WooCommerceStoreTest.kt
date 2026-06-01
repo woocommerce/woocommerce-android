@@ -338,6 +338,66 @@ class WooCommerceStoreTest {
     }
 
     @Test
+    fun `when fetch analytics scheduled import enabled succeeds, then the value is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(true))
+
+            val result = wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isTrue
+        }
+    }
+
+    @Test
+    fun `when fetch analytics scheduled import disabled succeeds, then the value is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(false))
+
+            val result = wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isFalse
+        }
+    }
+
+    @Test
+    fun `when fetch analytics scheduled import fails, then the error is returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            assertThat(result.isError).isTrue
+            assertThat(result.error).isEqualTo(error)
+        }
+    }
+
+    @Test
+    fun `when update analytics scheduled import enabled succeeds, then the value is returned`() {
+        runBlocking {
+            whenever(wcrestClient.updateAnalyticsScheduledImportEnabled(site, true)).thenReturn(WooPayload(true))
+
+            val result = wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, true)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isTrue
+        }
+    }
+
+    @Test
+    fun `when update analytics scheduled import fails, then the error is returned`() {
+        runBlocking {
+            whenever(wcrestClient.updateAnalyticsScheduledImportEnabled(site, false)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, false)
+
+            assertThat(result.isError).isTrue
+            assertThat(result.error).isEqualTo(error)
+        }
+    }
+
+    @Test
     fun `when fetching supported api version succeeds, then success returned`() {
         runBlocking {
             val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
