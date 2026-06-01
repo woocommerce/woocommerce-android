@@ -13,5 +13,6 @@ sealed class WooPosRefundUIEvent {
     data object RefundFlowDismissed : WooPosRefundUIEvent()
     data object RetryLoadRefundableItems : WooPosRefundUIEvent()
     data object RetryCreateRefund : WooPosRefundUIEvent()
+    data object ConnectReaderClicked : WooPosRefundUIEvent()
     data object CancelRefund : WooPosRefundUIEvent()
 }

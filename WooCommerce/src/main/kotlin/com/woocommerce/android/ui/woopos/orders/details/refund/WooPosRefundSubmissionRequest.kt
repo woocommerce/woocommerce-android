@@ -9,6 +9,7 @@ data class WooPosRefundSubmissionRequest(
     val refundAmount: BigDecimal,
     val refundReason: String,
     val refundItems: List<RefundRequestItem>,
+    val cardRefundAlreadySucceeded: Boolean = false,
 ) {
     val orderId: Long = order.id
 }
