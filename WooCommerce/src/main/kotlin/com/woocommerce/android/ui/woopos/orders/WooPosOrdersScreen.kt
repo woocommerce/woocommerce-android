@@ -135,21 +135,17 @@ fun WooPosOrdersScreen(
     var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
     val detailPaneIssueRefundHandler = remember { WooPosDetailPaneIssueRefundHandler() }
     val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
-        when (event) {
-            is WooPosOrdersUIEvent.OrderActionClicked -> when (val action = event.action) {
-                is WooPosOrdersState.OrderAction.IssueRefund -> {
-                    detailPaneIssueRefundInstanceId += 1
-                    detailPaneIssueRefundOrderId = action.orderId
-                    detailPaneIssueRefundDismissRequestToken = 0
-                    detailPaneIssueRefundHasPendingChanges = false
-                    pendingOrderSelectionAfterRefundDismiss = null
-                    pendingOrderSelectionConfirmation = null
-                }
-                is WooPosOrdersState.OrderAction.EmailReceipt ->
-                    detailViewModel.onEmailReceiptClicked(action.orderId)
-            }
-            is WooPosOrdersUIEvent.ViewRefundDetailsClicked ->
-                detailViewModel.onViewRefundDetailsClicked(event.refundIndex)
+        val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
+            ?.action as? WooPosOrdersState.OrderAction.IssueRefund
+        if (issueRefundAction != null) {
+            detailPaneIssueRefundInstanceId += 1
+            detailPaneIssueRefundOrderId = issueRefundAction.orderId
+            detailPaneIssueRefundDismissRequestToken = 0
+            detailPaneIssueRefundHasPendingChanges = false
+            pendingOrderSelectionAfterRefundDismiss = null
+            pendingOrderSelectionConfirmation = null
+        } else {
+            detailViewModel.onUIEvent(event)
         }
     }
 

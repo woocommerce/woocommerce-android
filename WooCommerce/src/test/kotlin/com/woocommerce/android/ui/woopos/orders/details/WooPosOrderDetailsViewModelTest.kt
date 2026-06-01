@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -215,7 +216,7 @@ class WooPosOrderDetailsViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onEmailReceiptClicked(orderId = 1L)
+        viewModel.onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(OrderAction.EmailReceipt(orderId = 1L)))
         advanceUntilIdle()
 
         // THEN
