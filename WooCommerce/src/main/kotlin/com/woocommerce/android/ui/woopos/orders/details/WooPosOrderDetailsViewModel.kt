@@ -13,11 +13,9 @@ import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -132,20 +130,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onUIEvent(event: WooPosOrdersUIEvent) {
-        when (event) {
-            is WooPosOrdersUIEvent.OrderActionClicked -> handleActionClicked(event.action)
-            is WooPosOrdersUIEvent.ViewRefundDetailsClicked -> onViewRefundDetailsClicked(event.refundIndex)
-        }
-    }
-
-    private fun handleActionClicked(action: OrderAction) {
-        when (action) {
-            is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is OrderAction.IssueRefund -> Unit
-        }
-    }
-    private fun onEmailReceiptButtonClicked(orderId: Long) {
+    fun onEmailReceiptClicked(orderId: Long) {
         viewModelScope.launch {
             ordersAnalyticsTracker.trackOrderDetailsEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(ToEmailReceipt(orderId))
@@ -167,7 +152,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         refreshSelectedOrder()
     }
 
-    private fun onViewRefundDetailsClicked(refundIndex: Int) {
+    fun onViewRefundDetailsClicked(refundIndex: Int) {
         val cached = cachedRefundData ?: return
         val rowData = cached.rows.getOrNull(refundIndex) ?: return
         val order = cached.order
