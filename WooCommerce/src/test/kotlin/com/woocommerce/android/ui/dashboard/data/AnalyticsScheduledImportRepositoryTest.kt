@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,46 +27,53 @@ class AnalyticsScheduledImportRepositoryTest {
     )
 
     @Test
-    fun `when setting is enabled, then isEnabled returns true`() = runTest {
+    fun `when the cached setting is enabled, then observeIsEnabled emits true`() = runTest {
+        whenever(wooCommerceStore.observeAnalyticsScheduledImportEnabled(site)).thenReturn(flowOf(true))
+
+        val result = repository.observeIsEnabled().first()
+
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun `when the cached setting is disabled, then observeIsEnabled emits false`() = runTest {
+        whenever(wooCommerceStore.observeAnalyticsScheduledImportEnabled(site)).thenReturn(flowOf(false))
+
+        val result = repository.observeIsEnabled().first()
+
+        assertThat(result).isFalse
+    }
+
+    @Test
+    fun `when the value is not cached, then observeIsEnabled emits false`() = runTest {
+        whenever(wooCommerceStore.observeAnalyticsScheduledImportEnabled(site)).thenReturn(flowOf(null))
+
+        val result = repository.observeIsEnabled().first()
+
+        assertThat(result).isFalse
+    }
+
+    @Test
+    fun `when refresh succeeds, then it returns the fetched value`() = runTest {
         whenever(wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooResult(true))
 
-        val result = repository.isEnabled()
+        val result = repository.refresh()
 
         assertThat(result.isError).isFalse
         assertThat(result.model).isTrue
     }
 
     @Test
-    fun `when setting is disabled, then isEnabled returns false`() = runTest {
-        whenever(wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooResult(false))
-
-        val result = repository.isEnabled()
-
-        assertThat(result.isError).isFalse
-        assertThat(result.model).isFalse
-    }
-
-    @Test
-    fun `when fetch fails, then isEnabled propagates the error`() = runTest {
+    fun `when refresh fails, then it propagates the error`() = runTest {
         whenever(wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(getFailureWooResult())
 
-        val result = repository.isEnabled()
+        val result = repository.refresh()
 
         assertThat(result.isError).isTrue
     }
 
     @Test
-    fun `when enabling the setting succeeds, then setEnabled returns true`() = runTest {
-        whenever(wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, true)).thenReturn(WooResult(true))
-
-        val result = repository.setEnabled(true)
-
-        assertThat(result.isError).isFalse
-        assertThat(result.model).isTrue
-    }
-
-    @Test
-    fun `when disabling the setting succeeds, then setEnabled returns false`() = runTest {
+    fun `when setEnabled succeeds, then it returns the updated value`() = runTest {
         whenever(wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, false)).thenReturn(WooResult(false))
 
         val result = repository.setEnabled(false)
@@ -74,7 +83,7 @@ class AnalyticsScheduledImportRepositoryTest {
     }
 
     @Test
-    fun `when update fails, then setEnabled propagates the error`() = runTest {
+    fun `when setEnabled fails, then it propagates the error`() = runTest {
         whenever(wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, true)).thenReturn(getFailureWooResult())
 
         val result = repository.setEnabled(true)

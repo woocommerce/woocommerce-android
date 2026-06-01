@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.settings.AnalyticsScheduledImportSettingEntity
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
@@ -34,6 +35,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
+import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -64,6 +66,7 @@ open class WooCommerceStore @Inject internal constructor(
     private val sitePluginDao: SitePluginDao,
     private val productSettingsDao: ProductSettingsDao,
     private val settingsDao: SettingsDao,
+    private val analyticsScheduledImportDao: AnalyticsScheduledImportDao,
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
@@ -479,7 +482,20 @@ open class WooCommerceStore @Inject internal constructor(
 
     suspend fun fetchAnalyticsScheduledImportEnabled(site: SiteModel): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsScheduledImportEnabled") {
-            wcCoreRestClient.fetchAnalyticsScheduledImportEnabled(site).asWooResult()
+            val response = wcCoreRestClient.fetchAnalyticsScheduledImportEnabled(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to fetch analytics scheduled import setting for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    cacheAnalyticsScheduledImportEnabled(site, response.result)
+                    WooResult(response.result)
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
         }
     }
 
@@ -488,8 +504,30 @@ open class WooCommerceStore @Inject internal constructor(
         enabled: Boolean
     ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(T.API, this, "updateAnalyticsScheduledImportEnabled") {
-            wcCoreRestClient.updateAnalyticsScheduledImportEnabled(site, enabled).asWooResult()
+            val response = wcCoreRestClient.updateAnalyticsScheduledImportEnabled(site, enabled)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to update analytics scheduled import setting for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    cacheAnalyticsScheduledImportEnabled(site, response.result)
+                    WooResult(response.result)
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
         }
+    }
+
+    fun observeAnalyticsScheduledImportEnabled(site: SiteModel): Flow<Boolean?> =
+        analyticsScheduledImportDao.observeSetting(site.localId()).map { it?.isEnabled }
+
+    private suspend fun cacheAnalyticsScheduledImportEnabled(site: SiteModel, enabled: Boolean) {
+        analyticsScheduledImportDao.insertOrUpdate(
+            AnalyticsScheduledImportSettingEntity(localSiteId = site.localId(), isEnabled = enabled)
+        )
     }
 
     suspend fun fetchPosSettings(site: SiteModel): WooResult<Map<String, String>> {

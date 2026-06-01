@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.wc
 import androidx.test.core.app.ApplicationProvider
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -93,7 +94,8 @@ class WooCommerceStoreTest {
             taxBasedOnDao = taxBasedOnDao,
             sitePluginDao = wpDatabaseRule.db.sitePluginDao(),
             productSettingsDao = wcDatabaseRule.db.productSettingsDao,
-            settingsDao = wcDatabaseRule.db.settingsDao
+            settingsDao = wcDatabaseRule.db.settingsDao,
+            analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -338,7 +340,7 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetch analytics scheduled import enabled succeeds, then the value is returned`() {
+    fun `when fetch analytics scheduled import enabled succeeds, then the value is returned and cached`() {
         runBlocking {
             whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(true))
 
@@ -346,11 +348,14 @@ class WooCommerceStoreTest {
 
             assertThat(result.isError).isFalse
             assertThat(result.model).isTrue
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()?.isEnabled
+            ).isTrue
         }
     }
 
     @Test
-    fun `when fetch analytics scheduled import disabled succeeds, then the value is returned`() {
+    fun `when fetch analytics scheduled import disabled succeeds, then the value is returned and cached`() {
         runBlocking {
             whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(false))
 
@@ -358,11 +363,14 @@ class WooCommerceStoreTest {
 
             assertThat(result.isError).isFalse
             assertThat(result.model).isFalse
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()?.isEnabled
+            ).isFalse
         }
     }
 
     @Test
-    fun `when fetch analytics scheduled import fails, then the error is returned`() {
+    fun `when fetch analytics scheduled import fails, then the error is returned and nothing is cached`() {
         runBlocking {
             whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(error))
 
@@ -370,11 +378,14 @@ class WooCommerceStoreTest {
 
             assertThat(result.isError).isTrue
             assertThat(result.error).isEqualTo(error)
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()
+            ).isNull()
         }
     }
 
     @Test
-    fun `when update analytics scheduled import enabled succeeds, then the value is returned`() {
+    fun `when update analytics scheduled import enabled succeeds, then the value is returned and cached`() {
         runBlocking {
             whenever(wcrestClient.updateAnalyticsScheduledImportEnabled(site, true)).thenReturn(WooPayload(true))
 
@@ -382,11 +393,14 @@ class WooCommerceStoreTest {
 
             assertThat(result.isError).isFalse
             assertThat(result.model).isTrue
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()?.isEnabled
+            ).isTrue
         }
     }
 
     @Test
-    fun `when update analytics scheduled import fails, then the error is returned`() {
+    fun `when update analytics scheduled import fails, then the error is returned and nothing is cached`() {
         runBlocking {
             whenever(wcrestClient.updateAnalyticsScheduledImportEnabled(site, false)).thenReturn(WooPayload(error))
 
@@ -394,6 +408,21 @@ class WooCommerceStoreTest {
 
             assertThat(result.isError).isTrue
             assertThat(result.error).isEqualTo(error)
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()
+            ).isNull()
+        }
+    }
+
+    @Test
+    fun `given a cached scheduled import value, when observed, then the cached value is emitted`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(true))
+            wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            val observed = wooCommerceStore.observeAnalyticsScheduledImportEnabled(site).first()
+
+            assertThat(observed).isTrue
         }
     }
 
