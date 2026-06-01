@@ -1,3 +1,6 @@
 RELEASE-NOTES.txt merge=union
 
+fastlane/ai_translation/baseline/** linguist-generated=true
+fastlane/ai_translation/translation-manifest.json linguist-generated=true
+
 .configure-files/*.enc binary

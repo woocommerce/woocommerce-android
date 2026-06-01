@@ -9,7 +9,24 @@ manifest_pr_checker.check_gemfile_lock_updated
 
 android_release_checker.check_release_notes_and_play_store_strings
 
-android_strings_checker.check_strings_do_not_refer_resource
+android_strings_checker_message = [
+  [
+    'This PR adds a translatable entry which references another string resource;',
+    'this usually causes issues with translations.'
+  ].join(' '),
+  'Please make sure to set the `translatable="false"` attribute.'
+].join("\n")
+
+git_utils.check_added_diff_lines(
+  file_selector: lambda { |path|
+    File.basename(path) == 'strings.xml' &&
+      !path.start_with?('fastlane/ai_translation/baseline/')
+  },
+  line_matcher: lambda { |line|
+    line.include?('@string/') && !line.include?('translatable="false"')
+  },
+  message: android_strings_checker_message
+)
 
 # skip remaining checks if we're in a release-process PR
 if github.pr_labels.include?('Releases')

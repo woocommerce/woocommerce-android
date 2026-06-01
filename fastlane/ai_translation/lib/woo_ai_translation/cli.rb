@@ -79,7 +79,8 @@ module WooAiTranslation
       # AI), then AI-fill only the gaps + the new locales.
       if opts[:mode] == 'backfill'
         Importer.new(source_path: opts[:source], res_dir: opts[:res_dir],
-                     manifest: manifest, context: context, logger: logger)
+                     manifest: manifest, context: context, baseline_dir: opts[:baseline_dir],
+                     logger: logger)
                 .import(locales: opts[:locales])
       end
 
@@ -91,7 +92,8 @@ module WooAiTranslation
     def run_import(opts, manifest, context, logger)
       reports = Importer.new(
         source_path: opts[:source], res_dir: opts[:res_dir],
-        manifest: manifest, context: context, logger: logger
+        manifest: manifest, context: context, baseline_dir: opts[:baseline_dir],
+        logger: logger
       ).import(locales: opts[:locales])
       manifest.save(opts[:manifest])
       reports.each { |r| warn("[ai_translate] import #{r.locale}: imported=#{r.imported} gaps=#{r.gaps}") }
