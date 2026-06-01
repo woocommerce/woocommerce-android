@@ -26,7 +26,6 @@ import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificati
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.aiassistant.AIAssistantEligibilityChecker
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
@@ -68,15 +67,13 @@ class DashboardViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
-    dashboardRepository: DashboardRepository,
+    private val dashboardRepository: DashboardRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
-    private val aiAssistantEligibilityChecker: AIAssistantEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        private const val AI_ASSISTANT_TRACKING_TYPE = "ai_assistant"
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
             SelectionType.TODAY,
             SelectionType.WEEK_TO_DATE,
@@ -111,10 +108,9 @@ class DashboardViewModel @Inject constructor(
     private val dashboardWidgets = combine(
         dashboardRepository.widgets,
         dashboardRepository.hasNewWidgets,
-        feedbackPrefs.userFeedbackIsDueObservable,
-        aiAssistantEligibilityChecker.observeEligibility()
-    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue, isAiAssistantEligible ->
-        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue, isAiAssistantEligible)
+        feedbackPrefs.userFeedbackIsDueObservable
+    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue ->
+        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue)
     }
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
@@ -152,6 +148,13 @@ class DashboardViewModel @Inject constructor(
         }
 
         updateShareStoreButtonVisibility()
+        insertAIAssistantWidgetByDefault()
+    }
+
+    private fun insertAIAssistantWidgetByDefault() {
+        launch {
+            dashboardRepository.insertAIAssistantWidgetAtTopIfMissing()
+        }
     }
 
     private fun updateShareStoreButtonVisibility() {
@@ -239,16 +242,8 @@ class DashboardViewModel @Inject constructor(
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
         hasNewWidgets: Boolean,
-        userFeedbackIsDue: Boolean,
-        isAiAssistantEligible: Boolean
+        userFeedbackIsDue: Boolean
     ): List<DashboardWidgetUiModel> = buildList {
-        add(
-            DashboardWidgetUiModel.AIAssistantEntry(
-                isVisible = isAiAssistantEligible,
-                onClick = ::onAiAssistantCardClicked
-            )
-        )
-
         addAll(
             widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
         )
@@ -302,8 +297,8 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    private fun onAiAssistantCardClicked() {
-        trackCardInteracted(AI_ASSISTANT_TRACKING_TYPE)
+    fun onAiAssistantCardClicked() {
+        trackCardInteracted(DashboardWidget.Type.AI_ASSISTANT.trackingIdentifier)
         triggerEvent(DashboardEvent.OpenAiAssistant)
     }
 
@@ -350,11 +345,6 @@ class DashboardViewModel @Inject constructor(
             override val isVisible: Boolean
                 get() = widget.isVisible
         }
-
-        data class AIAssistantEntry(
-            override val isVisible: Boolean,
-            val onClick: () -> Unit
-        ) : DashboardWidgetUiModel
 
         data class ShareStoreWidget(
             override val isVisible: Boolean,

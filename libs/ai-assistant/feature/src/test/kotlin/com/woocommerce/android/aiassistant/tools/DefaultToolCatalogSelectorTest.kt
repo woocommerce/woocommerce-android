@@ -68,7 +68,6 @@ class DefaultToolCatalogSelectorTest {
             "product_variations_update",
             "customers_list",
         )
-        assertThat(snapshot.tools.map { it.name }).doesNotContain("analytics_revenue")
     }
 
     @Test
@@ -86,7 +85,6 @@ class DefaultToolCatalogSelectorTest {
             "analytics_orders",
             "show_cards",
         )
-        assertThat(snapshot.tools.map { it.name }).doesNotContain("analytics_revenue")
     }
 
     @Test
@@ -100,7 +98,6 @@ class DefaultToolCatalogSelectorTest {
             "analytics_orders",
             "show_cards",
         )
-        assertThat(snapshot.tools.map { it.name }).doesNotContain("analytics_revenue")
     }
 
     @Test

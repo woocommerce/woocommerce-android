@@ -72,6 +72,7 @@
 
 /payments/connection_tokens
 /payments/orders/<id>/capture_terminal_payment
+/payments/orders/<id>/prepare_terminal_payment
 /payments/accounts
 /payments/charges/<charge_id>#String/
 
@@ -144,3 +145,4 @@
 
 /push-tokens
 /push-tokens/<id>
+/preferences

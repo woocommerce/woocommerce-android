@@ -1,50 +1,245 @@
 package com.woocommerce.android.ui.aisupportchat
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
+import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.composeView
-import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class AiSupportChatFragment : Fragment() {
+class AiSupportChatFragment : Fragment(), MenuProvider {
+    private val viewModel: AiSupportChatViewModel by viewModels()
+    private var progressDialog: CustomProgressDialog? = null
+    private var contactSupportMenuItem: MenuItem? = null
+    private var markResolvedMenuItem: MenuItem? = null
+
+    @Inject lateinit var zendeskSettings: ZendeskSettings
+
+    @Inject lateinit var zendeskTicketRepository: ZendeskTicketRepository
+
+    @Inject lateinit var selectedSite: SelectedSite
+
+    @Inject lateinit var analyticsTracker: AiSupportChatAnalyticsTracker
+
+    private val supportRequestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            viewModel.onSupportTicketCreated()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         composeView {
-            AiSupportChatPlaceholderScreen()
+            AiSupportChatScreen(
+                viewModel = viewModel,
+                onContactSupportClicked = ::onContactSupportClicked
+            )
         }
-}
 
-@Composable
-private fun AiSupportChatPlaceholderScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(R.string.ai_support_chat_placeholder),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        zendeskSettings.setup(context = requireContext())
+        setupContactSupportToolbarAction()
+        observeViewState()
+        observeViewEvents()
+        viewModel.onLaunchModeLoaded(AiSupportChatActivity.launchModeFrom(requireActivity().intent))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        contactSupportMenuItem = null
+        markResolvedMenuItem = null
+        hideProgressDialog()
+    }
+
+    private fun setupContactSupportToolbarAction() {
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_ai_support_chat, menu)
+        contactSupportMenuItem = menu.findItem(R.id.menu_contact_support)
+        markResolvedMenuItem = menu.findItem(R.id.menu_mark_resolved)
+        contactSupportMenuItem?.isVisible = viewModel.viewState.value.canContactHumanSupportFromToolbar
+        markResolvedMenuItem?.isVisible = viewModel.viewState.value.shouldShowResolvedButton
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.menu_contact_support -> {
+                onContactSupportClicked(HumanSupportContactSource.TOOLBAR)
+                return true
+            }
+            R.id.menu_mark_resolved -> {
+                viewModel.onMarkResolvedClicked()
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private fun onContactSupportClicked(source: HumanSupportContactSource) {
+        zendeskSettings.refreshIdentity()
+        viewModel.onContactSupportClicked(
+            source = source,
+            canCreateTicketDirectly = zendeskSettings.isIdentitySet
         )
     }
-}
 
-@LightDarkThemePreviews
-@Composable
-private fun AiSupportChatPlaceholderScreenPreview() {
-    WooThemeWithBackground {
-        AiSupportChatPlaceholderScreen()
+    private fun observeViewState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.viewState.collect { state ->
+                    contactSupportMenuItem?.isVisible = state.canContactHumanSupportFromToolbar
+                    markResolvedMenuItem?.isVisible = state.shouldShowResolvedButton
+                }
+            }
+        }
     }
+
+    private fun observeViewEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ContactHumanSupport -> handleContactHumanSupport(event)
+                OpenAppNotificationSettings -> WooPermissionUtils.showAppNotificationSettings(
+                    context = requireContext(),
+                    openInNewStack = false
+                )
+            }
+        }
+    }
+
+    private fun handleContactHumanSupport(event: ContactHumanSupport) {
+        when (event.mode) {
+            HumanSupportContactMode.DIRECT_CREATE -> showTranscriptConsentDialog(event)
+            HumanSupportContactMode.OPEN_FORM -> openSupportRequestForm(event, includeTranscript = false)
+        }
+    }
+
+    private fun showTranscriptConsentDialog(event: ContactHumanSupport) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.ai_support_chat_escalation_consent_title)
+            .setMessage(R.string.ai_support_chat_escalation_consent_message)
+            .setPositiveButton(R.string.ai_support_chat_escalation_consent_send_request) { _, _ ->
+                createTicketDirectly(event)
+            }
+            .setNeutralButton(R.string.ai_support_chat_escalation_consent_contact_form) { _, _ ->
+                openSupportRequestForm(event, includeTranscript = false)
+            }
+            .show()
+    }
+
+    private fun createTicketDirectly(event: ContactHumanSupport) {
+        showProgressDialog()
+        viewLifecycleOwner.lifecycleScope.launch {
+            zendeskTicketRepository.createRequest(
+                context = requireContext(),
+                origin = HelpOrigin.AI_TROUBLESHOOTING,
+                ticketType = requireNotNull(event.ticketType),
+                selectedSite = selectedSite.getIfExists(),
+                subject = requireNotNull(event.subject),
+                description = event.description,
+                extraTags = event.extraTags,
+                siteAddress = event.siteAddress
+            ).collect { result ->
+                hideProgressDialog()
+                result
+                    .onSuccess {
+                        analyticsTracker.trackTicketCreated(
+                            route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
+                            context = event.ticketAnalyticsContext
+                        )
+                        viewModel.onSupportTicketCreated()
+                        showTicketCreatedDialog()
+                    }
+                    .onFailure { error ->
+                        WooLog.e(
+                            WooLog.T.AI,
+                            "Support chat ticket creation failed via direct ticket creation",
+                            error
+                        )
+                        analyticsTracker.trackTicketCreationFailed(
+                            route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
+                            context = event.ticketAnalyticsContext,
+                            error = error
+                        )
+                        openSupportRequestForm(event, includeTranscript = true)
+                    }
+            }
+        }
+    }
+
+    private fun openSupportRequestForm(event: ContactHumanSupport, includeTranscript: Boolean) {
+        supportRequestLauncher.launch(
+            SupportRequestFormActivity.createIntent(
+                context = requireContext(),
+                origin = HelpOrigin.AI_TROUBLESHOOTING,
+                extraTags = ArrayList(event.extraTags),
+                preselectedTicketType = event.ticketType,
+                prefilledSubject = event.subject,
+                prefilledMessage = event.description.takeIf { includeTranscript },
+                prefilledSiteAddress = event.siteAddress,
+                aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext
+            )
+        )
+    }
+
+    private fun showProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(R.string.support_request_loading_title),
+            getString(R.string.support_request_loading_message)
+        ).also {
+            it.isCancelable = false
+            it.show(childFragmentManager, CustomProgressDialog.TAG)
+        }
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
+    }
+
+    private fun showTicketCreatedDialog() {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.support_request_success_title,
+            messageId = R.string.support_request_success_message,
+            positiveButtonId = R.string.support_request_dialog_action,
+            posBtnAction = { _, _ -> requireActivity().finish() }
+        )
+    }
+
+    private val ContactHumanSupport.description: String
+        get() = listOf(getString(R.string.ai_support_chat_escalation_transcript_header), transcript)
+            .filter { it.isNotBlank() }
+            .joinToString(separator = "\n\n")
+
+    private val ContactHumanSupport.subject: String?
+        get() = subjectResId?.let { getString(it) }
 }

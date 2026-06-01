@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckU
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
 import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -39,6 +41,7 @@ class TroubleshootConnectionViewModel @Inject constructor(
     private val storeProductsCheck: StoreProductsCheckUseCase,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
+    private val featureFlagRepository: FeatureFlagRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val isAppPasswordSite: Boolean
@@ -61,14 +64,19 @@ class TroubleshootConnectionViewModel @Inject constructor(
     )
 
     val viewState = checksFlow.map { checks ->
+        val areChecksFinished = checks.isFinished()
+        val isAiSupportChatAvailable = isAiSupportChatAvailable()
+
         ViewState(
             checks = checks,
-            shouldDisplaySummary = checks.all { it.status is Success }
+            shouldDisplaySummary = checks.all { it.status is Success },
+            shouldDisplayAiSupportChatButton = areChecksFinished && isAiSupportChatAvailable,
+            shouldDisplayContactSupportButton = areChecksFinished && !isAiSupportChatAvailable
         )
     }.distinctUntilChanged().asLiveData()
 
     val isCheckFinished = checksFlow.map { checks ->
-        checks.any { it.status is Failure } || checks.all { it.status is Success }
+        checks.isFinished()
     }.distinctUntilChanged().asLiveData()
 
     private val _technicalDetailsToShow = MutableStateFlow<String?>(null)
@@ -92,6 +100,11 @@ class TroubleshootConnectionViewModel @Inject constructor(
     fun onContactSupportClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
         triggerEvent(OpenSupportRequest(diagnosticLog = generateDiagnosticLog()))
+    }
+
+    fun onAiSupportChatClicked() {
+        if (!checksFlow.value.isFinished() || !isAiSupportChatAvailable()) return
+        triggerEvent(OpenAiSupportChat(checks = checksFlow.value))
     }
 
     fun onReturnClicked() {
@@ -190,12 +203,21 @@ class TroubleshootConnectionViewModel @Inject constructor(
         }.trimEnd()
     }
 
+    private fun isAiSupportChatAvailable(): Boolean =
+        featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)
+
+    private fun List<ConnectivityCheckCardData>.isFinished(): Boolean =
+        any { it.status is Failure } || all { it.status is Success }
+
     data class OpenSupportRequest(val diagnosticLog: String?) : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
+    data class OpenAiSupportChat(val checks: List<ConnectivityCheckCardData>) : MultiLiveEvent.Event()
 
     data class ViewState(
         val checks: List<ConnectivityCheckCardData>,
-        val shouldDisplaySummary: Boolean
+        val shouldDisplaySummary: Boolean,
+        val shouldDisplayAiSupportChatButton: Boolean,
+        val shouldDisplayContactSupportButton: Boolean
     )
 
     companion object {

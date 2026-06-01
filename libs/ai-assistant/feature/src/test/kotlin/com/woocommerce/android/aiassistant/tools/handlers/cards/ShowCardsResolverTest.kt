@@ -142,18 +142,23 @@ class ShowCardsResolverTest {
         runTest {
             whenever(variationsDataSource.getVariation(productId = 100L, variationId = 10L))
                 .thenReturn(Result.success(variation(productId = 100L, variationId = 10L)))
+            whenever(productsDataSource.getProduct(100L)).thenReturn(Result.success(product(100L, name = "Woo socks")))
 
             val result = resolver.resolve(listOf(ref(ShowCardFamily.Variation, "100/10")))
 
             verify(variationsDataSource).getVariation(productId = 100L, variationId = 10L)
+            verify(productsDataSource).getProduct(100L)
             val resolved = result.single() as ShowCardsResolution.Resolved
             assertThat(resolved.card.id).isEqualTo("100/10")
+            assertThat(resolved.card.title).isEqualTo("Size: M \u2022 Color: Blue")
+            assertThat(resolved.card.title).isNotEqualTo("Variation 10")
             assertThat(resolved.summaryJson().getValue("id").jsonPrimitive.content).isEqualTo("100/10")
             assertThat(resolved.summaryJson().getValue("product_id").jsonPrimitive.content).isEqualTo("100")
             assertThat(resolved.summaryJson().getValue("variation_id").jsonPrimitive.content).isEqualTo("10")
             val details = resolved.card.details as ShowCardDetails.Variation
             assertThat(details.productId).isEqualTo(100L)
             assertThat(details.variationId).isEqualTo(10L)
+            assertThat(details.parentProductName).isEqualTo("Woo socks")
             assertThat(details.sku).isEqualTo("woo-socks-blue")
             assertThat(details.price).isEqualTo("12.99")
             assertThat(details.stockStatus).isEqualTo("instock")
@@ -161,6 +166,21 @@ class ShowCardsResolverTest {
             assertThat(details.imageUrl).isEqualTo(PRODUCT_IMAGE_URL)
             assertThat(details.attributes.map { it.name }).containsExactly("Size", "Color")
             assertThat(details.attributes.map { it.option }).containsExactly("M", "Blue")
+        }
+
+    @Test
+    fun `given parent product fetch fails, when variation is resolved, then variation card is still returned`() =
+        runTest {
+            whenever(variationsDataSource.getVariation(productId = 100L, variationId = 10L))
+                .thenReturn(Result.success(variation(productId = 100L, variationId = 10L)))
+            whenever(productsDataSource.getProduct(100L)).thenReturn(Result.failure(IllegalStateException("network")))
+
+            val result = resolver.resolve(listOf(ref(ShowCardFamily.Variation, "100/10")))
+
+            val resolved = result.single() as ShowCardsResolution.Resolved
+            val details = resolved.card.details as ShowCardDetails.Variation
+            assertThat(details.parentProductName).isNull()
+            assertThat(resolved.card.title).isEqualTo("Size: M \u2022 Color: Blue")
         }
 
     @Test

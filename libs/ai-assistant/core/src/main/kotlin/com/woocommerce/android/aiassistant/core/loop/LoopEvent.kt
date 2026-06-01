@@ -10,7 +10,12 @@ import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 sealed interface LoopEvent {
     data class AssistantTextDelta(val text: String) : LoopEvent
     data class ToolCallStarted(val call: ToolCall) : LoopEvent
-    data class ToolCallFinished(val result: ToolResult) : LoopEvent
+    data class ToolCallFinished(
+        val result: ToolResult,
+        val toolName: String,
+        val decision: ToolDecision,
+        val durationMs: Long?,
+    ) : LoopEvent
     data class ConfirmationRequested(val request: ConfirmationRequest) : LoopEvent
     data class ConfirmationResolved(val result: ConfirmationResult) : LoopEvent
     data class Failed(val error: AssistantError) : LoopEvent

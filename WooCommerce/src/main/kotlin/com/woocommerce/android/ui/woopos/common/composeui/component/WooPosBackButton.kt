@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 @Composable
 fun WooPosBackButton(
     modifier: Modifier = Modifier,
+    @DrawableRes iconRes: Int = R.drawable.ic_back_24dp,
     contentDescription: String = stringResource(R.string.woopos_toolbar_icon_content_description),
     iconModifier: Modifier = Modifier.size(28.dp.toAdaptiveIconSize()),
     onClick: () -> Unit
@@ -28,7 +30,7 @@ fun WooPosBackButton(
         modifier = modifier.size(WooPosIconSize.XLarge.value)
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
+            imageVector = ImageVector.vectorResource(iconRes),
             contentDescription = contentDescription,
             tint = MaterialTheme.colorScheme.onSurface,
             modifier = iconModifier

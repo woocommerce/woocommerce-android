@@ -2,6 +2,7 @@ package com.woocommerce.android.aiassistant.core.headless
 
 import com.woocommerce.android.aiassistant.core.chat.AssistantEvent
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
+import com.woocommerce.android.aiassistant.core.chat.ChatStreamError
 import com.woocommerce.android.aiassistant.core.chat.FinishReason
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
@@ -21,6 +22,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import kotlin.time.TimeSource
 
 class WooAssistantHeadlessTest {
     private val json = Json {
@@ -147,8 +149,46 @@ class WooAssistantHeadlessTest {
             assertThat(turn.outcome).isEqualTo(LoopOutcome.STOPPED)
             assertThat(turn.confirmationResults.single().decision).isEqualTo("CANCELLED")
             assertThat(turn.errors).isEmpty()
-            assertThat(turn.toolCalls).isEmpty()
+            assertThat(turn.toolCalls).containsExactly(
+                HeadlessToolCallTrace(
+                    id = "call_1",
+                    name = "orders_update",
+                    arguments = buildJsonObject {
+                        put("id", 42)
+                        put("status", "completed")
+                    },
+                    safetyLevel = ToolSafetyLevel.UNSAFE,
+                    resultKind = HeadlessToolResultKind.REJECTED_BY_SAFETY,
+                )
+            )
             assertThat(registry.calls).isEmpty()
+        }
+
+    @Test
+    fun `given stream failure is stored on finished event, when running scenario, then result captures error`() =
+        runTest {
+            val toolDescriptor = toolDescriptor("orders_list", ToolSafetyLevel.SAFE)
+            val registry = RecordingHeadlessToolRegistry(
+                descriptors = listOf(toolDescriptor),
+                results = emptyMap(),
+            )
+            val harness = harness(
+                responses = listOf(listOf(AssistantEvent.Failed(ChatStreamError.RATE_LIMIT))),
+                registry = registry,
+            )
+
+            val result = harness.runScenario(
+                scenario = scenario(
+                    id = "rate-limited",
+                    userMessage = "latest orders",
+                    toolDescriptor = toolDescriptor,
+                )
+            )
+
+            val turn = result.turns.single()
+            assertThat(turn.outcome).isEqualTo(LoopOutcome.FAILED)
+            assertThat(turn.errors).containsExactly("RATE_LIMIT")
+            assertThat(turn.assistantText).isEmpty()
         }
 
     private fun toolDescriptor(
@@ -209,6 +249,7 @@ class WooAssistantHeadlessTest {
         retryPolicy = ConservativeRetryPolicy,
         historyBudgeter = passThroughBudgeter(),
         json = json,
+        timeSource = TimeSource.Monotonic,
         safetyOrchestrator = safetyOrchestrator,
     )
 
@@ -218,7 +259,12 @@ class WooAssistantHeadlessTest {
         toolDescriptor: ToolDescriptor,
     ) = HeadlessScenario(
         id = id,
-        turns = listOf(HeadlessTurnSpec(userMessage = userMessage)),
+        turns = listOf(
+            HeadlessTurnSpec(
+                userMessage = userMessage,
+                hardChecks = emptyList(),
+            )
+        ),
         initialHistory = listOf(AssistantMessage.System("You are a helpful commerce assistant.")),
         context = SessionContext(
             siteId = 1L,

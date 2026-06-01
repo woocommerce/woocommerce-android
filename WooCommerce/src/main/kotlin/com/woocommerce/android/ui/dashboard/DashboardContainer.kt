@@ -45,7 +45,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardCardsState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.AIAssistantEntry
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
@@ -232,13 +231,6 @@ private fun DashboardWidgetCard(
                 modifier = modifier
             )
         }
-
-        is AIAssistantEntry -> {
-            DashboardAIAssistantCard(
-                onClick = it.onClick,
-                modifier = modifier
-            )
-        }
     }
 }
 
@@ -251,6 +243,11 @@ private fun ConfigurableWidgetCard(
     modifier: Modifier
 ) {
     when (widgetUiModel.widget.type) {
+        DashboardWidget.Type.AI_ASSISTANT -> DashboardAIAssistantCard(
+            onClick = dashboardViewModel::onAiAssistantCardClicked,
+            modifier = modifier
+        )
+
         DashboardWidget.Type.PUSH_NOTIFICATIONS -> DashboardPushNotificationsCard(
             onClick = {
                 dashboardViewModel.trackCardInteracted(DashboardWidget.Type.PUSH_NOTIFICATIONS.trackingIdentifier)

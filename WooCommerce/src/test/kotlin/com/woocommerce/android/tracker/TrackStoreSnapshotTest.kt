@@ -324,7 +324,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given plugins returned but name doesnt match, when invoke, then track event with not_installed`() =
+    fun `given plugins returned but name doesn't match, when invoke, then track event with not_installed`() =
         testBlocking {
             // GIVEN
             whenever(selectedSite.getIfExists()).thenReturn(selectedSiteModel)

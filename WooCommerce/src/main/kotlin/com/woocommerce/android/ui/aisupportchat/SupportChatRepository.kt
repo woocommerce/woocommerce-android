@@ -26,23 +26,50 @@ class SupportChatRepository @Inject constructor(
         botSlug: String,
         message: String,
         context: JsonObject,
-        chatId: Long? = null
+        chatId: Long? = null,
+        sessionId: String? = null
     ): Result<SupportChatResponse> = withContext(dispatchers.io) {
         val response = if (chatId == null) {
             restClient.sendMessage(botSlug = botSlug, message = message, context = context)
         } else {
-            restClient.sendFollowUpMessage(botSlug = botSlug, chatId = chatId, message = message)
+            restClient.sendFollowUpMessage(
+                botSlug = botSlug,
+                chatId = chatId,
+                sessionId = sessionId,
+                message = message
+            )
         }
         response.toResult()
     }
 
-    suspend fun fetchChat(botSlug: String, chatId: Long): Result<SupportChatResponse> = withContext(dispatchers.io) {
-        restClient.fetchChat(botSlug = botSlug, chatId = chatId).toResult()
+    suspend fun fetchChat(
+        botSlug: String,
+        chatId: Long,
+        sessionId: String?
+    ): Result<SupportChatResponse> = withContext(dispatchers.io) {
+        restClient.fetchChat(botSlug = botSlug, chatId = chatId, sessionId = sessionId).toResult()
+    }
+
+    suspend fun submitFeedback(
+        botSlug: String,
+        chatId: Long,
+        messageId: Long,
+        sessionId: String,
+        upvoted: Boolean
+    ): Result<Unit> = withContext(dispatchers.io) {
+        restClient.submitFeedback(
+            botSlug = botSlug,
+            chatId = chatId,
+            messageId = messageId,
+            sessionId = sessionId,
+            upvoted = upvoted
+        ).toResult()
     }
 
     suspend fun registerChat(
         chatId: Long,
         botSlug: String,
+        sessionId: String?,
         firstUserMessage: String
     ): Unit = withContext(dispatchers.io) {
         val selectedSiteModel = selectedSite.get()
@@ -53,6 +80,9 @@ class SupportChatRepository @Inject constructor(
                 localSiteId = LocalId(selectedSiteModel.id),
                 remoteSiteId = selectedSiteModel.siteId,
                 botSlug = botSlug,
+                sessionId = sessionId,
+                hasCreatedTicket = false,
+                isResolved = false,
                 title = firstUserMessage.trim().take(MAX_TITLE_LENGTH).ifBlank { null },
                 createdAt = now,
                 updatedAt = now
@@ -60,19 +90,31 @@ class SupportChatRepository @Inject constructor(
         )
     }
 
-    suspend fun markChatAsUpdated(chatId: Long): Unit = withContext(dispatchers.io) {
-        bookmarkDao.markAsUpdated(chatId = chatId, updatedAt = currentTimeProvider.currentDate().time)
+    suspend fun markChatAsUpdated(chatId: Long, sessionId: String?): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markAsUpdated(
+            chatId = chatId,
+            sessionId = sessionId,
+            updatedAt = currentTimeProvider.currentDate().time
+        )
     }
 
     suspend fun loadChatHistory(): List<SupportChatBookmark> = withContext(dispatchers.io) {
         bookmarkDao.getForSite(LocalId(selectedSite.get().id)).map { it.toSupportChatBookmark() }
     }
 
+    suspend fun markChatAsTicketCreated(chatId: Long): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markTicketCreated(chatId)
+    }
+
+    suspend fun markChatAsResolved(chatId: Long): Unit = withContext(dispatchers.io) {
+        bookmarkDao.markResolved(chatId)
+    }
+
     suspend fun deleteChat(chatId: Long): Unit = withContext(dispatchers.io) {
         bookmarkDao.delete(chatId)
     }
 
-    private fun Response<SupportChatResponse>.toResult(): Result<SupportChatResponse> =
+    private fun <T> Response<T>.toResult(): Result<T> =
         when (this) {
             is Response.Success -> Result.success(data)
             is Response.Error -> Result.failure(
@@ -89,6 +131,9 @@ class SupportChatRepository @Inject constructor(
             localSiteId = localSiteId,
             remoteSiteId = remoteSiteId,
             botSlug = botSlug,
+            sessionId = sessionId,
+            hasCreatedTicket = hasCreatedTicket,
+            isResolved = isResolved,
             title = title,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -104,6 +149,9 @@ data class SupportChatBookmark(
     val localSiteId: LocalId,
     val remoteSiteId: Long,
     val botSlug: String,
+    val sessionId: String?,
+    val hasCreatedTicket: Boolean,
+    val isResolved: Boolean,
     val title: String?,
     val createdAt: Long,
     val updatedAt: Long

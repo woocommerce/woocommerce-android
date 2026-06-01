@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
-import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsViewModel.NotificationPreference
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.getOrAwaitValue
@@ -24,7 +23,6 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
@@ -62,50 +60,10 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when view is loaded, then all orders preference is selected`() = testBlocking {
+    fun `when view is loaded, then expose currency symbol`() = testBlocking {
         setup()
 
-        assertThat(viewModel.viewState.getOrAwaitValue().notificationPreference)
-            .isEqualTo(NotificationPreference.AllOrders)
-    }
-
-    @Test
-    fun `when notifications switch is changed, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onNotificationsEnabledChanged(false)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().notificationsEnabled).isFalse()
-    }
-
-    @Test
-    fun `when high value preference is selected, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onNotificationPreferenceChanged(NotificationPreference.HighValueOrders)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().notificationPreference)
-            .isEqualTo(NotificationPreference.HighValueOrders)
-    }
-
-    @Test
-    fun `when high value threshold amount is changed, then update state`() = testBlocking {
-        setup()
-
-        viewModel.onThresholdAmountChanged(BigDecimal(750))
-
-        assertThat(viewModel.viewState.getOrAwaitValue().thresholdAmount)
-            .isEqualTo(BigDecimal(750))
-    }
-
-    @Test
-    fun `when high value threshold amount is below minimum, then use minimum amount`() = testBlocking {
-        setup()
-
-        viewModel.onThresholdAmountChanged(BigDecimal.ZERO)
-
-        assertThat(viewModel.viewState.getOrAwaitValue().thresholdAmount)
-            .isEqualTo(BigDecimal.ONE)
+        assertThat(viewModel.viewState.getOrAwaitValue().currencySymbol).isEqualTo("$")
     }
 
     @Test

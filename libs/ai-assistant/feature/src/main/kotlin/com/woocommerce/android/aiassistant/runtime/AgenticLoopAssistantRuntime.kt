@@ -1,31 +1,40 @@
 package com.woocommerce.android.aiassistant.runtime
 
+import com.automattic.eventhorizon.AiAssistantErrorKindValue
+import com.automattic.eventhorizon.AiAssistantToolStatusValue
 import com.woocommerce.android.aiassistant.config.AssistantSystemPromptProvider
 import com.woocommerce.android.aiassistant.core.chat.AssistantError
 import com.woocommerce.android.aiassistant.core.chat.AssistantMessage
 import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
 import com.woocommerce.android.aiassistant.core.chat.ToolRegistry
 import com.woocommerce.android.aiassistant.core.chat.ToolResult
 import com.woocommerce.android.aiassistant.core.loop.AgenticLoop
 import com.woocommerce.android.aiassistant.core.loop.LoopEvent
 import com.woocommerce.android.aiassistant.core.loop.SessionContext
 import com.woocommerce.android.aiassistant.core.loop.ToolCatalogSelector
+import com.woocommerce.android.aiassistant.core.loop.ToolDecision
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationRequest
 import com.woocommerce.android.aiassistant.core.safety.ConfirmationResult
 import com.woocommerce.android.aiassistant.core.safety.SafetyOrchestrator
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewContext
+import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewProviderRegistry
 import com.woocommerce.android.aiassistant.safety.ConfirmationPreviewRenderer
-import com.woocommerce.android.aiassistant.safety.ConfirmationSnapshot
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationPreviewBuilder
-import com.woocommerce.android.aiassistant.safety.WooCommerceConfirmationSnapshotResolver
-import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetry
-import com.woocommerce.android.aiassistant.telemetry.toAssistantTelemetryEvent
+import com.woocommerce.android.aiassistant.telemetry.AssistantTelemetryContext
+import com.woocommerce.android.aiassistant.telemetry.ShowCardsCounts
+import com.woocommerce.android.aiassistant.telemetry.ShowCardsTelemetryReducer
 import com.woocommerce.android.aiassistant.tools.handlers.cards.SHOW_CARDS_TOOL_NAME
+import com.woocommerce.android.aiassistant.tools.handlers.cards.ShowCardsStructured
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCard
 import com.woocommerce.android.aiassistant.ui.AssistantConfirmationCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardUiStructuredParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
 import javax.inject.Inject
 
 internal class AgenticLoopAssistantRuntime @Inject constructor(
@@ -33,12 +42,11 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
     private val toolRegistry: ToolRegistry,
     private val toolCatalogSelector: ToolCatalogSelector,
     private val safetyOrchestrator: SafetyOrchestrator,
-    private val confirmationPreviewBuilder: WooCommerceConfirmationPreviewBuilder,
+    private val confirmationPreviewProviderRegistry: ConfirmationPreviewProviderRegistry,
     private val confirmationPreviewRenderer: ConfirmationPreviewRenderer,
-    private val confirmationSnapshotResolver: WooCommerceConfirmationSnapshotResolver,
     private val cardParser: AssistantCardUiStructuredParser,
     private val systemPromptProvider: AssistantSystemPromptProvider,
-    private val assistantTelemetry: AssistantTelemetry,
+    @AiAssistantJson private val json: Json,
 ) : AssistantRuntime {
 
     override fun startTurn(request: AssistantTurnRequest): Flow<AssistantRuntimeEvent> = runTurn(request)
@@ -75,18 +83,17 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     AssistantRuntimeEvent.AssistantTextDelta(event.text)
                 )
                 is LoopEvent.ConfirmationRequested -> {
-                    val snapshot = confirmationSnapshotResolver.resolve(event.request)
+                    val descriptor = context.catalogSnapshot.tools
+                        .firstOrNull { it.name == event.request.toolName }
+                        ?: event.request.toFallbackDescriptor()
                     emit(
                         AssistantRuntimeEvent.AwaitingConfirmation(
-                            event.request.toConfirmationCard(snapshot)
+                            event.request.toConfirmationCard(descriptor)
                         )
                     )
                 }
                 is LoopEvent.Finished -> {
                     val error = event.error ?: pendingError
-                    if (error != null) {
-                        assistantTelemetry.trackAssistantError(error.toAssistantTelemetryEvent())
-                    }
                     emit(
                         AssistantRuntimeEvent.Finished(
                             outcome = event.outcome,
@@ -108,8 +115,8 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                     emit(event.toRuntimeEvent(toolNamesById))
                 }
                 is LoopEvent.ToolCallFinished -> {
-                    val toolName = toolNamesById.remove(event.result.toolCallId)
-                    event.result.toRuntimeEvents(toolName).forEach { emit(it) }
+                    val fallbackToolName = toolNamesById.remove(event.result.toolCallId)
+                    event.toRuntimeEvents(request.telemetryContext, fallbackToolName).forEach { emit(it) }
                 }
             }
         }
@@ -128,13 +135,58 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         )
     }
 
-    private fun ToolResult.toRuntimeEvents(toolName: String?): List<AssistantRuntimeEvent> = buildList {
-        add(AssistantRuntimeEvent.ToolCallFinished(toolCallId = toolCallId))
-        val cards = toCards(toolName)
+    private fun LoopEvent.ToolCallFinished.toRuntimeEvents(
+        telemetryContext: AssistantTelemetryContext,
+        fallbackToolName: String?,
+    ): List<AssistantRuntimeEvent> = buildList {
+        val safeToolName = toolName.ifEmpty { fallbackToolName.orEmpty() }
+        val (status, errorKind) = toStatusAndErrorKind()
+        add(
+            AssistantRuntimeEvent.ToolCallFinished(
+                toolCallId = result.toolCallId,
+                toolName = safeToolName,
+                status = status,
+                errorKind = errorKind,
+                durationMs = durationMs,
+                emitTelemetry = decision != ToolDecision.REPLAYED,
+                telemetryContext = telemetryContext,
+            )
+        )
+        val cards = result.toCards(safeToolName)
+        val showCardsCounts = result.toShowCardsCounts(safeToolName)
+        if (showCardsCounts != null) {
+            add(
+                AssistantRuntimeEvent.ShowCardsProcessed(
+                    counts = showCardsCounts,
+                    telemetryContext = telemetryContext,
+                )
+            )
+        }
         if (cards.isNotEmpty()) {
             add(AssistantRuntimeEvent.CardsResolved(cards))
         }
     }
+
+    private fun LoopEvent.ToolCallFinished.toStatusAndErrorKind():
+        Pair<AiAssistantToolStatusValue, AiAssistantErrorKindValue?> =
+        when (decision) {
+            ToolDecision.EXECUTED -> when (result) {
+                is ToolResult.Success -> AiAssistantToolStatusValue.Success to null
+                is ToolResult.ValidationError ->
+                    AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ValidationError
+                is ToolResult.RejectedBySafety ->
+                    AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ValidationError
+                is ToolResult.TransportError ->
+                    AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ServerError
+            }
+            ToolDecision.MALFORMED_ARGUMENTS,
+            ToolDecision.VALIDATION_FAILED,
+            ToolDecision.REJECTED_BY_SAFETY,
+            ToolDecision.CAP_EXCEEDED ->
+                AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ValidationError
+            ToolDecision.HANDLER_FAILED -> AiAssistantToolStatusValue.Failure to AiAssistantErrorKindValue.ServerError
+            ToolDecision.REPLAYED -> AiAssistantToolStatusValue.Success to null
+        }
 
     private fun ToolResult.toCards(toolName: String?): List<AssistantCard> = when {
         toolName == SHOW_CARDS_TOOL_NAME && this is ToolResult.Success ->
@@ -142,7 +194,22 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
         else -> emptyList()
     }
 
-    private fun ConfirmationRequest.toConfirmationCard(snapshot: ConfirmationSnapshot?): AssistantConfirmationCard {
+    private fun ToolResult.toShowCardsCounts(toolName: String?): ShowCardsCounts? = when {
+        toolName != SHOW_CARDS_TOOL_NAME || this !is ToolResult.Success -> null
+        else -> runCatching {
+            ShowCardsTelemetryReducer.reduce(json.decodeFromJsonElement<ShowCardsStructured>(structured))
+        }.getOrNull()
+    }
+
+    private suspend fun ConfirmationRequest.toConfirmationCard(
+        descriptor: ToolDescriptor,
+    ): AssistantConfirmationCard {
+        val preview = confirmationPreviewProviderRegistry.buildPreview(
+            ConfirmationPreviewContext(
+                request = this,
+                descriptor = descriptor,
+            )
+        )
         return AssistantConfirmationCard(
             confirmationId = id,
             toolCall = ToolCall(
@@ -151,7 +218,14 @@ internal class AgenticLoopAssistantRuntime @Inject constructor(
                 arguments = arguments,
             ),
             state = AssistantConfirmationCardState.PENDING,
-            preview = confirmationPreviewRenderer.render(confirmationPreviewBuilder.build(this, snapshot)),
+            preview = confirmationPreviewRenderer.render(preview),
         )
     }
+
+    private fun ConfirmationRequest.toFallbackDescriptor(): ToolDescriptor = ToolDescriptor(
+        name = toolName,
+        description = "",
+        inputSchema = buildJsonObject {},
+        safetyLevel = safetyLevel,
+    )
 }

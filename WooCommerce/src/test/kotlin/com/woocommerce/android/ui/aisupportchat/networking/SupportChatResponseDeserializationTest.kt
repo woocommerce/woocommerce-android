@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.aisupportchat.networking
 
 import com.google.gson.Gson
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaConfidence
+import com.woocommerce.android.ui.aisupportchat.networking.model.SupportAreaType
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatFlags
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatResponse
 import com.woocommerce.android.ui.aisupportchat.networking.model.SupportChatRole
@@ -18,7 +20,7 @@ class SupportChatResponseDeserializationTest {
 
         assertThat(response.chatId).isEqualTo(4242L)
         assertThat(response.sessionId).isEqualTo("session-abc-123")
-        assertThat(response.botSlug).isEqualTo("woo-workflow-support_mobile_inapp")
+        assertThat(response.botSlug).isEqualTo("woo-workflow-support_mobile_inapp_all_users")
         assertThat(response.messages).hasSize(2)
 
         val userMessage = response.messages[0]
@@ -47,6 +49,90 @@ class SupportChatResponseDeserializationTest {
         val flags = requireNotNull(context.flags)
         assertThat(flags.forwardToHumanSupport).isTrue
         assertThat(flags.branch).isEqualTo("escalation")
+    }
+
+    @Test
+    fun `given support area in response, when decoded, then routing metadata is exposed`() {
+        val json = """
+            {
+              "chat_id": 1,
+              "messages": [
+                {
+                  "message_id": 1,
+                  "role": "bot",
+                  "content": "ok",
+                  "context": {
+                    "support_area": {
+                      "area": "card-reader",
+                      "topic": "woo_mobile_issue_card_reader",
+                      "confidence": "high"
+                    }
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = gson.fromJson(json, SupportChatResponse::class.java)
+        val supportArea = requireNotNull(response.messages.single().context?.supportArea)
+
+        assertThat(supportArea.areaType).isEqualTo(SupportAreaType.CARD_READER)
+        assertThat(supportArea.topic).isEqualTo("woo_mobile_issue_card_reader")
+        assertThat(supportArea.confidenceLevel).isEqualTo(SupportAreaConfidence.HIGH)
+        assertThat(supportArea.isHighConfidence).isTrue
+    }
+
+    @Test
+    fun `given is resolved in response, when decoded, then context exposes resolved state`() {
+        val json = """
+            {
+              "chat_id": 1,
+              "messages": [
+                {
+                  "message_id": 1,
+                  "role": "bot",
+                  "content": "ok",
+                  "context": {
+                    "is_resolved": true
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = gson.fromJson(json, SupportChatResponse::class.java)
+        val context = requireNotNull(response.messages.single().context)
+
+        assertThat(context.isResolved).isTrue
+    }
+
+    @Test
+    fun `given unknown support area values, when decoded, then defaults match iOS`() {
+        val json = """
+            {
+              "chat_id": 1,
+              "messages": [
+                {
+                  "message_id": 1,
+                  "role": "bot",
+                  "content": "ok",
+                  "context": {
+                    "support_area": {
+                      "area": "unknown",
+                      "confidence": "unknown"
+                    }
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val response = gson.fromJson(json, SupportChatResponse::class.java)
+        val supportArea = requireNotNull(response.messages.single().context?.supportArea)
+
+        assertThat(supportArea.areaType).isEqualTo(SupportAreaType.MOBILE_APP)
+        assertThat(supportArea.confidenceLevel).isEqualTo(SupportAreaConfidence.LOW)
+        assertThat(supportArea.isHighConfidence).isFalse
     }
 
     @Test

@@ -39,27 +39,34 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsViewModel.StockNotificationType
 import com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.notifications.compose.EnableNotificationsCard
 
 @Composable
-fun NewStockNotificationSettingsScreen(viewModel: NewStockNotificationSettingsViewModel) {
-    viewModel.viewState.observeAsState().value?.let { viewState ->
-        NewStockNotificationSettingsScreen(
-            viewState = viewState,
-            onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
-            onStockNotificationEnabledChanged = viewModel::onStockNotificationEnabledChanged,
-            onEditStoreSettingsClicked = viewModel::onEditStoreSettingsClicked
-        )
-    }
+fun NewStockNotificationSettingsScreen(
+    viewModel: NewStockNotificationSettingsViewModel,
+    sharedViewModel: NotificationSettingsSharedViewModel
+) {
+    val viewState = viewModel.viewState.observeAsState().value ?: return
+    val sharedViewState = sharedViewModel.newStockNotificationSettingsViewState.observeAsState().value ?: return
+    NewStockNotificationSettingsScreen(
+        viewState = viewState,
+        sharedViewState = sharedViewState,
+        onStockNotificationsEnabledChanged = sharedViewModel::onStockNotificationsEnabledChanged,
+        onStockNotificationSubtypeEnabledChanged = sharedViewModel::onStockNotificationSubtypeEnabledChanged,
+        onEditStoreSettingsClicked = viewModel::onEditStoreSettingsClicked
+    )
 }
 
 @Composable
 private fun NewStockNotificationSettingsScreen(
     viewState: ViewState,
-    onNotificationsEnabledChanged: (Boolean) -> Unit,
-    onStockNotificationEnabledChanged: (StockNotificationType, Boolean) -> Unit,
+    sharedViewState: NotificationSettingsSharedViewModel.NewStockNotificationSettingsViewState,
+    onStockNotificationsEnabledChanged: (Boolean) -> Unit,
+    onStockNotificationSubtypeEnabledChanged: (
+        NotificationSettingsSharedViewModel.StockNotificationType,
+        Boolean
+    ) -> Unit,
     onEditStoreSettingsClicked: () -> Unit
 ) {
     Scaffold(
@@ -75,22 +82,25 @@ private fun NewStockNotificationSettingsScreen(
             EnableNotificationsCard(
                 title = stringResource(R.string.settings_notifs_stock_enable_title),
                 description = stringResource(R.string.settings_notifs_stock_enable_description),
-                isEnabled = viewState.notificationsEnabled,
-                onEnabledChanged = onNotificationsEnabledChanged
+                isEnabled = sharedViewState.notificationsEnabled,
+                onEnabledChanged = onStockNotificationsEnabledChanged
             )
             StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_low_stock_title),
                 description = stringResource(R.string.settings_notifs_stock_low_stock_description),
-                checked = viewState.lowStockNotificationsEnabled,
-                enabled = viewState.notificationsEnabled,
+                checked = sharedViewState.lowStockNotificationsEnabled,
+                enabled = sharedViewState.notificationsEnabled,
                 onCheckedChange = {
-                    onStockNotificationEnabledChanged(StockNotificationType.LowStock, it)
+                    onStockNotificationSubtypeEnabledChanged(
+                        NotificationSettingsSharedViewModel.StockNotificationType.LowStock,
+                        it
+                    )
                 }
             ) {
                 LowStockDetails(
                     defaultLowStockThreshold = viewState.defaultLowStockThreshold,
                     isDefaultLowStockThresholdLoading = viewState.isDefaultLowStockThresholdLoading,
-                    enabled = viewState.notificationsEnabled,
+                    enabled = sharedViewState.notificationsEnabled,
                     onEditStoreSettingsClicked = onEditStoreSettingsClicked
                 )
             }
@@ -98,20 +108,26 @@ private fun NewStockNotificationSettingsScreen(
             StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_out_of_stock_title),
                 description = stringResource(R.string.settings_notifs_stock_out_of_stock_description),
-                checked = viewState.outOfStockNotificationsEnabled,
-                enabled = viewState.notificationsEnabled,
+                checked = sharedViewState.outOfStockNotificationsEnabled,
+                enabled = sharedViewState.notificationsEnabled,
                 onCheckedChange = {
-                    onStockNotificationEnabledChanged(StockNotificationType.OutOfStock, it)
+                    onStockNotificationSubtypeEnabledChanged(
+                        NotificationSettingsSharedViewModel.StockNotificationType.OutOfStock,
+                        it
+                    )
                 }
             )
             HorizontalDivider()
             StockNotificationOption(
                 title = stringResource(R.string.settings_notifs_stock_backorder_title),
                 description = stringResource(R.string.settings_notifs_stock_backorder_description),
-                checked = viewState.backorderNotificationsEnabled,
-                enabled = viewState.notificationsEnabled,
+                checked = sharedViewState.backorderNotificationsEnabled,
+                enabled = sharedViewState.notificationsEnabled,
                 onCheckedChange = {
-                    onStockNotificationEnabledChanged(StockNotificationType.Backorder, it)
+                    onStockNotificationSubtypeEnabledChanged(
+                        NotificationSettingsSharedViewModel.StockNotificationType.Backorder,
+                        it
+                    )
                 }
             )
         }
@@ -196,25 +212,27 @@ private fun LowStockDetails(
     }
     val openInNewIconId = "openInNewIcon"
     val textWithIcon = remember(text) {
-        val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
+        val linkRange = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()
         val thresholdPlaceholderStart = text.text.indexOf(LOW_STOCK_THRESHOLD_PLACEHOLDER)
         val thresholdPlaceholderEnd = thresholdPlaceholderStart + LOW_STOCK_THRESHOLD_PLACEHOLDER.length
+        val iconInsertionIndex = linkRange?.end ?: text.length
         buildAnnotatedString {
-            if (thresholdPlaceholderStart >= 0) {
+            if (thresholdPlaceholderStart in 0 until iconInsertionIndex) {
                 append(text.subSequence(0, thresholdPlaceholderStart))
                 appendInlineContent(thresholdPlaceholderId, "[Threshold]")
-                append(text.subSequence(thresholdPlaceholderEnd, text.length))
+                append(text.subSequence(thresholdPlaceholderEnd, iconInsertionIndex))
             } else {
-                append(text)
+                append(text.subSequence(0, iconInsertionIndex))
             }
             append(" ")
-            if (linkAnnotation != null) {
-                pushLink(linkAnnotation)
+            if (linkRange != null) {
+                pushLink(linkRange.item)
                 appendInlineContent(openInNewIconId, "[Icon]")
                 pop()
             } else {
                 appendInlineContent(openInNewIconId, "[Icon]")
             }
+            append(text.subSequence(iconInsertionIndex, text.length))
         }
     }
     val iconColor = MaterialTheme.colorScheme.primary
@@ -272,8 +290,9 @@ private fun NewStockNotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NewStockNotificationSettingsScreen(
             viewState = ViewState(),
-            onNotificationsEnabledChanged = {},
-            onStockNotificationEnabledChanged = { _, _ -> },
+            sharedViewState = NotificationSettingsSharedViewModel.NewStockNotificationSettingsViewState(),
+            onStockNotificationsEnabledChanged = {},
+            onStockNotificationSubtypeEnabledChanged = { _, _ -> },
             onEditStoreSettingsClicked = {}
         )
     }

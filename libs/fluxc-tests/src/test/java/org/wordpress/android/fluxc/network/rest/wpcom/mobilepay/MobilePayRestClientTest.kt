@@ -354,7 +354,8 @@ class MobilePayRestClientTest {
                 body = bodyCaptor.capture(),
                 clazz = eq(CreateOrderResponseType::class.java),
                 retryPolicy = retryPolicyCaptor.capture(),
-                headers = headersCaptor.capture()
+                headers = headersCaptor.capture(),
+                authenticatedRequest = eq(true)
             )
         ).thenReturn(response)
     }

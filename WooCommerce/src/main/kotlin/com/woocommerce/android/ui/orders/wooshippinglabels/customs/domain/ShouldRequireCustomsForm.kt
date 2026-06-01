@@ -23,7 +23,11 @@ class ShouldRequireCustomsForm @Inject constructor() {
     }
 
     private val WooShippingAddresses.isDifferentCountryShipment
-        get() = shipFrom.country != shipTo.address.country.code
+        get() = getEffectiveCustomsCountry(shipFrom.country, shipFrom.state.orEmpty()) !=
+            getEffectiveCustomsCountry(shipTo.address.country.code, shipTo.address.state.codeOrRaw)
+
+    private fun getEffectiveCustomsCountry(country: String, state: String): String =
+        if (country == US_COUNTRY_CODE && state in US_TERRITORY_STATES) state else country
 
     private fun isAddressInMilitaryState(
         countryCode: String,
@@ -33,5 +37,6 @@ class ShouldRequireCustomsForm @Inject constructor() {
     companion object {
         const val US_COUNTRY_CODE = "US"
         val US_MILITARY_STATES = arrayOf("AA", "AE", "AP")
+        val US_TERRITORY_STATES = arrayOf("AS", "GU", "MP", "PR", "VI", "UM")
     }
 }

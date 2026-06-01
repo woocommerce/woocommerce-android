@@ -24,7 +24,7 @@ sealed interface AssistantCard {
     data class Variation(
         val parentProductId: Long,
         val variationId: Long,
-        val name: String,
+        val parentProductName: String,
         val sku: String,
         val price: String,
         val stockStatus: String,

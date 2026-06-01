@@ -43,7 +43,8 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> emptyList()
         }
         val nonRefundedItems = getNonRefundedItems(order, refunds)
-        val lineItems = buildLineItems(order, nonRefundedItems)
+        val lineItems = buildLineItems(order, nonRefundedItems) +
+            buildCustomAmountRows(order, refunds)
         val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
         val actions = orderActionsProvider.getAvailableActions(order)
@@ -80,7 +81,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
         val lineItems = when {
             isFullyRefunded -> LineItemsState.Loaded(emptyList())
             hasPartialRefund -> LineItemsState.Loading
-            else -> LineItemsState.Loaded(buildLineItems(order))
+            else -> LineItemsState.Loaded(buildLineItems(order) + buildCustomAmountRows(order))
         }
         val refundedLineItems = when {
             isFullyRefunded || hasPartialRefund -> LineItemsState.Loading
@@ -134,7 +135,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> emptyList()
         }
         val items = getNonRefundedItems(order, refunds)
-        return buildLineItems(order, items)
+        return buildLineItems(order, items) + buildCustomAmountRows(order, refunds)
     }
 
     suspend fun buildLineItemsForSingleRefund(
@@ -174,6 +175,32 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 )
             }
         }.awaitAll()
+    }
+
+    private fun buildCustomAmountRows(
+        order: Order,
+        refunds: List<Refund> = emptyList()
+    ): List<LineItemRow> {
+        if (order.feesLines.isEmpty()) return emptyList()
+        val refundedFeeIds = refunds.flatMap { it.feeLines }.map { it.id }.toSet()
+        return order.feesLines
+            .filter { it.id !in refundedFeeIds }
+            .map { feeLine ->
+                LineItemRow(
+                    id = feeLine.id,
+                    name = feeLine.name.orEmpty(),
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "",
+                    lineTotal = formatPrice(feeLine.total, order.currency),
+                    imageUrl = null,
+                    isLumpSum = true,
+                    includesTax = when (feeLine.taxStatus) {
+                        Order.FeeLine.FeeLineTaxStatus.TAXABLE -> true
+                        Order.FeeLine.FeeLineTaxStatus.NONE,
+                        Order.FeeLine.FeeLineTaxStatus.UNKNOWN -> false
+                    },
+                )
+            }
     }
 
     private suspend fun buildLineItems(

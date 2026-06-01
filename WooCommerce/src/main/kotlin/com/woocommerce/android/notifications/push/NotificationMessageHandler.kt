@@ -87,6 +87,11 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
+        if (notificationModel.type == NotificationModel.Kind.UNKNOWN) {
+            wooLog.d(NOTIFICATIONS, "Discarding push notification with unknown type")
+            return
+        }
+
         val notification = notificationModel.toAppModel(resourceProvider)
         val notificationSource = messageData.detectNotificationSource(notification.remoteNoteId)
         val pushUserId = messageData[PUSH_ARG_USER]
@@ -316,6 +321,7 @@ class NotificationMessageHandler @Inject constructor(
         val wooTypeSegment = when (noteType) {
             is WooNotificationType.NewOrder -> NotificationModel.Kind.STORE_ORDER.name
             is WooNotificationType.ProductReview -> NotificationModel.Kind.COMMENT.name
+            is WooNotificationType.Stock -> NotificationModel.Kind.STORE_STOCK.name
             else -> null
         }
         return when {

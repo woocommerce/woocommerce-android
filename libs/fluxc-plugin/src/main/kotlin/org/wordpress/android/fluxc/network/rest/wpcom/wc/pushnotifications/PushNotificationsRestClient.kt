@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -12,6 +13,25 @@ import javax.inject.Singleton
 
 @Singleton
 class PushNotificationsRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
+    suspend fun fetchNotificationPreferences(site: SiteModel): WooPayload<WooPushNotificationPreferences> {
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.preferences.pathPushNotifications,
+            clazz = WooPushNotificationPreferences::class.java
+        ).toWooPayload()
+    }
+
+    suspend fun updateNotificationPreferences(
+        site: SiteModel,
+        preferences: WooPushNotificationPreferences
+    ): WooPayload<WooPushNotificationPreferences> {
+        return wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.preferences.pathPushNotifications,
+            clazz = WooPushNotificationPreferences::class.java,
+            body = preferences.toRequestMap()
+        ).toWooPayload()
+    }
 
     suspend fun registerPushToken(
         site: SiteModel,

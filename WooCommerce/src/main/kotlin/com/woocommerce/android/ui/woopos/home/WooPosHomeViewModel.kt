@@ -192,6 +192,10 @@ class WooPosHomeViewModel @Inject constructor(
                         PaymentMethod.CARD
                     )
 
+                    is ChildToParentEvent.OrderSuccessfullyPaidExternally -> onOrderSuccessfullyPaid(
+                        PaymentMethod.EXTERNAL
+                    )
+
                     is ChildToParentEvent.PaymentCollecting -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
@@ -281,6 +285,23 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.ShowCardReaderConnectionDialog -> {
                         _state.value = _state.value.copy(
                             dialogState = DialogState.CardReaderConnectionDialog
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountDialogRequested -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.ShowCustomAmountForm(editing = event.editing)
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountSubmitted -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.CustomAmountSubmitted(
+                                name = event.name,
+                                amount = event.amount,
+                                isTaxable = event.isTaxable,
+                                editingItemNumber = event.editingItemNumber,
+                            )
                         )
                     }
 

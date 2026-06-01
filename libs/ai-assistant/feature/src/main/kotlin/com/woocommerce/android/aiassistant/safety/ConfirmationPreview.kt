@@ -6,12 +6,24 @@ internal data class ConfirmationPreview(
     val message: ConfirmationPreviewText,
     val fields: List<ConfirmationPreviewField> = emptyList(),
     val isBulk: Boolean = false,
+    val bulkEntries: List<ConfirmationBulkEntry> = emptyList(),
 ) {
     val summary: ConfirmationPreviewText
         get() = message
 
     val rows: List<ConfirmationPreviewField>
         get() = fields
+}
+
+data class ConfirmationBulkEntry(
+    val id: Long,
+    val displayName: String? = null,
+) {
+    val displayText: String
+        get() = displayName?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { "#$id  $it" }
+            ?: "#$id"
 }
 
 internal data class ConfirmationPreviewField(

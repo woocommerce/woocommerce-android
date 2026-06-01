@@ -86,9 +86,7 @@ internal class ShowCardsToolHandler internal constructor(
                                     "description",
                                     "Entity id. For variation, use strict {parentProductId}/{variationId}. " +
                                         "For analytics_stats, pass the exact card_id returned by " +
-                                        "analytics_orders. Manual form: " +
-                                        "analytics_orders:after:<YYYY-MM-DD>:before:<YYYY-MM-DD>:" +
-                                        "interval:<hour|day|week|month|year> for analytics_stats.",
+                                        "analytics_orders; do not construct it manually.",
                                 )
                             }
                         }

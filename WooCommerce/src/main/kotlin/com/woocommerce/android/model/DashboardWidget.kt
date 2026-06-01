@@ -26,6 +26,10 @@ data class DashboardWidget(
         val trackingIdentifier: String,
         private val isSupported: Boolean = true,
     ) {
+        AI_ASSISTANT(
+            titleResource = R.string.more_menu_button_ai_assistant,
+            trackingIdentifier = "ai_assistant",
+        ),
         PUSH_NOTIFICATIONS(
             titleResource = R.string.my_store_widget_push_notifications_menu_title,
             trackingIdentifier = "push_notifications"

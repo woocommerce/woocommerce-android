@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
@@ -17,6 +18,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NewOrderNotificationSettingsFragment : BaseFragment() {
     private val viewModel: NewOrderNotificationSettingsViewModel by viewModels()
+    private val sharedViewModel: NotificationSettingsSharedViewModel by hiltNavGraphViewModels(
+        R.id.nav_graph_notification_settings
+    )
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -25,7 +29,10 @@ class NewOrderNotificationSettingsFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            NewOrderNotificationSettingsScreen(viewModel = viewModel)
+            NewOrderNotificationSettingsScreen(
+                viewModel = viewModel,
+                sharedViewModel = sharedViewModel
+            )
         }
     }
 
@@ -36,11 +43,26 @@ class NewOrderNotificationSettingsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshNotificationSettings()
+        sharedViewModel.onNotificationDetailShown(NotificationSettingsSharedViewModel.NotificationType.NEW_ORDERS)
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        sharedViewModel.savePendingNotificationPreferences()
     }
 
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
+                    event.message,
+                    event.actionText,
+                    event.action
+                )
+            }
+        }
+        sharedViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
