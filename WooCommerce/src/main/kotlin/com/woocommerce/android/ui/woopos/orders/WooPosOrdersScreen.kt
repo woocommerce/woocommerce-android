@@ -78,7 +78,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewModel
-import com.woocommerce.android.ui.woopos.orders.details.refund.ISSUE_REFUND_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.orders.details.refund.REFUND_REASON_RESULT_KEY
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundScreen
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
@@ -118,17 +117,6 @@ fun WooPosOrdersScreen(
         }
     }
 
-    val issueRefundDismissed = backStackEntry.savedStateHandle
-        .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
-        .collectAsState()
-
-    LaunchedEffect(issueRefundDismissed.value) {
-        if (issueRefundDismissed.value) {
-            detailViewModel.onBackFromIssueRefund()
-            backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
-        }
-    }
-
     val refundReasonResult = backStackEntry.savedStateHandle
         .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)
         .collectAsState()
@@ -139,12 +127,6 @@ fun WooPosOrdersScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        detailViewModel.navigationEvent.collect { event ->
-            onNavigationEvent(event)
-        }
-    }
-
     var detailPaneIssueRefundOrderId by rememberSaveable { mutableStateOf<Long?>(null) }
     var detailPaneIssueRefundInstanceId by rememberSaveable { mutableIntStateOf(0) }
     var detailPaneIssueRefundDismissRequestToken by rememberSaveable { mutableIntStateOf(0) }
@@ -152,11 +134,10 @@ fun WooPosOrdersScreen(
     var pendingOrderSelectionAfterRefundDismiss by rememberSaveable { mutableStateOf<Long?>(null) }
     var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
     val detailPaneIssueRefundHandler = remember { WooPosDetailPaneIssueRefundHandler() }
-    val shouldOpenIssueRefundInDetailPane = !detailViewModel.isSingleOrderMode
     val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
-        if (shouldOpenIssueRefundInDetailPane && issueRefundAction != null) {
+        if (issueRefundAction != null) {
             detailPaneIssueRefundInstanceId += 1
             detailPaneIssueRefundOrderId = issueRefundAction.orderId
             detailPaneIssueRefundDismissRequestToken = 0
@@ -287,7 +268,20 @@ private fun WooPosOrdersScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (isSingleOrderMode) {
-            when (detailState) {
+            if (detailPaneIssueRefundOrderId != null) {
+                WooPosIssueRefundScreen(
+                    orderId = detailPaneIssueRefundOrderId,
+                    onNavigationEvent = onNavigationEvent,
+                    refundReasonUpdate = refundReasonUpdate,
+                    onDismissed = onIssueRefundDismissed,
+                    viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
+                        detailPaneIssueRefundInstanceId,
+                    dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+                    onPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                    onDismissRequestRejected = onIssueRefundDismissRequestRejected,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else when (detailState) {
                 is WooPosOrderDetailsState.Loaded -> {
                     SingleOrderDetails(detailState = detailState, onUIEvent = onUIEvent)
                 }
@@ -373,7 +367,9 @@ private fun WooPosOrdersScreen(
             }
         }
 
-        if (listState.searchInputState is WooPosSearchInputState.Closed) {
+        if (listState.searchInputState is WooPosSearchInputState.Closed &&
+            !(isSingleOrderMode && detailPaneIssueRefundOrderId != null)
+        ) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (detailState as? WooPosOrderDetailsState.Loaded)
                     ?.details?.number.orEmpty()
@@ -583,7 +579,6 @@ private fun OrdersListWithDetails(
                 orderId = detailPaneIssueRefundOrderId,
                 onNavigationEvent = onNavigationEvent,
                 refundReasonUpdate = refundReasonUpdate,
-                presentModalAsDialog = true,
                 onDismissed = onIssueRefundDismissed,
                 viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
                     detailPaneIssueRefundInstanceId,

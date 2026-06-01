@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -50,7 +49,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -163,8 +161,7 @@ fun WooPosIssueRefundScreen(
     modifier: Modifier = Modifier,
     refundReasonUpdate: String? = null,
     disablePartialRefund: Boolean = false,
-    presentModalAsDialog: Boolean = false,
-    onDismissed: (() -> Unit)? = null,
+    onDismissed: () -> Unit,
     viewModelKey: String = "WooPosRefundViewModel:$orderId",
     dismissRequestToken: Int = 0,
     onPendingChangesChanged: (Boolean) -> Unit = {},
@@ -191,16 +188,7 @@ fun WooPosIssueRefundScreen(
         val dismissed = viewModel.onDismissRequest()
         if (dismissed) {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
-            if (onDismissed != null) {
-                onDismissed()
-            } else {
-                onNavigationEvent(
-                    WooPosNavigationEvent.GoBackWithResult(
-                        key = ISSUE_REFUND_DISMISSED_KEY,
-                        value = true
-                    )
-                )
-            }
+            onDismissed()
         }
         dismissed
     }
@@ -295,43 +283,11 @@ fun WooPosIssueRefundScreen(
             onEvent = viewModel::onUIEvent,
             onNavigationEvent = onNavigationEvent,
             disablePartialRefund = disablePartialRefund,
-            modifier = Modifier
-                .statusBarsPadding()
-                .then(
-                    if (presentModalAsDialog) {
-                        Modifier
-                    } else {
-                        Modifier.navigationBarsPadding()
-                    }
-                )
-                .then(
-                    if (modalState != null && !presentModalAsDialog) {
-                        Modifier.clearAndSetSemantics {}
-                    } else {
-                        Modifier
-                    }
-                ),
+            modifier = Modifier.statusBarsPadding(),
         )
-
-        if (modalState != null && !presentModalAsDialog) {
-            RefundModalLayer(
-                state = modalState,
-                orderId = orderId,
-                onDismiss = { handleDismiss() },
-                onModalBack = handleModalBack,
-                onCancelRefundFlow = handleCancelRefundFlow,
-                closeButtonEnabled = !modalIsProcessing,
-                onEvent = viewModel::onUIEvent,
-                onNavigationEvent = onNavigationEvent,
-                contentInsetsModifier = Modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
-                disablePartialRefund = disablePartialRefund,
-            )
-        }
     }
 
-    if (modalState != null && presentModalAsDialog) {
+    if (modalState != null) {
         Dialog(
             onDismissRequest = {
                 if (!modalIsProcessing) {
