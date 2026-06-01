@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
-import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
+import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
@@ -24,50 +24,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
-import java.math.BigDecimal
 import javax.inject.Inject
-
-interface WooPosRefundSubmissionProcessor {
-    fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState>
-}
-
-data class WooPosRefundSubmissionRequest(
-    val order: Order,
-    val refundAmount: BigDecimal,
-    val refundReason: String,
-    val refundItems: List<RefundRequestItem>,
-    val cardRefundAlreadySucceeded: Boolean = false,
-) {
-    val orderId: Long = order.id
-}
-
-sealed class WooPosRefundSubmissionState {
-    data object Processing : WooPosRefundSubmissionState()
-    data object PreparingReader : WooPosRefundSubmissionState()
-    data object ReaderConnectionRequired : WooPosRefundSubmissionState()
-    data class WaitingForCard(@StringRes val cardReaderHint: Int? = null) : WooPosRefundSubmissionState()
-    data object ProcessingReaderRefund : WooPosRefundSubmissionState()
-    data object NotifyingStore : WooPosRefundSubmissionState()
-    data object Success : WooPosRefundSubmissionState()
-    data class Failure(
-        val message: String,
-        val retryBackendNotificationOnly: Boolean = false,
-        val retryCardRefund: Boolean = false,
-        val canRetry: Boolean = !retryBackendNotificationOnly,
-    ) : WooPosRefundSubmissionState()
-}
 
 private sealed class RefundSubmissionPath {
     data object Interac : RefundSubmissionPath()
     data class Backend(val paymentMethodType: String?) : RefundSubmissionPath()
+    data object PaymentMetadataUnavailable : RefundSubmissionPath()
 }
 
 @Suppress("LongParameterList")
-class WooPosRefundSubmissionProcessorImpl @Inject constructor(
+class WooPosRefundSubmissionProcessor @Inject constructor(
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
     private val paymentChargeRepository: PaymentChargeRepository,
@@ -75,36 +44,59 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
-) : WooPosRefundSubmissionProcessor {
-    override fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState> = channelFlow {
-        logSubmissionStarted(request)
+) {
+    @Suppress("TooGenericExceptionCaught")
+    fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState> = channelFlow {
+        try {
+            logSubmissionStarted(request)
 
-        if (request.cardRefundAlreadySucceeded) {
-            WooLog.i(
+            if (request.cardRefundAlreadySucceeded) {
+                WooLog.i(
+                    WooLog.T.POS,
+                    "WooPosRefund: card refund already succeeded; notifying backend only " +
+                        "orderId=${request.orderId}"
+                )
+                notifyBackend(request, retryBackendNotificationOnly = true)
+                return@channelFlow
+            }
+
+            when (val submissionPath = resolveSubmissionPath(request)) {
+                RefundSubmissionPath.Interac -> {
+                    WooLog.i(
+                        WooLog.T.POS,
+                        "WooPosRefund: routing Interac refund through reader orderId=${request.orderId}"
+                    )
+                    submitInteracRefund(request)
+                }
+                is RefundSubmissionPath.Backend -> {
+                    WooLog.i(
+                        WooLog.T.POS,
+                        "WooPosRefund: using backend refund path " +
+                            "orderId=${request.orderId}, paymentMethodType=${submissionPath.paymentMethodType}"
+                    )
+                    notifyBackend(request, retryBackendNotificationOnly = false)
+                }
+                RefundSubmissionPath.PaymentMetadataUnavailable -> {
+                    trySendState(
+                        WooPosRefundSubmissionState.Failure(
+                            message = resourceProvider.getString(R.string.error_generic),
+                        )
+                    )
+                }
+            }
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (exception: Exception) {
+            WooLog.e(
                 WooLog.T.POS,
-                "WooPosRefund: card refund already succeeded; notifying backend only " +
-                    "orderId=${request.orderId}"
+                "WooPosRefund: submission failed unexpectedly orderId=${request.orderId}",
+                exception
             )
-            notifyBackend(request, retryBackendNotificationOnly = true)
-            return@channelFlow
-        }
-
-        when (val submissionPath = resolveSubmissionPath(request)) {
-            RefundSubmissionPath.Interac -> {
-                WooLog.i(
-                    WooLog.T.POS,
-                    "WooPosRefund: routing Interac refund through reader orderId=${request.orderId}"
+            trySendState(
+                WooPosRefundSubmissionState.Failure(
+                    message = resourceProvider.getString(R.string.error_generic),
                 )
-                submitInteracRefund(request)
-            }
-            is RefundSubmissionPath.Backend -> {
-                WooLog.i(
-                    WooLog.T.POS,
-                    "WooPosRefund: using backend refund path " +
-                        "orderId=${request.orderId}, paymentMethodType=${submissionPath.paymentMethodType}"
-                )
-                notifyBackend(request, retryBackendNotificationOnly = false)
-            }
+            )
         }
     }
 
@@ -124,6 +116,14 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
         request: WooPosRefundSubmissionRequest
     ): RefundSubmissionPath {
         val chargeId = request.order.chargeId ?: run {
+            if (request.order.requiresChargeMetadataForRefund()) {
+                WooLog.w(
+                    WooLog.T.POS,
+                    "WooPosRefund: card refund order has no charge id; failing refund " +
+                        "orderId=${request.orderId}, paymentMethod=${request.order.paymentMethod}"
+                )
+                return RefundSubmissionPath.PaymentMetadataUnavailable
+            }
             WooLog.w(
                 WooLog.T.POS,
                 "WooPosRefund: order has no charge id; using backend refund path orderId=${request.orderId}"
@@ -135,10 +135,10 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
             PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
                 WooLog.w(
                     WooLog.T.POS,
-                    "WooPosRefund: failed to fetch payment charge metadata; using backend refund path " +
+                    "WooPosRefund: failed to fetch payment charge metadata; failing refund " +
                         "orderId=${request.orderId}"
                 )
-                RefundSubmissionPath.Backend(paymentMethodType = null)
+                RefundSubmissionPath.PaymentMetadataUnavailable
             }
             is PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success -> {
                 WooLog.i(
@@ -153,6 +153,12 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun Order.requiresChargeMetadataForRefund(): Boolean {
+        return paymentMethod.isBlank() ||
+            paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE ||
+            paymentMethod == WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -181,10 +187,6 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
         } catch (exception: CancellationException) {
             throw exception
         } catch (exception: Exception) {
-            if (!retryBackendNotificationOnly) {
-                throw exception
-            }
-            // The Terminal refund already succeeded; expose this as backend-only retry so POS never re-runs it.
             WooLog.e(
                 WooLog.T.POS,
                 "WooPosRefund: backend refund creation failed unexpectedly " +
@@ -331,7 +333,6 @@ class WooPosRefundSubmissionProcessorImpl @Inject constructor(
         return cardReaderPaymentControllerFactory.createRefund(
             orderId = request.orderId,
             refundAmount = request.refundAmount,
-            cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = ttpPaymentProgress::isInProgress,
         )
     }
