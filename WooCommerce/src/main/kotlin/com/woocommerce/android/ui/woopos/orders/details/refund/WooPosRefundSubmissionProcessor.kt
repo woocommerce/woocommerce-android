@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
-import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -116,14 +113,6 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
         request: WooPosRefundSubmissionRequest
     ): RefundSubmissionPath {
         val chargeId = request.order.chargeId ?: run {
-            if (request.order.requiresChargeMetadataForRefund()) {
-                WooLog.w(
-                    WooLog.T.POS,
-                    "WooPosRefund: card refund order has no charge id; failing refund " +
-                        "orderId=${request.orderId}, paymentMethod=${request.order.paymentMethod}"
-                )
-                return RefundSubmissionPath.PaymentMetadataUnavailable
-            }
             WooLog.w(
                 WooLog.T.POS,
                 "WooPosRefund: order has no charge id; using backend refund path orderId=${request.orderId}"
@@ -153,12 +142,6 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun Order.requiresChargeMetadataForRefund(): Boolean {
-        return paymentMethod.isBlank() ||
-            paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE ||
-            paymentMethod == WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
     }
 
     @Suppress("TooGenericExceptionCaught")

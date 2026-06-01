@@ -222,22 +222,28 @@ class WooPosRefundSubmissionProcessorTest {
     }
 
     @Test
-    fun `given card refund has no charge id, when submitted, then failure is emitted`() = runTest {
+    fun `given card refund has no charge id, when submitted, then backend refund is created`() = runTest {
         val requestWithoutChargeId = request.copy(
             order = order.copy(chargeId = null, paymentMethod = "woocommerce_payments")
         )
 
         processor.submit(requestWithoutChargeId).test {
-            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
-            assertThat(failure.message).isEqualTo("Something went wrong")
-            assertThat(failure.retryBackendNotificationOnly).isFalse()
-            assertThat(failure.canRetry).isTrue()
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
             awaitComplete()
         }
 
         verify(paymentChargeRepository, never()).fetchCardDataUsedForOrderPayment(any())
         verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
-        verify(refundStore, never()).createItemsRefund(any(), any(), any(), any(), any(), any(), any())
+        verify(refundStore).createItemsRefund(
+            site = eq(site),
+            orderId = eq(order.id),
+            amount = eq(refundAmount),
+            reason = eq("Customer request"),
+            restockItems = eq(true),
+            autoRefund = eq(true),
+            items = eq(refundItems)
+        )
     }
 
     @Test
