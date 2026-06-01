@@ -44,11 +44,11 @@ class WooPosIsCardPaymentEnabledForCountryTest {
     }
 
     @Test
-    fun `given CA, when invoke, then returns false even though IPP is supported`() = runTest {
+    fun `given CA, when invoke, then returns true`() = runTest {
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("CA")
         whenever(countryConfigProvider.provideCountryConfigFor("CA")).thenReturn(CardReaderConfigForCanada)
 
-        assertThat(sut()).isFalse
+        assertThat(sut()).isTrue()
     }
 
     @Test

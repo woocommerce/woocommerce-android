@@ -1,8 +1,6 @@
 package com.woocommerce.android.cardreader.internal.config
 
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,7 +23,7 @@ class CardReaderConfigIsPosCardPaymentEnabledTest {
             @JvmStatic
             @Parameterized.Parameters(name = "country: {0}")
             fun data(): List<String> = listOf(
-                "US", "PR", "GB",
+                "US", "PR", "GB", "CA",
                 "FR", "DE", "IE", "NL", "AT", "BE", "FI", "IT", "LU", "PT", "ES",
                 "SG", "NZ",
                 "AU",
@@ -48,18 +46,6 @@ class CardReaderConfigIsPosCardPaymentEnabledTest {
             @JvmStatic
             @Parameterized.Parameters(name = "country: {0}")
             fun data(): List<String> = listOf("JP", "MX", "IN", "BR", "invalid")
-        }
-    }
-
-    class CanadaOverrideTest {
-
-        @Test
-        fun `given country CA, when isPosCardPaymentEnabled is read, then it returns false even though IPP is supported`() {
-            val config = CardReaderConfigFactory().getCardReaderConfigFor("CA")
-
-            assertThat(config).isInstanceOf(CardReaderConfigForCanada::class.java)
-            assertThat(config).isInstanceOf(CardReaderConfigForSupportedCountry::class.java)
-            assertThat(config.isPosCardPaymentEnabled).isFalse
         }
     }
 }
