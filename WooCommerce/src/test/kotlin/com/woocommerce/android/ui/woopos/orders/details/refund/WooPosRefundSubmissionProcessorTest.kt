@@ -102,7 +102,7 @@ class WooPosRefundSubmissionProcessorTest {
             )
         ).thenReturn(WooResult(refundModel))
 
-        processor = WooPosRefundSubmissionProcessorImpl(
+        processor = WooPosRefundSubmissionProcessor(
             refundStore = refundStore,
             selectedSite = selectedSite,
             loadPaymentGateway = loadPaymentGateway,

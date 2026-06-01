@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.orders.WooPosLoadPaymentGateway
 import com.woocommerce.android.util.WooLog
@@ -9,38 +8,17 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.store.WCRefundStore
-import java.math.BigDecimal
 import javax.inject.Inject
 
-interface WooPosRefundSubmissionProcessor {
-    fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState>
-}
-
-data class WooPosRefundSubmissionRequest(
-    val order: Order,
-    val refundAmount: BigDecimal,
-    val refundReason: String,
-    val refundItems: List<RefundRequestItem>,
-) {
-    val orderId: Long = order.id
-}
-
-sealed class WooPosRefundSubmissionState {
-    data object Processing : WooPosRefundSubmissionState()
-    data object Success : WooPosRefundSubmissionState()
-    data class Failure(val message: String) : WooPosRefundSubmissionState()
-}
-
-class WooPosRefundSubmissionProcessorImpl @Inject constructor(
+class WooPosRefundSubmissionProcessor @Inject constructor(
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
     private val loadPaymentGateway: WooPosLoadPaymentGateway,
     private val resourceProvider: ResourceProvider,
-) : WooPosRefundSubmissionProcessor {
+) {
     @Suppress("TooGenericExceptionCaught")
-    override fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState> = flow {
+    fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState> = flow {
         try {
             WooLog.i(
                 WooLog.T.POS,
