@@ -645,7 +645,7 @@ class WooPosRefundSubmissionProcessorTest {
                     paymentMethodType = INTERAC_PRESENT
                 )
             )
-            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any(), any(), any()))
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
                 .thenReturn(controller)
 
             processor.submit(request).test {
