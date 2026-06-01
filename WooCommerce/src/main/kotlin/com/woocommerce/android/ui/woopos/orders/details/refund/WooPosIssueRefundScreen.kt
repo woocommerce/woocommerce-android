@@ -208,8 +208,9 @@ fun WooPosIssueRefundScreen(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(state) {
-        onPendingChangesChanged(state.hasPendingChanges())
+    val hasPendingChanges = state.hasPendingChanges()
+    LaunchedEffect(hasPendingChanges) {
+        onPendingChangesChanged(hasPendingChanges)
     }
 
     var lastSelectionContent by remember { mutableStateOf<WooPosRefundState.Content?>(null) }
