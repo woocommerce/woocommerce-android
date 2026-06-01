@@ -224,11 +224,6 @@ fun WooPosIssueRefundScreen(
     val selectionState = state.toSelectionLayerState(lastSelectionContent)
     val modalState = state.toModalState()
     val modalIsProcessing = modalState.isNonCancelableModal()
-    var showCardReaderConnectionDialog by remember { mutableStateOf(false) }
-    val handleConnectReaderClicked = {
-        showCardReaderConnectionDialog = true
-        viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
-    }
 
     val handleModalDismiss = {
         val currentState = state
@@ -279,7 +274,6 @@ fun WooPosIssueRefundScreen(
                 onModalDismiss = handleModalDismiss,
                 closeButtonEnabled = !modalIsProcessing,
                 onEvent = viewModel::onUIEvent,
-                onConnectReaderClicked = handleConnectReaderClicked,
                 onNavigationEvent = onNavigationEvent,
                 contentInsetsModifier = Modifier
                     .statusBarsPadding()
@@ -315,23 +309,12 @@ fun WooPosIssueRefundScreen(
                     onModalDismiss = handleModalDismiss,
                     closeButtonEnabled = !modalIsProcessing,
                     onEvent = viewModel::onUIEvent,
-                    onConnectReaderClicked = handleConnectReaderClicked,
                     onNavigationEvent = onNavigationEvent,
                     contentInsetsModifier = Modifier.statusBarsPadding(),
                     disablePartialRefund = disablePartialRefund,
                 )
             }
         }
-    }
-
-    if (showCardReaderConnectionDialog) {
-        RefundCardReaderConnectionDialog(
-            onDismiss = { showCardReaderConnectionDialog = false },
-            onConnectionSuccess = {
-                showCardReaderConnectionDialog = false
-                viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
-            }
-        )
     }
 }
 
@@ -420,7 +403,6 @@ private fun RefundModalLayer(
     onModalDismiss: () -> Unit,
     closeButtonEnabled: Boolean,
     onEvent: (WooPosRefundUIEvent) -> Unit,
-    onConnectReaderClicked: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
     contentInsetsModifier: Modifier = Modifier,
@@ -440,58 +422,76 @@ private fun RefundModalLayer(
         return
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .then(contentInsetsModifier)
-    ) {
-        RefundScreenHeader(
-            title = null,
-            onCloseClicked = onModalDismiss,
-            closeButtonEnabled = closeButtonEnabled,
-            navigationIcon = RefundHeaderNavigationIcon.Close,
-        )
+    var showCardReaderConnectionDialog by remember { mutableStateOf(false) }
+    val handleConnectReaderClicked = {
+        showCardReaderConnectionDialog = true
+        onEvent(WooPosRefundUIEvent.ConnectReaderClicked)
+    }
 
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .padding(
-                    start = WooPosSpacing.Medium.value,
-                    end = WooPosSpacing.Medium.value,
-                    bottom = WooPosSpacing.XLarge.value,
-                ),
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+                .then(contentInsetsModifier)
         ) {
-            AnimatedContent(
-                targetState = state,
-                contentKey = { it::class },
-                modifier = Modifier.weight(1f),
-                transitionSpec = { refundFadeTransition() },
-                label = "refund_modal_state_transition",
-            ) { animatedState ->
-                when (animatedState) {
-                    is WooPosRefundState.Content -> ContentStateHandler(
-                        state = animatedState,
-                        orderId = orderId,
-                        onNavigationEvent = onNavigationEvent,
-                        onEvent = onEvent,
-                        disablePartialRefund = disablePartialRefund,
-                    )
-                    is WooPosRefundState.Error -> ErrorContent(animatedState)
-                    is WooPosRefundState.RefundSuccess -> RefundSuccessContent(state = animatedState)
-                    is WooPosRefundState.Loading,
-                    is WooPosRefundState.NoRefundableItems -> Unit
-                }
-            }
+            RefundScreenHeader(
+                title = null,
+                onCloseClicked = onModalDismiss,
+                closeButtonEnabled = closeButtonEnabled,
+                navigationIcon = RefundHeaderNavigationIcon.Close,
+            )
 
-            RefundScreenButtons(
-                state = state,
-                onDismiss = onDismiss,
-                onModalDismiss = onModalDismiss,
-                onEvent = onEvent,
-                onConnectReaderClicked = onConnectReaderClicked,
-                onNavigationEvent = onNavigationEvent,
-                disablePartialRefund = disablePartialRefund,
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(
+                        start = WooPosSpacing.Medium.value,
+                        end = WooPosSpacing.Medium.value,
+                        bottom = WooPosSpacing.XLarge.value,
+                    ),
+            ) {
+                AnimatedContent(
+                    targetState = state,
+                    contentKey = { it::class },
+                    modifier = Modifier.weight(1f),
+                    transitionSpec = { refundFadeTransition() },
+                    label = "refund_modal_state_transition",
+                ) { animatedState ->
+                    when (animatedState) {
+                        is WooPosRefundState.Content -> ContentStateHandler(
+                            state = animatedState,
+                            orderId = orderId,
+                            onNavigationEvent = onNavigationEvent,
+                            onEvent = onEvent,
+                            disablePartialRefund = disablePartialRefund,
+                        )
+                        is WooPosRefundState.Error -> ErrorContent(animatedState)
+                        is WooPosRefundState.RefundSuccess -> RefundSuccessContent(state = animatedState)
+                        is WooPosRefundState.Loading,
+                        is WooPosRefundState.NoRefundableItems -> Unit
+                    }
+                }
+
+                RefundScreenButtons(
+                    state = state,
+                    onDismiss = onDismiss,
+                    onModalDismiss = onModalDismiss,
+                    onEvent = onEvent,
+                    onConnectReaderClicked = handleConnectReaderClicked,
+                    onNavigationEvent = onNavigationEvent,
+                    disablePartialRefund = disablePartialRefund,
+                )
+            }
+        }
+
+        if (showCardReaderConnectionDialog) {
+            RefundCardReaderConnectionDialog(
+                onDismiss = { showCardReaderConnectionDialog = false },
+                onConnectionSuccess = {
+                    showCardReaderConnectionDialog = false
+                    onEvent(WooPosRefundUIEvent.ConnectReaderClicked)
+                }
             )
         }
     }
