@@ -31,12 +31,12 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.BackFromSplashClicked -> activity.finish()
 
         is WooPosNavigationEvent.OpenHomeFromSplash -> navigateToHomeScreen()
-        is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId, event.source)
+        is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId)
         is WooPosNavigationEvent.OpenMarkOrderAsPaid -> navigateToMarkOrderAsCompleteScreen(event.orderId)
         is WooPosNavigationEvent.OpenScanToPay -> navigateToScanToPayScreen(event.orderId)
 
         is WooPosNavigationEvent.OpenCardPayment ->
-            navigateToCardPaymentScreen(event.orderId, event.source, event.showCashPaymentButton)
+            navigateToCardPaymentScreen(event.orderId, event.showCashPaymentButton)
 
         is WooPosNavigationEvent.GoBackWithResult -> {
             previousBackStackEntry
@@ -75,7 +75,7 @@ fun NavHostController.handleNavigationEvent(
             navigateToOrderDetailsScreen(event.orderId)
 
         is WooPosNavigationEvent.NavigateToCashPayment -> {
-            navigateToCashPaymentScreen(event.orderId, event.source)
+            navigateToCashPaymentScreen(event.orderId)
         }
 
         is WooPosNavigationEvent.OpenPaymentSuccess ->

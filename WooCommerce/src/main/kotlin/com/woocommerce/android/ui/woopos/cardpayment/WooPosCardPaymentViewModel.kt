@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusProvider
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
-import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
@@ -52,9 +51,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
-    private val source: CardPaymentSource = (savedState[CARD_PAYMENT_ROUTE_SOURCE_KEY] as? String)
-        ?.let { runCatching { CardPaymentSource.valueOf(it) }.getOrNull() }
-        ?: CardPaymentSource.CHECKOUT
 
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
@@ -182,7 +178,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
-            allowCancelledStatus = false,
         )
         cardReaderPaymentController?.start()
         listenToPaymentState()
@@ -284,13 +279,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private suspend fun handlePaymentSuccessful() {
-        val successSource = when (source) {
-            CardPaymentSource.CHECKOUT -> PaymentSuccessSource.CARD_CHECKOUT
-        }
         _navigationEvent.emit(
             WooPosNavigationEvent.OpenPaymentSuccess(
                 orderId = orderId,
-                source = successSource,
+                source = PaymentSuccessSource.CARD_CHECKOUT,
             )
         )
     }
@@ -395,9 +387,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun navigateBack() {
         viewModelScope.launch {
-            when (source) {
-                CardPaymentSource.CHECKOUT -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            }
+            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
         }
     }
 
@@ -409,11 +399,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onCashPaymentClicked() {
         cancelPayment()
-        val cashSource = when (source) {
-            CardPaymentSource.CHECKOUT -> CashPaymentSource.CHECKOUT
-        }
         viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId, cashSource))
+            _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId))
         }
     }
 

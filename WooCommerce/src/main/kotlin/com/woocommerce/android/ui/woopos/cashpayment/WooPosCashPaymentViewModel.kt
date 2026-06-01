@@ -33,9 +33,6 @@ class WooPosCashPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
-    private val source: CashPaymentSource = savedState.get<String>(CASH_ROUTE_SOURCE_KEY)
-        ?.let { runCatching { CashPaymentSource.valueOf(it) }.getOrNull() }
-        ?: CashPaymentSource.CHECKOUT
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
@@ -132,11 +129,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
             if (result.isSuccess) {
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
-                when (source) {
-                    CashPaymentSource.CHECKOUT -> _navigationEvent.emit(
-                        WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment
-                    )
-                }
+                _navigationEvent.emit(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
             } else {
                 val currentState = _state.value as? WooPosCashPaymentState.Collecting ?: return@launch
                 _state.value = currentState.copy(
@@ -163,9 +156,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
     fun onBackClicked() {
         viewModelScope.launch {
             analyticsTracker.track(BackToCheckoutFromCash)
-            when (source) {
-                CashPaymentSource.CHECKOUT -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            }
+            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
         }
     }
 

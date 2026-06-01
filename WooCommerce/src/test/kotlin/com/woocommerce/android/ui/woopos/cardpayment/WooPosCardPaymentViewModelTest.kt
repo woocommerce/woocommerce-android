@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosEffectiveReaderStatusP
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderPaymentFlow
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
-import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -64,7 +63,7 @@ class WooPosCardPaymentViewModelTest {
         on { event }.thenReturn(controllerEventFlow)
     }
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock {
-        on { create(any(), any(), any(), any(), any()) }.thenReturn(paymentController)
+        on { create(any(), any(), any(), any()) }.thenReturn(paymentController)
     }
     private val networkStatus: WooPosNetworkStatus = mock {
         on { isConnected() }.thenReturn(true)
@@ -106,13 +105,11 @@ class WooPosCardPaymentViewModelTest {
 
     private fun createViewModel(
         orderId: Long = 100L,
-        source: CardPaymentSource = CardPaymentSource.CHECKOUT,
         showCashPaymentButton: Boolean = false,
     ): WooPosCardPaymentViewModel {
         val savedStateHandle = SavedStateHandle(
             mapOf(
                 CARD_PAYMENT_ROUTE_ORDER_ID_KEY to orderId,
-                CARD_PAYMENT_ROUTE_SOURCE_KEY to source.name,
                 CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY to showCashPaymentButton,
             )
         )
@@ -173,8 +170,8 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given CHECKOUT source, when controller emits PaymentSuccessful, then OpenPaymentSuccess with CARD_CHECKOUT`() = runTest {
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+    fun `when controller emits PaymentSuccessful, then OpenPaymentSuccess with CARD_CHECKOUT`() = runTest {
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
@@ -274,8 +271,8 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given CHECKOUT source and collecting state, when onBackClicked, then GoBack emitted`() = runTest {
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+    fun `given collecting state, when onBackClicked, then GoBack emitted`() = runTest {
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
@@ -364,10 +361,7 @@ class WooPosCardPaymentViewModelTest {
     @Test
     fun `given showCashPaymentButton not provided, when created, then showCashPaymentButton is false`() = runTest {
         val savedStateHandle = SavedStateHandle(
-            mapOf(
-                CARD_PAYMENT_ROUTE_ORDER_ID_KEY to 100L,
-                CARD_PAYMENT_ROUTE_SOURCE_KEY to CardPaymentSource.CHECKOUT.name,
-            )
+            mapOf(CARD_PAYMENT_ROUTE_ORDER_ID_KEY to 100L)
         )
         viewModel = WooPosCardPaymentViewModel(
             savedState = savedStateHandle,
@@ -388,8 +382,8 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given CHECKOUT source, when onCashPaymentClicked, then NavigateToCashPayment emitted with CHECKOUT source`() = runTest {
-        viewModel = createViewModel(orderId = 42L, source = CardPaymentSource.CHECKOUT)
+    fun `when onCashPaymentClicked, then NavigateToCashPayment emitted`() = runTest {
+        viewModel = createViewModel(orderId = 42L)
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
@@ -399,13 +393,12 @@ class WooPosCardPaymentViewModelTest {
             assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateToCashPayment::class.java)
             val cashEvent = event as WooPosNavigationEvent.NavigateToCashPayment
             assertThat(cashEvent.orderId).isEqualTo(42L)
-            assertThat(cashEvent.source).isEqualTo(CashPaymentSource.CHECKOUT)
         }
     }
 
     @Test
-    fun `given CHECKOUT source and order already paid error, when onBackClicked, then GoBack emitted`() = runTest {
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+    fun `given order already paid error, when onBackClicked, then GoBack emitted`() = runTest {
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         controllerEventFlow.emit(
@@ -519,7 +512,7 @@ class WooPosCardPaymentViewModelTest {
         whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .doSuspendableAnswer { awaitCancellation() }
 
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -542,7 +535,7 @@ class WooPosCardPaymentViewModelTest {
         whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .doSuspendableAnswer { awaitCancellation() }
 
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
@@ -565,7 +558,7 @@ class WooPosCardPaymentViewModelTest {
         whenever(remoteReaderPaymentFlow.collect(any(), any()))
             .thenReturn(WooPosRemoteReaderPaymentFlow.Result.Failed("error"))
 
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        viewModel = createViewModel()
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
 
