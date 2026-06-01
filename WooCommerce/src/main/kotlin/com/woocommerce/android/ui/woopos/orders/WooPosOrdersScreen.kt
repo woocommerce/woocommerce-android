@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -85,6 +86,7 @@ import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
 import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
 import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -98,7 +100,7 @@ fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     backStackEntry: NavBackStackEntry,
 ) {
-    val isPhoneLayout = false
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
     val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
     val detailViewModel: WooPosOrderDetailsViewModel = hiltViewModel()
 
@@ -150,7 +152,7 @@ fun WooPosOrdersScreen(
     var pendingOrderSelectionAfterRefundDismiss by rememberSaveable { mutableStateOf<Long?>(null) }
     var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
     val detailPaneIssueRefundHandler = remember { WooPosDetailPaneIssueRefundHandler() }
-    val shouldOpenIssueRefundInDetailPane = !isPhoneLayout && !detailViewModel.isSingleOrderMode
+    val shouldOpenIssueRefundInDetailPane = !detailViewModel.isSingleOrderMode
     val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
