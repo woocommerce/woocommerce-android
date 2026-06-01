@@ -6,7 +6,10 @@ sealed class WooPosRefundSubmissionState {
     data object Processing : WooPosRefundSubmissionState()
     data object PreparingReader : WooPosRefundSubmissionState()
     data object ReaderConnectionRequired : WooPosRefundSubmissionState()
-    data class WaitingForCard(@StringRes val cardReaderHint: Int? = null) : WooPosRefundSubmissionState()
+    data class WaitingForCard(
+        @StringRes val cardReaderHint: Int? = null,
+        val isDismissBlocked: Boolean = false,
+    ) : WooPosRefundSubmissionState()
     data object ProcessingReaderRefund : WooPosRefundSubmissionState()
     data object NotifyingStore : WooPosRefundSubmissionState()
     data object Success : WooPosRefundSubmissionState()

@@ -33,16 +33,16 @@ sealed class WooPosRefundState {
         @Immutable
         sealed class RefundStep {
             fun isNonCancelable(): Boolean {
-                return when (this) {
+                return when (val step = this) {
                     Processing,
                     ProcessingRefund,
                     NotifyingStore -> true
+                    is ReadyForRefund -> step.isDismissBlocked
                     SelectItems,
                     ReviewRefund,
                     ConfirmRefund,
                     PreparingReader,
-                    ReaderDisconnected,
-                    is ReadyForRefund -> false
+                    ReaderDisconnected -> false
                 }
             }
 
@@ -65,7 +65,10 @@ sealed class WooPosRefundState {
             data object ReaderDisconnected : RefundStep()
 
             @Immutable
-            data class ReadyForRefund(@StringRes val cardReaderHint: Int? = null) : RefundStep()
+            data class ReadyForRefund(
+                @StringRes val cardReaderHint: Int? = null,
+                val isDismissBlocked: Boolean = false,
+            ) : RefundStep()
 
             @Immutable
             data object ProcessingRefund : RefundStep()

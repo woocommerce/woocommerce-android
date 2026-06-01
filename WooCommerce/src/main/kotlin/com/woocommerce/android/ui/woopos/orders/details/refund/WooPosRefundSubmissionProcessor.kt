@@ -299,7 +299,13 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
             stateJob.cancel()
             eventJob.cancel()
             refundSessionState.exitFallbackJob?.cancel()
-            controller.stop()
+            runCatching { controller.stop() }.onFailure {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "WooPosRefund: failed to stop Interac reader refund controller orderId=${request.orderId}",
+                    it
+                )
+            }
         }
     }
 
@@ -349,7 +355,12 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                     "WooPosRefund: reader refund collecting card " +
                         "orderId=${request.orderId}, hint=${state.cardReaderHint}"
                 )
-                trySendState(WooPosRefundSubmissionState.WaitingForCard(state.cardReaderHint))
+                trySendState(
+                    WooPosRefundSubmissionState.WaitingForCard(
+                        cardReaderHint = state.cardReaderHint,
+                        isDismissBlocked = state.isDismissBlocked,
+                    )
+                )
             }
 
             is CardReaderInteracRefundState.ProcessingInteracRefund -> {

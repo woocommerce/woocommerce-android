@@ -291,6 +291,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(refundReason = event.reason)
             WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
+            WooPosRefundUIEvent.BackToConfirmRefundClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
             WooPosRefundUIEvent.BackToReviewClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.ConnectReaderClicked -> handleConnectReaderClicked()
@@ -464,7 +466,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             is WooPosRefundSubmissionState.WaitingForCard -> {
                 _state.value = contentState.copy(
                     step = WooPosRefundState.Content.RefundStep.ReadyForRefund(
-                        submissionState.cardReaderHint
+                        cardReaderHint = submissionState.cardReaderHint,
+                        isDismissBlocked = submissionState.isDismissBlocked,
                     )
                 )
             }

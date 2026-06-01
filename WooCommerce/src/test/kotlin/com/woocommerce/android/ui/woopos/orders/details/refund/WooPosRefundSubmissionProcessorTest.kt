@@ -30,6 +30,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -625,6 +626,34 @@ class WooPosRefundSubmissionProcessorTest {
                 assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.ReaderConnectionRequired)
                 awaitComplete()
             }
+        }
+
+    @Test
+    fun `given controller stop fails during cancellation, when collection is cancelled, then it does not crash`() =
+        runTest {
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderInteracRefundState.LoadingData {}
+            )
+            val controller = mockController(paymentState)
+            doThrow(RuntimeException("Cannot cancel this operation while it is waiting for a network response"))
+                .whenever(controller)
+                .stop()
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "interac",
+                    cardLast4 = "1234",
+                    paymentMethodType = INTERAC_PRESENT
+                )
+            )
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
+                .thenReturn(controller)
+
+            processor.submit(request).test {
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.PreparingReader)
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verify(controller).stop()
         }
 
     private fun mockController(
