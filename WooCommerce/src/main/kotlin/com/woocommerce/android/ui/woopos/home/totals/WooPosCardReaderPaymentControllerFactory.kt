@@ -87,9 +87,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     fun createRefund(
         orderId: Long,
         refundAmount: BigDecimal,
-        cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
         isTTPPaymentInProgress: KMutableProperty0<Boolean>,
-        allowCancelledStatus: Boolean = false,
     ): CardReaderPaymentController = CardReaderPaymentController(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -114,8 +112,8 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
             orderId = orderId,
             refundAmount = refundAmount
         ),
-        cardReaderType = cardReaderType,
+        cardReaderType = CardReaderType.EXTERNAL,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
-        allowCancelledStatus = allowCancelledStatus,
+        allowCancelledStatus = false,
     )
 }

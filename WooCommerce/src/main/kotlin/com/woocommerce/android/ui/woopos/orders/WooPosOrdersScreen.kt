@@ -151,6 +151,7 @@ fun WooPosOrdersScreen(
     var detailPaneIssueRefundHasPendingChanges by rememberSaveable { mutableStateOf(false) }
     var pendingOrderSelectionAfterRefundDismiss by rememberSaveable { mutableStateOf<Long?>(null) }
     var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
+    val detailPaneIssueRefundHandler = remember { WooPosDetailPaneIssueRefundHandler() }
     val shouldOpenIssueRefundInDetailPane = !isPhoneLayout && !detailViewModel.isSingleOrderMode
     val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
@@ -168,13 +169,20 @@ fun WooPosOrdersScreen(
     }
 
     val handleIssueRefundDismissed = {
-        val refundedOrderId = detailPaneIssueRefundOrderId
+        val action = detailPaneIssueRefundHandler.handleIssueRefundDismissed(
+            refundedOrderId = detailPaneIssueRefundOrderId,
+            pendingOrderSelectionAfterRefundDismiss = pendingOrderSelectionAfterRefundDismiss,
+        )
         detailPaneIssueRefundOrderId = null
         detailPaneIssueRefundHasPendingChanges = false
-        detailViewModel.onBackFromIssueRefund(refundedOrderId)
-        pendingOrderSelectionAfterRefundDismiss?.let { orderId ->
+        detailViewModel.onBackFromIssueRefund(action.refundedOrderId)
+        action.orderIdToSelect?.let { orderId ->
             listViewModel.onOrderSelected(orderId, WooPosScreenType.DualPane)
         }
+        pendingOrderSelectionAfterRefundDismiss = null
+    }
+
+    val handleIssueRefundDismissRequestRejected = {
         pendingOrderSelectionAfterRefundDismiss = null
     }
 
@@ -190,18 +198,19 @@ fun WooPosOrdersScreen(
         }
     } else {
         { orderId ->
-            val currentRefundOrderId = detailPaneIssueRefundOrderId
-            when {
-                currentRefundOrderId == null -> {
-                    listViewModel.onOrderSelected(orderId, WooPosScreenType.DualPane)
-                }
-                currentRefundOrderId == orderId -> Unit
-                detailPaneIssueRefundHasPendingChanges -> {
-                    pendingOrderSelectionConfirmation = orderId
-                }
-                else -> {
-                    requestRefundDismissBeforeOrderSelection(orderId)
-                }
+            val action = detailPaneIssueRefundHandler.handleOrderSelected(
+                orderId = orderId,
+                currentRefundOrderId = detailPaneIssueRefundOrderId,
+                hasPendingChanges = detailPaneIssueRefundHasPendingChanges,
+            )
+            when (action) {
+                is WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.SelectOrder ->
+                    listViewModel.onOrderSelected(action.orderId, WooPosScreenType.DualPane)
+                WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.Ignore -> Unit
+                is WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.ConfirmPendingSelection ->
+                    pendingOrderSelectionConfirmation = action.orderId
+                is WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.RequestRefundDismiss ->
+                    requestRefundDismissBeforeOrderSelection(action.orderId)
             }
         }
     }
@@ -230,6 +239,7 @@ fun WooPosOrdersScreen(
         refundReasonUpdate = refundReasonResult.value,
         onIssueRefundDismissed = handleIssueRefundDismissed,
         onIssueRefundPendingChangesChanged = { detailPaneIssueRefundHasPendingChanges = it },
+        onIssueRefundDismissRequestRejected = handleIssueRefundDismissRequestRejected,
         pendingOrderSelectionConfirmation = pendingOrderSelectionConfirmation,
         onPendingOrderSelectionConfirmationDismissed = { pendingOrderSelectionConfirmation = null },
         onPendingOrderSelectionConfirmed = {
@@ -267,6 +277,7 @@ private fun WooPosOrdersScreen(
     refundReasonUpdate: String? = null,
     onIssueRefundDismissed: () -> Unit = {},
     onIssueRefundPendingChangesChanged: (Boolean) -> Unit = {},
+    onIssueRefundDismissRequestRejected: () -> Unit = {},
     pendingOrderSelectionConfirmation: Long? = null,
     onPendingOrderSelectionConfirmationDismissed: () -> Unit = {},
     onPendingOrderSelectionConfirmed: () -> Unit = {},
@@ -343,6 +354,7 @@ private fun WooPosOrdersScreen(
                             onRetryDetailLoad = onRetryDetailLoad,
                             onIssueRefundDismissed = onIssueRefundDismissed,
                             onIssueRefundPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                            onIssueRefundDismissRequestRejected = onIssueRefundDismissRequestRejected,
                             onNavigationEvent = onNavigationEvent,
                         )
                     }
@@ -547,6 +559,7 @@ private fun OrdersListWithDetails(
     onRetryDetailLoad: () -> Unit,
     onIssueRefundDismissed: () -> Unit,
     onIssueRefundPendingChangesChanged: (Boolean) -> Unit,
+    onIssueRefundDismissRequestRejected: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -576,6 +589,7 @@ private fun OrdersListWithDetails(
                     detailPaneIssueRefundInstanceId,
                 dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
                 onPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                onDismissRequestRejected = onIssueRefundDismissRequestRejected,
                 modifier = Modifier.weight(0.7f)
             )
         } else {

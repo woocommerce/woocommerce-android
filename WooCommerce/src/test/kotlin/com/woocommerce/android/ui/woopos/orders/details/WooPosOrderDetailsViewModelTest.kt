@@ -347,6 +347,32 @@ class WooPosOrderDetailsViewModelTest {
         }
 
     @Test
+    fun `given selected order changed, when back from issue refund, then selected order state is untouched`() =
+        runTest {
+            // GIVEN
+            val selectedOrder = order(2L).copy(number = "2002")
+            val refreshedRefundedOrder = order(1L).copy(number = "1001")
+            doReturn(Result.success(selectedOrder)).whenever(dataSource).getOrderById(2L)
+            doReturn(Result.success(refreshedRefundedOrder)).whenever(dataSource).refreshOrderById(1L)
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            coordinator.selectOrder(1L)
+            advanceUntilIdle()
+            coordinator.selectOrder(2L)
+            advanceUntilIdle()
+            val selectedOrderDetails = (viewModel.state.value as WooPosOrderDetailsState.Loaded).details
+
+            // WHEN
+            viewModel.onBackFromIssueRefund(orderId = 1L)
+            advanceUntilIdle()
+
+            // THEN
+            verify(dataSource).refreshOrderById(1L)
+            val loaded = viewModel.state.value as WooPosOrderDetailsState.Loaded
+            assertThat(loaded.details).isEqualTo(selectedOrderDetails)
+        }
+
+    @Test
     fun `given state is not Loaded, when back from issue refund, then order is not refreshed`() = runTest {
         // GIVEN
         viewModel = createViewModel()

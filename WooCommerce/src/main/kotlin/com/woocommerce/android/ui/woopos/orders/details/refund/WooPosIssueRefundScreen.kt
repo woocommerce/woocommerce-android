@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -167,6 +168,7 @@ fun WooPosIssueRefundScreen(
     viewModelKey: String = "WooPosRefundViewModel:$orderId",
     dismissRequestToken: Int = 0,
     onPendingChangesChanged: (Boolean) -> Unit = {},
+    onDismissRequestRejected: () -> Unit = {},
 ) {
     val viewModel: WooPosRefundViewModel =
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(
@@ -186,7 +188,8 @@ fun WooPosIssueRefundScreen(
     }
 
     val handleDismiss = {
-        if (viewModel.onDismissRequest()) {
+        val dismissed = viewModel.onDismissRequest()
+        if (dismissed) {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             if (onDismissed != null) {
                 onDismissed()
@@ -199,20 +202,25 @@ fun WooPosIssueRefundScreen(
                 )
             }
         }
+        dismissed
     }
 
     var lastDismissRequestToken by rememberSaveable(viewModelKey) { mutableIntStateOf(0) }
     LaunchedEffect(dismissRequestToken) {
         if (dismissRequestToken != lastDismissRequestToken && dismissRequestToken > 0) {
-            handleDismiss()
-            lastDismissRequestToken = dismissRequestToken
+            if (handleDismiss()) {
+                lastDismissRequestToken = dismissRequestToken
+            } else {
+                onDismissRequestRejected()
+            }
         }
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(state) {
-        onPendingChangesChanged(state.hasPendingChanges())
+    val hasPendingChanges = state.hasPendingChanges()
+    LaunchedEffect(hasPendingChanges) {
+        onPendingChangesChanged(hasPendingChanges)
     }
 
     var lastSelectionContent by remember { mutableStateOf<WooPosRefundState.Content?>(null) }
@@ -228,8 +236,12 @@ fun WooPosIssueRefundScreen(
     val modalState = state.toModalState()
     val modalIsProcessing = modalState.isNonCancelableModal()
     var showCardReaderConnectionDialog by remember { mutableStateOf(false) }
+    val handleConnectReaderClicked = {
+        showCardReaderConnectionDialog = true
+        viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
+    }
 
-    val handleCancelRefundFlow = {
+    val handleCancelRefundFlow: () -> Unit = {
         val currentState = state
         if (currentState is WooPosRefundState.Content && !currentState.step.isNonCancelable()) {
             viewModel.onUIEvent(WooPosRefundUIEvent.CancelRefund)
@@ -239,7 +251,7 @@ fun WooPosIssueRefundScreen(
         }
     }
 
-    val handleModalBack = {
+    val handleModalBack: () -> Unit = {
         when (val currentState = state) {
             is WooPosRefundState.Content -> when (currentState.step) {
                 WooPosRefundState.Content.RefundStep.SelectItems ->
@@ -284,7 +296,7 @@ fun WooPosIssueRefundScreen(
     ) {
         RefundSelectionLayer(
             state = selectionState,
-            onDismiss = handleDismiss,
+            onDismiss = { handleDismiss() },
             onEvent = viewModel::onUIEvent,
             onNavigationEvent = onNavigationEvent,
             disablePartialRefund = disablePartialRefund,
@@ -296,6 +308,13 @@ fun WooPosIssueRefundScreen(
                     } else {
                         Modifier.navigationBarsPadding()
                     }
+                )
+                .then(
+                    if (modalState != null && !presentModalAsDialog) {
+                        Modifier.clearAndSetSemantics {}
+                    } else {
+                        Modifier
+                    }
                 ),
         )
 
@@ -303,15 +322,12 @@ fun WooPosIssueRefundScreen(
             RefundModalLayer(
                 state = modalState,
                 orderId = orderId,
-                onDismiss = handleDismiss,
+                onDismiss = { handleDismiss() },
                 onModalBack = handleModalBack,
                 onCancelRefundFlow = handleCancelRefundFlow,
                 closeButtonEnabled = !modalIsProcessing,
                 onEvent = viewModel::onUIEvent,
-                onConnectReaderClicked = {
-                    showCardReaderConnectionDialog = true
-                    viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
-                },
+                onConnectReaderClicked = handleConnectReaderClicked,
                 onNavigationEvent = onNavigationEvent,
                 contentInsetsModifier = Modifier
                     .statusBarsPadding()
@@ -343,34 +359,21 @@ fun WooPosIssueRefundScreen(
                 RefundModalLayer(
                     state = modalState,
                     orderId = orderId,
-                    onDismiss = handleDismiss,
+                    onDismiss = { handleDismiss() },
                     onModalBack = handleModalBack,
                     onCancelRefundFlow = handleCancelRefundFlow,
                     closeButtonEnabled = !modalIsProcessing,
                     onEvent = viewModel::onUIEvent,
-                    onConnectReaderClicked = {
-                        showCardReaderConnectionDialog = true
-                        viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
-                    },
+                    onConnectReaderClicked = handleConnectReaderClicked,
                     onNavigationEvent = onNavigationEvent,
                     contentInsetsModifier = Modifier.statusBarsPadding(),
                     disablePartialRefund = disablePartialRefund,
                 )
-
-                if (showCardReaderConnectionDialog) {
-                    RefundCardReaderConnectionDialog(
-                        onDismiss = { showCardReaderConnectionDialog = false },
-                        onConnectionSuccess = {
-                            showCardReaderConnectionDialog = false
-                            viewModel.onUIEvent(WooPosRefundUIEvent.ConnectReaderClicked)
-                        }
-                    )
-                }
             }
         }
     }
 
-    if (showCardReaderConnectionDialog && !presentModalAsDialog) {
+    if (showCardReaderConnectionDialog) {
         RefundCardReaderConnectionDialog(
             onDismiss = { showCardReaderConnectionDialog = false },
             onConnectionSuccess = {
@@ -1498,39 +1501,26 @@ private fun RefundReaderContent(
     state: WooPosRefundState.Content,
     modifier: Modifier = Modifier,
 ) {
-    val step = state.step
-    val title = when (step) {
+    val (title, subtitle) = when (val step = state.step) {
         WooPosRefundState.Content.RefundStep.PreparingReader ->
-            stringResource(R.string.woopos_refund_reader_preparing_title)
-        is WooPosRefundState.Content.RefundStep.ReadyForRefund ->
-            stringResource(R.string.woopos_refund_reader_ready_title)
-        WooPosRefundState.Content.RefundStep.ProcessingRefund ->
-            stringResource(R.string.woopos_refund_reader_processing_title)
-        WooPosRefundState.Content.RefundStep.NotifyingStore ->
-            stringResource(R.string.woopos_refund_notifying_store_title)
-        WooPosRefundState.Content.RefundStep.SelectItems,
-        WooPosRefundState.Content.RefundStep.ReviewRefund,
-        WooPosRefundState.Content.RefundStep.ConfirmRefund,
-        WooPosRefundState.Content.RefundStep.ReaderDisconnected,
-        WooPosRefundState.Content.RefundStep.Processing ->
-            error("RefundReaderContent rendered for unsupported step")
-    }
-    val subtitle = when (step) {
-        WooPosRefundState.Content.RefundStep.PreparingReader ->
-            stringResource(R.string.woopos_refund_reader_preparing_subtitle)
-        is WooPosRefundState.Content.RefundStep.ReadyForRefund ->
-            step.cardReaderHint?.let { stringResource(it) }
+            stringResource(R.string.woopos_refund_reader_preparing_title) to
+                stringResource(R.string.woopos_refund_reader_preparing_subtitle)
+        is WooPosRefundState.Content.RefundStep.ReadyForRefund -> {
+            val subtitle = step.cardReaderHint
+                ?.let { stringResource(it) }
                 ?: stringResource(R.string.woopos_refund_reader_ready_subtitle)
+            stringResource(R.string.woopos_refund_reader_ready_title) to subtitle
+        }
         WooPosRefundState.Content.RefundStep.ProcessingRefund ->
-            state.formattedTotal
+            stringResource(R.string.woopos_refund_reader_processing_title) to state.formattedTotal
         WooPosRefundState.Content.RefundStep.NotifyingStore ->
-            stringResource(R.string.woopos_refund_notifying_store_subtitle)
+            stringResource(R.string.woopos_refund_notifying_store_title) to
+                stringResource(R.string.woopos_refund_notifying_store_subtitle)
         WooPosRefundState.Content.RefundStep.SelectItems,
         WooPosRefundState.Content.RefundStep.ReviewRefund,
         WooPosRefundState.Content.RefundStep.ConfirmRefund,
         WooPosRefundState.Content.RefundStep.ReaderDisconnected,
-        WooPosRefundState.Content.RefundStep.Processing ->
-            error("RefundReaderContent rendered for unsupported step")
+        WooPosRefundState.Content.RefundStep.Processing -> return
     }
 
     Column(
