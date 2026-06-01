@@ -84,7 +84,7 @@ class AssistantCardGroupKindTest {
     private fun variationCard() = AssistantCard.Variation(
         parentProductId = 456L,
         variationId = 10L,
-        name = "Woo socks - Blue",
+        parentProductName = "Woo socks",
         sku = "woo-socks-blue",
         price = "12.99",
         stockStatus = "instock",

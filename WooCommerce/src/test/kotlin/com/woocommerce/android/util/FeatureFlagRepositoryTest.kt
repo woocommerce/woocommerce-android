@@ -125,15 +125,12 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given flag with local false, when getFlagState called, then localValue is false`() = testBlocking {
-        // GIVEN
-        val flag = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1
-
+    fun `given self driven push notifications feature flag, when inspected, then local value is enabled`() {
         // WHEN
-        val state = sut.getFlagState(flag)
+        val localValue = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1.localValue
 
         // THEN
-        assertThat(state.localValue).isFalse()
+        assertThat(localValue).isTrue()
     }
 
     @Test

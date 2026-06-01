@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -15,28 +14,19 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
-import org.wordpress.android.fluxc.persistence.AccountMapper
-import org.wordpress.android.fluxc.persistence.AccountStorePersistence
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ProductReviewsDaoTest {
-
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
-
-    @Rule
-    @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductReviewsDao
-    private lateinit var siteSqlUtils: SiteSqlUtils
 
     val site = SiteModel().apply {
         email = "test@example.org"
@@ -47,7 +37,6 @@ class ProductReviewsDaoTest {
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.productReviewsDao
-        siteSqlUtils = SiteSqlUtils(AccountStorePersistence(wpDatabaseRule.db, AccountMapper()))
     }
 
     @Test
@@ -146,7 +135,7 @@ class ProductReviewsDaoTest {
         assertEquals(reviews.size, savedReviews.size)
 
         // Delete site and verify reviews deleted via foreign key constraint
-        siteSqlUtils.deleteSite(site)
+        SiteSqlUtils().deleteSite(site)
         savedReviews = sut.getProductReviews(siteId = site.localId())
         assertEquals(0, savedReviews.size)
     }

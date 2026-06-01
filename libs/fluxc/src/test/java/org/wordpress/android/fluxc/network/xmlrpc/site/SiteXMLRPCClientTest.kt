@@ -1,5 +1,6 @@
-package org.wordpress.android.fluxc.site
+package org.wordpress.android.fluxc.network.xmlrpc.site
 
+import androidx.test.core.app.ApplicationProvider
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -14,7 +15,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowLog
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
@@ -23,13 +23,14 @@ import org.wordpress.android.fluxc.network.HTTPAuthManager
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequestBuilder
-import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class SiteXMLRPCClientTest {
     private lateinit var mSiteXMLRPCClient: SiteXMLRPCClient
@@ -72,8 +73,7 @@ class SiteXMLRPCClientTest {
                 mDispatcher, mMockedQueue, Mockito.mock(UserAgent::class.java),
                 Mockito.mock(HTTPAuthManager::class.java), XMLRPCRequestBuilder()
         )
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = WellSqlConfig(appContext)
+        val config = WellSqlConfig(ApplicationProvider.getApplicationContext())
         WellSql.init(config)
         config.reset()
     }
@@ -86,38 +86,38 @@ class SiteXMLRPCClientTest {
   <member><name>post_thumbnail</name><value><struct>
   <member><name>value</name><value><boolean>1</boolean></value></member>
   </struct></value></member>
-  
+
   <member><name>time_zone</name><value><struct>
   <member><name>value</name><value><string>0</string></value></member>
   </struct></value></member>
-  
+
   <member><name>login_url</name><value><struct>
   <member><name>value</name><value>
   <string>https://taliwutblog.wordpress.com/wp-login.php</string>
   </value></member></struct></value></member>
-  
+
   <member><name>blog_public</name><value><struct>
   <member><name>value</name><value><string>0</string></value></member></struct>
   </value></member>
-  
+
   <member><name>blog_title</name><value><struct>
   <member><name>value</name><value><string>@tal&amp;amp;wut blog</string>
   </value></member></struct></value></member>
-  
+
   <member><name>admin_url</name><value><struct>
   <member><name>readonly</name><value><boolean>1</boolean></value></member>
   <member><name>value</name><value>
   <string>https://taliwutblog.wordpress.com/wp-admin/</string>
   </value></member></struct></value></member>
-  
+
   <member><name>software_version</name><value><struct>
   <member><name>value</name><value><string>4.5.3-20160628</string></value></member>
   </struct></value></member>
-  
+
   <member><name>jetpack_client_id</name><value><struct>
   <member><name>value</name><value><string>false</string></value></member></struct>
   </value></member>
-  
+
   <member><name>home_url</name><value><struct>
   <member><name>value</name><value><string>http://taliwutblog.wordpress.com</string>
   </value></member></struct></value></member>

@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import android.content.Context
-import com.wellsql.generated.SiteModelTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -34,7 +33,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -51,6 +50,7 @@ import javax.inject.Singleton
 import kotlin.math.absoluteValue
 
 @Singleton
+@Suppress("TooManyFunctions", "LongParameterList")
 open class WooCommerceStore @Inject internal constructor(
     private val appContext: Context,
     dispatcher: Dispatcher,
@@ -59,7 +59,6 @@ open class WooCommerceStore @Inject internal constructor(
     private val systemRestClient: WooSystemRestClient,
     private val wcCoreRestClient: WooCommerceRestClient,
     private val settingsMapper: WCSettingsMapper,
-    private val siteSqlUtils: SiteSqlUtils,
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
     private val sitePluginDao: SitePluginDao,
@@ -71,11 +70,9 @@ open class WooCommerceStore @Inject internal constructor(
         WOO_SERVICES("woocommerce-services/woocommerce-services"),
         WOO_SHIPPING("woocommerce-shipping/woocommerce-shipping"),
         WOO_PAYMENTS("woocommerce-payments/woocommerce-payments"),
-        WOO_STRIPE_GATEWAY("woocommerce-gateway-stripe/woocommerce-gateway-stripe"),
         WOO_SHIPMENT_TRACKING("woocommerce-shipment-tracking/woocommerce-shipment-tracking"),
         WOO_SUBSCRIPTIONS("woocommerce-subscriptions/woocommerce-subscriptions"),
         WOO_GIFT_CARDS("woocommerce-gift-cards/woocommerce-gift-cards"),
-        WOO_MIN_MAX_QUANTITIES("woocommerce-min-max-quantities/woocommerce-min-max-quantities"),
         WOO_PRODUCT_BUNDLES("woocommerce-product-bundles/woocommerce-product-bundles"),
         WOO_COMPOSITE_PRODUCTS("woocommerce-composite-products/woocommerce-composite-products"),
         WOO_SQUARE("woocommerce-square/woocommerce-square"),
@@ -128,7 +125,7 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     fun getWooCommerceSites(): MutableList<SiteModel> =
-        siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+        siteStore.getWooCommerceSites().toMutableList()
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
@@ -285,7 +282,14 @@ open class WooCommerceStore @Inject internal constructor(
                     // Persist the Application Passwords auhtorization URL
                     site.applicationPasswordsAuthorizeUrl = response.result.authentication
                         ?.applicationPasswords?.endpoints?.authorization
-                    siteSqlUtils.insertOrUpdateSite(site)
+                    try {
+                        siteStore.insertOrUpdateSite(site)
+                    } catch (e: SiteStorePersistence.DuplicateSiteException) {
+                        AppLog.w(
+                            T.API,
+                            "Duplicate site detected while saving applicationPasswordsAuthorizeUrl: ${e.message}"
+                        )
+                    }
 
                     val namespaces = response.result.namespaces
                     val maxWooApiVersion = namespaces?.run {
@@ -323,25 +327,6 @@ open class WooCommerceStore @Inject internal constructor(
 
                 else -> {
                     WooResult(WooError(GENERIC_ERROR, UNKNOWN))
-                }
-            }
-        }
-    }
-
-    suspend fun enableCoupons(site: SiteModel): Boolean {
-        return coroutineEngine.withDefaultContext(T.API, this, "enableCoupons") {
-            val response = wcCoreRestClient.enableCoupons(site)
-            return@withDefaultContext when {
-                response.isError -> {
-                    AppLog.w(T.API, "Failed to enable coupons for ${site.siteId}")
-                    false
-                }
-
-                else -> {
-                    response.result?.let {
-                        settingsDao.setCouponsEnabled(site.localId(), it)
-                        it
-                    } ?: false
                 }
             }
         }

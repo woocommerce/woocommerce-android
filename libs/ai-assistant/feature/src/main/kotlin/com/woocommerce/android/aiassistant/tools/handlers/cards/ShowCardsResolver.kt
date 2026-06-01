@@ -10,6 +10,7 @@ import com.woocommerce.android.aiassistant.tools.customers.AICustomersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.AIOrdersDataSource
 import com.woocommerce.android.aiassistant.tools.orders.CompactOrderLineItem
 import com.woocommerce.android.aiassistant.tools.products.AIProductVariationsDataSource
+import com.woocommerce.android.aiassistant.tools.products.CompactVariationAttribute
 import com.woocommerce.android.aiassistant.tools.products.toProductVariationDetailResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -187,12 +188,24 @@ internal class DefaultShowCardsResolver @Inject constructor(
             productId = id.productId,
             variationId = id.variationId,
         ).fold(
-            onSuccess = { variation -> variation.toResolved(ref) },
+            onSuccess = { variation ->
+                val parentProductName = runCatching {
+                    productsDataSource.getProduct(id.productId)
+                        .getOrNull()
+                        ?.name
+                        ?.takeIf { it.isNotBlank() }
+                }.getOrNull()
+
+                variation.toResolved(ref, parentProductName)
+            },
             onFailure = { ShowCardsResolution.Missing(ref, ShowCardsRejectionReason.FetchFailed) },
         )
     }
 
-    private fun WCProductVariationModel.toResolved(ref: ValidatedRef): ShowCardsResolution.Resolved {
+    private fun WCProductVariationModel.toResolved(
+        ref: ValidatedRef,
+        parentProductName: String?,
+    ): ShowCardsResolution.Resolved {
         val detail = toProductVariationDetailResponse()
         return ShowCardsResolution.Resolved(
             ref = ref,
@@ -211,10 +224,13 @@ internal class DefaultShowCardsResolver @Inject constructor(
             card = ShowCardPayload(
                 family = ShowCardFamily.Variation.serializedName,
                 id = ref.id,
-                title = "Variation ${detail.id}",
+                title = detail.attributes.toVariationTitle()
+                    ?: detail.sku.takeIf { it.isNotBlank() }
+                    ?: "Variation ${detail.id}",
                 details = ShowCardDetails.Variation(
                     productId = detail.productId,
                     variationId = detail.id,
+                    parentProductName = parentProductName,
                     sku = detail.sku.takeIf { it.isNotBlank() },
                     price = detail.price.takeIf { it.isNotBlank() },
                     stockStatus = detail.stockStatus.takeIf { it.isNotBlank() },
@@ -225,6 +241,15 @@ internal class DefaultShowCardsResolver @Inject constructor(
             ),
         )
     }
+
+    private fun List<CompactVariationAttribute>.toVariationTitle(): String? =
+        mapNotNull { attribute ->
+            val option = attribute.option?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            val name = attribute.name?.takeIf { it.isNotBlank() }
+            if (name != null) "$name: $option" else option
+        }
+            .takeIf { it.isNotEmpty() }
+            ?.joinToString(separator = " \u2022 ")
 
     private suspend fun resolveAnalyticsStats(refs: List<ValidatedRef>): Map<ValidatedRef, ShowCardsResolution> {
         if (refs.isEmpty()) return emptyMap()
