@@ -18,10 +18,11 @@ import javax.inject.Inject
  * namespace, instead of the legacy REST POST /wc/v3/orders path.
  *
  * The flow is: for each distinct product/variation in the in-memory cart,
- * POST cart/add-item; then POST checkout to materialise the cart into a
- * pending order. The newly-created order is then fetched via the existing
- * orders REST client so the rest of the POS payment flow sees an Order
- * with fully-populated totals.
+ * POST cart/add-item; then POST cart/apply-coupon for each coupon in the
+ * cart; then POST checkout to materialise the cart into a pending order.
+ * The newly-created order is then fetched via the existing orders REST
+ * client so the rest of the POS payment flow sees an Order with
+ * fully-populated totals.
  *
  * Session continuity across the request sequence is maintained by
  * capturing the `Cart-Token` HTTP response header emitted by the first
@@ -30,9 +31,9 @@ import javax.inject.Inject
  * header-based session swap on the server picks it up so each request
  * operates on the same server-side cart.
  *
- * Coupons and custom fees are deliberately not supported in this spike;
- * the in-memory WooPosItemsViewModel.ItemClickedData types for those are
- * silently dropped. See DECISIONS.md alongside this file for scope notes.
+ * Custom fees are deliberately not supported in this spike; the in-memory
+ * WooPosItemsViewModel.ItemClickedData.CustomAmount items are silently
+ * dropped. Coupons are applied via cart/apply-coupon.
  *
  * Routed behind the FeatureFlag.WOO_POS_STORE_API_CHECKOUT flag from
  * WooPosTotalsRepository.createOrderFromCartItems.
@@ -52,12 +53,17 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
 
         val products = itemClickedDataList
             .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
+        val coupons = itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
 
         // The first add-item call creates the server-side cart; its response carries
         // the Cart-Token we replay on every subsequent call so we stay on that cart.
         val cartTokenHolder = CartTokenHolder()
 
         addProductsToCart(site, products, cartTokenHolder)
+            .onFailure { return@withContext Result.failure(it) }
+
+        applyCoupons(site, coupons, cartTokenHolder)
             .onFailure { return@withContext Result.failure(it) }
 
         val checkoutPayload = restClient.checkout(site, cartToken = cartTokenHolder.value)
@@ -105,6 +111,29 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
                 return Result.failure(
                     IllegalStateException(
                         "Store API add-item failed for $id: ${payload.error?.message}"
+                    )
+                )
+            }
+            cartTokenHolder.updateFrom(payload)
+        }
+        return Result.success(Unit)
+    }
+
+    private suspend fun applyCoupons(
+        site: SiteModel,
+        coupons: List<WooPosItemsViewModel.ItemClickedData.Coupon>,
+        cartTokenHolder: CartTokenHolder,
+    ): Result<Unit> {
+        for (coupon in coupons) {
+            val payload = restClient.applyCoupon(
+                site = site,
+                code = coupon.couponCode,
+                cartToken = cartTokenHolder.value,
+            )
+            if (payload.isError) {
+                return Result.failure(
+                    IllegalStateException(
+                        "Store API apply-coupon failed for ${coupon.couponCode}: ${payload.error?.message}"
                     )
                 )
             }

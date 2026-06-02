@@ -71,6 +71,33 @@ class PosStoreApiRestClient @Inject constructor(
     }
 
     /**
+     * POST /wc/pos/v1/cart/apply-coupon.
+     *
+     * Applies a single coupon to the in-progress cart. Coupon validation
+     * (usage limits, per-customer limits, product restrictions, etc.) runs
+     * server-side; an invalid code comes back as an error payload. Returns
+     * the response together with any refreshed `Cart-Token` header so the
+     * caller can replay it on subsequent calls in the same transaction.
+     */
+    suspend fun applyCoupon(
+        site: SiteModel,
+        code: String,
+        cartToken: String? = null,
+    ): WooPayload<Unit> {
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = appendCartToken(APPLY_COUPON_PATH, cartToken),
+            clazz = ApplyCouponResponseDto::class.java,
+            body = mapOf("code" to code)
+        )
+
+        return when (response) {
+            is Success -> WooPayload(Unit, response.headers)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
+    /**
      * POST /wc/pos/v1/checkout.
      *
      * Finalises the in-progress cart into an order. The body is empty:
@@ -128,6 +155,14 @@ class PosStoreApiRestClient @Inject constructor(
     private class AddItemResponseDto
 
     /**
+     * Minimal projection of the apply-coupon response. As with add-item, the
+     * in-memory POS cart stays the client-side source of truth, so we don't
+     * consume the returned cart payload here.
+     */
+    @Suppress("unused")
+    private class ApplyCouponResponseDto
+
+    /**
      * Minimal projection of the checkout response. The full schema is much
      * larger; we only need the order identification fields to hand off to
      * the existing payment flow.
@@ -148,6 +183,7 @@ class PosStoreApiRestClient @Inject constructor(
         const val CART_TOKEN_HEADER = "Cart-Token"
 
         private const val ADD_ITEM_PATH = "/wc/pos/v1/cart/add-item"
+        private const val APPLY_COUPON_PATH = "/wc/pos/v1/cart/apply-coupon"
         private const val CHECKOUT_PATH = "/wc/pos/v1/checkout"
         private const val CART_TOKEN_PARAM = "cart_token"
     }
