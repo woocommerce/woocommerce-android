@@ -117,41 +117,22 @@ class WooShippingEditAddressViewModel @Inject constructor(
         }
     }
 
-    private val addressValidatedFlow = snapshotFlow { address }
-        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
-            } else {
-                inputValue
-            }
-        }
+    private fun fieldValidatedFlow(
+        field: () -> InputValue,
+        validate: (InputValue) -> String?
+    ): Flow<InputValue> = snapshotFlow(field).transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { input ->
+        if (input.error == null) input.copy(error = validate(input)) else input
+    }
 
-    private val cityValidatedFlow = snapshotFlow { city }
-        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
-            } else {
-                inputValue
-            }
-        }
-
-    private val postalCodeValidatedFlow = snapshotFlow { postalCode }
-        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
-            } else {
-                inputValue
-            }
-        }
-
-    private val emailValidatedFlow = snapshotFlow { email }
-        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateEmail(inputValue.value))
-            } else {
-                inputValue
-            }
-        }
+    private val addressValidatedFlow =
+        fieldValidatedFlow({ address }) { addressValidator.validateFieldRequired(it.value) }
+    private val cityValidatedFlow =
+        fieldValidatedFlow({ city }) { addressValidator.validateFieldRequired(it.value) }
+    private val postalCodeValidatedFlow =
+        fieldValidatedFlow({ postalCode }) { addressValidator.validateFieldRequired(it.value) }
+    private val emailValidatedFlow = fieldValidatedFlow({ email }) {
+        if (it.isRequired) addressValidator.validateEmail(it.value) else null
+    }
 
     private val phoneValidatedFlow = snapshotFlow { phone }
         .combine(country) { phoneValue, countryValue -> Pair(phoneValue, countryValue) }
