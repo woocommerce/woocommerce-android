@@ -412,11 +412,6 @@ class WooPosBookingsViewModel @Inject constructor(
         clipboardHelper.copyToClipboard(text)
     }
 
-    fun onBackFromIssueRefund() {
-        if (_state.value !is WooPosBookingsState.Content) return
-        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
-    }
-
     private fun handleCollectPayment() {
         val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
         emitNav(
@@ -545,18 +540,6 @@ class WooPosBookingsViewModel @Inject constructor(
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 emitNav(WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId))
-            }
-            is WooPosBookingsState.BookingAction.IssueRefund -> {
-                if (_state.value !is WooPosBookingsState.Content) return
-                viewModelScope.launch {
-                    analyticsTracker.trackIssueRefundTapped()
-                    _navigationEvent.emit(
-                        WooPosNavigationEvent.OpenIssueRefund(
-                            orderId = action.orderId,
-                            disablePartialRefund = true,
-                        )
-                    )
-                }
             }
             is WooPosBookingsState.BookingAction.CancelBooking -> {
                 showCancelConfirmationDialog(action.bookingId)

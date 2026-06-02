@@ -113,7 +113,6 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 val paymentState = resolvePaymentState(booking.status, paymentStatus)
                 if (paymentState == PaymentState.Paid) {
                     add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
-                    add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
                 }
                 if (booking.isCancellable) {
                     add(

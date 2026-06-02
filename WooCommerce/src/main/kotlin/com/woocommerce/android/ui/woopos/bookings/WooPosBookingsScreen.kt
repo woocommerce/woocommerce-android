@@ -75,7 +75,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.details.refund.ISSUE_REFUND_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -124,17 +123,6 @@ fun WooPosBookingsScreen(
         if (bookingNoteResult.value) {
             viewModel.onBookingNoteSaved()
             backStackEntry.savedStateHandle[BOOKING_NOTE_RESULT_KEY] = false
-        }
-    }
-
-    val issueRefundDismissed = backStackEntry.savedStateHandle
-        .getStateFlow(ISSUE_REFUND_DISMISSED_KEY, false)
-        .collectAsState()
-
-    LaunchedEffect(issueRefundDismissed.value) {
-        if (issueRefundDismissed.value) {
-            viewModel.onBackFromIssueRefund()
-            backStackEntry.savedStateHandle[ISSUE_REFUND_DISMISSED_KEY] = false
         }
     }
 

@@ -4063,6 +4063,10 @@
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
     <string name="woopos_orders_yes_proceed">Yes, proceed</string>
+    <string name="woopos_refund_discard_changes_title">Discard refund changes?</string>
+    <string name="woopos_refund_discard_changes_message">Changing orders will discard the refund changes you made.</string>
+    <string name="woopos_refund_discard_changes_discard">Discard changes</string>
+    <string name="woopos_refund_discard_changes_dialog_background_content_description">Discard refund changes dialog background</string>
     <string name="woopos_refund_loading_error_title">Failed to load refund items</string>
     <string name="woopos_refund_creating_error_title">Failed to create refund</string>
     <string name="woopos_refund_error_subtitle">Please try again</string>

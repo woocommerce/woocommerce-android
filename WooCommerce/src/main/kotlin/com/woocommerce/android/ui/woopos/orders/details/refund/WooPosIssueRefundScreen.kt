@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -38,8 +37,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +49,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -161,11 +161,11 @@ fun WooPosIssueRefundScreen(
     modifier: Modifier = Modifier,
     refundReasonUpdate: String? = null,
     disablePartialRefund: Boolean = false,
-    presentModalAsDialog: Boolean = false,
-    onDismissed: (() -> Unit)? = null,
+    onDismissed: () -> Unit,
     viewModelKey: String = "WooPosRefundViewModel:$orderId",
     dismissRequestToken: Int = 0,
     onPendingChangesChanged: (Boolean) -> Unit = {},
+    onDismissRequestRejected: () -> Unit = {},
 ) {
     val viewModel: WooPosRefundViewModel =
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(
@@ -185,24 +185,22 @@ fun WooPosIssueRefundScreen(
     }
 
     val handleDismiss = {
-        if (viewModel.onDismissRequest()) {
+        val dismissed = viewModel.onDismissRequest()
+        if (dismissed) {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
-            if (onDismissed != null) {
-                onDismissed()
-            } else {
-                onNavigationEvent(
-                    WooPosNavigationEvent.GoBackWithResult(
-                        key = ISSUE_REFUND_DISMISSED_KEY,
-                        value = true
-                    )
-                )
-            }
+            onDismissed()
         }
+        dismissed
     }
 
+    var lastDismissRequestToken by rememberSaveable(viewModelKey) { mutableIntStateOf(0) }
     LaunchedEffect(dismissRequestToken) {
-        if (dismissRequestToken > 0) {
-            handleDismiss()
+        if (dismissRequestToken != lastDismissRequestToken && dismissRequestToken > 0) {
+            if (handleDismiss()) {
+                lastDismissRequestToken = dismissRequestToken
+            } else {
+                onDismissRequestRejected()
+            }
         }
     }
 
@@ -226,7 +224,7 @@ fun WooPosIssueRefundScreen(
     val modalState = state.toModalState()
     val modalIsProcessing = modalState.isNonCancelableModal()
 
-    val handleCancelRefundFlow = {
+    val handleCancelRefundFlow: () -> Unit = {
         val currentState = state
         if (currentState is WooPosRefundState.Content && !currentState.step.isNonCancelable()) {
             viewModel.onUIEvent(WooPosRefundUIEvent.CancelRefund)
@@ -236,7 +234,7 @@ fun WooPosIssueRefundScreen(
         }
     }
 
-    val handleModalBack = {
+    val handleModalBack: () -> Unit = {
         when (val currentState = state) {
             is WooPosRefundState.Content -> when (currentState.step) {
                 WooPosRefundState.Content.RefundStep.SelectItems ->
@@ -281,41 +279,15 @@ fun WooPosIssueRefundScreen(
     ) {
         RefundSelectionLayer(
             state = selectionState,
-            onDismiss = handleDismiss,
+            onDismiss = { handleDismiss() },
             onEvent = viewModel::onUIEvent,
             onNavigationEvent = onNavigationEvent,
             disablePartialRefund = disablePartialRefund,
-            modifier = Modifier
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .then(
-                    if (modalState != null && !presentModalAsDialog) {
-                        Modifier.clearAndSetSemantics {}
-                    } else {
-                        Modifier
-                    }
-                ),
+            modifier = Modifier.statusBarsPadding(),
         )
-
-        if (modalState != null && !presentModalAsDialog) {
-            RefundModalLayer(
-                state = modalState,
-                orderId = orderId,
-                onDismiss = handleDismiss,
-                onModalBack = handleModalBack,
-                onCancelRefundFlow = handleCancelRefundFlow,
-                closeButtonEnabled = !modalIsProcessing,
-                onEvent = viewModel::onUIEvent,
-                onNavigationEvent = onNavigationEvent,
-                contentInsetsModifier = Modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
-                disablePartialRefund = disablePartialRefund,
-            )
-        }
     }
 
-    if (modalState != null && presentModalAsDialog) {
+    if (modalState != null) {
         Dialog(
             onDismissRequest = {
                 if (!modalIsProcessing) {
@@ -337,7 +309,7 @@ fun WooPosIssueRefundScreen(
                 RefundModalLayer(
                     state = modalState,
                     orderId = orderId,
-                    onDismiss = handleDismiss,
+                    onDismiss = { handleDismiss() },
                     onModalBack = handleModalBack,
                     onCancelRefundFlow = handleCancelRefundFlow,
                     closeButtonEnabled = !modalIsProcessing,

@@ -302,10 +302,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object BookingIssueRefundTapped : Event() {
-            override val name: String = "booking_issue_refund_tapped"
-        }
-
         data object BookingViewOrderTapped : Event() {
             override val name: String = "booking_view_order_tapped"
         }
