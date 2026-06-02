@@ -205,7 +205,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             inOrder(unifiedLoginTracker).apply {
-                verify(unifiedLoginTracker).setStep(Step.QR_ERROR)
+                verify(unifiedLoginTracker).track(Flow.LOGIN_QR, Step.QR_ERROR)
                 verify(unifiedLoginTracker).trackFailure("Network:Scan")
             }
         }
@@ -221,7 +221,7 @@ class QrLoginScannerViewModelTest : BaseUnitTest() {
                 retryable = false,
             )
         )
-        verify(unifiedLoginTracker).setStep(Step.QR_ERROR)
+        verify(unifiedLoginTracker).track(Flow.LOGIN_QR, Step.QR_ERROR)
         verify(unifiedLoginTracker).trackFailure("Scanner")
     }
 

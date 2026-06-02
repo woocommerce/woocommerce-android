@@ -240,7 +240,7 @@ class QrLoginScannerViewModel @Inject constructor(
     }
 
     private fun trackFailure(reason: ErrorReason, failedAt: String? = null) {
-        unifiedLoginTracker.setStep(Step.QR_ERROR)
+        unifiedLoginTracker.track(Flow.LOGIN_QR, Step.QR_ERROR)
         val description = reason::class.simpleName.orEmpty()
             .let { simpleName -> if (failedAt != null) "$simpleName:$failedAt" else simpleName }
         unifiedLoginTracker.trackFailure(description)
