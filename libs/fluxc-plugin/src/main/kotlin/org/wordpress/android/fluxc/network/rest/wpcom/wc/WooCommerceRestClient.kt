@@ -20,6 +20,7 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         const val ANALYTICS_ENABLED_SETTING_ID = "woocommerce_analytics_enabled"
         const val ANALYTICS_SETTING_GROUP = "wc_admin"
         const val ANALYTICS_DATE_TYPE_SETTING_ID = "woocommerce_date_type"
+        const val ANALYTICS_SCHEDULED_IMPORT_SETTING_ID = "woocommerce_analytics_scheduled_import"
 
         private const val ROOT_ENDPOINT_TIMEOUT_MS = 15000
     }
@@ -152,5 +153,29 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         )
 
         return response.toWooPayload { WCAnalyticsOrderDateType.fromValue(it.value) }
+    }
+
+    suspend fun fetchAnalyticsScheduledImportEnabled(site: SiteModel): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(ANALYTICS_SETTING_GROUP).id(ANALYTICS_SCHEDULED_IMPORT_SETTING_ID).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java,
+        )
+        return response.toWooPayload { it.value == "yes" }
+    }
+
+    suspend fun updateAnalyticsScheduledImportEnabled(site: SiteModel, enabled: Boolean): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(ANALYTICS_SETTING_GROUP).id(ANALYTICS_SCHEDULED_IMPORT_SETTING_ID).pathV3
+        val param = mapOf("value" to if (enabled) "yes" else "no")
+
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java,
+            body = param
+        )
+
+        return response.toWooPayload { it.value == "yes" }
     }
 }
