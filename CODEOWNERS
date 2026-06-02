@@ -2,3 +2,7 @@
 
 # Dependabot
 /gradle/libs.versions.toml @woocommerce/android-developers
+Gemfile*       @woocommerce/apps-infra-tooling
+.ruby-version  @woocommerce/apps-infra-tooling
+.bundle/       @woocommerce/apps-infra-tooling
+.rubocop*.yml  @woocommerce/apps-infra-tooling
