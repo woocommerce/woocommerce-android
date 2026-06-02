@@ -71,20 +71,71 @@ class SupportChatBookmarkDaoTest {
     }
 
     @Test
-    fun `when marking bookmark as updated, then only updated date changes`(): Unit = runBlocking {
+    fun `when marking bookmark as updated, then updated date and session id change`(): Unit = runBlocking {
         val bookmark = createBookmark(chatId = 1L, updatedAt = 100L)
         dao.insertOrReplace(bookmark)
 
-        val updatedRows = dao.markAsUpdated(chatId = 1L, updatedAt = 200L)
+        val updatedRows = dao.markAsUpdated(chatId = 1L, sessionId = "updated-session", updatedAt = 200L)
 
         val updatedBookmark = requireNotNull(dao.getByChatId(1L))
         assertThat(updatedRows).isEqualTo(1)
-        assertThat(updatedBookmark).isEqualTo(bookmark.copy(updatedAt = 200L))
+        assertThat(updatedBookmark).isEqualTo(bookmark.copy(sessionId = "updated-session", updatedAt = 200L))
     }
 
     @Test
+    fun `given null session id, when marking bookmark as updated, then existing session id is preserved`(): Unit =
+        runBlocking {
+            val bookmark = createBookmark(chatId = 1L, sessionId = "existing-session", updatedAt = 100L)
+            dao.insertOrReplace(bookmark)
+
+            val updatedRows = dao.markAsUpdated(chatId = 1L, sessionId = null, updatedAt = 200L)
+
+            val updatedBookmark = requireNotNull(dao.getByChatId(1L))
+            assertThat(updatedRows).isEqualTo(1)
+            assertThat(updatedBookmark).isEqualTo(bookmark.copy(updatedAt = 200L))
+        }
+
+    @Test
     fun `given missing bookmark, when marking as updated, then no rows are changed`(): Unit = runBlocking {
-        val updatedRows = dao.markAsUpdated(chatId = 1L, updatedAt = 200L)
+        val updatedRows = dao.markAsUpdated(chatId = 1L, sessionId = "session-id", updatedAt = 200L)
+
+        assertThat(updatedRows).isEqualTo(0)
+    }
+
+    @Test
+    fun `when marking ticket created, then bookmark ticket created changes`(): Unit = runBlocking {
+        val bookmark = createBookmark(chatId = 1L)
+        dao.insertOrReplace(bookmark)
+
+        val updatedRows = dao.markTicketCreated(chatId = 1L)
+
+        val updatedBookmark = requireNotNull(dao.getByChatId(1L))
+        assertThat(updatedRows).isEqualTo(1)
+        assertThat(updatedBookmark).isEqualTo(bookmark.copy(hasCreatedTicket = true))
+    }
+
+    @Test
+    fun `given missing bookmark, when marking ticket created, then no rows are changed`(): Unit = runBlocking {
+        val updatedRows = dao.markTicketCreated(chatId = 1L)
+
+        assertThat(updatedRows).isEqualTo(0)
+    }
+
+    @Test
+    fun `when marking resolved, then bookmark resolved changes`(): Unit = runBlocking {
+        val bookmark = createBookmark(chatId = 1L)
+        dao.insertOrReplace(bookmark)
+
+        val updatedRows = dao.markResolved(chatId = 1L)
+
+        val updatedBookmark = requireNotNull(dao.getByChatId(1L))
+        assertThat(updatedRows).isEqualTo(1)
+        assertThat(updatedBookmark).isEqualTo(bookmark.copy(isResolved = true))
+    }
+
+    @Test
+    fun `given missing bookmark, when marking resolved, then no rows are changed`(): Unit = runBlocking {
+        val updatedRows = dao.markResolved(chatId = 1L)
 
         assertThat(updatedRows).isEqualTo(0)
     }
@@ -114,7 +165,10 @@ class SupportChatBookmarkDaoTest {
         chatId: Long,
         localSiteId: LocalId = DEFAULT_SITE_ID,
         remoteSiteId: Long = 100L,
-        botSlug: String = "woo-workflow-support_mobile_inapp",
+        botSlug: String = "woo-workflow-support_mobile_inapp_all_users",
+        sessionId: String? = "session-id",
+        hasCreatedTicket: Boolean = false,
+        isResolved: Boolean = false,
         title: String? = "Support chat",
         createdAt: Long = 1_000L,
         updatedAt: Long = 1_000L
@@ -123,6 +177,9 @@ class SupportChatBookmarkDaoTest {
         localSiteId = localSiteId,
         remoteSiteId = remoteSiteId,
         botSlug = botSlug,
+        sessionId = sessionId,
+        hasCreatedTicket = hasCreatedTicket,
+        isResolved = isResolved,
         title = title,
         createdAt = createdAt,
         updatedAt = updatedAt

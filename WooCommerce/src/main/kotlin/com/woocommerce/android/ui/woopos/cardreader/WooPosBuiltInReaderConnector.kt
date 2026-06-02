@@ -122,6 +122,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
             cardReaderManager.initialize(
                 updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
                 isDebug = BuildConfig.DEBUG,
             )
             cardReaderManager.setupTapToPayUx(

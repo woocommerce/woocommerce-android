@@ -31,10 +31,10 @@ class AiAssistantVariationCardRendererTest {
 
         assertThat(model).isEqualTo(
             AssistantVariationSummaryRowModel(
-                title = "Blue socks",
+                title = "Size: M \u2022 Color: Blue",
                 imageUrl = "https://example.com/blue-socks.png",
                 supportingTexts = listOf(
-                    "Size: M \u2022 Color: Blue",
+                    "Woo socks",
                     "Draft \u2022 In stock \u2022 \$12.99",
                     "SKU: woo-socks-blue",
                 ),
@@ -45,8 +45,10 @@ class AiAssistantVariationCardRendererTest {
     @Test
     fun `given variation card has blank supporting fields, when row model is built, then blank rows are omitted`() {
         val context: Context = mock()
+        whenever(context.getString(R.string.ai_assistant_variation_card_id_title, 10L)).thenReturn("Variation 10")
 
         val model = variationCard(
+            parentProductName = "",
             sku = "",
             price = "",
             stockStatus = "",
@@ -60,8 +62,10 @@ class AiAssistantVariationCardRendererTest {
     @Test
     fun `given variation card has non numeric price, when row model is built, then raw price is used`() {
         val context: Context = mock()
+        whenever(context.getString(R.string.ai_assistant_variation_card_id_title, 10L)).thenReturn("Variation 10")
 
         val model = variationCard(
+            parentProductName = "",
             sku = "",
             price = "From 12.99",
             stockStatus = "",
@@ -73,23 +77,23 @@ class AiAssistantVariationCardRendererTest {
     }
 
     @Test
-    fun `given variation card has blank name and non blank sku, when row model is built, then title uses sku label`() {
+    fun `given variation card has no attributes and non blank sku, when row model is built, then title uses sku label`() {
         val context: Context = mock()
         whenever(context.getString(R.string.orderdetail_product_lineitem_sku_value, "woo-socks-blue"))
             .thenReturn("SKU: woo-socks-blue")
 
-        val model = variationCard(name = "", price = "", stockStatus = "", status = "publish")
+        val model = variationCard(attributes = emptyList(), price = "", stockStatus = "", status = "publish")
             .toVariationSummaryRowModel(context, currencyFormatter)
 
         assertThat(model.title).isEqualTo("SKU: woo-socks-blue")
     }
 
     @Test
-    fun `given variation card has blank name and no sku, when row model is built, then title uses variation id label`() {
+    fun `given variation card has no attributes and no sku, when row model is built, then title uses variation id label`() {
         val context: Context = mock()
         whenever(context.getString(R.string.ai_assistant_variation_card_id_title, 10L)).thenReturn("Variation 10")
 
-        val model = variationCard(name = "", sku = "", price = "", stockStatus = "", status = "publish")
+        val model = variationCard(attributes = emptyList(), sku = "", price = "", stockStatus = "", status = "publish")
             .toVariationSummaryRowModel(context, currencyFormatter)
 
         assertThat(model.title).isEqualTo("Variation 10")
@@ -108,7 +112,7 @@ class AiAssistantVariationCardRendererTest {
     }
 
     private fun variationCard(
-        name: String = "Blue socks",
+        parentProductName: String = "Woo socks",
         sku: String = "woo-socks-blue",
         price: String = "12.99",
         stockStatus: String = "instock",
@@ -120,7 +124,7 @@ class AiAssistantVariationCardRendererTest {
     ) = AssistantCard.Variation(
         parentProductId = 100L,
         variationId = 10L,
-        name = name,
+        parentProductName = parentProductName,
         sku = sku,
         price = price,
         stockStatus = stockStatus,

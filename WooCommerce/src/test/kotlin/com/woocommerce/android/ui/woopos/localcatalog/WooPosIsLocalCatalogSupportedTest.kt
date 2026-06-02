@@ -134,7 +134,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         // GIVEN
         whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(
             WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
+                WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
             )
         )
 

@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigForAustralia
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
@@ -332,6 +333,55 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
                 WooResult(
                     listOf(
                         buildWCPayPluginInfo(version = wcPayPluginVersion)
+                    )
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.PluginUnsupportedVersion(PluginType.WOOCOMMERCE_PAYMENTS)
+            )
+        }
+
+    @Test
+    fun `given store in Australia, when wcpay plugin is minimum supported test build, then onboarding complete`() =
+        testBlocking {
+            val countryCode = "AU"
+            val wcPayPluginVersion = "10.8.0-test-1"
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode))
+                .thenReturn(CardReaderConfigForAustralia)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildWCPayPluginInfo(version = wcPayPluginVersion)
+                    )
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    wcPayPluginVersion,
+                    countryCode
+                )
+            )
+        }
+
+    @Test
+    fun `given store in Australia, when wcpay plugin is below minimum supported version, then unsupported returned`() =
+        testBlocking {
+            val countryCode = "AU"
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn(countryCode)
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode))
+                .thenReturn(CardReaderConfigForAustralia)
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildWCPayPluginInfo(version = "10.7.1")
                     )
                 )
             )

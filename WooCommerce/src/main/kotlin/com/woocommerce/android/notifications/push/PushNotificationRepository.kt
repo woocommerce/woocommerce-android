@@ -14,6 +14,7 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -46,8 +48,35 @@ class PushNotificationRepository @Inject constructor(
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker,
     private val localeProvider: LocaleProvider,
     private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val selectedSite: SelectedSite
 ) {
+    fun observeWooNotificationPreferences(): Flow<WooPushNotificationPreferences?> =
+        wooPushNotificationsStore.observeNotificationPreferences(selectedSite.get())
+
+    suspend fun fetchWooNotificationPreferences(): Result<WooPushNotificationPreferences> {
+        val result = wooPushNotificationsStore.fetchNotificationPreferences(selectedSite.get())
+        return if (!result.isError) {
+            result.model?.let {
+                Result.success(it)
+            } ?: Result.failure(Exception("Woo push notification preferences fetch succeeded but API returned null"))
+        } else {
+            Result.failure(WooException(result.error))
+        }
+    }
+
+    suspend fun updateWooNotificationPreferences(
+        preferences: WooPushNotificationPreferences
+    ): Result<WooPushNotificationPreferences> {
+        val result = wooPushNotificationsStore.updateNotificationPreferences(selectedSite.get(), preferences)
+        return if (!result.isError) {
+            result.model?.let {
+                Result.success(it)
+            } ?: Result.failure(Exception("Woo push notification preferences update succeeded but API returned null"))
+        } else {
+            Result.failure(WooException(result.error))
+        }
+    }
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
         WooLog.d(

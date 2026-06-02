@@ -70,10 +70,17 @@ class MockCardReaderManagerModule {
         override val connectionTokenProvider: CompositeConnectionTokenProvider
             get() = error("connectionTokenProvider is not used in instrumented tests")
 
-        override fun initialize(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean, isDebug: Boolean) {}
+        override fun initialize(
+            updateFrequency: SimulatorUpdateFrequency,
+            useInterac: Boolean,
+            useEftpos: Boolean,
+            isDebug: Boolean
+        ) {}
+
         override fun reinitializeSimulatedTerminal(
             updateFrequency: SimulatorUpdateFrequency,
-            useInterac: Boolean
+            useInterac: Boolean,
+            useEftpos: Boolean,
         ) {}
 
         override fun discoverReaders(
@@ -95,7 +102,10 @@ class MockCardReaderManagerModule {
         override suspend fun createPaymentIntent(paymentInfo: PaymentInfo): CreatePaymentIntentResult =
             CreatePaymentIntentResult.Failed(IllegalStateException("Not used in instrumented tests"))
 
-        override suspend fun retrieveAndCollectPayment(clientSecret: String): RetrieveAndCollectResult =
+        override suspend fun retrieveAndCollectPayment(
+            clientSecret: String,
+            paymentInfo: PaymentInfo
+        ): RetrieveAndCollectResult =
             RetrieveAndCollectResult.Failed(IllegalStateException("Not used in instrumented tests"))
 
         override suspend fun refundInteracPayment(

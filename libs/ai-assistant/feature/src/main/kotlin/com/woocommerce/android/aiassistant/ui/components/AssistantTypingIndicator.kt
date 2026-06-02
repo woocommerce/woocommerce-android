@@ -23,7 +23,7 @@ import com.woocommerce.android.aiassistant.R
  */
 @Composable
 internal fun AssistantTypingIndicator(modifier: Modifier = Modifier) {
-    val description = stringResource(R.string.assistant_chat_typing_content_description)
+    val description = stringResource(R.string.ai_assistant_chat_typing_content_description)
     Surface(
         modifier = modifier.semantics {
             contentDescription = description

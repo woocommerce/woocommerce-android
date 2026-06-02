@@ -23,6 +23,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
@@ -35,10 +36,31 @@ android {
     testOptions {
         unitTests.includeAndroidResources = true
     }
+
+    tasks.withType(Test).configureEach {
+        systemProperty "wooAiSmokeRunLive", project.findProperty("wooAiSmokeRunLive")?.toString() ?: "false"
+    }
+
+    sourceSets {
+        test.resources.srcDirs += 'src/test/resources'
+        testDebug.java.srcDirs += 'src/testDebug/kotlin'
+        testDebug.resources.srcDirs += 'src/testDebug/resources'
+    }
+}
+
+android.buildTypes.all { buildType ->
+    (secretProperties + developerProperties).each { property ->
+        if (property.key in ["wc.oauth.app_id", "wc.oauth.app_secret"]) {
+            buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
+                    "\"${property.value}\""
+        }
+    }
 }
 
 dependencies {
     implementation(project(":libs:ai-assistant:core"))
+
+    api(libs.automattic.eventhorizon)
 
     implementation(project(":libs:commons"))
     implementation(project(":libs:fluxc"))
@@ -69,7 +91,12 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
+    testImplementation(libs.google.dagger.hilt.android.testing)
+    testImplementation(libs.squareup.okhttp3.urlconnection)
+    testImplementation(libs.apache.http.client.android)
+    testImplementation(libs.apache.http.core)
     testImplementation(testFixtures(project(":libs:ai-assistant:core")))
+    kspTest(libs.google.dagger.hilt.compiler)
 }
 
 dependencyAnalysis {

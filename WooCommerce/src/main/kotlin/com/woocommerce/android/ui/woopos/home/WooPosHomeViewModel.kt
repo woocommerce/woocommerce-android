@@ -192,6 +192,10 @@ class WooPosHomeViewModel @Inject constructor(
                         PaymentMethod.CARD
                     )
 
+                    is ChildToParentEvent.OrderSuccessfullyPaidExternally -> onOrderSuccessfullyPaid(
+                        PaymentMethod.EXTERNAL
+                    )
+
                     is ChildToParentEvent.PaymentCollecting -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
@@ -230,7 +234,7 @@ class WooPosHomeViewModel @Inject constructor(
                         }
                     }
 
-                    is NavigationEvent -> viewModelScope.launch { _navigationEvent.emit(event) }
+                    is NavigationEvent -> viewModelScope.launch { handleNavigationEvent(event) }
                     is ChildToParentEvent.SearchEvent.QueryChanged -> {
                         sendEventToChildren(ChangedQuery(event.query))
                     }
@@ -284,6 +288,23 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
+                    is ChildToParentEvent.CustomAmountDialogRequested -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.ShowCustomAmountForm(editing = event.editing)
+                        )
+                    }
+
+                    is ChildToParentEvent.CustomAmountSubmitted -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.CustomAmountSubmitted(
+                                name = event.name,
+                                amount = event.amount,
+                                isTaxable = event.isTaxable,
+                                editingItemNumber = event.editingItemNumber,
+                            )
+                        )
+                    }
+
                     is ChildToParentEvent.SettingsEvent -> Unit
                 }
             }
@@ -294,6 +315,22 @@ class WooPosHomeViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventSender.sendToChildren(event)
         }
+    }
+
+    private suspend fun handleNavigationEvent(event: NavigationEvent) {
+        if (event == NavigationEvent.ToOrders) {
+            cancelCheckoutBeforeOpeningOrders()
+        }
+        _navigationEvent.emit(event)
+    }
+
+    private suspend fun cancelCheckoutBeforeOpeningOrders() {
+        if (_state.value.screenPositionState !is ScreenPositionState.Checkout) return
+
+        _state.value = _state.value.copy(
+            screenPositionState = ScreenPositionState.Cart
+        )
+        parentToChildrenEventSender.sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
     }
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {

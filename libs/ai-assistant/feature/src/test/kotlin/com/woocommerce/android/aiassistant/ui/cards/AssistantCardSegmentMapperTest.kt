@@ -131,7 +131,7 @@ class AssistantCardSegmentMapperTest {
                     AssistantCard.Variation(
                         parentProductId = 100L,
                         variationId = 10L,
-                        name = "Blue socks",
+                        parentProductName = "Woo socks",
                         sku = "woo-socks-blue",
                         price = "12.99",
                         stockStatus = "instock",
@@ -152,9 +152,9 @@ class AssistantCardSegmentMapperTest {
         val segments = AssistantCardSegmentMapper.toSegments(
             ShowCardsUiStructured(
                 cards = listOf(
-                    variationPayload(id = "100/10", productId = 100L, variationId = 10L, name = "Blue socks"),
-                    variationPayload(id = "100/11", productId = 100L, variationId = 11L, name = "Red socks"),
-                    variationPayload(id = "101/10", productId = 101L, variationId = 10L, name = "Green socks"),
+                    variationPayload(id = "100/10", productId = 100L, variationId = 10L),
+                    variationPayload(id = "100/11", productId = 100L, variationId = 11L),
+                    variationPayload(id = "101/10", productId = 101L, variationId = 10L),
                 )
             )
         )
@@ -163,7 +163,7 @@ class AssistantCardSegmentMapperTest {
         val variations = cardGroup.cards.filterIsInstance<AssistantCard.Variation>()
         assertThat(variations.map { "${it.parentProductId}/${it.variationId}" })
             .containsExactly("100/10", "100/11", "101/10")
-        assertThat(variations.map { it.name }).containsExactly("Blue socks", "Red socks", "Green socks")
+        assertThat(variations.map { it.parentProductName }).containsExactly("Woo socks", "Woo socks", "Woo socks")
     }
 
     private fun orderPayload(id: String, title: String) = ShowCardPayload(
@@ -196,15 +196,14 @@ class AssistantCardSegmentMapperTest {
         id: String = "100/10",
         productId: Long = 100L,
         variationId: Long = 10L,
-        name: String = "Blue socks",
     ) = ShowCardPayload(
         family = "variation",
         id = id,
-        title = name,
+        title = "Size: M \u2022 Color: Blue",
         details = ShowCardDetails.Variation(
             productId = productId,
             variationId = variationId,
-            name = name,
+            parentProductName = "Woo socks",
             sku = "woo-socks-blue",
             price = "12.99",
             stockStatus = "instock",

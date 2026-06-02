@@ -1,0 +1,436 @@
+package com.woocommerce.android.ui.aisupportchat.diagnostics
+
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.INTERNET_CONNECTION
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_CONNECTION
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_ORDERS
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.STORE_PRODUCTS
+import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest.WPCOM_SERVERS
+import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
+import com.woocommerce.android.ui.troubleshooting.FailureType
+import com.woocommerce.android.ui.troubleshooting.useCases.InternetConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreAnalyticsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreNotificationsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.StoreProductsCheckUseCase
+import com.woocommerce.android.ui.troubleshooting.useCases.WPComConnectionCheckUseCase
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+
+@ExperimentalCoroutinesApi
+class SupportDiagnosticsServiceTest : BaseUnitTest() {
+    private val internetCheck: InternetConnectionCheckUseCase = mock()
+    private val wpComCheck: WPComConnectionCheckUseCase = mock()
+    private val storeConnectionCheck: StoreConnectionCheckUseCase = mock()
+    private val storeOrdersCheck: StoreOrdersCheckUseCase = mock()
+    private val storeProductsCheck: StoreProductsCheckUseCase = mock()
+    private val storeAnalyticsCheck: StoreAnalyticsCheckUseCase = mock()
+    private val storeNotificationsCheck: StoreNotificationsCheckUseCase = mock()
+
+    private val service = SupportDiagnosticsService(
+        internetConnectionCheck = internetCheck,
+        wpComConnectionCheck = wpComCheck,
+        storeConnectionCheck = storeConnectionCheck,
+        storeOrdersCheck = storeOrdersCheck,
+        storeProductsCheck = storeProductsCheck,
+        storeAnalyticsCheck = storeAnalyticsCheck,
+        storeNotificationsCheck = storeNotificationsCheck
+    )
+
+    @Test
+    fun `given LOADING_ORDERS, when run, then order diagnostics are included`() =
+        testBlocking {
+            stubAll(success = true)
+
+            val initial = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().first()
+
+            assertThat(initial.statuses.map(DiagnosticStatus::test))
+                .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS)
+        }
+
+    @Test
+    fun `given all LOADING_ORDERS checks pass, when run, then each status transition is emitted`() =
+        testBlocking {
+            stubAll(success = true)
+
+            val emissions = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList()
+
+            assertThat(emissions).hasSize(1 + 4 * 2)
+        }
+
+    @Test
+    fun `given all LOADING_ORDERS checks pass, when run, then final statuses are passed`() =
+        testBlocking {
+            stubAll(success = true)
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.statuses.map(DiagnosticStatus::status))
+                .allMatch { it is TestStatus.Passed }
+        }
+
+    @Test
+    fun `given all LOADING_ORDERS checks pass, when run, then final result is complete`() =
+        testBlocking {
+            stubAll(success = true)
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.isComplete).isTrue
+        }
+
+    @Test
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then no action is suggested`() =
+        testBlocking {
+            stubWpComFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.suggestedAction).isNull()
+        }
+
+    @Test
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then failure metadata is preserved`() =
+        testBlocking {
+            stubWpComFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+            assertThat(final.firstFailure).isEqualTo(
+                DiagnosticStatus(
+                    test = WPCOM_SERVERS,
+                    status = TestStatus.Failed(
+                        failureType = FailureType.TIMEOUT,
+                        technicalDetails = "WPCom 503",
+                        durationMs = 250L
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given WPCOM_SERVERS fails, when run for LOADING_ORDERS, then later tests stay pending`() =
+        testBlocking {
+            stubWpComFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+            val pendingStatuses = final.statuses
+                .filter { it.test == STORE_CONNECTION || it.test == STORE_ORDERS }
+                .map(DiagnosticStatus::status)
+
+            assertThat(pendingStatuses).allMatch { it is TestStatus.Pending }
+        }
+
+    @Test
+    fun `given check throws, when run, then no action is suggested`() = testBlocking {
+        stubInternetThrows()
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+        assertThat(final.suggestedAction).isNull()
+    }
+
+    @Test
+    fun `given check throws, when run, then failure metadata is emitted`() = testBlocking {
+        stubInternetThrows()
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ORDERS).toList().last()
+
+        assertThat(final.firstFailure).isEqualTo(
+            DiagnosticStatus(
+                test = INTERNET_CONNECTION,
+                status = TestStatus.Failed(
+                    failureType = FailureType.GENERIC,
+                    technicalDetails = "No selected site"
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `given OTHER issue type, when run, then all tests are included`() = testBlocking {
+        stubAll(success = true)
+
+        val initial = service.runDiagnostics(SupportIssueType.OTHER).toList().first()
+
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_ORDERS, STORE_PRODUCTS)
+    }
+
+    @Test
+    fun `given LOADING_PRODUCTS, when run, then product check is included instead of order check`() = testBlocking {
+        stubAll(success = true)
+
+        val initial = service.runDiagnostics(SupportIssueType.LOADING_PRODUCTS).toList().first()
+
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, STORE_PRODUCTS)
+    }
+
+    @Test
+    fun `given LOADING_ANALYTICS, when run, then analytics setting check runs after connectivity checks`() = testBlocking {
+        stubAll(success = true)
+
+        val initial = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().first()
+
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
+            .containsExactly(INTERNET_CONNECTION, WPCOM_SERVERS, STORE_CONNECTION, DiagnosticTest.ANALYTICS_SETTING)
+    }
+
+    @Test
+    fun `given RECEIVING_NOTIFICATIONS, when run, then notification checks run after connectivity checks`() = testBlocking {
+        stubAll(success = true)
+
+        val initial = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().first()
+
+        assertThat(initial.statuses.map(DiagnosticStatus::test))
+            .containsExactly(
+                INTERNET_CONNECTION,
+                STORE_CONNECTION,
+                DiagnosticTest.NOTIFICATION_PERMISSION,
+                DiagnosticTest.APP_NOTIFICATIONS_ENABLED,
+                DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED,
+                DiagnosticTest.PUSH_NOTIFICATION_TOKEN,
+                DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION
+            )
+    }
+
+    @Test
+    fun `given notification setting fails, when run for RECEIVING_NOTIFICATIONS, then settings action is suggested`() =
+        testBlocking {
+            stubNotificationPermissionFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.OpenNotificationSettings)
+        }
+
+    @Test
+    fun `given push registration fails, when run for RECEIVING_NOTIFICATIONS, then register action is suggested`() =
+        testBlocking {
+            stubPushRegistrationFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.RECEIVING_NOTIFICATIONS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.RegisterPushNotifications)
+        }
+
+    @Test
+    fun `given analytics setting passes, when run for LOADING_ANALYTICS, then final status is passed`() = testBlocking {
+        stubAll(success = true)
+
+        val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+        assertThat(final.statuses.last()).isEqualTo(
+            DiagnosticStatus(DiagnosticTest.ANALYTICS_SETTING, TestStatus.Passed)
+        )
+    }
+
+    @Test
+    fun `given analytics setting fails, when run for LOADING_ANALYTICS, then failure metadata is emitted`() =
+        testBlocking {
+            stubAnalyticsFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+            assertThat(final.firstFailure).isEqualTo(
+                DiagnosticStatus(
+                    test = DiagnosticTest.ANALYTICS_SETTING,
+                    status = TestStatus.Failed(
+                        failureType = FailureType.GENERIC,
+                        technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE",
+                        durationMs = 300L
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given analytics setting is inactive, when run for LOADING_ANALYTICS, then enable action is suggested`() =
+        testBlocking {
+            stubAnalyticsFailure()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+            assertThat(final.suggestedAction).isEqualTo(SuggestedFixAction.EnableAnalytics)
+        }
+
+    @Test
+    fun `given analytics setting throws, when run for LOADING_ANALYTICS, then generic failure is emitted`() =
+        testBlocking {
+            stubAnalyticsThrows()
+
+            val final = service.runDiagnostics(SupportIssueType.LOADING_ANALYTICS).toList().last()
+
+            assertThat(final.firstFailure).isEqualTo(
+                DiagnosticStatus(
+                    test = DiagnosticTest.ANALYTICS_SETTING,
+                    status = TestStatus.Failed(
+                        failureType = FailureType.GENERIC,
+                        technicalDetails = "Analytics unavailable"
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given enabling analytics succeeds, when enableAnalytics called, then result is success`() = testBlocking {
+        whenever(storeAnalyticsCheck.enableAnalytics()).thenReturn(Result.success(Unit))
+
+        val result = service.enableAnalytics()
+
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given enabling analytics fails once then succeeds, when enableAnalytics called, then it retries`() =
+        testBlocking {
+            whenever(storeAnalyticsCheck.enableAnalytics())
+                .thenReturn(Result.failure(IllegalStateException("Failed")))
+                .thenReturn(Result.success(Unit))
+
+            val result = service.enableAnalytics()
+
+            assertThat(result.isSuccess).isTrue()
+            verify(storeAnalyticsCheck, times(2)).enableAnalytics()
+        }
+
+    @Test
+    fun `given enabling analytics is cancelled, when enableAnalytics called, then cancellation is rethrown`() =
+        testBlocking {
+            val cancellation = CancellationException("Cancelled")
+            whenever(storeAnalyticsCheck.enableAnalytics()).thenReturn(Result.failure(cancellation))
+            var thrown: Throwable? = null
+
+            try {
+                service.enableAnalytics()
+            } catch (error: CancellationException) {
+                thrown = error
+            }
+
+            assertThat(thrown).isSameAs(cancellation)
+        }
+
+    @Test
+    fun `given registering push succeeds, when registerPushNotifications called, then result is success`() =
+        testBlocking {
+            whenever(storeNotificationsCheck.registerPushNotifications()).thenReturn(Result.success(Unit))
+
+            val result = service.registerPushNotifications()
+
+            assertThat(result.isSuccess).isTrue()
+        }
+
+    private fun stubAll(success: Boolean) {
+        val outcome: ConnectivityCheckStatus = if (success) {
+            ConnectivityCheckStatus.Success()
+        } else {
+            ConnectivityCheckStatus.Failure()
+        }
+        whenever(internetCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(wpComCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeOrdersCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeProductsCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeAnalyticsCheck.invoke()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkPermission()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkAppNotificationsEnabled()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkNotificationChannelsEnabled()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkPushToken()).thenReturn(flowOf(outcome))
+        whenever(storeNotificationsCheck.checkPushRegistration()).thenReturn(flowOf(outcome))
+    }
+
+    private fun stubWpComFailure() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(wpComCheck.invoke()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    error = FailureType.TIMEOUT,
+                    technicalDetails = "WPCom 503",
+                    durationMs = 250L
+                )
+            )
+        )
+    }
+
+    private fun stubInternetThrows() {
+        whenever(internetCheck.invoke()).thenReturn(
+            flow {
+                emit(ConnectivityCheckStatus.InProgress)
+                error("No selected site")
+            }
+        )
+    }
+
+    private fun stubAnalyticsFailure() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(wpComCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeAnalyticsCheck.invoke()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    error = FailureType.GENERIC,
+                    technicalDetails = "Operation: Checking analytics setting\nError Type: PLUGIN_NOT_ACTIVE",
+                    durationMs = 300L
+                )
+            )
+        )
+    }
+
+    private fun stubAnalyticsThrows() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(wpComCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeAnalyticsCheck.invoke()).thenReturn(
+            flow {
+                emit(ConnectivityCheckStatus.InProgress)
+                error("Analytics unavailable")
+            }
+        )
+    }
+
+    private fun stubNotificationPermissionFailure() {
+        stubConnectivitySuccess()
+        whenever(storeNotificationsCheck.checkPermission()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    technicalDetails = StoreNotificationsCheckUseCase.ERROR_NOTIFICATION_PERMISSION_DENIED
+                )
+            )
+        )
+    }
+
+    private fun stubPushRegistrationFailure() {
+        stubConnectivitySuccess()
+        whenever(storeNotificationsCheck.checkPermission()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeNotificationsCheck.checkAppNotificationsEnabled()).thenReturn(
+            flowOf(ConnectivityCheckStatus.Success())
+        )
+        whenever(storeNotificationsCheck.checkNotificationChannelsEnabled()).thenReturn(
+            flowOf(ConnectivityCheckStatus.Success())
+        )
+        whenever(storeNotificationsCheck.checkPushToken()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeNotificationsCheck.checkPushRegistration()).thenReturn(
+            flowOf(
+                ConnectivityCheckStatus.Failure(
+                    technicalDetails = StoreNotificationsCheckUseCase.ERROR_PUSH_NOTIFICATIONS_UNREGISTERED
+                )
+            )
+        )
+    }
+
+    private fun stubConnectivitySuccess() {
+        whenever(internetCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+        whenever(storeConnectionCheck.invoke()).thenReturn(flowOf(ConnectivityCheckStatus.Success()))
+    }
+}

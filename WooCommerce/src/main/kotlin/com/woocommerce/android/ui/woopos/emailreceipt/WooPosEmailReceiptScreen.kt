@@ -63,6 +63,7 @@ private fun WooPosEmailReceiptScreen(
         WooPosToolbar(
             titleText = stringResource(R.string.woopos_email_receipt_title),
             onBackClicked = onBackClicked,
+            titleStyle = WooPosTypography.BodyLarge,
         )
         when (state) {
             is WooPosEmailReceiptState.Email ->
@@ -109,8 +110,9 @@ private fun EmailState(
                 onValueChange = onEmailAddressChanged,
                 label = stringResource(R.string.woopos_email_receipt_email_label),
                 contentAlignment = Alignment.Center,
-                textStyle = WooPosTypography.Heading,
+                textStyle = WooPosTypography.BodyLarge,
                 textColor = MaterialTheme.colorScheme.onSurface,
+                labelMaxLines = 2,
                 keyboardOptions = KeyboardOptions(
                     autoCorrectEnabled = false,
                     keyboardType = KeyboardType.Email

@@ -27,12 +27,14 @@ internal fun WooPosPaymentMethod.testTag(): String = when (this) {
 internal fun buildAllPaymentMethods(
     readerStatus: WooPosTotalsViewState.ReaderStatus,
     isTapToPayAvailable: Boolean,
+    isScanToPayEnabled: Boolean,
+    isMarkOrderAsPaidEnabled: Boolean,
 ): List<WooPosPaymentMethod> = buildList {
     val readerConnected = readerStatus.isReaderConnected()
     if (!readerConnected && isTapToPayAvailable) add(WooPosPaymentMethod.CARD_READER)
     if (readerConnected && isTapToPayAvailable) add(WooPosPaymentMethod.TAP_TO_PAY)
-    add(WooPosPaymentMethod.SCAN_TO_PAY)
-    add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
+    if (isScanToPayEnabled) add(WooPosPaymentMethod.SCAN_TO_PAY)
+    if (isMarkOrderAsPaidEnabled) add(WooPosPaymentMethod.MARK_ORDER_AS_PAID)
 }
 
 private fun WooPosTotalsViewState.ReaderStatus.isReaderConnected(): Boolean = when (this) {

@@ -29,7 +29,7 @@ fun AiAssistantStatsCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentDescription = stringResource(R.string.assistant_stats_card_open_content_description, state.period)
+    val contentDescription = stringResource(R.string.ai_assistant_stats_card_open_content_description, state.period)
     Column(
         modifier = modifier
             .clickable(role = Role.Button, onClick = onClick)
@@ -105,10 +105,10 @@ private fun StatsMetric(
 
 private fun AssistantCard.Stats.MetricType.labelRes(): Int =
     when (this) {
-        AssistantCard.Stats.MetricType.TotalSales -> R.string.assistant_stats_card_total_sales_label
-        AssistantCard.Stats.MetricType.NetSales -> R.string.assistant_stats_card_net_sales_label
-        AssistantCard.Stats.MetricType.TotalOrders -> R.string.assistant_stats_card_total_orders_label
-        AssistantCard.Stats.MetricType.AverageOrderValue -> R.string.assistant_stats_card_average_order_value_label
+        AssistantCard.Stats.MetricType.TotalSales -> R.string.ai_assistant_stats_card_total_sales_label
+        AssistantCard.Stats.MetricType.NetSales -> R.string.ai_assistant_stats_card_net_sales_label
+        AssistantCard.Stats.MetricType.TotalOrders -> R.string.ai_assistant_stats_card_total_orders_label
+        AssistantCard.Stats.MetricType.AverageOrderValue -> R.string.ai_assistant_stats_card_average_order_value_label
     }
 
 @VisibleForTesting
