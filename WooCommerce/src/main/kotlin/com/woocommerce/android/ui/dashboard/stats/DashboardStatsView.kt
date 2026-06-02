@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.stats
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -11,8 +12,11 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
+import androidx.core.widget.TextViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.github.mikephil.charting.charts.Chart
@@ -509,21 +513,63 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
     }
 
-    fun showLastUpdate(lastUpdateMillis: Long?) {
-        if (lastUpdateMillis != null) {
-            val lastUpdateFormatted = dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
-            lastUpdated.isVisible = true
-            fadeInLabelValue(
-                lastUpdated,
-                String.format(
+    fun showStatsFooter(lastUpdateMillis: Long?, isDelayed: Boolean, onInfoClick: () -> Unit) {
+        when {
+            isDelayed -> applyStatsFooter(
+                text = resources.getString(R.string.dashboard_stats_delayed_footer),
+                onInfoClick = onInfoClick
+            )
+
+            lastUpdateMillis != null -> applyStatsFooter(
+                text = String.format(
                     Locale.getDefault(),
                     resources.getString(R.string.last_update),
-                    lastUpdateFormatted
-                )
+                    dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
+                ),
+                onInfoClick = onInfoClick
             )
-        } else {
-            lastUpdated.isVisible = false
+
+            else -> {
+                lastUpdated.isVisible = false
+                clearStatsFooter()
+            }
         }
+    }
+
+    private fun applyStatsFooter(text: String, onInfoClick: () -> Unit) {
+        lastUpdated.isVisible = true
+        lastUpdated.text = text
+        lastUpdated.setTextColor(ContextCompat.getColor(context, R.color.color_on_surface_medium))
+        val iconSize = resources.getDimensionPixelSize(R.dimen.major_100)
+        val infoIcon = ContextCompat.getDrawable(context, R.drawable.ic_tintable_info_outline_24dp)?.apply {
+            setBounds(0, 0, iconSize, iconSize)
+        }
+        lastUpdated.setCompoundDrawablesRelative(null, null, infoIcon, null)
+        lastUpdated.compoundDrawablePadding = resources.getDimensionPixelSize(R.dimen.minor_50)
+        TextViewCompat.setCompoundDrawableTintList(
+            lastUpdated,
+            ColorStateList.valueOf(ContextCompat.getColor(context, R.color.color_primary))
+        )
+        lastUpdated.setOnClickListener { onInfoClick() }
+        // Tell screen readers what activating the footer does (the visible text is still read).
+        ViewCompat.replaceAccessibilityAction(
+            lastUpdated,
+            AccessibilityActionCompat.ACTION_CLICK,
+            resources.getString(R.string.dashboard_stats_info_content_description),
+            null
+        )
+    }
+
+    private fun clearStatsFooter() {
+        lastUpdated.setCompoundDrawablesRelative(null, null, null, null)
+        lastUpdated.setOnClickListener(null)
+        lastUpdated.isClickable = false
+        ViewCompat.replaceAccessibilityAction(
+            lastUpdated,
+            AccessibilityActionCompat.ACTION_CLICK,
+            null,
+            null
+        )
     }
 
     @Suppress("MagicNumber")
@@ -548,6 +594,7 @@ class DashboardStatsView @JvmOverloads constructor(
 
     fun clearStatsHeaderValues() {
         lastUpdated.text = ""
+        clearStatsFooter()
         updateColorForStatsHeaderValues(R.color.skeleton_color)
 
         visitorsValue.setText(R.string.emdash)
