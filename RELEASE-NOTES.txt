@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.1
+-----
+- [Internal] Migrated media upload and media-list endpoints to Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/15550]
+
 25.0
 -----
 - [*] Added age-eligibility verification to comply with Google Play age requirements [https://github.com/woocommerce/woocommerce-android/pull/16048]
@@ -16,12 +20,9 @@
 - [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
 - [*] Fixed USPS shipping label customs handling for US territories and added a 30-character limit on customs item descriptions [https://github.com/woocommerce/woocommerce-android/pull/15999]
 - [Internal] Enabled local flag for self-driven push notifications [https://github.com/woocommerce/woocommerce-android/pull/15997]
-<<<<<<< merge/release-24.9-into-trunk
 - [*] Fixed Woo POS failing to load products on stores whose web server blocks access to the catalog file [https://github.com/woocommerce/woocommerce-android/pull/16059]
-=======
 - [*] Fixed Woo Shipping label "Shipment details" title not expanding the bottom sheet on tap [https://github.com/woocommerce/woocommerce-android/pull/16020]
 - [*] Fixed Shipping Labels Verify button being briefly tappable when the address form input is invalid [https://github.com/woocommerce/woocommerce-android/pull/16021]
->>>>>>> trunk
 
 24.8
 -----
