@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.media
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -32,11 +31,9 @@ import org.wordpress.android.fluxc.store.MediaStore.FetchMediaListResponsePayloa
 import org.wordpress.android.fluxc.store.MediaStore.MediaError
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
-import org.wordpress.android.fluxc.tools.CoroutineEngine
-import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.utils.MimeType
 import java.security.GeneralSecurityException
-import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.annotations.action.Action as FluxAction
 
 @RunWith(RobolectricTestRunner::class)

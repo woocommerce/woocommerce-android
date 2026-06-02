@@ -232,11 +232,11 @@ class WooMediaNetwork @Inject constructor(
 
     private fun errorTypeFrom(error: MediaError): GenericErrorType {
         return when (error.statusCode) {
-            401 -> GenericErrorType.AUTHORIZATION_REQUIRED
-            403 -> GenericErrorType.NOT_AUTHENTICATED
-            404 -> GenericErrorType.NOT_FOUND
-            408 -> GenericErrorType.TIMEOUT
-            in 500..599 -> GenericErrorType.SERVER_ERROR
+            HTTP_STATUS_UNAUTHORIZED -> GenericErrorType.AUTHORIZATION_REQUIRED
+            HTTP_STATUS_FORBIDDEN -> GenericErrorType.NOT_AUTHENTICATED
+            HTTP_STATUS_NOT_FOUND -> GenericErrorType.NOT_FOUND
+            HTTP_STATUS_REQUEST_TIMEOUT -> GenericErrorType.TIMEOUT
+            in HTTP_STATUS_SERVER_ERROR_MIN..HTTP_STATUS_SERVER_ERROR_MAX -> GenericErrorType.SERVER_ERROR
             else -> when (error.type) {
                 MediaErrorType.NOT_AUTHENTICATED -> GenericErrorType.NOT_AUTHENTICATED
                 MediaErrorType.AUTHORIZATION_REQUIRED -> GenericErrorType.AUTHORIZATION_REQUIRED
@@ -255,5 +255,14 @@ class WooMediaNetwork @Inject constructor(
         } else {
             VolleyError(error.message)
         }
+    }
+
+    companion object {
+        private const val HTTP_STATUS_UNAUTHORIZED = 401
+        private const val HTTP_STATUS_FORBIDDEN = 403
+        private const val HTTP_STATUS_NOT_FOUND = 404
+        private const val HTTP_STATUS_REQUEST_TIMEOUT = 408
+        private const val HTTP_STATUS_SERVER_ERROR_MIN = 500
+        private const val HTTP_STATUS_SERVER_ERROR_MAX = 599
     }
 }
