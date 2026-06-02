@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
+import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
@@ -68,6 +69,7 @@ class DashboardViewModel @Inject constructor(
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     private val dashboardRepository: DashboardRepository,
+    private val analyticsScheduledImportRepository: AnalyticsScheduledImportRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
@@ -115,6 +117,9 @@ class DashboardViewModel @Inject constructor(
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
 
+    private val _isScheduledImportEnabled = MutableStateFlow(false)
+    val isScheduledImportEnabled: LiveData<Boolean> = _isScheduledImportEnabled.asLiveData()
+
     private val refreshingOnBackground = MutableStateFlow(-1)
 
     fun displayRefreshingIndicator() {
@@ -149,6 +154,22 @@ class DashboardViewModel @Inject constructor(
 
         updateShareStoreButtonVisibility()
         insertAIAssistantWidgetByDefault()
+        observeScheduledImportState()
+    }
+
+    private fun observeScheduledImportState() {
+        launch {
+            analyticsScheduledImportRepository.observeIsEnabled().collect { enabled ->
+                _isScheduledImportEnabled.value = enabled
+            }
+        }
+        launch {
+            analyticsScheduledImportRepository.refresh()
+        }
+    }
+
+    fun onDelayedStatsInfoClicked() {
+        triggerEvent(DashboardEvent.OpenScheduledImportInfo(isEnabled = _isScheduledImportEnabled.value))
     }
 
     private fun insertAIAssistantWidgetByDefault() {
@@ -393,6 +414,8 @@ class DashboardViewModel @Inject constructor(
         data object RefreshJitm : DashboardEvent()
 
         data object OpenWooPushNotificationsIntroduction : DashboardEvent()
+
+        data class OpenScheduledImportInfo(val isEnabled: Boolean) : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)

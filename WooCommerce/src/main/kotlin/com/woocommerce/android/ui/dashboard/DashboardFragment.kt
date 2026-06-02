@@ -200,6 +200,12 @@ class DashboardFragment :
                     )
                 }
 
+                is DashboardViewModel.DashboardEvent.OpenScheduledImportInfo -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToScheduledImportInfoBottomSheet(event.isEnabled)
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }
