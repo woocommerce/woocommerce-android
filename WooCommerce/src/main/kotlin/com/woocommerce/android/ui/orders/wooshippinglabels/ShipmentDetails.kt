@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -139,24 +140,28 @@ fun ShipmentDetails(
     }
 
     Column(modifier.fillMaxHeight()) {
-        Icon(
-            painter = if (expandProgress > 0.5f) {
-                painterResource(R.drawable.ic_arrow_down_26)
-            } else {
-                painterResource(R.drawable.ic_arrow_up_26)
-            },
-            contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
-            tint = colorResource(id = R.color.color_primary),
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
+                .fillMaxWidth()
                 .onSizeChanged { sheetHandleHeight = it.height }
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
                 .clickable(
                     onClick = toggleSheet,
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 )
-        )
+        ) {
+            Icon(
+                painter = if (expandProgress > 0.5f) {
+                    painterResource(R.drawable.ic_arrow_down_26)
+                } else {
+                    painterResource(R.drawable.ic_arrow_up_26)
+                },
+                contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
+                tint = colorResource(id = R.color.color_primary),
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
 
         Box(
             Modifier
@@ -177,11 +182,14 @@ fun ShipmentDetails(
                     Text(
                         text = stringResource(R.string.shipping_label_shipment_details_title),
                         color = MaterialTheme.colors.primary,
-                        modifier = Modifier.clickable(
-                            onClick = toggleSheet,
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        )
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                onClick = toggleSheet,
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            )
                     )
                     NoticeBanner(noticeBannerUiState)
                 }
