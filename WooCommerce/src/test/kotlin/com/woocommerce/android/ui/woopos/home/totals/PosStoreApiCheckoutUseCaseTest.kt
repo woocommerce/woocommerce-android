@@ -88,6 +88,74 @@ class PosStoreApiCheckoutUseCaseTest {
     }
 
     @Test
+    fun `given coupons in cart, when invoked, then apply-coupon is called once per coupon code`() = runTest {
+        givenAddToCartSucceeds()
+        givenApplyCouponSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
+        givenOrderFetchSucceeds(orderId = 42L)
+
+        sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 10L, couponCode = "SAVE10"),
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 11L, couponCode = "FREESHIP"),
+            )
+        )
+
+        verify(restClient).applyCoupon(site = eq(site), code = eq("SAVE10"), cartToken = anyOrNull())
+        verify(restClient).applyCoupon(site = eq(site), code = eq("FREESHIP"), cartToken = anyOrNull())
+    }
+
+    @Test
+    fun `given a coupon, when invoked, then it is applied after items and before checkout`() = runTest {
+        givenAddToCartSucceeds()
+        givenApplyCouponSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
+        givenOrderFetchSucceeds(orderId = 42L)
+
+        sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 10L, couponCode = "SAVE10"),
+            )
+        )
+
+        inOrder(restClient) {
+            verify(restClient).addToCart(any(), eq(1L), any(), anyOrNull(), anyOrNull())
+            verify(restClient).applyCoupon(eq(site), eq("SAVE10"), anyOrNull())
+            verify(restClient).checkout(eq(site), anyOrNull())
+        }
+    }
+
+    @Test
+    fun `given apply-coupon fails, when invoked, then checkout is not called`() = runTest {
+        givenAddToCartSucceeds()
+        whenever(restClient.applyCoupon(any(), any(), anyOrNull())) doReturn
+            WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "invalid coupon"))
+
+        val result = sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 10L, couponCode = "BAD"),
+            )
+        )
+
+        assertThat(result.isFailure).isTrue
+        verify(restClient, never()).checkout(any(), anyOrNull())
+    }
+
+    @Test
+    fun `given no coupons, when invoked, then apply-coupon is never called`() = runTest {
+        givenAddToCartSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
+        givenOrderFetchSucceeds(orderId = 42L)
+
+        sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
+
+        verify(restClient, never()).applyCoupon(any(), any(), anyOrNull())
+    }
+
+    @Test
     fun `given add-item fails, when invoked, then checkout is not called`() = runTest {
         whenever(restClient.addToCart(any(), any(), any(), any(), anyOrNull())) doReturn
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "boom"))
@@ -182,6 +250,10 @@ class PosStoreApiCheckoutUseCaseTest {
 
     private suspend fun givenAddToCartSucceeds() {
         whenever(restClient.addToCart(any(), any(), any(), any(), anyOrNull())) doReturn WooPayload(Unit)
+    }
+
+    private suspend fun givenApplyCouponSucceeds() {
+        whenever(restClient.applyCoupon(any(), any(), anyOrNull())) doReturn WooPayload(Unit)
     }
 
     private suspend fun givenCheckoutSucceeds(
