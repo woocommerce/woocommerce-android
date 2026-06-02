@@ -32,6 +32,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -188,6 +189,26 @@ class WooShippingEditAddressViewModel @Inject constructor(
         )
     }
 
+    // Drives the Verify button's enabled state. Reads raw inputs directly so it stays
+    // independent of the *ValidatedFlow debounce, which only delays inline error display.
+    private val isFormValidFlow: Flow<Boolean> = combine(
+        snapshotFlow { name },
+        snapshotFlow { company },
+        snapshotFlow { address },
+        snapshotFlow { city },
+        snapshotFlow { postalCode },
+        snapshotFlow { email },
+        snapshotFlow { phone },
+        country
+    ) { name, company, address, city, postalCode, email, phone, country ->
+        addressValidator.validateAtLeastOneOf(name.value, company.value) == null &&
+            addressValidator.validateFieldRequired(address.value) == null &&
+            addressValidator.validateFieldRequired(city.value) == null &&
+            addressValidator.validateFieldRequired(postalCode.value) == null &&
+            (!email.isRequired || addressValidator.validateEmail(email.value) == null) &&
+            (!phone.isRequired || validatePhoneByCountry(phone.value, country) == null)
+    }
+
     val viewState: MutableStateFlow<EditAddressViewState> = MutableStateFlow(
         EditAddressViewState(
             isCompanyExpanded = false,
@@ -331,8 +352,9 @@ class WooShippingEditAddressViewModel @Inject constructor(
             countriesState,
             statesState,
             addressValidationState,
-            currentAddress
-        ) { address, isExpanded, countriesState, statesState, addressValidation, currentAddress ->
+            currentAddress,
+            isFormValidFlow
+        ) { address, isExpanded, countriesState, statesState, addressValidation, currentAddress, isFormValid ->
             val loading = getLoadingState(countriesState, statesState, addressValidation)
             val error = getErrorState(countriesState, addressValidation, address)
             val validationException = (addressValidation as? AddressValidationState.VerificationFailed)?.exception
@@ -342,7 +364,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
                     AddressStatus.VerifyFailed(addressValidation.exception)
                 }
 
-                address.hasIncorrectOrMissingData || !isFormValid() -> AddressStatus.MissingInfo
+                address.hasIncorrectOrMissingData || !isFormValid -> AddressStatus.MissingInfo
                 hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SaveChanges
                 isSameAddress(address, currentAddress) && isVerified.value -> AddressStatus.Verified
                 navArgs.flow is EditAddressFlow.EditDestinationAddress &&
@@ -361,15 +383,6 @@ class WooShippingEditAddressViewModel @Inject constructor(
                 addressValidationState = addressValidation
             )
         }.collectLatest { viewState.value = it }
-    }
-
-    private fun isFormValid(): Boolean {
-        return addressValidator.validateAtLeastOneOf(name.value, company.value) == null &&
-            addressValidator.validateFieldRequired(address.value) == null &&
-            addressValidator.validateFieldRequired(city.value) == null &&
-            addressValidator.validateFieldRequired(postalCode.value) == null &&
-            (!email.isRequired || addressValidator.validateEmail(email.value) == null) &&
-            (!phone.isRequired || validatePhoneByCountry(phone.value, country.value) == null)
     }
 
     private fun validatePhoneByCountry(value: String, country: Location): String? =
