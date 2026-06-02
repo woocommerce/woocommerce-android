@@ -49,6 +49,7 @@ class WooMediaNetwork @Inject constructor(
         } else if (site.origin == SiteModel.ORIGIN_WPAPI
             && applicationPasswordsConfiguration.isEnabledForDirectAccess()
         ) {
+            AppLog.v(AppLog.T.MEDIA, "Uploading media using Application Passwords for WPAPI Site")
             launchUpload(site, media, useAppPasswords = true)
         } else {
             reportXmlrpcTry()
@@ -65,6 +66,7 @@ class WooMediaNetwork @Inject constructor(
             && applicationPasswordsConfiguration.isEnabledForDirectAccess()
         ) {
             coroutineEngine.launch(AppLog.T.MEDIA, this, "Fetching media list") {
+                AppLog.v(AppLog.T.MEDIA, "Fetching media list using Application Passwords for WPAPI Site")
                 val payload = applicationPasswordsMediaRestClient.fetchMediaList(
                     site, number, offset, mimeType
                 )
@@ -113,6 +115,7 @@ class WooMediaNetwork @Inject constructor(
 
     private suspend fun uploadForJetpackSite(site: SiteModel, media: MediaModel) {
         if (!shouldUseAppPasswordsForJetpack(site)) {
+            AppLog.v(AppLog.T.MEDIA, "Uploading media using WP.com REST for Jetpack Site")
             dispatchUploadFlow(wpComV2MediaRestClient.uploadMedia(site, media))
             return
         }
@@ -120,6 +123,7 @@ class WooMediaNetwork @Inject constructor(
         var appPasswordsError: MediaError? = null
 
         try {
+            AppLog.v(AppLog.T.MEDIA, "Uploading media using Application Passwords for Jetpack Site")
             applicationPasswordsMediaRestClient.uploadMedia(site, media).collect { payload ->
                 if (payload.isError) {
                     appPasswordsError = payload.error
@@ -137,6 +141,7 @@ class WooMediaNetwork @Inject constructor(
         logFailedAppPasswordsRequest("upload", site, appPasswordsError)
 
         var fallbackSucceeded = false
+        AppLog.v(AppLog.T.MEDIA, "Retrying media upload using WP.com REST for Jetpack Site")
         wpComV2MediaRestClient.uploadMedia(site, media).collect { payload ->
             if (payload.completed && !payload.isError && !payload.canceled) {
                 fallbackSucceeded = true
@@ -159,10 +164,12 @@ class WooMediaNetwork @Inject constructor(
         mimeType: MimeType.Type?
     ): FetchMediaListResponsePayload {
         if (!shouldUseAppPasswordsForJetpack(site)) {
+            AppLog.v(AppLog.T.MEDIA, "Fetching media list using WP.com REST for Jetpack Site")
             return wpComV2MediaRestClient.fetchMediaList(site, number, offset, mimeType)
         }
 
         val appPasswordsPayload = try {
+            AppLog.v(AppLog.T.MEDIA, "Fetching media list using Application Passwords for Jetpack Site")
             applicationPasswordsMediaRestClient.fetchMediaList(site, number, offset, mimeType)
         } catch (e: GeneralSecurityException) {
             AppLog.e(AppLog.T.MEDIA, "Error setting up Application Passwords encryption", e)
@@ -175,6 +182,7 @@ class WooMediaNetwork @Inject constructor(
 
         logFailedAppPasswordsRequest("fetch media list", site, appPasswordsPayload.error)
 
+        AppLog.v(AppLog.T.MEDIA, "Retrying media list fetch using WP.com REST for Jetpack Site")
         val fallbackPayload = wpComV2MediaRestClient.fetchMediaList(site, number, offset, mimeType)
         if (!fallbackPayload.isError) {
             jetpackApplicationPasswordsErrorHandler.handleError(
