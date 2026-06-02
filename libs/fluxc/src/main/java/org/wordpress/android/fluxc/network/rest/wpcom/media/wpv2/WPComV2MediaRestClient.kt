@@ -23,7 +23,9 @@ class WPComV2MediaRestClient @Inject constructor(
 ) : BaseWPV2MediaRestClient(okHttpClient, gson) {
     override fun WPAPIEndpoint.getFullUrl(site: SiteModel): String = getWPComUrl(site.siteId)
 
-    override suspend fun getAuthorizationHeader(site: SiteModel): String = "Bearer ${accessToken.get()}"
+    override suspend fun getAuthorizationHeader(site: SiteModel): AuthorizationHeaderResult {
+        return AuthorizationHeaderResult.Success("Bearer ${accessToken.get()}")
+    }
 
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
