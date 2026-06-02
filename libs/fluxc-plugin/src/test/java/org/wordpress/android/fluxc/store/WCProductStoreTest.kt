@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store
 
+import androidx.test.core.app.ApplicationProvider
 import com.google.gson.JsonObject
 import com.yarolegovich.wellsql.WellSql
 import junit.framework.TestCase.assertFalse
@@ -21,7 +22,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
@@ -65,7 +65,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateVariationPay
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateVariationPayload
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import org.wordpress.android.fluxc.wc.utils.SiteTestUtils
+import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -80,16 +80,18 @@ class WCProductStoreTest {
 
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(RuntimeEnvironment.application.applicationContext)
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Rule
     @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(RuntimeEnvironment.application.applicationContext)
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(appContext, listOf(SiteModel::class.java))
+        val config = SingleStoreWellSqlConfigForTests(
+            ApplicationProvider.getApplicationContext(),
+            SiteModel::class.java
+        )
         WellSql.init(config)
         config.reset()
 
@@ -1076,5 +1078,5 @@ class WCProductStoreTest {
 
     /* HELPER */
 
-    private fun insertTestAccountAndSiteIntoDb() = SiteTestUtils.insertTestAccountAndSiteIntoDb(wpDatabaseRule.db)
+    private fun insertTestAccountAndSiteIntoDb() = TestSiteSqlUtils.insertTestAccountAndSiteIntoDb(wpDatabaseRule.db)
 }

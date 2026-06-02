@@ -126,6 +126,7 @@ fun AiSupportChatScreen(
             messageRatings = viewState.messageRatings,
             isSending = viewState.isSending,
             isLoadingHistory = viewState.isLoadingHistory,
+            issuePickerEnabled = viewState.canHandleDiagnosticAction,
             showDiagnosticActions = viewState.showDiagnosticActions,
             diagnosticSuggestedAction = viewState.currentDiagnosticSuggestedAction,
             isExecutingFixAction = viewState.isExecutingFixAction,
@@ -184,6 +185,7 @@ private fun MessageList(
     messageRatings: Map<Long, AiSupportChatFeedbackRating>,
     isSending: Boolean,
     isLoadingHistory: Boolean,
+    issuePickerEnabled: Boolean,
     showDiagnosticActions: Boolean,
     diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
@@ -225,6 +227,7 @@ private fun MessageList(
             MessageBubble(
                 message = message,
                 feedbackRating = message.messageId?.let { messageRatings[it] },
+                issuePickerEnabled = issuePickerEnabled,
                 showDiagnosticActions = showDiagnosticActions,
                 diagnosticSuggestedAction = diagnosticSuggestedAction,
                 isExecutingFixAction = isExecutingFixAction,
@@ -247,6 +250,7 @@ private fun MessageList(
 private fun MessageBubble(
     message: AiSupportChatMessage,
     feedbackRating: AiSupportChatFeedbackRating?,
+    issuePickerEnabled: Boolean,
     showDiagnosticActions: Boolean,
     diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
@@ -284,6 +288,7 @@ private fun MessageBubble(
                     content = message.content,
                     textColor = textColor,
                     shouldFormatMarkdown = message.role == AiSupportChatMessageRole.BOT,
+                    issuePickerEnabled = issuePickerEnabled,
                     showDiagnosticActions = showDiagnosticActions,
                     diagnosticSuggestedAction = diagnosticSuggestedAction,
                     isExecutingFixAction = isExecutingFixAction,
@@ -380,6 +385,7 @@ private fun MessageContent(
     content: AiSupportChatMessageContent,
     textColor: Color,
     shouldFormatMarkdown: Boolean,
+    issuePickerEnabled: Boolean,
     showDiagnosticActions: Boolean,
     diagnosticSuggestedAction: SuggestedFixAction?,
     isExecutingFixAction: Boolean,
@@ -395,6 +401,7 @@ private fun MessageContent(
         )
         AiSupportChatMessageContent.IssuePicker -> IssuePickerContent(
             textColor = textColor,
+            enabled = issuePickerEnabled,
             onIssueSelected = onIssueSelected
         )
         AiSupportChatMessageContent.PostDiagnosticsGreeting -> TextContent(
@@ -464,6 +471,7 @@ private fun TextContent(
 @Composable
 private fun IssuePickerContent(
     textColor: Color,
+    enabled: Boolean,
     onIssueSelected: (SupportIssueType, String) -> Unit
 ) {
     Column(
@@ -479,6 +487,7 @@ private fun IssuePickerContent(
             val issueLabel = stringResource(issueType.displayLabel)
             WCOutlinedButton(
                 onClick = { onIssueSelected(issueType, issueLabel) },
+                enabled = enabled,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = issueLabel)

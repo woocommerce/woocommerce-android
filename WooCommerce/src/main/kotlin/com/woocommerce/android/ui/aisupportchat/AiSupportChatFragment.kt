@@ -24,6 +24,7 @@ import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -177,6 +178,11 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                         showTicketCreatedDialog()
                     }
                     .onFailure { error ->
+                        WooLog.e(
+                            WooLog.T.AI,
+                            "Support chat ticket creation failed via direct ticket creation",
+                            error
+                        )
                         analyticsTracker.trackTicketCreationFailed(
                             route = AiSupportChatTicketRoute.DIRECT_TICKET_CREATION,
                             context = event.ticketAnalyticsContext,

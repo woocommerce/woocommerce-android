@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
@@ -57,11 +56,9 @@ private const val API_RESPONSE = "notifications/notifications-api-response.json"
 @RunWith(RobolectricTestRunner::class)
 @Suppress("UnitTestNamingRule")
 class WpComPushNotificationStoreTest {
-    private val appContext = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = WPDatabaseTestRule(appContext)
+    val databaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val mockNotificationRestClient = mock<NotificationRestClient>()
     private val notificationMapper = NotificationMapper(FormattableContentMapper(Gson()))
@@ -74,11 +71,14 @@ class WpComPushNotificationStoreTest {
 
     @Before
     fun setUp() {
-        PreferenceUtils.getFluxCPreferences(appContext).edit().clear().apply()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext())
+            .edit()
+            .clear()
+            .apply()
 
         store = WpComPushNotificationStore(
             dispatcher = Dispatcher(),
-            context = appContext,
+            context = ApplicationProvider.getApplicationContext(),
             notificationRestClient = mockNotificationRestClient,
             notificationDao = databaseRule.db.notificationDao(),
             notificationMapper = notificationMapper,
@@ -275,7 +275,7 @@ class WpComPushNotificationStoreTest {
 
         store.registerDevice(token, NotificationAppKey.WOOCOMMERCE)
 
-        val storedDeviceId = PreferenceUtils.getFluxCPreferences(appContext)
+        val storedDeviceId = PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext())
             .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
         assertThat(storedDeviceId).isEqualTo(deviceId)
     }
@@ -299,14 +299,14 @@ class WpComPushNotificationStoreTest {
 
         store.registerDevice(token, NotificationAppKey.WOOCOMMERCE)
 
-        val storedUuid = PreferenceUtils.getFluxCPreferences(appContext)
+        val storedUuid = PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext())
             .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_UUID, null)
         assertThat(storedUuid).isNotNull()
     }
 
     @Test
     fun `given uuid already stored, when register device, then reuses existing uuid`() = runTest {
-        PreferenceUtils.getFluxCPreferences(appContext).edit()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext()).edit()
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_UUID, uuid)
             .apply()
         whenever(mockNotificationRestClient.registerDevice(any(), any(), any()))
@@ -325,7 +325,7 @@ class WpComPushNotificationStoreTest {
     // region unregisterWpComPushToken
     @Test
     fun `given device id stored, when unregister, then calls rest client`() = runTest {
-        PreferenceUtils.getFluxCPreferences(appContext).edit()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext()).edit()
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, deviceId)
             .apply()
         whenever(mockNotificationRestClient.unregisterDevice(deviceId))
@@ -338,7 +338,7 @@ class WpComPushNotificationStoreTest {
 
     @Test
     fun `given successful unregister, when unregister, then clears preferences`() = runTest {
-        PreferenceUtils.getFluxCPreferences(appContext).edit()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext()).edit()
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, deviceId)
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_UUID, uuid)
             .apply()
@@ -347,7 +347,7 @@ class WpComPushNotificationStoreTest {
 
         store.unregisterWpComPushToken()
 
-        val prefs = PreferenceUtils.getFluxCPreferences(appContext)
+        val prefs = PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext())
         assertThat(prefs.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)).isNull()
         assertThat(prefs.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_UUID, null)).isNull()
     }
@@ -420,7 +420,7 @@ class WpComPushNotificationStoreTest {
 
     @Test
     fun `given device registered, when update settings succeeds, then returns success`() = runTest {
-        PreferenceUtils.getFluxCPreferences(appContext).edit()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext()).edit()
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, deviceId)
             .apply()
         val settings = listOf(SiteNotificationSetting(site.siteId, true, true))
@@ -434,7 +434,7 @@ class WpComPushNotificationStoreTest {
 
     @Test
     fun `given device registered, when update settings fails, then returns failure`() = runTest {
-        PreferenceUtils.getFluxCPreferences(appContext).edit()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext()).edit()
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, deviceId)
             .apply()
         val settings = listOf(SiteNotificationSetting(site.siteId, true, true))
@@ -449,7 +449,7 @@ class WpComPushNotificationStoreTest {
 
     @Test
     fun `given device registered, when update settings, then calls rest client with correct payload`() = runTest {
-        PreferenceUtils.getFluxCPreferences(appContext).edit()
+        PreferenceUtils.getFluxCPreferences(ApplicationProvider.getApplicationContext()).edit()
             .putString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, deviceId)
             .apply()
         val settings = listOf(

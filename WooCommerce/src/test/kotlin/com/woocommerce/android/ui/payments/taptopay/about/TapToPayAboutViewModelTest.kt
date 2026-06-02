@@ -78,7 +78,7 @@ class TapToPayAboutViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given card reader config for the us, when view model init, then state doesnt contain`() {
+    fun `given card reader config for the us, when view model init, then state doesn't contain`() {
         // GIVEN
         val cardReaderConfig = CardReaderConfigForUSA
 

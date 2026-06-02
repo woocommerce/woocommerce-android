@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.refunds
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
@@ -35,7 +34,7 @@ class RefundStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val restClient = mock<RefundRestClient>()
     private val site = SiteModel()

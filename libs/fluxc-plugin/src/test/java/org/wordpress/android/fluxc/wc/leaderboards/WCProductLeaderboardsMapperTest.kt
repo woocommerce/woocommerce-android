@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -23,11 +22,9 @@ import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.st
 
 @RunWith(RobolectricTestRunner::class)
 class WCProductLeaderboardsMapperTest {
-    private val context = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(context)
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     companion object {
         const val DATE_PERIOD = "2024-01-01-2024-01-31"

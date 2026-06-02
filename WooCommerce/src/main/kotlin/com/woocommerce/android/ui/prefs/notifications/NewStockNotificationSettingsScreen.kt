@@ -212,25 +212,27 @@ private fun LowStockDetails(
     }
     val openInNewIconId = "openInNewIcon"
     val textWithIcon = remember(text) {
-        val linkAnnotation = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()?.item
+        val linkRange = text.getLinkAnnotations(start = 0, end = text.length).lastOrNull()
         val thresholdPlaceholderStart = text.text.indexOf(LOW_STOCK_THRESHOLD_PLACEHOLDER)
         val thresholdPlaceholderEnd = thresholdPlaceholderStart + LOW_STOCK_THRESHOLD_PLACEHOLDER.length
+        val iconInsertionIndex = linkRange?.end ?: text.length
         buildAnnotatedString {
-            if (thresholdPlaceholderStart >= 0) {
+            if (thresholdPlaceholderStart in 0 until iconInsertionIndex) {
                 append(text.subSequence(0, thresholdPlaceholderStart))
                 appendInlineContent(thresholdPlaceholderId, "[Threshold]")
-                append(text.subSequence(thresholdPlaceholderEnd, text.length))
+                append(text.subSequence(thresholdPlaceholderEnd, iconInsertionIndex))
             } else {
-                append(text)
+                append(text.subSequence(0, iconInsertionIndex))
             }
             append(" ")
-            if (linkAnnotation != null) {
-                pushLink(linkAnnotation)
+            if (linkRange != null) {
+                pushLink(linkRange.item)
                 appendInlineContent(openInNewIconId, "[Icon]")
                 pop()
             } else {
                 appendInlineContent(openInNewIconId, "[Icon]")
             }
+            append(text.subSequence(iconInsertionIndex, text.length))
         }
     }
     val iconColor = MaterialTheme.colorScheme.primary

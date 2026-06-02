@@ -16,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatAnalyticsTracker
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketRoute
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -162,6 +163,9 @@ class SupportRequestFormViewModel @Inject constructor(
         error: Throwable,
         aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext?
     ) {
+        aiSupportChatTicketAnalyticsContext?.let {
+            WooLog.e(WooLog.T.AI, "Support chat ticket creation failed via support form", error)
+        }
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
         aiSupportChatTicketAnalyticsContext?.let {
             aiSupportChatAnalyticsTracker.trackTicketCreationFailed(

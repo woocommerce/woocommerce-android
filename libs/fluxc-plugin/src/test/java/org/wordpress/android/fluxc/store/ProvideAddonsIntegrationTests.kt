@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.flow.first
@@ -59,7 +58,7 @@ class ProvideAddonsIntegrationTests {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: WCAddonsStore
 
@@ -70,8 +69,6 @@ class ProvideAddonsIntegrationTests {
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-
         logger = mock()
         dao = databaseRule.db.addonsDao
         restClient = mock()

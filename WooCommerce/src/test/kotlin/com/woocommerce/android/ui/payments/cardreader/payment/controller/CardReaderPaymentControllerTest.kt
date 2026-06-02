@@ -1383,7 +1383,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment succeeds, then receiptUrl stored into a persistant storage`() =
+    fun `when payment succeeds, then receiptUrl stored into a persistent storage`() =
         testBlocking {
             val receiptUrl = "testUrl"
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2937,7 +2937,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given unknown error, when contact support clicked, then contact support event emited`() =
+    fun `given unknown error, when contact support clicked, then contact support event emitted`() =
         testBlocking {
             setupControllerForInteracRefund()
             whenever(
@@ -3800,7 +3800,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesnt start`() =
+    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesn't start`() =
         testBlocking {
             val cardReader: CardReader = mock()
             whenever(cardReaderManager.readerStatus).thenReturn(
