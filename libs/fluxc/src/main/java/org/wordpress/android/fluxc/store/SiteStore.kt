@@ -303,6 +303,7 @@ open class SiteStore @Inject constructor(
         NOT_AUTHENTICATED,
         GENERIC_ERROR,
         WPCOM_SITE_SUSPENDED,
+        TLS_CERTIFICATE_VALIDITY_ERROR,
         WORDPRESS_COM_CONNECTIVITY_ERROR
     }
 

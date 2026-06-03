@@ -29,6 +29,15 @@ public class LoginSiteAddressErrorMapperTest {
     }
 
     @Test
+    public void mapsTlsCertificateValidityErrorToCertificateValidityMessage() {
+        SiteError error = new SiteError(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR);
+
+        Integer result = mMapper.getSiteInfoErrorResId(error, true);
+
+        assertThat(result).isEqualTo(R.string.error_site_url_certificate_validity);
+    }
+
+    @Test
     public void mapsAnyErrorToGenericNetworkWhenNetworkIsUnavailable() {
         SiteError error = new SiteError(SiteErrorType.INVALID_SITE);
 

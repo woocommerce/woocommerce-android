@@ -12,6 +12,8 @@ class LoginSiteAddressErrorMapper {
     int getSiteInfoErrorResId(SiteError error, boolean networkAvailable) {
         if (error.type == SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR) {
             return R.string.error_wordpress_com_connectivity;
+        } else if (error.type == SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR) {
+            return R.string.error_site_url_certificate_validity;
         } else if (networkAvailable) {
             return R.string.invalid_site_url_message;
         } else {

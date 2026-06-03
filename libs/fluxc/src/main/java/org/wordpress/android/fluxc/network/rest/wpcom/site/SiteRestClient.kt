@@ -41,6 +41,7 @@ import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponse
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainError
@@ -51,6 +52,8 @@ import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import java.net.UnknownHostException
+import java.security.cert.CertificateExpiredException
+import java.security.cert.CertificateNotYetValidException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -392,10 +395,10 @@ class SiteRestClient @Inject constructor(
                 val siteErrorType = when (response.error.apiError) {
                     "connection_disabled" -> SiteErrorType.WPCOM_SITE_SUSPENDED
                     else -> {
-                        if (isWordPressComConnectivityIssue(response.error)) {
-                            WORDPRESS_COM_CONNECTIVITY_ERROR
-                        } else {
-                            INVALID_SITE
+                        when {
+                            isTlsCertificateValidityIssue(response.error) -> TLS_CERTIFICATE_VALIDITY_ERROR
+                            isWordPressComConnectivityIssue(response.error) -> WORDPRESS_COM_CONNECTIVITY_ERROR
+                            else -> INVALID_SITE
                         }
                     }
                 }
@@ -406,6 +409,42 @@ class SiteRestClient @Inject constructor(
                 response.data.toConnectSiteInfoPayload(siteUrl)
             }
         }
+    }
+
+    private fun isTlsCertificateValidityIssue(error: WPComGsonNetworkError): Boolean {
+        if (error.type != GenericErrorType.INVALID_SSL_CERTIFICATE) {
+            return false
+        }
+
+        return error.volleyError.hasCertificateValidityIssue() ||
+            error.getCombinedErrorMessage().isCertificateValidityMessage()
+    }
+
+    private fun Throwable?.hasCertificateValidityIssue(): Boolean {
+        var throwable = this
+        while (throwable != null) {
+            when (throwable) {
+                is CertificateExpiredException,
+                is CertificateNotYetValidException -> return true
+            }
+
+            if (throwable.message.isCertificateValidityMessage()) {
+                return true
+            }
+
+            throwable = throwable.cause
+        }
+        return false
+    }
+
+    private fun String?.isCertificateValidityMessage(): Boolean {
+        val message = this?.lowercase() ?: return false
+        return message.contains("certificate has expired") ||
+            message.contains("certificate expired") ||
+            message.contains("certificate is not yet valid") ||
+            message.contains("certificate not yet valid") ||
+            message.contains("notafter") ||
+            message.contains("notbefore")
     }
 
     /**

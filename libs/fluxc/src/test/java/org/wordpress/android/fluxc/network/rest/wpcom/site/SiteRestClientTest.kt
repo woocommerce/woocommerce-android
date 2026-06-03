@@ -35,6 +35,8 @@ import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.util.UrlUtils
 import java.security.cert.CertificateException
+import java.security.cert.CertificateExpiredException
+import java.security.cert.CertificateNotYetValidException
 import javax.net.ssl.SSLHandshakeException
 import kotlin.test.assertNotNull
 
@@ -276,6 +278,43 @@ class SiteRestClientTest {
     }
 
     @Test
+    fun `given expired SSL certificate site info error, when fetching site info, then return certificate validity error`() =
+        test {
+            val sslException = SSLHandshakeException("certificate expired").apply {
+                initCause(CertificateExpiredException("expired"))
+            }
+
+            val result = fetchConnectSiteInfoWithInvalidSslError(sslException)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+        }
+
+    @Test
+    fun `given not yet valid SSL certificate site info error, when fetching site info, then return certificate validity error`() =
+        test {
+            val sslException = SSLHandshakeException("certificate not yet valid").apply {
+                initCause(CertificateNotYetValidException("not yet valid"))
+            }
+
+            val result = fetchConnectSiteInfoWithInvalidSslError(sslException)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+        }
+
+    @Test
+    fun `given message-only SSL certificate validity site info error, when fetching site info, then return certificate validity error`() =
+        test {
+            val result = fetchConnectSiteInfoWithInvalidSslError(
+                SSLHandshakeException("certificate has expired")
+            )
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+        }
+
+    @Test
     fun `given a Jetpack site, when fetching site info, then fetch app passwords url from root endpoint`() = test {
         initSiteResponse(
             SiteWPComRestResponse().apply {
@@ -481,5 +520,23 @@ class SiteRestClientTest {
             )
         ).thenReturn(response)
         return response
+    }
+
+    private suspend fun fetchConnectSiteInfoWithInvalidSslError(
+        sslException: SSLHandshakeException
+    ): org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload {
+        val urlUtilsMock = mockStatic(UrlUtils::class.java)
+        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+        val error = WPComGsonNetworkError(
+            BaseNetworkError(
+                GenericErrorType.INVALID_SSL_CERTIFICATE,
+                VolleyError(sslException)
+            )
+        )
+        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+
+        val result = restClient.fetchConnectSiteInfoSync("test.com")
+        urlUtilsMock.close()
+        return result
     }
 }
