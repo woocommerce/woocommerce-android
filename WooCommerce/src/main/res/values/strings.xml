@@ -2315,6 +2315,8 @@
     <string name="settings_notifs_new_orders_threshold">Minimum value (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">No alerts</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s and %2$s</string>
     <string name="settings_notifs_stock_enable_title">Enable stock notifications</string>
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
