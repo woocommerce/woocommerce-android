@@ -1,9 +1,7 @@
 package org.wordpress.android.login;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.SiteError;
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType;
 
@@ -21,14 +19,5 @@ class LoginSiteAddressErrorMapper {
         } else {
             return R.string.error_generic_network;
         }
-    }
-
-    @Nullable
-    @StringRes
-    Integer getWooSiteInfoInlineErrorResId(ConnectSiteInfoPayload siteInfo) {
-        if (!siteInfo.exists) {
-            return R.string.invalid_site_url_message;
-        }
-        return null;
     }
 }

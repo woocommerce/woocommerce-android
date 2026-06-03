@@ -1,7 +1,6 @@
 package org.wordpress.android.login;
 
 import org.junit.Test;
-import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.SiteError;
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType;
 
@@ -53,32 +52,5 @@ public class LoginSiteAddressErrorMapperTest {
         Integer result = mMapper.getSiteInfoErrorResId(error, false);
 
         assertThat(result).isEqualTo(R.string.error_generic_network);
-    }
-
-    @Test
-    public void mapsNonExistentWooSiteInfoToInvalidUrl() {
-        ConnectSiteInfoPayload siteInfo = new ConnectSiteInfoPayload("test.com");
-
-        Integer result = mMapper.getWooSiteInfoInlineErrorResId(siteInfo);
-
-        assertThat(result).isEqualTo(R.string.invalid_site_url_message);
-    }
-
-    @Test
-    public void mapsExistingWooSiteInfoToNoInlineError() {
-        ConnectSiteInfoPayload siteInfo = new ConnectSiteInfoPayload(
-                "test.com",
-                true,
-                true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                null);
-
-        Integer result = mMapper.getWooSiteInfoInlineErrorResId(siteInfo);
-
-        assertThat(result).isNull();
     }
 }

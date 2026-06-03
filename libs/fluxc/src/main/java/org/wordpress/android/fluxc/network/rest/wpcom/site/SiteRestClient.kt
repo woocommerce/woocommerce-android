@@ -65,9 +65,6 @@ private val TLS_CERTIFICATE_VALIDITY_ERROR_TYPES = setOf(
     GenericErrorType.NETWORK_ERROR
 )
 
-private val NOT_AFTER_PATTERN = Regex("\\bnot\\s*-?\\s*after\\b")
-private val NOT_BEFORE_PATTERN = Regex("\\bnot\\s*-?\\s*before\\b")
-
 @Suppress("LargeClass", "TooManyFunctions", "LongParameterList")
 @Singleton
 class SiteRestClient @Inject constructor(
@@ -433,7 +430,7 @@ class SiteRestClient @Inject constructor(
 
     private fun isRemoteSiteCertificateIssue(error: WPComGsonNetworkError): Boolean {
         return error.apiError == "follow_redirects_failed" &&
-            error.getCombinedErrorMessage().isRemoteSiteCertificateMessage()
+            error.getCombinedErrorMessage().contains("curl error 60", ignoreCase = true)
     }
 
     private fun Throwable?.hasCertificateValidityIssue(): Boolean {
@@ -472,16 +469,7 @@ class SiteRestClient @Inject constructor(
         val message = this?.lowercase() ?: return false
         return message.contains("certificate has expired") ||
             message.contains("certificate expired") ||
-            message.contains("certificate is not yet valid") ||
-            message.contains("certificate not yet valid") ||
-            message.contains("timestamp check failed") ||
-            NOT_AFTER_PATTERN.containsMatchIn(message) ||
-            NOT_BEFORE_PATTERN.containsMatchIn(message)
-    }
-
-    private fun String?.isRemoteSiteCertificateMessage(): Boolean {
-        val message = this?.lowercase() ?: return false
-        return message.contains("curl error 60")
+            message.contains("not yet valid")
     }
 
     /**

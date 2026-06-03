@@ -428,10 +428,10 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
     }
 
     private void handleConnectSiteInfoForWoo(ConnectSiteInfoPayload siteInfo) {
-        Integer errorResId = mSiteAddressErrorMapper.getWooSiteInfoInlineErrorResId(siteInfo);
-        if (errorResId != null) {
+        if (!siteInfo.exists) {
             endProgressIfNeeded();
-            showError(errorResId);
+            // Site does not exist
+            showError(R.string.invalid_site_url_message);
         } else if (!siteInfo.isWordPress) {
             endProgressIfNeeded();
             // Not a WordPress site
