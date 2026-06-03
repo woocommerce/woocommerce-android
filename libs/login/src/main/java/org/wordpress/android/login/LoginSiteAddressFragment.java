@@ -75,6 +75,7 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
     private boolean mConnectSiteInfoCalculatedHasJetpack;
 
     private LoginSiteAddressValidator mLoginSiteAddressValidator;
+    private final LoginSiteAddressErrorMapper mSiteAddressErrorMapper = new LoginSiteAddressErrorMapper();
 
     @Inject AccountStore mAccountStore;
     @Inject Dispatcher mDispatcher;
@@ -404,13 +405,9 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                 );
             } else {
                 AppLog.e(T.API, "onFetchedConnectSiteInfo has error: " + event.error.message);
-                if (event.error.type == SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR) {
-                    showError(R.string.error_wordpress_com_connectivity);
-                } else if (NetworkUtils.isNetworkAvailable(requireContext())) {
-                    showError(R.string.invalid_site_url_message);
-                } else {
-                    showError(R.string.error_generic_network);
-                }
+                showError(mSiteAddressErrorMapper.getSiteInfoErrorResId(
+                        event.error,
+                        NetworkUtils.isNetworkAvailable(requireContext())));
             }
             endProgressIfNeeded();
         } else {
@@ -431,10 +428,10 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
     }
 
     private void handleConnectSiteInfoForWoo(ConnectSiteInfoPayload siteInfo) {
-        if (!siteInfo.exists) {
+        Integer errorResId = mSiteAddressErrorMapper.getWooSiteInfoInlineErrorResId(siteInfo);
+        if (errorResId != null) {
             endProgressIfNeeded();
-            // Site does not exist
-            showError(R.string.invalid_site_url_message);
+            showError(errorResId);
         } else if (!siteInfo.isWordPress) {
             endProgressIfNeeded();
             // Not a WordPress site

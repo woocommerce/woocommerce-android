@@ -34,6 +34,8 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.util.UrlUtils
+import java.security.cert.CertificateException
+import javax.net.ssl.SSLHandshakeException
 import kotlin.test.assertNotNull
 
 @Suppress("UnitTestNamingRule")
@@ -222,6 +224,54 @@ class SiteRestClientTest {
 
         assertThat(result.error).isNotNull
         assertThat(result.error!!.type).isEqualTo(SiteErrorType.WPCOM_SITE_SUSPENDED)
+        urlUtilsMock.close()
+    }
+
+    @Test
+    fun `given malformed URL, when fetching site info, then return invalid site error`() = test {
+        val urlUtilsMock = mockStatic(UrlUtils::class.java)
+        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenReturn("https://[")
+
+        val result = restClient.fetchConnectSiteInfoSync("https://[")
+
+        assertThat(result.error).isNotNull
+        assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
+        urlUtilsMock.close()
+    }
+
+    @Test
+    fun `given ordinary site info error, when fetching site info, then return invalid site error`() = test {
+        val urlUtilsMock = mockStatic(UrlUtils::class.java)
+        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+        val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, ""))
+        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+
+        val result = restClient.fetchConnectSiteInfoSync("test.com")
+
+        assertThat(result.error).isNotNull
+        assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
+        urlUtilsMock.close()
+    }
+
+    @Test
+    fun `given non-date SSL site info error, when fetching site info, then return invalid site error`() = test {
+        val urlUtilsMock = mockStatic(UrlUtils::class.java)
+        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+        val sslException = SSLHandshakeException("self signed certificate").apply {
+            initCause(CertificateException("self signed"))
+        }
+        val error = WPComGsonNetworkError(
+            BaseNetworkError(
+                GenericErrorType.INVALID_SSL_CERTIFICATE,
+                VolleyError(sslException)
+            )
+        )
+        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+
+        val result = restClient.fetchConnectSiteInfoSync("test.com")
+
+        assertThat(result.error).isNotNull
+        assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
         urlUtilsMock.close()
     }
 
