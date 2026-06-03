@@ -216,43 +216,52 @@ class SiteRestClientTest {
     @Test
     fun `given a suspended WPCom website, when fetching site info, then return correct error`() = test {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
-        val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, "")).apply {
-            apiError = "connection_disabled"
+        try {
+            whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+            val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, "")).apply {
+                apiError = "connection_disabled"
+            }
+            initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+
+            val result = restClient.fetchConnectSiteInfoSync("test.com")
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WPCOM_SITE_SUSPENDED)
+        } finally {
+            urlUtilsMock.close()
         }
-        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
-
-        val result = restClient.fetchConnectSiteInfoSync("test.com")
-
-        assertThat(result.error).isNotNull
-        assertThat(result.error!!.type).isEqualTo(SiteErrorType.WPCOM_SITE_SUSPENDED)
-        urlUtilsMock.close()
     }
 
     @Test
     fun `given malformed URL, when fetching site info, then return invalid site error`() = test {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenReturn("https://[")
+        try {
+            whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenReturn("https://[")
 
-        val result = restClient.fetchConnectSiteInfoSync("https://[")
+            val result = restClient.fetchConnectSiteInfoSync("https://[")
 
-        assertThat(result.error).isNotNull
-        assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
-        urlUtilsMock.close()
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
+        } finally {
+            urlUtilsMock.close()
+        }
     }
 
     @Test
     fun `given ordinary site info error, when fetching site info, then return invalid site error`() = test {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
-        val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, ""))
-        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+        try {
+            whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+            val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, ""))
+            initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
 
-        val result = restClient.fetchConnectSiteInfoSync("test.com")
+            val result = restClient.fetchConnectSiteInfoSync("test.com")
 
-        assertThat(result.error).isNotNull
-        assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
-        urlUtilsMock.close()
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
+        } finally {
+            urlUtilsMock.close()
+        }
     }
 
     @Test
@@ -294,23 +303,26 @@ class SiteRestClientTest {
     @Test
     fun `given non-date SSL site info error, when fetching site info, then return invalid site error`() = test {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
-        val sslException = SSLHandshakeException("self signed certificate").apply {
-            initCause(CertificateException("self signed"))
-        }
-        val error = WPComGsonNetworkError(
-            BaseNetworkError(
-                GenericErrorType.INVALID_SSL_CERTIFICATE,
-                VolleyError(sslException)
+        try {
+            whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+            val sslException = SSLHandshakeException("self signed certificate").apply {
+                initCause(CertificateException("self signed"))
+            }
+            val error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.INVALID_SSL_CERTIFICATE,
+                    VolleyError(sslException)
+                )
             )
-        )
-        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+            initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
 
-        val result = restClient.fetchConnectSiteInfoSync("test.com")
+            val result = restClient.fetchConnectSiteInfoSync("test.com")
 
-        assertThat(result.error).isNotNull
-        assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
-        urlUtilsMock.close()
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
+        } finally {
+            urlUtilsMock.close()
+        }
     }
 
     @Test
@@ -623,11 +635,13 @@ class SiteRestClientTest {
         error: WPComGsonNetworkError
     ): org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
-        initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
+        try {
+            whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
+            initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
 
-        val result = restClient.fetchConnectSiteInfoSync("test.com")
-        urlUtilsMock.close()
-        return result
+            return restClient.fetchConnectSiteInfoSync("test.com")
+        } finally {
+            urlUtilsMock.close()
+        }
     }
 }

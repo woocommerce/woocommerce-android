@@ -466,10 +466,9 @@ class SiteRestClient @Inject constructor(
     }
 
     private fun String?.isCertificateValidityMessage(): Boolean {
-        val message = this?.lowercase() ?: return false
-        return message.contains("certificate has expired") ||
-            message.contains("certificate expired") ||
-            message.contains("not yet valid")
+        return this?.contains("certificate has expired", ignoreCase = true) == true ||
+            this?.contains("certificate expired", ignoreCase = true) == true ||
+            this?.contains("not yet valid", ignoreCase = true) == true
     }
 
     /**
