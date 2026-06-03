@@ -15,6 +15,7 @@
 - [*] Fixed USPS shipping label customs handling for US territories and added a 30-character limit on customs item descriptions [https://github.com/woocommerce/woocommerce-android/pull/15999]
 - [Internal] Enabled local flag for self-driven push notifications [https://github.com/woocommerce/woocommerce-android/pull/15997]
 - [*] Fixed Woo Shipping label "Shipment details" title not expanding the bottom sheet on tap [https://github.com/woocommerce/woocommerce-android/pull/16020]
+- [*] Fixed Shipping Labels Verify button being briefly tappable when the address form input is invalid [https://github.com/woocommerce/woocommerce-android/pull/16021]
 
 24.8
 -----
