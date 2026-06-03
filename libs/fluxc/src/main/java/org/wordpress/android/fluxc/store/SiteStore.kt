@@ -304,6 +304,7 @@ open class SiteStore @Inject constructor(
         GENERIC_ERROR,
         WPCOM_SITE_SUSPENDED,
         TLS_CERTIFICATE_VALIDITY_ERROR,
+        REMOTE_SITE_CERTIFICATE_ERROR,
         WORDPRESS_COM_CONNECTIVITY_ERROR
     }
 

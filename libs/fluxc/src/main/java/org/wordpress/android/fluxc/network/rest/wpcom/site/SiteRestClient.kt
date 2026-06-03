@@ -41,6 +41,7 @@ import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponse
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.REMOTE_SITE_CERTIFICATE_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter
@@ -63,6 +64,9 @@ private val TLS_CERTIFICATE_VALIDITY_ERROR_TYPES = setOf(
     GenericErrorType.NO_CONNECTION,
     GenericErrorType.NETWORK_ERROR
 )
+
+private val NOT_AFTER_PATTERN = Regex("\\bnot\\s*-?\\s*after\\b")
+private val NOT_BEFORE_PATTERN = Regex("\\bnot\\s*-?\\s*before\\b")
 
 @Suppress("LargeClass", "TooManyFunctions", "LongParameterList")
 @Singleton
@@ -403,6 +407,7 @@ class SiteRestClient @Inject constructor(
                     else -> {
                         when {
                             isTlsCertificateValidityIssue(response.error) -> TLS_CERTIFICATE_VALIDITY_ERROR
+                            isRemoteSiteCertificateIssue(response.error) -> REMOTE_SITE_CERTIFICATE_ERROR
                             isWordPressComConnectivityIssue(response.error) -> WORDPRESS_COM_CONNECTIVITY_ERROR
                             else -> INVALID_SITE
                         }
@@ -424,6 +429,11 @@ class SiteRestClient @Inject constructor(
 
         return error.volleyError.hasCertificateValidityIssue() ||
             error.getCombinedErrorMessage().isCertificateValidityMessage()
+    }
+
+    private fun isRemoteSiteCertificateIssue(error: WPComGsonNetworkError): Boolean {
+        return error.apiError == "follow_redirects_failed" &&
+            error.getCombinedErrorMessage().isRemoteSiteCertificateMessage()
     }
 
     private fun Throwable?.hasCertificateValidityIssue(): Boolean {
@@ -450,6 +460,8 @@ class SiteRestClient @Inject constructor(
     private fun Throwable.isAndroidCertificateValidityException(): Boolean {
         return this is java.security.cert.CertificateException &&
             message?.contains("unacceptable certificate", ignoreCase = true) == true &&
+            // Android Conscrypt can wrap date validity failures as a generic platform CertificateException.
+            // Cause/message matching above remains the portable fallback for other TLS providers.
             stackTrace.any { stackTraceElement ->
                 stackTraceElement.className == "com.android.org.conscrypt.OpenSSLX509Certificate" &&
                     stackTraceElement.methodName == "checkValidity"
@@ -463,8 +475,15 @@ class SiteRestClient @Inject constructor(
             message.contains("certificate is not yet valid") ||
             message.contains("certificate not yet valid") ||
             message.contains("timestamp check failed") ||
-            message.contains("notafter") ||
-            message.contains("notbefore")
+            NOT_AFTER_PATTERN.containsMatchIn(message) ||
+            NOT_BEFORE_PATTERN.containsMatchIn(message)
+    }
+
+    private fun String?.isRemoteSiteCertificateMessage(): Boolean {
+        val message = this?.lowercase() ?: return false
+        return message.contains("curl error 60") ||
+            message.contains("ssl certificate") ||
+            message.isCertificateValidityMessage()
     }
 
     /**

@@ -29,12 +29,21 @@ public class LoginSiteAddressErrorMapperTest {
     }
 
     @Test
-    public void mapsTlsCertificateValidityErrorToCertificateValidityMessage() {
+    public void mapsTlsCertificateValidityErrorToSecureConnectionDateTimeMessage() {
         SiteError error = new SiteError(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR);
 
         Integer result = mMapper.getSiteInfoErrorResId(error, true);
 
         assertThat(result).isEqualTo(R.string.error_site_url_certificate_validity);
+    }
+
+    @Test
+    public void mapsRemoteSiteCertificateErrorToRemoteCertificateMessage() {
+        SiteError error = new SiteError(SiteErrorType.REMOTE_SITE_CERTIFICATE_ERROR);
+
+        Integer result = mMapper.getSiteInfoErrorResId(error, true);
+
+        assertThat(result).isEqualTo(R.string.error_site_url_remote_certificate);
     }
 
     @Test
