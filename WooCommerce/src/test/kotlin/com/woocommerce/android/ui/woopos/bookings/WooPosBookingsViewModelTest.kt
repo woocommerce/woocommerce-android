@@ -34,10 +34,8 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -582,25 +580,6 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given non-content state, when onBackFromIssueRefund, then state remains unchanged`() = runTest {
-        // GIVEN
-        whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
-            .thenReturn(Result.failure(RuntimeException("error")))
-
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        val beforeState = viewModel.state.value
-
-        // WHEN
-        viewModel.onBackFromIssueRefund()
-
-        // THEN
-        assertThat(viewModel.state.value).isEqualTo(beforeState)
-        verifyBlocking(bookingsRepository, never()) { fetchBooking(any()) }
-    }
-
-    @Test
     fun `given non-content state, when onBookingSelected, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
@@ -787,81 +766,6 @@ class WooPosBookingsViewModelTest {
                 bookingId = 1L,
                 attendanceStatus = BookingEntity.AttendanceStatus.Attended
             )
-        }
-
-    @Test
-    fun `given content loaded, when IssueRefund action clicked, then navigation event is emitted`() =
-        runTest {
-            // GIVEN
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.navigationEvent.test {
-                // WHEN
-                viewModel.onUIEvent(
-                    WooPosBookingsUIEvent.BookingMenuActionClicked(
-                        WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                    )
-                )
-                advanceUntilIdle()
-
-                // THEN
-                val event = awaitItem()
-                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenIssueRefund::class.java)
-                val issueRefundEvent = event as WooPosNavigationEvent.OpenIssueRefund
-                assertThat(issueRefundEvent.orderId).isEqualTo(10L)
-                assertThat(issueRefundEvent.disablePartialRefund).isTrue()
-            }
-        }
-
-    @Test
-    fun `given non-Content state, when IssueRefund action clicked, then no navigation event emitted`() =
-        runTest {
-            // GIVEN
-            whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(
-                bookingListHandler.loadBookings(
-                    filters = anyOrNull(),
-                    sortBy = anyOrNull(),
-                    searchQuery = anyOrNull()
-                )
-            ).thenReturn(Result.failure(RuntimeException("error")))
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-            val beforeState = viewModel.state.value
-
-            viewModel.navigationEvent.test {
-                // WHEN
-                viewModel.onUIEvent(
-                    WooPosBookingsUIEvent.BookingMenuActionClicked(
-                        WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
-                    )
-                )
-                advanceUntilIdle()
-
-                // THEN
-                expectNoEvents()
-                assertThat(viewModel.state.value).isEqualTo(beforeState)
-                assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
-            }
-        }
-
-    @Test
-    fun `when onBackFromIssueRefund, then selected booking is refreshed`() =
-        runTest {
-            // GIVEN
-            viewModel = createViewModel()
-            advanceUntilIdle()
-            val content = viewModel.state.value as WooPosBookingsState.Content
-            val bookingId = content.selectedDetails!!.id
-
-            // WHEN
-            viewModel.onBackFromIssueRefund()
-            advanceUntilIdle()
-
-            // THEN
-            verify(bookingsRepository).fetchBooking(bookingId)
         }
 
     @Test
@@ -1104,23 +1008,6 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `when onBackFromIssueRefund, then pullToRefreshState stays Enabled`() =
-        runTest {
-            // GIVEN
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            // WHEN
-            viewModel.onBackFromIssueRefund()
-            advanceUntilIdle()
-
-            // THEN
-            val updatedState = viewModel.state.value as WooPosBookingsState.Content
-            assertThat(updatedState.pullToRefreshState)
-                .isEqualTo(WooPosPullToRefreshState.Enabled)
-        }
-
-    @Test
     fun `given booking note saved, when refreshing, then pullToRefreshState stays Enabled`() =
         runTest {
             // GIVEN
@@ -1167,25 +1054,6 @@ class WooPosBookingsViewModelTest {
 
             // WHEN
             viewModel.onBookingNoteSaved()
-            advanceUntilIdle()
-
-            // THEN
-            verify(bookingsRepository).fetchBooking(bookingId)
-            verify(bookingListHandler, times(1))
-                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
-        }
-
-    @Test
-    fun `when issue refund dismissed, then single booking is fetched instead of full refresh`() =
-        runTest {
-            // GIVEN
-            viewModel = createViewModel()
-            advanceUntilIdle()
-            val content = viewModel.state.value as WooPosBookingsState.Content
-            val bookingId = content.selectedDetails!!.id
-
-            // WHEN
-            viewModel.onBackFromIssueRefund()
             advanceUntilIdle()
 
             // THEN

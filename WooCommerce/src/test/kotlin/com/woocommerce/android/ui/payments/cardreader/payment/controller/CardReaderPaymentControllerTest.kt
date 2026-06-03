@@ -80,6 +80,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -2479,6 +2480,37 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user leaves the screen, when cancel payment throws, then stop does not crash`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+            whenever(cardReaderManager.cancelPayment(any())).thenThrow(IllegalStateException("Cancellation race"))
+            controller.start()
+
+            controller.stop()
+
+            verify(cardReaderManager).cancelPayment(any())
+        }
+
+    @Test
+    fun `given user leaves the screen, when scope cancellation handler throws, then stop does not crash`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow<CardPaymentStatus> {
+                    suspendCancellableCoroutine<Unit> { continuation ->
+                        continuation.invokeOnCancellation {
+                            throw IllegalStateException("Cancellation race")
+                        }
+                    }
+                }
+            }
+            controller.start()
+
+            controller.stop()
+        }
+
+    @Test
     fun `given user leaves the screen, when payment succeeded on retry, then payment NOT canceled`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
@@ -3020,10 +3052,9 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            assertThat(
-                (controller.paymentState.value as CardReaderInteracRefundState.CollectingInteracRefund).cardReaderHint
-            )
-                .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
+            val state = controller.paymentState.value as CardReaderInteracRefundState.CollectingInteracRefund
+            assertThat(state.cardReaderHint).isEqualTo(R.string.card_reader_payment_remove_card_prompt)
+            assertThat(state.isDismissBlocked).isTrue()
         }
 
     @Test

@@ -205,13 +205,13 @@ class ShowCardsToolHandlerTest {
             "id",
             "product_id",
             "variation_id",
-            "name",
             "sku",
             "price",
             "stock_status",
             "status",
             "attributes",
         )
+        assertThat(summary.keys).doesNotContain("name")
         assertThat(assertSuccess(result).structured.toString()).doesNotContain("image_url")
     }
 
@@ -708,7 +708,6 @@ class ShowCardsToolHandlerTest {
                     id = id,
                     productId = 100L,
                     variationId = 10L,
-                    name = "Blue socks",
                     sku = "woo-socks-blue",
                     price = "12.99",
                     stockStatus = "instock",

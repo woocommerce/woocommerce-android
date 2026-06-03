@@ -20,15 +20,7 @@ sealed class CardReaderConfigForSupportedCountry(
     val minimumAllowedChargeAmount: BigDecimal,
     val maximumTTPAllowedChargeAmountWithoutPin: BigDecimal?,
 ) : CardReaderConfig() {
-    // Remove the CA exclusion once Interac is supported in POS. CA is a fully-supported
-    // IPP country (external reader + TTP) for the rest of the app, but POS card payments
-    // are blocked here until Interac lands.
-    override val isPosCardPaymentEnabled: Boolean
-        get() = countryCode != POS_DISABLED_COUNTRY_CA
-
-    private companion object {
-        const val POS_DISABLED_COUNTRY_CA = "CA"
-    }
+    override val isPosCardPaymentEnabled: Boolean get() = true
 }
 
 fun CardReaderConfigForSupportedCountry.isExtensionSupported(type: SupportedExtensionType) =

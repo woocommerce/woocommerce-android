@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
 import com.woocommerce.android.ui.woopos.markorderascomplete.navigateToMarkOrderAsCompleteScreen
-import com.woocommerce.android.ui.woopos.orders.details.refund.navigateToIssueRefundScreen
 import com.woocommerce.android.ui.woopos.orders.details.refund.navigateToRefundReason
 import com.woocommerce.android.ui.woopos.orders.navigateToOrderDetailsScreen
 import com.woocommerce.android.ui.woopos.orders.navigateToOrdersScreen
@@ -55,9 +54,6 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenEmailReceipt ->
             navigateToEmailReceipt(event.orderId, event.receiptAlreadySent)
-
-        is WooPosNavigationEvent.OpenIssueRefund ->
-            navigateToIssueRefundScreen(event.orderId, event.disablePartialRefund)
 
         is WooPosNavigationEvent.OpenRefundReason ->
             navigateToRefundReason(event.orderId, event.initialReason)

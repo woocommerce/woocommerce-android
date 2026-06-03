@@ -41,6 +41,14 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
+    fun `given flag disabled and Canadian country, when invoked, then returns true`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+        whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("CA")
+
+        assertThat(sut()).isTrue
+    }
+
+    @Test
     fun `given flag disabled and lowercase country code, when invoked, then matches case-insensitively`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("gb")

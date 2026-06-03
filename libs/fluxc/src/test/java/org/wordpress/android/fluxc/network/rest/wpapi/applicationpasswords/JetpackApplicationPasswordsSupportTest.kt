@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -13,7 +14,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport.Companion.FLAG_REFRESH_DURATION_DAYS
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport.Companion.UNSUPPORTED_JETPACK_APP_PASSWORDS_SITES
@@ -22,7 +22,6 @@ import kotlin.time.Duration.Companion.days
 
 @RunWith(RobolectricTestRunner::class)
 class JetpackApplicationPasswordsSupportTest {
-    private lateinit var context: Context
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport
 
@@ -30,7 +29,7 @@ class JetpackApplicationPasswordsSupportTest {
 
     @Before
     fun setup() {
-        context = RuntimeEnvironment.getApplication().applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         sharedPreferences = PreferenceUtils.getFluxCPreferences(context)
         jetpackApplicationPasswordsSupport = JetpackApplicationPasswordsSupport(context = context, appLog = mock())
     }
