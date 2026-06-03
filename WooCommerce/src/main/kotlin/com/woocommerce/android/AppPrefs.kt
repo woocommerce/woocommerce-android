@@ -153,6 +153,7 @@ object AppPrefs {
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
         AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
+        HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
     }
 
     /**
@@ -361,6 +362,13 @@ object AppPrefs {
                 .commit()
             check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
         }
+
+    var hasSeenAnalyticsScheduledImportInfo: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
+            default = false,
+        )
+        set(value) = setBoolean(key = DeletableSitePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO, value = value)
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 

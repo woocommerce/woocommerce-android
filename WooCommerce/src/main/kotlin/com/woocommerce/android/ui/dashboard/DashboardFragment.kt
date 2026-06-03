@@ -36,6 +36,7 @@ import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
@@ -101,6 +102,9 @@ class DashboardFragment :
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
@@ -205,6 +209,13 @@ class DashboardFragment :
                         DashboardFragmentDirections.actionDashboardToScheduledImportInfoBottomSheet(event.isEnabled)
                     )
                 }
+
+                is DashboardViewModel.DashboardEvent.ShowScheduledImportNotice ->
+                    uiMessageResolver.showActionSnack(
+                        message = R.string.dashboard_stats_delayed_footer,
+                        actionText = R.string.learn_more,
+                        action = { dashboardViewModel.onDelayedStatsInfoClicked() }
+                    )
 
                 else -> event.isHandled = false
             }

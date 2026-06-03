@@ -169,6 +169,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onDelayedStatsInfoClicked() {
+        appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo = true
         triggerEvent(DashboardEvent.OpenScheduledImportInfo(isEnabled = _isScheduledImportEnabled.value))
     }
 
@@ -204,6 +205,13 @@ class DashboardViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
         triggerEvent(RefreshJitm)
+        maybeShowScheduledImportNotice()
+    }
+
+    private fun maybeShowScheduledImportNotice() {
+        if (_isScheduledImportEnabled.value && !appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo) {
+            triggerEvent(DashboardEvent.ShowScheduledImportNotice)
+        }
     }
 
     fun onResume() {
@@ -416,6 +424,8 @@ class DashboardViewModel @Inject constructor(
         data object OpenWooPushNotificationsIntroduction : DashboardEvent()
 
         data class OpenScheduledImportInfo(val isEnabled: Boolean) : DashboardEvent()
+
+        data object ShowScheduledImportNotice : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
