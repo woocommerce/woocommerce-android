@@ -58,6 +58,12 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
+private val TLS_CERTIFICATE_VALIDITY_ERROR_TYPES = setOf(
+    GenericErrorType.INVALID_SSL_CERTIFICATE,
+    GenericErrorType.NO_CONNECTION,
+    GenericErrorType.NETWORK_ERROR
+)
+
 @Suppress("LargeClass", "TooManyFunctions", "LongParameterList")
 @Singleton
 class SiteRestClient @Inject constructor(
@@ -412,7 +418,7 @@ class SiteRestClient @Inject constructor(
     }
 
     private fun isTlsCertificateValidityIssue(error: WPComGsonNetworkError): Boolean {
-        if (error.type != GenericErrorType.INVALID_SSL_CERTIFICATE) {
+        if (error.type !in TLS_CERTIFICATE_VALIDITY_ERROR_TYPES) {
             return false
         }
 
@@ -432,9 +438,22 @@ class SiteRestClient @Inject constructor(
                 return true
             }
 
+            if (throwable.isAndroidCertificateValidityException()) {
+                return true
+            }
+
             throwable = throwable.cause
         }
         return false
+    }
+
+    private fun Throwable.isAndroidCertificateValidityException(): Boolean {
+        return this is java.security.cert.CertificateException &&
+            message?.contains("unacceptable certificate", ignoreCase = true) == true &&
+            stackTrace.any { stackTraceElement ->
+                stackTraceElement.className == "com.android.org.conscrypt.OpenSSLX509Certificate" &&
+                    stackTraceElement.methodName == "checkValidity"
+            }
     }
 
     private fun String?.isCertificateValidityMessage(): Boolean {
@@ -443,6 +462,7 @@ class SiteRestClient @Inject constructor(
             message.contains("certificate expired") ||
             message.contains("certificate is not yet valid") ||
             message.contains("certificate not yet valid") ||
+            message.contains("timestamp check failed") ||
             message.contains("notafter") ||
             message.contains("notbefore")
     }

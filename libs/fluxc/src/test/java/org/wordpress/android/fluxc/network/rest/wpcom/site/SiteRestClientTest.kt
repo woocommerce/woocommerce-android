@@ -315,6 +315,36 @@ class SiteRestClientTest {
         }
 
     @Test
+    fun `given Android no connection certificate validity error, when fetching site info, then return certificate validity error`() =
+        test {
+            val certificateException = CertificateException("Unacceptable certificate: CN=E8").apply {
+                stackTrace = arrayOf(
+                    StackTraceElement(
+                        "com.android.org.conscrypt.OpenSSLX509Certificate",
+                        "checkValidity",
+                        "OpenSSLX509Certificate.java",
+                        266
+                    )
+                )
+            }
+            val sslException = SSLHandshakeException("Unacceptable certificate").apply {
+                initCause(certificateException)
+            }
+            val volleyError = com.android.volley.NoConnectionError(sslException)
+            val error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.NO_CONNECTION,
+                    volleyError
+                )
+            )
+
+            val result = fetchConnectSiteInfoWithError(error)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+        }
+
+    @Test
     fun `given a Jetpack site, when fetching site info, then fetch app passwords url from root endpoint`() = test {
         initSiteResponse(
             SiteWPComRestResponse().apply {
@@ -525,14 +555,20 @@ class SiteRestClientTest {
     private suspend fun fetchConnectSiteInfoWithInvalidSslError(
         sslException: SSLHandshakeException
     ): org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload {
-        val urlUtilsMock = mockStatic(UrlUtils::class.java)
-        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
         val error = WPComGsonNetworkError(
             BaseNetworkError(
                 GenericErrorType.INVALID_SSL_CERTIFICATE,
                 VolleyError(sslException)
             )
         )
+        return fetchConnectSiteInfoWithError(error)
+    }
+
+    private suspend fun fetchConnectSiteInfoWithError(
+        error: WPComGsonNetworkError
+    ): org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload {
+        val urlUtilsMock = mockStatic(UrlUtils::class.java)
+        whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }
         initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
 
         val result = restClient.fetchConnectSiteInfoSync("test.com")
