@@ -481,9 +481,7 @@ class SiteRestClient @Inject constructor(
 
     private fun String?.isRemoteSiteCertificateMessage(): Boolean {
         val message = this?.lowercase() ?: return false
-        return message.contains("curl error 60") ||
-            message.contains("ssl certificate") ||
-            message.isCertificateValidityMessage()
+        return message.contains("curl error 60")
     }
 
     /**

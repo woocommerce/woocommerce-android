@@ -274,6 +274,24 @@ class SiteRestClientTest {
         }
 
     @Test
+    fun `given follow redirects failed wrong-host certificate error, when fetching site info, then return remote certificate error`() =
+        test {
+            val error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.INVALID_RESPONSE,
+                    "cURL error 60: SSL: no alternative certificate subject name matches target host name"
+                )
+            ).apply {
+                apiError = "follow_redirects_failed"
+            }
+
+            val result = fetchConnectSiteInfoWithError(error)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.REMOTE_SITE_CERTIFICATE_ERROR)
+        }
+
+    @Test
     fun `given follow redirects failed non-certificate error, when fetching site info, then return invalid site error`() =
         test {
             val error = WPComGsonNetworkError(
