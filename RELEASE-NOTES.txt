@@ -7,6 +7,7 @@
 - [*] Added age-eligibility verification to comply with Google Play age requirements [https://github.com/woocommerce/woocommerce-android/pull/16048]
 - [**] Woo POS is now available in Canada, and the POS refund flow is improved [https://github.com/woocommerce/woocommerce-android/pull/15996]
 - [*] Fixed Tap to Pay being offered on devices that don't support it, and replaced the generic "No reader connected" error with a clear "Tap to Pay is not available" message linking to the requirements [https://github.com/woocommerce/woocommerce-android/pull/16044]
+- [*] Improved login error messages for site security certificate issues [https://github.com/woocommerce/woocommerce-android/pull/16042]
 
 24.9
 -----
