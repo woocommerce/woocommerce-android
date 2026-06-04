@@ -218,10 +218,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when discovery fails, then observers get notified`() = testBlocking {
-        val terminalException = mock<TerminalException> {
-            on { errorMessage }.thenReturn("test")
-            on { errorCode }.thenReturn(TerminalErrorCode.NOT_CONNECTED_TO_READER)
-        }
+        val terminalException = TerminalException(TerminalErrorCode.NOT_CONNECTED_TO_READER, "test")
         whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
 
@@ -232,10 +229,10 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given TTP unsupported device error, when discovery fails, then ttp specific event emitted`() = testBlocking {
-        val terminalException = mock<TerminalException> {
-            on { errorMessage }.thenReturn("Device does not use TEE")
-            on { errorCode }.thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE)
-        }
+        val terminalException = TerminalException(
+            TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
+            "Device does not use TEE",
+        )
         whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
 
@@ -246,10 +243,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given TTP tampered device error, when discovery fails, then ttp specific event emitted`() = testBlocking {
-        val terminalException = mock<TerminalException> {
-            on { errorMessage }.thenReturn("tampered")
-            on { errorCode }.thenReturn(TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED)
-        }
+        val terminalException = TerminalException(TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED, "tampered")
         whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
 
@@ -261,10 +255,10 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given TTP unsupported android version error, when discovery fails, then ttp specific event emitted`() =
         testBlocking {
-            val terminalException = mock<TerminalException> {
-                on { errorMessage }.thenReturn("old android")
-                on { errorCode }.thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION)
-            }
+            val terminalException = TerminalException(
+                TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
+                "old android",
+            )
             whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
                 .thenReturn(flow { emit(Failure(terminalException)) })
 
@@ -275,10 +269,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given non TTP error code, when discovery fails, then generic Failed event emitted`() = testBlocking {
-        val terminalException = mock<TerminalException> {
-            on { errorMessage }.thenReturn("other error")
-            on { errorCode }.thenReturn(TerminalErrorCode.NOT_CONNECTED_TO_READER)
-        }
+        val terminalException = TerminalException(TerminalErrorCode.NOT_CONNECTED_TO_READER, "other error")
         whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
             .thenReturn(flow { emit(Failure(terminalException)) })
 

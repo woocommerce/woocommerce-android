@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
@@ -1383,7 +1384,11 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
             whenever(tapToPayAvailabilityStatus()).thenReturn(DeviceNotSupported)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<CardReaderOnboardingState.OnboardingCompleted>()
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = "1.0",
+                    countryCode = "US",
+                )
             )
 
             // WHEN
@@ -1412,7 +1417,11 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
             whenever(tapToPayAvailabilityStatus()).thenReturn(DeviceNotSupported)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-                mock<CardReaderOnboardingState.OnboardingCompleted>()
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = "1.0",
+                    countryCode = "US",
+                )
             )
             initViewModel()
 
