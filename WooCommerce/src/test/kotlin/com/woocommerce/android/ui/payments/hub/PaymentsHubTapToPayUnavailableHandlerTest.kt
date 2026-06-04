@@ -85,6 +85,34 @@ class PaymentsHubTapToPayUnavailableHandlerTest {
     }
 
     @Test
+    fun `given DeviceNotSupported, when handleTTPUnavailable, then dialog points at learn more action`() {
+        // GIVEN
+        val status = TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported
+        val captor = argumentCaptor<MultiLiveEvent.Event.ShowDialog>()
+
+        // WHEN
+        handler.handleTTPUnavailable(
+            status = status,
+            triggerEvent = triggerEvent,
+            positiveButtonClick = positiveButtonClick
+        )
+
+        // THEN
+        verify(triggerEvent).invoke(captor.capture())
+        assertThat(captor.firstValue.titleId).isEqualTo(R.string.card_reader_tap_to_pay_not_available_error_title)
+        assertThat(captor.firstValue.messageId).isEqualTo(
+            R.string.card_reader_tap_to_pay_not_available_error_device
+        )
+        assertThat(captor.firstValue.positiveButtonId).isEqualTo(
+            R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button
+        )
+        assertThat(captor.firstValue.negativeButtonId).isEqualTo(R.string.close)
+
+        captor.firstValue.positiveBtnAction!!.onClick(mock(), 0)
+        verify(positiveButtonClick).invoke(PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_LEARN_MORE)
+    }
+
+    @Test
     fun `given GooglePlayServicesNotAvailable, when handleTTPUnavailable, then triggers showdialog event`() {
         // GIVEN
         val status = TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable

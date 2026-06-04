@@ -44,6 +44,14 @@ class PaymentsHubTapToPayUnavailableHandler @Inject constructor() {
                     triggerEvent
                 ) { positiveButtonClick(ActionType.TAP_TO_PAY_REQUIREMENTS) }
             }
+
+            TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported -> {
+                showDialog(
+                    R.string.card_reader_tap_to_pay_not_available_error_device,
+                    R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button,
+                    triggerEvent
+                ) { positiveButtonClick(ActionType.TAP_TO_PAY_LEARN_MORE) }
+            }
         }
     }
 
@@ -65,6 +73,6 @@ class PaymentsHubTapToPayUnavailableHandler @Inject constructor() {
     }
 
     enum class ActionType {
-        PURCHASE_READER, TAP_TO_PAY_REQUIREMENTS,
+        PURCHASE_READER, TAP_TO_PAY_REQUIREMENTS, TAP_TO_PAY_LEARN_MORE,
     }
 }

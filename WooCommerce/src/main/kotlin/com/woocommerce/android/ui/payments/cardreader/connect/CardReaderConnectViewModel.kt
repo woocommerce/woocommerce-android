@@ -5,12 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
@@ -56,6 +58,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.TapToPayDeviceUnsupportedState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -339,7 +342,20 @@ class CardReaderConnectViewModel @Inject constructor(
                 WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
                 viewState.value = ScanningFailedState(::restartFlow, ::onCancelClicked)
             }
+
+            is FailedTapToPayDeviceUnsupported -> {
+                tracker.trackReaderDiscoveryFailed(discoveryEvent.msg)
+                WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
+                viewState.value = TapToPayDeviceUnsupportedState(
+                    onPrimaryActionClicked = ::onTapToPayRequirementsClicked,
+                    onSecondaryActionClicked = ::onCancelClicked,
+                )
+            }
         }
+    }
+
+    private fun onTapToPayRequirementsClicked() {
+        triggerEvent(Event.LaunchUrlInChromeTab(AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY))
     }
 
     fun onUpdateReaderResult(updateResult: CardReaderUpdateViewModel.UpdateResult) {

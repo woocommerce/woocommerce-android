@@ -1389,6 +1389,7 @@
     <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_device">This device doesn\'t meet the security requirements for Tap to Pay on Android. To accept in-person payments, you can purchase a Bluetooth card reader.</string>
     <string name="card_reader_hub_payout_summary_available_funds">Available funds</string>
     <string name="card_reader_hub_payout_summary_pending_funds">Pending funds</string>
     <string name="card_reader_hub_payout_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
