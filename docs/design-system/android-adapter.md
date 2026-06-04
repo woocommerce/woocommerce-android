@@ -58,9 +58,11 @@ The exact enum/type name can be refined during implementation.
 
 ## Token Strategy
 
-i1 uses manual Android runtime token definitions first.
+i1 uses manual Kotlin/Compose runtime token definitions first.
 
-- Keep Android token names stable and screen-facing.
+- Use `docs/design-system/material3-reference.md` for official Material 3 role semantics, Compose
+  API pointers, and default scale references while mapping i1 foundations.
+- Keep adapter token names stable and screen-facing.
 - Use Material 3 role names where the design maps cleanly.
 - Add Woo-specific semantic tokens only when Material 3 roles do not express the design intent.
 - Keep Figma variables with no clean Material 3 role internal first, and expose them publicly only when production components or pilot screens need them.
