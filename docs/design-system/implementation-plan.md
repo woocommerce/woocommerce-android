@@ -14,6 +14,7 @@ Expected output:
 
 - Design-system docs skeleton.
 - Decision checkpoint with source references and rejected alternatives.
+- Material 3 reference for token semantics and Compose interop.
 - Candidate criteria and pilot definitions.
 
 Keep this as one docs PR. The checkpoint, implementation plan, token map, component catalog, migration playbook, and pilot docs are one coherent decision package.
@@ -25,9 +26,15 @@ Implement the design-system foundation layer without adopting it in product scre
 Expected output:
 
 - `WooDesignSystemTheme`.
-- Manual i1 Android runtime tokens.
+- Migration-era wrapper naming: use `WooDesignSystemTheme`, not `WooNewTheme`, while the legacy
+  `WooTheme` wrapper exists. Future consolidation can happen after the legacy wrapper is removed.
+- `WooTheme` foundation accessors for theme-scoped production APIs.
+- Manual i1 Kotlin/Compose runtime tokens.
 - Foundation groups for color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
-- Material 3 role names where the design maps cleanly; Woo-specific semantic tokens only when necessary.
+- Curated production color roles through `WooTheme.colors`, projected into `MaterialTheme.colorScheme`.
+- Full text roles through `WooTheme.text`, with the regular projection installed in `MaterialTheme.typography`.
+- Spacing and padding through `WooTheme.spacing` and `WooTheme.padding`.
+- Woo-specific semantic colors added to `WooTheme.colors` only when necessary and approved.
 - Internal adapter tokens for Figma variables with no clean Material 3 role, with public exposure only when needed by production components or pilots.
 - Kotlin/Compose-owned token primitive values for i1 foundations.
 - No Android XML resources for design-system tokens until a real XML/View use case needs them.
@@ -62,6 +69,9 @@ Production screens should consume only production-ready components. In-progress 
 Preview-only implementations should stay private/internal to the catalog or preview files, preferably under `designsystem.preview`, so migration agents do not import unsettled APIs into product screens.
 
 The initial production subset should cover top/navigation bar, page title/body/link text styles or wrappers, primary button, settings cell/row, section header, switch, icon button, divider, progress indicator, and the spacing/radius/color/typography tokens they depend on.
+
+Production components should read approved foundations through `WooTheme.*`. Material 3 defaults may use
+`MaterialTheme` internally as an interop projection.
 
 Progress indicator is not listed as an i1 Figma component. Include it as a thin Material 3 wrapper so future custom loading/progress design can replace the implementation behind the adapter.
 

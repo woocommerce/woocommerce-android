@@ -81,7 +81,7 @@ It does not mean:
 3. Keep the existing host. For XML/View migration, replace the layout with `composeView`; for existing Compose adoption, keep the current Compose root.
 4. Opt into the design-system theme only at the Compose root for the adopted screen.
 5. Build a stateless screen composable and a VM-aware overload only if the screen needs ViewModel state.
-6. Use design-system components and tokens where they are production-ready.
+6. Use design-system components and `WooTheme.*` foundations where they are production-ready.
 7. Do not use preview-only components in production screens. Preview-only implementations should not have public APIs intended for product-screen imports.
 8. Preserve existing string resources and analytics event names unless the migration explicitly requires a product copy or tracking change.
 9. Add light and dark previews with `@PreviewLightDark`. Pilot previews should use the same theme that the screen opts into at runtime. Add font scale, RTL, or orientation previews when the screen is sensitive to those dimensions.
@@ -103,7 +103,7 @@ For each migrated or adopted screen, an agent must report a short candidate asse
 - Which adoption outcome was used.
 - Risk signals checked.
 - What behavior was intentionally preserved.
-- What design-system tokens/components were used.
+- What design-system components and `WooTheme` foundations were used.
 - What stayed in XML/View or legacy Compose and why.
 - Preview coverage added.
 - Verification performed.

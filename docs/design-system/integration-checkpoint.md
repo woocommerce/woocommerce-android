@@ -23,10 +23,11 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Add new design-system foundations and components as opt-in APIs.
 - Do not globally remap existing `Woo*`, `WC*`, XML styles, or resource names yet.
 - Figma is the design-intent source of truth; Android owns the runtime API contract.
-- Manually define stable i1 Android runtime tokens first.
+- Manually define stable i1 Kotlin/Compose runtime tokens first.
 - Structure tokens and docs so a future Figma generation pipeline can update adapter internals later.
 - Do not expose raw Figma variable names as public Android APIs.
-- Keep a strict token map with Android token name, Figma variable/name/ID when available, light and dark values, Material 3 role mapping, status, and notes.
+- Keep a strict token map with Android API/token name, source shorthand or Figma variable/name/ID
+  when useful, light and dark values, Material 3 role mapping, status, and notes.
 - Use Material 3 role names where the design maps cleanly; add Woo-specific semantic tokens only when necessary.
 - Figma variables with no clean Material 3 role stay internal first, with public exposure only when needed by production components or pilots.
 - i1 foundations start Kotlin/Compose-only; do not create Android XML resources for design-system tokens until XML/View needs them.
@@ -50,6 +51,22 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Package root: `com.woocommerce.android.ui.compose.designsystem`.
 - Suggested subpackages: `foundation`, `component`, and `preview`.
 - Use a separate opt-in `WooDesignSystemTheme`, Material 3-only.
+- `WooDesignSystemTheme` is the migration-era wrapper name while the legacy
+  `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper exists. Do not introduce `WooNewTheme`.
+  Future consolidation can merge wrapper/accessor naming after the legacy wrapper is removed.
+- `WooDesignSystemTheme` installs the Store design-system runtime; `WooTheme.*` is the
+  component-facing accessor for theme-scoped foundation values.
+- The new `WooTheme` accessor lives under the design-system package. This intentionally accepts temporary
+  simple-name overlap with the legacy `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper until the
+  legacy wrapper is removed; new design-system code should not import the legacy wrapper.
+- `WooTheme.colors` is the canonical Store authoring surface for curated, production-approved color roles. It
+  should not mirror the full Material 3 `ColorScheme`.
+- `MaterialTheme.colorScheme` remains populated from the same source values as an interop projection for Material 3
+  components, defaults, and helpers.
+- `WooTheme.text` exposes the Store text-role model, including regular, emphasized, and strong variants.
+  `MaterialTheme.typography` is the regular Material 3 projection.
+- Do not add a separate `WooTheme.semanticColors` in PR 2. Future approved non-Material semantic colors should grow
+  additively inside `WooTheme.colors`.
 - PR 2 foundation scope includes color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
 - Add an explicit theme selector to `composeView`, defaulting to the legacy app theme.
 - New design-system foundations, components, preview catalog entries, and pilot updates should use `androidx.compose.ui.tooling.preview.PreviewLightDark` for light/dark previews.
@@ -109,6 +126,7 @@ Planned docs folder:
 - `docs/design-system/android-adapter.md`
 - `docs/design-system/token-map.md`
 - `docs/design-system/component-catalog.md`
+- `docs/design-system/material3-reference.md`
 - `docs/design-system/screen-migration-playbook.md`
 - `docs/design-system/implementation-plan.md`
 - `docs/design-system/pilot-feedback-completed.md`
@@ -125,6 +143,7 @@ Created docs:
 - `docs/design-system/android-adapter.md`
 - `docs/design-system/token-map.md`
 - `docs/design-system/component-catalog.md`
+- `docs/design-system/material3-reference.md`
 - `docs/design-system/screen-migration-playbook.md`
 - `docs/design-system/implementation-plan.md`
 - `docs/design-system/pilot-feedback-completed.md`

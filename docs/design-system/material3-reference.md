@@ -5,7 +5,12 @@ defaults and Compose semantics. It is for the Store Management App design-system
 out of scope.
 
 Use this as a semantic baseline, not as a public API mandate. The i1 adapter still owns stable
-`Woo` APIs under `com.woocommerce.android.ui.compose.designsystem`.
+`WooTheme` and component APIs under `com.woocommerce.android.ui.compose.designsystem`.
+
+Store design-system APIs should expose approved authoring roles through `WooTheme`. `MaterialTheme`
+is still populated from the same source values so Material 3 components, defaults, and helpers work
+normally. Product-screen and design-system component code should read approved Store foundations
+through `WooTheme` and use `MaterialTheme` when a Material API requires the interop projection.
 
 ## Official Sources
 
@@ -25,8 +30,10 @@ implementation, confirm API availability against the repo's pinned Material 3 de
 
 ## Color Roles
 
-Map i1 colors to Material 3 roles when the role describes the UI meaning. Add Woo-specific semantic
-tokens only when Material 3 does not express the i1 intent.
+Map i1 colors to Material 3 roles when the role describes the UI meaning. Approved production roles
+are exposed through `WooTheme.colors`; the same source values are projected into
+`MaterialTheme.colorScheme` for Material 3 interop. Future Woo-specific semantic tokens are additive
+members of `WooTheme.colors` once approved.
 
 | Role group | Use for i1 mapping |
 | --- | --- |
@@ -52,8 +59,9 @@ been explicitly checked and the mismatch is intentional.
 
 ## Typography Scale
 
-Compose Material 3 exposes a 15-role type scale through `MaterialTheme.typography`. Use the role by
-semantic purpose first, then adjust i1 values in `WooDesignSystemTheme` if the design differs.
+Compose Material 3 exposes a 15-role type scale through `MaterialTheme.typography`. The Store
+design-system authoring surface is `WooTheme.text`, which keeps the regular, emphasized, and strong
+variants. `MaterialTheme.typography` receives the regular projection for Material 3 interop.
 
 | Role | Default size/line | Weight | Typical use |
 | --- | --- | --- | --- |
@@ -73,8 +81,9 @@ semantic purpose first, then adjust i1 values in `WooDesignSystemTheme` if the d
 | `labelMedium` | 12sp/16sp | Medium | Compact labels. |
 | `labelSmall` | 11sp/16sp | Medium | Small labels and metadata. |
 
-Material 3 currently also has emphasized token variants in AndroidX source. Treat those as internal
-Material implementation details until the i1 adapter deliberately exposes a Woo semantic for them.
+Material 3 currently also has emphasized token variants in AndroidX source. Treat those as Material
+implementation details; the Store design-system text variants are the ones exposed through
+`WooTheme.text`.
 
 ## Shape Roles
 
@@ -184,6 +193,11 @@ The existing adapter decision still stands:
 - Material 3 `ColorScheme`, `Typography`, `Shapes`, and component defaults should be built from those
   Kotlin/Compose-owned primitives.
 - Do not create Android resources for every Material role just because `ColorScheme` has that role.
+- Expose only approved Store authoring roles through `WooTheme`. `WooTheme.colors` is a curated color
+  surface, not a public mirror of every Material 3 `ColorScheme` role.
+- Future non-Material 3 colors such as success, warning, caution, info, or link should grow
+  additively into `WooTheme.colors` when approved; do not create a parallel semantic-colors carrier
+  in PR 2.
 - Promote a primitive to Android resources only when a real non-migrated XML/View screen needs that
   token.
 - When promotion is needed, move the primitive value to resources and update Compose to read the same

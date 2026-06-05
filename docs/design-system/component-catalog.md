@@ -21,6 +21,9 @@ Before the two pilots begin, production-ready APIs should exist for:
 - Progress indicator.
 - Spacing, radius, color, and typography tokens used by those components.
 
+Production components should read approved foundation values through `WooTheme.*`. `MaterialTheme` remains available
+inside wrappers when Material 3 components or defaults require interop projection values.
+
 Do not add additional thin wrappers beyond this subset unless a later design-system decision explicitly expands the catalog. This prevents the adapter from becoming an unlimited Material 3 wrapper library.
 
 ## Preview Standard
@@ -68,6 +71,8 @@ Before a component is marked `production`:
 
 - It uses `Woo` naming inside `com.woocommerce.android.ui.compose.designsystem`.
 - It is wrapped by `WooDesignSystemTheme` in design-system previews.
+- It reads production foundation values through `WooTheme.*`, except where a Material 3 API requires `MaterialTheme`
+  interop values.
 - It has light and dark previews through `@PreviewLightDark`.
 - Required states are covered in previews.
 - Screenshot verification is completed if the component is high-risk.

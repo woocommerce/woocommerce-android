@@ -30,6 +30,16 @@ Suggested subpackages:
 - Use the `Woo` prefix for new design-system components inside the design-system package.
 - Do not use `WooDs*` for new APIs.
 - Do not use `WC*` for new design-system APIs. `WC*` remains the legacy/shared component namespace.
+- Use `WooDesignSystemTheme` for the opt-in theme wrapper.
+- Treat `WooDesignSystemTheme` as the migration-era wrapper name while the legacy
+  `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper still exists. Do not use temporal names
+  such as `WooNewTheme`; future consolidation can merge wrapper/accessor naming after the legacy
+  wrapper is removed.
+- Use `WooTheme` as the design-system foundation accessor object for theme-scoped values such as
+  colors, typography, spacing, and padding.
+- The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
+  The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
+  wrapper until deliberately removed; new design-system code should not import it.
 - Do not expose raw Figma variable names as public Android API.
 - Public APIs should expose only production-ready tokens and components.
 - In-progress i1 areas may be documented, tracked, or preview-only until signed off.
@@ -41,6 +51,10 @@ Suggested subpackages:
 Add a separate `WooDesignSystemTheme` for design-system screens and previews.
 
 - The theme is Material 3-only.
+- The name is intentionally explicit during migration so design-system opt-in roots are distinguishable
+  from legacy `WooTheme` roots.
+- `WooDesignSystemTheme` provides the theme-scoped `WooTheme.*` foundation values and projects the
+  same source values into `MaterialTheme` for Material 3 component interop.
 - Existing Material 2 usage can remain until touched.
 - `composeView` should accept an explicit theme selector and default to the current legacy app theme.
 - Migrated design-system screens opt in at the Fragment Compose root.
@@ -63,9 +77,22 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Use `docs/design-system/material3-reference.md` for official Material 3 role semantics, Compose
   API pointers, and default scale references while mapping i1 foundations.
 - Keep adapter token names stable and screen-facing.
-- Use Material 3 role names where the design maps cleanly.
-- Add Woo-specific semantic tokens only when Material 3 roles do not express the design intent.
+- Use Material 3 role names where the design maps cleanly, but expose approved Store authoring roles
+  through `WooTheme`.
+- Product-screen and design-system component code should read approved foundations from `WooTheme`,
+  for example `WooTheme.colors.primary`, `WooTheme.text.titleMedium.emphasized`,
+  `WooTheme.spacing.space5`, and `WooTheme.padding.padding5`.
+- `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` are interop
+  projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
+  them, not as the primary Store design-system authoring surface.
+- `WooTheme.colors` exposes only curated, production-approved color roles. It is not a public mirror
+  of the full Material 3 `ColorScheme`.
+- Future Woo-specific colors with no Material 3 role, such as success, warning, caution, info, or
+  link, can grow additively into `WooTheme.colors` once approved. Do not create a parallel
+  `WooTheme.semanticColors` group in PR 2.
 - Keep Figma variables with no clean Material 3 role internal first, and expose them publicly only when production components or pilot screens need them.
+- Internal `WooRadius`, `WooStroke`, and unresolved foundation groups may exist as implementation
+  catalog entries without public accessors until a production component or pilot needs them.
 - Keep Figma variable names or IDs only in documentation and internal mapping metadata.
 - Structure token definitions so a future Figma generation pipeline can update adapter internals without changing screen APIs.
 - Every token that reaches production APIs must be represented in `docs/design-system/token-map.md`.
