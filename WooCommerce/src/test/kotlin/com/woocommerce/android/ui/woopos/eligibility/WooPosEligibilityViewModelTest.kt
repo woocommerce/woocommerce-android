@@ -241,14 +241,14 @@ class WooPosEligibilityViewModelTest {
     }
 
     @Test
-    fun `given DE store and primary expansion flag on, when ineligible due to unsupported currency, then message uses EUR`() = runTest {
+    fun `given IE store and primary expansion flag on, when ineligible due to unsupported currency, then message uses EUR`() = runTest {
         // GIVEN
         whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(
-            listOf("us" to "usd", "gb" to "gbp", "de" to "eur"),
+            listOf("us" to "usd", "gb" to "gbp", "ie" to "eur"),
         )
         val sut = createSut()
-        whenever(mockStoreCountryProvider()).thenReturn("Germany")
-        whenever(mockStoreCountryCodeProvider()).thenReturn("de")
+        whenever(mockStoreCountryProvider()).thenReturn("Ireland")
+        whenever(mockStoreCountryCodeProvider()).thenReturn("ie")
 
         // WHEN
         sut.initialize(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
@@ -257,20 +257,20 @@ class WooPosEligibilityViewModelTest {
         // THEN
         verify(mockResourceProvider).getString(
             eq(com.woocommerce.android.R.string.woopos_eligibility_reason_unsupported_currency_country_pair),
-            eq("Germany"),
+            eq("Ireland"),
             eq("EUR"),
         )
     }
 
     @Test
-    fun `given DE store and primary expansion flag off, when ineligible due to unsupported currency, then generic message used`() = runTest {
+    fun `given IE store and primary expansion flag off, when ineligible due to unsupported currency, then generic message used`() = runTest {
         // GIVEN
         whenever(supportedCountries.supportedCountryCurrencyPairs()).thenReturn(
             listOf("us" to "usd", "gb" to "gbp"),
         )
         val sut = createSut()
-        whenever(mockStoreCountryProvider()).thenReturn("Germany")
-        whenever(mockStoreCountryCodeProvider()).thenReturn("de")
+        whenever(mockStoreCountryProvider()).thenReturn("Ireland")
+        whenever(mockStoreCountryCodeProvider()).thenReturn("ie")
 
         // WHEN
         sut.initialize(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
