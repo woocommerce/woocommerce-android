@@ -7,9 +7,9 @@ out of scope.
 Use this as a semantic baseline, not as a public API mandate. The i1 adapter still owns stable
 `WooTheme` and component APIs under `com.woocommerce.android.ui.compose.designsystem`.
 
-Store design-system APIs should expose approved authoring roles through `WooTheme`. `MaterialTheme`
-is still populated from the same source values so Material 3 components, defaults, and helpers work
-normally. Product-screen and design-system component code should read approved Store foundations
+Store design-system APIs should expose source-backed authoring roles through `WooTheme`.
+`MaterialTheme` is still populated from source values so Material 3 components, defaults, and
+helpers work normally. Product-screen and design-system component code should read Store foundations
 through `WooTheme` and use `MaterialTheme` when a Material API requires the interop projection.
 
 ## Official Sources
@@ -30,10 +30,14 @@ implementation, confirm API availability against the repo's pinned Material 3 de
 
 ## Color Roles
 
-Map i1 colors to Material 3 roles when the role describes the UI meaning. Approved production roles
-are exposed through `WooTheme.colors`; the same source values are projected into
-`MaterialTheme.colorScheme` for Material 3 interop. Future Woo-specific semantic tokens are additive
-members of `WooTheme.colors` once approved.
+Use Material 3 color roles as interop semantics, not as the public Store color API. PR 2
+`WooTheme.colors` should expose every source-backed Figma/manual-export color token, grouped
+shallowly by source intent. `MaterialTheme.colorScheme` receives internal projection aliases for
+Material 3 components, defaults, and helpers.
+
+Do not generate public `WooTheme.colors` entries for Material fixed roles, `surfaceContainer*`,
+`surfaceDim`, `surfaceBright`, or other Material aliases unless those names are real source-backed
+tokens. `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
 
 | Role group | Use for i1 mapping |
 | --- | --- |
@@ -45,17 +49,21 @@ members of `WooTheme.colors` once approved.
 | `error`, `onError`, `errorContainer`, `onErrorContainer` | Destructive actions, validation errors, and error containers. |
 | `surface`, `onSurface` | Default app surfaces and primary text/icons on neutral surfaces. |
 | `surfaceVariant`, `onSurfaceVariant` | Lower-emphasis neutral containers, secondary text/icons, and content adjacent to dividers. |
-| `surfaceContainerLowest` through `surfaceContainerHighest` | Nested neutral containers. Prefer this scale over inventing ad hoc neutral fills. |
-| `surfaceDim`, `surfaceBright` | Light/dark-aware surface extremes. Use only if i1 needs that explicit semantic. |
+| `surfaceContainerLowest` through `surfaceContainerHighest` | Nested neutral containers for internal projection only unless source-backed names exist. |
+| `surfaceDim`, `surfaceBright` | Light/dark-aware surface extremes for internal projection only unless source-backed names exist. |
 | `background`, `onBackground` | Root/background areas when distinct from `surface`. In M3, prefer `surface` for most containers. |
 | `outline`, `outlineVariant` | Borders, dividers, and low-emphasis strokes. |
 | `inverseSurface`, `inverseOnSurface`, `inversePrimary` | Inverse surfaces such as snackbar-like UI. |
 | `scrim` | Modal overlays and obscuring layers. |
-| `primaryFixed` and other fixed roles | Dynamic-color-stable accent roles. Do not use unless a later design decision needs fixed dynamic-color behavior. |
+| `primaryFixed` and other fixed roles | Dynamic-color-stable accent roles. Keep internal unless source-backed names exist. |
 
 Always pair `on*` colors with their matching container/background role. Do not put
 `onPrimaryContainer` on `primary`, or `primaryContainer` on `tertiaryContainer`, unless contrast has
 been explicitly checked and the mismatch is intentional.
+
+Public palette/ramp and alert tokens do not automatically approve foreground/background pairing.
+Component-specific contrast is required before using them for text, essential icons, or required
+state communication.
 
 ## Typography Scale
 
@@ -117,9 +125,9 @@ elevation. Compose `Surface` supports both:
 - `ColorScheme.surfaceColorAtElevation(elevation)` computes elevated surface color.
 - AndroidX elevation token levels are `0dp`, `1dp`, `3dp`, `6dp`, `8dp`, and `12dp`.
 
-For i1, prefer explicit `surfaceContainer*` roles for stable neutral container hierarchy. Use
-`Surface` and component defaults where the Material behavior matches. Avoid creating one-off neutral
-fills when a surface role already describes the hierarchy.
+For Material 3 interop, `surfaceContainer*` roles can help model stable neutral container hierarchy.
+Keep those aliases internal unless the source export has matching public tokens. Product code should
+prefer the source-backed `WooTheme.colors` surface/background tokens.
 
 ## State Layers And Interaction States
 
@@ -193,11 +201,10 @@ The existing adapter decision still stands:
 - Material 3 `ColorScheme`, `Typography`, `Shapes`, and component defaults should be built from those
   Kotlin/Compose-owned primitives.
 - Do not create Android resources for every Material role just because `ColorScheme` has that role.
-- Expose only approved Store authoring roles through `WooTheme`. `WooTheme.colors` is a curated color
-  surface, not a public mirror of every Material 3 `ColorScheme` role.
-- Future non-Material 3 colors such as success, warning, caution, info, or link should grow
-  additively into `WooTheme.colors` when approved; do not create a parallel semantic-colors carrier
-  in PR 2.
+- Expose every source-backed PR 2 color token through `WooTheme.colors`, grouped shallowly by intent.
+- Do not create a parallel semantic-colors carrier in PR 2. Semantic, status, alert, component, and
+  palette colors live as grouped fields under `WooTheme.colors`.
+- Keep Material 3-only projection aliases internal unless the alias is itself a source-backed token.
 - Promote a primitive to Android resources only when a real non-migrated XML/View screen needs that
   token.
 - When promotion is needed, move the primitive value to resources and update Compose to read the same

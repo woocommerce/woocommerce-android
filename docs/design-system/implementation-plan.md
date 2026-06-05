@@ -31,11 +31,19 @@ Expected output:
 - `WooTheme` foundation accessors for theme-scoped production APIs.
 - Manual i1 Kotlin/Compose runtime tokens.
 - Foundation groups for color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
-- Curated production color roles through `WooTheme.colors`, projected into `MaterialTheme.colorScheme`.
+- Every source-backed Figma/manual-export color token available for PR 2 exposed through
+  `WooTheme.colors`, grouped shallowly by intent.
+- Internal Material 3 `ColorScheme` projection for Material 3 components, defaults, and helpers.
 - Full text roles through `WooTheme.text`, with the regular projection installed in `MaterialTheme.typography`.
 - Spacing and padding through `WooTheme.spacing` and `WooTheme.padding`.
-- Woo-specific semantic colors added to `WooTheme.colors` only when necessary and approved.
-- Internal adapter tokens for Figma variables with no clean Material 3 role, with public exposure only when needed by production components or pilots.
+- Semantic, status, alert, component, and palette colors as grouped fields under `WooTheme.colors`;
+  no separate `WooTheme.semanticColors`.
+- No generated public Material aliases such as fixed roles or surface-container aliases unless those
+  names are real source-backed tokens.
+- Palette/ramp and alert tokens documented as source-backed but requiring component-specific contrast
+  checks before foreground/background pairing.
+- Internal adapter tokens for unresolved non-color Figma variables, with public exposure only when
+  needed by production components or pilots.
 - Kotlin/Compose-owned token primitive values for i1 foundations.
 - No Android XML resources for design-system tokens until a real XML/View use case needs them.
 - Promotion rule: when XML/View needs a token, move that token's primitive value to Android resources and update Compose to read from the same resource.
@@ -70,8 +78,8 @@ Preview-only implementations should stay private/internal to the catalog or prev
 
 The initial production subset should cover top/navigation bar, page title/body/link text styles or wrappers, primary button, settings cell/row, section header, switch, icon button, divider, progress indicator, and the spacing/radius/color/typography tokens they depend on.
 
-Production components should read approved foundations through `WooTheme.*`. Material 3 defaults may use
-`MaterialTheme` internally as an interop projection.
+Production components should read approved foundations through `WooTheme.*`. Material 3 defaults may
+use `MaterialTheme` internally as an interop projection.
 
 Progress indicator is not listed as an i1 Figma component. Include it as a thin Material 3 wrapper so future custom loading/progress design can replace the implementation behind the adapter.
 
