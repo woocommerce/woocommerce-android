@@ -6,18 +6,30 @@ import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticResult
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticStatus
 import com.woocommerce.android.ui.aisupportchat.diagnostics.DiagnosticTest
 import com.woocommerce.android.ui.aisupportchat.diagnostics.TestStatus
+import com.woocommerce.android.util.BuildConfigWrapper
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
 class SupportChatContextProvider @Inject constructor(
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val buildConfigWrapper: BuildConfigWrapper
 ) {
-    fun buildInitialContext(diagnosticResult: DiagnosticResult? = null): JsonObject {
-        val site = selectedSite.get()
+    fun buildInitialContext(
+        diagnosticResult: DiagnosticResult? = null,
+        siteAddress: String? = null
+    ): JsonObject {
+        val site = selectedSite.getIfExists()
+        val resolvedSiteAddress = siteAddress?.takeIf { it.isNotBlank() } ?: site?.url
         return JsonObject().apply {
-            addProperty("selectedSiteId", site.siteId)
-            addProperty("site_url", site.url)
+            addProperty("platform", "android")
+            addProperty("app_version", buildConfigWrapper.versionName)
+            site?.let {
+                if (it.siteId > 0L) {
+                    addProperty("selectedSiteId", it.siteId)
+                }
+            }
+            resolvedSiteAddress?.let { addProperty("site_url", it) }
             diagnosticResult?.toTroubleshootingResults()?.let { troubleshootingResults ->
                 addProperty("troubleshootingResults", troubleshootingResults)
             }
@@ -62,5 +74,11 @@ class SupportChatContextProvider @Inject constructor(
             DiagnosticTest.STORE_CONNECTION -> "Connecting to your site"
             DiagnosticTest.STORE_ORDERS -> "Fetching your site orders"
             DiagnosticTest.STORE_PRODUCTS -> "Fetching products in your store"
+            DiagnosticTest.ANALYTICS_SETTING -> "Checking analytics setting"
+            DiagnosticTest.NOTIFICATION_PERMISSION -> "Checking notification permission"
+            DiagnosticTest.APP_NOTIFICATIONS_ENABLED -> "Checking app notification settings"
+            DiagnosticTest.NOTIFICATION_CHANNELS_ENABLED -> "Checking notification channels"
+            DiagnosticTest.PUSH_NOTIFICATION_TOKEN -> "Checking push notification token"
+            DiagnosticTest.PUSH_NOTIFICATION_REGISTRATION -> "Checking push registration"
         }
 }

@@ -180,7 +180,7 @@ class AssistantViewModelTest {
             val started = assistantTelemetryTracker.singleEvent<AiAssistantTurnStartedEvent>()
 
             assertThat(started.isRetry).isFalse()
-            assertThat(started.completionStack).isEqualTo("jetpack_ai_query")
+            assertThat(started.completionStack).isEqualTo("woo_mobile_ai")
             assertThat(started.promptVersion).isEqualTo(AssistantConfig.PROMPT_VERSION)
             assertThat(started.toolCatalogVersion).isEqualTo(AssistantConfig.TOOL_CATALOG_VERSION)
         }

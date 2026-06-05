@@ -74,7 +74,7 @@ fun NotificationModel.getChannelType(): NotificationChannelType {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> NotificationChannelType.NEW_ORDER
         NotificationModel.Kind.COMMENT -> NotificationChannelType.REVIEW
-        NotificationModel.Kind.STOCK -> NotificationChannelType.STOCK
+        NotificationModel.Kind.STORE_STOCK -> NotificationChannelType.STOCK
         else -> NotificationChannelType.OTHER
     }
 }
@@ -83,7 +83,7 @@ fun NotificationModel.getUniqueId(): Long {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.meta?.ids?.order ?: 0L
         NotificationModel.Kind.COMMENT -> this.meta?.ids?.comment ?: 0L
-        NotificationModel.Kind.STOCK -> this.meta?.ids?.post ?: 0L
+        NotificationModel.Kind.STORE_STOCK -> this.meta?.ids?.product ?: 0L
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
@@ -97,7 +97,7 @@ fun NotificationModel.getNoteTitle(resourceProvider: ResourceProvider): String {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> resourceProvider.getString(R.string.notification_order_title)
         NotificationModel.Kind.COMMENT -> resourceProvider.getString(R.string.notification_review_title)
-        NotificationModel.Kind.STOCK ->
+        NotificationModel.Kind.STORE_STOCK ->
             title
                 ?: getTitleSnippet()
                 ?: resourceProvider.getString(R.string.settings_notifs_stock)
@@ -107,7 +107,7 @@ fun NotificationModel.getNoteTitle(resourceProvider: ResourceProvider): String {
 
 fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String? {
     return when (type) {
-        NotificationModel.Kind.STORE_ORDER, NotificationModel.Kind.STOCK -> getMessageSnippet()
+        NotificationModel.Kind.STORE_ORDER, NotificationModel.Kind.STORE_STOCK -> getMessageSnippet()
         NotificationModel.Kind.COMMENT -> "${getTitleSnippet()}: ${getMessageSnippet()}"
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,

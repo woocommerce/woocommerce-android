@@ -2296,6 +2296,7 @@
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Turn on notifications&lt;/a&gt; in your device settings to receive store notifications.</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Turn on in device settings</string>
     <string name="settings_notifs_enable_title">Enable notifications</string>
     <string name="settings_notifs_error_fetch">There was an error fetching your notification settings.</string>
     <string name="settings_notifs_error_update">There was an error updating your notification settings.</string>
@@ -2309,8 +2310,9 @@
     <string name="settings_notifs_new_orders_all_title">All new orders</string>
     <string name="settings_notifs_new_orders_all_description">Ping for every order, regardless of value.</string>
     <string name="settings_notifs_new_orders_high_value_title">Only high-value orders</string>
-    <string name="settings_notifs_new_orders_high_value_description">Filter to orders above your threshold.</string>
-    <string name="settings_notifs_new_orders_threshold">Threshold (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Orders over %1$s</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filter to orders above your minimum value.</string>
+    <string name="settings_notifs_new_orders_threshold">Minimum value (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
     <string name="settings_notifs_stock_enable_title">Enable stock notifications</string>
@@ -2326,15 +2328,13 @@
     <string name="settings_notifs_stock_backorder_description">When a customer orders an item that\'s currently out of stock.</string>
     <string name="settings_notifs_new_reviews">New reviews</string>
     <string name="settings_notifs_new_reviews_subtitle">All reviews</string>
-    <string name="settings_notifs_new_reviews_enable_description">Get notified when someone leaves a review on one of your products.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Get notified when a review is left for your store.</string>
     <string name="settings_notifs_new_reviews_all_title">All new reviews</string>
-    <string name="settings_notifs_new_reviews_all_description">Ping for every review, regardless of rating.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Reviews up to a rating</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Choose the highest rating that should send a notification.</string>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d star or below</item>
-        <item quantity="other">%1$d stars or below</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_all_description">Ping for every review.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Only low-rated reviews</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Filter to reviews at or below your chosen rating.</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d stars and below</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d star and below</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -2399,8 +2399,8 @@
     <string name="support_subtitle">How can we help?</string>
     <string name="support_help_center">Help Center</string>
     <string name="support_faq_detail">Get answers to questions you have</string>
-    <string name="support_contact">Contact support</string>
-    <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
+    <string name="support_contact">Contact Support</string>
+    <string name="support_contact_detail">Get help with app or store issues</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="support_system_status_report">System status report</string>
@@ -2411,33 +2411,84 @@
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
 
-    <string name="ai_support_chat_help_row_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
-    <string name="ai_support_chat_screen_title">AI Troubleshooting</string>
+    <string name="ai_support_chat_screen_title">Contact Support</string>
+    <string name="ai_support_chat_history_row_title">Chat history</string>
+    <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
+    <string name="ai_support_chat_history_title">Chat history</string>
+    <string name="ai_support_chat_history_empty">You haven\'t chatted with support yet.</string>
+    <string name="ai_support_chat_history_load_error">Unable to load chat history.</string>
+    <string name="ai_support_chat_history_delete_error">Unable to delete chat history.</string>
+    <string name="ai_support_chat_history_default_title">Support conversation</string>
     <string name="ai_support_chat_placeholder">Coming soon</string>
-    <string name="ai_support_chat_greeting">Hi! Tell me what\'s happening with your store, and I\'ll help troubleshoot it.</string>
-    <string name="ai_support_chat_input_hint">Message AI Troubleshooting</string>
+    <string name="ai_support_chat_greeting">Hello! I\'m your Woo Mobile Support Bot. Is there anything I can help you with today?</string>
+    <string name="ai_support_chat_input_hint">Type a message…</string>
     <string name="ai_support_chat_send">Send</string>
+    <string name="ai_support_chat_error_title">Error</string>
+    <string name="ai_support_chat_error_dismiss">Dismiss</string>
     <string name="ai_support_chat_send_error">Unable to send your message. Check your connection and try again.</string>
+    <string name="ai_support_chat_load_history_error">Unable to load this chat. Check your connection and try again.</string>
+    <string name="ai_support_chat_suggested_fix_error">Unable to apply this fix. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
+    <string name="ai_support_chat_human_support_message">It looks like you might need additional help. Would you like to contact our support team?</string>
+    <string name="ai_support_chat_contact_support">Ask a Happiness Engineer</string>
+    <string name="ai_support_chat_ticket_created_message">A support ticket has been created for this chat. We\'ll respond via email.</string>
+    <string name="ai_support_chat_resolved_message">This chat has been marked as resolved.</string>
+    <string name="ai_support_chat_toolbar_contact_support">Ask a Happiness Engineer</string>
+    <string name="ai_support_chat_mark_resolved">Mark Resolved</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Cancel</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">This will close the chat actions for this conversation.</string>
+    <string name="ai_support_chat_escalation_consent_title">Send this chat to support?</string>
+    <string name="ai_support_chat_escalation_consent_message">We can create a support request using this chat transcript, or you can open the contact form and enter the details yourself.</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Send Request</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Contact Form</string>
+    <string name="ai_support_chat_escalation_transcript_header">Following is the transcript of an in-app AI support chat session:</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Mobile App Support Request</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Card Reader Support Request</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">WooPayments Support Request</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">WooCommerce Plugin Support Request</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Plugin Support Request</string>
     <string name="ai_support_chat_post_diagnostics_greeting">Please describe your issue in more detail so I can help.</string>
+    <string name="ai_support_chat_resolved_prompt">Please mark the chat as resolved if your problem is resolved, or leave a message if you have other questions.</string>
     <string name="ai_support_chat_issue_picker_title">What would you like to troubleshoot?</string>
     <string name="ai_support_chat_issue_loading_orders">I can\'t see my orders</string>
     <string name="ai_support_chat_issue_loading_products">I can\'t see my products</string>
     <string name="ai_support_chat_issue_loading_analytics">My analytics aren\'t loading</string>
     <string name="ai_support_chat_issue_receiving_notifications">I\'m not receiving notifications</string>
     <string name="ai_support_chat_issue_other">Something else</string>
-    <string name="ai_support_chat_diagnostics_title">Checking your store…</string>
-    <string name="ai_support_chat_diagnostics_success">Diagnostics completed</string>
-    <string name="ai_support_chat_diagnostics_failure">Some checks failed. You can try again or continue to chat with these results.</string>
-    <string name="ai_support_chat_diagnostics_retry">Retry</string>
+    <string name="ai_support_chat_diagnostics_success">All checks completed with no issues</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Enable Analytics</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Open Notification Settings</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Register Notifications</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Enabling Analytics…</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Registering notifications…</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Run Checks Again</string>
     <string name="ai_support_chat_diagnostics_continue">Continue to Chat</string>
     <string name="ai_support_chat_diagnostics_status_pending">Pending</string>
     <string name="ai_support_chat_diagnostics_status_running">Running</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passed</string>
     <string name="ai_support_chat_diagnostics_status_failed">Failed</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Checking analytics setting</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Checking notification permission</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Checking app notification settings</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Checking notification channels</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Checking push notification token</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Checking push registration</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">We can\'t work properly with your site\'s response.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">There is a problem with your Jetpack connection.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce Analytics is not enabled on your store.\n\nAnalytics data like revenue and order stats won\'t be available until it\'s enabled.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">We couldn\'t check your analytics setting.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Notifications are blocked in Android settings.\n\nEnable notifications for WooCommerce, then return here to continue.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">We couldn\'t find a push notification token for this device.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">This device is not registered to receive push notifications for your store.</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">We couldn\'t check your push notification registration.</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
-    <string name="ai_support_chat_connectivity_action">Chat with support</string>
+    <string name="ai_support_chat_connectivity_action">Contact Support</string>
+    <string name="ai_support_chat_feedback_helpful">Helpful</string>
+    <string name="ai_support_chat_feedback_not_helpful">Not helpful</string>
 
     <string name="support_developer_section_title" translatable="false">DEVELOPER</string>
     <string name="support_override_feature_flags" translatable="false">Override Feature Flags</string>
@@ -3734,6 +3785,23 @@
     <string name="woopos_add_variable_product_to_cart_accessibility_label">Open list of variations</string>
     <string name="woopos_add_coupon_to_cart_accessibility_label">Add coupon to cart</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Custom amount %1$s, %2$s</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">Edit %s</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
+    <string name="woopos_custom_amount_entry_title">Custom amount</string>
+    <string name="woopos_custom_amount_entry_subtitle">Add a one-off charge</string>
+    <string name="woopos_custom_amount_dialog_title_add">Add custom amount</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Edit custom amount</string>
+    <string name="woopos_custom_amount_form_title">Custom amount</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Amount</string>
+    <string name="woopos_custom_amount_dialog_name_label">Name</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Custom amount</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Charge taxes</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Add custom amount</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Update custom amount</string>
+    <string name="woopos_custom_amount_dialog_cancel">Cancel</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
@@ -3848,7 +3916,21 @@
     <string name="woopos_payment_method_other_methods_label">Other payment methods</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scan to pay</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Mark order as paid</string>
-    <string name="woopos_payment_method_picker_dialog_title">Choose payment method</string>
+    <string name="woopos_mark_order_as_paid_title">Mark order as paid?</string>
+    <string name="woopos_mark_order_as_paid_message">This will mark the %1$s order as completed. Use this only if you\'ve already collected payment another way.</string>
+    <string name="woopos_mark_order_as_paid_note_hint">e.g. Bank transfer from Maria, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Mark as paid</string>
+    <string name="woopos_mark_order_as_paid_error_message">Couldn\'t update the order. Try again.</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Order could not be loaded. Go back and try again.</string>
+    <string name="woopos_scan_to_pay_title">Scan to pay</string>
+    <string name="woopos_scan_to_pay_subtitle">Show this code to the customer to let them pay from their phone.</string>
+    <string name="woopos_scan_to_pay_total">Order total: %1$s</string>
+    <string name="woopos_scan_to_pay_error_message">We couldn\'t prepare the payment. Please try again.</string>
+    <string name="woopos_scan_to_pay_retry">Try again</string>
+    <string name="woopos_scan_to_pay_cancel">Cancel</string>
+    <string name="woopos_scan_to_pay_order_note">Customer paid via Scan to Pay</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Use this device to accept contactless card payments.</string>
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Pay with Tap to pay</string>
@@ -3877,6 +3959,7 @@
     <string name="woopos_coupons_loading_error_coupons_disabled_message">Enable coupon codes in WooCommerce settings to start creating them for your customers.</string>
     <string name="woopos_coupons_empty_list_message">Coupons can be effective way to drive business. Would you like to create one?</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">Create coupon</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Add coupon</string>
     <string name="woopos_coupons_loading_error_title">Unable to load coupons</string>
     <string name="woopos_coupons_loading_error_message">Please check your internet connection and try again.</string>
 
@@ -3892,6 +3975,8 @@
     <string name="woopos_cart_product_unknown_item">Unknown item</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
+    <string name="woopos_totals_success_payment_qr">A payment of %1$s was successfully received.</string>
+    <string name="woopos_totals_success_payment_external">Order of %1$s was marked as complete.</string>
 
     <string name="woopos_variations_empty_list_title">No supported variations found</string>
     <string name="woopos_variations_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>
@@ -4119,12 +4204,8 @@
 
     <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
     <string name="woopos_eligibility_retry_check_label">Retry</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Please make sure the WooCommerce plugin is installed and activated from your WordPress admin. If there is still an issue, please contact support for assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
     <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale must be enabled to proceed. Please enable the POS feature from your WordPress admin under WooCommerce settings &gt; Advanced &gt; Features.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">The POS system is not available for your store’s currency. Please check your store currency settings or contact support for assistance.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
     <string name="woopos_eligibility_ciab_title">Pro plan required</string>
     <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
@@ -4364,6 +4445,7 @@
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Description must be %1$s characters or fewer.</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">HS tariff number</string>
     <string name="woo_shipping_labels_customs_product_details_tariff_invalid">The tariff number must be between 6 and 12 digits long</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
@@ -4767,4 +4849,9 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Confirmation isn\'t available yet. Please try again from the chat.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">The assistant couldn\'t finish after several steps.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Something went wrong while the assistant was working.</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update order #%1$s (%2$s)</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Update order #%1$s (%2$s): emails the customer</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Guest</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Customer #%1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update variation %1$s (#%2$s) for product #%3$s</string>
 </resources>

@@ -12,7 +12,11 @@ class WooShippingCustomsValidator @Inject constructor(
     private val validateHSTariffNumber: ValidateHSTariffNumber,
     private val validateITN: ValidateITN
 ) {
-    fun validate(customsData: CustomsData, destinationCountryCode: String): FormValidationResult {
+    fun validate(
+        customsData: CustomsData,
+        originCountryCode: String,
+        destinationCountryCode: String
+    ): FormValidationResult {
         val itnValidationResult = validateITN.invoke(customsData, destinationCountryCode)
         if (itnValidationResult !is ValidateITN.ITNValidationResult.Valid) {
             return if (itnValidationResult is ValidateITN.ITNValidationResult.Missing) {
@@ -26,7 +30,7 @@ class WooShippingCustomsValidator @Inject constructor(
             validateRestrictionType(customsData.restrictionType, customsData.restrictionDescription).isValid &&
             customsData.items.all {
                 validateHSTariffNumber(it.hsTariffNumber, destinationCountryCode).isValid &&
-                    validateProductDescription(it.description).isValid &&
+                    validateProductDescription(it.description, originCountryCode, destinationCountryCode).isValid &&
                     validateProductValue(it.value.toString()).isValid &&
                     validateProductWeight(it.weight.toString()).isValid
             }
@@ -103,12 +107,31 @@ class WooShippingCustomsValidator @Inject constructor(
         )
     }
 
-    fun validateProductDescription(description: String) = when (description.isBlank()) {
-        false -> FieldValidationResult.Valid
-        true -> FieldValidationResult.Invalid(
+    fun validateProductDescription(
+        description: String,
+        originCountryCode: String,
+        destinationCountryCode: String
+    ): FieldValidationResult = when {
+        description.isBlank() -> FieldValidationResult.Invalid(
             errorMessageId = R.string.woo_shipping_labels_customs_product_details_description_missing
         )
+
+        isUSPSDomesticMailShipment(originCountryCode, destinationCountryCode) &&
+            description.length > MAX_ITEM_DESCRIPTION_LENGTH -> FieldValidationResult.Invalid(
+            errorMessage = UiString.UiStringRes(
+                stringRes = R.string.woo_shipping_labels_customs_product_details_description_too_long,
+                params = listOf(UiString.UiStringText(MAX_ITEM_DESCRIPTION_LENGTH.toString()))
+            )
+        )
+
+        else -> FieldValidationResult.Valid
     }
+
+    private fun isUSPSDomesticMailShipment(
+        originCountryCode: String,
+        destinationCountryCode: String
+    ): Boolean = originCountryCode in ACCEPTED_USPS_ORIGIN_COUNTRIES &&
+        destinationCountryCode in ACCEPTED_USPS_ORIGIN_COUNTRIES
 
     fun validateProductValue(value: String) = when (value.isBlank()) {
         false -> FieldValidationResult.Valid
@@ -142,5 +165,21 @@ class WooShippingCustomsValidator @Inject constructor(
         }
 
         data object Valid : FieldValidationResult
+    }
+
+    companion object {
+        const val MAX_ITEM_DESCRIPTION_LENGTH = 30
+
+        val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
+            "US", // United States
+            "PR", // Puerto Rico
+            "VI", // Virgin Islands
+            "GU", // Guam
+            "AS", // American Samoa
+            "UM", // United States Minor Outlying Islands
+            "MH", // Marshall Islands
+            "FM", // Micronesia
+            "MP", // Northern Mariana Islands
+        )
     }
 }

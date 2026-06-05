@@ -980,7 +980,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             var currentViewState: WooShippingViewState? = null
 
             whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
-            whenever(customsValidator.validate(any(), any())) doReturn
+            whenever(customsValidator.validate(any(), any(), any())) doReturn
                 WooShippingCustomsValidator.FormValidationResult.ItnMissing
             whenever(getShipments(any())) doReturn defaultShipments.map {
                 it.copy(items = defaultShippableItems.map { it.copy(price = BigDecimal(10000)) })

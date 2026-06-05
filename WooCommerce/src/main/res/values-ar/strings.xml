@@ -4097,14 +4097,8 @@ Language: ar
         <item>حزمة مخصصة</item>
         <item>حزمة الخدمة</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="zero">⁦%1$d⁩ من النجوم أو أقل</item>
-        <item quantity="one">⁦%1$d⁩ من النجوم أو أقل</item>
-        <item quantity="two">⁦%1$d⁩ من النجوم أو أقل</item>
-        <item quantity="few">⁦%1$d⁩ من النجوم أو أقل</item>
-        <item quantity="many">⁦%1$d⁩ من النجوم أو أقل</item>
-        <item quantity="other">⁦%1$d⁩ من النجوم أو أقل</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ من النجوم أو أقل</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">⁦%1$d⁩ من النجوم أو أقل</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="zero">الإجمالي الفرعي للعناصر (%d من العناصر)</item>
         <item quantity="one">الإجمالي الفرعي للعناصر (%d من العناصر)</item>

@@ -124,18 +124,55 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     @Test
     fun `given successful fetch response, when fetching chat, then success result is returned`() = testBlocking {
         val response = createResponse()
-        whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID)).thenReturn(Response.Success(response, emptyList()))
+        whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(
+            Response.Success(response, emptyList())
+        )
 
-        val result = repository.fetchChat(BOT_SLUG, CHAT_ID)
+        val result = repository.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)
 
         assertThat(result.getOrNull()).isEqualTo(response)
     }
 
     @Test
     fun `given failed fetch response, when fetching chat, then failure result is returned`() = testBlocking {
-        whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID)).thenReturn(Response.Error(createNetworkError()))
+        whenever(restClient.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Response.Error(createNetworkError()))
 
-        val result = repository.fetchChat(BOT_SLUG, CHAT_ID)
+        val result = repository.fetchChat(BOT_SLUG, CHAT_ID, SESSION_ID)
+
+        val exception = requireNotNull(result.exceptionOrNull()) as SupportChatRepositoryException
+        assertThat(exception.message).isEqualTo(ERROR_MESSAGE)
+        assertThat(exception.type).isEqualTo(BaseRequest.GenericErrorType.NOT_FOUND.name)
+    }
+
+    @Test
+    fun `given successful feedback response, when submitting feedback, then success result is returned`() = testBlocking {
+        whenever(restClient.submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, true))
+            .thenReturn(Response.Success(Unit, emptyList()))
+
+        val result = repository.submitFeedback(
+            botSlug = BOT_SLUG,
+            chatId = CHAT_ID,
+            messageId = MESSAGE_ID,
+            sessionId = SESSION_ID,
+            upvoted = true
+        )
+
+        assertThat(result.isSuccess).isTrue
+        verify(restClient).submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, true)
+    }
+
+    @Test
+    fun `given failed feedback response, when submitting feedback, then failure result is returned`() = testBlocking {
+        whenever(restClient.submitFeedback(BOT_SLUG, CHAT_ID, MESSAGE_ID, SESSION_ID, false))
+            .thenReturn(Response.Error(createNetworkError()))
+
+        val result = repository.submitFeedback(
+            botSlug = BOT_SLUG,
+            chatId = CHAT_ID,
+            messageId = MESSAGE_ID,
+            sessionId = SESSION_ID,
+            upvoted = false
+        )
 
         val exception = requireNotNull(result.exceptionOrNull()) as SupportChatRepositoryException
         assertThat(exception.message).isEqualTo(ERROR_MESSAGE)
@@ -152,6 +189,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
             repository.registerChat(
                 chatId = CHAT_ID,
                 botSlug = BOT_SLUG,
+                sessionId = SESSION_ID,
                 firstUserMessage = firstMessage
             )
 
@@ -160,6 +198,9 @@ class SupportChatRepositoryTest : BaseUnitTest() {
             assertThat(bookmarkCaptor.firstValue.localSiteId).isEqualTo(LocalId(LOCAL_SITE_ID))
             assertThat(bookmarkCaptor.firstValue.remoteSiteId).isEqualTo(REMOTE_SITE_ID)
             assertThat(bookmarkCaptor.firstValue.botSlug).isEqualTo(BOT_SLUG)
+            assertThat(bookmarkCaptor.firstValue.sessionId).isEqualTo(SESSION_ID)
+            assertThat(bookmarkCaptor.firstValue.hasCreatedTicket).isFalse()
+            assertThat(bookmarkCaptor.firstValue.isResolved).isFalse()
             assertThat(bookmarkCaptor.firstValue.title).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX")
             assertThat(bookmarkCaptor.firstValue.createdAt).isEqualTo(CURRENT_TIME)
             assertThat(bookmarkCaptor.firstValue.updatedAt).isEqualTo(CURRENT_TIME)
@@ -173,6 +214,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         repository.registerChat(
             chatId = CHAT_ID,
             botSlug = BOT_SLUG,
+            sessionId = SESSION_ID,
             firstUserMessage = "   "
         )
 
@@ -182,9 +224,23 @@ class SupportChatRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when marking chat as updated, then dao is updated with current timestamp`() = testBlocking {
-        repository.markChatAsUpdated(CHAT_ID)
+        repository.markChatAsUpdated(CHAT_ID, SESSION_ID)
 
-        verify(bookmarkDao).markAsUpdated(CHAT_ID, CURRENT_TIME)
+        verify(bookmarkDao).markAsUpdated(CHAT_ID, SESSION_ID, CURRENT_TIME)
+    }
+
+    @Test
+    fun `when marking chat as ticket created, then dao marks ticket created`() = testBlocking {
+        repository.markChatAsTicketCreated(CHAT_ID)
+
+        verify(bookmarkDao).markTicketCreated(CHAT_ID)
+    }
+
+    @Test
+    fun `when marking chat as resolved, then dao marks resolved`() = testBlocking {
+        repository.markChatAsResolved(CHAT_ID)
+
+        verify(bookmarkDao).markResolved(CHAT_ID)
     }
 
     @Test
@@ -209,6 +265,9 @@ class SupportChatRepositoryTest : BaseUnitTest() {
                 localSiteId = entity.localSiteId,
                 remoteSiteId = entity.remoteSiteId,
                 botSlug = entity.botSlug,
+                sessionId = entity.sessionId,
+                hasCreatedTicket = entity.hasCreatedTicket,
+                isResolved = entity.isResolved,
                 title = entity.title,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt
@@ -237,6 +296,9 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         localSiteId = LocalId(LOCAL_SITE_ID),
         remoteSiteId = REMOTE_SITE_ID,
         botSlug = BOT_SLUG,
+        sessionId = SESSION_ID,
+        hasCreatedTicket = true,
+        isResolved = true,
         title = "Support chat",
         createdAt = 1_000L,
         updatedAt = 2_000L
@@ -253,6 +315,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
     private companion object {
         const val BOT_SLUG = "woo-workflow-support_mobile_inapp_all_users"
         const val CHAT_ID = 1234L
+        const val MESSAGE_ID = 5678L
         const val SESSION_ID = "session-abc-123"
         const val LOCAL_SITE_ID = 10
         const val REMOTE_SITE_ID = 20L

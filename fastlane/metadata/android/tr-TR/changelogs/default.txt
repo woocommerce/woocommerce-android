@@ -1,2 +1,0 @@
-24.8:
-Yeni Yapay Zeka Asistanınıza merhaba deyin, mağazanızı doğrudan cebinizden çalıştırmanın daha akıllı bir yolu. Seçilen mağazalara geldiğinizde, tek tıkla mağazanızın üstünde kalmanıza yardımcı olur. Sipariş listesini de düzgünleştirdik, böylece artık siparişin ayrıntılarından geri döndüğünüzde görünmez.

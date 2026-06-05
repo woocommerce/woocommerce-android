@@ -7,7 +7,6 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsViewModel.NotificationType
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -34,7 +33,7 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: NotificationSettingsViewModel
 
-    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    fun setup(prepareMocks: () -> Unit = {}) {
         whenever(wooNotificationBuilder.isNotificationsEnabled()).thenReturn(true)
         prepareMocks()
         viewModel = NotificationSettingsViewModel(
@@ -170,73 +169,5 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
             channelType = NotificationChannelType.NEW_ORDER,
             dismissDelay = 10.seconds
         )
-    }
-
-    @Test
-    fun `when view is loaded, then expose notification type rows`() = testBlocking {
-        setup()
-
-        val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
-
-        assertThat(notificationTypeItems.map { it.type }).containsExactly(
-            NotificationType.NEW_ORDERS,
-            NotificationType.NEW_REVIEWS,
-            NotificationType.STOCK
-        )
-    }
-
-    @Test
-    fun `when view is loaded, then all notification type switches are enabled`() = testBlocking {
-        setup()
-
-        val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
-
-        assertThat(notificationTypeItems.map { it.isEnabled }).containsOnly(true)
-    }
-
-    @Test
-    fun `when notification type switch is changed, then update row state`() = testBlocking {
-        setup()
-
-        viewModel.onNotificationTypeEnabledChanged(NotificationType.STOCK, false)
-
-        val notificationTypeItems = viewModel.notificationTypeItems.captureValues().last()
-
-        assertThat(
-            notificationTypeItems.first { it.type == NotificationType.STOCK }.isEnabled
-        ).isFalse()
-    }
-
-    @Test
-    fun `when new orders notification type is clicked, then open new orders settings`() = testBlocking {
-        setup()
-
-        val event = viewModel.event.runAndCaptureValues {
-            viewModel.onNotificationTypeClicked(NotificationType.NEW_ORDERS)
-        }.last()
-
-        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenNewOrderNotificationSettings::class.java)
-    }
-
-    @Test
-    fun `when new reviews notification type is clicked, then open new reviews settings`() = testBlocking {
-        setup()
-
-        val event = viewModel.event.runAndCaptureValues {
-            viewModel.onNotificationTypeClicked(NotificationType.NEW_REVIEWS)
-        }.last()
-
-        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenNewReviewNotificationSettings::class.java)
-    }
-
-    @Test
-    fun `when stock notification type is clicked, then open stock settings`() = testBlocking {
-        setup()
-
-        val event = viewModel.event.runAndCaptureValues {
-            viewModel.onNotificationTypeClicked(NotificationType.STOCK)
-        }.last()
-
-        assertThat(event).isInstanceOf(NotificationSettingsViewModel.OpenStockNotificationSettings::class.java)
     }
 }

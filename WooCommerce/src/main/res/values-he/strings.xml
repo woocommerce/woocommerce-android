@@ -4095,12 +4095,8 @@ Language: he_IL
         <item>חבילות מותאמות אישית</item>
         <item>חבילת שירות</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">כוכב ⁦%1$d⁩ ומטה</item>
-        <item quantity="two">⁦%1$d⁩ כוכבים ומטה</item>
-        <item quantity="many">⁦%1$d⁩ כוכבים ומטה</item>
-        <item quantity="other">⁦%1$d⁩ כוכבים ומטה</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ כוכבים ומטה</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">כוכב ⁦%1$d⁩ ומטה</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">סכום ביניים (פריט %d)</item>
         <item quantity="two">סכום ביניים (%d פריטים)</item>

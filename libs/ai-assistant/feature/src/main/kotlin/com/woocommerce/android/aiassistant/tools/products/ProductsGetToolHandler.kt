@@ -24,11 +24,12 @@ internal class ProductsGetToolHandler @Inject constructor(
 
     override val descriptor = ToolDescriptor(
         name = "products_get",
-        description = "Fetch a single product with full detail (price, stock, categories, type). " +
-            "Use when the merchant references a specific product by ID. " +
-            "For variable products, use product_variations_list only when the merchant explicitly asks about " +
-            "variations, sizes, colors, options, or variation-level stock. Do NOT call this tool to render a " +
-            "card after products_list - `show_cards` re-fetches product detail itself when given a reference.",
+        description = "Fetch a single product with full detail including price, stock, full description, " +
+            "categories, type, and fields not shown on product cards. Use when the merchant references a specific " +
+            "product by ID or by a prior-turn product position/reference once its ID is known. For variable " +
+            "products, use product_variations_list instead when the merchant asks about variations, sizes, colors, " +
+            "options, or variation-level stock. Do not call just to re-render an existing product card; show_cards " +
+            "can use existing product references.",
         inputSchema = inputSchema {
             integer("id", description = "The product ID. Required.", required = true)
         },

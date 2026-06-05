@@ -138,7 +138,7 @@ fun TroubleshootConnectionScreen(
                     )
                     .fillMaxWidth()
             ) {
-                Text(stringResource(id = R.string.ai_support_chat_connectivity_action))
+                Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
             }
         }
         if (shouldDisplayContactSupportButton) {

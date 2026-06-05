@@ -583,9 +583,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) { addresses, customsData ->
             customsData.mapIndexed { index, currentItemCustomsData ->
                 val selectedAddress = addresses.getOrNull(index)
+                val originCountryCode = selectedAddress?.shipFrom?.country.orEmpty()
                 val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
                 val customsFormValidationResult = currentItemCustomsData?.let {
-                    customsValidator.validate(it, destinationCountryCode)
+                    customsValidator.validate(it, originCountryCode, destinationCountryCode)
                 }
 
                 when (customsFormValidationResult) {
@@ -1187,11 +1188,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onEditCustomsClick() {
-        val destinationCountryCode = shippingAddresses.value.getOrNull(selectedShipmentIndex)
-            ?.shipTo?.address?.country?.code.orEmpty()
+        val selectedAddress = shippingAddresses.value.getOrNull(selectedShipmentIndex)
+        val originCountryCode = selectedAddress?.shipFrom?.country.orEmpty()
+        val destinationCountryCode = selectedAddress?.shipTo?.address?.country?.code.orEmpty()
 
         launch {
             val event = NavigateToCustomsFormEdit(
+                originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 customData = requireNotNull(customsFormDataFlow.value[selectedShipmentIndex]),
                 storeOptions = accountSettings.first()?.storeOptions ?: StoreOptionsModel.EMPTY
@@ -1357,6 +1360,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     ) : Parcelable
 
     data class NavigateToCustomsFormEdit(
+        val originCountryCode: String,
         val destinationCountryCode: String,
         val customData: CustomsData,
         val storeOptions: StoreOptionsModel

@@ -4097,11 +4097,8 @@ Language: ru
         <item>Индивидуальный пакет</item>
         <item>Пакет услуг</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d звезда или ниже</item>
-        <item quantity="few">%1$d звезды или ниже</item>
-        <item quantity="many">%1$d звёзд или ниже</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d звёзд или ниже</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d звезда или ниже</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Промежуточный итог по товарам (позиций: %d)</item>
         <item quantity="few">Промежуточный итог по товарам (позиций: %d)</item>

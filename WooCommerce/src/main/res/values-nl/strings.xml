@@ -4097,10 +4097,8 @@ Language: nl
         <item>Aangepast pakket</item>
         <item>Servicepakket</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d ster of lager</item>
-        <item quantity="other">%1$d sterren of lager</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d sterren of lager</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d ster of lager</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotaal artikelen (%d artikel)</item>
         <item quantity="other">Subtotaal artikelen (%d artikelen)</item>

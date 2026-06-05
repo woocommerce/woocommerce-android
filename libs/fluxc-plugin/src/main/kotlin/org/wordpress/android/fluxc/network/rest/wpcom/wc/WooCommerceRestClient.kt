@@ -18,6 +18,8 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         const val TAX_SETTING_GROUP = "tax"
         const val TAX_SETTING_ID = "woocommerce_tax_based_on"
         const val ROUND_TAX_AT_SUBTOTAL_SETTING_ID = "woocommerce_tax_round_at_subtotal"
+        const val ADVANCED_SETTING_GROUP = "advanced"
+        const val ANALYTICS_ENABLED_SETTING_ID = "woocommerce_analytics_enabled"
         const val ANALYTICS_SETTING_GROUP = "wc_admin"
         const val ANALYTICS_DATE_TYPE_SETTING_ID = "woocommerce_date_type"
 
@@ -95,6 +97,30 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         )
 
         return response.toWooPayload { it.let { it.value == "yes" } }
+    }
+
+    suspend fun enableAnalytics(site: SiteModel): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(ADVANCED_SETTING_GROUP).id(ANALYTICS_ENABLED_SETTING_ID).pathV3
+        val param = mapOf("value" to "yes")
+
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java,
+            body = param
+        )
+
+        return response.toWooPayload { it.value == "yes" }
+    }
+
+    suspend fun fetchAnalyticsEnabled(site: SiteModel): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(ADVANCED_SETTING_GROUP).id(ANALYTICS_ENABLED_SETTING_ID).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java
+        )
+        return response.toWooPayload { it.value == "yes" }
     }
 
     suspend fun fetchSiteSettingsTaxBasedOn(site: SiteModel): WooPayload<SiteSettingOptionResponse> {

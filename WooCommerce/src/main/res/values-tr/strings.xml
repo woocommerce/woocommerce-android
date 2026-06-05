@@ -4096,10 +4096,8 @@ Language: tr
         <item>Özelleştirilmiş paket</item>
         <item>Hizmet paketi</item>
     </string-array>
-    <plurals name="settings_notifs_new_reviews_selected_rating">
-        <item quantity="one">%1$d yıldız veya altı</item>
-        <item quantity="other">%1$d yıldız veya altı</item>
-    </plurals>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d yıldız veya altı</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d yıldız veya altı</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Ürün alt toplamı (%d ürün)</item>
         <item quantity="other">Ürün alt toplamı (%d ürün)</item>

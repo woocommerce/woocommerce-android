@@ -153,7 +153,7 @@ class ConfirmationPreviewProviderRegistryTest {
             val variationsDataSource: AIProductVariationsDataSource = mock()
             val registry = ConfirmationPreviewProviderRegistryImpl(
                 setOf(
-                    OrdersConfirmationPreviewProvider(ordersDataSource),
+                    OrdersConfirmationPreviewProvider(mock(), ordersDataSource),
                     ProductsConfirmationPreviewProvider(productsDataSource),
                     ProductVariationsConfirmationPreviewProvider(variationsDataSource),
                     GenericSchemaConfirmationPreviewProvider(),
