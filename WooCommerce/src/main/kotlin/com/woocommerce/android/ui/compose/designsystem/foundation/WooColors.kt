@@ -15,12 +15,7 @@ data class WooColors(
     val surface: WooSurfaceColors,
     val outline: Color,
     val outlineVariant: Color,
-    val text: WooTextColors,
-    val icon: WooIconColors,
-    val border: WooBorderColors,
     val status: WooStatusColors,
-    val interactive: WooInteractiveColors,
-    val label: WooLabelColors,
     val overlay: WooOverlayColors,
     val alert: WooAlertColors,
     val palette: WooPaletteColors,
@@ -45,36 +40,11 @@ data class WooSurfaceColors(
     val inverted: Color,
     val onInverted: Color,
     val onInvertedVariant: Color,
-    val primary: Color,
-    val secondary: Color,
-)
-
-@Immutable
-data class WooTextColors(
-    val primary: Color,
-    val secondary: Color,
-    val tertiary: Color,
-    val disabled: Color,
-    val onPrimary: Color,
-)
-
-@Immutable
-data class WooIconColors(
-    val primary: Color,
-)
-
-@Immutable
-data class WooBorderColors(
-    val default: Color,
-    val focused: Color,
 )
 
 @Immutable
 @Suppress("LongParameterList")
 data class WooStatusColors(
-    val success: Color,
-    val error: Color,
-    val warning: Color,
     val errorContainer: Color,
     val onErrorContainer: Color,
     val warningContainer: Color,
@@ -92,26 +62,9 @@ data class WooStatusColors(
 )
 
 @Immutable
-data class WooInteractiveColors(
-    val primary: Color,
-    val destructive: Color,
-    val primaryPressed: Color,
-)
-
-@Immutable
-data class WooLabelColors(
-    val primary: Color,
-    val secondary: Color,
-    val tertiary: Color,
-    val disabled: Color,
-    val onPrimary: Color,
-)
-
-@Immutable
 data class WooOverlayColors(
     val overlay20: Color,
     val overlay50: Color,
-    val surfaceOverlay: Color,
 )
 
 @Immutable
@@ -196,29 +149,10 @@ private val LightWooColors = WooColors(
         inverted = color(0xFF1C1C1E),
         onInverted = color(0xFFFFFFFF),
         onInvertedVariant = color(0xFF929298),
-        primary = color(0xFFFFFFFF),
-        secondary = color(0xFF787C82),
     ),
     outline = color(0xFF787C82),
     outlineVariant = color(0xFFD2D2D8),
-    text = WooTextColors(
-        primary = color(0xFF000000),
-        secondary = color(0xFF787C82),
-        tertiary = color(0xFFA7AAAD),
-        disabled = color(0xFF50575E),
-        onPrimary = color(0xFFFFFFFF),
-    ),
-    icon = WooIconColors(
-        primary = color(0xFF000000),
-    ),
-    border = WooBorderColors(
-        default = color(0xFF3C3C43, alpha = 0.29f),
-        focused = color(0xFF873EFF),
-    ),
     status = WooStatusColors(
-        success = color(0xFF2EA043),
-        error = color(0xFFDC3545),
-        warning = color(0xFFFF9800),
         errorContainer = color(0xFFF6E6E3),
         onErrorContainer = color(0xFF470000),
         warningContainer = color(0xFFFDE6BE),
@@ -234,22 +168,9 @@ private val LightWooColors = WooColors(
         neutralOutlinedContainer = color(0xFFDBDBDB),
         onNeutralOutlinedContainer = color(0xFF1E1E1E),
     ),
-    interactive = WooInteractiveColors(
-        primary = color(0xFF873EFF),
-        destructive = color(0xFFDC3545),
-        primaryPressed = color(0xFF5007AA),
-    ),
-    label = WooLabelColors(
-        primary = color(0xFF000000),
-        secondary = color(0xFF787C82),
-        tertiary = color(0xFFA7AAAD),
-        disabled = color(0xFF50575E),
-        onPrimary = color(0xFFFFFFFF),
-    ),
     overlay = WooOverlayColors(
         overlay20 = color(0xFF000000, alpha = 0.2f),
         overlay50 = color(0xFF000000, alpha = 0.5f),
-        surfaceOverlay = color(0xFF787880, alpha = 0.16f),
     ),
     alert = WooAlertColors(
         red = color(0xFFFC4A5B),
@@ -280,29 +201,10 @@ private val DarkWooColors = WooColors(
         inverted = color(0xFFFFFFFF),
         onInverted = color(0xFF1E1E1E),
         onInvertedVariant = color(0xFF8D8D91),
-        primary = color(0xFF1D2327),
-        secondary = color(0xFF2C3338),
     ),
     outline = color(0xFF454549),
     outlineVariant = color(0xFF5E5E63),
-    text = WooTextColors(
-        primary = color(0xFFFFFFFF),
-        secondary = color(0xFFA7AAAD),
-        tertiary = color(0xFF787C82),
-        disabled = color(0xFF50575E),
-        onPrimary = color(0xFF000000),
-    ),
-    icon = WooIconColors(
-        primary = color(0xFFF6F7F7),
-    ),
-    border = WooBorderColors(
-        default = color(0xFF3C3C43, alpha = 0.29f),
-        focused = color(0xFFA77EFF),
-    ),
     status = WooStatusColors(
-        success = color(0xFF1E732E),
-        error = color(0xFFA51D2A),
-        warning = color(0xFFC67100),
         errorContainer = color(0xFFF6E6E3, alpha = 0.9f),
         onErrorContainer = color(0xFF470000),
         warningContainer = color(0xFFFDE6BE, alpha = 0.9f),
@@ -318,22 +220,9 @@ private val DarkWooColors = WooColors(
         neutralOutlinedContainer = color(0xFFDBDBDB, alpha = 0.9f),
         onNeutralOutlinedContainer = color(0xFFDBDBDB),
     ),
-    interactive = WooInteractiveColors(
-        primary = color(0xFFA77EFF),
-        destructive = color(0xFFDC3545),
-        primaryPressed = color(0xFFB999FF),
-    ),
-    label = WooLabelColors(
-        primary = color(0xFFFFFFFF),
-        secondary = color(0xFFA7AAAD),
-        tertiary = color(0xFF787C82),
-        disabled = color(0xFF50575E),
-        onPrimary = color(0xFF000000),
-    ),
     overlay = WooOverlayColors(
         overlay20 = color(0xFF000000, alpha = 0.2f),
         overlay50 = color(0xFF000000, alpha = 0.75f),
-        surfaceOverlay = color(0xFF787880, alpha = 0.16f),
     ),
     alert = WooAlertColors(
         red = color(0xFFDC3545),

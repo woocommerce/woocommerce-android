@@ -87,11 +87,14 @@ private fun ColorFoundationSection() {
 
     FoundationSection(title = "Color") {
         ColorSwatch("primary", colors.primary, colors.onPrimary)
-        ColorSwatch("text.primary", colors.text.primary, colors.surface.default)
-        ColorSwatch("icon.primary", colors.icon.primary, colors.surface.default)
-        ColorSwatch("border.default", colors.border.default, colors.surface.default)
-        ColorSwatch("status.success", colors.status.success, colors.surface.default)
-        ColorSwatch("interactive.destructive", colors.interactive.destructive, colors.onPrimary)
+        ColorSwatch("surface.default", colors.surface.default, colors.surface.onDefault)
+        ColorSwatch("outlineVariant", colors.outlineVariant, colors.surface.onDefault)
+        ColorSwatch(
+            label = "status.successContainer",
+            color = colors.status.successContainer,
+            contentColor = colors.status.onSuccessContainer,
+        )
+        ColorSwatch("alert.red", colors.alert.red, colors.onPrimary)
         ColorSwatch("overlay.overlay20", colors.overlay.overlay20, colors.surface.default)
         ColorSwatch("palette.wooPurple.shade40", colors.palette.wooPurple.shade40, colors.onPrimary)
         MaterialProjectionSample()
