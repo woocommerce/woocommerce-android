@@ -1,0 +1,394 @@
+package com.woocommerce.android.ui.compose.designsystem.foundation
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+
+@Immutable
+@Suppress("LongParameterList")
+data class WooColors(
+    val primary: Color,
+    val onPrimary: Color,
+    val secondary: Color,
+    val onSecondary: Color,
+    val background: WooBackgroundColors,
+    val surface: WooSurfaceColors,
+    val outline: Color,
+    val outlineVariant: Color,
+    val text: WooTextColors,
+    val icon: WooIconColors,
+    val border: WooBorderColors,
+    val status: WooStatusColors,
+    val interactive: WooInteractiveColors,
+    val label: WooLabelColors,
+    val overlay: WooOverlayColors,
+    val alert: WooAlertColors,
+    val palette: WooPaletteColors,
+)
+
+@Immutable
+data class WooBackgroundColors(
+    val section: Color,
+    val onSection: Color,
+    val sectionVariant: Color,
+    val onSectionVariant: Color,
+)
+
+@Immutable
+@Suppress("LongParameterList")
+data class WooSurfaceColors(
+    val default: Color,
+    val onDefault: Color,
+    val onVariant: Color,
+    val onLowest: Color,
+    val onHighest: Color,
+    val inverted: Color,
+    val onInverted: Color,
+    val onInvertedVariant: Color,
+    val primary: Color,
+    val secondary: Color,
+)
+
+@Immutable
+data class WooTextColors(
+    val primary: Color,
+    val secondary: Color,
+    val tertiary: Color,
+    val disabled: Color,
+    val onPrimary: Color,
+)
+
+@Immutable
+data class WooIconColors(
+    val primary: Color,
+)
+
+@Immutable
+data class WooBorderColors(
+    val default: Color,
+    val focused: Color,
+)
+
+@Immutable
+@Suppress("LongParameterList")
+data class WooStatusColors(
+    val success: Color,
+    val error: Color,
+    val warning: Color,
+    val errorContainer: Color,
+    val onErrorContainer: Color,
+    val warningContainer: Color,
+    val onWarningContainer: Color,
+    val cautionContainer: Color,
+    val onCautionContainer: Color,
+    val successContainer: Color,
+    val onSuccessContainer: Color,
+    val infoContainer: Color,
+    val onInfoContainer: Color,
+    val neutralContainer: Color,
+    val onNeutralContainer: Color,
+    val neutralOutlinedContainer: Color,
+    val onNeutralOutlinedContainer: Color,
+)
+
+@Immutable
+data class WooInteractiveColors(
+    val primary: Color,
+    val destructive: Color,
+    val primaryPressed: Color,
+)
+
+@Immutable
+data class WooLabelColors(
+    val primary: Color,
+    val secondary: Color,
+    val tertiary: Color,
+    val disabled: Color,
+    val onPrimary: Color,
+)
+
+@Immutable
+data class WooOverlayColors(
+    val overlay20: Color,
+    val overlay50: Color,
+    val surfaceOverlay: Color,
+)
+
+@Immutable
+data class WooAlertColors(
+    val red: Color,
+    val yellow: Color,
+    val green: Color,
+    val blue: Color,
+)
+
+@Immutable
+data class WooPaletteColors(
+    val sandstone: WooSandstoneColors,
+    val wooBlue: WooPaletteRampColors,
+    val wooGreen: WooPaletteRampColors,
+    val wooOrange: WooPaletteRampColors,
+    val wooPink: WooPaletteRampColors,
+    val wooPurple: WooPurpleColors,
+)
+
+@Immutable
+data class WooSandstoneColors(
+    val shade5: Color,
+    val shade10: Color,
+    val shade20: Color,
+    val shade40: Color,
+    val shade60: Color,
+)
+
+@Immutable
+data class WooPaletteRampColors(
+    val shade20: Color,
+    val shade40: Color,
+    val shade60: Color,
+)
+
+@Immutable
+@Suppress("LongParameterList")
+data class WooPurpleColors(
+    val shade0: Color,
+    val shade5: Color,
+    val shade10: Color,
+    val shade20: Color,
+    val shade30: Color,
+    val shade40: Color,
+    val shade50: Color,
+    val shade60: Color,
+    val shade70: Color,
+    val shade80: Color,
+    val shade90: Color,
+    val shade100: Color,
+)
+
+internal val LocalWooColors = staticCompositionLocalOf {
+    LightWooColors
+}
+
+internal fun wooColors(useDarkTheme: Boolean): WooColors =
+    if (useDarkTheme) {
+        DarkWooColors
+    } else {
+        LightWooColors
+    }
+
+private val LightWooColors = WooColors(
+    primary = color(0xFF873EFF),
+    onPrimary = color(0xFFFFFFFF),
+    secondary = color(0xFFEAE2FE),
+    onSecondary = color(0xFF873EFF),
+    background = WooBackgroundColors(
+        section = color(0xFFF2F2F8),
+        onSection = color(0xFF1E1E1E),
+        sectionVariant = color(0xFFF0F0F0),
+        onSectionVariant = color(0xFF1C1C1E),
+    ),
+    surface = WooSurfaceColors(
+        default = color(0xFFFFFFFF),
+        onDefault = color(0xFF1E1E1E),
+        onVariant = color(0xFF868A94),
+        onLowest = color(0xFFB2B7C0),
+        onHighest = color(0xFF50575E),
+        inverted = color(0xFF1C1C1E),
+        onInverted = color(0xFFFFFFFF),
+        onInvertedVariant = color(0xFF929298),
+        primary = color(0xFFFFFFFF),
+        secondary = color(0xFF787C82),
+    ),
+    outline = color(0xFF787C82),
+    outlineVariant = color(0xFFD2D2D8),
+    text = WooTextColors(
+        primary = color(0xFF000000),
+        secondary = color(0xFF787C82),
+        tertiary = color(0xFFA7AAAD),
+        disabled = color(0xFF50575E),
+        onPrimary = color(0xFFFFFFFF),
+    ),
+    icon = WooIconColors(
+        primary = color(0xFF000000),
+    ),
+    border = WooBorderColors(
+        default = color(0xFF3C3C43, alpha = 0.29f),
+        focused = color(0xFF873EFF),
+    ),
+    status = WooStatusColors(
+        success = color(0xFF2EA043),
+        error = color(0xFFDC3545),
+        warning = color(0xFFFF9800),
+        errorContainer = color(0xFFF6E6E3),
+        onErrorContainer = color(0xFF470000),
+        warningContainer = color(0xFFFDE6BE),
+        onWarningContainer = color(0xFF2E1900),
+        cautionContainer = color(0xFFFEE995),
+        onCautionContainer = color(0xFF281D00),
+        successContainer = color(0xFFC6F7CD),
+        onSuccessContainer = color(0xFF002900),
+        infoContainer = color(0xFFDEEBFA),
+        onInfoContainer = color(0xFF001B4F),
+        neutralContainer = color(0xFFF4F4F4),
+        onNeutralContainer = color(0xFF1E1E1E),
+        neutralOutlinedContainer = color(0xFFDBDBDB),
+        onNeutralOutlinedContainer = color(0xFF1E1E1E),
+    ),
+    interactive = WooInteractiveColors(
+        primary = color(0xFF873EFF),
+        destructive = color(0xFFDC3545),
+        primaryPressed = color(0xFF5007AA),
+    ),
+    label = WooLabelColors(
+        primary = color(0xFF000000),
+        secondary = color(0xFF787C82),
+        tertiary = color(0xFFA7AAAD),
+        disabled = color(0xFF50575E),
+        onPrimary = color(0xFFFFFFFF),
+    ),
+    overlay = WooOverlayColors(
+        overlay20 = color(0xFF000000, alpha = 0.2f),
+        overlay50 = color(0xFF000000, alpha = 0.5f),
+        surfaceOverlay = color(0xFF787880, alpha = 0.16f),
+    ),
+    alert = WooAlertColors(
+        red = color(0xFFFC4A5B),
+        yellow = color(0xFFEAAB2D),
+        green = color(0xFF27AE32),
+        blue = color(0xFF1E94D0),
+    ),
+    palette = wooPaletteColors(),
+)
+
+private val DarkWooColors = WooColors(
+    primary = color(0xFF873EFF),
+    onPrimary = color(0xFFFFFFFF),
+    secondary = color(0xFF383146),
+    onSecondary = color(0xFFF1EDFE),
+    background = WooBackgroundColors(
+        section = color(0xFF101517),
+        onSection = color(0xFFFFFFFF),
+        sectionVariant = color(0xFF101517),
+        onSectionVariant = color(0xFF8B8A8E),
+    ),
+    surface = WooSurfaceColors(
+        default = color(0xFF232529),
+        onDefault = color(0xFFFFFFFF),
+        onVariant = color(0xFF868A94),
+        onLowest = color(0xFF626068),
+        onHighest = color(0xFF626068),
+        inverted = color(0xFFFFFFFF),
+        onInverted = color(0xFF1E1E1E),
+        onInvertedVariant = color(0xFF8D8D91),
+        primary = color(0xFF1D2327),
+        secondary = color(0xFF2C3338),
+    ),
+    outline = color(0xFF454549),
+    outlineVariant = color(0xFF5E5E63),
+    text = WooTextColors(
+        primary = color(0xFFFFFFFF),
+        secondary = color(0xFFA7AAAD),
+        tertiary = color(0xFF787C82),
+        disabled = color(0xFF50575E),
+        onPrimary = color(0xFF000000),
+    ),
+    icon = WooIconColors(
+        primary = color(0xFFF6F7F7),
+    ),
+    border = WooBorderColors(
+        default = color(0xFF3C3C43, alpha = 0.29f),
+        focused = color(0xFFA77EFF),
+    ),
+    status = WooStatusColors(
+        success = color(0xFF1E732E),
+        error = color(0xFFA51D2A),
+        warning = color(0xFFC67100),
+        errorContainer = color(0xFFF6E6E3, alpha = 0.9f),
+        onErrorContainer = color(0xFF470000),
+        warningContainer = color(0xFFFDE6BE, alpha = 0.9f),
+        onWarningContainer = color(0xFF2E1900),
+        cautionContainer = color(0xFFFEE995, alpha = 0.9f),
+        onCautionContainer = color(0xFF281D00),
+        successContainer = color(0xFFC6F7CD, alpha = 0.9f),
+        onSuccessContainer = color(0xFF002900),
+        infoContainer = color(0xFFDEEBFA, alpha = 0.9f),
+        onInfoContainer = color(0xFF001B4F),
+        neutralContainer = color(0xFFF4F4F4, alpha = 0.9f),
+        onNeutralContainer = color(0xFF1E1E1E),
+        neutralOutlinedContainer = color(0xFFDBDBDB, alpha = 0.9f),
+        onNeutralOutlinedContainer = color(0xFFDBDBDB),
+    ),
+    interactive = WooInteractiveColors(
+        primary = color(0xFFA77EFF),
+        destructive = color(0xFFDC3545),
+        primaryPressed = color(0xFFB999FF),
+    ),
+    label = WooLabelColors(
+        primary = color(0xFFFFFFFF),
+        secondary = color(0xFFA7AAAD),
+        tertiary = color(0xFF787C82),
+        disabled = color(0xFF50575E),
+        onPrimary = color(0xFF000000),
+    ),
+    overlay = WooOverlayColors(
+        overlay20 = color(0xFF000000, alpha = 0.2f),
+        overlay50 = color(0xFF000000, alpha = 0.75f),
+        surfaceOverlay = color(0xFF787880, alpha = 0.16f),
+    ),
+    alert = WooAlertColors(
+        red = color(0xFFDC3545),
+        yellow = color(0xFFEAAB2D),
+        green = color(0xFF69B66F),
+        blue = color(0xFF1E94D0),
+    ),
+    palette = wooPaletteColors(),
+)
+
+@Suppress("MagicNumber")
+private fun wooPaletteColors() = WooPaletteColors(
+    sandstone = WooSandstoneColors(
+        shade5 = color(0xFFFBF9F6),
+        shade10 = color(0xFFF1EEEB),
+        shade20 = color(0xFFE6E2DE),
+        shade40 = color(0xFFC5C2BF),
+        shade60 = color(0xFF8B8A89),
+    ),
+    wooBlue = WooPaletteRampColors(
+        shade20 = color(0xFF75FFFF),
+        shade40 = color(0xFF1AD0FD),
+        shade60 = color(0xFF05096C),
+    ),
+    wooGreen = WooPaletteRampColors(
+        shade20 = color(0xFFD5FF4A),
+        shade40 = color(0xFF06E782),
+        shade60 = color(0xFF083D2D),
+    ),
+    wooOrange = WooPaletteRampColors(
+        shade20 = color(0xFFFFE500),
+        shade40 = color(0xFFFF9000),
+        shade60 = color(0xFFFF4800),
+    ),
+    wooPink = WooPaletteRampColors(
+        shade20 = color(0xFFFCA8FF),
+        shade40 = color(0xFFFF45E3),
+        shade60 = color(0xFF4E0061),
+    ),
+    wooPurple = WooPurpleColors(
+        shade0 = color(0xFFF2EDFF),
+        shade5 = color(0xFFE1D7FF),
+        shade10 = color(0xFFD1C1FF),
+        shade20 = color(0xFFB999FF),
+        shade30 = color(0xFFA77EFF),
+        shade40 = color(0xFF873EFF),
+        shade50 = color(0xFF720EEC),
+        shade60 = color(0xFF6108CE),
+        shade70 = color(0xFF5007AA),
+        shade80 = color(0xFF3C087E),
+        shade90 = color(0xFF2C045D),
+        shade100 = color(0xFF1F0342),
+    ),
+)
+
+private fun color(argb: Long): Color = Color(argb)
+
+private fun color(argb: Long, alpha: Float): Color = Color(argb).copy(alpha = alpha)
