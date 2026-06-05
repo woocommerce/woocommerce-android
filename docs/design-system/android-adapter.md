@@ -79,7 +79,7 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Keep adapter token names stable and screen-facing.
 - Use source-backed names and shallow intent groups for public Store authoring roles under `WooTheme`.
 - Product-screen and design-system component code should read approved foundations from `WooTheme`,
-  for example `WooTheme.colors.core.primary`, `WooTheme.text.titleMedium.emphasized`,
+  for example `WooTheme.colors.primary`, `WooTheme.text.titleMedium.emphasized`,
   `WooTheme.spacing.space5`, and `WooTheme.padding.padding5`.
 - `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` are interop
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
@@ -92,8 +92,9 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Keep Material 3-only projection aliases internal. Do not expose generated Material aliases such as
   fixed roles or surface-container aliases unless those names are real source-backed tokens.
 - `outline` and `outlineVariant` are source-backed tokens and public under `WooTheme.colors`.
-- Preserve source intent with shallow groups such as core, background, surface, text, icon, border,
-  status, interactive, label, overlay, alert, and palette.
+- Preserve source intent with shallow groups such as background, surface, text, icon, border, status,
+  interactive, label, overlay, alert, and palette. Core colors remain top-level roles on
+  `WooTheme.colors`.
 - Palette/ramp and alert tokens are source-backed, but they do not automatically approve
   foreground/background pairing. Check component-specific contrast before using them for text,
   essential icons, or required state communication.
