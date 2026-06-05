@@ -195,9 +195,9 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given primary expansion country DE and primary flag on, when invoked, then return success true`() = testBlocking {
-        whenever(supportedCountries.supportedCountries()).thenReturn(listOf("us", "gb", "de"))
-        val siteSettings = buildSiteSettings(countryCode = "DE", currencyCode = "EUR")
+    fun `given primary expansion country IE and primary flag on, when invoked, then return success true`() = testBlocking {
+        whenever(supportedCountries.supportedCountries()).thenReturn(listOf("us", "gb", "ie"))
+        val siteSettings = buildSiteSettings(countryCode = "IE", currencyCode = "EUR")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
 
         val r = sut(forceRefresh = true)
@@ -206,9 +206,9 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given primary expansion country DE and primary flag off, when invoked, then return success false`() = testBlocking {
+    fun `given primary expansion country IE and primary flag off, when invoked, then return success false`() = testBlocking {
         whenever(supportedCountries.supportedCountries()).thenReturn(listOf("us", "gb"))
-        val siteSettings = buildSiteSettings(countryCode = "DE", currencyCode = "EUR")
+        val siteSettings = buildSiteSettings(countryCode = "IE", currencyCode = "EUR")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(siteSettings))
 
         val r = sut(forceRefresh = true)

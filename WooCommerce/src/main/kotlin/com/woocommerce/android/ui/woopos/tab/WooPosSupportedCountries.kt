@@ -30,21 +30,14 @@ class WooPosSupportedCountries @Inject constructor(
     private companion object {
         val BASE_PAIRS = listOf("us" to "usd", "pr" to "usd", "gb" to "gbp")
         val PRIMARY_EXPANSION_PAIRS = listOf(
-            "fr" to "eur",
-            "de" to "eur",
             "ie" to "eur",
             "nl" to "eur",
             "sg" to "sgd",
             "nz" to "nzd",
         )
         val EU_EXTENDED_PAIRS = listOf(
-            "at" to "eur",
-            "be" to "eur",
             "fi" to "eur",
-            "it" to "eur",
             "lu" to "eur",
-            "pt" to "eur",
-            "es" to "eur",
         )
         val AUSTRALIA_PAIR = "au" to "aud"
     }

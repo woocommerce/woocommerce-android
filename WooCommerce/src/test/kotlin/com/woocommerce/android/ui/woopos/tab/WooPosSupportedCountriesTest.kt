@@ -46,8 +46,6 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
                 "us" to "usd",
                 "pr" to "usd",
                 "gb" to "gbp",
-                "fr" to "eur",
-                "de" to "eur",
                 "ie" to "eur",
                 "nl" to "eur",
                 "sg" to "sgd",
@@ -61,19 +59,21 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
 
         assertThat(sut.supportedCountryCurrencyPairs())
             .containsExactlyInAnyOrder(
-                "us" to "usd", "pr" to "usd", "gb" to "gbp",
-                "at" to "eur", "be" to "eur", "fi" to "eur", "it" to "eur",
-                "lu" to "eur", "pt" to "eur", "es" to "eur",
+                "us" to "usd",
+                "pr" to "usd",
+                "gb" to "gbp",
+                "fi" to "eur",
+                "lu" to "eur",
             )
     }
 
     @Test
-    fun `given primary and EU extended flags on, when supportedCountryCurrencyPairs called, then all 16 pairs returned and AU absent`() = testBlocking {
+    fun `given primary and EU extended flags on, when supportedCountryCurrencyPairs called, then all 9 pairs returned and AU absent`() = testBlocking {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
 
         val pairs = sut.supportedCountryCurrencyPairs()
-        assertThat(pairs).hasSize(16)
+        assertThat(pairs).hasSize(9)
         assertThat(pairs.map { it.first }).doesNotContain("au")
     }
 
@@ -99,9 +99,19 @@ class WooPosSupportedCountriesTest : BaseUnitTest() {
         assertThat(sut.supportedCountries())
             .containsExactlyInAnyOrder(
                 "us", "pr", "gb",
-                "fr", "de", "ie", "nl", "sg", "nz",
-                "at", "be", "fi", "it", "lu", "pt", "es",
+                "ie", "nl", "sg", "nz",
+                "fi", "lu",
                 "au",
             )
+    }
+
+    @Test
+    fun `given all expansion flags on, when supportedCountries called, then fiscalization countries are absent`() = testBlocking {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)).thenReturn(true)
+
+        assertThat(sut.supportedCountries())
+            .doesNotContain("at", "be", "fr", "it", "de", "pt", "es")
     }
 }
