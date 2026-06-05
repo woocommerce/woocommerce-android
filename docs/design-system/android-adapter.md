@@ -84,17 +84,18 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` are interop
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
   them, not as the primary Store design-system authoring surface.
-- `WooTheme.colors` should expose every source-backed Figma/manual-export color token available for
-  PR 2, grouped shallowly by intent.
+- `WooTheme.colors` should expose the source-backed PR 2 color tokens used by the core foundation and
+  inspected i1 component nodes, grouped shallowly by source intent.
 - Do not limit `WooTheme.colors` to a small curated Material 3-like subset.
-- Do not create `WooTheme.semanticColors`; semantic, status, alert, component, and palette colors
-  live as grouped fields under `WooTheme.colors`.
+- Do not expose the manual `Semantic/*.tokens.json` groups in PR 2 unless a concrete Figma
+  component node is confirmed to bind to that token group.
+- Do not create `WooTheme.semanticColors`; supported status, alert, overlay, and palette colors live
+  as grouped fields under `WooTheme.colors`.
 - Keep Material 3-only projection aliases internal. Do not expose generated Material aliases such as
   fixed roles or surface-container aliases unless those names are real source-backed tokens.
 - `outline` and `outlineVariant` are source-backed tokens and public under `WooTheme.colors`.
-- Preserve source intent with shallow groups such as background, surface, text, icon, border, status,
-  interactive, label, overlay, alert, and palette. Core colors remain top-level roles on
-  `WooTheme.colors`.
+- Preserve source intent with shallow groups such as background, surface, outline, status, overlay,
+  alert, and palette. Core colors remain top-level roles on `WooTheme.colors`.
 - Palette/ramp and alert tokens are source-backed, but they do not automatically approve
   foreground/background pairing. Check component-specific contrast before using them for text,
   essential icons, or required state communication.

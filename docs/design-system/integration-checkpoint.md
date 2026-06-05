@@ -28,14 +28,16 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Do not expose raw Figma variable names as public Android APIs.
 - Keep a strict token map with Android API/token name, source shorthand or Figma variable/name/ID
   when useful, light and dark values, Material 3 role mapping, status, and notes.
-- Public `WooTheme.colors` exposes every source-backed Figma/manual-export color token available for
-  PR 2, grouped shallowly by intent.
+- Public `WooTheme.colors` exposes source-backed PR 2 color tokens used by the core foundation and
+  inspected i1 component nodes, grouped shallowly by source intent.
 - Do not limit `WooTheme.colors` to a small curated Material 3-like subset.
 - Material 3 color roles remain internal interop projection aliases, not the Store authoring surface.
 - Do not expose generated Material aliases such as fixed roles or surface-container aliases unless
   they are real source-backed tokens.
-- Do not add `WooTheme.semanticColors`; semantic, status, alert, component, and palette colors live
-  as grouped fields under `WooTheme.colors`.
+- Do not add `WooTheme.semanticColors`; supported status, alert, overlay, and palette colors live as
+  grouped fields under `WooTheme.colors`.
+- Do not expose manual `Semantic/*.tokens.json` groups in PR 2 unless a concrete Figma component node
+  is confirmed to bind to that token group.
 - `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
 - i1 foundations start Kotlin/Compose-only; do not create Android XML resources for design-system tokens until XML/View needs them.
 - When XML/View needs a design-system token, move that token's primitive value to Android resources and update Compose to read from the same resource.
@@ -66,9 +68,10 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - The new `WooTheme` accessor lives under the design-system package. This intentionally accepts temporary
   simple-name overlap with the legacy `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper until the
   legacy wrapper is removed; new design-system code should not import the legacy wrapper.
-- `WooTheme.colors` is the canonical Store authoring surface for all source-backed PR 2 color tokens.
-- Group colors shallowly by source intent, such as core, background, surface, text, icon, border,
-  status, interactive, label, overlay, alert, and palette.
+- `WooTheme.colors` is the canonical Store authoring surface for source-backed PR 2 color tokens used
+  by the core foundation and inspected i1 component nodes.
+- Group colors shallowly by source intent, such as core, background, surface, outline, status,
+  overlay, alert, and palette.
 - `MaterialTheme.colorScheme` remains populated from source values as an internal interop projection
   for Material 3 components, defaults, and helpers.
 - `WooTheme.text` exposes the Store text-role model, including regular, emphasized, and strong variants.

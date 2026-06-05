@@ -31,9 +31,9 @@ implementation, confirm API availability against the repo's pinned Material 3 de
 ## Color Roles
 
 Use Material 3 color roles as interop semantics, not as the public Store color API. PR 2
-`WooTheme.colors` should expose every source-backed Figma/manual-export color token, grouped
-shallowly by source intent. `MaterialTheme.colorScheme` receives internal projection aliases for
-Material 3 components, defaults, and helpers.
+`WooTheme.colors` should expose the source-backed color tokens used by the core foundation and
+inspected i1 component nodes, grouped shallowly by source intent. `MaterialTheme.colorScheme`
+receives internal projection aliases for Material 3 components, defaults, and helpers.
 
 Do not generate public `WooTheme.colors` entries for Material fixed roles, `surfaceContainer*`,
 `surfaceDim`, `surfaceBright`, or other Material aliases unless those names are real source-backed
@@ -201,9 +201,12 @@ The existing adapter decision still stands:
 - Material 3 `ColorScheme`, `Typography`, `Shapes`, and component defaults should be built from those
   Kotlin/Compose-owned primitives.
 - Do not create Android resources for every Material role just because `ColorScheme` has that role.
-- Expose every source-backed PR 2 color token through `WooTheme.colors`, grouped shallowly by intent.
-- Do not create a parallel semantic-colors carrier in PR 2. Semantic, status, alert, component, and
+- Expose source-backed PR 2 color tokens used by the core foundation and inspected i1 component nodes
+  through `WooTheme.colors`, grouped shallowly by source intent.
+- Do not create a parallel semantic-colors carrier in PR 2. Supported status, alert, overlay, and
   palette colors live as grouped fields under `WooTheme.colors`.
+- Do not expose manual `Semantic/*.tokens.json` groups in PR 2 unless a concrete Figma component node
+  is confirmed to bind to that token group.
 - Keep Material 3-only projection aliases internal unless the alias is itself a source-backed token.
 - Promote a primitive to Android resources only when a real non-migrated XML/View screen needs that
   token.

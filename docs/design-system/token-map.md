@@ -10,6 +10,8 @@ Source references use public-repo shorthands:
 
 - P2: `Woo Mobile Design System, i1`, May 27, 2026 (`pe5sF9-5ox-p2`).
 - Figma file: `Woo Mobile Design System` (`50XIH5MmOf4xUYEkM6fAm6-fi`).
+- Manual export summary: `docs/orchestrator/state/store-design-system-pr2-token-export-summary.md`.
+- Local manual export JSON files under `~/Downloads/Woo theme/` are used only for source verification where noted.
 
 Use source shorthands in the source-reference column, optionally with node IDs when useful. Do not
 use raw P2 or Figma URLs in public repo docs.
@@ -18,8 +20,9 @@ For PR 2 color mapping, use the local export summary
 `docs/orchestrator/state/store-design-system-pr2-token-export-summary.md` as the primary source.
 Use `~/Downloads/Woo theme/` only to verify source groups that the summary mentions but does not
 enumerate, such as alert and palette rows. Do not copy raw variable IDs into repo docs.
-The public color-surface decision in this file supersedes any older summary recommendation to keep
-semantic/status colors internal.
+The manual `Semantic/*.tokens.json` export is not part of the PR 2 public API. Direct Figma
+component inspection found the accessible i1 components binding to core, background, surface,
+outline, status-container, alert, palette, spacing, radius, stroke, and type tokens instead.
 
 ## Status Values
 
@@ -36,32 +39,26 @@ interop.
 
 | Android API | Source reference | Light value | Dark value | Material 3 role mapping | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| `WooTheme.colors` | Manual color exports | TBD | TBD | Internal `ColorScheme` projection only | needs_android_mapping | Every source-backed color token, grouped shallowly by intent. |
-| `WooTheme.text` | Design type roles | TBD | TBD | Regular projection to `Typography` | needs_android_mapping | Exposes regular, emphasized, and strong variants. |
-| `WooTheme.spacing` | Design spacing scale | TBD | TBD | No Material role | needs_android_mapping | Theme-scoped spacing accessor. |
-| `WooTheme.padding` | Design padding scale | TBD | TBD | No Material role | needs_android_mapping | Separate group from spacing even when values match. |
-
-These group rows are planning placeholders. When implementation marks a token `production`, add an
-individual row for that public API or token.
+| `WooTheme.colors` | Manual light/dark color exports | See color reconciliation table | See color reconciliation table | Partial projection to `ColorScheme` | production | Grouped public source tokens; not a full Material 3 role mirror. |
+| `WooTheme.text` | `Typescale/Android.tokens.json`; `Font theme/Android.tokens.json` | See text table | Same values | Regular projection to `Typography` | needs_android_mapping | Numeric roles and weights are source-backed; font family remains ambiguous. |
+| `WooTheme.spacing` | `Value.tokens 2.json` / spacing | `0..64dp` | Same values | No Material role | production | Theme-scoped spacing accessor. |
+| `WooTheme.padding` | `Value.tokens 2.json` / padding | `0..64dp` | Same values | No Material role | production | Separate group from spacing even when values match. |
 
 ## PR 2 Public Color Surface
 
-`WooTheme.colors` should expose every source-backed Figma/manual-export color token available for
-PR 2. Group the public API shallowly by source intent; do not collapse the source into a small
-Material 3-like subset.
+`WooTheme.colors` exposes the source-backed color tokens from Figma, the export summary, and approved
+manual fallback groups that are used by the core foundation and inspected i1 component nodes. Group
+the public API shallowly by source intent; do not collapse the source into a small Material 3-like
+subset.
 
 | Public group | Source-backed coverage |
 | --- | --- |
 | Core | Primary, on-primary, secondary, and on-secondary roles. |
 | Background | Section background and section background variant roles, including matching on-colors. |
 | Surface | Surface, on-surface tones, inverted surface, and inverted on-surface tones. |
-| Text | Semantic text primary, secondary, tertiary, disabled, and on-primary. |
-| Icon | Semantic icon tokens. |
-| Border | `outline`, `outlineVariant`, default border, and focused border. |
-| Status | Top-level status/background tones and semantic status tones. Keep duplicate-looking intents separate. |
-| Interactive | Interactive primary, destructive, and pressed tokens. |
-| Label | Semantic label primary, secondary, tertiary, disabled, and on-primary. |
-| Overlay | Overlay opacity tokens and semantic surface overlay. Preserve exported alpha values. |
+| Outline | `outline` and `outlineVariant`. |
+| Status | Top-level status/background container tones and matching on-colors. |
+| Overlay | Overlay opacity tokens. Preserve exported alpha values. |
 | Alert | Alert blue, green, red, and yellow rows verified from the manual export fallback. |
 | Palette | Sandstone and Woo brand ramps verified from the manual export fallback. |
 
@@ -80,6 +77,8 @@ required state communication.
   `surfaceContainer*`, `surfaceDim`, `surfaceBright`, or similar aliases unless they are real
   source-backed tokens.
 - `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
+- Do not expose the manual `Semantic/*.tokens.json` groups in PR 2 unless a concrete Figma
+  component node is confirmed to bind to that token group.
 - Do not create a separate `WooTheme.semanticColors` group in PR 2.
 - If a non-color Figma variable has no clean Material 3 role, add it as an internal adapter token
   first.
@@ -97,28 +96,248 @@ required state communication.
 
 ## Token Ownership And XML/View Promotion
 
-The i1 adapter is Compose-first at the API/component layer, and i1 token primitive values start as Kotlin/Compose-owned implementation details.
+The i1 adapter is Compose-first at the API/component layer, and i1 token primitive values start as
+Kotlin/Compose-owned implementation details.
 
 When defining tokens:
 
 - Define color, spacing, radius, icon sizing, typography, and similar primitive values in Kotlin/Compose foundation code first.
 - Compose APIs should expose stable `WooTheme` and design-system component surfaces, not raw `R.color`
   or `R.dimen` usage to product screens.
-- If a non-migrated XML/View screen needs a design-system token, move only that token's primitive value to Android resources and update Compose to read from the same resource.
+- If a non-migrated XML/View screen needs a design-system token, move only that token's primitive
+  value to Android resources and update Compose to read from the same resource.
 - XML/View styles may consume promoted token resources only through targeted, opt-in style usage.
 - Do not copy token values into separate Kotlin/Compose constants and XML resources.
-- Keep `token-map.md` as the audit trail for the token value, source shorthand, Material 3 role mapping, status, and notes.
-- Avoid global XML theme/resource remapping unless a later design-system decision explicitly changes the rollout strategy.
-- Do not globally apply design-system XML/View styles in PR 2. Add targeted XML/View style usage only when a non-migrated XML/View screen needs design-system styling.
+- Keep `token-map.md` as the audit trail for the token value, source shorthand, Material 3 role
+  mapping, status, and notes.
+- Avoid global XML theme/resource remapping unless a later design-system decision explicitly changes
+  the rollout strategy.
+- Do not globally apply design-system XML/View styles in PR 2. Add targeted XML/View style usage only
+  when a non-migrated XML/View screen needs design-system styling.
 
-## Token Groups
+## Public Color Source Reconciliation
 
-Track i1 foundation groups here as implementation progresses:
+Every public `WooTheme.colors` field below is source-backed in both modes. Palette and alert rows are
+fallback-verified from local manual export JSON; primary export summary mentions those groups but does
+not enumerate each row. The manual semantic export is intentionally omitted from the public surface
+because inspected Figma component nodes do not bind to it. Palette/ramp and alert tokens are source
+tokens only. They require component-specific contrast evidence before foreground text, essential icon,
+or required state use.
 
-- Color roles.
-- Typography.
-- Spacing.
-- Radius.
-- Elevation.
-- Icon sizing.
-- Interaction/state tokens.
+| Android API | Source path | Export file | Light hex / alpha | Dark hex / alpha | M3 projection | Status | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `WooTheme.colors.primary` | `Primary` | `Light.tokens.json` / `Dark.tokens.json` | `#873EFF` / 100% | `#873EFF` / 100% | `primary` | production | Core primary. |
+| `WooTheme.colors.onPrimary` | `On Primary` | `Light.tokens.json` / `Dark.tokens.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onPrimary` | production | Contrast with primary: 5.04:1 in both modes. |
+| `WooTheme.colors.secondary` | `Secondary` | `Light.tokens.json` / `Dark.tokens.json` | `#EAE2FE` / 100% | `#383146` / 100% | `secondary`; internal container alias | production | Contrast with onSecondary: 4.04:1 light, 10.78:1 dark. |
+| `WooTheme.colors.onSecondary` | `On Secondary` | `Light.tokens.json` / `Dark.tokens.json` | `#873EFF` / 100% | `#F1EDFE` / 100% | `onSecondary`; internal container alias | production | Source foreground for secondary. |
+| `WooTheme.colors.outline` | `Outline/Outline` | `Light.tokens.json` / `Dark.tokens.json` | `#787C82` / 100% | `#454549` / 100% | `outline` | production | Boundary token; do not use as required affordance without component contrast review. |
+| `WooTheme.colors.outlineVariant` | `Outline/Outline Variant` | `Light.tokens.json` / `Dark.tokens.json` | `#D2D2D8` / 100% | `#5E5E63` / 100% | `outlineVariant` | production | Subtle boundary token; component-specific contrast required. |
+| `WooTheme.colors.background.section` | `Background/Section Background` | `Light.tokens.json` / `Dark.tokens.json` | `#F2F2F8` / 100% | `#101517` / 100% | `background` | production | Contrast with onSection: 14.95:1 light, 18.39:1 dark. |
+| `WooTheme.colors.background.onSection` | `Background/On Section Background` | `Light.tokens.json` / `Dark.tokens.json` | `#1E1E1E` / 100% | `#FFFFFF` / 100% | `onBackground` | production | Source foreground for section background. |
+| `WooTheme.colors.background.sectionVariant` | `Background/Section Background Variant` | `Light.tokens.json` / `Dark.tokens.json` | `#F0F0F0` / 100% | `#101517` / 100% | `surfaceVariant`; internal surface-container alias | production | Contrast with onSectionVariant: 14.93:1 light, 5.36:1 dark. |
+| `WooTheme.colors.background.onSectionVariant` | `Background/On Section Background Variant` | `Light.tokens.json` / `Dark.tokens.json` | `#1C1C1E` / 100% | `#8B8A8E` / 100% | No direct M3 role | production | Source foreground for variant section background. |
+| `WooTheme.colors.surface.default` | `Surface/Surface` | `Light.tokens.json` / `Dark.tokens.json` | `#FFFFFF` / 100% | `#232529` / 100% | `surface`; internal surface-container aliases | production | Contrast with onDefault: 16.67:1 light, 15.35:1 dark. |
+| `WooTheme.colors.surface.onDefault` | `Surface/On Surface` | `Light.tokens.json` / `Dark.tokens.json` | `#1E1E1E` / 100% | `#FFFFFF` / 100% | `onSurface` | production | Source foreground for default surface. |
+| `WooTheme.colors.surface.onVariant` | `Surface/On Surface Variant` | `Light.tokens.json` / `Dark.tokens.json` | `#868A94` / 100% | `#868A94` / 100% | `onSurfaceVariant` | production | Variant foreground; verify pairings per component. |
+| `WooTheme.colors.surface.onLowest` | `Surface/On Surface Lowest` | `Light.tokens.json` / `Dark.tokens.json` | `#B2B7C0` / 100% | `#626068` / 100% | No direct M3 role | production | Source surface tone; component-specific contrast required. |
+| `WooTheme.colors.surface.onHighest` | `Surface/On Surface Highest` | `Light.tokens.json` / `Dark.tokens.json` | `#50575E` / 100% | `#626068` / 100% | No direct M3 role | production | Source surface tone; component-specific contrast required. |
+| `WooTheme.colors.surface.inverted` | `Surface/Inverted Surface` | `Light.tokens.json` / `Dark.tokens.json` | `#1C1C1E` / 100% | `#FFFFFF` / 100% | `inverseSurface` | production | Top-level surface source token. |
+| `WooTheme.colors.surface.onInverted` | `Surface/On Inverted Surface` | `Light.tokens.json` / `Dark.tokens.json` | `#FFFFFF` / 100% | `#1E1E1E` / 100% | `inverseOnSurface` | production | Source foreground for inverted surface. |
+| `WooTheme.colors.surface.onInvertedVariant` | `Surface/On Inverted Surface Variant` | `Light.tokens.json` / `Dark.tokens.json` | `#929298` / 100% | `#8D8D91` / 100% | No direct M3 role | production | Source inverted variant foreground. |
+| `WooTheme.colors.status.errorContainer` | `Error` | `Light.tokens.json` / `Dark.tokens.json` | `#F6E6E3` / 100% | `#F6E6E3` / 90% | `errorContainer` | production | Dark status container alpha is 90%; contrast with onErrorContainer: 13.68:1 before alpha composition. |
+| `WooTheme.colors.status.onErrorContainer` | `On Error` | `Light.tokens.json` / `Dark.tokens.json` | `#470000` / 100% | `#470000` / 100% | `onErrorContainer` | production | Top-level container foreground. |
+| `WooTheme.colors.status.warningContainer` | `Warning` | `Light.tokens.json` / `Dark.tokens.json` | `#FDE6BE` / 100% | `#FDE6BE` / 90% | No direct M3 role | production | Dark status container alpha is 90%; contrast with onWarningContainer: 13.73:1 before alpha composition. |
+| `WooTheme.colors.status.onWarningContainer` | `On Warning` | `Light.tokens.json` / `Dark.tokens.json` | `#2E1900` / 100% | `#2E1900` / 100% | No direct M3 role | production | Top-level container foreground. |
+| `WooTheme.colors.status.cautionContainer` | `Caution` | `Light.tokens.json` / `Dark.tokens.json` | `#FEE995` / 100% | `#FEE995` / 90% | No direct M3 role | production | Dark status container alpha is 90%; contrast with onCautionContainer: 13.67:1 before alpha composition. |
+| `WooTheme.colors.status.onCautionContainer` | `On Caution` | `Light.tokens.json` / `Dark.tokens.json` | `#281D00` / 100% | `#281D00` / 100% | No direct M3 role | production | Top-level container foreground. |
+| `WooTheme.colors.status.successContainer` | `Success` | `Light.tokens.json` / `Dark.tokens.json` | `#C6F7CD` / 100% | `#C6F7CD` / 90% | No direct M3 role | production | Dark status container alpha is 90%; contrast with onSuccessContainer: 13.35:1 before alpha composition. |
+| `WooTheme.colors.status.onSuccessContainer` | `On Success` | `Light.tokens.json` / `Dark.tokens.json` | `#002900` / 100% | `#002900` / 100% | No direct M3 role | production | Top-level container foreground. |
+| `WooTheme.colors.status.infoContainer` | `Info` | `Light.tokens.json` / `Dark.tokens.json` | `#DEEBFA` / 100% | `#DEEBFA` / 90% | No direct M3 role | production | Dark status container alpha is 90%; contrast with onInfoContainer: 13.68:1 before alpha composition. |
+| `WooTheme.colors.status.onInfoContainer` | `On Info` | `Light.tokens.json` / `Dark.tokens.json` | `#001B4F` / 100% | `#001B4F` / 100% | No direct M3 role | production | Top-level container foreground. |
+| `WooTheme.colors.status.neutralContainer` | `Neutral` | `Light.tokens.json` / `Dark.tokens.json` | `#F4F4F4` / 100% | `#F4F4F4` / 90% | No direct M3 role | production | Dark status container alpha is 90%; contrast with onNeutralContainer: 15.16:1 before alpha composition. |
+| `WooTheme.colors.status.onNeutralContainer` | `On Neutral` | `Light.tokens.json` / `Dark.tokens.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Top-level container foreground. |
+| `WooTheme.colors.status.neutralOutlinedContainer` | `Neutral Outlined` | `Light.tokens.json` / `Dark.tokens.json` | `#DBDBDB` / 100% | `#DBDBDB` / 90% | No direct M3 role | production | Dark pairing with onNeutralOutlinedContainer is not contrast-safe; component-specific contrast is required. |
+| `WooTheme.colors.status.onNeutralOutlinedContainer` | `On Neutral Outlined` | `Light.tokens.json` / `Dark.tokens.json` | `#1E1E1E` / 100% | `#DBDBDB` / 100% | No direct M3 role | needs_design | Source-backed, but dark foreground/background contrast is unresolved for text or essential icon use. |
+| `WooTheme.colors.overlay.overlay20` | `Overlay/Opacity-20` | `Light.tokens.json` / `Dark.tokens.json` | `#000000` / 20% | `#000000` / 20% | No direct M3 role | production | Preserve source alpha; overlay use only. |
+| `WooTheme.colors.overlay.overlay50` | `Overlay/Opacity-50` | `Light.tokens.json` / `Dark.tokens.json` | `#000000` / 50% | `#000000` / 75% | `scrim` | production | Dark alpha is 75%, despite token label. |
+| `WooTheme.colors.alert.red` | `Alerts/Red` | `Light.tokens.json` / `Dark.tokens.json` | `#FC4A5B` / 100% | `#DC3545` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.alert.yellow` | `Alerts/Yellow` | `Light.tokens.json` / `Dark.tokens.json` | `#EAAB2D` / 100% | `#EAAB2D` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.alert.green` | `Alerts/Green` | `Light.tokens.json` / `Dark.tokens.json` | `#27AE32` / 100% | `#69B66F` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.alert.blue` | `Alerts/Blue` | `Light.tokens.json` / `Dark.tokens.json` | `#1E94D0` / 100% | `#1E94D0` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.sandstone.shade5` | `Sandstone/Sandstone 5` | `Light.tokens.json` / `Dark.tokens.json` | `#FBF9F6` / 100% | `#FBF9F6` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.sandstone.shade10` | `Sandstone/Sandstone 10` | `Light.tokens.json` / `Dark.tokens.json` | `#F1EEEB` / 100% | `#F1EEEB` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.sandstone.shade20` | `Sandstone/Sandstone 20` | `Light.tokens.json` / `Dark.tokens.json` | `#E6E2DE` / 100% | `#E6E2DE` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.sandstone.shade40` | `Sandstone/Sandstone 40` | `Light.tokens.json` / `Dark.tokens.json` | `#C5C2BF` / 100% | `#C5C2BF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.sandstone.shade60` | `Sandstone/Sandstone 60` | `Light.tokens.json` / `Dark.tokens.json` | `#8B8A89` / 100% | `#8B8A89` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooBlue.shade20` | `Woo Blue/Woo Blue 20` | `Light.tokens.json` / `Dark.tokens.json` | `#75FFFF` / 100% | `#75FFFF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooBlue.shade40` | `Woo Blue/Woo Blue 40` | `Light.tokens.json` / `Dark.tokens.json` | `#1AD0FD` / 100% | `#1AD0FD` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooBlue.shade60` | `Woo Blue/Woo Blue 60` | `Light.tokens.json` / `Dark.tokens.json` | `#05096C` / 100% | `#05096C` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooGreen.shade20` | `Woo Green/Woo Green 20` | `Light.tokens.json` / `Dark.tokens.json` | `#D5FF4A` / 100% | `#D5FF4A` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooGreen.shade40` | `Woo Green/Woo Green 40` | `Light.tokens.json` / `Dark.tokens.json` | `#06E782` / 100% | `#06E782` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooGreen.shade60` | `Woo Green/Woo Green 60` | `Light.tokens.json` / `Dark.tokens.json` | `#083D2D` / 100% | `#083D2D` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooOrange.shade20` | `Woo Orange/Woo Orange 20` | `Light.tokens.json` / `Dark.tokens.json` | `#FFE500` / 100% | `#FFE500` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooOrange.shade40` | `Woo Orange/Woo Orange 40` | `Light.tokens.json` / `Dark.tokens.json` | `#FF9000` / 100% | `#FF9000` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooOrange.shade60` | `Woo Orange/Woo Orange 60` | `Light.tokens.json` / `Dark.tokens.json` | `#FF4800` / 100% | `#FF4800` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPink.shade20` | `Woo Pink/Woo Pink 20` | `Light.tokens.json` / `Dark.tokens.json` | `#FCA8FF` / 100% | `#FCA8FF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPink.shade40` | `Woo Pink/Woo Pink 40` | `Light.tokens.json` / `Dark.tokens.json` | `#FF45E3` / 100% | `#FF45E3` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPink.shade60` | `Woo Pink/Woo Pink 60` | `Light.tokens.json` / `Dark.tokens.json` | `#4E0061` / 100% | `#4E0061` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade0` | `Woo Puprle/Woo Purple 0` | `Light.tokens.json` / `Dark.tokens.json` | `#F2EDFF` / 100% | `#F2EDFF` / 100% | No direct M3 role | production | Source typo stays in docs only; Android API uses `wooPurple`. |
+| `WooTheme.colors.palette.wooPurple.shade5` | `Woo Puprle/Woo Purple 5` | `Light.tokens.json` / `Dark.tokens.json` | `#E1D7FF` / 100% | `#E1D7FF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade10` | `Woo Puprle/Woo Purple 10` | `Light.tokens.json` / `Dark.tokens.json` | `#D1C1FF` / 100% | `#D1C1FF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade20` | `Woo Puprle/Woo Purple 20` | `Light.tokens.json` / `Dark.tokens.json` | `#B999FF` / 100% | `#B999FF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade30` | `Woo Puprle/Woo Purple 30` | `Light.tokens.json` / `Dark.tokens.json` | `#A77EFF` / 100% | `#A77EFF` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade40` | `Woo Puprle/Woo Purple 40` | `Light.tokens.json` / `Dark.tokens.json` | `#873EFF` / 100% | `#873EFF` / 100% | No direct M3 role | production | Same hex as top-level primary. |
+| `WooTheme.colors.palette.wooPurple.shade50` | `Woo Puprle/Woo Purple 50` | `Light.tokens.json` / `Dark.tokens.json` | `#720EEC` / 100% | `#720EEC` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade60` | `Woo Puprle/Woo Purple 60` | `Light.tokens.json` / `Dark.tokens.json` | `#6108CE` / 100% | `#6108CE` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade70` | `Woo Puprle/Woo Purple 70` | `Light.tokens.json` / `Dark.tokens.json` | `#5007AA` / 100% | `#5007AA` / 100% | No direct M3 role | production | Source palette token. |
+| `WooTheme.colors.palette.wooPurple.shade80` | `Woo Puprle/Woo Purple 80` | `Light.tokens.json` / `Dark.tokens.json` | `#3C087E` / 100% | `#3C087E` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade90` | `Woo Puprle/Woo Purple 90` | `Light.tokens.json` / `Dark.tokens.json` | `#2C045D` / 100% | `#2C045D` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+| `WooTheme.colors.palette.wooPurple.shade100` | `Woo Puprle/Woo Purple 100` | `Light.tokens.json` / `Dark.tokens.json` | `#1F0342` / 100% | `#1F0342` / 100% | No direct M3 role | production | Fallback-verified from local manual export JSON; component-specific contrast required. |
+
+## Material 3 Color Projection
+
+`WooDesignSystemTheme` builds a complete `ColorScheme(...)` against Material 3 `1.4.0`. Direct rows
+reuse public source fields. Alias rows are internal projection decisions only and are not additional
+public `WooTheme.colors` fields.
+
+| Material role | Projection source | Status | Notes |
+| --- | --- | --- | --- |
+| `primary` | `WooTheme.colors.primary` | production | Direct source-backed projection. |
+| `onPrimary` | `WooTheme.colors.onPrimary` | production | Direct source-backed projection. |
+| `primaryContainer` | `WooTheme.colors.secondary` | production | Internal alias; no distinct source token. |
+| `onPrimaryContainer` | `WooTheme.colors.onSecondary` | production | Internal alias; no distinct source token. |
+| `inversePrimary` | `WooTheme.colors.primary` | production | Internal alias; no distinct source token. |
+| `secondary` | `WooTheme.colors.secondary` | production | Direct source-backed projection. |
+| `onSecondary` | `WooTheme.colors.onSecondary` | production | Direct source-backed projection. |
+| `secondaryContainer` | `WooTheme.colors.secondary` | production | Internal alias; no distinct source token. |
+| `onSecondaryContainer` | `WooTheme.colors.onSecondary` | production | Internal alias; no distinct source token. |
+| `tertiary` | `WooTheme.colors.secondary` | production | Internal alias until a distinct tertiary source appears. |
+| `onTertiary` | `WooTheme.colors.onSecondary` | production | Internal alias until a distinct tertiary source appears. |
+| `tertiaryContainer` | `WooTheme.colors.secondary` | production | Internal alias until a distinct tertiary container source appears. |
+| `onTertiaryContainer` | `WooTheme.colors.onSecondary` | production | Internal alias until a distinct tertiary container source appears. |
+| `background` | `WooTheme.colors.background.section` | production | Direct source-backed projection. |
+| `onBackground` | `WooTheme.colors.background.onSection` | production | Direct source-backed projection. |
+| `surface` | `WooTheme.colors.surface.default` | production | Direct source-backed projection. |
+| `onSurface` | `WooTheme.colors.surface.onDefault` | production | Direct source-backed projection. |
+| `surfaceVariant` | `WooTheme.colors.background.sectionVariant` | production | Source-backed projection, not a public Material mirror. |
+| `onSurfaceVariant` | `WooTheme.colors.surface.onVariant` | production | Direct source-backed projection. |
+| `surfaceTint` | `WooTheme.colors.primary` | production | Internal alias; no distinct source token. |
+| `inverseSurface` | `WooTheme.colors.surface.inverted` | production | Direct source-backed projection. |
+| `inverseOnSurface` | `WooTheme.colors.surface.onInverted` | production | Direct source-backed projection. |
+| `error` | `WooTheme.colors.status.errorContainer` | production | Internal alias until a distinct error source token is approved for controls. |
+| `onError` | `WooTheme.colors.status.onErrorContainer` | production | Internal alias paired with `error`. |
+| `errorContainer` | `WooTheme.colors.status.errorContainer` | production | Direct source-backed projection. |
+| `onErrorContainer` | `WooTheme.colors.status.onErrorContainer` | production | Direct source-backed projection. |
+| `outline` | `WooTheme.colors.outline` | production | Direct source-backed projection. |
+| `outlineVariant` | `WooTheme.colors.outlineVariant` | production | Direct source-backed projection. |
+| `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed projection; dark alpha is 75%. |
+| `surfaceBright` | `WooTheme.colors.surface.default` | production | Internal alias; no distinct source token. |
+| `surfaceDim` | `WooTheme.colors.background.section` | production | Internal alias; no distinct source token. |
+| `surfaceContainer` | `WooTheme.colors.background.section` | production | Internal alias; no distinct source token. |
+| `surfaceContainerHigh` | `WooTheme.colors.surface.default` | production | Internal alias; no distinct source token. |
+| `surfaceContainerHighest` | `WooTheme.colors.surface.default` | production | Internal alias; no distinct source token. |
+| `surfaceContainerLow` | `WooTheme.colors.background.sectionVariant` | production | Internal alias; no distinct source token. |
+| `surfaceContainerLowest` | `WooTheme.colors.surface.default` | production | Internal alias; no distinct source token. |
+| `primaryFixed` | `WooTheme.colors.primary` | production | Internal alias; no distinct source token. |
+| `primaryFixedDim` | `WooTheme.colors.secondary` | production | Internal alias; no distinct source token. |
+| `onPrimaryFixed` | `WooTheme.colors.onPrimary` | production | Internal alias; no distinct source token. |
+| `onPrimaryFixedVariant` | `WooTheme.colors.onSecondary` | production | Internal alias; no distinct source token. |
+| `secondaryFixed` | `WooTheme.colors.secondary` | production | Internal alias; no distinct source token. |
+| `secondaryFixedDim` | `WooTheme.colors.secondary` | production | Internal alias; no distinct source token. |
+| `onSecondaryFixed` | `WooTheme.colors.onSecondary` | production | Internal alias; no distinct source token. |
+| `onSecondaryFixedVariant` | `WooTheme.colors.onSecondary` | production | Internal alias; no distinct source token. |
+| `tertiaryFixed` | `WooTheme.colors.secondary` | production | Internal alias until a distinct tertiary fixed source appears. |
+| `tertiaryFixedDim` | `WooTheme.colors.secondary` | production | Internal alias until a distinct tertiary fixed source appears. |
+| `onTertiaryFixed` | `WooTheme.colors.onSecondary` | production | Internal alias until a distinct tertiary fixed source appears. |
+| `onTertiaryFixedVariant` | `WooTheme.colors.onSecondary` | production | Internal alias until a distinct tertiary fixed source appears. |
+
+## Public Text Tokens
+
+`WooTheme.text` exposes all 15 Android type roles with `regular`, `emphasized`, and `strong`
+variants. The regular variant is projected to `MaterialTheme.typography`. Android numeric role
+values are source-ready, but font family remains unresolved because the Android type export reports
+one family while the Android font-theme export reports another.
+
+| Android API | Size | Line height | Tracking | Weights | Material projection | Status | Notes |
+| --- | ---: | ---: | ---: | --- | --- | --- | --- |
+| `WooTheme.text.displayLarge` | `56sp` | `64sp` | `-0.41sp` | regular / medium / bold | `displayLarge.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.displayMedium` | `48sp` | `52sp` | `-0.41sp` | regular / medium / bold | `displayMedium.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.displaySmall` | `36sp` | `44sp` | `-0.41sp` | regular / medium / bold | `displaySmall.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.headlineLarge` | `34sp` | `40sp` | `-1.40sp` | regular / medium / bold | `headlineLarge.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.headlineMedium` | `28sp` | `36sp` | `-0.41sp` | regular / medium / bold | `headlineMedium.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.headlineSmall` | `24sp` | `32sp` | `-1.00sp` | regular / medium / bold | `headlineSmall.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.titleLarge` | `20sp` | `28sp` | `-0.41sp` | regular / medium / bold | `titleLarge.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.titleMedium` | `17sp` | `20sp` | `-0.41sp` | regular / medium / bold | `titleMedium.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.titleSmall` | `14sp` | `16sp` | `-0.41sp` | regular / medium / bold | `titleSmall.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.bodyLarge` | `17sp` | `24sp` | `-0.41sp` | regular / medium / bold | `bodyLarge.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.bodyMedium` | `15sp` | `20sp` | `-0.41sp` | regular / medium / bold | `bodyMedium.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.bodySmall` | `13sp` | `16sp` | `-0.41sp` | regular / medium / bold | `bodySmall.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.labelLarge` | `16sp` | `24sp` | `-0.41sp` | regular / medium / bold | `labelLarge.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.labelMedium` | `14sp` | `20sp` | `-0.41sp` | regular / medium / bold | `labelMedium.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.labelSmall` | `10sp` | `14sp` | `-0.07sp` | regular / medium / bold | `labelSmall.regular` | needs_android_mapping | Font family gate remains open. |
+
+## Spacing And Padding
+
+Spacing and padding use the same i1 primitive scale today, but remain separate public groups because
+they encode different design intent.
+
+| Android API | Source path | Value | Material projection | Status | Notes |
+| --- | --- | ---: | --- | --- | --- |
+| `WooTheme.spacing.space0` | `Spacing/0` | `0dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space1` | `Spacing/1` | `2dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space2` | `Spacing/2` | `4dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space3` | `Spacing/3` | `8dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space4` | `Spacing/4` | `12dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space5` | `Spacing/5` | `16dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space6` | `Spacing/6` | `20dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space7` | `Spacing/7` | `24dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space8` | `Spacing/8` | `32dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space9` | `Spacing/9` | `40dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space10` | `Spacing/10` | `48dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space11` | `Spacing/11` | `56dp` | No Material role | production | Source-ready. |
+| `WooTheme.spacing.space12` | `Spacing/12` | `64dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding0` | `Padding/0` | `0dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding1` | `Padding/1` | `2dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding2` | `Padding/2` | `4dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding3` | `Padding/3` | `8dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding4` | `Padding/4` | `12dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding5` | `Padding/5` | `16dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding6` | `Padding/6` | `20dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding7` | `Padding/7` | `24dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding8` | `Padding/8` | `32dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding9` | `Padding/9` | `40dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding10` | `Padding/10` | `48dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding11` | `Padding/11` | `56dp` | No Material role | production | Source-ready. |
+| `WooTheme.padding.padding12` | `Padding/12` | `64dp` | No Material role | production | Source-ready. |
+
+## Internal Radius And Stroke
+
+Radius and stroke are source-backed but remain internal in PR2. Do not add public radius, stroke,
+elevation, icon-sizing, or state accessors on the Store design-system theme namespace.
+
+| Internal token | Source path | Value | Material projection | Status | Notes |
+| --- | --- | ---: | --- | --- | --- |
+| `WooRadius.none` | `Radius/None` | `0dp` | No Material role | preview_only | Internal only. |
+| `WooRadius.extraSmall` | `Radius/Extra-small` | `2dp` | `MaterialTheme.shapes.extraSmall` | production | Internal projection. |
+| `WooRadius.small` | `Radius/Small` | `4dp` | `MaterialTheme.shapes.small` | production | Internal projection. |
+| `WooRadius.medium` | `Radius/Medium` | `8dp` | `MaterialTheme.shapes.medium` | production | Internal projection. |
+| `WooRadius.large` | `Radius/Large` | `12dp` | `MaterialTheme.shapes.large` | production | Internal projection. |
+| `WooRadius.extraLarge` | `Radius/Extra large` | `16dp` | `MaterialTheme.shapes.extraLarge` | production | Internal projection. |
+| `WooRadius.full` | `Radius/Full` | `999dp` | No Material role | preview_only | Pill/full-radius sentinel. |
+| `WooStroke.none` | `Stroke/None` | `0dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.extraThin` | `Stroke/Extra-Thin` | `0.5dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.thin` | `Stroke/Thin` | `0.75dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.regular` | `Stroke/Regular` | `1dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.medium` | `Stroke/Medium` | `1.5dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.mediumIncreased` | `Stroke/Medium Increased` | `2dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.thick` | `Stroke/Thick` | `3dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.extraThick` | `Stroke/Extra Thick` | `4dp` | No Material role | preview_only | Internal only. |
+
+## Unresolved Groups
+
+| Group | Source status | Android status | Public API | Notes |
+| --- | --- | --- | --- | --- |
+| Icon sizing | `Value.tokens 3.json` generic `Size` scale exists | needs_android_mapping | None | Probable icon-size source only; generic source label is not accepted for public API. |
+| Elevation | No export found | needs_design | None | Do not invent shadow, z-depth, or elevation values. |
+| Interaction state alpha | Pressed/focused/overlay related colors exist | needs_design | None | Existing colors are not disabled, hover, focus, dragged, or pressed state-layer alpha primitives. |
+| Minimum touch target | No export found | needs_design | None | Do not use generic size scale as minimum touch target. |

@@ -31,13 +31,15 @@ Expected output:
 - `WooTheme` foundation accessors for theme-scoped production APIs.
 - Manual i1 Kotlin/Compose runtime tokens.
 - Foundation groups for color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
-- Every source-backed Figma/manual-export color token available for PR 2 exposed through
-  `WooTheme.colors`, grouped shallowly by intent.
+- Source-backed PR 2 color tokens used by the core foundation and inspected i1 component nodes
+  exposed through `WooTheme.colors`, grouped shallowly by source intent.
 - Internal Material 3 `ColorScheme` projection for Material 3 components, defaults, and helpers.
 - Full text roles through `WooTheme.text`, with the regular projection installed in `MaterialTheme.typography`.
 - Spacing and padding through `WooTheme.spacing` and `WooTheme.padding`.
-- Semantic, status, alert, component, and palette colors as grouped fields under `WooTheme.colors`;
+- Supported status, alert, overlay, and palette colors as grouped fields under `WooTheme.colors`;
   no separate `WooTheme.semanticColors`.
+- Manual `Semantic/*.tokens.json` groups remain out of the PR 2 public API unless a concrete Figma
+  component node is confirmed to bind to that token group.
 - No generated public Material aliases such as fixed roles or surface-container aliases unless those
   names are real source-backed tokens.
 - Palette/ramp and alert tokens documented as source-backed but requiring component-specific contrast
