@@ -129,11 +129,56 @@ internal fun wooColors(useDarkTheme: Boolean): WooColors =
         LightWooColors
     }
 
+@Suppress("MagicNumber")
+private val FixedWooPaletteColors = WooPaletteColors(
+    sandstone = WooSandstoneColors(
+        shade5 = color(0xFFFBF9F6),
+        shade10 = color(0xFFF1EEEB),
+        shade20 = color(0xFFE6E2DE),
+        shade40 = color(0xFFC5C2BF),
+        shade60 = color(0xFF8B8A89),
+    ),
+    wooBlue = WooPaletteRampColors(
+        shade20 = color(0xFF75FFFF),
+        shade40 = color(0xFF1AD0FD),
+        shade60 = color(0xFF05096C),
+    ),
+    wooGreen = WooPaletteRampColors(
+        shade20 = color(0xFFD5FF4A),
+        shade40 = color(0xFF06E782),
+        shade60 = color(0xFF083D2D),
+    ),
+    wooOrange = WooPaletteRampColors(
+        shade20 = color(0xFFFFE500),
+        shade40 = color(0xFFFF9000),
+        shade60 = color(0xFFFF4800),
+    ),
+    wooPink = WooPaletteRampColors(
+        shade20 = color(0xFFFCA8FF),
+        shade40 = color(0xFFFF45E3),
+        shade60 = color(0xFF4E0061),
+    ),
+    wooPurple = WooPurpleColors(
+        shade0 = color(0xFFF2EDFF),
+        shade5 = color(0xFFE1D7FF),
+        shade10 = color(0xFFD1C1FF),
+        shade20 = color(0xFFB999FF),
+        shade30 = color(0xFFA77EFF),
+        shade40 = color(0xFF873EFF),
+        shade50 = color(0xFF720EEC),
+        shade60 = color(0xFF6108CE),
+        shade70 = color(0xFF5007AA),
+        shade80 = color(0xFF3C087E),
+        shade90 = color(0xFF2C045D),
+        shade100 = color(0xFF1F0342),
+    ),
+)
+
 private val LightWooColors = WooColors(
-    primary = color(0xFF873EFF),
+    primary = FixedWooPaletteColors.wooPurple.shade40,
     onPrimary = color(0xFFFFFFFF),
     secondary = color(0xFFEAE2FE),
-    onSecondary = color(0xFF873EFF),
+    onSecondary = FixedWooPaletteColors.wooPurple.shade40,
     background = WooBackgroundColors(
         section = color(0xFFF2F2F8),
         onSection = color(0xFF1E1E1E),
@@ -178,11 +223,11 @@ private val LightWooColors = WooColors(
         green = color(0xFF27AE32),
         blue = color(0xFF1E94D0),
     ),
-    palette = wooPaletteColors(),
+    palette = FixedWooPaletteColors,
 )
 
 private val DarkWooColors = WooColors(
-    primary = color(0xFF873EFF),
+    primary = FixedWooPaletteColors.wooPurple.shade40,
     onPrimary = color(0xFFFFFFFF),
     secondary = color(0xFF383146),
     onSecondary = color(0xFFF1EDFE),
@@ -230,52 +275,7 @@ private val DarkWooColors = WooColors(
         green = color(0xFF69B66F),
         blue = color(0xFF1E94D0),
     ),
-    palette = wooPaletteColors(),
-)
-
-@Suppress("MagicNumber")
-private fun wooPaletteColors() = WooPaletteColors(
-    sandstone = WooSandstoneColors(
-        shade5 = color(0xFFFBF9F6),
-        shade10 = color(0xFFF1EEEB),
-        shade20 = color(0xFFE6E2DE),
-        shade40 = color(0xFFC5C2BF),
-        shade60 = color(0xFF8B8A89),
-    ),
-    wooBlue = WooPaletteRampColors(
-        shade20 = color(0xFF75FFFF),
-        shade40 = color(0xFF1AD0FD),
-        shade60 = color(0xFF05096C),
-    ),
-    wooGreen = WooPaletteRampColors(
-        shade20 = color(0xFFD5FF4A),
-        shade40 = color(0xFF06E782),
-        shade60 = color(0xFF083D2D),
-    ),
-    wooOrange = WooPaletteRampColors(
-        shade20 = color(0xFFFFE500),
-        shade40 = color(0xFFFF9000),
-        shade60 = color(0xFFFF4800),
-    ),
-    wooPink = WooPaletteRampColors(
-        shade20 = color(0xFFFCA8FF),
-        shade40 = color(0xFFFF45E3),
-        shade60 = color(0xFF4E0061),
-    ),
-    wooPurple = WooPurpleColors(
-        shade0 = color(0xFFF2EDFF),
-        shade5 = color(0xFFE1D7FF),
-        shade10 = color(0xFFD1C1FF),
-        shade20 = color(0xFFB999FF),
-        shade30 = color(0xFFA77EFF),
-        shade40 = color(0xFF873EFF),
-        shade50 = color(0xFF720EEC),
-        shade60 = color(0xFF6108CE),
-        shade70 = color(0xFF5007AA),
-        shade80 = color(0xFF3C087E),
-        shade90 = color(0xFF2C045D),
-        shade100 = color(0xFF1F0342),
-    ),
+    palette = FixedWooPaletteColors,
 )
 
 private fun color(argb: Long): Color = Color(argb)
