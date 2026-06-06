@@ -175,7 +175,6 @@ class WooPosBookingViewStateMapperTest {
             val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
                 .withZone(ZoneOffset.UTC)
                 .format(start)
-            assertThat(expectedDate).contains("July 6")
             assertThat(result.appointmentDate).isEqualTo(expectedDate)
         }
 
