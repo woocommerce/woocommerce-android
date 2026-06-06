@@ -6,9 +6,11 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
-import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -20,7 +22,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
+class WooPosTabShouldBeVisibleTest {
 
     private val appPrefs: AppPrefs = mock()
     private val selectedSite: SelectedSite = mock()
@@ -34,6 +36,10 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
 
     private lateinit var sut: WooPosTabShouldBeVisible
     private lateinit var siteModel: SiteModel
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     @Before
     fun setup() {
@@ -53,14 +59,14 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tablet, when invoked with forceRefresh, then return success true`() = testBlocking {
+    fun `given tablet, when invoked with forceRefresh, then return success true`() = runTest {
         val r = sut(forceRefresh = true)
         assertTrue(r.isSuccess)
         assertTrue(r.getOrThrow())
     }
 
     @Test
-    fun `given screen size not allowed, when invoked with forceRefresh, then return success false`() = testBlocking {
+    fun `given screen size not allowed, when invoked with forceRefresh, then return success false`() = runTest {
         whenever(isScreenSizeAllowed()).thenReturn(false)
         val r = sut(forceRefresh = true)
         assertTrue(r.isSuccess)
@@ -68,7 +74,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given null site, when invoked with forceRefresh, then return failure unknown`() = testBlocking {
+    fun `given null site, when invoked with forceRefresh, then return failure unknown`() = runTest {
         whenever(selectedSite.getOrNull()).thenReturn(null)
         val r = sut(forceRefresh = true)
         assertTrue(r.isFailure)
@@ -76,7 +82,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given feature unsupported for CIAB site, when invoked with forceRefresh, then return success false`() = testBlocking {
+    fun `given feature unsupported for CIAB site, when invoked with forceRefresh, then return success false`() = runTest {
         whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.POS)).thenReturn(true)
 
         val r = sut(forceRefresh = true)
@@ -86,7 +92,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given cached value is true, when invoked without forceRefresh, then return cached value`() = testBlocking {
+    fun `given cached value is true, when invoked without forceRefresh, then return cached value`() = runTest {
         whenever(appPrefs.isPOSTabVisibleForSite(siteModel.id)).thenReturn(true)
 
         val r = sut(forceRefresh = false)
@@ -96,7 +102,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given successful check, when invoked with forceRefresh, then cache positive result`() = testBlocking {
+    fun `given successful check, when invoked with forceRefresh, then cache positive result`() = runTest {
         val r = sut(forceRefresh = true)
 
         assertTrue(r.isSuccess)
@@ -105,7 +111,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given screen size not allowed, when invoked with forceRefresh, then clear cache`() = testBlocking {
+    fun `given screen size not allowed, when invoked with forceRefresh, then clear cache`() = runTest {
         whenever(isScreenSizeAllowed()).thenReturn(false)
 
         val r = sut(forceRefresh = true)
@@ -117,7 +123,7 @@ class WooPosTabShouldBeVisibleTest : BaseUnitTest() {
 
     @Test
     fun `given country is not allowed, when invoked with forceRefresh, then return success false and clear cache`() =
-        testBlocking {
+        runTest {
             whenever(isCountryAllowed()).thenReturn(false)
 
             val r = sut(forceRefresh = true)
