@@ -33,6 +33,7 @@ enum class FeatureFlag(
     POS_BOOKINGS("pos_bookings", localValue = PackageUtils.isDebugBuild()),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks", localValue = PackageUtils.isDebugBuild()),
     BOOKINGS_RESCHEDULE("bookings_reschedule", localValue = PackageUtils.isDebugBuild()),
+    NEW_DESIGN_SYSTEM("new_design_system", localValue = false),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1"),
     LOGGED_OUT_FF_PANEL("logged_out_ff_panel", localValue = PackageUtils.isDebugBuild()),
     AI_ASSISTANT("woo_mobile_ai_assistant"),
