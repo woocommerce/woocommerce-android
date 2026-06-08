@@ -839,6 +839,26 @@ class DashboardViewModelTest : BaseUnitTest() {
             assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
         }
 
+    @Test
+    fun `given no delayed-stats card is visible, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(listOf(dashboardWidget(DashboardWidget.Type.ORDERS)))
+                )
+            }
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
     private companion object {
         fun dashboardWidget(
             type: DashboardWidget.Type,

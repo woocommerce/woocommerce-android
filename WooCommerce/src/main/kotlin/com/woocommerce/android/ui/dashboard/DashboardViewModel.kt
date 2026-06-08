@@ -83,6 +83,12 @@ class DashboardViewModel @Inject constructor(
             SelectionType.YEAR_TO_DATE,
             SelectionType.CUSTOM
         )
+
+        // Cards backed by the /reports endpoints that render the delayed-stats footer.
+        private val DELAYED_STATS_CARD_TYPES = setOf(
+            DashboardWidget.Type.STATS,
+            DashboardWidget.Type.POPULAR_PRODUCTS
+        )
     }
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
@@ -119,6 +125,8 @@ class DashboardViewModel @Inject constructor(
 
     private val _isScheduledImportEnabled = MutableStateFlow(false)
     val isScheduledImportEnabled: LiveData<Boolean> = _isScheduledImportEnabled.asLiveData()
+
+    private val _hasVisibleDelayedStatsCard = MutableStateFlow(false)
 
     private val refreshingOnBackground = MutableStateFlow(-1)
 
@@ -166,6 +174,13 @@ class DashboardViewModel @Inject constructor(
         launch {
             analyticsScheduledImportRepository.refresh()
         }
+        launch {
+            dashboardRepository.widgets.collect { widgets ->
+                _hasVisibleDelayedStatsCard.value = widgets.any {
+                    it.type in DELAYED_STATS_CARD_TYPES && it.isVisible
+                }
+            }
+        }
     }
 
     fun onDelayedStatsInfoClicked() {
@@ -209,7 +224,10 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun maybeShowScheduledImportNotice() {
-        if (_isScheduledImportEnabled.value && !appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo) {
+        val shouldShow = _isScheduledImportEnabled.value &&
+            _hasVisibleDelayedStatsCard.value &&
+            !appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo
+        if (shouldShow) {
             triggerEvent(DashboardEvent.ShowScheduledImportNotice)
         }
     }
