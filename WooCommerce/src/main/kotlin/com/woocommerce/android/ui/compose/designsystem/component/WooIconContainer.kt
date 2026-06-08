@@ -21,16 +21,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 
-enum class WooIconContainerTone {
-    Purple,
-    Sandstone,
-    Blue,
-    Green,
-    Orange,
-    Pink,
-    DarkPurple,
-}
-
 @Composable
 fun WooIconContainer(
     imageVector: ImageVector,

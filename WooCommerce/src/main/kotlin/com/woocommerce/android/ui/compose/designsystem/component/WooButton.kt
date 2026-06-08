@@ -32,11 +32,6 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooStroke
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 
-enum class WooButtonSize {
-    Medium,
-    Small,
-}
-
 @Composable
 fun WooPrimaryButton(
     text: String,

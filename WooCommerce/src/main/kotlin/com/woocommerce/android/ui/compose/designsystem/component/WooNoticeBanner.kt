@@ -27,16 +27,6 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooStroke
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 
-enum class WooNoticeBannerTone {
-    Neutral,
-    NeutralOutlined,
-    Info,
-    Success,
-    Warning,
-    Caution,
-    Error,
-}
-
 @Composable
 fun WooNoticeBanner(
     title: String,
