@@ -20,7 +20,7 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 
 - Use an Android **Design System Adapter**, not a global app rewrite.
 - Keep the adapter inside the existing Store app UI/theme/resource layer for i1.
-- Add new design-system foundations and components as opt-in APIs.
+- Add new design-system foundations and components as deliberately adopted APIs.
 - Do not globally remap existing `Woo*`, `WC*`, XML styles, or resource names yet.
 - Figma is the design-intent source of truth; Android owns the runtime API contract.
 - Manually define stable i1 Kotlin/Compose runtime tokens first.
@@ -65,6 +65,14 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   Future consolidation can merge wrapper/accessor naming after the legacy wrapper is removed.
 - `WooDesignSystemTheme` installs the Store design-system runtime; `WooTheme.*` is the
   component-facing accessor for theme-scoped foundation values.
+- Both `WooThemeWithBackground` and `WooDesignSystemThemeWithBackground` must provide design-system
+  composition locals.
+- `WooThemeWithBackground` uses a legacy-compatible design-system foundation sourced from existing
+  legacy app resources.
+- `WooDesignSystemThemeWithBackground` uses the real design-system foundation.
+- `FeatureFlag.NEW_DESIGN_SYSTEM` controls the default `composeView` root wrapper. Explicit
+  `ComposeTheme.LEGACY` forces the legacy-compatible foundation, and explicit
+  `ComposeTheme.DESIGN_SYSTEM` forces the real design-system foundation.
 - The new `WooTheme` accessor lives under the design-system package. This intentionally accepts temporary
   simple-name overlap with the legacy `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper until the
   legacy wrapper is removed; new design-system code should not import the legacy wrapper.
@@ -80,14 +88,23 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   component-specific contrast is still required before using them for text, essential icons, or
   required state communication.
 - PR 2 foundation scope includes color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
-- Add an explicit theme selector to `composeView`, defaulting to the legacy app theme.
+- Add an explicit theme selector to `composeView`; default/no explicit selection follows
+  `FeatureFlag.NEW_DESIGN_SYSTEM`.
 - New design-system foundations, components, preview catalog entries, and pilot updates should use `androidx.compose.ui.tooling.preview.PreviewLightDark` for light/dark previews.
-- Design-system previews should wrap content in `WooDesignSystemTheme`, not `WooThemeWithBackground`.
-- Pilot previews should use the same theme that the screen opts into at runtime.
+- Design-system component previews should wrap content in `WooDesignSystemTheme`, not
+  `WooThemeWithBackground`.
+- Migrated screen and pilot previews should cover both `WooThemeWithBackground` legacy-compatible
+  foundation and `WooDesignSystemThemeWithBackground` design-system foundation.
 - Preview coverage is required for every component; screenshot verification is required for pilot screens and high-risk components.
 - Production components need accessibility review before product-screen adoption.
 - Pilot screens need an accessibility regression check against the original screen.
-- Migrated design-system screens opt into the design-system theme at the Fragment Compose root.
+- Migrated screens use one design-system component tree. The active root/foundation controls visual
+  rollout, so ordinary migrations should not keep duplicate legacy/design-system screen
+  implementations.
+- Temporary full-screen fallbacks are allowed only for genuinely high-risk migrations and require an
+  expiry/removal plan.
+- Bridge components such as `WooTopAppBar` may need component-level compatibility for title
+  alignment, typography, nav/action treatment, divider/elevation, height, and insets.
 - Fragment-hosted Compose layout migration means replacing XML/View layout content with Compose while keeping Fragments, XML nav graphs, SafeArgs, ViewModels, navigation, and Store app event ownership.
 - Compose layout migration is optional per screen, not required for all screens.
 - Some screens require substantial work and should stay XML/View while receiving targeted token/style updates when needed.
@@ -116,7 +133,8 @@ A good candidate:
 - Is a low-risk product surface.
 - Has visible design-system value such as toolbar, text hierarchy, cells, buttons, banners, empty/loading states, or forms.
 - Has bounded state and navigation.
-- Can be verified with previews and screenshots in light and dark mode.
+- Can be verified with previews and screenshots in light and dark mode across both
+  legacy-compatible and design-system foundations.
 - Avoids RecyclerView behavior, selection tracking, `ActionMode`, complex custom Views, or major accessibility redesign.
 - Has a clear before/after baseline for AI agents.
 

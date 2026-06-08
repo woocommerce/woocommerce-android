@@ -24,6 +24,10 @@ Before the two pilots begin, production-ready APIs should exist for:
 Production components should read approved foundation values through `WooTheme.*`. `MaterialTheme` remains available
 inside wrappers when Material 3 components or defaults require interop projection values.
 
+Production components must render correctly under both the real design-system foundation and the
+legacy-compatible foundation provided by `WooThemeWithBackground`. Do not rely on static fallback
+defaults such as `LightWooColors`.
+
 Do not add additional thin wrappers beyond this subset unless a later design-system decision explicitly expands the catalog. This prevents the adapter from becoming an unlimited Material 3 wrapper library.
 
 ## Preview Standard
@@ -32,7 +36,9 @@ Use `androidx.compose.ui.tooling.preview.PreviewLightDark` for design-system com
 
 Older Store Compose screens may use the project `LightDarkThemePreviews` annotation. New design-system foundations, components, preview catalog entries, and pilot updates should use `@PreviewLightDark`.
 
-Design-system previews should wrap content in `WooDesignSystemTheme`, not `WooThemeWithBackground`. Pilot screen previews should use the same theme that the screen opts into at runtime.
+Design-system component previews should wrap content in `WooDesignSystemTheme`, not
+`WooThemeWithBackground`. Migrated screen previews should cover both the legacy-compatible foundation
+and the real design-system foundation.
 
 Preview coverage is required for every component. Screenshot verification is required for pilot screens and high-risk components, but not for every small primitive component.
 
@@ -73,6 +79,7 @@ Before a component is marked `production`:
 - It is wrapped by `WooDesignSystemTheme` in design-system previews.
 - It reads production foundation values through `WooTheme.*`, except where a Material 3 API requires `MaterialTheme`
   interop values.
+- It renders under `WooThemeWithBackground` without falling back to hardcoded light defaults.
 - It has light and dark previews through `@PreviewLightDark`.
 - Required states are covered in previews.
 - Screenshot verification is completed if the component is high-risk.

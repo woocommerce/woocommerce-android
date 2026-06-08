@@ -2,7 +2,8 @@
 
 This plan sequences the Woo Mobile Design System i1 adapter work for trunk-based delivery.
 
-The goal is to avoid a long-lived branch, avoid global app changes, and keep product-screen adoption behind opt-in APIs and pilot validation.
+The goal is to avoid a long-lived branch, avoid global app changes, and keep product-screen adoption
+deliberate and validated through pilots.
 
 ## PR Sequence
 
@@ -29,6 +30,9 @@ Expected output:
 - Migration-era wrapper naming: use `WooDesignSystemTheme`, not `WooNewTheme`, while the legacy
   `WooTheme` wrapper exists. Future consolidation can happen after the legacy wrapper is removed.
 - `WooTheme` foundation accessors for theme-scoped production APIs.
+- `WooDesignSystemThemeWithBackground` providing the real design-system foundation.
+- `WooThemeWithBackground` also providing design-system composition locals through a
+  legacy-compatible foundation.
 - Manual i1 Kotlin/Compose runtime tokens.
 - Foundation groups for color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
 - Source-backed PR 2 color tokens used by the core foundation and inspected i1 component nodes
@@ -54,6 +58,8 @@ Expected output:
 - Token map entries for implemented foundations.
 - Light and dark previews using `@PreviewLightDark`.
 - Design-system previews wrapped in `WooDesignSystemTheme`.
+- Foundation previews or tests proving design-system components do not fall back to static
+  `LightWooColors` when rendered under `WooThemeWithBackground`.
 
 Keep this PR opt-in only. Do not globally remap existing app theme resources.
 
@@ -87,15 +93,23 @@ Progress indicator is not listed as an i1 Figma component. Include it as a thin 
 
 Do not add more thin Material 3 wrappers beyond the initial production subset unless a later design-system decision explicitly expands the catalog.
 
+Bridge components such as `WooTopAppBar` may need deeper compatibility than token mapping. Prefer
+component-level compatibility driven by the active foundation over screen-level duplicate
+implementations.
+
 ### 4. `composeView` Theme Selector
 
 Add explicit theme selection to the Store app `composeView` helper.
 
 Expected output:
 
-- Existing calls continue to use the legacy app theme by default.
-- Design-system screens can opt in at the Fragment Compose root.
-- No behavior change for existing screens.
+- Default/no explicit theme selection follows `FeatureFlag.NEW_DESIGN_SYSTEM`.
+- `ComposeTheme.LEGACY` uses `WooThemeWithBackground` with the legacy-compatible design-system
+  foundation.
+- `ComposeTheme.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground` with the real
+  design-system foundation.
+- Existing non-migrated screens using `WooThemeWithBackground` do not visually regress.
+- No duplicate legacy/design-system screen implementations are introduced.
 
 ### 5. Existing-Compose Pilot: Privacy Settings
 
@@ -105,7 +119,9 @@ Expected output:
 
 - Existing Fragment hosting remains.
 - Existing ViewModel, navigation, events, analytics, strings, and behavior remain.
-- Existing previews are preserved or improved.
+- One screen implementation uses design-system components in both foundation states.
+- Previews cover legacy-compatible light/dark and design-system light/dark. Add RTL and large-font
+  coverage for row-heavy content.
 - Real findings are added to the screen migration playbook.
 
 ### 6. XML/View Pilot: Feedback Completed
@@ -115,7 +131,9 @@ Migrate `FeedbackCompletedFragment` from XML/View layout to Fragment-hosted Comp
 Expected output:
 
 - Existing Fragment, nav graph destinations, SafeArgs, analytics, strings, and behavior remain.
-- The screen opts into the design-system theme at the Compose root.
+- One screen implementation uses design-system components in both foundation states.
+- The root wrapper remains controlled by `composeView` theme selection and
+  `FeatureFlag.NEW_DESIGN_SYSTEM`.
 - The XML layout is removed only after the Compose replacement is verified.
 - Real findings are added to the screen migration playbook.
 
@@ -148,8 +166,14 @@ Expected output:
 - Agents must include a short candidate assessment in migration or adoption output.
 - No production screen should consume preview-only components.
 - Preview-only components should not be exposed as reusable production-screen APIs.
+- Migrated screens should not keep permanent duplicate legacy/design-system implementations.
+- Temporary full-screen fallbacks are allowed only for genuinely high-risk migrations and require an
+  expiry/removal plan.
 - New design-system previews should use `androidx.compose.ui.tooling.preview.PreviewLightDark`.
-- New design-system previews should wrap content in `WooDesignSystemTheme`, not `WooThemeWithBackground`.
+- Design-system component previews should wrap content in `WooDesignSystemTheme`, not
+  `WooThemeWithBackground`.
+- Migrated screen previews should cover both `WooThemeWithBackground` legacy-compatible foundation
+  and `WooDesignSystemThemeWithBackground` design-system foundation.
 - Screenshot verification is required for pilot screens and high-risk components, not for every small primitive component.
 - Production components need accessibility review before product-screen adoption.
 - Pilot screens need an accessibility regression check against the original screen.

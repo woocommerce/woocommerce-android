@@ -7,7 +7,9 @@ This document defines how the Store Management App adopts the Woo Mobile Design 
 - Store Management App only.
 - POS is out of scope.
 - The adapter lives in the existing Store app UI/theme/resource layer for i1.
-- The adapter is opt-in. Existing screens keep their current behavior and styling until deliberately migrated.
+- Design-system components are adopted deliberately. Existing screens keep their current behavior and
+  styling until migrated; the feature flag controls the default Compose root for screens using the
+  shared `composeView` helper.
 - Figma is the design-intent source of truth. Android owns the runtime API contract.
 - Source references use public-repo shorthands: P2 `pe5sF9-5ox-p2`, Figma `50XIH5MmOf4xUYEkM6fAm6-fi`. Do not expand them into raw URLs in public repo docs.
 
@@ -46,29 +48,95 @@ Suggested subpackages:
 - Preview-only components should not be exposed as reusable product-screen APIs.
 - Keep preview-only implementations private/internal to catalog or preview files under `designsystem.preview`.
 
-## Theme Strategy
+## Theme Root Strategy
 
-Add a separate `WooDesignSystemTheme` for design-system screens and previews.
+Both Store Compose theme roots must satisfy the design-system foundation contract.
 
-- The theme is Material 3-only.
-- The name is intentionally explicit during migration so design-system opt-in roots are distinguishable
-  from legacy `WooTheme` roots.
-- `WooDesignSystemTheme` provides the theme-scoped `WooTheme.*` foundation values and projects source
-  values into `MaterialTheme` for Material 3 component interop.
+- `ComposeTheme.LEGACY` uses `WooThemeWithBackground`.
+- `ComposeTheme.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground`.
+- Default/no explicit `composeView` theme follows `FeatureFlag.NEW_DESIGN_SYSTEM`.
+- Explicit `ComposeTheme.DESIGN_SYSTEM` still forces the real design-system foundation.
+- Explicit `ComposeTheme.LEGACY` still forces the legacy-compatible foundation.
+- Do not replace `WooThemeWithBackground` with `WooDesignSystemThemeWithBackground` while the flag is
+  off.
 - Existing Material 2 usage can remain until touched.
-- `composeView` should accept an explicit theme selector and default to the current legacy app theme.
-- Migrated design-system screens opt in at the Fragment Compose root.
-- Do not globally remap existing `Woo*`, `WC*`, XML styles, colors, typography, or app theme resources for i1.
+- Do not globally remap existing `Woo*`, `WC*`, XML styles, colors, typography, or app theme
+  resources for i1.
 
-Expected hosting shape:
+`WooDesignSystemThemeWithBackground` provides the real design-system foundation. `WooThemeWithBackground`
+continues to provide the legacy app look and must also provide design-system composition locals using
+a legacy-compatible foundation.
+
+Expected migrated-screen hosting shape:
 
 ```kotlin
-composeView(theme = ComposeTheme.DesignSystem) {
+composeView {
+    PrivacySettingsScreen(...)
+}
+```
+
+Default hosting lets the feature flag choose the root wrapper. Ordinary migrated screens should use
+that default. Use explicit theme selection only when a screen, preview, or test intentionally needs to
+force a foundation:
+
+```kotlin
+composeView(theme = ComposeTheme.DESIGN_SYSTEM) {
     FeedbackCompletedScreen(...)
 }
 ```
 
-The exact enum/type name can be refined during implementation.
+## Rollout Strategy
+
+Migrate screens once to design-system components. Do not keep duplicate `LegacyScreen` and
+`DesignSystemScreen` implementations for ordinary migrations.
+
+- Screen code should not branch between legacy and design-system UI trees.
+- The active theme root/foundation controls the visual rollout.
+- Flag off: the single design-system component tree renders under `WooThemeWithBackground` with a
+  legacy-compatible design-system foundation.
+- Flag on: the same tree renders under `WooDesignSystemThemeWithBackground` with the real
+  design-system foundation.
+- Temporary full-screen fallbacks are allowed only for genuinely high-risk migrations and must have
+  an explicit expiry/removal plan.
+- Do not add broad component variants unless there is a clear bridge need.
+
+No design-system component should depend on hardcoded light fallback defaults. Rendering a
+design-system component under `WooThemeWithBackground` must receive valid `WooTheme.colors`,
+`WooTheme.text`, `WooTheme.spacing`, and `WooTheme.padding` values.
+
+## Legacy-Compatible Foundation
+
+`WooThemeWithBackground` should provide design-system locals using values mapped from the existing
+legacy app theme.
+
+- Source legacy-compatible colors from existing Android color resources, including the resources used
+  by `com.woocommerce.android.ui.compose.theme.WooColors`, so light/dark behavior remains
+  resource-driven.
+- Map `WooTheme.colors.background.section` to the current window/background concept.
+- Map `WooTheme.colors.surface.default` to the current surface/card/row background concept.
+- Map surface `on*` roles to existing on-surface text colors.
+- Map `outline` and `outlineVariant` to existing divider/outline resources.
+- Map `primary` and `onPrimary` to current primary resources.
+- Provide legacy-compatible shapes/radius.
+- Provide spacing and padding tokens, either shared with the design-system foundation or explicitly
+  mapped if needed.
+- Map typography when practical. Exact line wrapping is not part of the compatibility guarantee.
+
+The compatibility promise is broad visual closeness, not pixel-perfect legacy rendering. Density and
+layout are not guaranteed unless the component itself supports them.
+
+## Bridge Component Compatibility
+
+Top app bar/chrome migration is not just a token change. Moving from the Activity toolbar to Compose
+`WooTopAppBar` changes chrome ownership and structure.
+
+- Under the legacy-compatible foundation, `WooTopAppBar` should look and behave close to the existing
+  Activity toolbar.
+- Under the design-system foundation, `WooTopAppBar` should render the real design-system app bar.
+- Consider title alignment, title typography, navigation icon treatment, action colors,
+  divider/elevation, height, and insets.
+- Prefer component-level compatibility driven by the active foundation instead of screen-level
+  duplicate implementations.
 
 ## Token Strategy
 

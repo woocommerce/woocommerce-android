@@ -2,7 +2,8 @@
 
 `PrivacySettingsFragment` is the first existing-Compose pilot for Store Management App design-system integration.
 
-The goal is to validate Compose Design System Adoption: an existing Store Compose screen adopts the opt-in design-system theme, tokens, and components without changing its hosting model or product behavior.
+The goal is to validate Compose Design System Adoption: an existing Store Compose screen adopts
+design-system components and foundations without changing its hosting model or product behavior.
 
 ## Target Files
 
@@ -33,7 +34,8 @@ The goal is to validate Compose Design System Adoption: an existing Store Compos
 
 The pilot should consume production-ready design-system APIs for:
 
-- `WooDesignSystemTheme`.
+- `WooTheme.*` foundations under both `WooThemeWithBackground` and
+  `WooDesignSystemThemeWithBackground`.
 - Page title/body typography.
 - Section header.
 - Cell or settings row.
@@ -50,12 +52,11 @@ If a required component is not production-ready yet, either implement it first o
 
 Preserve or improve the current previews:
 
-- Light and dark mode using `@PreviewLightDark`.
-- Runtime theme parity with the design-system theme.
+- Legacy-compatible foundation in light and dark mode.
+- Design-system foundation in light and dark mode.
 - RTL mode.
+- Large font scale.
 - Smaller screen.
-
-Add large font scale if the row layout is sensitive to text wrapping.
 
 ## Verification
 
@@ -67,6 +68,8 @@ Before treating this as the existing-Compose adoption template:
 - Verify web option and usage tracker links.
 - Verify policies navigation.
 - Verify snackbar behavior if touched.
+- Verify the same screen implementation renders with both foundation states.
+- Verify DS components under `WooThemeWithBackground` do not fall back to `LightWooColors`.
 - Review light and dark previews/screenshots.
 - Confirm no POS APIs or patterns were introduced.
 

@@ -2,7 +2,7 @@
 
 `FeedbackCompletedFragment` is the first XML/View pilot for Store Management App design-system integration.
 
-The goal is to validate the opt-in adapter, the Fragment-hosted Compose migration workflow, and the documentation future AI agents should follow.
+The goal is to validate the adapter, the Fragment-hosted Compose migration workflow, and the documentation future AI agents should follow.
 
 ## Target Files
 
@@ -34,7 +34,8 @@ The goal is to validate the opt-in adapter, the Fragment-hosted Compose migratio
 
 The pilot should consume production-ready design-system APIs for:
 
-- `WooDesignSystemTheme`.
+- `WooTheme.*` foundations under both `WooThemeWithBackground` and
+  `WooDesignSystemThemeWithBackground`.
 - Top bar or navigation bar component.
 - Page title/body/link typography.
 - Primary button.
@@ -48,8 +49,8 @@ If a required component is not production-ready yet, either implement it first o
 
 Add previews for:
 
-- Light and dark mode using `@PreviewLightDark`.
-- Runtime theme parity with the design-system theme.
+- Legacy-compatible foundation in light and dark mode.
+- Design-system foundation in light and dark mode.
 - Long body/link text if layout can wrap.
 - Large font scale if text or button layout is sensitive.
 
@@ -63,6 +64,10 @@ Before treating the pilot as the migration template:
 - Verify "Back to store" behavior.
 - Verify the inline help link.
 - Verify analytics are unchanged.
+- Verify the same screen implementation renders with both foundation states.
+- Verify DS components under `WooThemeWithBackground` do not fall back to `LightWooColors`.
+- Verify `WooTopAppBar` legacy-compatible behavior is close enough to the Activity toolbar when the
+  flag is off.
 - Review light and dark previews/screenshots.
 - Confirm no POS APIs or patterns were introduced.
 
