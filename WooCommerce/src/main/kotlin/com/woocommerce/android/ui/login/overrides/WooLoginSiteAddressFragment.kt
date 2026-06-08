@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.overrides
 
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
@@ -25,20 +26,24 @@ class WooLoginSiteAddressFragment : LoginSiteAddressFragment() {
         super.setupContent(rootView)
     }
 
-    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val prefilledSiteUrl = arguments?.getString(ARG_PREFILLED_SITE_URL)
         if (prefilledSiteUrl.isNotNullOrEmpty()) {
-            val siteAddressEditText = view?.findViewById<WPLoginInputRow>(R.id.login_site_address_row)
+            val siteAddressEditText = view.findViewById<WPLoginInputRow>(R.id.login_site_address_row)
                 ?.editText
                 ?: return
-            siteAddressEditText.setText(prefilledSiteUrl)
-            // Auto-submit so the merchant goes from "scan QR" to the next login step with no taps,
-            // mirroring WooLoginEmailFragment which calls next(prefilledEmail) on the email screen.
-            discover()
-            // Single-shot: prevent replay on rotation / process recovery.
-            arguments?.remove(ARG_PREFILLED_SITE_URL)
+            // Defer until the view is attached so the base fragment's onActivityCreated has run and
+            // its LoginSiteAddressValidator exists; setText() here fires the base TextWatcher, which
+            // dereferences that validator (a null validator was the WOOMOB-3107 crash).
+            siteAddressEditText.post {
+                siteAddressEditText.setText(prefilledSiteUrl)
+                // Auto-submit so the merchant goes from "scan QR" to the next login step with no taps,
+                // mirroring WooLoginEmailFragment which calls next(prefilledEmail) on the email screen.
+                discover()
+                // Single-shot: prevent replay on rotation / process recovery.
+                arguments?.remove(ARG_PREFILLED_SITE_URL)
+            }
         }
     }
 }
