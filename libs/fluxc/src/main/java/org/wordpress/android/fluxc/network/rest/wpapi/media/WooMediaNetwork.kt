@@ -45,12 +45,12 @@ class WooMediaNetwork @Inject constructor(
 
     fun uploadMedia(site: SiteModel, media: MediaModel) {
         if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
-            launchUpload(site, media, useAppPasswords = false)
+            launchUpload(site, media, isJetpackSite = true)
         } else if (site.origin == SiteModel.ORIGIN_WPAPI
             && applicationPasswordsConfiguration.isEnabledForDirectAccess()
         ) {
             AppLog.v(AppLog.T.MEDIA, "Uploading media using Application Passwords for WPAPI Site")
-            launchUpload(site, media, useAppPasswords = true)
+            launchUpload(site, media, isJetpackSite = false)
         } else {
             reportXmlrpcTry()
         }
@@ -98,13 +98,13 @@ class WooMediaNetwork @Inject constructor(
         }
     }
 
-    private fun launchUpload(site: SiteModel, media: MediaModel, useAppPasswords: Boolean) {
+    private fun launchUpload(site: SiteModel, media: MediaModel, isJetpackSite: Boolean) {
         val uploadJob = coroutineEngine.launch(AppLog.T.MEDIA, this, "Uploading media") {
             try {
-                if (useAppPasswords) {
-                    dispatchUploadFlow(applicationPasswordsMediaRestClient.uploadMedia(site, media))
-                } else {
+                if (isJetpackSite) {
                     uploadForJetpackSite(site, media)
+                } else {
+                    dispatchUploadFlow(applicationPasswordsMediaRestClient.uploadMedia(site, media))
                 }
             } finally {
                 currentUploads.remove(media.id)
