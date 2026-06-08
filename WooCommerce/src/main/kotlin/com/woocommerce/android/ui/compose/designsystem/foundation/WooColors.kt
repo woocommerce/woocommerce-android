@@ -138,8 +138,9 @@ internal fun wooColors(useDarkTheme: Boolean): WooColors =
 internal fun legacyWooColors(): WooColors = WooColors(
     primary = colorResource(R.color.color_primary),
     onPrimary = colorResource(R.color.color_on_primary),
-    secondary = colorResource(R.color.color_secondary),
-    onSecondary = colorResource(R.color.color_on_secondary),
+    // Legacy screens use secondary as a low-emphasis button role, not the app's pink accent color.
+    secondary = colorResource(R.color.light_colored_button_background),
+    onSecondary = colorResource(R.color.light_colored_button_text),
     background = WooBackgroundColors(
         section = colorResource(R.color.default_window_background),
         onSection = colorResource(R.color.color_on_background),
