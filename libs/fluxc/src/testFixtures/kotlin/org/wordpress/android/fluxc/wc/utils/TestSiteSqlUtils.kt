@@ -1,15 +1,22 @@
 package org.wordpress.android.fluxc.wc.utils
 
 import kotlinx.coroutines.runBlocking
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.AccountMapper
 import org.wordpress.android.fluxc.persistence.AccountStorePersistence
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 
-@Suppress("MagicNumber")
-object SiteTestUtils {
+object TestSiteSqlUtils {
+    private val accountStorePersistence: AccountStorePersistence = mock {
+        on { getDefaultAccount() } doReturn AccountModel().apply { userId = 1L }
+    }
+    val siteStorePersistence = SiteStorePersistence(accountStorePersistence)
+
+    @Suppress("MagicNumber")
     fun insertTestAccountAndSiteIntoDb(
         wpDatabase: WPAndroidDatabase,
         mapper: AccountMapper = AccountMapper()
@@ -21,7 +28,7 @@ object SiteTestUtils {
         val site = SiteModel()
         site.siteId = 6347
 
-        SiteSqlUtils(accountStorePersistence).insertOrUpdateSite(site)
+        SiteStorePersistence(accountStorePersistence).insertOrUpdateSite(site)
         return site
     }
 }

@@ -44,7 +44,7 @@ class WooPosIsCountryAllowedTest {
     fun `given flag disabled and POS-supported country, when invoked, then returns true for each supported country`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
 
-        listOf("US", "PR", "GB", "IE", "NL", "SG", "NZ", "FI", "LU", "AU").forEach { countryCode ->
+        listOf("US", "PR", "GB", "CA", "IE", "NL", "SG", "NZ", "FI", "LU", "AU").forEach { countryCode ->
             whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(countryCode)
 
             assertThat(sut())

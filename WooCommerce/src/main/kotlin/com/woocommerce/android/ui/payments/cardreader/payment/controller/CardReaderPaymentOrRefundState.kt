@@ -165,6 +165,7 @@ sealed class CardReaderPaymentOrRefundState {
             val amountWithCurrencyLabel: String,
             val onCancel: () -> Unit,
             @StringRes val cardReaderHint: Int? = null,
+            val isDismissBlocked: Boolean = false,
         ) : CardReaderInteracRefundState()
 
         data class ProcessingInteracRefund(

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -21,7 +20,7 @@ class OrderShipmentTrackingDaoTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val defaultSiteId = LocalId(6)
     private val defaultOrderId = 12L

@@ -181,6 +181,9 @@ interface WCDatabaseModule {
         @Provides fun provideSupportChatBookmarkDao(database: WCAndroidDatabase): SupportChatBookmarkDao {
             return database.supportChatBookmarkDao
         }
+
+        @Provides fun provideAnalyticsScheduledImportDao(database: WCAndroidDatabase) =
+            database.analyticsScheduledImportDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }
