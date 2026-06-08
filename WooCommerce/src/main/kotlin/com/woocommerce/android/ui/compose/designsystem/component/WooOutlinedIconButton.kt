@@ -1,20 +1,20 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton as MaterialOutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -70,25 +70,24 @@ fun WooOutlinedIconButton(
         WooIconButtonEmphasis.Primary -> colors.primary
     }
 
-    IconButton(
+    MaterialOutlinedIconButton(
         onClick = onClick,
         modifier = modifier
-            .size(MIN_TOUCH_TARGET_SIZE)
             .semantics {
                 this.contentDescription = contentDescription
             },
         enabled = enabled,
-        colors = IconButtonDefaults.iconButtonColors(
+        colors = IconButtonDefaults.outlinedIconButtonColors(
+            containerColor = Color.Transparent,
             contentColor = contentColor,
+            disabledContainerColor = Color.Transparent,
             disabledContentColor = colors.surface.onLowest,
         ),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(DefaultWooStroke.extraThin, colors.outlineVariant),
     ) {
         Box(
-            modifier = Modifier
-                .size(ICON_BUTTON_VISUAL_SIZE)
-                .border(DefaultWooStroke.extraThin, colors.outlineVariant, MaterialTheme.shapes.large)
-                .clip(MaterialTheme.shapes.large)
-                .clearAndSetSemantics {},
+            modifier = Modifier.clearAndSetSemantics {},
             contentAlignment = Alignment.Center,
         ) {
             icon()
@@ -128,6 +127,4 @@ private fun WooOutlinedIconButtonPreview() {
     }
 }
 
-private val MIN_TOUCH_TARGET_SIZE = 48.dp
-private val ICON_BUTTON_VISUAL_SIZE = 40.dp
 private val ICON_SIZE = 18.dp
