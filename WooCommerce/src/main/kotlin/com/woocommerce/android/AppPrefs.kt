@@ -75,6 +75,7 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
+        HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
@@ -153,7 +154,6 @@ object AppPrefs {
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
         AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
-        HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
     }
 
     /**
@@ -365,10 +365,10 @@ object AppPrefs {
 
     var hasSeenAnalyticsScheduledImportInfo: Boolean
         get() = getBoolean(
-            key = DeletableSitePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
+            key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
             default = false,
         )
-        set(value) = setBoolean(key = DeletableSitePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO, value = value)
+        set(value) = setBoolean(key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO, value = value)
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
