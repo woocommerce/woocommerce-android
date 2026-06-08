@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooStroke
-import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @PreviewLightDark
 @Composable
@@ -50,15 +51,18 @@ private fun WooDesignSystemFoundationLargeFontPreview() {
     }
 }
 
+@PreviewLightDark
+@Composable
+private fun WooDesignSystemFoundationLegacyCompatiblePreview() {
+    WooThemeWithBackground {
+        FoundationPreviewContent()
+    }
+}
+
 @Composable
 private fun PreviewTheme(content: @Composable () -> Unit) {
-    WooDesignSystemTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            content()
-        }
+    WooDesignSystemThemeWithBackground {
+        content()
     }
 }
 

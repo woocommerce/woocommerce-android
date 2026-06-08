@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import com.woocommerce.android.R
 
 @Immutable
 @Suppress("LongParameterList")
@@ -118,8 +121,8 @@ data class WooPurpleColors(
     val shade100: Color,
 )
 
-internal val LocalWooColors = staticCompositionLocalOf {
-    LightWooColors
+internal val LocalWooColors = staticCompositionLocalOf<WooColors> {
+    error("WooTheme.colors is not available. Wrap content in WooDesignSystemTheme or WooThemeWithBackground.")
 }
 
 internal fun wooColors(useDarkTheme: Boolean): WooColors =
@@ -128,6 +131,61 @@ internal fun wooColors(useDarkTheme: Boolean): WooColors =
     } else {
         LightWooColors
     }
+
+// Resource-backed bridge for rendering DS components under the legacy theme root.
+@Composable
+@Suppress("LongMethod")
+internal fun legacyWooColors(): WooColors = WooColors(
+    primary = colorResource(R.color.color_primary),
+    onPrimary = colorResource(R.color.color_on_primary),
+    secondary = colorResource(R.color.color_secondary),
+    onSecondary = colorResource(R.color.color_on_secondary),
+    background = WooBackgroundColors(
+        section = colorResource(R.color.default_window_background),
+        onSection = colorResource(R.color.color_on_background),
+        sectionVariant = colorResource(R.color.color_surface_variant),
+        onSectionVariant = colorResource(R.color.color_on_surface_medium),
+    ),
+    surface = WooSurfaceColors(
+        default = colorResource(R.color.color_surface),
+        onDefault = colorResource(R.color.color_on_surface),
+        onVariant = colorResource(R.color.color_on_surface_medium),
+        onLowest = colorResource(R.color.color_on_surface_disabled),
+        onHighest = colorResource(R.color.color_on_surface_high),
+        inverted = colorResource(R.color.color_on_surface),
+        onInverted = colorResource(R.color.color_surface),
+        onInvertedVariant = colorResource(R.color.color_on_primary_medium),
+    ),
+    outline = colorResource(R.color.divider_color),
+    outlineVariant = colorResource(R.color.image_border_color),
+    status = WooStatusColors(
+        errorContainer = colorResource(R.color.color_error),
+        onErrorContainer = colorResource(R.color.color_on_error),
+        warningContainer = colorResource(R.color.color_alert),
+        onWarningContainer = colorResource(R.color.color_on_surface),
+        cautionContainer = colorResource(R.color.color_alert),
+        onCautionContainer = colorResource(R.color.color_on_surface),
+        successContainer = colorResource(R.color.color_info),
+        onSuccessContainer = colorResource(R.color.color_on_surface),
+        infoContainer = colorResource(R.color.color_primary),
+        onInfoContainer = colorResource(R.color.color_on_primary),
+        neutralContainer = colorResource(R.color.color_surface_elevated),
+        onNeutralContainer = colorResource(R.color.color_on_surface),
+        neutralOutlinedContainer = colorResource(R.color.color_surface),
+        onNeutralOutlinedContainer = colorResource(R.color.color_on_surface),
+    ),
+    overlay = WooOverlayColors(
+        overlay20 = colorResource(R.color.color_ripple_overlay),
+        overlay50 = colorResource(R.color.color_scrim_background),
+    ),
+    alert = WooAlertColors(
+        red = colorResource(R.color.color_error),
+        yellow = colorResource(R.color.color_alert),
+        green = colorResource(R.color.color_info),
+        blue = colorResource(R.color.color_primary),
+    ),
+    palette = FixedWooPaletteColors,
+)
 
 @Suppress("MagicNumber")
 private val FixedWooPaletteColors = WooPaletteColors(

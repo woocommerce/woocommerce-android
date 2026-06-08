@@ -7,6 +7,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.woocommerce.android.ui.compose.theme.Material3Typography as LegacyMaterial3Typography
 
 @Immutable
 @Suppress("LongParameterList")
@@ -53,6 +54,25 @@ internal val DefaultWooTypography = WooTypography(
     labelSmall = textRole(size = 10, lineHeight = 14, letterSpacing = -0.07f),
 )
 
+// Preserves current app text metrics when DS components render in the legacy root.
+internal val LegacyWooTypography = WooTypography(
+    displayLarge = legacyTextRole(LegacyMaterial3Typography.displayLarge),
+    displayMedium = legacyTextRole(LegacyMaterial3Typography.displayMedium),
+    displaySmall = legacyTextRole(LegacyMaterial3Typography.displaySmall),
+    headlineLarge = legacyTextRole(LegacyMaterial3Typography.headlineLarge),
+    headlineMedium = legacyTextRole(LegacyMaterial3Typography.headlineMedium),
+    headlineSmall = legacyTextRole(LegacyMaterial3Typography.headlineSmall),
+    titleLarge = legacyTextRole(LegacyMaterial3Typography.titleLarge),
+    titleMedium = legacyTextRole(LegacyMaterial3Typography.titleMedium),
+    titleSmall = legacyTextRole(LegacyMaterial3Typography.titleSmall),
+    bodyLarge = legacyTextRole(LegacyMaterial3Typography.bodyLarge),
+    bodyMedium = legacyTextRole(LegacyMaterial3Typography.bodyMedium),
+    bodySmall = legacyTextRole(LegacyMaterial3Typography.bodySmall),
+    labelLarge = legacyTextRole(LegacyMaterial3Typography.labelLarge),
+    labelMedium = legacyTextRole(LegacyMaterial3Typography.labelMedium),
+    labelSmall = legacyTextRole(LegacyMaterial3Typography.labelSmall),
+)
+
 internal fun WooTypography.toMaterialTypography(): Typography = Typography(
     displayLarge = displayLarge.regular,
     displayMedium = displayMedium.regular,
@@ -71,9 +91,15 @@ internal fun WooTypography.toMaterialTypography(): Typography = Typography(
     labelSmall = labelSmall.regular,
 )
 
-internal val LocalWooText = staticCompositionLocalOf {
-    DefaultWooTypography
+internal val LocalWooText = staticCompositionLocalOf<WooTypography> {
+    error("WooTheme.text is not available. Wrap content in WooDesignSystemTheme or WooThemeWithBackground.")
 }
+
+private fun legacyTextRole(style: TextStyle): WooTextRole = WooTextRole(
+    regular = style,
+    emphasized = style.copy(fontWeight = FontWeight.Medium),
+    strong = style.copy(fontWeight = FontWeight.Bold),
+)
 
 private fun textRole(
     size: Int,
