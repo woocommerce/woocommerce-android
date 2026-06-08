@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -14,7 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.OpenPolicies
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowUsageTracker
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowWebOptions
@@ -36,6 +36,8 @@ class PrivacySettingsFragment : BaseFragment() {
 
     private var snackbar: Snackbar? = null
 
+    override val activityAppBarStatus = AppBarStatus.Hidden
+
     override fun getFragmentTitle() = getString(R.string.privacy_settings)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,12 +49,11 @@ class PrivacySettingsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return ComposeView(requireContext()).apply {
-            setContent {
-                WooThemeWithBackground {
-                    PrivacySettingsScreen(viewModel)
-                }
-            }
+        return composeView {
+            PrivacySettingsScreen(
+                viewModel = viewModel,
+                onBackClick = { findNavController().navigateUp() },
+            )
         }
     }
 

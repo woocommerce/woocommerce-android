@@ -114,20 +114,29 @@ Compose `WooTopAppBar` changes ownership and structure, not only colors.
 2. Decide whether the screen is a good candidate and which adoption outcome applies.
 3. Keep the existing host. For XML/View migration, replace the layout with `composeView`; for existing Compose adoption, keep the current Compose root.
 4. Keep one screen implementation. Let the default `composeView` theme follow the feature flag unless
-   the task explicitly requires forcing `ComposeTheme.LEGACY` or `ComposeTheme.DESIGN_SYSTEM`.
-5. Build a stateless screen composable and a VM-aware overload only if the screen needs ViewModel state.
-6. Use design-system components and `WooTheme.*` foundations where they are production-ready.
-7. Do not use preview-only components in production screens. Preview-only implementations should not have public APIs intended for product-screen imports.
-8. Preserve existing string resources and analytics event names unless the migration explicitly requires a product copy or tracking change.
-9. Add previews for the migrated screen in both foundation states: legacy-compatible light,
-   legacy-compatible dark, design-system light, and design-system dark. Add RTL and large-font
-   coverage for row-heavy screens.
-10. Verify pilot screens with screenshot review, targeted tests when behavior changes, and an
+   the task explicitly requires forcing `ComposeTheme.LEGACY` or `ComposeTheme.DESIGN_SYSTEM`. If a
+   pilot opts into the design-system theme, do it only at the Compose root.
+5. If the adopted screen replaces the activity toolbar, set the Fragment's `activityAppBarStatus` to `AppBarStatus.Hidden`,
+   render `WooTopAppBar` inside the screen `Scaffold`, and pass navigation callbacks from the Fragment. Use `WindowInsets(0)`
+   for the Compose top bar unless the screen is intentionally edge-to-edge, so a Fragment-hosted screen does not add a second
+   status-bar inset.
+6. Treat source examples as component and token guidance, not as a mandate to copy an iOS table layout onto Android. Preserve the
+   screen's existing surface/background relationship unless design explicitly asks for a stronger grouping treatment. Rows that
+   use surface-keyed content colors should sit on `WooTheme.colors.surface.default`; avoid adding new cards or dividers unless
+   the screen already had that hierarchy or the migration needs it for clarity.
+7. Build a stateless screen composable and a VM-aware overload only if the screen needs ViewModel state.
+8. Use design-system components and `WooTheme.*` foundations where they are production-ready.
+9. Do not use preview-only components in production screens. Preview-only implementations should not have public APIs intended for product-screen imports.
+10. Preserve existing string resources and analytics event names unless the migration explicitly requires a product copy or tracking change.
+11. Add previews for the migrated screen in both foundation states: legacy-compatible light,
+   legacy-compatible dark, design-system light, and design-system dark. Add font scale, RTL, or
+   orientation previews when the screen is sensitive to those dimensions.
+12. Verify pilot screens with screenshot review, targeted tests when behavior changes, and an
    accessibility regression check against the original screen.
-11. Verify design-system components under `WooThemeWithBackground` do not fall back to static
+13. Verify design-system components under `WooThemeWithBackground` do not fall back to static
    `LightWooColors` or other hardcoded light defaults.
-12. Verify existing non-migrated screens using `WooThemeWithBackground` do not visually regress.
-13. Verify `composeView` behavior: default/no explicit opt-in follows the feature flag, explicit
+14. Verify existing non-migrated screens using `WooThemeWithBackground` do not visually regress.
+15. Verify `composeView` behavior: default/no explicit opt-in follows the feature flag, explicit
    `ComposeTheme.DESIGN_SYSTEM` forces the real design-system foundation, and explicit
    `ComposeTheme.LEGACY` uses the legacy-compatible foundation.
 

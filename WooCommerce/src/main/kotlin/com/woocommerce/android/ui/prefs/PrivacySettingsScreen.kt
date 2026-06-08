@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,15 +32,24 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooBodyText
+import com.woocommerce.android.ui.compose.designsystem.component.WooLinearProgressIndicator
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageTitle
+import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeader
+import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRow
+import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchSettingsRow
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 @Composable
 fun PrivacySettingsScreen(
     viewModel: PrivacySettingsViewModel,
+    onBackClick: () -> Unit,
 ) {
     val state: PrivacySettingsViewModel.State by viewModel.state.observeAsState(
         PrivacySettingsViewModel.State(
@@ -59,6 +65,7 @@ fun PrivacySettingsScreen(
         onAdvertisingOptionsClicked = viewModel::onWebOptionsClicked,
         onUsageTrackerClicked = viewModel::onUsageTrackerClicked,
         onPoliciesClicked = viewModel::onPoliciesClicked,
+        onBackClick = onBackClick,
     )
 }
 
@@ -70,16 +77,28 @@ fun PrivacySettingsScreen(
     onAdvertisingOptionsClicked: () -> Unit,
     onUsageTrackerClicked: () -> Unit,
     onPoliciesClicked: () -> Unit,
+    onBackClick: () -> Unit,
 ) {
-    Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
+    Scaffold(
+        topBar = {
+            WooTopAppBar(
+                title = stringResource(R.string.privacy_settings),
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_back_24dp),
+                navigationIconContentDescription = stringResource(R.string.back),
+                onNavigationClick = onBackClick,
+                windowInsets = WindowInsets(0),
+            )
+        },
+        containerColor = WooTheme.colors.surface.default,
+    ) { paddingValues ->
         AnimatedVisibility(
             visible = state.progressBarVisible,
             enter = slideInVertically(),
-            exit = slideOutVertically()
+            exit = slideOutVertically(),
+            modifier = Modifier.padding(paddingValues),
         ) {
-            LinearProgressIndicator(
+            WooLinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.24f)
             )
         }
         Column(
@@ -87,85 +106,70 @@ fun PrivacySettingsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                style = MaterialTheme.typography.titleLarge,
+            WooPageTitle(
                 text = stringResource(R.string.settings_privacy_header),
-                modifier = Modifier.padding(top = 16.dp, start = 16.dp)
+                modifier = Modifier.padding(
+                    top = WooTheme.padding.padding5,
+                    start = WooTheme.padding.padding5,
+                    end = WooTheme.padding.padding5,
+                )
             )
-            Text(
-                style = MaterialTheme.typography.bodyMedium,
+            WooBodyText(
                 text = stringResource(R.string.settings_privacy_statement),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                modifier = Modifier.padding(
+                    start = WooTheme.padding.padding5,
+                    end = WooTheme.padding.padding5,
+                    top = WooTheme.spacing.space3,
+                )
             )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp)
+                    .padding(top = WooTheme.spacing.space8)
             ) {
                 Column {
-                    OptionRowWithHeader(
-                        sectionHeader = stringResource(R.string.settings_tracking_header),
-                        sectionTitle = stringResource(R.string.settings_tracking_analytics),
-                        sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
-                        onRowClicked = { onAnalyticsSettingChanged(!state.sendUsageStats) }
-                    ) {
-                        Switch(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            checked = state.sendUsageStats,
-                            onCheckedChange = onAnalyticsSettingChanged,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    OptionRowWithHeader(
-                        sectionHeader = stringResource(R.string.settings_more_privacy_options_header),
-                        sectionTitle = stringResource(R.string.settings_web_options),
-                        sectionDescription = stringResource(R.string.settings_web_options_description),
-                        onRowClicked = onAdvertisingOptionsClicked
-                    ) {
-                        IconButton(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            onClick = onAdvertisingOptionsClicked
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
-                                contentDescription = stringResource(id = R.string.settings_web_options)
-                            )
-                        }
-                    }
-                    OptionRow(
-                        onRowClicked = onUsageTrackerClicked,
-                        sectionTitle = stringResource(R.string.settings_usage_tracking),
-                        sectionDescription = stringResource(R.string.settings_usage_tracking_description),
-                    ) {
-                        IconButton(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            onClick = onUsageTrackerClicked,
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
-                                contentDescription = stringResource(id = R.string.settings_usage_tracking)
-                            )
-                        }
-                    }
-                    OptionRow(
-                        onRowClicked = onPoliciesClicked,
-                        sectionTitle = stringResource(R.string.settings_privacy_cookies_polices),
-                        sectionDescription = stringResource(R.string.settings_privacy_cookies_polices_description),
-                        actionContent = null,
+                    PrivacySettingsSectionHeader(
+                        text = stringResource(R.string.settings_tracking_header),
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    OptionRowWithHeader(
-                        sectionHeader = stringResource(R.string.settings_reports_header),
-                        sectionTitle = stringResource(R.string.settings_reports_report_crashes),
-                        sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
-                        onRowClicked = { onReportCrashesChanged(!state.crashReportingEnabled) }
-                    ) {
-                        Switch(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            checked = state.crashReportingEnabled,
-                            onCheckedChange = onReportCrashesChanged,
-                        )
-                    }
+                    WooSwitchSettingsRow(
+                        title = stringResource(R.string.settings_tracking_analytics),
+                        description = stringResource(R.string.settings_tracking_analytics_description),
+                        checked = state.sendUsageStats,
+                        onCheckedChange = onAnalyticsSettingChanged,
+                    )
+                }
+                Spacer(modifier = Modifier.height(WooTheme.spacing.space5))
+                Column {
+                    PrivacySettingsSectionHeader(
+                        text = stringResource(R.string.settings_more_privacy_options_header),
+                    )
+                    ExternalLinkSettingsRow(
+                        title = stringResource(R.string.settings_web_options),
+                        description = stringResource(R.string.settings_web_options_description),
+                        onClick = onAdvertisingOptionsClicked,
+                    )
+                    ExternalLinkSettingsRow(
+                        title = stringResource(R.string.settings_usage_tracking),
+                        description = stringResource(R.string.settings_usage_tracking_description),
+                        onClick = onUsageTrackerClicked,
+                    )
+                    WooSettingsRow(
+                        title = stringResource(R.string.settings_privacy_cookies_polices),
+                        description = stringResource(R.string.settings_privacy_cookies_polices_description),
+                        onClick = onPoliciesClicked,
+                    )
+                }
+                Spacer(modifier = Modifier.height(WooTheme.spacing.space7))
+                Column {
+                    PrivacySettingsSectionHeader(
+                        text = stringResource(R.string.settings_reports_header),
+                    )
+                    WooSwitchSettingsRow(
+                        title = stringResource(R.string.settings_reports_report_crashes),
+                        description = stringResource(R.string.settings_reports_report_crashes_description),
+                        checked = state.crashReportingEnabled,
+                        onCheckedChange = onReportCrashesChanged,
+                    )
                 }
             }
         }
@@ -173,28 +177,35 @@ fun PrivacySettingsScreen(
 }
 
 @Composable
-private fun OptionRowWithHeader(
-    sectionHeader: String,
-    sectionTitle: String,
-    sectionDescription: String,
+private fun PrivacySettingsSectionHeader(
+    text: String,
     modifier: Modifier = Modifier,
-    onRowClicked: () -> Unit,
-    actionContent: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        SettingsSectionHeader(
-            text = sectionHeader,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        OptionRow(
-            onRowClicked,
-            sectionTitle,
-            sectionDescription,
-            actionContent = actionContent
-        )
-    }
+    WooSectionHeader(
+        text = text,
+        modifier = modifier.padding(horizontal = WooTheme.padding.padding5)
+    )
+}
+
+@Composable
+private fun ExternalLinkSettingsRow(
+    title: String,
+    description: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WooSettingsRow(
+        title = title,
+        description = description,
+        onClick = onClick,
+        modifier = modifier,
+        trailingContent = {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
+                contentDescription = null,
+            )
+        },
+    )
 }
 
 @Composable
@@ -252,24 +263,55 @@ private fun textAppearanceWooBody2() = TextStyle(
     fontSize = 14.sp,
 )
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
+@Composable
+private fun PrivacySettingsScreenPreview() {
+    PrivacySettingsScreenPreviewContent()
+}
+
 @Preview(name = "RTL mode", locale = "ar")
+@Composable
+private fun PrivacySettingsScreenRtlPreview() {
+    PrivacySettingsScreenPreviewContent()
+}
+
 @Preview(name = "Smaller screen", device = Devices.NEXUS_5)
 @Composable
-private fun Default() {
-    WooThemeWithBackground {
+private fun PrivacySettingsScreenSmallPreview() {
+    PrivacySettingsScreenPreviewContent()
+}
+
+@Preview(name = "Large font", fontScale = 1.5f)
+@Composable
+private fun PrivacySettingsScreenLargeFontPreview() {
+    PrivacySettingsScreenPreviewContent()
+}
+
+@Preview(name = "Progress visible")
+@Composable
+private fun PrivacySettingsScreenProgressPreview() {
+    PrivacySettingsScreenPreviewContent(
+        progressBarVisible = true,
+    )
+}
+
+@Composable
+private fun PrivacySettingsScreenPreviewContent(
+    progressBarVisible: Boolean = false,
+) {
+    WooDesignSystemThemeWithBackground {
         PrivacySettingsScreen(
             state = PrivacySettingsViewModel.State(
                 sendUsageStats = true,
                 crashReportingEnabled = false,
-                progressBarVisible = true
+                progressBarVisible = progressBarVisible
             ),
-            {},
-            {},
-            {},
-            {},
-            {}
+            onAnalyticsSettingChanged = {},
+            onReportCrashesChanged = {},
+            onAdvertisingOptionsClicked = {},
+            onUsageTrackerClicked = {},
+            onPoliciesClicked = {},
+            onBackClick = {},
         )
     }
 }
