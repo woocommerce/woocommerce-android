@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
@@ -30,21 +29,12 @@ fun WooSettingsRow(
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
-    val rowModifier = if (onClick != null) {
-        modifier.clickable(
-            enabled = enabled,
-            role = Role.Button,
-            onClick = onClick,
-        )
-    } else {
-        modifier
-    }
-
-    WooCellLayout(
+    WooCell(
         title = title,
         description = description,
         enabled = enabled,
-        modifier = rowModifier,
+        onClick = onClick,
+        modifier = modifier,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
     )

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
@@ -21,7 +20,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
@@ -82,7 +80,6 @@ fun WooCell(
         title = title,
         description = description,
         enabled = enabled,
-        density = WooCellLayoutDensity.Generic,
         modifier = rowModifier,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
@@ -95,11 +92,9 @@ internal fun WooCellLayout(
     description: String?,
     enabled: Boolean,
     modifier: Modifier = Modifier,
-    density: WooCellLayoutDensity = WooCellLayoutDensity.Compact,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
-    val metrics = density.toMetrics()
     val slotContentColor = if (enabled) {
         WooTheme.colors.surface.onDefault
     } else {
@@ -109,13 +104,13 @@ internal fun WooCellLayout(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = metrics.minHeight)
-            .padding(horizontal = metrics.horizontalPadding, vertical = metrics.verticalPadding),
+            .heightIn(min = MIN_TOUCH_TARGET_SIZE)
+            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding7),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingContent != null) {
             Box(
-                modifier = Modifier.padding(end = metrics.contentGap),
+                modifier = Modifier.padding(end = WooTheme.spacing.space5),
                 contentAlignment = Alignment.Center,
             ) {
                 CompositionLocalProvider(LocalContentColor provides slotContentColor) {
@@ -133,9 +128,7 @@ internal fun WooCellLayout(
 
         if (trailingContent != null) {
             Box(
-                modifier = Modifier
-                    .padding(start = metrics.contentGap)
-                    .widthIn(min = metrics.trailingMinWidth),
+                modifier = Modifier.padding(start = WooTheme.spacing.space5),
                 contentAlignment = Alignment.Center,
             ) {
                 CompositionLocalProvider(LocalContentColor provides slotContentColor) {
@@ -145,38 +138,6 @@ internal fun WooCellLayout(
         }
     }
 }
-
-internal enum class WooCellLayoutDensity {
-    Compact,
-    Generic,
-}
-
-@Composable
-private fun WooCellLayoutDensity.toMetrics(): WooCellLayoutMetrics =
-    when (this) {
-        WooCellLayoutDensity.Compact -> WooCellLayoutMetrics(
-            minHeight = MIN_TOUCH_TARGET_SIZE,
-            horizontalPadding = WooTheme.padding.padding5,
-            verticalPadding = WooTheme.padding.padding3,
-            contentGap = WooTheme.spacing.space4,
-            trailingMinWidth = MIN_TOUCH_TARGET_SIZE,
-        )
-        WooCellLayoutDensity.Generic -> WooCellLayoutMetrics(
-            minHeight = GENERIC_CELL_MIN_HEIGHT,
-            horizontalPadding = WooTheme.padding.padding7,
-            verticalPadding = WooTheme.padding.padding7,
-            contentGap = WooTheme.spacing.space6,
-            trailingMinWidth = MIN_TOUCH_TARGET_SIZE,
-        )
-    }
-
-private data class WooCellLayoutMetrics(
-    val minHeight: Dp,
-    val horizontalPadding: Dp,
-    val verticalPadding: Dp,
-    val contentGap: Dp,
-    val trailingMinWidth: Dp,
-)
 
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark
@@ -215,4 +176,3 @@ private fun WooCellPreview() {
 }
 
 private val MIN_TOUCH_TARGET_SIZE = 48.dp
-private val GENERIC_CELL_MIN_HEIGHT = 90.dp
