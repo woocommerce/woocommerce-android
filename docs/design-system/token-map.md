@@ -94,6 +94,34 @@ required state communication.
 - Mark unsettled tokens `preview_only`, `needs_design`, or `needs_android_mapping`.
 - Do not wire design-system token resources into app-wide legacy styles by default. Product screens opt in through the design-system theme/components or targeted XML/View style usage.
 
+## PR3 Component Consumption Notes
+
+PR3 production components consume the existing foundation surface without adding new public token accessors.
+Newly promoted fixed visual sizes and component-only shapes remain private component constants unless a later screen
+or foundation decision promotes them.
+
+| Component API | Production token consumption | Status | Notes |
+| --- | --- | --- | --- |
+| `WooTopAppBar` | `WooTheme.colors.surface.default`, `surface.onDefault`, `primary`, `outlineVariant`; `WooTheme.text.bodyLarge.strong`; `WooTheme.spacing.space1`; internal `WooStroke.extraThin` | production | Wraps Material 3 `CenterAlignedTopAppBar` so title, navigation, and action slots are measured instead of using fixed title padding. Matches Figma Top Navigation Bar node `1657:961` for centered title, 64dp bar height, surface background, and bottom divider. Neutral navigation content uses `surface.onDefault`; primary action content uses `primary`; action spacing uses `space1` because action icons already include touch-target padding. The 40dp navigation visual sits inside a 48dp target; neither value is promoted as a token. |
+| `WooPageHeader` | `WooTheme.colors.surface.default`, `background.onSection`, `outlineVariant`; `WooTheme.text.headlineSmall.strong`; `WooTheme.padding.padding7`; `WooTheme.spacing.space1`; internal `WooStroke.extraThin` | production_initial | Matches Figma Page Header page node `1168:11407` and component node `1168:11650`: 64dp surface bar, 24dp horizontal title/action inset, optional 40dp right action area capped at 136dp, and bottom divider. |
+| `WooPageTitle` | `WooTheme.colors.background.onSection`; `WooTheme.text.headlineSmall.strong` | production_initial | Standalone page-title primitive for page content intros. The title exposes heading semantics and no longer implies the Figma page-header bar composition. |
+| `WooBodyText`, `WooLinkedBodyText`, `WooLinkText` | `WooTheme.colors.surface.onVariant`, `surface.onLowest`, `primary`; `WooTheme.text.bodyMedium.regular` and `bodyMedium.emphasized` | production | Body copy uses lower-emphasis source surface text. Link wrappers add underline and link annotations with `primary`; disabled standalone links use `surface.onLowest`. No semantic color carrier is introduced. |
+| `WooBadge` | Status container/on-container pairs including `neutralOutlinedContainer` / `onNeutralOutlinedContainer`; `WooTheme.text.bodySmall.regular`; `WooTheme.padding.padding3`; `WooTheme.spacing.space1`; internal `WooStroke.regular`; `MaterialTheme.shapes.medium` / internal `WooRadius.medium` | production_initial | Matches Figma Badge nodes `1164:7609`, `199:19563`, and `199:19562`: 24dp minimum height, `corner-radius/medium`, optional 14dp icon slot, and `bodySmall.regular`. `Caution` maps to warning tokens and `Warning` maps to caution tokens to preserve source naming. Count/badged-box variants are not promoted. |
+| `WooPrimaryButton`, `WooSecondaryButton`, `WooTertiaryButton`, `WooButtonSize` | `WooTheme.colors.primary`, `onPrimary`, `secondary`, `onSecondary`, `surface.onLowest`, `outlineVariant`; `WooTheme.text.labelLarge.emphasized`, `labelMedium.emphasized`; `WooTheme.padding.padding5`; `WooTheme.spacing.space3`; internal `WooStroke.medium`; `MaterialTheme.shapes.large` / internal `WooRadius.large` | production_initial | Uses the 12dp large shape projection from Figma Button nodes `1653:5498` / `1653:5502` / `1654:5531`. Primary is filled `primary/onPrimary`, Secondary is filled `secondary/onSecondary`, and Tertiary is outlined with `secondary` and `stroke/weight/medium`. Medium visuals use 48dp with an 18dp leading icon slot; small visuals use 32dp with `labelMedium` and a 14dp leading icon slot. 48dp touch target remains an accessibility rule, not a token. Loading/destructive states are not promoted. |
+| `WooCell`, `WooCellContent`, `WooSettingsRow`, `WooSwitchSettingsRow` | `WooTheme.colors.surface.onDefault`, `surface.onVariant`, `surface.onLowest`; `WooTheme.text.titleMedium.emphasized`, `bodyMedium.regular`; `WooTheme.spacing.space1`, `space4`, `space6`; `WooTheme.padding.padding3`, `padding5`, `padding7` | production_initial | Generic `WooCell` uses the recorded generic-cell density: 90dp-ish private minimum height, `padding7` horizontal/vertical padding, and `space6` slot/content gaps. `WooSettingsRow` and `WooSwitchSettingsRow` keep the compact density: 48dp minimum height, `padding5` horizontal, `padding3` vertical, and `space4` slot/content gaps. Enabled title/decorative slots use `surface.onDefault`, descriptions use `surface.onVariant`, and disabled content uses `surface.onLowest` without a row-level alpha. |
+| `WooCheckbox`, `WooRadioButton` | `WooTheme.colors.primary`, `onPrimary`, `outline` | production_initial | Controlled Material 3 primitives. Checked/selected emphasis uses `primary`; unchecked boundaries use `outline`; disabled rendering follows Material defaults. Label/group association remains caller-owned. |
+| `WooFilterChip` | `WooTheme.colors.surface.onDefault`, `surface.onLowest`, `secondary`, `onSecondary`, `primary`, `outlineVariant`; `WooTheme.text.labelLarge.emphasized`; internal `WooStroke.extraThin` | production_initial | Controlled Material 3 `FilterChip`. Selected container uses `secondary`/`onSecondary`; border uses `outlineVariant` and selected border uses `primary`; disabled label/icon colors use `surface.onLowest`. |
+| `WooSectionHeader` | `WooTheme.colors.primary`; `WooTheme.text.labelLarge.emphasized` | production | Section headers expose heading semantics. |
+| `WooSwitch` | `WooTheme.colors.primary`, `onPrimary` | production | Only checked emphasis is overridden; Material disabled defaults remain in use. |
+| `WooIconButton` | `WooTheme.colors.surface.onDefault`, `primary`, `surface.onLowest` | production | `WooIconButtonEmphasis.Neutral` maps to `surface.onDefault`; `Primary` maps to `primary`; disabled content maps to `surface.onLowest`. The plain variant has no border and keeps the accessible label exposed through button semantics for both the slot and ImageVector overloads. |
+| `WooOutlinedIconButton` | `WooTheme.colors.surface.onDefault`, `primary`, `surface.onLowest`, `outlineVariant`; internal `WooStroke.extraThin`; `MaterialTheme.shapes.large` / internal `WooRadius.large` | production | Uses the same `WooIconButtonEmphasis` policy as `WooIconButton`. The visual container follows Figma navigation-button node `1656:5112` as a 40dp visual inside a 48dp target; the accessible label is exposed through button semantics for both the slot and ImageVector overloads. |
+| `WooIconContainer` | Palette pairs: `wooPurple.shade0`/`primary`, `sandstone.shade10`/`surface.onHighest`, `wooBlue.shade20`/`wooBlue.shade60`, `wooGreen.shade20`/`wooGreen.shade60`, `wooOrange.shade20`/`wooOrange.shade60`, `wooPink.shade20`/`wooPink.shade60`, `primary`/`onPrimary`; `MaterialTheme.shapes.medium` / internal `WooRadius.medium` | production_initial | Restricted palette tone box matching Figma icon-box node `1447:7243`: 44dp container, `corner-radius/medium`, and 18dp icon. The palette tone enum is intentionally not an open color API. |
+| `WooNoticeBanner` | Status container/on-container pairs; `status.neutralOutlinedContainer`, `status.onNeutralOutlinedContainer`, `surface.default`; `WooTheme.text.titleMedium.emphasized`, `bodyMedium.regular`; `WooTheme.padding.padding4`; `WooTheme.spacing.space1`, `space3`; internal `WooStroke.extraThin`; `MaterialTheme.shapes.medium` / internal `WooRadius.medium` | production_initial | Static banner only. Filled tones use status container/content pairs. `NeutralOutlined` uses `surface.default` fill, `neutralOutlinedContainer` border, and `onNeutralOutlinedContainer` content to preserve seven-tone source parity. Actionable/dismissible/live-region behavior is not encoded in PR3. |
+| `WooSearchField` | `WooTheme.colors.surface.default`, `surface.onDefault`, `surface.onVariant`, `surface.onLowest`, `primary`, `outlineVariant`; `WooTheme.text.bodyMedium.regular`; `MaterialTheme.shapes.large` / internal `WooRadius.large` | production_initial | Controlled Material 3 `OutlinedTextField`. Focus/cursor use `primary`; border uses `outlineVariant` when not focused; disabled text/icon/placeholder colors use `surface.onLowest`; clear icon size is a private component constant and the clear button follows the field enabled state. |
+| `WooTabRow`, `WooTab` | `WooTheme.colors.surface.default`, `surface.onDefault`, `surface.onVariant`, `primary`; `WooTheme.text.labelLarge.emphasized` | needs_android_mapping | Controlled Material 3 top tabs. This is not parity for the Figma bottom Tab Bar source (`919:10678` / `1392:40868` / `1388:40618`), so keep it out of pilot adoption until a source-backed top-tabs design or explicit Store migration need is approved. |
+| `WooDivider`, `WooVerticalDivider` | `WooTheme.colors.outlineVariant`; internal `WooStroke.extraThin` | production | Matches Figma Divider node `347:3189`; inset/full/spacer variants do not add production APIs in PR3. |
+| `WooLinearProgressIndicator`, `WooCircularProgressIndicator` | `WooTheme.colors.primary`, `secondary` | production | Progress wrappers keep custom loading/progress design replaceable behind the adapter. |
+
 ## Token Ownership And XML/View Promotion
 
 The i1 adapter is Compose-first at the API/component layer, and i1 token primitive values start as
@@ -258,6 +286,11 @@ variants. The regular variant is projected to `MaterialTheme.typography`. Androi
 values are source-ready, but font family remains unresolved because the Android type export reports
 one family while the Android font-theme export reports another.
 
+PR3 production components consume `headlineSmall`, `bodyLarge`, `titleMedium`, `bodyMedium`, `labelLarge`, and
+`labelMedium` roles through wrappers. This does not promote global typography status beyond
+`needs_android_mapping`; it records that these numeric roles are production-consumed while the
+font-family decision remains open.
+
 | Android API | Size | Line height | Tracking | Weights | Material projection | Status | Notes |
 | --- | ---: | ---: | ---: | --- | --- | --- | --- |
 | `WooTheme.text.displayLarge` | `56sp` | `64sp` | `-0.41sp` | regular / medium / bold | `displayLarge.regular` | needs_android_mapping | Font family gate remains open. |
@@ -265,12 +298,12 @@ one family while the Android font-theme export reports another.
 | `WooTheme.text.displaySmall` | `36sp` | `44sp` | `-0.41sp` | regular / medium / bold | `displaySmall.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.headlineLarge` | `34sp` | `40sp` | `-1.40sp` | regular / medium / bold | `headlineLarge.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.headlineMedium` | `28sp` | `36sp` | `-0.41sp` | regular / medium / bold | `headlineMedium.regular` | needs_android_mapping | Font family gate remains open. |
-| `WooTheme.text.headlineSmall` | `24sp` | `32sp` | `-1.00sp` | regular / medium / bold | `headlineSmall.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.headlineSmall` | `24sp` | `32sp` | `-0.75sp` | regular / medium / bold | `headlineSmall.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.titleLarge` | `20sp` | `28sp` | `-0.41sp` | regular / medium / bold | `titleLarge.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.titleMedium` | `17sp` | `20sp` | `-0.41sp` | regular / medium / bold | `titleMedium.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.titleSmall` | `14sp` | `16sp` | `-0.41sp` | regular / medium / bold | `titleSmall.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.bodyLarge` | `17sp` | `24sp` | `-0.41sp` | regular / medium / bold | `bodyLarge.regular` | needs_android_mapping | Font family gate remains open. |
-| `WooTheme.text.bodyMedium` | `15sp` | `20sp` | `-0.41sp` | regular / medium / bold | `bodyMedium.regular` | needs_android_mapping | Font family gate remains open. |
+| `WooTheme.text.bodyMedium` | `14sp` | `20sp` | `-0.41sp` | regular / medium / bold | `bodyMedium.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.bodySmall` | `13sp` | `16sp` | `-0.41sp` | regular / medium / bold | `bodySmall.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.labelLarge` | `16sp` | `24sp` | `-0.41sp` | regular / medium / bold | `labelLarge.regular` | needs_android_mapping | Font family gate remains open. |
 | `WooTheme.text.labelMedium` | `14sp` | `20sp` | `-0.41sp` | regular / medium / bold | `labelMedium.regular` | needs_android_mapping | Font family gate remains open. |
@@ -320,15 +353,15 @@ elevation, icon-sizing, or state accessors on the Store design-system theme name
 | `WooRadius.none` | `Radius/None` | `0dp` | No Material role | preview_only | Internal only. |
 | `WooRadius.extraSmall` | `Radius/Extra-small` | `2dp` | `MaterialTheme.shapes.extraSmall` | production | Internal projection. |
 | `WooRadius.small` | `Radius/Small` | `4dp` | `MaterialTheme.shapes.small` | production | Internal projection. |
-| `WooRadius.medium` | `Radius/Medium` | `8dp` | `MaterialTheme.shapes.medium` | production | Internal projection. |
-| `WooRadius.large` | `Radius/Large` | `12dp` | `MaterialTheme.shapes.large` | production | Internal projection. |
+| `WooRadius.medium` | `Radius/Medium` | `8dp` | `MaterialTheme.shapes.medium` | production | Internal projection; production-consumed by `WooBadge`, `WooIconContainer`, and `WooNoticeBanner`. |
+| `WooRadius.large` | `Radius/Large` | `12dp` | `MaterialTheme.shapes.large` | production | Internal projection; production-consumed by the button family, `WooTopAppBar` navigation affordance, `WooOutlinedIconButton`, and `WooSearchField`. |
 | `WooRadius.extraLarge` | `Radius/Extra large` | `16dp` | `MaterialTheme.shapes.extraLarge` | production | Internal projection. |
 | `WooRadius.full` | `Radius/Full` | `999dp` | No Material role | preview_only | Pill/full-radius sentinel. |
 | `WooStroke.none` | `Stroke/None` | `0dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.extraThin` | `Stroke/Extra-Thin` | `0.5dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.extraThin` | `Stroke/Extra-Thin` | `0.5dp` | No Material role | production | Internal only; production-consumed by `WooFilterChip`, `WooDivider`, `WooVerticalDivider`, `WooTopAppBar`, `WooPageHeader`, `WooOutlinedIconButton`, and `WooNoticeBanner` `NeutralOutlined`. |
 | `WooStroke.thin` | `Stroke/Thin` | `0.75dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.regular` | `Stroke/Regular` | `1dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.medium` | `Stroke/Medium` | `1.5dp` | No Material role | preview_only | Internal only. |
+| `WooStroke.regular` | `Stroke/Regular` | `1dp` | No Material role | production | Internal only; production-consumed by `WooBadge` `NeutralOutlined`. |
+| `WooStroke.medium` | `Stroke/Medium` | `1.5dp` | No Material role | production | Internal only; production-consumed by `WooTertiaryButton`. |
 | `WooStroke.mediumIncreased` | `Stroke/Medium Increased` | `2dp` | No Material role | preview_only | Internal only. |
 | `WooStroke.thick` | `Stroke/Thick` | `3dp` | No Material role | preview_only | Internal only. |
 | `WooStroke.extraThick` | `Stroke/Extra Thick` | `4dp` | No Material role | preview_only | Internal only. |
@@ -340,4 +373,4 @@ elevation, icon-sizing, or state accessors on the Store design-system theme name
 | Icon sizing | `Value.tokens 3.json` generic `Size` scale exists | needs_android_mapping | None | Probable icon-size source only; generic source label is not accepted for public API. |
 | Elevation | No export found | needs_design | None | Do not invent shadow, z-depth, or elevation values. |
 | Interaction state alpha | Pressed/focused/overlay related colors exist | needs_design | None | Existing colors are not disabled, hover, focus, dragged, or pressed state-layer alpha primitives. |
-| Minimum touch target | No export found | needs_design | None | Do not use generic size scale as minimum touch target. |
+| Minimum touch target | No export found | needs_design | None | PR3 components enforce `48dp` where needed as an accessibility rule, not a source-backed design-system token. |
