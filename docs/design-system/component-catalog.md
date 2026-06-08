@@ -18,7 +18,7 @@ Before the two pilots begin, production-ready APIs should exist for the original
 - Primary button.
 - Settings cell/row.
 - Section header.
-- Switch.
+- Switch as a pilot-needed Material 3 wrapper, not an inspected i1 Figma component.
 - Icon button.
 - Divider.
 - Progress indicator.
