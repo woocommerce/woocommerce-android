@@ -105,7 +105,7 @@ internal fun WooCellLayout(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = MIN_TOUCH_TARGET_SIZE)
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding7),
+            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingContent != null) {
