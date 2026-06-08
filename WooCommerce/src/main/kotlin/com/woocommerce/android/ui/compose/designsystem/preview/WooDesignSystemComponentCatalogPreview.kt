@@ -69,11 +69,20 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooTertiaryButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.component.WooVerticalDivider
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @PreviewLightDark
 @Composable
 private fun WooDesignSystemComponentCatalogPreview() {
     WooDesignSystemPreviewTheme {
+        CatalogContent()
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun WooDesignSystemComponentCatalogLegacyCompatiblePreview() {
+    WooThemeWithBackground {
         CatalogContent()
     }
 }

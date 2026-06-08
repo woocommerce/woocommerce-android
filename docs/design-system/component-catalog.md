@@ -45,9 +45,10 @@ Use `androidx.compose.ui.tooling.preview.PreviewLightDark` for design-system com
 
 Older Store Compose screens may use the project `LightDarkThemePreviews` annotation. New design-system foundations, components, preview catalog entries, and pilot updates should use `@PreviewLightDark`.
 
-Design-system component previews should wrap content in `WooDesignSystemTheme`, not
-`WooThemeWithBackground`. Migrated screen previews should cover both the legacy-compatible foundation
-and the real design-system foundation.
+Individual design-system component previews should wrap content in `WooDesignSystemTheme`, not
+`WooThemeWithBackground`. The component catalog may include an additional `WooThemeWithBackground`
+preview to smoke-test the legacy-compatible foundation. Migrated screen previews should cover both
+the legacy-compatible foundation and the real design-system foundation.
 
 Preview coverage is required for every component. Screenshot verification is required for pilot screens and high-risk components, but not for every small primitive component.
 
