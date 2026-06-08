@@ -28,19 +28,12 @@ class CardReaderCountryConfigProvider @Inject constructor(
 
     private companion object {
         val EXPANSION_COUNTRY_FEATURE_FLAGS = mapOf(
-            "FR" to FeatureFlag.IPP_COUNTRY_EXPANSION,
-            "DE" to FeatureFlag.IPP_COUNTRY_EXPANSION,
             "IE" to FeatureFlag.IPP_COUNTRY_EXPANSION,
             "NL" to FeatureFlag.IPP_COUNTRY_EXPANSION,
             "SG" to FeatureFlag.IPP_COUNTRY_EXPANSION,
             "NZ" to FeatureFlag.IPP_COUNTRY_EXPANSION,
-            "AT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
-            "BE" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
             "FI" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
-            "IT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
             "LU" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
-            "PT" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
-            "ES" to FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED,
             "AU" to FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS,
         )
     }

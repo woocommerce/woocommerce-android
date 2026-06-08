@@ -24,7 +24,7 @@ class CardReaderConfigIsPosCardPaymentEnabledTest {
             @Parameterized.Parameters(name = "country: {0}")
             fun data(): List<String> = listOf(
                 "US", "PR", "GB", "CA",
-                "FR", "DE", "IE", "NL", "AT", "BE", "FI", "IT", "LU", "PT", "ES",
+                "IE", "NL", "FI", "LU",
                 "SG", "NZ",
                 "AU",
             )
@@ -45,7 +45,11 @@ class CardReaderConfigIsPosCardPaymentEnabledTest {
         companion object {
             @JvmStatic
             @Parameterized.Parameters(name = "country: {0}")
-            fun data(): List<String> = listOf("JP", "MX", "IN", "BR", "invalid")
+            fun data(): List<String> = listOf(
+                "JP", "MX", "IN", "BR",
+                "FR", "DE", "AT", "BE", "IT", "PT", "ES",
+                "invalid",
+            )
         }
     }
 }
