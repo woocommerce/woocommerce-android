@@ -41,6 +41,19 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
+    fun `given flag disabled and POS-supported country, when invoked, then returns true for each supported country`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+
+        listOf("US", "PR", "GB", "CA", "IE", "NL", "SG", "NZ", "FI", "LU", "AU").forEach { countryCode ->
+            whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(countryCode)
+
+            assertThat(sut())
+                .describedAs("$countryCode should be allowed")
+                .isTrue
+        }
+    }
+
+    @Test
     fun `given flag disabled and lowercase country code, when invoked, then matches case-insensitively`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("gb")
@@ -54,6 +67,19 @@ class WooPosIsCountryAllowedTest {
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("JP")
 
         assertThat(sut()).isFalse
+    }
+
+    @Test
+    fun `given flag disabled and fiscalization-only country, when invoked, then returns false`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+
+        listOf("AT", "BE", "FR", "IT", "DE", "PT", "ES").forEach { countryCode ->
+            whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(countryCode)
+
+            assertThat(sut())
+                .describedAs("$countryCode should not be allowed")
+                .isFalse
+        }
     }
 
     @Test

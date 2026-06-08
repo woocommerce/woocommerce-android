@@ -1,21 +1,14 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.config.CardReaderConfigForAT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForAustralia
-import com.woocommerce.android.cardreader.config.CardReaderConfigForBE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.config.CardReaderConfigForDE
-import com.woocommerce.android.cardreader.config.CardReaderConfigForES
 import com.woocommerce.android.cardreader.config.CardReaderConfigForFI
-import com.woocommerce.android.cardreader.config.CardReaderConfigForFR
 import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
 import com.woocommerce.android.cardreader.config.CardReaderConfigForIE
-import com.woocommerce.android.cardreader.config.CardReaderConfigForIT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForLU
 import com.woocommerce.android.cardreader.config.CardReaderConfigForNL
 import com.woocommerce.android.cardreader.config.CardReaderConfigForNZ
-import com.woocommerce.android.cardreader.config.CardReaderConfigForPT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSG
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
@@ -90,8 +83,6 @@ class CardReaderCountryConfigProviderTest {
     fun `given primary expansion country and primary flag on, when config provide, then per-country config returned`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
 
-        assertThat(sut.provideCountryConfigFor("FR")).isInstanceOf(CardReaderConfigForFR::class.java)
-        assertThat(sut.provideCountryConfigFor("DE")).isInstanceOf(CardReaderConfigForDE::class.java)
         assertThat(sut.provideCountryConfigFor("IE")).isInstanceOf(CardReaderConfigForIE::class.java)
         assertThat(sut.provideCountryConfigFor("NL")).isInstanceOf(CardReaderConfigForNL::class.java)
         assertThat(sut.provideCountryConfigFor("SG")).isInstanceOf(CardReaderConfigForSG::class.java)
@@ -100,7 +91,7 @@ class CardReaderCountryConfigProviderTest {
 
     @Test
     fun `given primary expansion country and primary flag off, when config provide, then unsupported returned`() {
-        listOf("FR", "DE", "IE", "NL", "SG", "NZ").forEach { code ->
+        listOf("IE", "NL", "SG", "NZ").forEach { code ->
             assertThat(sut.provideCountryConfigFor(code))
                 .`as`("Expected $code to be unsupported when primary flag is off")
                 .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
@@ -111,7 +102,7 @@ class CardReaderCountryConfigProviderTest {
     fun `given primary expansion country with only EU extended flag on, when config provide, then unsupported returned`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
 
-        listOf("FR", "DE", "IE", "NL", "SG", "NZ").forEach { code ->
+        listOf("IE", "NL", "SG", "NZ").forEach { code ->
             assertThat(sut.provideCountryConfigFor(code))
                 .`as`("Expected $code to be unsupported when only EU extended flag is on")
                 .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
@@ -124,18 +115,13 @@ class CardReaderCountryConfigProviderTest {
     fun `given EU extended country and EU extended flag on, when config provide, then per-country config returned`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
 
-        assertThat(sut.provideCountryConfigFor("AT")).isInstanceOf(CardReaderConfigForAT::class.java)
-        assertThat(sut.provideCountryConfigFor("BE")).isInstanceOf(CardReaderConfigForBE::class.java)
         assertThat(sut.provideCountryConfigFor("FI")).isInstanceOf(CardReaderConfigForFI::class.java)
-        assertThat(sut.provideCountryConfigFor("IT")).isInstanceOf(CardReaderConfigForIT::class.java)
         assertThat(sut.provideCountryConfigFor("LU")).isInstanceOf(CardReaderConfigForLU::class.java)
-        assertThat(sut.provideCountryConfigFor("PT")).isInstanceOf(CardReaderConfigForPT::class.java)
-        assertThat(sut.provideCountryConfigFor("ES")).isInstanceOf(CardReaderConfigForES::class.java)
     }
 
     @Test
     fun `given EU extended country and EU extended flag off, when config provide, then unsupported returned`() {
-        listOf("AT", "BE", "FI", "IT", "LU", "PT", "ES").forEach { code ->
+        listOf("FI", "LU").forEach { code ->
             assertThat(sut.provideCountryConfigFor(code))
                 .`as`("Expected $code to be unsupported when EU extended flag is off")
                 .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
@@ -146,9 +132,22 @@ class CardReaderCountryConfigProviderTest {
     fun `given EU extended country with only primary flag on, when config provide, then unsupported returned`() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
 
-        listOf("AT", "BE", "FI", "IT", "LU", "PT", "ES").forEach { code ->
+        listOf("FI", "LU").forEach { code ->
             assertThat(sut.provideCountryConfigFor(code))
                 .`as`("Expected $code to be unsupported when only primary flag is on")
+                .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
+        }
+    }
+
+    @Test
+    fun `given fiscalization country codes and all flags on, when config provide, then unsupported returned`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_COUNTRY_EXPANSION_EU_EXTENDED)).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.IPP_AUSTRALIA_WOOPAYMENTS)).thenReturn(true)
+
+        listOf("AT", "BE", "FR", "IT", "DE", "PT", "ES").forEach { code ->
+            assertThat(sut.provideCountryConfigFor(code))
+                .`as`("Expected $code to be unsupported")
                 .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
         }
     }

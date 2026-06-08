@@ -19,21 +19,23 @@ class HelpAiSupportChatEntryPointTest {
     }
 
     @Test
-    fun `given AI support chat unavailable, when checking contact support, then contact support is shown`() {
-        val shouldShowContactSupport = HelpAiSupportChatEntryPoint.shouldShowContactSupport(
-            aiSupportChatAvailable = false
-        )
+    fun `given AI support chat unavailable, when checking contact support, then support form is used`() {
+        val shouldOpenAiSupportChatFromContactSupport = HelpAiSupportChatEntryPoint
+            .shouldOpenAiSupportChatFromContactSupport(
+                aiSupportChatAvailable = false
+            )
 
-        assertThat(shouldShowContactSupport).isTrue()
+        assertThat(shouldOpenAiSupportChatFromContactSupport).isFalse()
     }
 
     @Test
-    fun `given AI support chat available, when checking contact support, then contact support is hidden`() {
-        val shouldShowContactSupport = HelpAiSupportChatEntryPoint.shouldShowContactSupport(
-            aiSupportChatAvailable = true
-        )
+    fun `given AI support chat available, when checking contact support, then AI support chat is used`() {
+        val shouldOpenAiSupportChatFromContactSupport = HelpAiSupportChatEntryPoint
+            .shouldOpenAiSupportChatFromContactSupport(
+                aiSupportChatAvailable = true
+            )
 
-        assertThat(shouldShowContactSupport).isFalse()
+        assertThat(shouldOpenAiSupportChatFromContactSupport).isTrue()
     }
 
     @Test

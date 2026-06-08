@@ -21,9 +21,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementWithFe
 class WhatsNewDaoTest {
     @Rule
     @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(
-        ApplicationProvider.getApplicationContext()
-    )
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var whatsNewDao: WhatsNewDao
 

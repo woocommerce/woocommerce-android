@@ -1,8 +1,9 @@
 package org.wordpress.android.fluxc.wc
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -10,6 +11,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -18,7 +20,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
-import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
@@ -41,6 +42,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.AccountStore
@@ -50,15 +52,16 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
+import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.test.assertEquals
 
+@Suppress("UnitTestNamingRule")
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WooCommerceStoreTest {
-
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Rule
     @JvmField
@@ -69,7 +72,6 @@ class WooCommerceStoreTest {
         const val SUPPORTED_API_VERSION = "wc/v3"
     }
 
-    private val appContext = ApplicationProvider.getApplicationContext<Application>()
     private val restClient = mock<WooSystemRestClient>()
     private val siteStore = mock<SiteStore>()
     private val wcrestClient = mock<WooCommerceRestClient>()
@@ -81,19 +83,19 @@ class WooCommerceStoreTest {
 
     private val wooCommerceStore by lazy {
         WooCommerceStore(
-            appContext = appContext,
+            appContext = ApplicationProvider.getApplicationContext(),
             dispatcher = dispatcher,
             coroutineEngine = initCoroutineEngine(),
             siteStore = siteStore,
             systemRestClient = restClient,
             wcCoreRestClient = wcrestClient,
-            siteSqlUtils = TestSiteSqlUtils.siteSqlUtils,
             settingsMapper = settingsMapper,
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
             sitePluginDao = wpDatabaseRule.db.sitePluginDao(),
             productSettingsDao = wcDatabaseRule.db.productSettingsDao,
-            settingsDao = wcDatabaseRule.db.settingsDao
+            settingsDao = wcDatabaseRule.db.settingsDao,
+            analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -129,10 +131,8 @@ class WooCommerceStoreTest {
     @Before
     fun setUp() {
         val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(
-                SiteModel::class.java
-            )
+            ApplicationProvider.getApplicationContext(),
+            SiteModel::class.java
         )
         WellSql.init(config)
         config.reset()
@@ -142,6 +142,10 @@ class WooCommerceStoreTest {
 
     @Test
     fun testGetWooCommerceSites() {
+        whenever(siteStore.getWooCommerceSites()).doAnswer {
+            SiteSqlUtils().getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+        }
+
         val nonWooSite = SiteModel().apply { siteId = 42 }
         WellSql.insert(nonWooSite).execute()
 
@@ -336,6 +340,93 @@ class WooCommerceStoreTest {
     }
 
     @Test
+    fun `when fetch analytics scheduled import enabled succeeds, then the value is returned and cached`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(true))
+
+            val result = wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isTrue
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()?.isEnabled
+            ).isTrue
+        }
+    }
+
+    @Test
+    fun `when fetch analytics scheduled import disabled succeeds, then the value is returned and cached`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(false))
+
+            val result = wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isFalse
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()?.isEnabled
+            ).isFalse
+        }
+    }
+
+    @Test
+    fun `when fetch analytics scheduled import fails, then the error is returned and nothing is cached`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            assertThat(result.isError).isTrue
+            assertThat(result.error).isEqualTo(error)
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()
+            ).isNull()
+        }
+    }
+
+    @Test
+    fun `when update analytics scheduled import enabled succeeds, then the value is returned and cached`() {
+        runBlocking {
+            whenever(wcrestClient.updateAnalyticsScheduledImportEnabled(site, true)).thenReturn(WooPayload(true))
+
+            val result = wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, true)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isTrue
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()?.isEnabled
+            ).isTrue
+        }
+    }
+
+    @Test
+    fun `when update analytics scheduled import fails, then the error is returned and nothing is cached`() {
+        runBlocking {
+            whenever(wcrestClient.updateAnalyticsScheduledImportEnabled(site, false)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.updateAnalyticsScheduledImportEnabled(site, false)
+
+            assertThat(result.isError).isTrue
+            assertThat(result.error).isEqualTo(error)
+            assertThat(
+                wcDatabaseRule.db.analyticsScheduledImportDao.observeSetting(site.localId()).first()
+            ).isNull()
+        }
+    }
+
+    @Test
+    fun `given a cached scheduled import value, when observed, then the cached value is emitted`() {
+        runBlocking {
+            whenever(wcrestClient.fetchAnalyticsScheduledImportEnabled(site)).thenReturn(WooPayload(true))
+            wooCommerceStore.fetchAnalyticsScheduledImportEnabled(site)
+
+            val observed = wooCommerceStore.observeAnalyticsScheduledImportEnabled(site).first()
+
+            assertThat(observed).isTrue
+        }
+    }
+
+    @Test
     fun `when fetching supported api version succeeds, then success returned`() {
         runBlocking {
             val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
@@ -352,11 +443,15 @@ class WooCommerceStoreTest {
     @Test
     fun `when fetching api version succeeds, then update application passwords authorization URL`() {
         runBlocking {
+            whenever(siteStore.insertOrUpdateSite(any())).doAnswer {
+                TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
+            }
+
             // Sanity check
             assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
 
             val authorizationUrl = "https://example.com/authorization-url"
-            TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
+            TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
 
             fetchSupportedWooApiVersion(
                 response = RootWPAPIRestResponse(
@@ -368,7 +463,7 @@ class WooCommerceStoreTest {
                 )
             )
 
-            val updateSite = TestSiteSqlUtils.siteSqlUtils.getSiteWithLocalId(site.localId())
+            val updateSite = SiteSqlUtils().getSitesWithLocalId(site.localId().value).firstOrNull()
             assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
         }
     }
@@ -417,24 +512,6 @@ class WooCommerceStoreTest {
             wooCommerceStore.fetchWooCommerceSites()
 
             verify(siteStore, never()).fetchSites(any())
-        }
-    }
-
-    @Test
-    fun `when enabling coupons succeeds, then true is returned`() {
-        runBlocking {
-            whenever(wcrestClient.enableCoupons(site)).thenReturn(WooPayload(true))
-            val result = wooCommerceStore.enableCoupons(site)
-            assertThat(result).isTrue
-        }
-    }
-
-    @Test
-    fun `when enabling coupons fails, then false is returned`() {
-        runBlocking {
-            whenever(wcrestClient.enableCoupons(site)).thenReturn(WooPayload(false))
-            val result = wooCommerceStore.enableCoupons(site)
-            assertThat(result).isFalse
         }
     }
 

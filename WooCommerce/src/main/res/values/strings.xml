@@ -2399,8 +2399,8 @@
     <string name="support_subtitle">How can we help?</string>
     <string name="support_help_center">Help Center</string>
     <string name="support_faq_detail">Get answers to questions you have</string>
-    <string name="support_contact">Contact support</string>
-    <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
+    <string name="support_contact">Contact Support</string>
+    <string name="support_contact_detail">Get help with app or store issues</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="support_system_status_report">System status report</string>
@@ -2413,7 +2413,7 @@
 
     <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
-    <string name="ai_support_chat_screen_title">Chat with support</string>
+    <string name="ai_support_chat_screen_title">Contact Support</string>
     <string name="ai_support_chat_history_row_title">Chat history</string>
     <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
     <string name="ai_support_chat_history_title">Chat history</string>
@@ -2432,10 +2432,10 @@
     <string name="ai_support_chat_suggested_fix_error">Unable to apply this fix. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
     <string name="ai_support_chat_human_support_message">It looks like you might need additional help. Would you like to contact our support team?</string>
-    <string name="ai_support_chat_contact_support">Contact Support</string>
+    <string name="ai_support_chat_contact_support">Ask a Happiness Engineer</string>
     <string name="ai_support_chat_ticket_created_message">A support ticket has been created for this chat. We\'ll respond via email.</string>
     <string name="ai_support_chat_resolved_message">This chat has been marked as resolved.</string>
-    <string name="ai_support_chat_toolbar_contact_support">Contact Support</string>
+    <string name="ai_support_chat_toolbar_contact_support">Ask a Happiness Engineer</string>
     <string name="ai_support_chat_mark_resolved">Mark Resolved</string>
     <string name="ai_support_chat_mark_resolved_cancel">Cancel</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
@@ -2486,7 +2486,7 @@
     <string name="ai_support_chat_diagnostics_push_registration_failure">This device is not registered to receive push notifications for your store.</string>
     <string name="ai_support_chat_diagnostics_push_check_failure">We couldn\'t check your push notification registration.</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
-    <string name="ai_support_chat_connectivity_action">Chat with support</string>
+    <string name="ai_support_chat_connectivity_action">Contact Support</string>
     <string name="ai_support_chat_feedback_helpful">Helpful</string>
     <string name="ai_support_chat_feedback_not_helpful">Not helpful</string>
 
@@ -4063,9 +4063,25 @@
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
     <string name="woopos_orders_yes_proceed">Yes, proceed</string>
+    <string name="woopos_refund_discard_changes_title">Discard refund changes?</string>
+    <string name="woopos_refund_discard_changes_message">Changing orders will discard the refund changes you made.</string>
+    <string name="woopos_refund_discard_changes_discard">Discard changes</string>
+    <string name="woopos_refund_discard_changes_dialog_background_content_description">Discard refund changes dialog background</string>
     <string name="woopos_refund_loading_error_title">Failed to load refund items</string>
     <string name="woopos_refund_creating_error_title">Failed to create refund</string>
     <string name="woopos_refund_error_subtitle">Please try again</string>
+    <string name="woopos_refund_reader_title">Refund card payment</string>
+    <string name="woopos_refund_reader_preparing_title">Preparing reader for refund</string>
+    <string name="woopos_refund_reader_preparing_subtitle">Getting reader ready</string>
+    <string name="woopos_refund_reader_not_connected_title">Reader not connected</string>
+    <string name="woopos_refund_reader_not_connected_subtitle">To process this refund, please connect your reader.</string>
+    <string name="woopos_refund_reader_not_connected_cta_button_label">Connect to reader</string>
+    <string name="woopos_refund_reader_ready_title">Ready for refund</string>
+    <string name="woopos_refund_reader_ready_subtitle">Tap, insert, or swipe card to refund</string>
+    <string name="woopos_refund_reader_processing_title">Processing refund</string>
+    <string name="woopos_refund_notifying_store_title">Notifying store</string>
+    <string name="woopos_refund_notifying_store_subtitle">Applying refund to order</string>
+    <string name="woopos_refund_back_to_order_button">Back to order</string>
     <string name="woopos_orders_refund_complete">Refund complete</string>
     <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
