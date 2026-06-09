@@ -364,6 +364,12 @@ open class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setCrashReportingEnabled(enabled)
     }
 
+    fun isAdvancedHtmlErrorLoggingEnabled(): Boolean = AppPrefs.isAdvancedHtmlErrorLoggingEnabled()
+
+    fun setAdvancedHtmlErrorLoggingEnabled(enabled: Boolean) {
+        AppPrefs.setAdvancedHtmlErrorLoggingEnabled(enabled)
+    }
+
     fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
         AppPrefs.setTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
     }

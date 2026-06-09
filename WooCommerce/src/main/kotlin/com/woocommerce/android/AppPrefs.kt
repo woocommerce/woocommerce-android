@@ -232,7 +232,10 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
 
-        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
+
+        // Whether advanced HTML error response logging is enabled (for support troubleshooting)
+        ADVANCED_HTML_ERROR_LOGGING
     }
 
     fun init(context: Context) {
@@ -639,6 +642,13 @@ object AppPrefs {
 
     fun setCrashReportingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
+    }
+
+    fun isAdvancedHtmlErrorLoggingEnabled(): Boolean =
+        getBoolean(UndeletablePrefKey.ADVANCED_HTML_ERROR_LOGGING, false)
+
+    fun setAdvancedHtmlErrorLoggingEnabled(enabled: Boolean) {
+        setBoolean(UndeletablePrefKey.ADVANCED_HTML_ERROR_LOGGING, enabled)
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =
