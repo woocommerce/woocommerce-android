@@ -87,7 +87,9 @@ internal class ConnectionManager(
                     when (state.exception.errorCode) {
                         TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
                         TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
-                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION ->
+                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION,
+                        TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_PROCESSOR,
+                        TerminalErrorCode.TAP_TO_PAY_INSECURE_ENVIRONMENT ->
                             CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported(state.exception.errorMessage)
                         else -> CardReaderDiscoveryEvents.Failed(state.exception.errorMessage)
                     }
