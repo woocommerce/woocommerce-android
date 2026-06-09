@@ -3755,6 +3755,7 @@
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
+    <string name="woopos_home_sync_failed_server_permissions_message">The catalog file could not be downloaded from your store due to blocked server permissions. Please contact your hosting provider.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
     <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
