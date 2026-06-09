@@ -6,6 +6,7 @@
 -----
 - [**] Woo POS is now available in Canada, and the POS refund flow is improved [https://github.com/woocommerce/woocommerce-android/pull/15996]
 - [*] POS keeps working when a store blocks the product catalog file: it falls back to basic sync, and on WooCommerce 11.0+ shows a notice to contact the hosting provider with an option to continue [https://github.com/woocommerce/woocommerce-android/pull/PENDING]
+- [*] POS settings catalog refresh now shows a clear "contact your hosting provider" message when the catalog file is blocked, instead of a generic connection error [https://github.com/woocommerce/woocommerce-android/pull/PENDING]
 
 24.9
 -----
