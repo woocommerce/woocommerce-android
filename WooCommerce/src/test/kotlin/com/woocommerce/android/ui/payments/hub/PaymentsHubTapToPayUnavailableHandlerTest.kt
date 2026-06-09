@@ -85,7 +85,7 @@ class PaymentsHubTapToPayUnavailableHandlerTest {
     }
 
     @Test
-    fun `given DeviceNotSupported, when handleTTPUnavailable, then dialog points at learn more action`() {
+    fun `given DeviceNotSupported, when handleTTPUnavailable, then dialog points at requirements action`() {
         // GIVEN
         val status = TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported
         val captor = argumentCaptor<MultiLiveEvent.Event.ShowDialog>()
@@ -109,7 +109,7 @@ class PaymentsHubTapToPayUnavailableHandlerTest {
         assertThat(captor.firstValue.negativeButtonId).isEqualTo(R.string.close)
 
         captor.firstValue.positiveBtnAction!!.onClick(mock(), 0)
-        verify(positiveButtonClick).invoke(PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_LEARN_MORE)
+        verify(positiveButtonClick).invoke(PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS)
     }
 
     @Test

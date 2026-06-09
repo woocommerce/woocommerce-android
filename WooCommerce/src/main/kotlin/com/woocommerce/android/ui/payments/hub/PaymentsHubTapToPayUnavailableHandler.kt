@@ -50,7 +50,7 @@ class PaymentsHubTapToPayUnavailableHandler @Inject constructor() {
                     R.string.card_reader_tap_to_pay_not_available_error_device,
                     R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button,
                     triggerEvent
-                ) { positiveButtonClick(ActionType.TAP_TO_PAY_LEARN_MORE) }
+                ) { positiveButtonClick(ActionType.TAP_TO_PAY_REQUIREMENTS) }
             }
         }
     }
