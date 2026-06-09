@@ -55,6 +55,7 @@ class PaymentsFlowTracker @Inject constructor(
         addPaymentMethodTypeProperty(properties)
         addCardReaderModelProperty(properties)
         addCardReaderBatteryLevelProperty(properties)
+        addTransportProperty(properties)
 
         val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
         if (isError) {
@@ -112,6 +113,13 @@ class PaymentsFlowTracker @Inject constructor(
         val cardReaderModel = cardReaderTrackingInfoProvider.trackingInfo.cardReaderModel
         if (!cardReaderModel.isNullOrBlank()) {
             properties["card_reader_model"] = cardReaderModel
+        }
+    }
+
+    private fun addTransportProperty(properties: MutableMap<String, Any>) {
+        val transport = cardReaderTrackingInfoProvider.trackingInfo.transport
+        if (!transport.isNullOrBlank()) {
+            properties["transport"] = transport
         }
     }
 
@@ -332,6 +340,14 @@ class PaymentsFlowTracker @Inject constructor(
 
     fun trackMissingLocationTapped() {
         track(eventProvider.CARD_READER_LOCATION_MISSING_TAPPED)
+    }
+
+    fun trackLocationPermissionPreAlertShown() {
+        track(eventProvider.CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN)
+    }
+
+    fun trackLocationPermissionRequiredShown() {
+        track(eventProvider.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN)
     }
 
     fun trackConnectionFailed() {

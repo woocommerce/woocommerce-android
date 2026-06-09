@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.taxes
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -32,7 +31,7 @@ class WCTaxStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var store: WCTaxStore
 

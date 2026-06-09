@@ -1,0 +1,23 @@
+plugins {
+    id("org.jetbrains.kotlin.jvm")
+    id("java-test-fixtures")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.dependency.analysis)
+}
+
+java {
+    sourceCompatibility = libs.versions.java.get()
+    targetCompatibility = libs.versions.java.get()
+}
+
+dependencies {
+    api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.serialization.json)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    testFixturesApi(libs.kotlinx.coroutines.core)
+    testFixturesApi(libs.kotlinx.serialization.json)
+}

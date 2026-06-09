@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormali
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -775,6 +776,83 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
 
         assertThat(result.addressStatus).isEqualTo(AddressStatus.MissingInfo)
     }
+
+    @Test
+    fun `given a valid form, when email becomes invalid, then address status is MissingInfo before debounce`() =
+        testBlocking {
+            val address = Address(
+                address1 = "Address",
+                address2 = "",
+                city = "Miami",
+                postcode = "12345",
+                email = "valid@test.com",
+                phone = "1234567890",
+                state = AmbiguousLocation.Raw("FL"),
+                country = AmbiguousLocation.Raw("US").asLocation(),
+                firstName = "Name",
+                lastName = "",
+                company = ""
+            )
+            whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+            whenever(addressValidator.validateAtLeastOneOf(any(), any())).doReturn(null)
+            whenever(addressValidator.validateEmail("valid@test.com")).doReturn(null)
+            whenever(addressValidator.validateEmail("")).doReturn("Required")
+            whenever(addressValidator.validateUSCustomsPhone(any())).doReturn(null)
+            mockCountries(Result.success(countries))
+            whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+            Snapshot.withMutableSnapshot {
+                val savedState = createSavedStateHandle(address, isVerified = true)
+                createViewModel(savedState)
+            }
+            advanceUntilIdle()
+            assertThat(sut.viewState.value.addressStatus).isNotEqualTo(AddressStatus.MissingInfo)
+
+            Snapshot.withMutableSnapshot {
+                sut.onEmailChange("")
+            }
+            // Advance by less than DELAY_TIME_MILLIS (500) so the per-field validator does not fire.
+            advanceTimeBy(100)
+
+            assertThat(sut.viewState.value.addressStatus).isEqualTo(AddressStatus.MissingInfo)
+        }
+
+    @Test
+    fun `given an invalid form, when email becomes valid, then address status is not MissingInfo before debounce`() =
+        testBlocking {
+            val address = Address(
+                address1 = "Address",
+                address2 = "",
+                city = "Miami",
+                postcode = "12345",
+                email = "",
+                phone = "1234567890",
+                state = AmbiguousLocation.Raw("FL"),
+                country = AmbiguousLocation.Raw("US").asLocation(),
+                firstName = "Name",
+                lastName = "",
+                company = ""
+            )
+            whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+            whenever(addressValidator.validateAtLeastOneOf(any(), any())).doReturn(null)
+            whenever(addressValidator.validateEmail("")).doReturn("Required")
+            whenever(addressValidator.validateEmail("valid@test.com")).doReturn(null)
+            whenever(addressValidator.validateUSCustomsPhone(any())).doReturn(null)
+            mockCountries(Result.success(countries))
+            whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+            Snapshot.withMutableSnapshot {
+                val savedState = createSavedStateHandle(address, isVerified = true)
+                createViewModel(savedState)
+            }
+            advanceUntilIdle()
+            assertThat(sut.viewState.value.addressStatus).isEqualTo(AddressStatus.MissingInfo)
+
+            Snapshot.withMutableSnapshot {
+                sut.onEmailChange("valid@test.com")
+            }
+            advanceTimeBy(100)
+
+            assertThat(sut.viewState.value.addressStatus).isNotEqualTo(AddressStatus.MissingInfo)
+        }
 
     @Test
     fun `when screen is initialized then normalize address is closed`() = testBlocking {

@@ -113,4 +113,57 @@ class ShouldRequireCustomsFormTest {
         )
         assertFalse(shouldRequireCustomsForm(addressData))
     }
+
+    @Test
+    fun `given destination state is any US territory, when invoked, then customs is required`() {
+        listOf("AS", "GU", "MP", "PR", "VI", "UM").forEach { territory ->
+            val addressData = WooShippingAddresses(
+                shipFrom = OriginShippingAddress.EMPTY.copy(country = "US", state = "CA"),
+                shipTo = DestinationShippingAddress(
+                    Address.EMPTY.copy(
+                        country = Location.EMPTY.copy(code = "US"),
+                        state = AmbiguousLocation.Defined(Location.EMPTY.copy(code = territory))
+                    ),
+                    false
+                ),
+                originAddresses = emptyList()
+            )
+            assertTrue(
+                "Expected customs to be required for US territory state $territory",
+                shouldRequireCustomsForm(addressData)
+            )
+        }
+    }
+
+    @Test
+    fun `given origin is un-normalized US territory and destination is US mainland, when invoked, then customs is required`() {
+        val addressData = WooShippingAddresses(
+            shipFrom = OriginShippingAddress.EMPTY.copy(country = "US", state = "PR"),
+            shipTo = DestinationShippingAddress(
+                Address.EMPTY.copy(
+                    country = Location.EMPTY.copy(code = "US"),
+                    state = AmbiguousLocation.Defined(Location.EMPTY.copy(code = "CA"))
+                ),
+                false
+            ),
+            originAddresses = emptyList()
+        )
+        assertTrue(shouldRequireCustomsForm(addressData))
+    }
+
+    @Test
+    fun `given shipment within the same US territory, when invoked, then customs is not required`() {
+        val addressData = WooShippingAddresses(
+            shipFrom = OriginShippingAddress.EMPTY.copy(country = "US", state = "PR"),
+            shipTo = DestinationShippingAddress(
+                Address.EMPTY.copy(
+                    country = Location.EMPTY.copy(code = "US"),
+                    state = AmbiguousLocation.Defined(Location.EMPTY.copy(code = "PR"))
+                ),
+                false
+            ),
+            originAddresses = emptyList()
+        )
+        assertFalse(shouldRequireCustomsForm(addressData))
+    }
 }

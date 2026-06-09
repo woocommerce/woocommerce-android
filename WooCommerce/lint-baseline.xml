@@ -4260,28 +4260,6 @@
 
     <issue
         id="DoNotMockDataClass"
-        message="&apos;org.wordpress.android.fluxc.model.WCSSRModel&apos; is a data class, so mocking it should not be necessary"
-        errorLine1="    private val ssrModel: WCSSRModel = mock()"
-        errorLine2="                                       ~~~~~~">
-        <location
-            file="src/test/kotlin/com/woocommerce/android/ui/woopos/WooPOSIsRemotelyEnabledTest.kt"
-            line="20"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="DoNotMockDataClass"
-        message="&apos;org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult&apos; is a data class, so mocking it should not be necessary"
-        errorLine1="    private val cacheResult: WooResult&lt;WCSSRModel> = mock()"
-        errorLine2="                                                     ~~~~~~">
-        <location
-            file="src/test/kotlin/com/woocommerce/android/ui/woopos/WooPOSIsRemotelyEnabledTest.kt"
-            line="22"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="DoNotMockDataClass"
         message="&apos;com.woocommerce.android.model.Product&apos; is a data class, so mocking it should not be necessary"
         errorLine1="        val cachedProduct = mock&lt;Product>()"
         errorLine2="                            ~~~~~~~~~~~~~~~">

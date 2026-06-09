@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -79,6 +80,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -98,6 +100,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.reflect.KMutableProperty0
@@ -162,6 +165,10 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(appPrefs.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test statement descriptor")
+        whenever(appPrefs.getCardReaderPreferredPlugin(any(), any(), any()))
+            .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(wooStore.fetchSiteRootApiRoutes(any()))
+            .thenReturn(WooResult(listOf(PREPARE_TERMINAL_PAYMENT_ROUTE)))
         whenever(paymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
 
         whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
@@ -1376,7 +1383,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment succeeds, then receiptUrl stored into a persistant storage`() =
+    fun `when payment succeeds, then receiptUrl stored into a persistent storage`() =
         testBlocking {
             val receiptUrl = "testUrl"
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2473,6 +2480,37 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given user leaves the screen, when cancel payment throws, then stop does not crash`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+            whenever(cardReaderManager.cancelPayment(any())).thenThrow(IllegalStateException("Cancellation race"))
+            controller.start()
+
+            controller.stop()
+
+            verify(cardReaderManager).cancelPayment(any())
+        }
+
+    @Test
+    fun `given user leaves the screen, when scope cancellation handler throws, then stop does not crash`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow<CardPaymentStatus> {
+                    suspendCancellableCoroutine<Unit> { continuation ->
+                        continuation.invokeOnCancellation {
+                            throw IllegalStateException("Cancellation race")
+                        }
+                    }
+                }
+            }
+            controller.start()
+
+            controller.stop()
+        }
+
+    @Test
     fun `given user leaves the screen, when payment succeeded on retry, then payment NOT canceled`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
@@ -2700,6 +2738,97 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given australia and total 18, when flow started, then fee set to percentage plus flat fee`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("AU")
+            whenever(mockedOrder.currency).thenReturn("AUD")
+            whenever(mockedOrder.total).thenReturn(BigDecimal("18.00"))
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            controller.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.feeAmount).isEqualTo(41)
+        }
+
+    @Test
+    fun `given canada, when flow started, then manual preferred and interac preparation passed`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            controller.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.cardPresentCaptureMethod)
+                .isEqualTo(PaymentInfo.CardPresentCaptureMethod.MANUAL_PREFERRED)
+            assertThat(captor.firstValue.terminalPaymentPreparation)
+                .isEqualTo(PaymentInfo.TerminalPaymentPreparation.CANADA_INTERAC)
+        }
+
+    @Test
+    fun `given canada without terminal preparation route, when flow started, then preparation is skipped`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+            whenever(wooStore.fetchSiteRootApiRoutes(any())).thenReturn(WooResult(emptyList()))
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            controller.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.cardPresentCaptureMethod)
+                .isEqualTo(PaymentInfo.CardPresentCaptureMethod.MANUAL_PREFERRED)
+            assertThat(captor.firstValue.terminalPaymentPreparation)
+                .isEqualTo(PaymentInfo.TerminalPaymentPreparation.NONE)
+        }
+
+    @Test
+    fun `given stripe gateway in canada, when flow started, then terminal preparation is skipped`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("CA")
+            whenever(appPrefs.getCardReaderPreferredPlugin(any(), any(), any()))
+                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            controller.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.terminalPaymentPreparation)
+                .isEqualTo(PaymentInfo.TerminalPaymentPreparation.NONE)
+        }
+
+    @Test
+    fun `given australia, when flow started, then manual preferred and card present preparation passed`() =
+        testBlocking {
+            // Given
+            whenever(wooStore.getStoreCountryCode(any())).thenReturn("AU")
+            val captor = argumentCaptor<PaymentInfo>()
+
+            // When
+            controller.start()
+
+            // Then
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.cardPresentCaptureMethod)
+                .isEqualTo(PaymentInfo.CardPresentCaptureMethod.MANUAL_PREFERRED)
+            assertThat(captor.firstValue.terminalPaymentPreparation)
+                .isEqualTo(PaymentInfo.TerminalPaymentPreparation.AUSTRALIA_CARD_PRESENT)
+        }
+
+    @Test
     fun `given us and total 1,49, when flow started, then fee is not set`() =
         testBlocking {
             // Given
@@ -2714,6 +2843,9 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             // Then
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.feeAmount).isNull()
+            assertThat(captor.firstValue.cardPresentCaptureMethod).isNull()
+            assertThat(captor.firstValue.terminalPaymentPreparation)
+                .isEqualTo(PaymentInfo.TerminalPaymentPreparation.NONE)
         }
 
     @Test
@@ -2805,7 +2937,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given unknown error, when contact support clicked, then contact support event emited`() =
+    fun `given unknown error, when contact support clicked, then contact support event emitted`() =
         testBlocking {
             setupControllerForInteracRefund()
             whenever(
@@ -2920,10 +3052,9 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            assertThat(
-                (controller.paymentState.value as CardReaderInteracRefundState.CollectingInteracRefund).cardReaderHint
-            )
-                .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
+            val state = controller.paymentState.value as CardReaderInteracRefundState.CollectingInteracRefund
+            assertThat(state.cardReaderHint).isEqualTo(R.string.card_reader_payment_remove_card_prompt)
+            assertThat(state.isDismissBlocked).isTrue()
         }
 
     @Test
@@ -3669,7 +3800,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesnt start`() =
+    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesn't start`() =
         testBlocking {
             val cardReader: CardReader = mock()
             whenever(cardReaderManager.readerStatus).thenReturn(
@@ -3728,5 +3859,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         private val siteModel = SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" }
         private val DUMMY_TOTAL = BigDecimal(10.72)
         private const val DUMMY_CURRENCY_SYMBOL = "£"
+        private const val PREPARE_TERMINAL_PAYMENT_ROUTE =
+            "/wc/v3/payments/orders/(?P<order_id>\\w+)/prepare_terminal_payment"
     }
 }

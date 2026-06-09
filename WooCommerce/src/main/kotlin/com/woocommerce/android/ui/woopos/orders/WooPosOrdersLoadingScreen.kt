@@ -44,26 +44,38 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
 @Composable
-fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxSize()
-    ) {
+fun WooPosOrdersLoadingScreen(
+    modifier: Modifier = Modifier,
+    isPhoneLayout: Boolean = false,
+) {
+    if (isPhoneLayout) {
         WooPosOrdersListLoadingPane(
-            modifier = Modifier
+            modifier = modifier
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
-                .weight(0.3f)
-                .fillMaxHeight()
         )
+    } else {
+        Row(
+            modifier = modifier.fillMaxSize()
+        ) {
+            WooPosOrdersListLoadingPane(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+                    .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
+                    .weight(0.3f)
+                    .fillMaxHeight()
+            )
 
-        OrderDetailsLoadingPane(
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = WooPosSpacing.Medium.value)
-        )
+            OrderDetailsLoadingPane(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .statusBarsPadding()
+                    .padding(horizontal = WooPosSpacing.Medium.value)
+            )
+        }
     }
 }
 
@@ -324,5 +336,13 @@ private fun TotalLoadingItem() {
 fun WooPosOrdersLoadingStatePreview() {
     WooPosTheme {
         WooPosOrdersLoadingScreen()
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrdersLoadingStatePhonePreview() {
+    WooPosTheme {
+        WooPosOrdersLoadingScreen(isPhoneLayout = true)
     }
 }

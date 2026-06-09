@@ -62,7 +62,8 @@ internal class WCSettingsMapperTest {
         val expectedModel = WCProductSettingsModel(
             localSiteId = site.localId(),
             dimensionUnit = "in",
-            weightUnit = "oz"
+            weightUnit = "oz",
+            defaultLowStockThreshold = 2
         )
 
         // when
@@ -74,6 +75,7 @@ internal class WCSettingsMapperTest {
             assertEquals(expectedModel.localSiteId, localSiteId)
             assertEquals(expectedModel.dimensionUnit, dimensionUnit)
             assertEquals(expectedModel.weightUnit, weightUnit)
+            assertEquals(expectedModel.defaultLowStockThreshold, defaultLowStockThreshold)
         }
     }
 

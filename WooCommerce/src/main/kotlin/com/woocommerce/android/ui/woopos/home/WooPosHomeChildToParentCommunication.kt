@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.woopos.home
 
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -36,6 +38,7 @@ sealed class ChildToParentEvent {
     data object ReturnedFromCardReaderPaymentToCheckout : ChildToParentEvent()
     data object GoBackToCheckoutAfterFailedPayment : ChildToParentEvent()
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
+    data object OrderSuccessfullyPaidExternally : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
     data object SetupBarcodeScannerClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()
@@ -54,8 +57,21 @@ sealed class ChildToParentEvent {
     data object RefreshProductList : ChildToParentEvent()
     data object ShowCardReaderConnectionDialog : ChildToParentEvent()
 
+    data class CustomAmountDialogRequested(
+        val editing: WooPosCartItemViewState.CustomAmount? = null,
+    ) : ChildToParentEvent()
+
+    data class CustomAmountSubmitted(
+        val name: String,
+        val amount: BigDecimal,
+        val isTaxable: Boolean,
+        val editingItemNumber: Int? = null,
+    ) : ChildToParentEvent()
+
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()
+        data class ToMarkOrderAsPaid(val orderId: Long) : NavigationEvent()
+        data class ToScanToPay(val orderId: Long) : NavigationEvent()
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()

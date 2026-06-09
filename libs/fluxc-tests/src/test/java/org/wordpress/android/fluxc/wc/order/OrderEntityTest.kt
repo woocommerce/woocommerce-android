@@ -5,7 +5,10 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.order.ShippingLine
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -15,7 +18,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetShippingAddress() {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
                 shippingAddress1 = "Some place"
         )
 
@@ -25,7 +28,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetShippingVSBillingAddress() {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
                 billingAddress1 = "Some place",
                 billingCountry = "Canada",
                 shippingAddress1 = "A different place",
@@ -40,7 +43,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetLineItems() = runBlocking {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
                 lineItems = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/lineitems.json")
         )
         val renderedLineItems = model.getLineItemList()
@@ -74,7 +77,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetLineItemAttributes() = runBlocking {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
                 lineItems = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/lineitems.json")
         )
         val renderedLineItems = model.getLineItemList()
@@ -102,7 +105,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetSubtotal() = runBlocking {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
                 lineItems = "[{\"subtotal\": \"12.26\"},{\"subtotal\": \"15.39\"}]"
         )
 
@@ -112,7 +115,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetShippingLines() {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             shippingLines = UnitTestUtils.getStringFromResourceFile(
                     this.javaClass, "wc/order-shipping-lines.json"
             )
@@ -126,7 +129,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetShippingLinesAttributes() {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             shippingLines = UnitTestUtils.getStringFromResourceFile(
                     this.javaClass, "wc/order-shipping-lines.json"
             )
@@ -148,7 +151,7 @@ class OrderEntityTest {
     @Test
     fun testGetTaxLinesHandlesInvalidJson() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             taxLines = """[{
             "id": 1,
             "rate_id": "stripe_tax_for_woocommerce__shipping_tax__0__Shipping Tax",
@@ -168,7 +171,7 @@ class OrderEntityTest {
 
     @Test
     fun testGetTaxLinesValidJson() = runBlocking {
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             taxLines = """[{
             "id": 1,
             "rate_id": 5,
@@ -222,7 +225,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithValidJson() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = """[
                 {"id": 1, "name": "Product 1", "total": "10.00"},
                 {"id": 2, "name": "Product 2", "total": "20.00"}
@@ -241,7 +244,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithEmptyString() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = "",
             shippingLines = "",
             feeLines = "",
@@ -267,7 +270,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithMalformedJson() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = "[{invalid json",
             shippingLines = "not json at all",
             feeLines = "{\"key\": \"value\"}",
@@ -290,7 +293,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithNumberFormatException() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = """[{
                 "id": "not_a_number",
                 "name": "Product",
@@ -318,7 +321,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithNullValues() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = "null",
             shippingLines = "[null, null]",
             feeLines = """[{"id": null, "name": null}]"""
@@ -338,7 +341,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithMixedValidAndInvalidData() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             couponLines = """[
                 {"id": 1, "code": "VALID10", "discount": "10.00"},
                 {"id": "invalid", "code": "INVALID", "discount": "abc"},
@@ -356,7 +359,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithLargeNumbers() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = """[{
                 "id": 9223372036854775807,
                 "name": "Product with max long id",
@@ -375,7 +378,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithSpecialCharacters() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = """[{
                 "id": 1,
                 "name": "Product with \"quotes\" and \n newlines",
@@ -395,7 +398,7 @@ class OrderEntityTest {
     @Test
     fun testParseJsonListSafelyWithEmptyArray() = runBlocking {
         // GIVEN
-        val model = OrderTestUtils.generateSampleOrder(61).copy(
+        val model = generateSampleOrder(61).copy(
             lineItems = "[]",
             shippingLines = "[]",
             feeLines = "[]",
@@ -416,5 +419,30 @@ class OrderEntityTest {
         assertTrue(feeLines.isEmpty())
         assertTrue(couponLines.isEmpty())
         assertTrue(taxLines.isEmpty())
+    }
+
+    /* HELPER */
+
+    @Suppress("LongParameterList")
+    private fun generateSampleOrder(
+        orderId: Long,
+        orderStatus: String = CoreOrderStatus.PROCESSING.value,
+        siteId: Int = 6,
+        modified: String = "1955-11-05T14:15:00Z",
+        paymentMethod: String = "",
+        paymentMethodTitle: String = ""
+    ): OrderEntity {
+        return OrderEntity(
+            orderId = orderId,
+            localSiteId = LocalId(siteId),
+            status = orderStatus,
+            dateModified = modified,
+            dateCreated = "1955-11-05T14:15:00Z",
+            datePaid = "1956-11-05T14:15:00Z",
+            currency = "USD",
+            total = "10.0",
+            paymentMethod = paymentMethod,
+            paymentMethodTitle = paymentMethodTitle,
+        )
     }
 }

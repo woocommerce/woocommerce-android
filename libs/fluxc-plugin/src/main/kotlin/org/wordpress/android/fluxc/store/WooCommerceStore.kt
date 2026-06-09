@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import android.content.Context
-import com.wellsql.generated.SiteModelTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,11 +15,13 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.settings.AnalyticsScheduledImportSettingEntity
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -33,7 +34,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
+import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -50,6 +52,7 @@ import javax.inject.Singleton
 import kotlin.math.absoluteValue
 
 @Singleton
+@Suppress("TooManyFunctions", "LongParameterList")
 open class WooCommerceStore @Inject internal constructor(
     private val appContext: Context,
     dispatcher: Dispatcher,
@@ -58,23 +61,21 @@ open class WooCommerceStore @Inject internal constructor(
     private val systemRestClient: WooSystemRestClient,
     private val wcCoreRestClient: WooCommerceRestClient,
     private val settingsMapper: WCSettingsMapper,
-    private val siteSqlUtils: SiteSqlUtils,
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
     private val sitePluginDao: SitePluginDao,
     private val productSettingsDao: ProductSettingsDao,
     private val settingsDao: SettingsDao,
+    private val analyticsScheduledImportDao: AnalyticsScheduledImportDao,
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
         WOO_SERVICES("woocommerce-services/woocommerce-services"),
         WOO_SHIPPING("woocommerce-shipping/woocommerce-shipping"),
         WOO_PAYMENTS("woocommerce-payments/woocommerce-payments"),
-        WOO_STRIPE_GATEWAY("woocommerce-gateway-stripe/woocommerce-gateway-stripe"),
         WOO_SHIPMENT_TRACKING("woocommerce-shipment-tracking/woocommerce-shipment-tracking"),
         WOO_SUBSCRIPTIONS("woocommerce-subscriptions/woocommerce-subscriptions"),
         WOO_GIFT_CARDS("woocommerce-gift-cards/woocommerce-gift-cards"),
-        WOO_MIN_MAX_QUANTITIES("woocommerce-min-max-quantities/woocommerce-min-max-quantities"),
         WOO_PRODUCT_BUNDLES("woocommerce-product-bundles/woocommerce-product-bundles"),
         WOO_COMPOSITE_PRODUCTS("woocommerce-composite-products/woocommerce-composite-products"),
         WOO_SQUARE("woocommerce-square/woocommerce-square"),
@@ -127,7 +128,7 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     fun getWooCommerceSites(): MutableList<SiteModel> =
-        siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+        siteStore.getWooCommerceSites().toMutableList()
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
@@ -284,7 +285,14 @@ open class WooCommerceStore @Inject internal constructor(
                     // Persist the Application Passwords auhtorization URL
                     site.applicationPasswordsAuthorizeUrl = response.result.authentication
                         ?.applicationPasswords?.endpoints?.authorization
-                    siteSqlUtils.insertOrUpdateSite(site)
+                    try {
+                        siteStore.insertOrUpdateSite(site)
+                    } catch (e: SiteStorePersistence.DuplicateSiteException) {
+                        AppLog.w(
+                            T.API,
+                            "Duplicate site detected while saving applicationPasswordsAuthorizeUrl: ${e.message}"
+                        )
+                    }
 
                     val namespaces = response.result.namespaces
                     val maxWooApiVersion = namespaces?.run {
@@ -307,21 +315,52 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
-    suspend fun enableCoupons(site: SiteModel): Boolean {
-        return coroutineEngine.withDefaultContext(T.API, this, "enableCoupons") {
-            val response = wcCoreRestClient.enableCoupons(site)
+    suspend fun fetchSiteRootApiRoutes(site: SiteModel): WooResult<List<String>> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteRootApiRoutes") {
+            val response = wcCoreRestClient.fetchSiteRootAPIRoutes(site)
             return@withDefaultContext when {
                 response.isError -> {
-                    AppLog.w(T.API, "Failed to enable coupons for ${site.siteId}")
-                    false
+                    AppLog.w(T.API, "Fetching WP API routes failed for site ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    WooResult(response.result.routes?.keys?.toList().orEmpty())
                 }
 
                 else -> {
-                    response.result?.let {
-                        settingsDao.setCouponsEnabled(site.localId(), it)
-                        it
-                    } ?: false
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
                 }
+            }
+        }
+    }
+
+    suspend fun enableAnalytics(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "enableAnalytics") {
+            val response = wcCoreRestClient.enableAnalytics(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to enable analytics for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> WooResult(response.result)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    suspend fun fetchAnalyticsEnabled(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsEnabled") {
+            val response = wcCoreRestClient.fetchAnalyticsEnabled(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to fetch analytics setting for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> WooResult(response.result)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
     }
@@ -424,6 +463,71 @@ open class WooCommerceStore @Inject internal constructor(
                 }
             }
         }
+    }
+
+    suspend fun fetchAnalyticsOrderDateType(site: SiteModel): WooResult<WCAnalyticsOrderDateType> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsOrderDateType") {
+            wcCoreRestClient.fetchAnalyticsOrderDateType(site).asWooResult()
+        }
+    }
+
+    suspend fun updateAnalyticsOrderDateType(
+        site: SiteModel,
+        orderDateType: WCAnalyticsOrderDateType
+    ): WooResult<WCAnalyticsOrderDateType> {
+        return coroutineEngine.withDefaultContext(T.API, this, "updateAnalyticsOrderDateType") {
+            wcCoreRestClient.updateAnalyticsOrderDateType(site, orderDateType).asWooResult()
+        }
+    }
+
+    suspend fun fetchAnalyticsScheduledImportEnabled(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchAnalyticsScheduledImportEnabled") {
+            val response = wcCoreRestClient.fetchAnalyticsScheduledImportEnabled(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to fetch analytics scheduled import setting for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    cacheAnalyticsScheduledImportEnabled(site, response.result)
+                    WooResult(response.result)
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    suspend fun updateAnalyticsScheduledImportEnabled(
+        site: SiteModel,
+        enabled: Boolean
+    ): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "updateAnalyticsScheduledImportEnabled") {
+            val response = wcCoreRestClient.updateAnalyticsScheduledImportEnabled(site, enabled)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(T.API, "Failed to update analytics scheduled import setting for ${site.siteId}")
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    cacheAnalyticsScheduledImportEnabled(site, response.result)
+                    WooResult(response.result)
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    fun observeAnalyticsScheduledImportEnabled(site: SiteModel): Flow<Boolean?> =
+        analyticsScheduledImportDao.observeSetting(site.localId()).map { it?.isEnabled }
+
+    private suspend fun cacheAnalyticsScheduledImportEnabled(site: SiteModel, enabled: Boolean) {
+        analyticsScheduledImportDao.insertOrUpdate(
+            AnalyticsScheduledImportSettingEntity(localSiteId = site.localId(), isEnabled = enabled)
+        )
     }
 
     suspend fun fetchPosSettings(site: SiteModel): WooResult<Map<String, String>> {

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -50,7 +49,7 @@ class WCLeaderboardsStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var storeUnderTest: WCLeaderboardsStore
 

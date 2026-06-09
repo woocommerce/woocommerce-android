@@ -129,6 +129,10 @@ class OrderRestClient @Inject constructor(
         createdVia: String? = null,
         searchQuery: String? = null,
         decimalPoints: Int? = null,
+        customer: Long? = null,
+        include: List<Long>? = null,
+        after: String? = null,
+        before: String? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -142,6 +146,10 @@ class OrderRestClient @Inject constructor(
             "created_via" to createdVia,
             "search" to searchQuery,
             "dp" to decimalPoints?.toString(),
+            "customer" to customer?.toString(),
+            "include" to include?.joinToString(","),
+            "after" to after,
+            "before" to before,
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -199,6 +207,8 @@ class OrderRestClient @Inject constructor(
             val params = mutableMapOf(
                 "per_page" to networkPageSize.toString(),
                 "offset" to offset.toString(),
+                "orderby" to OrderBy.DATE.value,
+                "order" to SortOrder.DESCENDING.value,
                 "_fields" to "id,date_created_gmt,date_modified_gmt"
             ).putIfNotEmpty(
                 "search" to listDescriptor.searchQuery,
@@ -258,6 +268,8 @@ class OrderRestClient @Inject constructor(
         val params = mutableMapOf(
             "per_page" to networkPageSize.toString(),
             "offset" to "0",
+            "orderby" to OrderBy.DATE.value,
+            "order" to SortOrder.DESCENDING.value,
             "_fields" to ORDER_FIELDS
         ).putIfNotEmpty(
             "search" to listDescriptor.searchQuery,
@@ -1072,9 +1084,20 @@ class OrderRestClient @Inject constructor(
         site: SiteModel,
         orderIds: List<Long>,
         newStatus: String
+    ): BulkUpdateOrderStatusResponsePayload =
+        batchUpdateOrders(
+            site = site,
+            updateRequests = orderIds.associateWith {
+                UpdateOrderRequest(status = WCOrderStatusModel(statusKey = newStatus), decimalPlaces = null)
+            }
+        )
+
+    suspend fun batchUpdateOrders(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateOrderRequest>
     ): BulkUpdateOrderStatusResponsePayload {
         // Check batch update limit
-        if (orderIds.size > BATCH_UPDATE_LIMIT) {
+        if (updateRequests.size > BATCH_UPDATE_LIMIT) {
             return BulkUpdateOrderStatusResponsePayload(
                 error = OrderError(
                     type = OrderErrorType.BULK_UPDATE_LIMIT_EXCEEDED,
@@ -1084,18 +1107,15 @@ class OrderRestClient @Inject constructor(
         }
 
         val url = WOOCOMMERCE.orders.batch.pathV3
-        val updateRequests = orderIds.map { orderId ->
-            mapOf(
-                "id" to orderId,
-                "status" to newStatus
-            )
+        val updates = updateRequests.map { (orderId, request) ->
+            request.toNetworkRequest() + ("id" to orderId)
         }
 
         val response = wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
             clazz = BatchOrderApiResponse::class.java,
-            body = mapOf("update" to updateRequests)
+            body = mapOf("update" to updates)
         )
 
         return when (response) {
@@ -1122,6 +1142,7 @@ class OrderRestClient @Inject constructor(
             lineItems?.let { put("line_items", it) }
             shippingAddress?.toDto()?.let { put("shipping", it) }
             billingAddress?.toDto()?.let { put("billing", it) }
+            billingEmail?.let { put("billing", mapOf("email" to it)) }
             feeLines?.let { put("fee_lines", it) }
             shippingLines?.let { put("shipping_lines", it) }
             customerNote?.let { put("customer_note", it) }
@@ -1288,6 +1309,7 @@ class OrderRestClient @Inject constructor(
         DATE("date"),
         ID("id"),
         INCLUDE("include"),
+        MODIFIED("modified"),
         TITLE("title"),
         SLUG("slug")
     }

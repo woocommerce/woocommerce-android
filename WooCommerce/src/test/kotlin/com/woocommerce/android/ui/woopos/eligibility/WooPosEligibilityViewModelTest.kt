@@ -6,15 +6,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
-import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryName
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -24,7 +21,6 @@ import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -39,8 +35,6 @@ class WooPosEligibilityViewModelTest {
     private val mockSelectedSite: SelectedSite = mock()
     private val mockWooCommerceStore: WooCommerceStore = mock()
     private val mockCiabSiteGateKeeper: CIABSiteGateKeeper = mock()
-    private val mockStoreCountryProvider: WooPosGetStoreCountryName = mock()
-    private val mockStoreCountryCodeProvider: WooPosGetStoreCountryCode = mock()
 
     @Rule
     @JvmField
@@ -49,10 +43,8 @@ class WooPosEligibilityViewModelTest {
     init {
         whenever(mockResourceProvider.getString(any())).thenReturn("Test suggestion text")
         whenever(mockResourceProvider.getString(any(), any())).thenReturn("Test suggestion text with params")
-        runBlocking {
-            whenever(mockStoreCountryProvider()).doReturn("United States")
-            whenever(mockStoreCountryCodeProvider()).doReturn("us")
-        }
+        whenever(mockResourceProvider.getString(any(), any(), any()))
+            .thenReturn("Test suggestion text with country and currency")
     }
 
     @Test
@@ -60,7 +52,7 @@ class WooPosEligibilityViewModelTest {
         // GIVEN
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
         val sut = createSut()
-        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled)
+        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable)
         val navigated = mutableListOf<Unit>()
         val job = launch { sut.navigateToPos.collect { navigated.add(it) } }
 
@@ -76,7 +68,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given POS is ineligible on retry, should update state to Ineligible with suggestion text`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(
             WooPosLaunchability.NotLaunchable(reason)
         )
@@ -95,7 +87,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `initialize should set state to Ineligible with suggestion text`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val sut = createSut()
 
         // WHEN
@@ -109,10 +101,8 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given ineligible reason, when initialize is called, then IneligibleUIShown event is tracked`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val tracker: WooPosAnalyticsTracker = mock()
-        whenever(mockStoreCountryProvider()).thenReturn("United States")
-        whenever(mockStoreCountryCodeProvider()).thenReturn("us")
         val sut = WooPosEligibilityViewModel(
             canBeLaunchedInTab,
             tracker,
@@ -120,8 +110,6 @@ class WooPosEligibilityViewModelTest {
             mockSelectedSite,
             mockWooCommerceStore,
             mockCiabSiteGateKeeper,
-            mockStoreCountryProvider,
-            mockStoreCountryCodeProvider,
         )
 
         // WHEN
@@ -134,7 +122,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given ineligible state, when retryEligibilityCheckTapped is called, then IneligibleUIRetryTapped event is tracked`() = runTest {
         // GIVEN
-        val reason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
+        val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(reason))
         val sut = WooPosEligibilityViewModel(
@@ -144,8 +132,6 @@ class WooPosEligibilityViewModelTest {
             mockSelectedSite,
             mockWooCommerceStore,
             mockCiabSiteGateKeeper,
-            mockStoreCountryProvider,
-            mockStoreCountryCodeProvider,
         )
 
         sut.initialize(reason)
@@ -162,8 +148,8 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given retry results in different ineligible reason, then IneligibleUIShown event is tracked for new reason`() = runTest {
         // GIVEN
-        val initialReason = WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
-        val retryReason = WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound
+        val initialReason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
+        val retryReason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
         val tracker: WooPosAnalyticsTracker = mock()
         whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(retryReason))
         val sut = WooPosEligibilityViewModel(
@@ -173,8 +159,6 @@ class WooPosEligibilityViewModelTest {
             mockSelectedSite,
             mockWooCommerceStore,
             mockCiabSiteGateKeeper,
-            mockStoreCountryProvider,
-            mockStoreCountryCodeProvider,
         )
 
         sut.initialize(initialReason)
@@ -235,9 +219,7 @@ class WooPosEligibilityViewModelTest {
         }
     }
 
-    private suspend fun createSut(): WooPosEligibilityViewModel {
-        whenever(mockStoreCountryProvider()).thenReturn("United States")
-        whenever(mockStoreCountryCodeProvider()).thenReturn("us")
+    private fun createSut(): WooPosEligibilityViewModel {
         return WooPosEligibilityViewModel(
             canBeLaunchedInTab,
             mockAnalyticsTracker,
@@ -245,8 +227,6 @@ class WooPosEligibilityViewModelTest {
             mockSelectedSite,
             mockWooCommerceStore,
             mockCiabSiteGateKeeper,
-            mockStoreCountryProvider,
-            mockStoreCountryCodeProvider,
         )
     }
 }

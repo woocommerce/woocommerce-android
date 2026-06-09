@@ -3,7 +3,9 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
@@ -15,6 +17,7 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
@@ -35,14 +38,16 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val terminalWrapper: TerminalWrapper = mock {
         on { getLifecycleObserver() }.thenReturn(terminalApplicationDelegateWrapper)
     }
-    private val tokenProvider: TokenProvider = mock()
+    private val tokenProvider: CompositeConnectionTokenProvider = mock()
     private val application: Application = mock()
     private val logWrapper: LogWrapper = mock()
     private val paymentManager: PaymentManager = mock()
     private val interacRefundManager: InteracRefundManager = mock()
     private val connectionManager: ConnectionManager = mock()
     private val softwareUpdateManager: SoftwareUpdateManager = mock()
-    private val terminalListener: TerminalListenerImpl = mock()
+    private val terminalListener: TerminalListenerImpl = mock {
+        on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+    }
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
@@ -54,6 +59,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val locationId = "locationId"
 
     private val useInterac = false
+    private val useEftpos = false
 
     @Before
     fun setUp() {
@@ -72,7 +78,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
+        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
@@ -95,7 +101,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
+        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -104,7 +110,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(updateFrequency, useInterac, false)
+        cardReaderManager.initialize(updateFrequency, useInterac, useEftpos, false)
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }

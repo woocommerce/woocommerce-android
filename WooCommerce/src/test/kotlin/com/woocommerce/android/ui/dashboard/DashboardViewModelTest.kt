@@ -11,6 +11,9 @@ import com.woocommerce.android.notifications.push.PushNotificationRegistrationSt
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
+import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.captureValues
@@ -70,7 +73,9 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock {
         on { invoke() } doReturn flowOf(false)
     }
-
+    private val analyticsScheduledImportRepository: AnalyticsScheduledImportRepository = mock {
+        on { observeIsEnabled() } doReturn flowOf(false)
+    }
     private lateinit var viewModel: DashboardViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit) {
@@ -86,11 +91,52 @@ class DashboardViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
+            analyticsScheduledImportRepository = analyticsScheduledImportRepository,
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
             shouldShowEnablePushNotificationsUi = shouldShowEnablePushNotificationsUi,
             feedbackPrefs = feedbackPrefs,
         )
     }
+
+    @Test
+    fun `given ai assistant is missing, when dashboard starts, then repository inserts ai assistant at top`() =
+        testBlocking {
+            // GIVEN
+            val widgetsFlow = MutableStateFlow(DEFAULT_WIDGETS_WITHOUT_AI)
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(widgetsFlow)
+            }
+
+            // WHEN
+            viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            verify(dashboardRepository).insertAIAssistantWidgetAtTopIfMissing()
+        }
+
+    @Test
+    fun `given upgraded config is only missing ai assistant, when insertion emission lands, then new widgets card is hidden`() =
+        testBlocking {
+            // GIVEN
+            val widgets = MutableStateFlow(DEFAULT_WIDGETS_WITHOUT_AI)
+            val hasNewWidgets = MutableStateFlow(true)
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(widgets)
+                whenever(dashboardRepository.hasNewWidgets).thenReturn(hasNewWidgets)
+            }
+
+            // WHEN
+            val states = viewModel.dashboardCardsState.captureValues()
+            widgets.value = listOf(dashboardWidget(DashboardWidget.Type.AI_ASSISTANT)) + DEFAULT_WIDGETS_WITHOUT_AI
+            hasNewWidgets.value = false
+
+            // THEN
+            verify(dashboardRepository).insertAIAssistantWidgetAtTopIfMissing()
+            val newWidgetsCard = states.last().widgets
+                .filterIsInstance<NewWidgetsCard>()
+                .single()
+            assertThat(newWidgetsCard.isVisible).isFalse()
+        }
 
     @Test
     fun `given a Jetpack site, when screen starts, then hide the Jetpack Benefits banner`() = testBlocking {
@@ -290,6 +336,219 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given ai assistant is available, when screen starts, then dashboard state shows assistant widget`() =
+        testBlocking {
+            // GIVEN
+            val aiAssistant = dashboardWidget(DashboardWidget.Type.AI_ASSISTANT)
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            aiAssistant,
+                            dashboardWidget(DashboardWidget.Type.STATS)
+                        )
+                    )
+                )
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val assistantWidget = viewState.widgets
+                .filterIsInstance<ConfigurableWidget>()
+                .single { it.widget.type == DashboardWidget.Type.AI_ASSISTANT }
+            assertThat(assistantWidget.isVisible).isTrue()
+        }
+
+    @Test
+    fun `given ai assistant is hidden, when screen starts, then dashboard state hides assistant widget`() =
+        testBlocking {
+            // GIVEN
+            val aiAssistant = dashboardWidget(
+                type = DashboardWidget.Type.AI_ASSISTANT,
+                status = DashboardWidget.Status.Hidden
+            )
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            aiAssistant,
+                            dashboardWidget(DashboardWidget.Type.STATS)
+                        )
+                    )
+                )
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val assistantWidget = viewState.widgets
+                .filterIsInstance<ConfigurableWidget>()
+                .single { it.widget.type == DashboardWidget.Type.AI_ASSISTANT }
+            assertThat(assistantWidget.isVisible).isFalse()
+        }
+
+    @Test
+    fun `given ai assistant and feedback are visible, when screen starts, then assistant is first visible card`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                DashboardWidget(
+                    type = DashboardWidget.Type.AI_ASSISTANT,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.ORDERS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.STATS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                )
+            )
+            setup {
+                whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val visibleWidgets = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filter { it.isVisible }
+
+            // THEN
+            assertThat(visibleWidgets[0]).isInstanceOf(ConfigurableWidget::class.java)
+            assertThat((visibleWidgets[0] as ConfigurableWidget).widget.type)
+                .isEqualTo(DashboardWidget.Type.AI_ASSISTANT)
+            assertThat(visibleWidgets[1])
+                .isInstanceOf(DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java)
+            assertThat(visibleWidgets.filterIsInstance<ConfigurableWidget>().map { it.widget.type })
+                .containsExactly(
+                    DashboardWidget.Type.AI_ASSISTANT,
+                    DashboardWidget.Type.ORDERS,
+                    DashboardWidget.Type.STATS
+                )
+        }
+
+    @Test
+    fun `given ai assistant card is visible, when card tapped, then open assistant event is emitted`() =
+        testBlocking {
+            // GIVEN
+            setup {}
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onAiAssistantCardClicked()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.OpenAiAssistant)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_INTERACTED,
+                mapOf(AnalyticsTracker.KEY_TYPE to "ai_assistant")
+            )
+        }
+
+    @Test
+    fun `given ai assistant is hidden, when dashboard state is built, then configurable widget order is unchanged`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                DashboardWidget(
+                    type = DashboardWidget.Type.ORDERS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.STATS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                ),
+                DashboardWidget(
+                    type = DashboardWidget.Type.COUPONS,
+                    isSelected = true,
+                    status = DashboardWidget.Status.Available
+                )
+            )
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+
+            // THEN
+            val visibleConfigurableTypes = viewState.widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+            assertThat(visibleConfigurableTypes).containsExactly(
+                DashboardWidget.Type.ORDERS,
+                DashboardWidget.Type.STATS,
+                DashboardWidget.Type.COUPONS
+            )
+        }
+
+    @Test
+    fun `given stored ai assistant is below stats, when dashboard state is built, then visible order follows storage`() =
+        testBlocking {
+            // GIVEN
+            val orderedWidgets = listOf(
+                dashboardWidget(DashboardWidget.Type.STATS, isSelected = true),
+                dashboardWidget(DashboardWidget.Type.AI_ASSISTANT, isSelected = true),
+                dashboardWidget(DashboardWidget.Type.ORDERS, isSelected = true)
+            )
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(flowOf(orderedWidgets))
+            }
+
+            // WHEN
+            val visibleConfigurableTypes = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+
+            // THEN
+            assertThat(visibleConfigurableTypes).containsExactly(
+                DashboardWidget.Type.STATS,
+                DashboardWidget.Type.AI_ASSISTANT,
+                DashboardWidget.Type.ORDERS
+            )
+        }
+
+    @Test
+    fun `given stored ai assistant is unselected, when dashboard state is built, then ai assistant is not visible`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            dashboardWidget(DashboardWidget.Type.AI_ASSISTANT, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.STATS, isSelected = true)
+                        )
+                    )
+                )
+            }
+
+            // WHEN
+            val visibleTypes = viewModel.dashboardCardsState.captureValues().last()
+                .widgets
+                .filter { it.isVisible }
+                .filterIsInstance<ConfigurableWidget>()
+                .map { it.widget.type }
+
+            // THEN
+            assertThat(visibleTypes).doesNotContain(DashboardWidget.Type.AI_ASSISTANT)
+        }
+
+    @Test
     fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {
         setup {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
@@ -461,5 +720,171 @@ class DashboardViewModelTest : BaseUnitTest() {
         statusFlow.value = Status.REGISTERED_WOO_ONLY
         jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
         assertThat(jetpackBenefitsBanner!!.show).isFalse()
+    }
+
+    @Test
+    fun `given scheduled import is enabled, when dashboard starts, then isScheduledImportEnabled is true`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+            }
+
+            // THEN
+            assertThat(viewModel.isScheduledImportEnabled.getOrAwaitValue()).isTrue()
+        }
+
+    @Test
+    fun `given no cached scheduled import setting, when dashboard starts, then isScheduledImportEnabled is false`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(false))
+            }
+
+            // THEN
+            assertThat(viewModel.isScheduledImportEnabled.getOrAwaitValue()).isFalse()
+        }
+
+    @Test
+    fun `when dashboard starts, then scheduled import setting is refreshed from remote`() =
+        testBlocking {
+            // GIVEN
+            setup {}
+
+            // THEN
+            verify(analyticsScheduledImportRepository).refresh()
+        }
+
+    @Test
+    fun `given import enabled, when delayed stats info clicked, then info event is emitted with current state`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+            }
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onDelayedStatsInfoClicked()
+            }.last()
+
+            // THEN
+            assertThat(event)
+                .isEqualTo(DashboardViewModel.DashboardEvent.OpenScheduledImportInfo(isEnabled = true))
+        }
+
+    @Test
+    fun `when delayed stats info is clicked, then the info sheet is marked as seen`() = testBlocking {
+        // GIVEN
+        setup {}
+
+        // WHEN
+        viewModel.onDelayedStatsInfoClicked()
+
+        // THEN
+        verify(appPrefsWrapper).hasSeenAnalyticsScheduledImportInfo = true
+    }
+
+    @Test
+    fun `given import enabled and info not seen, when pull to refresh, then scheduled import notice is shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo).thenReturn(false)
+            }
+            // Activate the cards state so a delayed-stats card (STATS) is visible
+            viewModel.dashboardCardsState.getOrAwaitValue()
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `given the info sheet has been seen, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo).thenReturn(true)
+            }
+            // Activate the cards state so a delayed-stats card is visible (isolates the seen-flag gate)
+            viewModel.dashboardCardsState.getOrAwaitValue()
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `given import disabled, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(false))
+            }
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `given no delayed-stats card is visible, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            dashboardWidget(DashboardWidget.Type.STATS, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.POPULAR_PRODUCTS, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.ORDERS, isSelected = true)
+                        )
+                    )
+                )
+            }
+            // Activate the cards state; the delayed-stats cards (STATS, POPULAR_PRODUCTS) are not visible
+            viewModel.dashboardCardsState.getOrAwaitValue()
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    private companion object {
+        fun dashboardWidget(
+            type: DashboardWidget.Type,
+            isSelected: Boolean = true,
+            status: DashboardWidget.Status = DashboardWidget.Status.Available
+        ) = DashboardWidget(type = type, isSelected = isSelected, status = status)
+
+        val DEFAULT_WIDGETS_WITHOUT_AI = listOf(
+            dashboardWidget(DashboardWidget.Type.STATS),
+            dashboardWidget(DashboardWidget.Type.POPULAR_PRODUCTS),
+            dashboardWidget(DashboardWidget.Type.ONBOARDING),
+            dashboardWidget(DashboardWidget.Type.BLAZE),
+            dashboardWidget(DashboardWidget.Type.GOOGLE_ADS),
+            dashboardWidget(DashboardWidget.Type.PUSH_NOTIFICATIONS)
+        )
     }
 }

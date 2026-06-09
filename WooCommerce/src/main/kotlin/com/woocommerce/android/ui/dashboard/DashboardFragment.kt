@@ -36,6 +36,7 @@ import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenAiAssistant
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
@@ -100,6 +102,9 @@ class DashboardFragment :
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
@@ -172,6 +177,12 @@ class DashboardFragment :
                     )
                 }
 
+                is OpenAiAssistant -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToAiAssistantHostFragment()
+                    )
+                }
+
                 is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
 
                 is ContactSupport -> activity?.startHelpActivity(HelpOrigin.MY_STORE)
@@ -192,6 +203,19 @@ class DashboardFragment :
                         DashboardFragmentDirections.actionDashboardToWooPushNotificationsIntroductionDialog()
                     )
                 }
+
+                is DashboardViewModel.DashboardEvent.OpenScheduledImportInfo -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToScheduledImportInfoBottomSheet(event.isEnabled)
+                    )
+                }
+
+                is DashboardViewModel.DashboardEvent.ShowScheduledImportNotice ->
+                    uiMessageResolver.showActionSnack(
+                        message = R.string.dashboard_stats_delayed_footer,
+                        actionText = R.string.learn_more,
+                        action = { dashboardViewModel.onDelayedStatsInfoClicked() }
+                    )
 
                 else -> event.isHandled = false
             }

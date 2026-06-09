@@ -17,6 +17,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECT
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_READER_DISCOVERED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
@@ -141,6 +143,20 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             assertTrue(props.containsKey("card_reader_battery_level"))
             val batteryLevelProperty = props["card_reader_battery_level"]
             assertEquals("50 %", batteryLevelProperty)
+        }
+
+    @Test
+    fun `given transport is set, when event is tracked, then it contains transport property`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(TrackingInfo(transport = "wifi_lan"))
+            val props = mutableMapOf<String, Any>()
+
+            // WHEN
+            paymentsFlowTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+
+            // THEN
+            assertThat(props["transport"]).isEqualTo("wifi_lan")
         }
 
     @Test
@@ -964,6 +980,22 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
             paymentsFlowTracker.trackFetchingLocationSucceeded()
 
             verify(trackerWrapper).track(eq(CARD_READER_LOCATION_SUCCESS), any())
+        }
+
+    @Test
+    fun `when location permission pre alert shown, then CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN tracked`() =
+        testBlocking {
+            paymentsFlowTracker.trackLocationPermissionPreAlertShown()
+
+            verify(trackerWrapper).track(eq(CARD_READER_LOCATION_PERMISSION_PRE_ALERT_SHOWN), any())
+        }
+
+    @Test
+    fun `when location permission required shown, then CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN tracked`() =
+        testBlocking {
+            paymentsFlowTracker.trackLocationPermissionRequiredShown()
+
+            verify(trackerWrapper).track(eq(CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN), any())
         }
 
     @Test

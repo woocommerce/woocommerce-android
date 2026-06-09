@@ -75,6 +75,7 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
+        HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
@@ -111,11 +112,13 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        DASHBOARD_REVENUE_STATS_TYPE,
         ACTIVE_TOP_PERFORMERS_GRANULARITY,
         DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
+        ENABLE_SIMULATED_EFTPOS,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
@@ -149,6 +152,7 @@ object AppPrefs {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
     }
 
@@ -171,6 +175,12 @@ object AppPrefs {
 
         // last connected card reader's id
         LAST_CONNECTED_CARD_READER_ID,
+
+        // last connected phone reader's stable device id (for Woo POS remote tap-to-pay)
+        LAST_CONNECTED_PHONE_DEVICE_ID,
+
+        // this phone's stable device id when it advertises itself as a Woo POS remote tap-to-pay reader
+        WOO_POS_REMOTE_READER_DEVICE_UUID,
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
@@ -278,6 +288,10 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
+    var isEftposEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, false)
+        set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, value)
+
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateFrequencyUiModel.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
@@ -337,6 +351,26 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var isAiAssistantEarlyAccessNoticeDismissed: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
+            default = false,
+        )
+        set(value) {
+            val committed = getPreferences()
+                .edit()
+                .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
+                .commit()
+            check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
+
+    var hasSeenAnalyticsScheduledImportInfo: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
+            default = false,
+        )
+        set(value) = setBoolean(key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO, value = value)
 
     var qrLoginRolloutBucket: Int?
         get() = UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET
@@ -588,6 +622,18 @@ object AppPrefs {
     fun getLastConnectedCardReaderId() = getString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID).orNullIfEmpty()
 
     fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
+
+    fun setLastConnectedPhoneDeviceId(deviceId: String) =
+        setString(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID, deviceId)
+
+    fun getLastConnectedPhoneDeviceId() =
+        getString(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID).orNullIfEmpty()
+
+    fun removeLastConnectedPhoneDeviceId() = remove(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID)
+
+    var wooPosRemoteReaderDeviceUUID: String
+        get() = getString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, "")
+        set(value) = setString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, value)
 
     fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
 
@@ -1003,6 +1049,12 @@ object AppPrefs {
     }
 
     fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
+
+    fun setDashboardRevenueStatsType(typeName: String) {
+        setString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE, typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = getString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE)
 
     fun setActiveTopPerformersTab(selectionName: String) {
         setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)

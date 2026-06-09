@@ -1,17 +1,20 @@
 package com.woocommerce.android.ui.woopos.settings.categories
 
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 enum class WooPosSettingsCategory(
     @StringRes val titleRes: Int,
     @StringRes val subtitleRes: Int?,
     val rootDestination: WooPosSettingsDetailDestination,
     @DrawableRes val icon: Int? = null,
     val isFixedAtBottom: Boolean = false
-) {
+) : Parcelable {
     STORE(
         R.string.woopos_settings_store_category,
         R.string.woopos_settings_store_category_subtitle,

@@ -23,9 +23,6 @@ sealed class WooPosBookingsState {
         data class EmailReceipt(override val orderId: Long) : BookingAction
 
         @Immutable
-        data class IssueRefund(override val orderId: Long) : BookingAction
-
-        @Immutable
         data class CancelBooking(val bookingId: Long, override val orderId: Long) : BookingAction
 
         @Immutable
@@ -135,9 +132,6 @@ sealed class WooPosBookingsState {
 
         sealed class DialogState {
             data object Hidden : DialogState()
-            data class IssueRefund(
-                val orderId: Long
-            ) : DialogState()
 
             sealed class CancelBooking : DialogState() {
                 abstract val bookingId: Long

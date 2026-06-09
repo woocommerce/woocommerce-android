@@ -72,7 +72,7 @@ class WooPosSplashViewModelTest {
     fun `given site not eligible, when vm created, then state is NotEligible`() = runTest {
         // GIVEN
         whenever(posCanBeLaunchedInTab()).thenReturn(
-            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+            WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion)
         )
         whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
@@ -83,7 +83,7 @@ class WooPosSplashViewModelTest {
 
         // THEN
         assertThat(sut.state.value).isEqualTo(
-            WooPosSplashState.NotEligible(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
+            WooPosSplashState.NotEligible(WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion)
         )
     }
 

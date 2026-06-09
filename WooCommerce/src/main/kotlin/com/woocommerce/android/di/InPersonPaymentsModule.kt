@@ -1,12 +1,15 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import android.content.Context
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
@@ -15,6 +18,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Singleton
@@ -39,6 +43,18 @@ class InPersonPaymentsModule {
                 selectedSite.get()
             )
             return result.model?.token.orEmpty()
+        }
+
+        override suspend fun preparePaymentIntent(
+            orderId: Long,
+            paymentId: String
+        ): CardReaderStore.PreparePaymentResponse {
+            val response = inPersonPaymentsStore.preparePayment(
+                selectedSite.get(),
+                paymentId,
+                orderId
+            )
+            return responseMapper.mapResponse(response)
         }
 
         override suspend fun capturePaymentIntent(orderId: Long, paymentId: String): CapturePaymentResponse {
@@ -76,6 +92,14 @@ class InPersonPaymentsModule {
     @Provides
     @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
+
+    @Provides
+    @Singleton
+    fun provideCardReaderRemoteSession(
+        @ApplicationContext context: Context,
+        cardReaderManager: CardReaderManager,
+        logWrapper: LogWrapper,
+    ): CardReaderRemoteSession = CardReaderRemoteSession(context, cardReaderManager, logWrapper)
 }
 
 @InstallIn(SingletonComponent::class)

@@ -1,6 +1,6 @@
 ---
 name: verify-on-device
-description: Build, install, and visually verify the app on an Android emulator or device
+description: Build, install, and visually verify the app on an Android emulator or device. Uses the Android CLI for agents (android) when available with a full mobile-mcp/adb fallback.
 allowed-tools: Bash, Read, Grep, Glob, mcp__mobile-mcp__*
 user-invocable: true
 context: fork
@@ -8,9 +8,57 @@ context: fork
 
 # Verify on Device
 
-Build, install, and visually verify the app on an Android emulator or physical device using mobile-mcp.
+Build, install, and visually verify the app on an Android emulator or physical device. The skill prefers the Android CLI for agents (`android`) when installed and falls back to mobile-mcp + adb otherwise.
 
-**Prerequisites:** Node.js v22+, Android SDK with platform-tools, a running Android emulator or connected device.
+**Prerequisites:** Node.js v22+, Android SDK with platform-tools, and an emulator or device to target (step 0 can provision one when the Android CLI is installed).
+
+**Optional:** Google's Android CLI for agents (`android`). When present, the skill uses `android run` for combined install+launch, `android layout --diff` for low-token screen-transition polling, and `android docs` for platform-API lookups. If not installed, every step falls back to the mobile-mcp / adb path with no behavior change.
+
+## Detect the Android CLI Once Per Session
+
+Run this probe once at the start of a verification task and cache the result. Every CLI-based block in this skill is gated on `USE_ANDROID_CLI=1`.
+
+The probe validates that `android` on PATH is Google's agent CLI (prints a semver like `0.7.15232955`) and not the deprecated Android SDK `android` tool from `tools/`, which shadows it whenever the legacy SDK tools dir is on PATH. The probe only detects — it does not mutate PATH or create symlinks, since an in-script `export PATH` would not survive subsequent shell invocations in this skill. If `android` is missing, shadowed, or broken, it sets `USE_ANDROID_CLI=0` and prints a hint pointing at the canonical install location (`~/.android/bin/android-cli`) when present. Exact PATH/symlink fix depends on the user's environment — the goal is to make `android --version` resolve to the agent CLI; the user applies the fix once in their shell rc so it persists.
+
+The probe also writes `USE_ANDROID_CLI` to `/tmp/.verify_on_device.env`. Each subsequent `Bash` tool call starts a fresh shell, so a plain shell variable would be lost between invocations — every gated block in this skill begins by sourcing that file to restore the cached result.
+
+```bash
+_android_is_agent_cli() {
+  android --version 2>&1 | grep -qE '^[0-9]+\.[0-9]+\.'
+}
+
+if command -v android >/dev/null 2>&1 && _android_is_agent_cli; then
+  USE_ANDROID_CLI=1
+  android --version   # log for reproducibility
+else
+  USE_ANDROID_CLI=0
+  if [ -x "$HOME/.android/bin/android-cli" ]; then
+    echo 'NOTE: Agent CLI binary is at ~/.android/bin/android-cli but `android` does not resolve to it (likely missing symlink or shadowed by the legacy Android SDK tool).'
+    echo 'Fix: update your PATH/symlinks until `android --version` prints a semver (e.g. symlink android-cli to a name `android` on a directory earlier in PATH than the legacy Android SDK tools), then restart the session.'
+  fi
+fi
+
+# Persist for subsequent Bash invocations (shell state does not survive
+# across separate Bash tool calls). Subsequent gated blocks `source` this.
+echo "USE_ANDROID_CLI=$USE_ANDROID_CLI" > /tmp/.verify_on_device.env
+```
+
+If `USE_ANDROID_CLI=0`, follow the fallback blocks (labelled "Fallback") throughout this skill.
+
+## Verification Status of Agent-CLI Blocks
+
+The `USE_ANDROID_CLI=0` fallback paths in this skill (mobile-mcp + adb) have been exercised end-to-end against this repo. The `USE_ANDROID_CLI=1` blocks were all re-run against agent CLI 0.7.15232955 on 2026-04-21 against this repo. Results:
+
+| CLI block | Status |
+|---|---|
+| `android run` (step 7 install + launch) | Verified — installs and launches in one call. |
+| `android layout --diff` (screen-transition polling) | Verified — captured the `ordersList` transition on a tab switch; diff JSON is a small fraction of a full layout dump. *Note: `--device=<device_id>` was added to the documented invocation post-verification (multi-device fix); the flag is documented by the CLI but the new combination has not been re-run end-to-end.* |
+| `android screen capture --annotate` + `screen resolve` (Option B tap) | Verified — both short (`-a`/`-o`) and long (`--annotate`/`--output=…`) flag forms work. |
+| `android docs search` / `docs fetch` | Verified — first invocation auto-downloads a knowledge-base zip (~one-time, a few seconds). |
+| `android emulator list` (step 0 lifecycle) | Partial — `list` runs end-to-end. `create`/`start`/`stop` shape confirmed via `--help` only; no AVD was created during verification, so step 0 is flagged **Experimental** in its heading. |
+| `android describe` | **Rejected.** Output is multi-line plain text (not JSON, not paths-to-JSON). Requires `ANDROID_HOME` set; produces listings only after a build. Replaced with `find` in step 7. |
+
+If a CLI block fails in practice, **do not assume the docs are right**. Fall back to the `USE_ANDROID_CLI=0` path for that step, file the discrepancy as a skill issue, and fix it in the skill before the next run.
 
 ## Critical Rule: Default to Main App (Store Management)
 
@@ -31,11 +79,14 @@ adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
 ```
 
-## Critical Rule: Always Use the Accessibility Tree for Tapping
+## Critical Rule: Never Estimate Tap Coordinates From Raw Screenshots
 
-**NEVER estimate tap coordinates from screenshots.** Screenshots are scaled down from the actual device resolution (e.g., a 1080x2400 device produces a ~480x1065 screenshot). Coordinates derived from screenshots will be systematically wrong.
+**NEVER estimate tap coordinates directly from a raw (un-annotated) screenshot.** Screenshots are scaled down from the actual device resolution (e.g., a 1080x2400 device produces a ~480x1065 screenshot). Coordinates derived from raw screenshots will be systematically wrong.
 
-**ALWAYS follow this workflow:**
+Use one of the two workflows below. Both translate a human-readable target (an accessibility label, a visual element) into exact device-pixel coordinates — neither relies on pixel-measuring a screenshot.
+
+### Option A — Accessibility-tree workflow (default)
+
 1. Call `mobile_list_elements_on_screen` to get elements with their **device-pixel coordinates**
 2. Compute tap target as the **center** of the element's bounding rect: `tap_x = x + width/2`, `tap_y = y + height/2`
 3. Call `mobile_click_on_screen_at_coordinates` with those computed coordinates
@@ -43,21 +94,79 @@ adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce
 
 Only use `mobile_take_screenshot` for **visual verification** — never for deriving coordinates.
 
+### Option B — Visual-label workflow (`USE_ANDROID_CLI=1`)
+
+Useful when an element lacks an accessibility label or test tag, or when you already have an annotated screenshot in context. `android screen capture --annotate` overlays numeric labels (#1, #2, ...) on every interactive element; `android screen resolve` substitutes `#N` placeholders in a template string with the element's device-pixel `x y` coordinates.
+
+The `android screen ...` commands do not support `--device`, so use this workflow only when the CLI's default device is the same device you intend to tap.
+
+```bash
+# Capture an annotated screenshot — each interactive element gets a number.
+android screen capture --annotate --output=/tmp/ui.png
+
+# Idiomatic: let resolve produce a complete `input tap X Y` command and pipe
+# it straight to `adb shell`. The CLI replaces `#5` with the resolved coords.
+android screen resolve --screenshot=/tmp/ui.png --string="input tap #5" \
+  | adb -s <device_id> shell
+
+# Alternative: capture just the coordinates and feed mobile-mcp's tap tool.
+COORDS=$(android screen resolve --screenshot=/tmp/ui.png --string="#5")
+# $COORDS is now "<x> <y>"; call mobile_click_on_screen_at_coordinates with those.
+```
+
+Option A remains the default — accessibility-tree coordinates are stable and don't require visual inspection. Reach for Option B when Option A does not surface the element you need.
+
 ## Waiting for Screen Transitions
 
-After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow this stabilization protocol:
+After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow one of the two stabilization protocols below.
+
+### Preferred: Diff-Based Polling (`USE_ANDROID_CLI=1`)
+
+`android layout --diff` returns only the elements that changed since the last snapshot, instead of re-reading the entire accessibility tree (50-200+ elements per call). This is the single biggest token-consumption win over repeated `mobile_list_elements_on_screen` calls — measure on your own flow to confirm the magnitude.
+
+Always pass `--device=<device_id>` to keep these calls pinned to the same device chosen in step 1; without it, `android layout` may target a different connected device than the one the app was launched on.
+
+```bash
+# `[[:space:]]*` around the colon makes the pattern tolerant of both
+# compact and pretty-printed JSON, so a stray --pretty in the chain
+# doesn't silently break the grep.
+TARGET='"resource-id"[[:space:]]*:[[:space:]]*"com.woocommerce.android.dev:id/ordersList"'
+
+# Baseline snapshot immediately after the action — also greppable: if the
+# transition was instantaneous, the target is already on screen and every
+# subsequent --diff would return empty (diffs are delta-only).
+android layout --device=<device_id> --pretty --output=/tmp/layout_t0.json
+if ! grep -qE "$TARGET" /tmp/layout_t0.json; then
+  # Poll diffs until the expected target appears (1 second between polls).
+  for i in 1 2 3 4 5; do
+    android layout --device=<device_id> --diff --output=/tmp/layout_diff.json
+    grep -qE "$TARGET" /tmp/layout_diff.json && break
+    sleep 1
+  done
+  # Safety net — one full-layout read in case the target arrived between
+  # two diffs but didn't change after that (so no later diff mentions it).
+  android layout --device=<device_id> --pretty --output=/tmp/layout_final.json
+  grep -qE "$TARGET" /tmp/layout_final.json || echo "Target not found after polling."
+fi
+```
+
+Replace the `TARGET` pattern with the `resource-id`, Compose test tag, or `content-description` of the screen you expect to land on (see the WooCommerce Navigation Reference). Compose test tags surface as `resource-id` because `testTagsAsResourceId` is on, so the example pattern works for both — but `content-description` lives under a different JSON key (typically `content-desc`), so swap the key, not just the value.
+
+### Fallback: Repeated Layout Reads (no `android` CLI)
 
 1. Call `mobile_list_elements_on_screen` after the action.
 2. If the expected target element is NOT present, call `mobile_list_elements_on_screen` again. Each tool round-trip takes ~1-2 seconds, which provides sufficient implicit delay.
 3. Repeat up to 5 times.
 4. If after 5 attempts the expected element is still missing, take a screenshot for diagnosis and report the issue.
 
+### Guidance That Applies to Both Paths
+
 **Loading indicators to watch for:**
 - Skeleton/shimmer views (animated placeholder content) — the screen is loading data, keep waiting.
 - `CircularProgressIndicator` or `ProgressBar` elements — an operation is in progress, keep waiting.
 - Empty state views with text like "No orders yet" — the screen IS loaded, just empty. Do NOT keep waiting.
 
-**When NOT to retry:** If `mobile_list_elements_on_screen` returns the same result 3 times in a row with no change, the screen is stable. The element you want is genuinely not present — consider scrolling or navigating differently.
+**When NOT to retry:** If the layout (full or diff) returns the same result 3 times in a row with no change, the screen is stable. The element you want is genuinely not present — consider scrolling or navigating differently.
 
 ### Timing Guidelines
 
@@ -136,6 +245,65 @@ Plan your verification flow accordingly. If the user wants to test post-login fe
 
 **Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
 
+### 0. Provision an Emulator (Optional, macOS/Linux only — Experimental)
+
+Only run this step when no physical device is attached, no emulator is running, and the task requires a clean-slate device. Skip otherwise.
+
+> **Status: experimental.** Of the three emulator subcommands used here, only `android emulator list` has been exercised end-to-end against this repo. `android emulator create`, `start`, and `stop` were shape-confirmed via `--help` only — no AVD was created during PR verification. Expect to iterate on this step the first time you actually use it; if it fails, fall back to booting the emulator manually via Android Studio or `emulator -avd <name>` and continue from step 1.
+
+```bash
+. /tmp/.verify_on_device.env  # restore USE_ANDROID_CLI from the probe step
+
+# `android emulator` is disabled on Windows per Google's docs — detect Git
+# Bash / MSYS / Cygwin and skip there. macOS and Linux both reach the `then`.
+case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;; *) IS_WINDOWS=0 ;; esac
+
+if [ "$USE_ANDROID_CLI" = "1" ] && [ "$IS_WINDOWS" = "0" ]; then
+  # List existing AVDs; reuse one if it already fits the task.
+  android emulator list
+
+  # Create a device from a profile. The CLI only accepts --profile and
+  # --list-profiles — the profile name doubles as the device name.
+  android emulator create --profile=medium_phone
+
+  # Snapshot existing serials BEFORE start so we can pin every adb call
+  # to the new emulator. The moment a second device is attached, plain
+  # `adb shell ...` errors with "more than one device/emulator" and the
+  # boot-completed loop spins forever.
+  PRE_SERIALS=$(adb devices | awk 'NR>1 && $2=="device"{print $1}' | sort -u)
+
+  # Start the device using that profile name. `android emulator start`
+  # returns once the command is issued — use `adb wait-for-device` plus a
+  # boot-completed check before step 1, or `mobile_list_available_devices`
+  # will race the boot sequence.
+  android emulator start medium_phone
+
+  # Identify the new serial by diffing `adb devices` (give it up to 30s
+  # to register).
+  for _ in $(seq 1 30); do
+    POST_SERIALS=$(adb devices | awk 'NR>1 && $2=="device"{print $1}' | sort -u)
+    NEW_SERIAL=$(comm -13 <(echo "$PRE_SERIALS") <(echo "$POST_SERIALS") | head -n1)
+    [ -n "$NEW_SERIAL" ] && break
+    sleep 1
+  done
+
+  adb -s "$NEW_SERIAL" wait-for-device
+  until [ "$(adb -s "$NEW_SERIAL" shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do sleep 2; done
+fi
+```
+
+At the end of the task, if this session created the AVD, stop it using the device serial (`adb devices` or `android emulator list` will print it):
+
+```bash
+. /tmp/.verify_on_device.env  # restore USE_ANDROID_CLI from the probe step
+
+if [ "$USE_ANDROID_CLI" = "1" ]; then
+  android emulator stop <device-serial-number>
+fi
+```
+
+**Fallback (no `android` CLI):** continue to step 1 and assume a running device, as before.
+
 ### 1. Discover Devices
 
 Call `mobile_list_available_devices`. If multiple devices are returned, ask the user which to use. If none are found, instruct the user to boot an emulator or connect a device.
@@ -171,6 +339,10 @@ If the build fails with "SDK location not found", check that `local.properties` 
 
 ### 5. Install the APK
 
+**Preferred path (`USE_ANDROID_CLI=1`):** skip this step. The single `android run` call in step 7 installs and launches in one shot — APK resolution and the install itself happen there.
+
+**Fallback (no `android` CLI):** install via mobile-mcp.
+
 Use `mobile_install_app` with:
 - **path:** `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`
 
@@ -182,7 +354,42 @@ If the user requests verification of a specific scenario (error states, empty da
 
 ### 7. Restart and Launch the App
 
-Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active.
+Always force-stop the app first, then launch fresh. This ensures a clean starting state regardless of what screen was previously active — the "Always Restart the App" rule above applies to both paths.
+
+**Preferred path (`USE_ANDROID_CLI=1`, full flow):** locate the APK produced by step 4, then one `android run` call reinstalls and launches the exact Activity. `android run` has no "launch-only" mode — it always reinstalls. When the app is already installed and the build hasn't changed (shortcut flow from the top of "Steps"), use the **launch-only form** further below to skip the reinstall — the CLI does not offer a launch-only equivalent, so both no-CLI users and CLI shortcut users land on the same `am start` block.
+
+```bash
+# 1. Resolve the APK path. `android describe` was evaluated for this purpose but
+#    its output is multi-line plain text (not JSON/paths-to-JSON) and the
+#    underlying Gradle task requires ANDROID_HOME; a plain `find` is simpler and
+#    works whether the CLI is installed or not.
+APK=$(find WooCommerce/build -type f -name 'WooCommerce-wasabi-debug.apk' | head -n1)
+
+# Persist for the POS variant below (each Bash tool call is a fresh shell, so
+# a plain $APK does not survive between separate code blocks). %q shell-quotes
+# the value so a path with spaces or other special chars survives sourcing.
+printf 'APK=%q\n' "$APK" >> /tmp/.verify_on_device.env
+
+# 2. Force-stop — android run does not guarantee a cold start.
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+
+# 3. Combined install + launch.
+android run --apks="$APK" \
+  --activity=com.woocommerce.android.ui.main.MainActivity \
+  --device=<device_id>
+```
+
+For POS tasks (only when explicitly requested) — sources `$APK` from the block above:
+```bash
+. /tmp/.verify_on_device.env  # restore $APK persisted by the main launch block
+
+adb -s <device_id> shell am force-stop com.woocommerce.android.dev
+android run --apks="$APK" \
+  --activity=com.woocommerce.android.ui.woopos.root.WooPosActivity \
+  --device=<device_id>
+```
+
+**Launch-only form (no reinstall):** force-stop + `am start`. Use this when (a) the agent CLI is not available, or (b) the agent CLI is available but the app is already installed and the build hasn't changed (the CLI shortcut path).
 
 ```bash
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
@@ -404,3 +611,15 @@ When mobile-mcp tools are not giving enough information:
 | `adb -s <device> logcat -d *:E \| tail -30` | Check recent error logs |
 | `adb -s <device> shell am force-stop com.woocommerce.android.dev` | Force kill the app |
 | `adb -s <device> shell pm clear com.woocommerce.android.dev` | Clear app data (full reset — will require re-login) |
+
+### Android Knowledge Base (`USE_ANDROID_CLI=1`)
+
+When a platform-behavior question comes up mid-task (intent flags, `am start` semantics, `Activity` launch modes, permissions, animation scales, `settings put global` keys), prefer the Android Knowledge Base over a web search — the answers are authoritative, local, and don't cost browsing tokens.
+
+```bash
+# Search by free-form query, then fetch one of the kb:// URLs it returns.
+android docs search "am start intent flags"
+android docs fetch <kb-url-from-the-search-result>
+```
+
+If the CLI is not installed, fall back to the Android developer website as before.

@@ -41,6 +41,64 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given assistant feature flag, when inspected, then local value is enabled`() {
+        // WHEN
+        val localValue = FeatureFlag.AI_ASSISTANT.localValue
+
+        // THEN
+        assertThat(localValue).isTrue()
+    }
+
+    @Test
+    fun `given ai support chat feature flag, when inspected, then local value is enabled`() {
+        // WHEN
+        val localValue = FeatureFlag.AI_SUPPORT_CHAT.localValue
+
+        // THEN
+        assertThat(localValue).isTrue()
+    }
+
+    @Test
+    fun `given assistant feature flag, when inspected, then remote key matches release key`() {
+        // WHEN
+        val remoteFlagKey = FeatureFlag.AI_ASSISTANT.remoteFlagKey
+
+        // THEN
+        assertThat(remoteFlagKey).isEqualTo("woo_mobile_ai_assistant")
+    }
+
+    @Test
+    fun `given assistant remote flag key is true, when getFlagState called, then remoteValue is true`() =
+        testBlocking {
+            // GIVEN
+            remoteFlags.value = listOf(createRemoteFlag("woo_mobile_ai_assistant", true))
+            advanceUntilIdle()
+
+            // WHEN
+            val state = sut.getFlagState(FeatureFlag.AI_ASSISTANT)
+
+            // THEN
+            assertThat(state.remoteValue).isTrue()
+            assertThat(state.effectiveValue).isTrue()
+        }
+
+    @Test
+    fun `given assistant remote flag key is false, when getFlagState called, then effective value is false`() =
+        testBlocking {
+            // GIVEN
+            remoteFlags.value = listOf(createRemoteFlag("woo_mobile_ai_assistant", false))
+            advanceUntilIdle()
+
+            // WHEN
+            val state = sut.getFlagState(FeatureFlag.AI_ASSISTANT)
+
+            // THEN
+            assertThat(state.localValue).isTrue()
+            assertThat(state.remoteValue).isFalse()
+            assertThat(state.effectiveValue).isFalse()
+        }
+
+    @Test
     fun `given remote is false, when getFlagState called, then remoteValue is false`() = testBlocking {
         // GIVEN
         val flag = FeatureFlag.WC_SHIPPING_BANNER
@@ -67,15 +125,12 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given flag with local false, when getFlagState called, then localValue is false`() = testBlocking {
-        // GIVEN
-        val flag = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1
-
+    fun `given self driven push notifications feature flag, when inspected, then local value is enabled`() {
         // WHEN
-        val state = sut.getFlagState(flag)
+        val localValue = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1.localValue
 
         // THEN
-        assertThat(state.localValue).isFalse()
+        assertThat(localValue).isTrue()
     }
 
     @Test

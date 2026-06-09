@@ -186,6 +186,7 @@ class MainActivityViewModel @Inject constructor(
         when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
+            NotificationChannelType.STOCK -> triggerEvent(ViewMyStoreStats)
             NotificationChannelType.OTHER -> if (notification.isBlazeNotification) {
                 triggerEvent(ViewBlazeCampaignList)
             } else {
@@ -206,6 +207,8 @@ class MainActivityViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(REVIEW_OPEN)
                 triggerEvent(ViewReviewDetail(notification.uniqueId))
             }
+
+            is WooNotificationType.Stock -> triggerEvent(ViewProductDetail(notification.uniqueId))
 
             is WooNotificationType.BlazeStatusUpdate -> triggerEvent(
                 ViewBlazeCampaignDetail(campaignId = notification.uniqueId.toString())
@@ -373,6 +376,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long) : Event()
+    data class ViewProductDetail(val uniqueId: Long) : Event()
     data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
     object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()

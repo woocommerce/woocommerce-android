@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.stats
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -11,8 +12,11 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
+import androidx.core.widget.TextViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.github.mikephil.charting.charts.Chart
@@ -43,6 +47,7 @@ import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityStr
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.BarChartGestureListener
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsType
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -57,6 +62,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
@@ -82,6 +88,7 @@ class DashboardStatsView @JvmOverloads constructor(
     private lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
 
     private var revenueStatsModel: RevenueStatsUiModel? = null
+    private var selectedRevenueStatsType = RevenueStatsType.TOTAL
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var visitorStatsState: VisitorStatsViewState = VisitorStatsViewState.NotLoaded
@@ -106,9 +113,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private val fadeHandler = Handler(Looper.getMainLooper())
 
-    private val statsDateValue
-        get() = binding.statsViewRow.statsDateTextView
-
     private val revenueValue
         get() = binding.statsViewRow.totalRevenueTextView
 
@@ -124,9 +128,6 @@ class DashboardStatsView @JvmOverloads constructor(
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
-    val customRangeLabel
-        get() = binding.statsViewRow.statsCustomDateRangeTextView
-
     private val customRangeGranularityLabel
         get() = binding.customRangeGranularityLabel
 
@@ -141,8 +142,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     init {
         // TODO Remove those views from the layout when releasing Dynamic Dashboard
-        customRangeLabel.isVisible = false
-        statsDateValue.isVisible = false
         binding.statsTabLayout.isVisible = false
         customRangeButton.isVisible = false
         binding.viewAnalyticsButton.isVisible = false
@@ -205,6 +204,20 @@ class DashboardStatsView @JvmOverloads constructor(
         )
         isRequestingStats = true
         applyCustomRange(statsTimeRangeSelection)
+    }
+
+    fun setOnOrderDateTypeClickListener(onClick: () -> Unit) {
+        binding.statsViewRow.ordersLayout.setOnClickListener { onClick() }
+    }
+
+    fun setOrderDateType(orderDateType: WCAnalyticsOrderDateType) {
+        binding.statsViewRow.ordersLabel.setText(
+            when (orderDateType) {
+                WCAnalyticsOrderDateType.PAID -> R.string.dashboard_stats_paid_orders
+                WCAnalyticsOrderDateType.CREATED -> R.string.dashboard_stats_placed_orders
+                WCAnalyticsOrderDateType.COMPLETED -> R.string.dashboard_stats_completed_orders
+            }
+        )
     }
 
     private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {
@@ -379,13 +392,22 @@ class DashboardStatsView @JvmOverloads constructor(
         }
     }
 
-    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
+    fun updateView(
+        revenueStatsModel: RevenueStatsUiModel?,
+        selectedRevenueStatsType: RevenueStatsType = RevenueStatsType.TOTAL
+    ) {
+        val revenueStatsTypeChanged = this.selectedRevenueStatsType != selectedRevenueStatsType
         this.revenueStatsModel = revenueStatsModel
+        this.selectedRevenueStatsType = selectedRevenueStatsType
+        if (revenueStatsTypeChanged) {
+            binding.chart.highlightValue(null)
+            isChartValueSelected = false
+        }
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
         // https://github.com/woocommerce/woocommerce-android/issues/1455#issuecomment-540401646
         this.chartRevenueStats = revenueStatsModel?.intervalList?.associate {
-            it.interval!! to (it.sales ?: 0.0)
+            it.interval!! to (it.salesFor(selectedRevenueStatsType) ?: 0.0)
         } ?: mapOf()
 
         this.chartOrderStats = revenueStatsModel?.intervalList?.associate {
@@ -491,21 +513,63 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
     }
 
-    fun showLastUpdate(lastUpdateMillis: Long?) {
-        if (lastUpdateMillis != null) {
-            val lastUpdateFormatted = dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
-            lastUpdated.isVisible = true
-            fadeInLabelValue(
-                lastUpdated,
-                String.format(
+    fun showStatsFooter(lastUpdateMillis: Long?, isDelayed: Boolean, onInfoClick: () -> Unit) {
+        when {
+            isDelayed -> applyStatsFooter(
+                text = resources.getString(R.string.dashboard_stats_delayed_footer),
+                onInfoClick = onInfoClick
+            )
+
+            lastUpdateMillis != null -> applyStatsFooter(
+                text = String.format(
                     Locale.getDefault(),
                     resources.getString(R.string.last_update),
-                    lastUpdateFormatted
-                )
+                    dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
+                ),
+                onInfoClick = onInfoClick
             )
-        } else {
-            lastUpdated.isVisible = false
+
+            else -> {
+                lastUpdated.isVisible = false
+                clearStatsFooter()
+            }
         }
+    }
+
+    private fun applyStatsFooter(text: String, onInfoClick: () -> Unit) {
+        lastUpdated.isVisible = true
+        lastUpdated.text = text
+        lastUpdated.setTextColor(ContextCompat.getColor(context, R.color.color_on_surface_medium))
+        val iconSize = resources.getDimensionPixelSize(R.dimen.major_100)
+        val infoIcon = ContextCompat.getDrawable(context, R.drawable.ic_tintable_info_outline_24dp)?.apply {
+            setBounds(0, 0, iconSize, iconSize)
+        }
+        lastUpdated.setCompoundDrawablesRelative(null, null, infoIcon, null)
+        lastUpdated.compoundDrawablePadding = resources.getDimensionPixelSize(R.dimen.minor_50)
+        TextViewCompat.setCompoundDrawableTintList(
+            lastUpdated,
+            ColorStateList.valueOf(ContextCompat.getColor(context, R.color.color_primary))
+        )
+        lastUpdated.setOnClickListener { onInfoClick() }
+        // Tell screen readers what activating the footer does (the visible text is still read).
+        ViewCompat.replaceAccessibilityAction(
+            lastUpdated,
+            AccessibilityActionCompat.ACTION_CLICK,
+            resources.getString(R.string.dashboard_stats_info_content_description),
+            null
+        )
+    }
+
+    private fun clearStatsFooter() {
+        lastUpdated.setCompoundDrawablesRelative(null, null, null, null)
+        lastUpdated.setOnClickListener(null)
+        lastUpdated.isClickable = false
+        ViewCompat.replaceAccessibilityAction(
+            lastUpdated,
+            AccessibilityActionCompat.ACTION_CLICK,
+            null,
+            null
+        )
     }
 
     @Suppress("MagicNumber")
@@ -530,6 +594,7 @@ class DashboardStatsView @JvmOverloads constructor(
 
     fun clearStatsHeaderValues() {
         lastUpdated.text = ""
+        clearStatsFooter()
         updateColorForStatsHeaderValues(R.color.skeleton_color)
 
         visitorsValue.setText(R.string.emdash)
@@ -545,7 +610,7 @@ class DashboardStatsView @JvmOverloads constructor(
     private fun updateChartView() {
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
-        val totalSales = revenueStatsModel?.totalSales ?: 0.0
+        val totalSales = revenueStatsModel?.salesFor(selectedRevenueStatsType) ?: 0.0
         val revenue = currencyFormatter.getFormattedAmountZeroRounded(
             totalSales,
             revenueStatsModel?.currencyCode.orEmpty()
@@ -557,7 +622,7 @@ class DashboardStatsView @JvmOverloads constructor(
         fadeInLabelValue(revenueValue, revenue)
         fadeInLabelValue(ordersValue, orders)
 
-        if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
+        if (chartRevenueStats.isEmpty() || totalSales == 0.0) {
             binding.chart.clear()
             isRequestingStats = false
             return

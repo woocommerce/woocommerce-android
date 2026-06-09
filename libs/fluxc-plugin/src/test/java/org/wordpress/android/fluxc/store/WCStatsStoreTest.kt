@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.not
@@ -10,6 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
@@ -53,11 +53,9 @@ import org.hamcrest.CoreMatchers.`is` as isEqual
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCStatsStoreTest {
-    private val context = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(context)
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val mockOrderStatsRestClient = mock<OrderStatsRestClient>()
     private val mockBundleStatsRestClient = mock<BundleStatsRestClient>()
@@ -373,7 +371,9 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -395,7 +395,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -413,7 +415,9 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -435,7 +439,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -461,7 +467,9 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -482,7 +490,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -500,7 +510,9 @@ class WCStatsStoreTest {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull(),
+                    anyOrNull()
                 )
             ).thenReturn(
                 FetchRevenueStatsResponsePayload(
@@ -521,7 +533,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
             val siteDate = dateArgument.firstValue
             assertEquals(timeOnSite, siteDate)
@@ -554,7 +568,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(
             FetchRevenueStatsResponsePayload(
@@ -570,6 +586,7 @@ class WCStatsStoreTest {
                 startDate = currentDayStatsModel.startDate,
                 endDate = currentDayStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -607,7 +624,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(currentWeekPayload)
         wcStatsStore.fetchRevenueStats(
@@ -617,6 +636,7 @@ class WCStatsStoreTest {
                 startDate = currentWeekStatsModel.startDate,
                 endDate = currentWeekStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -654,7 +674,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(currentMonthPayload)
         wcStatsStore.fetchRevenueStats(
@@ -664,6 +686,7 @@ class WCStatsStoreTest {
                 startDate = currentMonthStatsModel.startDate,
                 endDate = currentMonthStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -701,7 +724,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(allSiteCurrentDayPayload)
         wcStatsStore.fetchRevenueStats(
@@ -711,6 +736,7 @@ class WCStatsStoreTest {
                 startDate = altSiteOrderStatsModel.startDate,
                 endDate = altSiteOrderStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -741,7 +767,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
@@ -751,6 +779,7 @@ class WCStatsStoreTest {
                 startDate = altSiteOrderStatsModel.startDate,
                 endDate = altSiteOrderStatsModel.endDate,
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -780,7 +809,9 @@ class WCStatsStoreTest {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
+                anyOrNull(),
+                anyOrNull()
             )
         ).thenReturn(nonExistentPayload)
         wcStatsStore.fetchRevenueStats(
@@ -790,6 +821,7 @@ class WCStatsStoreTest {
                 startDate = "2019-01-01",
                 endDate = "2019-01-07",
                 revenueRangeId = "${currentDayStatsModel.startDate}${currentDayStatsModel.endDate}",
+                orderDateType = null,
             )
         )
 
@@ -1191,6 +1223,7 @@ class WCStatsStoreTest {
             startDate = startDate,
             endDate = endDate,
             revenueRangeId = "$startDate$endDate",
+            orderDateType = null,
         )
     }
 

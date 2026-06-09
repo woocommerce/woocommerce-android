@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
+import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
@@ -67,7 +68,8 @@ class DashboardViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
-    dashboardRepository: DashboardRepository,
+    private val dashboardRepository: DashboardRepository,
+    private val analyticsScheduledImportRepository: AnalyticsScheduledImportRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
@@ -80,6 +82,12 @@ class DashboardViewModel @Inject constructor(
             SelectionType.MONTH_TO_DATE,
             SelectionType.YEAR_TO_DATE,
             SelectionType.CUSTOM
+        )
+
+        // Cards backed by the /reports endpoints that render the delayed-stats footer.
+        private val DELAYED_STATS_CARD_TYPES = setOf(
+            DashboardWidget.Type.STATS,
+            DashboardWidget.Type.POPULAR_PRODUCTS
         )
     }
 
@@ -115,6 +123,9 @@ class DashboardViewModel @Inject constructor(
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
 
+    private val _isScheduledImportEnabled = MutableStateFlow(false)
+    val isScheduledImportEnabled: LiveData<Boolean> = _isScheduledImportEnabled.asLiveData()
+
     private val refreshingOnBackground = MutableStateFlow(-1)
 
     fun displayRefreshingIndicator() {
@@ -148,6 +159,30 @@ class DashboardViewModel @Inject constructor(
         }
 
         updateShareStoreButtonVisibility()
+        insertAIAssistantWidgetByDefault()
+        observeScheduledImportState()
+    }
+
+    private fun observeScheduledImportState() {
+        launch {
+            analyticsScheduledImportRepository.observeIsEnabled().collect { enabled ->
+                _isScheduledImportEnabled.value = enabled
+            }
+        }
+        launch {
+            analyticsScheduledImportRepository.refresh()
+        }
+    }
+
+    fun onDelayedStatsInfoClicked() {
+        appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo = true
+        triggerEvent(DashboardEvent.OpenScheduledImportInfo(isEnabled = _isScheduledImportEnabled.value))
+    }
+
+    private fun insertAIAssistantWidgetByDefault() {
+        launch {
+            dashboardRepository.insertAIAssistantWidgetAtTopIfMissing()
+        }
     }
 
     private fun updateShareStoreButtonVisibility() {
@@ -176,7 +211,22 @@ class DashboardViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
         triggerEvent(RefreshJitm)
+        maybeShowScheduledImportNotice()
     }
+
+    private fun maybeShowScheduledImportNotice() {
+        val shouldShow = _isScheduledImportEnabled.value &&
+            hasVisibleDelayedStatsCard() &&
+            !appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo
+        if (shouldShow) {
+            triggerEvent(DashboardEvent.ShowScheduledImportNotice)
+        }
+    }
+
+    private fun hasVisibleDelayedStatsCard(): Boolean =
+        dashboardCardsState.value?.widgets
+            ?.filterIsInstance<DashboardWidgetUiModel.ConfigurableWidget>()
+            ?.any { it.widget.type in DELAYED_STATS_CARD_TYPES && it.isVisible } == true
 
     fun onResume() {
         _refreshTrigger.tryEmit(RefreshEvent())
@@ -290,6 +340,11 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
+    fun onAiAssistantCardClicked() {
+        trackCardInteracted(DashboardWidget.Type.AI_ASSISTANT.trackingIdentifier)
+        triggerEvent(DashboardEvent.OpenAiAssistant)
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -364,6 +419,8 @@ class DashboardViewModel @Inject constructor(
 
         data object OpenEditWidgets : DashboardEvent()
 
+        data object OpenAiAssistant : DashboardEvent()
+
         data class OpenRangePicker(
             val start: Long,
             val end: Long,
@@ -379,6 +436,10 @@ class DashboardViewModel @Inject constructor(
         data object RefreshJitm : DashboardEvent()
 
         data object OpenWooPushNotificationsIntroduction : DashboardEvent()
+
+        data class OpenScheduledImportInfo(val isEnabled: Boolean) : DashboardEvent()
+
+        data object ShowScheduledImportNotice : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)

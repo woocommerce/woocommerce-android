@@ -1,14 +1,16 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
-import com.woocommerce.android.ui.woopos.orders.WooPosLoadPaymentGateway
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -16,9 +18,13 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,18 +32,14 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.Settings
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
@@ -57,12 +59,13 @@ class WooPosRefundViewModelTest {
     private val calculateRefundTax = WooPosCalculateRefundTax()
     private val resourceProvider: ResourceProvider = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
-    private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val loadPaymentGateway: WooPosLoadPaymentGateway = mock()
     private val loadPaymentMethod: WooPosGetPaymentMethod = mock()
+    private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor = mock()
+    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
 
     private val testOrderId = 123L
     private val testOrder = OrderTestUtils.generateTestOrder(orderId = testOrderId).copy(
@@ -105,17 +108,6 @@ class WooPosRefundViewModelTest {
 
     private val testSite = SiteModel().apply { id = 1 }
 
-    private val testRefundModel = WCRefundModel(
-        id = 1L,
-        dateCreated = Date(),
-        amount = BigDecimal("22.00"),
-        reason = "",
-        automaticGatewayRefund = false,
-        items = emptyList(),
-        shippingLineItems = emptyList(),
-        feeLineItems = emptyList()
-    )
-
     @Before
     fun setUp() = runTest {
         val testSettings = Settings(
@@ -139,17 +131,23 @@ class WooPosRefundViewModelTest {
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(testSite)).thenReturn(WooResult(testSettings))
         whenever(wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(testSite)).thenReturn(WooResult(false))
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
 
-        val defaultGateway = com.woocommerce.android.model.PaymentGateway(
-            title = "Default",
-            description = "",
-            isEnabled = true,
-            methodTitle = "Default",
-            methodDescription = "",
-            supportsRefunds = false
-        )
-        whenever(loadPaymentGateway.invoke(any())).thenReturn(Result.success(defaultGateway))
         whenever(loadPaymentMethod.invoke(any())).thenReturn(Result.success("Manual refund"))
+        whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+            flowOf(
+                WooPosRefundSubmissionState.Processing,
+                WooPosRefundSubmissionState.Success
+            )
+        )
+    }
+
+    @After
+    fun tearDown() {
+        if (::viewModel.isInitialized) {
+            viewModel.viewModelScope.cancel()
+            coroutineTestRule.testDispatcher.scheduler.advanceUntilIdle()
+        }
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
@@ -163,12 +161,12 @@ class WooPosRefundViewModelTest {
             calculateRefundTax = calculateRefundTax,
             resourceProvider = resourceProvider,
             currencyFormatter = currencyFormatter,
-            refundStore = refundStore,
             selectedSite = selectedSite,
             wooCommerceStore = wooCommerceStore,
-            loadPaymentGateway = loadPaymentGateway,
             getPaymentMethod = loadPaymentMethod,
-            analyticsTracker = analyticsTracker
+            refundSubmissionProcessor = refundSubmissionProcessor,
+            analyticsTracker = analyticsTracker,
+            cardReaderFacade = cardReaderFacade
         )
     }
 
@@ -226,7 +224,7 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
         advanceUntilIdle()
 
         // THEN
@@ -248,7 +246,7 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // THEN
@@ -275,7 +273,7 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
         advanceUntilIdle()
 
         // THEN
@@ -294,7 +292,7 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // THEN
@@ -313,7 +311,7 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
         advanceUntilIdle()
 
         // THEN
@@ -357,7 +355,7 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
         advanceUntilIdle()
 
         // THEN
@@ -447,7 +445,7 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // THEN
@@ -469,7 +467,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
@@ -493,7 +491,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
@@ -521,7 +519,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -546,7 +544,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -582,7 +580,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -598,7 +596,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ReviewRefund step, when DialogDismissed event, then state resets to Loading`() =
+    fun `given content state at ReviewRefund step, when RefundFlowDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -607,7 +605,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -615,7 +613,7 @@ class WooPosRefundViewModelTest {
             assertThat(reviewState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
 
             // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             advanceUntilIdle()
 
             // THEN
@@ -623,7 +621,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at SelectItems step, when DialogDismissed event, then state resets to Loading`() =
+    fun `given content state at SelectItems step, when RefundFlowDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -632,14 +630,14 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
 
             // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
 
             // THEN
             assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
@@ -653,7 +651,7 @@ class WooPosRefundViewModelTest {
         )
 
         viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
         advanceUntilIdle()
 
         val errorState = viewModel.state.value
@@ -676,7 +674,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -701,7 +699,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -718,7 +716,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ConfirmRefund step, when DialogDismissed event, then state resets to Loading`() =
+    fun `given content state at ConfirmRefund step, when RefundFlowDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -727,7 +725,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -736,7 +734,7 @@ class WooPosRefundViewModelTest {
             assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
 
             // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             advanceUntilIdle()
 
             // THEN
@@ -761,20 +759,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // WHEN
@@ -791,7 +777,133 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given valid refund request without reason, when refund confirmed, then refund store called with empty reason`() =
+    fun `given interac refund requires reader connection, when reader connects, then refund resumes`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired),
+                flowOf(
+                    WooPosRefundSubmissionState.PreparingReader,
+                    WooPosRefundSubmissionState.Success
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val waitingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(waitingState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReaderDisconnected)
+
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            advanceUntilIdle()
+
+            verify(refundSubmissionProcessor, times(2)).submit(any())
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.RefundSuccess::class.java)
+        }
+
+    @Test
+    fun `given interac refund requires reader connection, when returning to confirm, then pending refund is cleared`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired)
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val disconnectedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(disconnectedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReaderDisconnected)
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.CancelRefund)
+            viewModel.onUIEvent(WooPosRefundUIEvent.BackToConfirmRefundClicked)
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            advanceUntilIdle()
+
+            val confirmState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+            verify(refundSubmissionProcessor, times(1)).submit(any())
+        }
+
+    @Test
+    fun `given reader asks to remove card, when dismiss requested, then dismissal is blocked`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.WaitingForCard(
+                        cardReaderHint = R.string.card_reader_payment_remove_card_prompt,
+                        isDismissBlocked = true,
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val state = viewModel.state.value as WooPosRefundState.Content
+            assertThat(state.step).isEqualTo(
+                WooPosRefundState.Content.RefundStep.ReadyForRefund(
+                    cardReaderHint = R.string.card_reader_payment_remove_card_prompt,
+                    isDismissBlocked = true,
+                )
+            )
+            assertThat(viewModel.onDismissRequest()).isFalse()
+        }
+
+    @Test
+    fun `given valid refund request without reason, when refund confirmed, then processor receives empty reason`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -808,20 +920,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // WHEN
@@ -829,19 +929,18 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(refundStore).createItemsRefund(
-                site = eq(testSite),
-                orderId = eq(testOrderId),
-                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
-                reason = eq(""),
-                restockItems = eq(true),
-                autoRefund = eq(false),
-                items = eq(groupedItems)
+            verify(refundSubmissionProcessor).submit(
+                argThat {
+                    orderId == testOrderId &&
+                        refundAmount.compareTo(BigDecimal("22.00")) == 0 &&
+                        refundReason == "" &&
+                        refundItems == groupedItems
+                }
             )
         }
 
     @Test
-    fun `given valid refund request with reason, when refund confirmed, then refund store called with provided reason`() =
+    fun `given valid refund request with reason, when refund confirmed, then processor receives provided reason`() =
         runTest {
             // GIVEN
             val testReason = "Customer bought wrong item"
@@ -859,20 +958,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // WHEN
@@ -881,14 +968,13 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(refundStore).createItemsRefund(
-                site = eq(testSite),
-                orderId = eq(testOrderId),
-                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
-                reason = eq(testReason),
-                restockItems = eq(true),
-                autoRefund = eq(false),
-                items = eq(groupedItems)
+            verify(refundSubmissionProcessor).submit(
+                argThat {
+                    orderId == testOrderId &&
+                        refundAmount.compareTo(BigDecimal("22.00")) == 0 &&
+                        refundReason == testReason &&
+                        refundItems == groupedItems
+                }
             )
         }
 
@@ -910,20 +996,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // WHEN
@@ -932,15 +1006,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN - verify only called once despite two events
-            verify(refundStore).createItemsRefund(
-                site = any(),
-                orderId = any(),
-                amount = any(),
-                reason = any(),
-                restockItems = any(),
-                autoRefund = any(),
-                items = any()
-            )
+            verify(refundSubmissionProcessor).submit(any())
         }
 
     @Test
@@ -954,7 +1020,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
@@ -1004,7 +1070,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
@@ -1061,7 +1127,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
@@ -1118,7 +1184,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
@@ -1173,7 +1239,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
@@ -1245,7 +1311,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
@@ -1302,7 +1368,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -1337,7 +1403,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -1400,7 +1466,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
@@ -1492,20 +1558,8 @@ class WooPosRefundViewModelTest {
             whenever(
                 groupRefundItems.invoke(eq(selectedItems), eq(orderWithThreeItems), any())
             ).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
@@ -1519,14 +1573,13 @@ class WooPosRefundViewModelTest {
 
             // THEN
             verify(groupRefundItems).invoke(eq(selectedItems), eq(orderWithThreeItems), any())
-            verify(refundStore).createItemsRefund(
-                site = eq(testSite),
-                orderId = eq(testOrderId),
-                amount = argThat { this.compareTo(BigDecimal("27.50")) == 0 },
-                reason = eq(""),
-                restockItems = eq(true),
-                autoRefund = eq(false),
-                items = eq(groupedItems)
+            verify(refundSubmissionProcessor).submit(
+                argThat {
+                    orderId == testOrderId &&
+                        refundAmount.compareTo(BigDecimal("27.50")) == 0 &&
+                        refundReason == "" &&
+                        refundItems == groupedItems
+                }
             )
         }
 
@@ -1538,7 +1591,7 @@ class WooPosRefundViewModelTest {
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
         viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
         advanceUntilIdle()
 
         verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
@@ -1553,7 +1606,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
@@ -1573,7 +1626,7 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
@@ -1603,20 +1656,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -1676,20 +1717,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(orderWithTwoItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(selectedItems), eq(orderWithTwoItems), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
@@ -1722,20 +1751,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -1761,20 +1778,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -1800,34 +1805,63 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(
-                WooResult(
-                    error = WooError(
-                        type = WooErrorType.GENERIC_ERROR,
-                        original = GenericErrorType.UNKNOWN,
-                        message = "Refund failed"
-                    )
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Processing,
+                    WooPosRefundSubmissionState.Failure("Refund failed")
                 )
             )
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
             verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.canRetry).isTrue()
+        }
+
+    @Test
+    fun `given backend notification fails after terminal refund succeeds, when API call completes, then error is not retryable`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.ProcessingReaderRefund,
+                    WooPosRefundSubmissionState.NotifyingStore,
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Backend failed",
+                        retryBackendNotificationOnly = true,
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.message).isEqualTo("Backend failed")
+            assertThat(errorState.canRetry).isFalse()
         }
 
     @Test
@@ -1839,10 +1873,10 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             advanceUntilIdle()
 
             verify(analyticsTracker).track(
@@ -1861,11 +1895,11 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             advanceUntilIdle()
 
             verify(analyticsTracker).track(
@@ -1884,12 +1918,12 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
             advanceUntilIdle()
 
             verify(analyticsTracker).track(
@@ -1924,22 +1958,11 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(orderWithEmail), any())).thenReturn(groupedItems)
             whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-            whenever(
                 resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, "customer@example.com")
             ).thenReturn("A receipt has been sent to customer@example.com.")
 
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // WHEN
@@ -1969,20 +1992,8 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(WooResult(testRefundModel))
-
             viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
             // WHEN

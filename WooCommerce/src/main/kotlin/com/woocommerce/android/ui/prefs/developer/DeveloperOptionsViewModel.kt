@@ -67,6 +67,21 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     }
 
+    private val eftposPaymentEnabledFlow = combine(
+        isSimulatedReaderEnabled,
+        developerOptionsRepository.observeEftposPaymentEnabled()
+    ) { simulatedReader, useEftpos ->
+        if (!simulatedReader) return@combine null
+
+        ToggleableListItem(
+            icon = R.drawable.ic_credit_card_give,
+            label = UiStringRes(R.string.enable_eftpos_payment),
+            isEnabled = true,
+            isChecked = useEftpos,
+            onToggled = developerOptionsRepository::changeEnableEftposPaymentState
+        )
+    }
+
     private val savedPrivacySettingsOnDialogFlow = developerOptionsRepository
         .observeSavedPrivacyBannerSettings()
         .map { isChecked ->
@@ -122,15 +137,27 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    private val resetScheduledImportNoticeFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_info_outline_20dp,
+            iconTint = R.color.color_primary,
+            label = UiString.UiStringText("Reset analytics scheduled import notice"),
+            isEnabled = true,
+            onClick = ::onResetScheduledImportNoticeClicked
+        )
+    )
+
     val viewState = combine(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
         interacPaymentEnabledFlow,
+        eftposPaymentEnabledFlow,
         savedPrivacySettingsOnDialogFlow,
         apiFakerFlow,
         sendSentryReportFlow,
         featureFlagsFlow,
-        fetchTestAnnouncementFlow
+        fetchTestAnnouncementFlow,
+        resetScheduledImportNoticeFlow
     ) { items ->
         DeveloperOptionsViewState(
             rows = items.filterNotNull()
@@ -170,6 +197,13 @@ class DeveloperOptionsViewModel @Inject constructor(
         developerOptionsRepository.sendTestSentryReport()
         triggerEvent(
             DeveloperOptionsEvents.ShowToastText("Sentry report sent")
+        )
+    }
+
+    private fun onResetScheduledImportNoticeClicked() {
+        developerOptionsRepository.resetAnalyticsScheduledImportNoticeSeen()
+        triggerEvent(
+            DeveloperOptionsEvents.ShowToastText("Analytics scheduled import notice reset")
         )
     }
 

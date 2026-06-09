@@ -56,7 +56,6 @@ class SiteWPAPIRestClient @Inject constructor(
                 val response = result.data
                 SiteModel().apply {
                     name = response?.name
-                    description = response?.description
                     timezone = response?.gmtOffset
                     origin = SiteModel.ORIGIN_WPAPI
                     hasWooCommerce = response?.namespaces?.any {
