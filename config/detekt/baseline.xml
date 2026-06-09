@@ -62,6 +62,7 @@
     <ID>ForbiddenComment:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
+    <ID>LargeClass:WooPosTotalsViewModel.kt$WooPosTotalsViewModel : ViewModel</ID>
     <ID>LongMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
     <ID>LongMethod:CardReaderDetailFragment.kt$CardReaderDetailFragment$private fun observeViewState(binding: FragmentCardReaderDetailBinding)</ID>
     <ID>LongMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
@@ -1816,34 +1817,11 @@
     <ID>UnitTestNamingRule:ShouldShowPrivacyBannerTest.kt$ShouldShowPrivacyBannerTest$@Test fun `given user has saved privacy banner settings, then do not show banner`(): Unit</ID>
     <ID>UnitTestNamingRule:ShouldShowPrivacyBannerTest.kt$ShouldShowPrivacyBannerTest$@Test fun `given user is logged in, country is GDPR compliant, and has not saved privacy banner settings, then show banner`(): Unit</ID>
     <ID>UnitTestNamingRule:ShouldShowPrivacyBannerTest.kt$ShouldShowPrivacyBannerTest$@Test fun `given user is not logged in, then do not show banner`(): Unit</ID>
-    <ID>UnitTestNamingRule:SiteHomepageRestClientTest.kt$SiteHomepageRestClientTest$@Test fun `does not add page for posts parameter when it is missing`()</ID>
-    <ID>UnitTestNamingRule:SiteHomepageRestClientTest.kt$SiteHomepageRestClientTest$@Test fun `does not add page on front parameter when it is missing`()</ID>
-    <ID>UnitTestNamingRule:SiteHomepageRestClientTest.kt$SiteHomepageRestClientTest$@Test fun `returns error when API call fails`()</ID>
-    <ID>UnitTestNamingRule:SiteHomepageRestClientTest.kt$SiteHomepageRestClientTest$@Test fun `returns success when setting homepage to page`()</ID>
-    <ID>UnitTestNamingRule:SiteHomepageRestClientTest.kt$SiteHomepageRestClientTest$@Test fun `returns success when setting homepage to posts`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `maps response to page homepage settings`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `maps response to posts homepage settings`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `maps site to page homepage settings`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `maps site to posts homepage settings`()</ID>
     <ID>UnitTestNamingRule:SiteHomepageSettingsMapperTest.kt$SiteHomepageSettingsMapperTest$@Test fun `returns null on unexpected type`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given any site without manage options capability, when site is generated, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site with publicize module, when site is generated over rest, publicize is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site with sharing buttons module, when site is generated, share buttons is supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site without publicize module, when site is generated over rest, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site without sharing buttons module, when site is generated, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site, when site is generated over xmlrpc, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given jetpack site, when site is generated over xmlrpc, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize + share btns unsupported jetpack site, when site generated over rest, sharing is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize + share buttons unsupported wpcom site, when site is generated, sharing is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize supported jetpack site, when site is generated over rest, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given publicize supported wpcom site, when site is generated, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given self hosted non jp site, when site is generated, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given self hosted non jp site, when site is generated, share buttons is not supported`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given share buttons supported jetpack site, when site is generated over rest, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given share buttons supported wpcom site, when site is generated, sharing is enabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given site with publish posts capability disabled, when site is generated, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given wpcom site with publicize permanently disabled, when site is generated, publicize is disabled`()</ID>
-    <ID>UnitTestNamingRule:SiteModelTest.kt$SiteModelTest$@Test fun `given wpcom site with publish posts capability enabled, when site is generated, publicize is enabled`()</ID>
     <ID>UnitTestNamingRule:SiteObserverTest.kt$SiteObserverTest$@Test fun `when observeAndUpdateSelectedSiteData is called, fetchRemoteFeatureFlags is called`()</ID>
     <ID>UnitTestNamingRule:SiteOptionsStoreTest.kt$SiteOptionsStoreTest$@Test fun `call fails when page for posts and homepage are the same`()</ID>
     <ID>UnitTestNamingRule:SiteOptionsStoreTest.kt$SiteOptionsStoreTest$@Test fun `calls rest client and returns error response`()</ID>
@@ -1864,43 +1842,6 @@
     <ID>UnitTestNamingRule:SitePickerViewModelTest.kt$SitePickerViewModelTest$@Test fun `given user is logging in, then when try another account is clicked, logout is initiated`()</ID>
     <ID>UnitTestNamingRule:SitePickerViewModelTest.kt$SitePickerViewModelTest$@Test fun `given user is logging in, when need help finding email is clicked, find email dialog is displayed`()</ID>
     <ID>UnitTestNamingRule:SitePickerViewModelTest.kt$SitePickerViewModelTest$@Test fun `given user is logging in, when view connected sites is clicked, site list is displayed`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site in coming soon state`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site with all params`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site with override site creation flow if specified`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site without a site name and site title`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site without a site name`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `creates new site without params with dry run`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `fetchSite returns error when API call fails`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `fetchSites returns error when API call fails`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `fetched sites can filter JP connected package sites`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `returns fetched site`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `returns fetched sites using filter`()</ID>
-    <ID>UnitTestNamingRule:SiteRestClientTest.kt$SiteRestClientTest$@Test fun `returns fetched sites when not filtering`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `creates a new site`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fails to create a new site`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchAllDomains error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchAllDomains from WPCom endpoint`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite error from XMLRPC endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite from WPCom endpoint and stores it to DB`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSite from XMLRPC endpoint and stores it to DB`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSiteDomains error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSiteDomains from WPCom endpoint`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSiteDomains updates stored domains`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSitePlans error from WPCom endpoint returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSitePlans from WPCom endpoint`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSites returns error`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `fetchSites saves fetched sites to DB and removes absent sites`()</ID>
-    <ID>UnitTestNamingRule:SiteStoreTest.kt$SiteStoreTest$@Test fun `getSiteDomains is backed by DomainsDao`()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun `returns correct timezone`()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetCurrentDateTimeForNonUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetCurrentDateTimeUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetFormattedDateForNonUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteUtilsTest.kt$SiteUtilsTest$@Test fun testGetFormattedDateForUtcSite()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test @Throws(Exception::class) fun testFetchSite()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test @Throws(Exception::class) fun testFetchSiteBadResponseFormat()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test @Throws(Exception::class) fun testFetchSitesResponseNotArray()</ID>
-    <ID>UnitTestNamingRule:SiteXMLRPCClientTest.kt$SiteXMLRPCClientTest$@Test fun testFetchSites()</ID>
     <ID>UnitTestNamingRule:SpecifyPerformanceMonitoringConfigTest.kt$SpecifyPerformanceMonitoringConfigTest$@Test fun `given the app is not debug and user did not disabled tracking, enable performance monitoring`()</ID>
     <ID>UnitTestNamingRule:SpecifyPerformanceMonitoringConfigTest.kt$SpecifyPerformanceMonitoringConfigTest$@Test fun `given the debug app, disable performance monitoring`()</ID>
     <ID>UnitTestNamingRule:SpecifyPerformanceMonitoringConfigTest.kt$SpecifyPerformanceMonitoringConfigTest$@Test fun `given the user disabled tracking, disable performance monitoring`()</ID>
@@ -2139,10 +2080,6 @@
     <ID>UnitTestNamingRule:WCCustomerStoreTest.kt$WCCustomerStoreTest$@Test fun `fetchCustomersFromAnalytics with error returns error and does not cache`()</ID>
     <ID>UnitTestNamingRule:WCCustomerStoreTest.kt$WCCustomerStoreTest$@Test fun `fetchSingleCustomer with error returns error result`()</ID>
     <ID>UnitTestNamingRule:WCCustomerStoreTest.kt$WCCustomerStoreTest$@Test fun `fetchSingleCustomer with success returns customer model`()</ID>
-    <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting countries returns a list of all countries`()</ID>
-    <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting states for a country with states returns the expected list of states`()</ID>
-    <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting states for a country without states returns empty list`()</ID>
-    <ID>UnitTestNamingRule:WCDataStoreTest.kt$WCDataStoreTest$@Test fun `given fetched countries, requesting states with empty country code returns empty list`()</ID>
     <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test gateway insert`()</ID>
     <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test gateway update`()</ID>
     <ID>UnitTestNamingRule:WCGatewaySqlUtilsTest.kt$WCGatewaySqlUtilsTest$@Test fun `test select empty result`()</ID>
@@ -2156,7 +2093,6 @@
     <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `fetch attributes should return WooResult correctly`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `fetch attributes with empty result should return WooError`()</ID>
     <ID>UnitTestNamingRule:WCGlobalAttributeStoreTest.kt$WCGlobalAttributeStoreTest$@Test fun `update Attribute should return WooResult with parsed entity`()</ID>
-    <ID>UnitTestNamingRule:WCGoogleStoreTest.kt$WCGoogleStoreTest$@Test fun `when programs response is paginated, requested everything and return the sum`()</ID>
     <ID>UnitTestNamingRule:WCInboxStoreTest.kt$WCInboxStoreTest$@Test fun `Given notes are fetched successfully, when notes fetched, then return WooResult`()</ID>
     <ID>UnitTestNamingRule:WCInboxStoreTest.kt$WCInboxStoreTest$@Test fun `Given notes are fetched successfully, when notes fetched, then save them into DB`()</ID>
     <ID>UnitTestNamingRule:WCInboxStoreTest.kt$WCInboxStoreTest$@Test fun `Given notes fetching error, when notes fetched, then notes are not saved`()</ID>
@@ -2248,23 +2184,6 @@
     <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testGetShippingLabelsForOrder()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testInsertOrUpdateShippingLabelForOrder()</ID>
     <ID>UnitTestNamingRule:WCShippingLabelSqlUtilsTest.kt$WCShippingLabelSqlUtilsTest$@Test fun testInsertOrUpdateShippingLabelListForOrder()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test @Suppress("LongMethod") fun `get shipping rates`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test @Suppress("LongMethod") fun `purchase shipping labels with polling`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `creating packages returns error if the API call fails`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `creating packages returns true if the API call succeeds`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `fetch shipping label eligibility`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `fetch shipping labels for order`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `get account settings`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `get packages`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `get stored eligibility`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `get stored shipping labels for order`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `invalidate cached data if parameters are different`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `print shipping label for order`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `purchase shipping label error`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `purchase shipping labels with polling fail after 3 retries`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `purchase shipping labels with polling one label failed`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `refund shipping label for order`()</ID>
-    <ID>UnitTestNamingRule:WCShippingLabelStoreTest.kt$WCShippingLabelStoreTest$@Test fun `verify shipping address`()</ID>
     <ID>UnitTestNamingRule:WCTaxStoreTest.kt$WCTaxStoreTest$@Test fun `get stored tax class list for site`()</ID>
     <ID>UnitTestNamingRule:WCUserStoreTest.kt$WCUserStoreTest$@Test fun `fetch user role`()</ID>
     <ID>UnitTestNamingRule:WCUserStoreTest.kt$WCUserStoreTest$@Test fun `get user role from db`()</ID>
@@ -2307,17 +2226,7 @@
     <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUtmMediumAlwaysSetToWoo_android`()</ID>
     <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUtmQueriesAreExcludedInTheUrlIfTheyAreNullOrEmpty`()</ID>
     <ID>UnitTestNamingRule:WooCommerceComUTMProviderTest.kt$WooCommerceComUTMProviderTest$@Test fun `testUtmQueryParamsAreAddedToTheUrlProperly`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `given 3 woo and 3 updated sites, when fetching a jetpack cp site, emit event with 6 rows affected`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings fails, the error returned`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings succeeds, the setting is saved in db`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun `when fetch tax based on settings succeeds, the success returned`()</ID>
-    <ID>UnitTestNamingRule:WooCommerceStoreTest.kt$WooCommerceStoreTest$@Test fun testGetWooCommerceSites()</ID>
     <ID>UnitTestNamingRule:WooLogFileProviderTest.kt$WooLogFileProviderTest$@Test fun `should provide a valid log file`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given empty feature list when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given error result when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given feature enabled remotely when invoked then returns true`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given feature not in list when invoked then returns false`()</ID>
-    <ID>UnitTestNamingRule:WooPOSIsRemotelyEnabledTest.kt$WooPOSIsRemotelyEnabledTest$@Test fun `given null result when invoked then returns false`()</ID>
     <ID>UnitTestNamingRule:WooPosCartItemsUpdaterTest.kt$WooPosCartItemsUpdaterTest$@Test fun `given cart with multiple coupons, then relevant coupons are updated`()</ID>
     <ID>UnitTestNamingRule:WooPosCartViewModelTest.kt$WooPosCartViewModelTest$@Test fun `given empty cart, then button should not be visible`()</ID>
     <ID>UnitTestNamingRule:WooPosCashPaymentViewModelTest.kt$WooPosCashPaymentViewModelTest$@Test fun `given valid amount,when onUIEvent AmountChanged , then button is enabled and changeDue is updated`()</ID>

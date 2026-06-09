@@ -6,7 +6,9 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMeth
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
-sealed class CardReaderConfig : Parcelable
+sealed class CardReaderConfig : Parcelable {
+    abstract val isPosCardPaymentEnabled: Boolean
+}
 
 @Suppress("LongParameterList")
 sealed class CardReaderConfigForSupportedCountry(
@@ -17,7 +19,9 @@ sealed class CardReaderConfigForSupportedCountry(
     val supportedExtensions: List<SupportedExtension>,
     val minimumAllowedChargeAmount: BigDecimal,
     val maximumTTPAllowedChargeAmountWithoutPin: BigDecimal?,
-) : CardReaderConfig()
+) : CardReaderConfig() {
+    override val isPosCardPaymentEnabled: Boolean get() = true
+}
 
 fun CardReaderConfigForSupportedCountry.isExtensionSupported(type: SupportedExtensionType) =
     supportedExtensions.any { it.type == type }
@@ -26,7 +30,9 @@ fun CardReaderConfigForSupportedCountry.minSupportedVersionForExtension(type: Su
     supportedExtensions.first { it.type == type }.supportedSince
 
 @Parcelize
-object CardReaderConfigForUnsupportedCountry : CardReaderConfig()
+object CardReaderConfigForUnsupportedCountry : CardReaderConfig() {
+    override val isPosCardPaymentEnabled: Boolean get() = false
+}
 
 data class SupportedExtension(
     val type: SupportedExtensionType,

@@ -240,6 +240,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.ProductsRemoved -> Unit
                     is ParentToChildrenEvent.MissingVariationEvent -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
+                    is ParentToChildrenEvent.CustomAmountSubmitted -> Unit
+                    is ParentToChildrenEvent.ShowCustomAmountForm -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> {
                         if (event.itemData is ItemClickedData.Product.Variation &&
                             searchHelper.isSearchOpen()
@@ -394,7 +396,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
     private fun determinePullToRefreshState(): WooPosPullToRefreshState {
         return when (dataSource.getCurrentSyncStrategy()) {
-            SyncStrategy.LOCAL_CATALOG,
             SyncStrategy.LOCAL_CATALOG_FILE -> WooPosPullToRefreshState.Enabled
             SyncStrategy.REMOTE -> WooPosPullToRefreshState.Disabled
         }

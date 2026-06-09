@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 @ExperimentalCoroutinesApi
 class CustomerListSelectionViewModelTest : BaseUnitTest() {
     private val customerListRepository: CustomerListRepository = mock {
-        onBlocking {
+        on {
             searchCustomerListWithEmail(
                 any(),
                 any(),
@@ -41,14 +41,14 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             )
         }.thenReturn(Result.success(listOf(mock())))
 
-        onBlocking { getCustomerList(any()) }.thenReturn(emptyList())
+        on { getCustomerList(any()) }.thenReturn(emptyList())
     }
     private val mockCustomer: CustomerListViewState.CustomerList.Item.Customer = mock()
     private val customerListViewModelMapper: CustomerListViewModelMapper = mock {
         on { mapFromWCCustomerToItem(any(), any(), any()) }.thenReturn(mockCustomer)
     }
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes = mock {
-        onBlocking { invoke(true) }.thenReturn(
+        on { invoke(true) }.thenReturn(
             listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_name,
@@ -64,7 +64,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         )
     }
     private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported = mock {
-        onBlocking { invoke() }.thenReturn(true)
+        on { invoke() }.thenReturn(true)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val stringUtils: StringUtils = mock {
@@ -452,7 +452,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given empty list from repo and non email search, when add customer manually clicked, then event doesnt have email`() =
+    fun `given empty list from repo and non email search, when add customer manually clicked, then event doesn't have email`() =
         testBlocking {
             // GIVEN
             whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
@@ -738,7 +738,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given less than page returned from repo, when onEndOfListReached, then next call doesnt load more customers`() =
+    fun `given less than page returned from repo, when onEndOfListReached, then next call doesn't load more customers`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel()

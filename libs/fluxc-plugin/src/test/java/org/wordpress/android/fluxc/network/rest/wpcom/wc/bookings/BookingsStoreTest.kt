@@ -230,7 +230,7 @@ class BookingsStoreTest {
             val dto = sampleBookingDto().copy(orderId = 0L) // avoid order fetch
             val filters = BookingFilters(
                 dateRange = BookingsDateRangePresets.today(clock),
-                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
+                customer = BookingsFilterOption.Customer(userId = 1L, customerName = "name"),
             )
             whenever(
                 bookingsRestClient.fetchBookings(
@@ -316,7 +316,7 @@ class BookingsStoreTest {
             val dto = sampleBookingDto().copy(orderId = 0L)
             val filters = BookingFilters(
                 dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
-                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name")
+                customer = BookingsFilterOption.Customer(userId = 1L, customerName = "name")
             )
             whenever(
                 bookingsRestClient.fetchBookings(
@@ -396,7 +396,7 @@ class BookingsStoreTest {
             val dto = sampleBookingDto().copy(orderId = 0L)
             val requestedFilters = BookingFilters(
                 dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
-                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
+                customer = BookingsFilterOption.Customer(userId = 1L, customerName = "name"),
             )
             whenever(
                 bookingsRestClient.fetchBookings(

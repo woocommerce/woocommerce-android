@@ -75,7 +75,7 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockPriceFormat(BigDecimal("20.0"))).thenReturn("$20.0")
         whenever(mockDataSource.getCurrentSyncStrategy())
-            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
         whenever(mockResourceProvider.getString(R.string.something_went_wrong_try_again))
             .thenReturn("Something went wrong")
         whenever(mockResourceProvider.getString(R.string.woo_pos_ptr_offline_error))
@@ -840,7 +840,7 @@ class WooPosItemsSearchViewModelTest {
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
         whenever(
             mockDataSource.getCurrentSyncStrategy()
-        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
         whenever(mockDataSource.refreshProducts()).thenReturn(
             Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
         )
@@ -888,7 +888,7 @@ class WooPosItemsSearchViewModelTest {
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
         whenever(
             mockDataSource.getCurrentSyncStrategy()
-        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
         whenever(mockDataSource.refreshProducts()).thenReturn(
             Result.success(
                 PosLocalCatalogProductSyncResult(
@@ -921,7 +921,7 @@ class WooPosItemsSearchViewModelTest {
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
         whenever(
             mockDataSource.getCurrentSyncStrategy()
-        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
         whenever(mockDataSource.refreshProducts()).thenReturn(
             Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
         )
@@ -948,7 +948,7 @@ class WooPosItemsSearchViewModelTest {
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
         whenever(
             mockDataSource.getCurrentSyncStrategy()
-        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
 
         // WHEN
         val viewModel = createViewModel()
@@ -970,7 +970,7 @@ class WooPosItemsSearchViewModelTest {
             mockSuccessfulSearch(defaultQuery, emptyList())
             whenever(
                 mockDataSource.getCurrentSyncStrategy()
-            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
             whenever(mockDataSource.refreshProducts()).thenReturn(
                 Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
             )
@@ -1006,7 +1006,7 @@ class WooPosItemsSearchViewModelTest {
             mockSuccessfulSearch(defaultQuery, emptyList())
             whenever(
                 mockDataSource.getCurrentSyncStrategy()
-            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
             whenever(mockDataSource.refreshProducts()).thenReturn(
                 Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
             )
@@ -1061,7 +1061,7 @@ class WooPosItemsSearchViewModelTest {
             mockSuccessfulSearch(defaultQuery, emptyList())
             whenever(
                 mockDataSource.getCurrentSyncStrategy()
-            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
             whenever(mockDataSource.refreshProducts()).thenReturn(
                 Result.success(
                     PosLocalCatalogProductSyncResult(

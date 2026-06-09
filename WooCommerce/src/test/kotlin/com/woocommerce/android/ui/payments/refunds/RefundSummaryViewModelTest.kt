@@ -25,6 +25,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -98,6 +99,43 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
 
             assertThat(viewState.refundMethod).isEqualTo("Credit/Debit card (Visa **** 1234)")
+        }
+    }
+
+    @Test
+    fun `given eftpos card brand, when charge data loaded, then refund method uses lower case eftpos`() {
+        testBlocking {
+            val chargeId = "charge_id"
+            val order = createTestOrder(
+                paymentMethod = "woocommerce_payments",
+                chargeId = chargeId
+            )
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+            whenever(gatewayStore.getGateway(any(), any())).thenReturn(
+                WCGatewayModel(
+                    id = "woocommerce_payments",
+                    title = "WooPayments (Card)",
+                    description = "",
+                    order = 0,
+                    isEnabled = true,
+                    methodTitle = "WooPayments",
+                    methodDescription = "",
+                    features = listOf("refunds")
+                )
+            )
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "eftpos_au",
+                    cardLast4 = "0978",
+                    paymentMethodType = "card_present"
+                )
+            )
+
+            initViewModel()
+
+            val viewState = viewModel.refundSummaryStateLiveData.liveData.getOrAwaitValue()
+
+            assertThat(viewState.refundMethod).isEqualTo("WooPayments (Card) (eftpos **** 0978)")
         }
     }
 

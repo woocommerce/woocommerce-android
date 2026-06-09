@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -8,16 +9,18 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -27,6 +30,7 @@ fun WooPosToolbar(
     modifier: Modifier = Modifier,
     titleText: String,
     onBackClicked: (() -> Unit)? = null,
+    @DrawableRes navigationIconRes: Int = R.drawable.ic_back_24dp,
     titleStyle: WooPosTypography = WooPosTypography.Heading,
     titleFontWeight: FontWeight = FontWeight.Bold
 ) {
@@ -34,7 +38,7 @@ fun WooPosToolbar(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(56.dp),
+            .heightIn(min = WooPosComponentSize.XSmall.value),
     ) {
         val (backButton, title) = createRefs()
 
@@ -49,7 +53,8 @@ fun WooPosToolbar(
             }
         ) {
             WooPosBackButton(
-                modifier = Modifier.padding(start = WooPosSpacing.Small.value)
+                modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                iconRes = navigationIconRes,
             ) { onBackClicked?.invoke() }
         }
 
@@ -59,7 +64,8 @@ fun WooPosToolbar(
             style = titleStyle,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = titleFontWeight,
-            maxLines = 1,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .constrainAs(title) {
                     if (onBackClicked != null) {

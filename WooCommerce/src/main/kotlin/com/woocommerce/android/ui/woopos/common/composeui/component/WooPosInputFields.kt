@@ -30,6 +30,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.payments.changeduecalculator.CurrencyVisualTransformation
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -95,6 +96,10 @@ fun WooPosMoneyInputField(
 
     var labelWidth by remember { mutableIntStateOf(0) }
 
+    val placeholderText = remember(decimalSeparator, numberOfDecimals) {
+        if (numberOfDecimals > 0) "0$decimalSeparator${"0".repeat(numberOfDecimals)}" else "0"
+    }
+
     Box(
         modifier = modifier.background(WooPosTheme.colors.transparent),
         contentAlignment = contentAlignment,
@@ -102,7 +107,7 @@ fun WooPosMoneyInputField(
         val showLabel = textFieldValue.text.isEmpty()
         if (showLabel) {
             WooPosText(
-                text = visualTransformation.filter(AnnotatedString("0.00")).text.toString(),
+                text = visualTransformation.filter(AnnotatedString(placeholderText)).text.toString(),
                 style = textStyle,
                 color = WooPosTheme.colors.onDisabledContainer,
                 maxLines = 1,
@@ -183,6 +188,7 @@ fun WooPosInputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentAlignment: Alignment = Alignment.CenterStart,
+    labelMaxLines: Int = 1,
 ) {
     var labelWidth by remember { mutableIntStateOf(0) }
 
@@ -195,8 +201,9 @@ fun WooPosInputField(
                 text = label,
                 style = textStyle,
                 color = WooPosTheme.colors.onDisabledContainer,
-                maxLines = 1,
-                softWrap = false,
+                maxLines = labelMaxLines,
+                softWrap = labelMaxLines > 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.onGloballyPositioned { coordinates ->
                     labelWidth = coordinates.size.width
                 }

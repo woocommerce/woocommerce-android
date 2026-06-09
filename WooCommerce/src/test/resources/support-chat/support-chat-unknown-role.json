@@ -1,0 +1,13 @@
+{
+  "chat_id": 1,
+  "session_id": "session-unknown",
+  "bot_slug": "woo-workflow-support_mobile_inapp_all_users",
+  "bot_version": "v1.0.0",
+  "messages": [
+    {
+      "message_id": 1,
+      "role": "system",
+      "content": "Some future role"
+    }
+  ]
+}

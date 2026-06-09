@@ -69,6 +69,7 @@ class BookingMapper @Inject constructor(
     fun Booking.toAppointmentDetailsModel(
         staffMemberStatus: BookingStaffMemberStatus?,
         cancelStatus: CancelStatus,
+        rescheduleButtonVisible: Boolean = false,
         attendanceUpdateStatus: AttendanceUpdateStatus = AttendanceUpdateStatus.Idle,
         locationStatus: BookingLocationStatus = BookingLocationStatus.Loading,
     ): BookingAppointmentDetailsModel {
@@ -82,6 +83,7 @@ class BookingMapper @Inject constructor(
             location = locationStatus,
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
+            rescheduleButtonVisible = rescheduleButtonVisible,
             duration = duration,
             attendanceStatus = attendanceStatus.toUiModel(),
             isAttendanceStatusEditable = isAttendanceStatusEditable,

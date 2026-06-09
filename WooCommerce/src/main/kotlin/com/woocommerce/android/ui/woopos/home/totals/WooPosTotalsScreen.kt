@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -9,29 +12,37 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,18 +56,25 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.adaptiveContentWidth
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
@@ -64,13 +82,33 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
-    val viewModel: WooPosTotalsViewModel = hiltViewModel()
+fun WooPosTotalsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosTotalsViewModel = hiltViewModel(),
+    onPhoneBack: (() -> Unit)? = null,
+) {
     val state = viewModel.state.collectAsState().value
+    val onUIEvent = rememberUpdatedState(viewModel::onUIEvent)
+    val fineLocationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        onUIEvent.value(WooPosTotalsUIEvent.OnFineLocationPermissionResult(granted))
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.screenEvents.collect { event ->
+            when (event) {
+                WooPosTotalsScreenEvent.RequestFineLocationPermission ->
+                    fineLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
+
     WooPosTotalsScreen(
         modifier = modifier,
         state = state,
         onUIEvent = viewModel::onUIEvent,
+        onPhoneBack = onPhoneBack,
     )
 }
 
@@ -79,6 +117,7 @@ private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsViewState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     Box(modifier = modifier) {
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Checkout) {
@@ -86,6 +125,7 @@ private fun WooPosTotalsScreen(
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent,
+                    onPhoneBack = onPhoneBack,
                 )
             }
         }
@@ -95,7 +135,8 @@ private fun WooPosTotalsScreen(
                 WooPosPaymentSuccessScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
-                    onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+                    onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) },
+                    onBackPressed = { onUIEvent(WooPosTotalsUIEvent.OnBackClicked) },
                 )
             }
         }
@@ -170,88 +211,259 @@ private fun StateChangeAnimated(
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Checkout,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
+    val scrollState = rememberScrollState()
+    val showToolbarBottomShadow by remember {
+        derivedStateOf { scrollState.canScrollBackward }
+    }
+    val showButtonsTopShadow by remember {
+        derivedStateOf { scrollState.canScrollForward }
+    }
+    val otherPaymentMethods = buildAllPaymentMethods(
+        readerStatus = state.readerStatus,
+        isTapToPayAvailable = state.isTapToPayAvailable,
+        isScanToPayEnabled = state.isScanToPayEnabled,
+        isMarkOrderAsPaidEnabled = state.isMarkOrderAsPaidEnabled,
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
+        if (onPhoneBack != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WooPosBackButton(
+                    modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                    onClick = onPhoneBack,
+                )
+            }
+            ScrollEdgeShadow(visible = showToolbarBottomShadow, edge = ScrollEdge.Top)
+        }
+        BoxWithConstraints(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+                .fillMaxWidth(),
         ) {
+            val minContentHeight = maxHeight
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .heightIn(min = minContentHeight),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                when (val readerStatus = state.readerStatus) {
-                    is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                        ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
-                    }
-                    is WooPosTotalsViewState.ReaderStatus.Preparing -> {
-                        PreparingReader(
-                            title = readerStatus.title,
-                            subtitle = readerStatus.subtitle
-                        )
-                    }
-                    is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
-                        PreparingReader(
-                            title = readerStatus.title,
-                            subtitle = readerStatus.subtitle
-                        )
-                    }
-                    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
-                        ReaderReadyForPayment(readerStatus)
-                    }
-                    WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
-                }
-            }
+                ReaderStatusContent(state = state, onUIEvent = onUIEvent)
 
-            AnimatedContent(
-                targetState = state.totals,
-                label = "totals_grid_animation"
-            ) { totalsVisible ->
-                if (totalsVisible is Totals.Visible) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = WooPosSpacing.XLarge.value,
-                                vertical = WooPosSpacing.Medium.value,
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        TotalsGrid(totalsVisible)
+                AnimatedContent(
+                    modifier = Modifier.fillMaxWidth(),
+                    targetState = state.totals,
+                    label = "totals_grid_animation",
+                ) { totalsVisible ->
+                    if (totalsVisible is Totals.Visible) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = WooPosSpacing.XLarge.value,
+                                    vertical = WooPosSpacing.Medium.value,
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            TotalsGrid(totalsVisible)
+                        }
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        CheckoutBottomBar(
+            state = state,
+            onUIEvent = onUIEvent,
+            showButtonsTopShadow = showButtonsTopShadow,
+            hasOtherPaymentMethods = otherPaymentMethods.isNotEmpty(),
+        )
+    }
 
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
-                .padding(bottom = WooPosSpacing.XLarge.value)
-                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+    // Sibling of the Column so the phone fullscreen overlays the totals chrome
+    // instead of laying out below the bottom bar.
+    WooPosAllPaymentMethodsBottomSheet(
+        isVisible = state.isAllPaymentMethodsBottomSheetVisible,
+        methods = otherPaymentMethods,
+        onMethodClicked = { method ->
+            onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false))
+            method.toUIEvent()?.let(onUIEvent)
+        },
+        onDismissRequest = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(false)) },
+    )
+}
+
+@Composable
+internal fun CheckoutBottomBar(
+    state: WooPosTotalsViewState.Checkout,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    showButtonsTopShadow: Boolean = false,
+    hasOtherPaymentMethods: Boolean = false,
+) {
+    if (state.isCardPaymentEnabledForCountry) {
+        CheckoutPaymentButtons(
+            onUIEvent = onUIEvent,
+            buttonsState = state.paymentButtonsState,
+            showTopShadow = showButtonsTopShadow,
+            hasOtherPaymentMethods = hasOtherPaymentMethods,
+        )
+    } else {
+        NoCardCheckoutPaymentButtons(
+            onUIEvent = onUIEvent,
+            buttonsState = state.paymentButtonsState,
+            hasOtherPaymentMethods = hasOtherPaymentMethods,
         )
     }
 }
 
 @Composable
+private fun CheckoutPaymentButtons(
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    buttonsState: WooPosTotalsViewState.PaymentButtonsState,
+    showTopShadow: Boolean,
+    hasOtherPaymentMethods: Boolean,
+) {
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    val outerPaddingModifier = if (isPhone) {
+        Modifier.padding(WooPosSpacing.Large.value)
+    } else {
+        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+    }
+    val buttonState = when (buttonsState) {
+        WooPosTotalsViewState.PaymentButtonsState.Enabled -> WooPosButtonState.ENABLED
+        WooPosTotalsViewState.PaymentButtonsState.Disabled -> WooPosButtonState.DISABLED
+    }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        ScrollEdgeShadow(visible = showTopShadow, edge = ScrollEdge.Bottom)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(outerPaddingModifier)
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        ) {
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON),
+                text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                state = buttonState,
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+            )
+            if (hasOtherPaymentMethods) {
+                WooPosOutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+                    text = stringResource(R.string.woopos_payment_method_other_methods_label),
+                    state = buttonState,
+                    onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+                )
+            }
+        }
+    }
+}
+
+private enum class ScrollEdge { Top, Bottom }
+
+private val SCROLL_EDGE_SHADOW_HEIGHT = 1.dp
+private const val SCROLL_EDGE_SHADOW_ALPHA = 0.12f
+
+@Composable
+private fun ScrollEdgeShadow(
+    visible: Boolean,
+    edge: ScrollEdge,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        val shadowColor = Color.Black.copy(alpha = SCROLL_EDGE_SHADOW_ALPHA)
+        val gradientColors = when (edge) {
+            ScrollEdge.Top -> listOf(shadowColor, Color.Transparent)
+            ScrollEdge.Bottom -> listOf(Color.Transparent, shadowColor)
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SCROLL_EDGE_SHADOW_HEIGHT)
+                .background(Brush.verticalGradient(colors = gradientColors)),
+        )
+    }
+}
+
+@Composable
+private fun NoCardCheckoutPaymentButtons(
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    buttonsState: WooPosTotalsViewState.PaymentButtonsState,
+    hasOtherPaymentMethods: Boolean,
+) {
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    val outerPaddingModifier = if (isPhone) {
+        Modifier.padding(WooPosSpacing.Large.value)
+    } else {
+        Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
+    }
+    val buttonState = when (buttonsState) {
+        WooPosTotalsViewState.PaymentButtonsState.Enabled -> WooPosButtonState.ENABLED
+        WooPosTotalsViewState.PaymentButtonsState.Disabled -> WooPosButtonState.DISABLED
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(outerPaddingModifier)
+            .navigationBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+    ) {
+        WooPosButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON),
+            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+            state = buttonState,
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+        )
+        if (hasOtherPaymentMethods) {
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(WooPosTestTags.OTHER_PAYMENT_METHODS_BUTTON),
+                text = stringResource(R.string.woopos_payment_method_other_methods_label),
+                state = buttonState,
+                onClick = { onUIEvent(WooPosTotalsUIEvent.OnAllPaymentMethodsVisibilityChanged(true)) },
+            )
+        }
+    }
+}
+
+private fun WooPosPaymentMethod.toUIEvent(): WooPosTotalsUIEvent? = when (this) {
+    WooPosPaymentMethod.CARD_READER -> WooPosTotalsUIEvent.ConnectReaderClicked
+    WooPosPaymentMethod.TAP_TO_PAY -> WooPosTotalsUIEvent.OnTapToPayClicked
+    WooPosPaymentMethod.SCAN_TO_PAY -> WooPosTotalsUIEvent.OnScanToPayClicked
+    WooPosPaymentMethod.MARK_ORDER_AS_PAID -> WooPosTotalsUIEvent.OnMarkOrderAsPaidClicked
+}
+
+@Composable
+private fun TapToPayConnecting() {
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
+}
+
+@Composable
 private fun PreparingReader(title: String, subtitle: String) {
-    WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
+    WooPosCircularLoadingIndicator(modifier = Modifier.size(WooPosComponentSize.XLarge.value))
     Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
     WooPosText(
         text = title,
@@ -261,8 +473,10 @@ private fun PreparingReader(title: String, subtitle: String) {
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
     WooPosText(
         text = subtitle,
-        style = WooPosTypography.Heading,
-        fontWeight = FontWeight.Bold
+        style = WooPosTypography.BodyLarge,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
     )
 }
 
@@ -270,7 +484,7 @@ private fun PreparingReader(title: String, subtitle: String) {
 private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStatus.ReadyForPayment) {
     val tapCardAnimation by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
     LottieAnimation(
-        modifier = Modifier.size(256.dp),
+        modifier = Modifier.size(WooPosComponentSize.XXLarge.value),
         composition = tapCardAnimation,
         clipSpec = LottieClipSpec.Markers("reader_awaiting_start", "reader_awaiting_end"),
         iterations = LottieConstants.IterateForever,
@@ -284,11 +498,51 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
     WooPosText(
         text = readerStatus.subtitle,
-        style = WooPosTypography.Heading,
+        style = WooPosTypography.BodyLarge,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
     )
+}
+
+@Composable
+private fun ReaderStatusContent(
+    state: WooPosTotalsViewState.Checkout,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        when (val readerStatus = state.readerStatus) {
+            is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
+                when {
+                    state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.Preparing ->
+                        PreparingReader(
+                            title = stringResource(R.string.woopos_tap_to_pay_preparing_title),
+                            subtitle = stringResource(R.string.woopos_tap_to_pay_preparing_subtitle),
+                        )
+
+                    state.tapToPayProgress == WooPosTotalsViewState.TapToPayProgress.SdkActive ->
+                        TapToPayConnecting()
+
+                    state.isTapToPayAvailable -> TapToPayPromoted(onUIEvent = onUIEvent)
+                    else -> ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
+                }
+            }
+            is WooPosTotalsViewState.ReaderStatus.Preparing -> {
+                PreparingReader(title = readerStatus.title, subtitle = readerStatus.subtitle)
+            }
+            is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
+                PreparingReader(title = readerStatus.title, subtitle = readerStatus.subtitle)
+            }
+            is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
+                ReaderReadyForPayment(readerStatus)
+            }
+            WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
+        }
+    }
 }
 
 @Composable
@@ -300,35 +554,73 @@ private fun ReaderDisconnected(
     Column(
         modifier = modifier.padding(WooPosSpacing.XLarge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
-            modifier = Modifier.size(140.dp),
+            modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
             imageVector = WooPosIcons.CardReaderNotConnected,
             contentDescription = stringResource(id = R.string.woopos_reader_not_connected_description),
         )
-
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
         WooPosText(
             text = status.title,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
         )
-
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
         WooPosText(
             text = status.subtitle,
             style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
             text = status.actionButtonLabel,
             onClick = { onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked) },
             modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .height(80.dp)
+                .adaptiveContentWidth()
+                .testTag(WooPosTestTags.CARD_READER_PAYMENT_BUTTON)
+        )
+    }
+}
+
+@Composable
+private fun TapToPayPromoted(
+    modifier: Modifier = Modifier,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+) {
+    Column(
+        modifier = modifier.padding(WooPosSpacing.XLarge.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Image(
+            modifier = Modifier.size(140.dp.toAdaptiveComponentSize()),
+            painter = painterResource(id = R.drawable.img_tap_to_pay_summary),
+            contentDescription = stringResource(id = R.string.woopos_tap_to_pay_promoted_image_description),
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        WooPosText(
+            text = stringResource(R.string.woopos_tap_to_pay_promoted_title),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        WooPosText(
+            text = stringResource(R.string.woopos_tap_to_pay_promoted_subtitle),
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        WooPosButton(
+            text = stringResource(R.string.woopos_tap_to_pay_promoted_cta_button_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnTapToPayClicked) },
+            modifier = Modifier
+                .adaptiveContentWidth()
+                .testTag(WooPosTestTags.TAP_TO_PAY_PROMOTED_BUTTON)
         )
     }
 }
@@ -338,7 +630,7 @@ private fun TotalsGrid(totals: Totals.Visible) {
     Column(
         modifier = Modifier
             .padding(WooPosSpacing.Large.value)
-            .fillMaxWidth(0.5f),
+            .adaptiveContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -415,20 +707,22 @@ private fun TotalsGridRow(
 
 @Composable
 private fun TotalsLoading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+    val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = WooPosSpacing.XLarge.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
-            modifier = Modifier
-                .wrapContentSize(),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(24.dp)
-                    .width(332.dp)
+                    .height(24.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
 
@@ -436,8 +730,8 @@ private fun TotalsLoading() {
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(24.dp)
-                    .width(332.dp)
+                    .height(24.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
 
@@ -445,11 +739,16 @@ private fun TotalsLoading() {
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(332.dp)
+                    .height(40.dp.toAdaptiveComponentSize())
+                    .adaptiveContentWidth()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
+        Spacer(
+            modifier = Modifier
+                .height(if (isPhone) WooPosSpacing.Large.value else WooPosSpacing.None.value)
+                .navigationBarsPadding()
+        )
     }
 }
 
@@ -538,6 +837,30 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
 
 @Composable
 @WooPosPreview
+fun WooPosTotalsScreenPhoneBackPreview(modifier: Modifier = Modifier) {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$420.00",
+                    orderTotalText = "$462.00",
+                    orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
+                    title = "Ready for payment",
+                    subtitle = "Tap, swipe or insert card",
+                ),
+            ),
+            onUIEvent = {},
+            onPhoneBack = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
 fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosTotalsScreen(
@@ -554,6 +877,31 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
                     subtitle = "To process this payment, please connect your reader.",
                     actionButtonLabel = "Connect to a reader",
                 ),
+            ),
+            onUIEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsScreenPreviewWithTapToPayPromoted() {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = Modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$420.00",
+                    orderTotalText = "$462.00",
+                    orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
+                    title = "Reader not connected",
+                    subtitle = "To process this payment, please connect your reader.",
+                    actionButtonLabel = "Connect to a reader",
+                ),
+                isTapToPayAvailable = true,
             ),
             onUIEvent = {},
         )
@@ -586,6 +934,27 @@ fun WooPosTotalsScreenPreviewWithCashPaymentAvailable() {
 
 @Composable
 @WooPosPreview
+fun WooPosTotalsScreenPreviewNoCardPaymentSupported() {
+    WooPosTheme {
+        WooPosTotalsScreen(
+            modifier = Modifier,
+            state = WooPosTotalsViewState.Checkout(
+                totals = Totals.Visible(
+                    orderSubtotalText = "$10.50",
+                    orderTotalText = "$12.00",
+                    orderTaxText = "$1.50",
+                    orderDiscountText = null,
+                ),
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
+                isCardPaymentEnabledForCountry = false,
+            ),
+            onUIEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
 fun WooPosTotalsScreenPreviewForFreeOrders() {
     WooPosTheme {
         WooPosTotalsScreen(
@@ -601,19 +970,6 @@ fun WooPosTotalsScreenPreviewForFreeOrders() {
             ),
             onUIEvent = {},
         )
-    }
-}
-
-@Composable
-@WooPosPreview
-fun TotalsErrorPreview() {
-    val readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
-        title = "Reader not connected",
-        subtitle = "To process this payment, please connect your reader.",
-        actionButtonLabel = "Connect to a reader",
-    )
-    WooPosTheme {
-        ReaderDisconnected(modifier = Modifier, status = readerStatus) {}
     }
 }
 

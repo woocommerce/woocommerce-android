@@ -43,16 +43,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState.Open.Input
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent.SearchIconClicked
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WOO_POS_ITEMS_TOOLBAR_HEIGHT
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
 
@@ -202,12 +203,12 @@ private fun SearchInput(
             leadingIcon = {
                 if (state.isLoading) {
                     WooPosCircularLoadingIndicator(
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(WooPosIconSize.Small.value)
                     )
                 } else {
                     IconButton(
                         onClick = {},
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(WooPosIconSize.Medium.value)
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_search_24dp),
@@ -221,7 +222,7 @@ private fun SearchInput(
                 if (textFieldValue.text.isNotEmpty()) {
                     IconButton(
                         onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(WooPosIconSize.Medium.value)
                     ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_clear),
@@ -280,6 +281,16 @@ sealed class WooPosSearchUIEvent {
     object SearchIconClicked : WooPosSearchUIEvent()
     data class Search(val query: String, val cursorPosition: Int) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
+}
+
+fun WooPosSearchUIEvent.toItemsUIEvent(): WooPosItemsUIEvent = when (this) {
+    WooPosSearchUIEvent.Clear -> WooPosItemsUIEvent.ClearSearchClicked
+    WooPosSearchUIEvent.Close -> WooPosItemsUIEvent.CloseSearchClicked
+    WooPosSearchUIEvent.SearchIconClicked -> WooPosItemsUIEvent.SearchIconClicked
+    is WooPosSearchUIEvent.Search -> WooPosItemsUIEvent.SearchChanged(
+        query = query,
+        cursorPosition = cursorPosition,
+    )
 }
 
 @WooPosPreview

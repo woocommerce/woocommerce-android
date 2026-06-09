@@ -30,20 +30,24 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemIm
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
 
 @Composable
 fun WooPosRefundDetailsDialog(
-    dialogState: WooPosOrdersState.Content.DialogState.RefundDetails,
+    dialogState: WooPosOrderDetailsState.DialogState.RefundDetails,
+    isVisible: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WooPosDialogWrapper(
         modifier = modifier,
-        isVisible = true,
+        isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_orders_details_refund_details_background
         ),
@@ -64,7 +68,7 @@ fun WooPosRefundDetailsDialog(
 
             WooPosLazyColumn(
                 modifier = Modifier.weight(1f, fill = false),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.None.value),
                 contentPadding = PaddingValues(bottom = WooPosSpacing.Medium.value),
                 withBottomShadow = true,
             ) {
@@ -127,10 +131,10 @@ private fun RefundDetailItem(
         WooPosItemImage(
             imageUrl = item.imageUrl,
             modifier = Modifier
-                .size(56.dp)
+                .size(56.dp.toAdaptiveIconSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
             placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-            placeholderIconSize = 24.dp,
+            placeholderIconSize = WooPosIconSize.Small.value,
         )
 
         Spacer(Modifier.width(WooPosSpacing.Medium.value))

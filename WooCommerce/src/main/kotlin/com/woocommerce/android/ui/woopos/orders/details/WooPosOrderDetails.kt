@@ -34,6 +34,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountTileAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
@@ -41,13 +42,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverfl
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
 import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
-import com.woocommerce.android.ui.woopos.orders.WOO_POS_ORDERS_TOOLBAR_HEIGHT
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
@@ -57,6 +60,7 @@ fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
     showOrderNumber: Boolean = true,
+    foldPrimaryAction: Boolean = false,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
@@ -71,7 +75,7 @@ fun WooPosOrderDetails(
             )
     ) {
         Row(
-            modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+            modifier = Modifier.heightIn(min = WooPosComponentSize.XSmall.value),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (showOrderNumber) {
@@ -84,7 +88,7 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
-            OrderActions(details, onUIEvent)
+            OrderActions(details, onUIEvent, foldPrimaryAction)
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
@@ -106,38 +110,26 @@ fun WooPosOrderDetails(
 @Composable
 private fun OrderActions(
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    foldPrimaryAction: Boolean = false,
 ) {
-    when (val actionsState = details.actionsState) {
-        is WooPosOrdersState.OrderActionsState.Loading -> {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .height(40.dp)
-                    .width(160.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            )
-        }
+    val actions = details.actions
+    val primaryAction = if (foldPrimaryAction) null else actions.firstOrNull()
+    val overflowActions = if (foldPrimaryAction) actions else actions.drop(1)
 
-        is WooPosOrdersState.OrderActionsState.Loaded -> {
-            val actions = actionsState.actions
-            val primaryAction = actions.firstOrNull()
-            val overflowActions = actions.drop(1)
-
-            WooPosOverflowMenu(
-                primaryAction = primaryAction?.let { action ->
-                    WooPosOverflowPrimaryAction(
-                        label = orderActionLabel(action),
-                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
-                    )
-                },
-                items = overflowActions.map { action ->
-                    orderActionToMenuItem(action) {
-                        onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
-                    }
-                }
+    WooPosOverflowMenu(
+        primaryAction = primaryAction?.let { action ->
+            WooPosOverflowPrimaryAction(
+                label = orderActionLabel(action),
+                onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
             )
+        },
+        items = overflowActions.map { action ->
+            orderActionToMenuItem(action) {
+                onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
+            }
         }
-    }
+    )
 }
 
 @Composable
@@ -253,7 +245,7 @@ private fun ProductsShimmer(title: String) {
                 ) {
                     WooPosShimmerBox(
                         modifier = Modifier
-                            .size(56.dp)
+                            .size(56.dp.toAdaptiveIconSize())
                             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                     )
                     Spacer(Modifier.width(WooPosSpacing.Medium.value))
@@ -261,14 +253,14 @@ private fun ProductsShimmer(title: String) {
                         WooPosShimmerBox(
                             modifier = Modifier
                                 .fillMaxWidth(0.6f)
-                                .height(16.dp)
+                                .height(16.dp.toAdaptiveIconSize())
                                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                         )
                         Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                         WooPosShimmerBox(
                             modifier = Modifier
                                 .fillMaxWidth(0.3f)
-                                .height(14.dp)
+                                .height(14.dp.toAdaptiveIconSize())
                                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                         )
                     }
@@ -306,14 +298,16 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             }
         )
 
-        OrderLineItemImage(
-            imageUrl = row.imageUrl,
-            modifier = Modifier.constrainAs(image) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-        )
+        val imageModifier = Modifier.constrainAs(image) {
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+        }
+        if (row.isLumpSum) {
+            WooPosCustomAmountTileAvatar(name = row.name, modifier = imageModifier)
+        } else {
+            OrderLineItemImage(imageUrl = row.imageUrl, modifier = imageModifier)
+        }
 
         val hasAttributes = !row.attributesDescription.isNullOrEmpty()
         if (hasAttributes) {
@@ -339,10 +333,19 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
         }
 
         val bookingInfo = row.bookingInfo
-        if (bookingInfo != null) {
-            BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
-        } else {
-            WooPosText(
+        when {
+            bookingInfo != null -> BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
+            row.isLumpSum -> {
+                if (row.includesTax) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
+                        style = WooPosTypography.BodyMedium,
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        modifier = subtitleModifier,
+                    )
+                }
+            }
+            else -> WooPosText(
                 text = row.qtyAndUnitPrice,
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
@@ -468,28 +471,35 @@ private fun OrdersTotals(
                 )
             }
 
-            if (breakdown.refunds.isNotEmpty()) {
-                DividerWithSpacing()
-                breakdown.refunds.forEachIndexed { index, refundRow ->
-                    RefundRowContent(
-                        refundRow = refundRow,
-                        onViewDetailsClicked = {
-                            onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
-                        }
-                    )
-                    if (index < breakdown.refunds.size - 1) {
+            when (val refundsState = breakdown.refundsState) {
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loading -> {
+                    DividerWithSpacing()
+                    RefundRowShimmer()
+                }
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded -> {
+                    if (refundsState.refunds.isNotEmpty()) {
                         DividerWithSpacing()
+                        refundsState.refunds.forEachIndexed { index, refundRow ->
+                            RefundRowContent(
+                                refundRow = refundRow,
+                                onViewDetailsClicked = {
+                                    onUIEvent(WooPosOrdersUIEvent.ViewRefundDetailsClicked(index))
+                                }
+                            )
+                            if (index < refundsState.refunds.size - 1) {
+                                DividerWithSpacing()
+                            }
+                        }
                     }
                 }
-            }
-
-            breakdown.refundLoadError?.let { error ->
-                DividerWithSpacing()
-                WooPosText(
-                    text = error,
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                )
+                is WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Error -> {
+                    DividerWithSpacing()
+                    WooPosText(
+                        text = refundsState.message,
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
 
             breakdown.netPayment?.let { netPayment ->
@@ -556,6 +566,43 @@ private fun RefundRowContent(
 }
 
 @Composable
+private fun RefundRowShimmer() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            WooPosShimmerText(
+                text = REFUND_SHIMMER_LABEL_PLACEHOLDER,
+                style = WooPosTypography.BodyLarge.style,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.weight(1f))
+            WooPosShimmerText(
+                text = REFUND_SHIMMER_AMOUNT_PLACEHOLDER,
+                style = WooPosTypography.BodyMedium.style,
+            )
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+        WooPosShimmerText(
+            text = REFUND_SHIMMER_DATE_PLACEHOLDER,
+            style = WooPosTypography.BodyMedium.style,
+        )
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosShimmerText(
+            text = REFUND_SHIMMER_VIEW_DETAILS_PLACEHOLDER,
+            style = WooPosTypography.BodyMedium.style,
+        )
+    }
+}
+
+private const val REFUND_SHIMMER_LABEL_PLACEHOLDER = "Refund #1"
+private const val REFUND_SHIMMER_AMOUNT_PLACEHOLDER = "-$00.00"
+private const val REFUND_SHIMMER_DATE_PLACEHOLDER = "Jan 01, 2025 at 12:00 PM"
+private const val REFUND_SHIMMER_VIEW_DETAILS_PLACEHOLDER = "View details"
+
+@Composable
 private fun TotalRowLine(
     label: String,
     value: String,
@@ -588,10 +635,10 @@ private fun OrderLineItemImage(
     WooPosItemImage(
         imageUrl = imageUrl,
         modifier = modifier
-            .size(56.dp)
+            .size(56.dp.toAdaptiveIconSize())
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
         placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
-        placeholderIconSize = 24.dp
+        placeholderIconSize = WooPosIconSize.Small.value
     )
 }
 
@@ -671,6 +718,16 @@ fun WooPosOrderDetailsPreview() {
                     bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
                         "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
                     )
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                    id = 901,
+                    name = "Gift wrap",
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "",
+                    lineTotal = "$2.50",
+                    imageUrl = null,
+                    isLumpSum = true,
+                    includesTax = true,
                 )
             )
         ),
@@ -692,18 +749,20 @@ fun WooPosOrderDetailsPreview() {
             discountCode = "SAVE5",
             taxes = "$0.00",
             shipping = null,
-            refunds = listOf(
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = "Refund #1",
-                    amount = "-$3.00",
-                    date = "Aug 29, 2025 at 12:26 PM",
-                    reason = "Customer bought an extra item.",
-                ),
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                    label = "Refund #2",
-                    amount = "-$2.00",
-                    date = "Aug 30, 2025 at 2:15 PM",
-                    reason = null,
+            refundsState = WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded(
+                refunds = listOf(
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = "Refund #1",
+                        amount = "-$3.00",
+                        date = "Aug 29, 2025 at 12:26 PM",
+                        reason = "Customer bought an extra item.",
+                    ),
+                    WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                        label = "Refund #2",
+                        amount = "-$2.00",
+                        date = "Aug 30, 2025 at 2:15 PM",
+                        reason = null,
+                    ),
                 ),
             ),
             netPayment = "$13.00"
@@ -711,11 +770,9 @@ fun WooPosOrderDetailsPreview() {
         total = "$18.00",
         totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments",
-        actionsState = WooPosOrdersState.OrderActionsState.Loaded(
-            listOf(
-                WooPosOrdersState.OrderAction.IssueRefund(1L),
-                WooPosOrdersState.OrderAction.EmailReceipt(1L)
-            )
+        actions = listOf(
+            WooPosOrdersState.OrderAction.IssueRefund(1L),
+            WooPosOrdersState.OrderAction.EmailReceipt(1L)
         )
     )
 

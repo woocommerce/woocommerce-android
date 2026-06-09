@@ -40,11 +40,11 @@ class BookingListHandlerTest : BaseUnitTest() {
             val limit = invocation.getArgument<Int>(0)
             results.map { it.take(limit) }
         }
-        onBlocking { getBookingsList(any(), anyOrNull(), any()) } doAnswer { invocation ->
+        on { getBookingsList(any(), anyOrNull(), any()) } doAnswer { invocation ->
             val limit = invocation.getArgument<Int>(0)
             results.value.take(limit)
         }
-        onBlocking {
+        on {
             fetchBookings(
                 any(),
                 any(),

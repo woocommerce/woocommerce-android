@@ -31,7 +31,9 @@ class DashboardRepository @Inject constructor(
     observePushNotificationsWidgetStatus: ObservePushNotificationsWidgetStatus,
     observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus,
     observeStockWidgetStatus: ObserveStockWidgetStatus,
-    observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus
+    observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus,
+    observeInboxWidgetStatus: ObserveInboxWidgetStatus,
+    observeAIAssistantWidgetStatus: ObserveAIAssistantWidgetStatus,
 ) {
     private val siteCoroutineScopeFlow = selectedSite.observe().map {
         selectedSite.siteComponent?.let { component ->
@@ -62,6 +64,10 @@ class DashboardRepository @Inject constructor(
 
     private val googleAdsWidgetStatus = widgetStatusFlow { observeGoogleAdsWidgetStatus() }
 
+    private val inboxWidgetStatus = widgetStatusFlow { observeInboxWidgetStatus() }
+
+    private val aiAssistantWidgetStatus = widgetStatusFlow { observeAIAssistantWidgetStatus() }
+
     val widgets = combine(
         dashboardDataStore.widgets,
         siteOrdersState,
@@ -69,16 +75,20 @@ class DashboardRepository @Inject constructor(
         pushNotificationsWidgetStatus,
         onboardingWidgetStatus,
         stockWidgetStatus,
-        googleAdsWidgetStatus
+        googleAdsWidgetStatus,
+        inboxWidgetStatus,
+        aiAssistantWidgetStatus
     ) { widgets, siteOrdersState, blazeWidgetStatus, pushNotificationsWidgetStatus, onboardingWidgetStatus,
-        stockWidgetStatus, googleAdsWidgetStatus ->
+        stockWidgetStatus, googleAdsWidgetStatus, inboxWidgetStatus, aiAssistantWidgetStatus ->
         widgets.toDomainModel(
             siteOrdersState,
             blazeWidgetStatus,
             pushNotificationsWidgetStatus,
             onboardingWidgetStatus,
             stockWidgetStatus,
-            googleAdsWidgetStatus
+            googleAdsWidgetStatus,
+            inboxWidgetStatus,
+            aiAssistantWidgetStatus
         )
     }
 
@@ -118,13 +128,35 @@ class DashboardRepository @Inject constructor(
         updateWidgets(widgets + newWidgets)
     }
 
+    suspend fun insertAIAssistantWidgetAtTopIfMissing() {
+        val storedWidgets = dashboardDataStore.widgets.first()
+        if (storedWidgets.any { it.type == DashboardWidget.Type.AI_ASSISTANT.name }) {
+            return
+        }
+
+        val aiAssistantWidget = DashboardWidget(
+            type = DashboardWidget.Type.AI_ASSISTANT,
+            isSelected = true,
+            status = DashboardWidget.Status.Available
+        ).toDataModel()
+
+        dashboardDataStore.updateDashboard(
+            DashboardDataModel.newBuilder()
+                .addWidgets(aiAssistantWidget)
+                .addAllWidgets(storedWidgets)
+                .build()
+        )
+    }
+
     private fun List<DashboardWidgetDataModel>.toDomainModel(
         siteOrdersState: DashboardWidget.Status,
         blazeWidgetStatus: DashboardWidget.Status,
         pushNotificationsWidgetStatus: DashboardWidget.Status,
         onboardingWidgetStatus: DashboardWidget.Status,
         stockWidgetStatus: DashboardWidget.Status,
-        googleAdsWidgetStatus: DashboardWidget.Status
+        googleAdsWidgetStatus: DashboardWidget.Status,
+        inboxWidgetStatus: DashboardWidget.Status,
+        aiAssistantWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
         return map { widget ->
             val type = DashboardWidget.Type.valueOf(widget.type)
@@ -141,6 +173,8 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                     DashboardWidget.Type.STOCK -> stockWidgetStatus
                     DashboardWidget.Type.GOOGLE_ADS -> googleAdsWidgetStatus
+                    DashboardWidget.Type.INBOX -> inboxWidgetStatus
+                    DashboardWidget.Type.AI_ASSISTANT -> aiAssistantWidgetStatus
 
                     else -> DashboardWidget.Status.Available
                 }

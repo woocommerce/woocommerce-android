@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,6 +77,116 @@ object WooPosIcons {
             bodyColor = MaterialTheme.colorScheme.secondary,
             detailColor = MaterialTheme.colorScheme.primary,
         )
+
+    val CardReaderScanning: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            cardReaderWithNfcDark(
+                blobColor = Color(0xFFB280FF).copy(alpha = 0.5f),
+                readerBodyColor = Color(0xFFBEA0F2),
+                readerFaceColor = Color(0xFFDFD1FB),
+                nfcColor = Color(0xFF966CCF)
+            )
+        } else {
+            cardReaderWithNfc(
+                blobColor = Color(0xFFAD86E9),
+                readerBodyColor = Color(0xFFDFD1FB),
+                readerFaceColor = Color(0xFFF2EDFF),
+                nfcColor = Color(0xFF966CCF)
+            )
+        }
+
+    val CardReaderFound: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            cardReaderWithNfcDark(
+                blobColor = Color(0xFF9252E0).copy(alpha = 0.5f),
+                readerBodyColor = Color(0xFFBEA0F2),
+                readerFaceColor = Color(0xFFDFD1FB),
+                nfcColor = Color(0xFF966CCF)
+            )
+        } else {
+            cardReaderWithNfc(
+                blobColor = Color(0xFF7F54B3),
+                readerBodyColor = Color(0xFFDFD1FB),
+                readerFaceColor = Color(0xFFF2EDFF),
+                nfcColor = Color(0xFF966CCF)
+            )
+        }
+
+    val CardReaderConnecting: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            cardReaderWithNfcDark(
+                blobColor = Color(0xFFBE99FF).copy(alpha = 0.5f),
+                readerBodyColor = Color(0xFFBEA0F2),
+                readerFaceColor = Color(0xFFDFD1FB),
+                nfcColor = Color(0xFFCFB9F6)
+            )
+        } else {
+            cardReaderWithNfc(
+                blobColor = Color(0xFFBEA0F2),
+                readerBodyColor = Color(0xFFDFD1FB),
+                readerFaceColor = Color(0xFFF2EDFF),
+                nfcColor = Color(0xFFCFB9F6)
+            )
+        }
+
+    val CardReaderSuccess: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            cardReaderWithNfcDark(
+                blobColor = Color(0xFF66EA87).copy(alpha = 0.5f),
+                readerBodyColor = Color(0xFF9EFAAD),
+                readerFaceColor = Color(0xFFDBFFDB),
+                nfcColor = Color(0xFF18CD82)
+            )
+        } else {
+            cardReaderWithNfc(
+                blobColor = Color(0xFF66EA87),
+                readerBodyColor = Color(0xFF9EFAAD),
+                readerFaceColor = Color(0xFFDBFFDB),
+                nfcColor = Color(0xFF18CD82)
+            )
+        }
+
+    val CardReaderError: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            cardReaderErrorDark(
+                blobColor = Color(0xFFFFB31A).copy(alpha = 0.5f),
+                readerBodyColor = Color(0xFFBD460A),
+                readerFaceColor = Color(0xFFF5C13D),
+                exclamationColor = Color(0xFFBD4200)
+            )
+        } else {
+            cardReaderError(
+                blobColor = Color(0xFFFFEE86),
+                readerBodyColor = Color(0xFFFF7122),
+                readerFaceColor = Color(0xFFFFBE16),
+                exclamationColor = Color(0xFFBD4200)
+            )
+        }
+
+    val CardReaderBatteryLow: ImageVector
+        @Composable
+        get() = if (isSystemInDarkTheme()) {
+            cardReaderBatteryDark(
+                blobColor = Color(0xFF85857A).copy(alpha = 0.5f),
+                readerBodyColor = Color(0xFF82807D),
+                readerFaceColor = Color(0xFFBAB7B2),
+                batteryColor = Color.Black,
+                batteryLevelColor = Color(0xFFFF7122)
+            )
+        } else {
+            cardReaderBattery(
+                blobColor = Color(0xFFE7E7E5),
+                readerBodyColor = Color(0xFF767471),
+                readerFaceColor = Color(0xFFBAB7B2),
+                batteryColor = Color.White,
+                batteryLevelColor = Color(0xFFFF7122)
+            )
+        }
 
     val CardReaderNotConnected: ImageVector
         @Composable
@@ -540,6 +651,246 @@ object WooPosIcons {
         }.build()
     }
 
+    private fun ImageVector.Builder.addCardReaderBlobs(blobColor: Color) {
+        path(fill = SolidColor(blobColor)) {
+            moveTo(54.6986f, 141.943f)
+            curveTo(51.6569f, 143.799f, 48.2843f, 145.052f, 44.6415f, 145.58f)
+            curveTo(25.393f, 148.373f, 5.88991f, 129.904f, 1.08011f, 104.328f)
+            curveTo(-3.72969f, 78.7526f, 7.97517f, 55.7552f, 27.2236f, 52.9623f)
+            curveTo(35.6626f, 51.7378f, 44.1505f, 54.6001f, 51.4277f, 60.3565f)
+            curveTo(60.8814f, 22.6925f, 84.173f, -2.94319f, 108.874f, 0.271658f)
+            curveTo(126.42f, 2.55524f, 140.716f, 18.8801f, 148.469f, 42.2086f)
+            curveTo(160.466f, 33.0717f, 173.517f, 30.0297f, 184.124f, 35.3818f)
+            curveTo(203.378f, 45.0968f, 207.285f, 78.7903f, 192.851f, 110.638f)
+            curveTo(179.655f, 139.756f, 155.697f, 157.25f, 136.972f, 152.612f)
+            curveTo(125.423f, 171.338f, 109.489f, 182.162f, 92.9209f, 180.005f)
+            curveTo(76.3635f, 177.85f, 62.6999f, 163.192f, 54.6986f, 141.943f)
+            close()
+        }
+    }
+
+    private fun ImageVector.Builder.addCardReaderBody(
+        readerBodyColor: Color,
+        readerFaceColor: Color
+    ) {
+        path(fill = SolidColor(readerBodyColor)) {
+            moveTo(61.4512f, 31.2461f)
+            lineTo(141.4512f, 31.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 157.4512f, 47.2461f)
+            lineTo(157.4512f, 128.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 141.4512f, 144.2461f)
+            lineTo(61.4512f, 144.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 45.4512f, 128.2461f)
+            lineTo(45.4512f, 47.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 61.4512f, 31.2461f)
+            close()
+        }
+        path(fill = SolidColor(readerFaceColor)) {
+            moveTo(61.4512f, 47.2461f)
+            lineTo(141.4512f, 47.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 157.4512f, 63.2461f)
+            lineTo(157.4512f, 128.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 141.4512f, 144.2461f)
+            lineTo(61.4512f, 144.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 45.4512f, 128.2461f)
+            lineTo(45.4512f, 63.2461f)
+            arcTo(16f, 16f, 0f, isMoreThanHalf = false, isPositiveArc = true, 61.4512f, 47.2461f)
+            close()
+        }
+    }
+
+    private fun ImageVector.Builder.addNfcSignal(nfcColor: Color) {
+        path(
+            stroke = SolidColor(nfcColor),
+            strokeLineWidth = 4f,
+            strokeLineCap = androidx.compose.ui.graphics.StrokeCap.Round
+        ) {
+            moveTo(92.4512f, 89.369f)
+            curveTo(94.0182f, 93.1521f, 94.142f, 97.5329f, 92.4512f, 101.615f)
+            moveTo(99.8422f, 86.3076f)
+            curveTo(102.193f, 91.9822f, 102.378f, 98.5534f, 99.8422f, 104.676f)
+            moveTo(107.233f, 83.2461f)
+            curveTo(110.367f, 90.8122f, 110.615f, 99.5739f, 107.233f, 107.738f)
+        }
+    }
+
+    private fun ImageVector.Builder.addExclamationMark(exclamationColor: Color) {
+        path(fill = SolidColor(exclamationColor)) {
+            moveTo(101.451f, 102.468f)
+            curveTo(99.5499f, 102.468f, 98.5746f, 101.514f, 98.5252f, 99.6055f)
+            lineTo(98.0438f, 80.4351f)
+            curveTo(98.0191f, 79.5171f, 98.3154f, 78.7561f, 98.9327f, 78.1521f)
+            curveTo(99.5746f, 77.5481f, 100.402f, 77.2461f, 101.414f, 77.2461f)
+            curveTo(102.402f, 77.2461f, 103.217f, 77.5602f, 103.859f, 78.1883f)
+            curveTo(104.525f, 78.7923f, 104.846f, 79.5533f, 104.822f, 80.4714f)
+            lineTo(104.266f, 99.6055f)
+            curveTo(104.241f, 101.514f, 103.303f, 102.468f, 101.451f, 102.468f)
+            close()
+            moveTo(101.451f, 114.246f)
+            curveTo(100.365f, 114.246f, 99.4265f, 113.884f, 98.6364f, 113.159f)
+            curveTo(97.8462f, 112.41f, 97.4512f, 111.516f, 97.4512f, 110.477f)
+            curveTo(97.4512f, 109.438f, 97.8462f, 108.557f, 98.6364f, 107.832f)
+            curveTo(99.4265f, 107.083f, 100.365f, 106.708f, 101.451f, 106.708f)
+            curveTo(102.538f, 106.708f, 103.476f, 107.071f, 104.266f, 107.796f)
+            curveTo(105.056f, 108.52f, 105.451f, 109.414f, 105.451f, 110.477f)
+            curveTo(105.451f, 111.54f, 105.044f, 112.434f, 104.229f, 113.159f)
+            curveTo(103.439f, 113.884f, 102.513f, 114.246f, 101.451f, 114.246f)
+            close()
+        }
+    }
+
+    private fun ImageVector.Builder.addBatteryIcon(
+        batteryColor: Color,
+        batteryLevelColor: Color
+    ) {
+        path(fill = SolidColor(batteryColor)) {
+            moveTo(91.4512f, 60.2461f)
+            curveTo(89.242f, 60.2461f, 87.4512f, 62.037f, 87.4512f, 64.2461f)
+            verticalLineTo(68.2461f)
+            horizontalLineTo(80.4512f)
+            curveTo(77.6897f, 68.2461f, 75.4512f, 70.4847f, 75.4512f, 73.2461f)
+            verticalLineTo(123.246f)
+            curveTo(75.4512f, 126.008f, 77.6897f, 128.246f, 80.4512f, 128.246f)
+            horizontalLineTo(122.451f)
+            curveTo(125.213f, 128.246f, 127.451f, 126.008f, 127.451f, 123.246f)
+            verticalLineTo(73.2461f)
+            curveTo(127.451f, 70.4847f, 125.213f, 68.2461f, 122.451f, 68.2461f)
+            horizontalLineTo(115.451f)
+            verticalLineTo(64.2461f)
+            curveTo(115.451f, 62.037f, 113.66f, 60.2461f, 111.451f, 60.2461f)
+            horizontalLineTo(91.4512f)
+            close()
+        }
+        path(fill = SolidColor(batteryLevelColor)) {
+            moveTo(83.4512f, 114.246f)
+            lineTo(119.4512f, 114.246f)
+            arcTo(3f, 3f, 0f, isMoreThanHalf = false, isPositiveArc = true, 122.4512f, 117.246f)
+            lineTo(122.4512f, 117.246f)
+            arcTo(3f, 3f, 0f, isMoreThanHalf = false, isPositiveArc = true, 119.4512f, 120.246f)
+            lineTo(83.4512f, 120.246f)
+            arcTo(3f, 3f, 0f, isMoreThanHalf = false, isPositiveArc = true, 80.4512f, 117.246f)
+            lineTo(80.4512f, 117.246f)
+            arcTo(3f, 3f, 0f, isMoreThanHalf = false, isPositiveArc = true, 83.4512f, 114.246f)
+            close()
+        }
+    }
+
+    private fun cardReaderWithNfc(
+        blobColor: Color,
+        readerBodyColor: Color,
+        readerFaceColor: Color,
+        nfcColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderWithNfc",
+            defaultWidth = 202.dp,
+            defaultHeight = 181.dp,
+            viewportWidth = 202f,
+            viewportHeight = 181f
+        ).apply {
+            addCardReaderBlobs(blobColor)
+            addCardReaderBody(readerBodyColor, readerFaceColor)
+            addNfcSignal(nfcColor)
+        }.build()
+    }
+
+    private fun cardReaderWithNfcDark(
+        blobColor: Color,
+        readerBodyColor: Color,
+        readerFaceColor: Color,
+        nfcColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderWithNfcDark",
+            defaultWidth = 202.dp,
+            defaultHeight = 181.dp,
+            viewportWidth = 202f,
+            viewportHeight = 181f
+        ).apply {
+            addCardReaderBlobs(blobColor)
+            addCardReaderBody(readerBodyColor, readerFaceColor)
+            addNfcSignal(nfcColor)
+        }.build()
+    }
+
+    private fun cardReaderError(
+        blobColor: Color,
+        readerBodyColor: Color,
+        readerFaceColor: Color,
+        exclamationColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderError",
+            defaultWidth = 202.dp,
+            defaultHeight = 181.dp,
+            viewportWidth = 202f,
+            viewportHeight = 181f
+        ).apply {
+            addCardReaderBlobs(blobColor)
+            addCardReaderBody(readerBodyColor, readerFaceColor)
+            addExclamationMark(exclamationColor)
+        }.build()
+    }
+
+    private fun cardReaderErrorDark(
+        blobColor: Color,
+        readerBodyColor: Color,
+        readerFaceColor: Color,
+        exclamationColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderErrorDark",
+            defaultWidth = 202.dp,
+            defaultHeight = 181.dp,
+            viewportWidth = 202f,
+            viewportHeight = 181f
+        ).apply {
+            addCardReaderBlobs(blobColor)
+            addCardReaderBody(readerBodyColor, readerFaceColor)
+            addExclamationMark(exclamationColor)
+        }.build()
+    }
+
+    private fun cardReaderBattery(
+        blobColor: Color,
+        readerBodyColor: Color,
+        readerFaceColor: Color,
+        batteryColor: Color,
+        batteryLevelColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderBattery",
+            defaultWidth = 202.dp,
+            defaultHeight = 181.dp,
+            viewportWidth = 202f,
+            viewportHeight = 181f
+        ).apply {
+            addCardReaderBlobs(blobColor)
+            addCardReaderBody(readerBodyColor, readerFaceColor)
+            addBatteryIcon(batteryColor, batteryLevelColor)
+        }.build()
+    }
+
+    private fun cardReaderBatteryDark(
+        blobColor: Color,
+        readerBodyColor: Color,
+        readerFaceColor: Color,
+        batteryColor: Color,
+        batteryLevelColor: Color
+    ): ImageVector {
+        return ImageVector.Builder(
+            name = "CardReaderBatteryDark",
+            defaultWidth = 202.dp,
+            defaultHeight = 181.dp,
+            viewportWidth = 202f,
+            viewportHeight = 181f
+        ).apply {
+            addCardReaderBlobs(blobColor)
+            addCardReaderBody(readerBodyColor, readerFaceColor)
+            addBatteryIcon(batteryColor, batteryLevelColor)
+        }.build()
+    }
+
     private fun cardReaderNotConnected(
         primaryColor: Color,
         secondaryColor: Color,
@@ -767,83 +1118,143 @@ private fun WooPosIconsPreview() {
                 maxItemsInEachRow = 4
             ) {
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.NotFound,
                         contentDescription = "NotFound",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.Check,
                         contentDescription = "Check",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.ErrorX,
                         contentDescription = "ErrorX",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.OrdersEmpty,
                         contentDescription = "OrdersEmpty",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.BluetoothSettings,
                         contentDescription = "BluetoothSettings",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CouponsEmpty,
                         contentDescription = "CouponsEmpty",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderScanning,
+                        contentDescription = "CardReaderScanning",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderFound,
+                        contentDescription = "CardReaderFound",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderConnecting,
+                        contentDescription = "CardReaderConnecting",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderSuccess,
+                        contentDescription = "CardReaderSuccess",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderError,
+                        contentDescription = "CardReaderError",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        imageVector = WooPosIcons.CardReaderBatteryLow,
+                        contentDescription = "CardReaderBatteryLow",
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.CardReaderNotConnected,
                         contentDescription = "CardReaderNotConnected",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(WooPosComponentSize.Small.value),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         imageVector = WooPosIcons.BookingsEmpty,
                         contentDescription = "BookingsEmpty",
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
             }

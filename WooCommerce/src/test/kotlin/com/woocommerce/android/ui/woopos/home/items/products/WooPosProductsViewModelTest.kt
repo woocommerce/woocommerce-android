@@ -55,8 +55,8 @@ class WooPosProductsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
-        onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+        on { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
+        on { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
@@ -335,6 +335,23 @@ class WooPosProductsViewModelTest {
             val value = awaitItem()
             assertThat(value).isInstanceOf(WooPosProductsViewState.Empty::class.java)
         }
+    }
+
+    @Test
+    fun `when custom amount entry row clicked, then dialog request event sent and tracked`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.CustomAmountEntryRowClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.CustomAmountDialogRequested())
+        )
+        verify(analyticsTracker).track(
+            eq(WooPosAnalyticsEvent.Event.CustomAmountEntryRowTapped)
+        )
     }
 
     @Test

@@ -6,9 +6,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
@@ -17,6 +19,9 @@ class AutoLoginActivity : AppCompatActivity() {
 
     @Inject
     lateinit var autoLoginHandler: AutoLoginHandler
+
+    @Inject
+    lateinit var registerDevice: RegisterDevice
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -32,6 +37,7 @@ class AutoLoginActivity : AppCompatActivity() {
             uri = uri,
             scope = lifecycleScope,
             onSuccess = {
+                registerDevice.kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             },

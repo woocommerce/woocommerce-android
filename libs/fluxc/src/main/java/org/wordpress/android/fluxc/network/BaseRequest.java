@@ -1,5 +1,8 @@
 package org.wordpress.android.fluxc.network;
 
+import static org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.METHOD_NOT_ALLOWED;
+import static org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.NOT_SET;
+
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Base64;
@@ -29,9 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.SSLHandshakeException;
-
-import static org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.METHOD_NOT_ALLOWED;
-import static org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.NOT_SET;
 
 public abstract class BaseRequest<T> extends Request<T> {
     public static final int DEFAULT_REQUEST_TIMEOUT = 30000;
@@ -86,7 +86,8 @@ public abstract class BaseRequest<T> extends Request<T> {
         }
 
         public BaseNetworkError(@NonNull GenericErrorType error, @NonNull VolleyError volleyError) {
-            this.message = "";
+            String volleyErrorMessage = volleyError.getMessage();
+            this.message = volleyErrorMessage != null ? volleyErrorMessage : "";
             this.type = error;
             this.volleyError = volleyError;
         }
@@ -103,6 +104,12 @@ public abstract class BaseRequest<T> extends Request<T> {
         public BaseNetworkError(@NonNull VolleyError volleyError) {
             this.type = GenericErrorType.UNKNOWN;
             this.message = "";
+            this.volleyError = volleyError;
+        }
+
+        public BaseNetworkError(@NonNull VolleyError volleyError, @NonNull String message) {
+            this.type = GenericErrorType.UNKNOWN;
+            this.message = message;
             this.volleyError = volleyError;
         }
 
@@ -384,7 +391,7 @@ public abstract class BaseRequest<T> extends Request<T> {
         }
 
         // Nothing found
-        return new BaseNetworkError(volleyError);
+        return new BaseNetworkError(volleyError, errorMessage);
     }
 
     public abstract BaseNetworkError deliverBaseNetworkError(@NonNull BaseNetworkError error);

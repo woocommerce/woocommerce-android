@@ -20,7 +20,6 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
@@ -59,8 +58,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
-    private val registerDevice: RegisterDevice
+    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -71,9 +69,24 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val SUCCESS_PARAMETER = "success"
         private const val USERNAME_PARAMETER = "user_login"
         private const val PASSWORD_PARAMETER = "password"
+        private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
     }
 
-    private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
+    private var siteAddress: String
+        get() = savedStateHandle[SITE_ADDRESS_KEY]!!
+        set(value) {
+            savedStateHandle[SITE_ADDRESS_KEY] = value
+        }
+
+    // The URL the WP.com `connect/site-info` endpoint reports as the canonical site URL is
+    // sometimes wrong — its cache can return an http URL for a site that 301s to https. Once
+    // FluxC's WP-API discovery resolves the real scheme, we adopt it and re-attempt login
+    // (guarded so a misbehaving server can't trigger a ping-pong update).
+    private var hasReconciledSiteUrl: Boolean
+        get() = savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] ?: false
+        set(value) {
+            savedStateHandle[HAS_RECONCILED_SITE_URL_KEY] = value
+        }
 
     private val authError = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
@@ -255,6 +268,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loadingMessage.value = R.string.login_site_credentials_fetching_site
         wpApiSiteRepository.fetchSite(url = siteAddress).fold(
             onSuccess = { site ->
+                val canonicalUrl = site.url
+                if (!hasReconciledSiteUrl && !canonicalUrl.isNullOrEmpty() && canonicalUrl != siteAddress) {
+                    hasReconciledSiteUrl = true
+                    siteAddress = canonicalUrl
+                    login()
+                    return@fold
+                }
                 if (site.hasWooCommerce) {
                     fetchedSiteId.value = site.id
                     loadingMessage.value = 0
@@ -339,11 +359,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 }
                 appPrefs.removeLoginSiteAddress()
                 selectedSite.set(site)
-                registerDevice(RegisterDevice.Mode.IF_NEEDED)
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->
-                triggerEvent(ShowSnackbar(R.string.error_generic))
+                triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
                 when (exception) {
                     is ApplicationPasswordGenerationException -> {
                         trackLoginFailure(

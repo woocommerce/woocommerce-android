@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,6 +39,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -75,36 +77,46 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackBu
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
-fun WooPosCartScreen(modifier: Modifier = Modifier) {
-    val viewModel: WooPosCartViewModel = hiltViewModel()
-
-    viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(modifier, it, viewModel::onUIEvent)
+fun WooPosCartScreen(
+    checkoutSlot: WooPosCartCheckoutButtonSlot,
+    modifier: Modifier = Modifier,
+    viewModel: WooPosCartViewModel = hiltViewModel(),
+) {
+    viewModel.state.observeAsState().value?.let { state ->
+        WooPosCartScreen(modifier, state, viewModel::onUIEvent, checkoutSlot = checkoutSlot)
     }
 }
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
-private fun WooPosCartScreen(
+fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
+    checkoutSlot: WooPosCartCheckoutButtonSlot,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -122,6 +134,7 @@ private fun WooPosCartScreen(
             toolbar = state.toolbar,
             onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
             onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
+            onPhoneBack = onPhoneBack,
         )
 
         when (state.body) {
@@ -143,45 +156,54 @@ private fun WooPosCartScreen(
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
-                        bottom.linkTo(checkoutButton.top)
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
-                    checkoutButtonState = state.checkoutButtonState,
                     onUIEvent = onUIEvent
                 )
             }
         }
 
-        AnimatedVisibility(
-            visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
-            enter = fadeIn(animationSpec = tween(300)),
-            exit = fadeOut(animationSpec = tween(300)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value)
-                .padding(bottom = WooPosSpacing.Small.value)
-                .constrainAs(checkoutButton) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+        when (checkoutSlot) {
+            WooPosCartCheckoutButtonSlot.Inline -> {
+                AnimatedVisibility(
+                    visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
+                    enter = fadeIn(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(300)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(checkoutButton) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                ) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceBright,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        WooPosButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = WooPosSpacing.Medium.value)
+                                .navigationBarsPadding()
+                                .testTag(WooPosTestTags.CHECKOUT_BUTTON),
+                            text = stringResource(R.string.woopos_checkout_button),
+                            onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
+                            state = when (state.checkoutButtonState) {
+                                WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
+                                WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
+                                WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
+                            }
+                        )
+                    }
                 }
-        ) {
-            WooPosButton(
-                modifier = Modifier.testTag(WooPosTestTags.CHECKOUT_BUTTON),
-                text = stringResource(R.string.woopos_checkout_button),
-                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
-                state = when (state.checkoutButtonState) {
-                    WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
-                    WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
-
-                    // To be displayed during animation
-                    WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
-                }
-            )
+            }
+            WooPosCartCheckoutButtonSlot.External -> Unit
         }
     }
 }
@@ -200,7 +222,7 @@ fun CartBodyEmpty(
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_add_shopping_cart_24dp),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(WooPosComponentSize.Small.value),
             tint = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.5F)
         )
 
@@ -247,16 +269,10 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartItemViewState>,
     areItemsRemovable: Boolean,
-    checkoutButtonState: WooPosCartState.CheckoutButtonState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
-
-    val spacerHeight by animateDpAsState(
-        targetValue = if (checkoutButtonState == WooPosCartState.CheckoutButtonState.Invisible) 212.dp else 0.dp,
-        label = "cart list height animation"
-    )
 
     WooPosLazyColumn(
         modifier = modifier
@@ -290,6 +306,13 @@ private fun CartBodyWithItems(
                     onUIEvent = onUIEvent,
                 )
 
+                is WooPosCartItemViewState.CustomAmount -> CustomAmountItem(
+                    modifier = Modifier.animateItem(),
+                    item = item,
+                    canRemoveItems = areItemsRemovable,
+                    onUIEvent = onUIEvent,
+                )
+
                 is WooPosCartItemViewState.Error -> ErrorItem(
                     modifier = Modifier.animateItem(),
                     item = item,
@@ -304,9 +327,6 @@ private fun CartBodyWithItems(
                     onUIEvent = onUIEvent,
                 )
             }
-        }
-        item {
-            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
@@ -332,7 +352,8 @@ private fun CartToolbar(
     modifier: Modifier = Modifier,
     toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onPhoneBack: (() -> Unit)? = null,
 ) {
     val iconSize = 28.dp
     val iconTitlePadding = WooPosSpacing.Medium.value
@@ -346,16 +367,30 @@ private fun CartToolbar(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(56.dp)
+            .height(WooPosComponentSize.XSmall.value)
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        AnimatedVisibility(
-            visible = toolbar.backIconVisible,
-            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
-        ) {
-            WooPosBackButton(
+        when (onPhoneBack) {
+            null -> AnimatedVisibility(
+                visible = toolbar.backIconVisible,
+                enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+                exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+            ) {
+                WooPosBackButton(
+                    modifier = Modifier
+                        .constrainAs(backButton) {
+                            start.linkTo(parent.start)
+                            centerVerticallyTo(parent)
+                        }
+                        .padding(start = WooPosSpacing.Small.value),
+                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                    iconModifier = Modifier
+                        .size(iconSize)
+                        .offset(y = 4.dp)
+                ) { onBackClicked() }
+            }
+            else -> WooPosBackButton(
                 modifier = Modifier
                     .constrainAs(backButton) {
                         start.linkTo(parent.start)
@@ -363,12 +398,11 @@ private fun CartToolbar(
                     }
                     .padding(start = WooPosSpacing.Small.value),
                 contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                iconModifier = Modifier
-                    .size(iconSize)
-                    .offset(y = 4.dp)
-            ) { onBackClicked() }
+                onClick = onPhoneBack,
+            )
         }
 
+        val titleStartMargin = WooPosSpacing.Small.value
         WooPosText(
             text = stringResource(R.string.woopos_cart_title),
             style = WooPosTypography.Heading,
@@ -376,11 +410,17 @@ private fun CartToolbar(
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    start.linkTo(parent.start, margin = titleOffset)
+                    when (onPhoneBack) {
+                        null -> start.linkTo(parent.start, margin = titleOffset)
+                        else -> start.linkTo(backButton.end, margin = titleStartMargin)
+                    }
                     centerVerticallyTo(parent)
                 }
                 .padding(
-                    start = WooPosSpacing.Medium.value,
+                    start = when (onPhoneBack) {
+                        null -> WooPosSpacing.Medium.value
+                        else -> 0.dp
+                    },
                     end = WooPosSpacing.XSmall.value,
                 )
         )
@@ -458,7 +498,7 @@ private fun ClearCartButton(
                 expanded = dropdownExpanded,
                 onDismissRequest = { dropdownExpanded = false },
                 modifier = Modifier
-                    .defaultMinSize(minWidth = 200.dp)
+                    .defaultMinSize(minWidth = WooPosComponentSize.XLarge.value)
                     .background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
             ) {
                 DropdownMenuItem(
@@ -512,9 +552,9 @@ private fun ProductItem(
             WooPosItemImage(
                 imageUrl = item.imageUrl,
                 modifier = Modifier
-                    .width(96.dp)
+                    .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp),
+                    .heightIn(min = WooPosComponentSize.Medium.value),
                 placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
                 placeholderIconSize = 36.dp
             )
@@ -614,9 +654,9 @@ private fun CouponItem(
                             is CouponValidationState.Valid -> WooPosTheme.colors.success
                         }
                     )
-                    .width(96.dp)
+                    .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp),
+                    .heightIn(min = WooPosComponentSize.Medium.value),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -629,7 +669,7 @@ private fun CouponItem(
                             is CouponValidationState.Valid -> WooPosTheme.colors.onSuccess
                         }
                     ),
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(36.dp.toAdaptiveIconSize())
                 )
             }
 
@@ -696,6 +736,110 @@ private fun CouponItem(
 }
 
 @Composable
+private fun CustomAmountItem(
+    modifier: Modifier = Modifier,
+    item: WooPosCartItemViewState.CustomAmount,
+    canRemoveItems: Boolean,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_custom_amount_content_description,
+        item.name,
+        item.formattedAmount,
+    )
+
+    WooPosCard(
+        modifier = modifier
+            .wrapContentHeight()
+            .semantics { contentDescription = itemContentDescription },
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+    ) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            WooPosCustomAmountInitialsAvatar(
+                name = item.name,
+                modifier = Modifier
+                    .width(WooPosComponentSize.Medium.value)
+                    .fillMaxHeight()
+                    .heightIn(min = WooPosComponentSize.Medium.value),
+            )
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .padding(vertical = WooPosSpacing.Medium.value),
+            ) {
+                WooPosText(
+                    text = item.name,
+                    maxLines = 1,
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clearAndSetSemantics { },
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosText(
+                    text = item.formattedAmount,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { },
+                )
+                if (item.isTaxable) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_includes_tax),
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.onSurfaceVariantLowest,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clearAndSetSemantics { },
+                    )
+                }
+            }
+
+            // Edit lives inside the overflow menu, so this also gates the edit path during checkout
+            // — intentional: cart contents are locked once payment starts.
+            if (canRemoveItems) {
+                CustomAmountOverflowMenu(item = item, onUIEvent = onUIEvent)
+            }
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+        }
+    }
+}
+
+@Composable
+private fun CustomAmountOverflowMenu(
+    item: WooPosCartItemViewState.CustomAmount,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
+) {
+    WooPosOverflowMenu(
+        items = listOf(
+            WooPosOverflowMenuItem(
+                label = stringResource(R.string.woopos_cart_custom_amount_menu_edit),
+                onClick = { onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(item)) },
+            ),
+            WooPosOverflowMenuItem(
+                label = stringResource(R.string.woopos_cart_custom_amount_menu_remove),
+                color = MaterialTheme.colorScheme.error,
+                onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+            ),
+        )
+    )
+}
+
+@Composable
 private fun LoadingItem(
     modifier: Modifier = Modifier,
     item: WooPosCartItemViewState.Loading,
@@ -708,7 +852,7 @@ private fun LoadingItem(
     )
     WooPosCard(
         modifier = modifier
-            .height(96.dp)
+            .height(WooPosComponentSize.Medium.value)
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
@@ -721,7 +865,7 @@ private fun LoadingItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(WooPosComponentSize.Medium.value)
             ) {
                 WooPosShimmerBox(
                     modifier = Modifier.fillMaxSize()
@@ -786,16 +930,16 @@ private fun ErrorItem(
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.error)
-                    .width(96.dp)
+                    .width(WooPosComponentSize.Medium.value)
                     .fillMaxHeight()
-                    .heightIn(min = 96.dp),
+                    .heightIn(min = WooPosComponentSize.Medium.value),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onError),
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(36.dp.toAdaptiveIconSize())
                 )
             }
 
@@ -849,7 +993,7 @@ private fun RemoveItemFromCartButton(
     IconButton(
         onClick = { onUIEvent(ItemRemovedFromCart(item)) },
         modifier = Modifier
-            .size(48.dp)
+            .size(WooPosIconSize.XLarge.value)
             .semantics { contentDescription = removeButtonContentDescription }
     ) {
         Icon(
@@ -919,8 +1063,10 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+        )
     }
 }
 
@@ -984,8 +1130,10 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = false,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+        )
     }
 }
 
@@ -1004,8 +1152,10 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+        )
     }
 }
 
@@ -1040,7 +1190,14 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
-            )
-        ) {}
+            ),
+            onUIEvent = {},
+            checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,
+        )
     }
+}
+
+enum class WooPosCartCheckoutButtonSlot {
+    Inline,
+    External,
 }

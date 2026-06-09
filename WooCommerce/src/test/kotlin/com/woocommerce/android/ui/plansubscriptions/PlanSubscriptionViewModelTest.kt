@@ -273,11 +273,11 @@ class PlanSubscriptionViewModelTest : BaseUnitTest() {
         }
 
         planRepository = mock {
-            onBlocking { fetchCurrentPlanDetails(siteModel) } doReturn sitePlan
+            on { fetchCurrentPlanDetails(siteModel) } doReturn sitePlan
         }
 
         remainingTrialPeriodUseCase = mock {
-            onBlocking { invoke(sitePlan.expirationDate) } doReturn remainingTrialPeriod
+            on { invoke(sitePlan.expirationDate) } doReturn remainingTrialPeriod
         }
 
         sut = PlanSubscriptionViewModel(
@@ -298,7 +298,7 @@ class PlanSubscriptionViewModelTest : BaseUnitTest() {
         }
 
         planRepository = mock {
-            onBlocking { fetchCurrentPlanDetails(siteModel) } doReturn null
+            on { fetchCurrentPlanDetails(siteModel) } doReturn null
         }
 
         sut = PlanSubscriptionViewModel(

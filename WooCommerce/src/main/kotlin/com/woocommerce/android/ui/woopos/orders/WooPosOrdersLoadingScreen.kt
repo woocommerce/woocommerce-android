@@ -34,33 +34,48 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
 
 @Composable
-fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxSize()
-    ) {
+fun WooPosOrdersLoadingScreen(
+    modifier: Modifier = Modifier,
+    isPhoneLayout: Boolean = false,
+) {
+    if (isPhoneLayout) {
         WooPosOrdersListLoadingPane(
-            modifier = Modifier
+            modifier = modifier
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
-                .weight(0.3f)
-                .fillMaxHeight()
         )
+    } else {
+        Row(
+            modifier = modifier.fillMaxSize()
+        ) {
+            WooPosOrdersListLoadingPane(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+                    .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
+                    .weight(0.3f)
+                    .fillMaxHeight()
+            )
 
-        OrderDetailsLoadingPane(
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = WooPosSpacing.Medium.value)
-        )
+            OrderDetailsLoadingPane(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .statusBarsPadding()
+                    .padding(horizontal = WooPosSpacing.Medium.value)
+            )
+        }
     }
 }
 
@@ -76,7 +91,7 @@ fun WooPosOrdersOrderLoadingRow() {
                     horizontal = WooPosSpacing.Medium.value,
                     vertical = WooPosSpacing.Medium.value
                 )
-                .heightIn(min = 64.dp),
+                .heightIn(min = 64.dp.toAdaptiveComponentSize()),
             verticalAlignment = Alignment.Top
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
@@ -97,7 +112,7 @@ fun WooPosOrdersOrderLoadingRow() {
                 WooPosShimmerBox(
                     modifier = Modifier
                         .fillMaxWidth(0.2f)
-                        .height(16.dp)
+                        .height(16.dp.toAdaptiveIconSize())
                         .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                 )
             }
@@ -151,8 +166,8 @@ fun OrderDetailsLoadingPane(
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(40.dp)
-                    .width(160.dp)
+                    .height(40.dp.toAdaptiveComponentSize())
+                    .width(WooPosComponentSize.XLarge.value)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
@@ -175,8 +190,8 @@ fun OrderDetailsLoadingPane(
 
         WooPosShimmerBox(
             modifier = Modifier
-                .width(100.dp)
-                .height(24.dp)
+                .width(WooPosComponentSize.Medium.value)
+                .height(24.dp.toAdaptiveComponentSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
 
@@ -260,7 +275,7 @@ private fun ProductLoadingItem() {
 
         WooPosShimmerBox(
             modifier = Modifier
-                .size(56.dp)
+                .size(56.dp.toAdaptiveIconSize())
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                 .constrainAs(image) {
                     top.linkTo(parent.top)
@@ -321,5 +336,13 @@ private fun TotalLoadingItem() {
 fun WooPosOrdersLoadingStatePreview() {
     WooPosTheme {
         WooPosOrdersLoadingScreen()
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrdersLoadingStatePhonePreview() {
+    WooPosTheme {
+        WooPosOrdersLoadingScreen(isPhoneLayout = true)
     }
 }

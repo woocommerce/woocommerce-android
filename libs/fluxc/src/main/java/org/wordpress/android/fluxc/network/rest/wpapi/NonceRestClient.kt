@@ -47,7 +47,7 @@ class NonceRestClient @Inject constructor(
      *  [rest-nonce endpoint](https://developer.wordpress.org/reference/functions/wp_ajax_rest_nonce/)
      *  that became available in WordPress 5.3.
      */
-    @Suppress("NestedBlockDepth")
+    @Suppress("NestedBlockDepth", "LongMethod")
     suspend fun requestNonce(siteUrl: String, username: String, password: String): Nonce {
         @Suppress("MagicNumber")
         fun Int.isRedirect(): Boolean = this in 300..399
@@ -93,7 +93,24 @@ class NonceRestClient @Inject constructor(
                 } else {
                     val networkResponse = response.error.volleyError?.networkResponse
                     if (networkResponse?.statusCode?.isRedirect() == true) {
-                        requestNonce(networkResponse.headers?.get("Location") ?: redirectUrl, username)
+                        val location = networkResponse.headers?.get("Location") ?: redirectUrl
+                        if (location.contains("admin-ajax.php") && location.contains("rest-nonce")) {
+                            requestNonce(location, username)
+                        } else if (isSchemeUpgrade(wpLoginUrl, location)) {
+                            requestNonce(
+                                location.replace("wp-login.php", "").trimEnd('/'),
+                                username,
+                                password
+                            )
+                        } else {
+                            FailedRequest(
+                                timeOfResponse = currentTimeProvider.currentDate().time,
+                                username = username,
+                                type = Nonce.CookieNonceErrorType.INVALID_NONCE,
+                                networkError = response.error,
+                                errorMessage = response.error.message,
+                            )
+                        }
                     } else {
                         FailedRequest(
                             timeOfResponse = currentTimeProvider.currentDate().time,
@@ -109,6 +126,12 @@ class NonceRestClient @Inject constructor(
         return nonce.also {
             nonceMap[siteUrl] = it
         }
+    }
+
+    private fun isSchemeUpgrade(originalUrl: String, redirectUrl: String): Boolean {
+        return originalUrl.startsWith("http://") &&
+            redirectUrl.startsWith("https://") &&
+            redirectUrl.removePrefix("https://") == originalUrl.removePrefix("http://")
     }
 
     private fun getErrorType(networkResponse: NetworkResponse?): Nonce.CookieNonceErrorType = when {

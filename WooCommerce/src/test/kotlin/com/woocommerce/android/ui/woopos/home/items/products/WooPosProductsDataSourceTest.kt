@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
@@ -8,8 +7,10 @@ import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -27,8 +28,8 @@ class WooPosProductsDataSourceTest {
     private val remoteDataSource: WooPosProductsRemoteDataSource = mock()
     private val localDbDataSource: WooPosProductsInDbDataSource = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock {
-        on { invoke() }.thenReturn(false)
+    private val syncRepository: WooPosLocalCatalogSyncRepository = mock {
+        on { syncState }.thenReturn(MutableStateFlow(null))
     }
 
     @Rule
@@ -318,6 +319,6 @@ class WooPosProductsDataSourceTest {
         remoteDataSource = remoteDataSource,
         localDbDataSource = localDbDataSource,
         syncStatusChecker = syncStatusChecker,
-        fileApproachEnabled = fileApproachEnabled
+        syncRepository = syncRepository,
     )
 }

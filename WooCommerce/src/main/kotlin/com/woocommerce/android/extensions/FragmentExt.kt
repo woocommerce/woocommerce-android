@@ -106,7 +106,7 @@ fun Fragment.navigateBackWithNotice(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] An optional ID to identify the correct back stack entry. It's required when calling [handleResult]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
@@ -145,7 +145,7 @@ fun <T> Fragment.handleResult(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleResult]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
@@ -169,7 +169,7 @@ fun <T> Fragment.handleDialogResult(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
@@ -192,7 +192,7 @@ fun Fragment.handleDialogNotice(
  *
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
- *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ *  from a Dialog (otherwise the result will get lost upon configuration change)
  * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *

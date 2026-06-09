@@ -3,7 +3,6 @@ package com.woocommerce.android
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -44,6 +43,8 @@ open class AppPrefsWrapper @Inject constructor() {
     var isWooPosSurveyNotificationCurrentUserShown by AppPrefs::isWooPosSurveyNotificationCurrentUserShown
 
     var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
+
+    var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
 
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
@@ -157,6 +158,14 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun removeLastConnectedCardReaderId() = AppPrefs.removeLastConnectedCardReaderId()
 
+    fun setLastConnectedPhoneDeviceId(deviceId: String) = AppPrefs.setLastConnectedPhoneDeviceId(deviceId)
+
+    fun getLastConnectedPhoneDeviceId() = AppPrefs.getLastConnectedPhoneDeviceId()
+
+    fun removeLastConnectedPhoneDeviceId() = AppPrefs.removeLastConnectedPhoneDeviceId()
+
+    var wooPosRemoteReaderDeviceUUID by AppPrefs::wooPosRemoteReaderDeviceUUID
+
     fun getJetpackBenefitsDismissalDate(): Long {
         return AppPrefs.getJetpackBenefitsDismissalDate()
     }
@@ -231,6 +240,12 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun getActiveStoreStatsTab() = AppPrefs.getActiveStatsTab()
 
+    fun setDashboardRevenueStatsType(typeName: String) {
+        AppPrefs.setDashboardRevenueStatsType(typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = AppPrefs.getDashboardRevenueStatsType()
+
     fun setActiveTopPerformersTab(selectionName: String) {
         AppPrefs.setActiveTopPerformersTab(selectionName)
     }
@@ -242,13 +257,6 @@ open class AppPrefsWrapper @Inject constructor() {
     fun setActiveCouponsTab(selectionName: String) {
         AppPrefs.setActiveCouponsTab(selectionName)
     }
-
-    fun setCustomDomainsSource(source: DomainFlowSource) {
-        AppPrefs.setCustomDomainsSource(source.name)
-    }
-
-    fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
-    fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
 
     /**
      * Card Reader Upsell

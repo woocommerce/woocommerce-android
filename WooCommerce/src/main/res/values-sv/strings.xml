@@ -1,11 +1,330 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-20 10:43:36+0000
+Translation-Revision-Date: 2026-05-19 09:57:12+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Något gick fel när assistenten arbetade.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Assistenten kunde inte avsluta efter flera steg.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Bekräftelsen är inte tillgänglig än. Försök igen från chatten.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Begäran stoppades.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Jag är inte säker på om den ändringen tillämpades. Verifiera i din butik innan du provar något annat.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">Assistenten kunde inte slutföra den begäran.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">Assistenten kunde inte slutföra den butiksåtgärden.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">Assistenttjänsten kunde inte avsluta detta svar. Försök igen senare.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">Begäran nådde sin tidsgräns. Försök igen.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">Assistenten är upptagen just nu. Försök igen om en stund.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">Assistenten fick inte tillgång till din butik. Logga in igen och öppna sedan assistenten igen.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">Kunde inte ansluta. Kontrollera din anslutning och försök igen.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">Avbryt</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">Bekräfta</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">Bekräfta %1$s?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">Försök igen</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">Åtgärda den väntande ändringen ovan.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">Stoppa svar</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">Skicka meddelande</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">Fråga om din butik</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">Öppna analys för %1$s</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">Otillgänglig</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">Genomsnittligt beställningsvärde</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">Totalt antal beställningar</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">Nettoförsäljning</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">Total försäljning</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">Avfärda notis om tidig åtkomst</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">Ge feedback</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">Hej! Vi har precis kommit igång, och mer är på gång. Berätta för oss vad som saknas och vad du gärna vill ha hjälp med!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">TIDIG ÅTKOMST</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">Skicka förslag: %1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">Visa mina senaste kunder. Lista upp till 10 kunder sorterade efter registreringsdatum, senaste först.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">Några beställningar som jag behöver titta på? Visa mig de senaste beställningarna som inväntar granskning, har pausats eller behandlas.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">Vad håller på att ta slut? Lista de produkter som är slut i lager eller har lågt lagersaldo så att jag vet vad jag ska fylla på.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">Hur är mina intäkter denna vecka? Visa mig total försäljning för den här veckan och hur den står sig i jämförelse med förra veckan.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">Vilka är mina nyaste kunder?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">Några beställningar som behöver min uppmärksamhet?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">Vad håller på att ta slut?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">Hur är intäkterna denna vecka?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">Vad kan jag hjälpa till med?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">Kort</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">Kunder</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">Analys</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">Varianter</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">Produkter</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">Beställningar</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">Assistenten arbetar: %1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">Kontrollerar din butik</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">Kontrollerar kunder</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">Kontrollerar analys</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">Uppdaterar produkter</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">Kontrollerar produkter</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">Uppdaterar beställningar</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">Kontrollerar beställningar</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">Assistent tänker</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Assistent: %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Du: %1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">Hoppa till senaste</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Starta ny konversation</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Tillbaka</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">Assistent</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">+%1$d fler</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">Avbruten</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">Bekräftat</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Väntande ändring</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Av</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Uppdaterad</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">Lagerstatus</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Lager</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">Rea</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">Pris</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">Namn</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">E-post för fakturering</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">Kundmeddelande</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">Status</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">Granska %1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">Uppdatera variant nr %1$s för produkt nr %2$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">Uppdatera en produktvariant</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Uppdatera %1$d produkter</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Uppdatera %1$d produkt</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Uppdatera många produkter</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Uppdatera produkt %1$s (#%2$s)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">Uppdatera produkt #%1$s</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">Uppdatera en produkt</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">Uppdatera %1$d beställningar: skickar e-post till kunder</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">Uppdatera %1$d beställning: skickar e-post till kunden</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">Uppdatera %1$d beställningar</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">Uppdatera %1$d beställning</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Uppdatera många beställningar</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">Uppdatera beställning nummer %1$s: skickar e-post till kunden</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">Uppdatera beställning #%1$s</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">Uppdatera en beställning</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Jag förstår</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Använd samma Wi-Fi och logga in på samma butik på båda enheterna. Din telefon behöver stöd för Android 13 eller senare, NFC och Tryck för att betala.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Kontrollera kompatibilitet</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">Öppna Woo på din telefon och gå sedan till Inställningar → Betalningar → Kortläsarläge.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">Ställ in din telefon</string>
+    <string name="woopos_remote_ttp_explainer_intro">Använd Woo-appen på din telefon för att ta emot kortbetalningar.</string>
+    <string name="woopos_remote_ttp_explainer_title">Ingen kortläsare? Inga problem</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Använd en Android-telefon som en kortläsare</string>
+    <string name="woopos_card_reader_unknown_reader_name">Okänd läsare</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Bluetooth-läsare</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Telefonläsare</string>
+    <string name="woopos_remote_payment_failed_generic">Något gick fel. Försök igen.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">Anslutningen till telefonläsaren bröts. Anslut igen och försök igen.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Ge platsbehörighet att använda Tryck för att betala</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Tryck för att betala kunde inte startas: %1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Tryck för att betala kunde inte startas. Försök igen.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Förbereder Tryck för att betala</string>
+    <string name="woopos_tap_to_pay_preparing_title">Förbereder</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Illustration av Tryck för att betala på telefon</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Betala med Tryck för att betala</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">Använd denna enhet för att ta emot kontaktlösa kortbetalningar.</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tryck för att betala</string>
+    <string name="woopos_payment_method_picker_dialog_title">Välj betalningsmetod</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">Markera beställning som betald</string>
+    <string name="woopos_payment_method_scan_to_pay_label">Skanna för att betala</string>
+    <string name="woopos_payment_method_other_methods_label">Andra betalningsmetoder</string>
+    <string name="woopos_payment_method_all_methods_label">Alla betalningsmetoder</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tryck för att betala</string>
+    <string name="woopos_payment_method_card_reader_label">Kortläsare</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Fingeravtryck</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">Transport</string>
+    <string name="woopos_settings_card_reader_disconnect_button">Koppla från</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Anslutning misslyckades</string>
+    <string name="ai_assistant_variation_card_id_title">Variant %1$d</string>
+    <string name="ai_support_chat_connectivity_action">Chatta med support</string>
+    <string name="ai_support_chat_connectivity_initial_message">Hjälp mig att felsöka min butiksanslutning.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">Misslyckades</string>
+    <string name="ai_support_chat_diagnostics_status_passed">Godkänt</string>
+    <string name="ai_support_chat_diagnostics_status_running">Körs</string>
+    <string name="ai_support_chat_diagnostics_status_pending">Väntande</string>
+    <string name="ai_support_chat_diagnostics_continue">Fortsätt till chatt</string>
+    <string name="ai_support_chat_diagnostics_retry">Försök igen</string>
+    <string name="ai_support_chat_diagnostics_failure">Några kontroller misslyckades. Du kan försöka igen eller fortsätta chatta med dessa resultat.</string>
+    <string name="ai_support_chat_diagnostics_success">Diagnostik slutförd</string>
+    <string name="ai_support_chat_diagnostics_title">Kontrollerar din butik …</string>
+    <string name="ai_support_chat_issue_other">Något annat</string>
+    <string name="ai_support_chat_issue_receiving_notifications">Jag får inga aviseringar</string>
+    <string name="ai_support_chat_issue_loading_analytics">Min analys laddas inte</string>
+    <string name="ai_support_chat_issue_loading_products">Jag kan inte se mina produkter</string>
+    <string name="ai_support_chat_issue_loading_orders">Jag kan inte se mina beställningar</string>
+    <string name="ai_support_chat_issue_picker_title">Vad vill du felsöka?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">Beskriv ditt problem mer detaljerat så att jag kan hjälpa till.</string>
+    <string name="ai_support_chat_typing">Tänker …</string>
+    <string name="ai_support_chat_send_error">Kan inte skicka ditt meddelande. Kontrollera din anslutning och försök igen.</string>
+    <string name="ai_support_chat_send">Skicka</string>
+    <string name="ai_support_chat_input_hint">AI-felsökning av meddelande</string>
+    <string name="ai_support_chat_greeting">Hej! Berätta vad som händer med din butik så hjälper jag dig att felsöka den.</string>
+    <string name="ai_support_chat_placeholder">Kommer snart</string>
+    <string name="ai_support_chat_screen_title">AI-felsökning</string>
+    <string name="ai_support_chat_help_row_subtitle">Chatta med vår AI-assistent för att diagnostisera butikens problem</string>
+    <string name="ai_support_chat_help_row_title">AI-felsökning</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Välj det högsta betyget som ska skicka en avisering.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Recensioner upp till ett betyg</string>
+    <string name="settings_notifs_new_reviews_all_description">Pinga för varje recension, oavsett betyg.</string>
+    <string name="settings_notifs_new_reviews_all_title">Alla nya recensioner</string>
+    <string name="settings_notifs_new_reviews_enable_description">Bli aviserad när någon lämnar en recension på en av dina produkter.</string>
+    <string name="settings_notifs_stock_backorder_description">När en kund beställer en artikel som för närvarande är slut i lager.</string>
+    <string name="settings_notifs_stock_backorder_title">På restorder</string>
+    <string name="settings_notifs_stock_out_of_stock_description">När en produktvariant når noll.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">Slut i lager</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Det gick inte att hämta tröskelvärdet för hela butiken</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Produkter kan använda sitt eget tröskelvärde eller tröskelvärdet för hela butiken. &lt;a href=\'\'&gt;Visa butiksövergripande tröskelvärde&lt;/a&gt; för att se det aktuella värdet.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Produkter kan använda sitt eget tröskelvärde eller tröskelvärdet för hela butiken på &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;Redigera tröskelvärde för hela butiken&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">När en produktvariant når tröskeln för lågt lager.</string>
+    <string name="settings_notifs_stock_low_stock_title">Lågt lager</string>
+    <string name="settings_notifs_stock_enable_description">Bli aviserad när lagerändringar behöver din uppmärksamhet.</string>
+    <string name="settings_notifs_stock_enable_title">Aktivera lageraviseringar</string>
+    <string name="settings_notifs_new_orders_threshold">Tröskelvärde (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filtrera till beställningar ovanför din tröskel.</string>
+    <string name="settings_notifs_new_orders_high_value_title">Endast beställningar med högt värde</string>
+    <string name="settings_notifs_new_orders_all_description">Pinga för varje beställning, oavsett värde.</string>
+    <string name="settings_notifs_new_orders_all_title">Alla nya beställningar</string>
+    <string name="settings_notifs_notify_me_for">Avisera mig för</string>
+    <string name="settings_notifs_new_orders_enable_description">Bli meddelad när en beställning görs i din butik.</string>
+    <string name="settings_notifs_error_update">Ett fel uppstod när dina aviseringsinställningar uppdaterades.</string>
+    <string name="settings_notifs_error_fetch">Ett fel uppstod när dina aviseringsinställningar hämtades.</string>
+    <string name="settings_notifs_enable_title">Aktivera aviseringar</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;Aktivera aviseringar&lt;/a&gt; i dina enhetsinställningar för att få butiksaviseringar.</string>
+    <string name="card_reader_mode_location_permission_open_settings">Öppna inställningar</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">Platsbehörighet har blockerats. Öppna Inställningar och ge behörighet för att använda Tryck för att betala på den här telefonen.</string>
+    <string name="card_reader_mode_location_permission_continue">Fortsätt</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android kräver platsåtkomst för att använda Tryck för att betala på denna telefon. Din plats blir kvar på den här enheten.</string>
+    <string name="card_reader_mode_location_permission_header">Platsbehörighet krävs</string>
+    <string name="card_reader_mode_error_close">Stäng</string>
+    <string name="card_reader_mode_error_subtitle">Kontrollera din Wi-Fi-anslutning och försök igen.</string>
+    <string name="card_reader_mode_error_header">Det gick inte att starta kortläsarläget</string>
+    <string name="card_reader_mode_starting_subtitle">Konfigurerar identifiering på det lokala nätverket …</string>
+    <string name="card_reader_mode_starting_header">Startar kortläsarläget</string>
+    <string name="card_reader_mode_settings_row_label">Kortläsarläge</string>
+    <string name="card_reader_mode_cancel">Avbryt</string>
+    <string name="card_reader_mode_waiting_subtitle">Väntar på betalning …</string>
+    <string name="card_reader_mode_waiting_header">Parkopplad med surfplatta</string>
+    <string name="card_reader_mode_ready_to_pair_store">Butik: %1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">Öppna Woo POS på din surfplatta och välj denna telefon.</string>
+    <string name="card_reader_mode_ready_to_pair_header">Redo att para</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">Öppna AI-assistent</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Fråga om din butik …</string>
+    <string name="notification_channel_stock_title">Lageraviseringar</string>
+    <string name="woopos_card_reader_update_battery_low_message_with_level">Läsarens batteri är på %d%%, vilket är för lågt för att installera denna uppdatering. Ladda din läsare till minst 50%% och försök igen.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Läsarens batteri är för lågt för att installera denna uppdatering. Ladda din läsare till minst 50 % och försök igen.</string>
+    <string name="woopos_card_reader_update_failed_title">Uppdatering misslyckades</string>
+    <string name="woopos_card_reader_update_completed_title">Programvara uppdaterad</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Avbryt ändå</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Att avbryta en pågående programvaruuppdatering är inte att rekommendera. Om du avbryter blockeras din läsaranslutning.</string>
+    <string name="woopos_card_reader_update_optional_message">Din kortläsares programvara behöver uppdateras för att fungera korrekt</string>
+    <string name="woopos_card_reader_update_required_message">Din kortläsarprogramvara behöver uppdateras för att du ska kunna ta emot betalningar. Om du avbryter blockeras din läsaranslutning.</string>
+    <string name="woopos_card_reader_update_progress">%d%% slutförd</string>
+    <string name="woopos_card_reader_updating_optional_title">Uppdaterar din läsares programvara</string>
+    <string name="woopos_card_reader_updating_title">Uppdaterar programvara</string>
+    <string name="woopos_card_reader_cancel_button">Avbryt</string>
+    <string name="woopos_card_reader_retry_button">Försök igen</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">Postnumret för din butik saknas eller är ogiltigt. Uppdatera din butiksadress i WooCommerce-inställningarna.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Ogiltigt postnummer</string>
+    <string name="woopos_card_reader_invalid_address_message">Din butiksadress saknas eller är ofullständig. Uppdatera din butiksadress i WooCommerce-inställningarna.</string>
+    <string name="woopos_card_reader_invalid_address_title">Ogiltig företagsadress</string>
+    <string name="woopos_card_reader_grant_permission_button">Bevilja behörighet</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">Bluetooth-behörighet krävs för att ansluta till en kortläsare.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth-behörighet krävs</string>
+    <string name="woopos_card_reader_location_permission_message">Platsbehörighet krävs för att ansluta till en kortläsare via Bluetooth.</string>
+    <string name="woopos_card_reader_location_permission_title">Platsbehörighet krävs</string>
+    <string name="woopos_card_reader_enable_location_button">Aktivera plats</string>
+    <string name="woopos_card_reader_location_disabled_message">Aktivera plats för att ansluta till en kortläsare.</string>
+    <string name="woopos_card_reader_location_disabled_title">Plats är av</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Aktivera Bluetooth</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Aktivera Bluetooth för att ansluta till en kortläsare.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth är av</string>
+    <string name="woopos_card_reader_battery_low_message">Batterinivån i läsaren är kritiskt låg. Ladda läsaren och försök igen.</string>
+    <string name="woopos_card_reader_battery_low_title">Batteri för lågt</string>
+    <string name="woopos_card_reader_connected_title">Ansluten</string>
+    <string name="woopos_card_reader_connecting_failed_title">Anslutning misslyckades</string>
+    <string name="woopos_card_reader_connecting_message">Vänta medan vi ansluter till din läsare</string>
+    <string name="woopos_card_reader_connecting_title">Ansluter</string>
+    <string name="woopos_card_reader_multiple_found_description">Välj en läsare</string>
+    <string name="woopos_card_reader_multiple_found_title">Flera läsare hittades</string>
+    <string name="woopos_card_reader_keep_searching_button">Fortsätt söka</string>
+    <string name="woopos_card_reader_connect_button">Anslut</string>
+    <string name="woopos_card_reader_found_description">Vill du ansluta till denna läsare?</string>
+    <string name="woopos_card_reader_found_title">%s hittades</string>
+    <string name="woopos_card_reader_scanning_failed_title">Skanning misslyckades</string>
+    <string name="woopos_card_reader_scanning_instruction">Se till att din läsare är laddad och påslagen</string>
+    <string name="woopos_card_reader_scanning_title">Skannar efter läsare</string>
+    <string name="woopos_card_reader_close_content_description">Stäng</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Anslutningsdialogruta för kortläsare</string>
+    <string name="woopos_orders_empty_list_message">Beställningar kommer att visas här när du börjar behandla försäljning i POS.</string>
+    <string name="woopos_battery_critical">Batterikritisk kortläsare</string>
+    <string name="woopos_battery_low">Batteriet i kortläsaren är lågt</string>
+    <string name="woopos_reader_reconnecting">Återansluter …</string>
+    <string name="more_menu_button_ai_assistant_description">Fråga om din butik</string>
+    <string name="more_menu_button_ai_assistant">AI-assistent</string>
+    <string name="settings_notifs_new_reviews_subtitle">Alla recensioner</string>
+    <string name="settings_notifs_new_reviews">Nya recensioner</string>
+    <string name="settings_notifs_stock_subtitle">Alla lageraviseringar</string>
+    <string name="settings_notifs_stock">Lager</string>
+    <string name="settings_notifs_new_orders_subtitle">Alla beställningar</string>
+    <string name="settings_notifs_new_orders">Nya beställningar</string>
+    <string name="settings_push_notifications">Push-notiser</string>
+    <string name="settings_logout_dialog_message">Loggar ut dig.</string>
+    <string name="card_reader_detail_reconnecting_cancel">Avbryt återanslutning</string>
+    <string name="card_reader_detail_reconnecting_header">Återansluter till kortläsare …</string>
+    <string name="dashboard_stats_order_date_type_update_error">Kan inte uppdatera beställningstyp. Försök igen.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">Detta är en inställning för hela butiken som också styr alternativet ”Datumtyp” i WooCommerce-inställningarna för adminanalys.</string>
+    <string name="dashboard_stats_completed_orders_description">Räkna beställningar det datum de markerades som slutförda.</string>
+    <string name="dashboard_stats_placed_orders_description">Räkna beställningar på det datum de gjordes eller skapades.</string>
+    <string name="dashboard_stats_paid_orders_description">Räkna beställningar det datum då beställningen betalades.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Välj vilka beställningar som ska inkluderas i dina prestandamätvärden för det valda tidsintervallet.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Typ av beställningsdatum</string>
+    <string name="dashboard_stats_completed_orders">Slutförda beställningar</string>
+    <string name="dashboard_stats_placed_orders">Lagda beställningar</string>
+    <string name="dashboard_stats_paid_orders">Betalda beställningar</string>
+    <string name="dashboard_stats_revenue_type_total">Totalt</string>
+    <string name="dashboard_stats_revenue_type_net">Netto</string>
+    <string name="dashboard_stats_revenue_type_gross">Brutto</string>
+    <string name="booking_reschedule_change_team_member">Ändra teammedlem</string>
+    <string name="booking_reschedule_screen_title">Planera om bokning</string>
+    <string name="booking_details_reschedule_button">Planera om</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">Jag godkänner &lt;a href=\"fedex-tos\"&gt;FedEx användarvillkor&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">För att köpa FedEx fraktetiketter måste du godkänna följande villkor:</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx användarvillkor</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Vi kunde inte ladda fraktavgifter. Lägg till ett för- och efternamn till destinationsadressen och försök igen.</string>
+    <string name="woopos_settings_receipt_edit_button">Redigera kvittoinformation</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d av %2$d artiklar</string>
+    <string name="woopos_home_syncing_catalog_preparing">Förbereder katalog …</string>
+    <string name="product_type_bookable_service_desc">En tjänst som kunder kan boka online</string>
+    <string name="product_type_bookable_service_title">Tjänst</string>
+    <string name="settings_troubleshoot_connection">Felsök anslutning</string>
+    <string name="connectivity_tool_copy">Kopiera</string>
+    <string name="connectivity_tool_technical_details_copied">Tekniska detaljer har kopierats till ditt urklipp.</string>
+    <string name="connectivity_tool_technical_details_title">Tekniska detaljer</string>
+    <string name="connectivity_tool_view_technical_details">Visa tekniska detaljer</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Hämtar produkter i din butik</string>
+    <string name="user_role_access_error_fetch_failed">Vi kunde inte verifiera din roll i denna butik. Försök igen. Om problemet kvarstår, kontakta support.</string>
+    <string name="woopos_eligibility_learn_more_label">Läs mer</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. &lt;b&gt;Uppgradera till Pro&lt;/b&gt; för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. Uppgradera till Pro för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
+    <string name="woopos_eligibility_ciab_title">Pro-paket krävs</string>
+    <string name="ciab_order_status_open">Öppna</string>
+    <string name="booking_payment_status_authorization_voided">Auktorisering ogiltigförklarad</string>
+    <string name="booking_payment_status_authorized">Auktoriserad</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Det gick inte att köpa fraktetikett. Fyll i avsändarens adress.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Originaladress saknas eller ogiltig</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Auktorisering ogiltigförklarad</string>
+    <string name="woopos_bookings_payment_status_authorized">Auktoriserad</string>
+    <string name="woopos_orders_details_refund_details_background">Bakgrund för dialogrutan Återbetalningsinformation</string>
+    <string name="woopos_orders_details_refund_total">Återbetalningsbelopp</string>
+    <string name="woopos_orders_details_refund_tax">Moms</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Delsumma objekt (%d objekt)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Delsumma objekt (%d objekt)</string>
+    <string name="woopos_orders_details_refund_view_details">Visa detaljer</string>
+    <string name="woopos_orders_details_refund_label_numbered">Återbetalning av #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">Återbetalda produkter</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Du kan lämna den här sidan så fortsätter importen i bakgrunden.</string>
+    <string name="woopos_home_syncing_catalog_hint">Katalogsynkronisering kan ta några minuter.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Du är ett steg ifrån att få aviseringar om nya beställningar, recensioner med mera.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Få pushnotiser för din butik</string>
+    <string name="my_store_widget_push_notifications_description">Aktivera pushnotiser för att hålla koll på nya beställningar och recensioner.</string>
     <string name="woopos_search_products_and_variations">Sök produkter och varianter</string>
     <string name="woopos_bookings_details_customer_guest_badge">Gäst</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Uppdatera tillägg</string>
@@ -132,7 +451,6 @@ Language: sv_SE
     <string name="restart">Starta om</string>
     <string name="dev_feature_flags">Funktionsflaggor</string>
     <string name="settings_enable_push_notifications">Aktivera pushnotiser</string>
-    <string name="my_store_widget_push_notifications_description">Anslut din butik till WordPress.com för att få aviseringar om nya ordrar och recensioner.</string>
     <string name="my_store_widget_push_notifications_menu_title">Aktivera pushnotiser</string>
     <string name="my_store_widget_push_notifications_title">Missa aldrig en ny beställning</string>
     <string name="woo_pos_promo_title">Försäljningsplats från WooCommerce</string>
@@ -242,7 +560,7 @@ Language: sv_SE
     <string name="woopos_search_orders">Sök beställningar</string>
     <string name="woopos_orders_details_totals_card_content_description">Genomgång av beställningsbelopp</string>
     <string name="woopos_orders_details_products_list_content_description">Lista över beställningsprodukter</string>
-    <string name="woopos_orders_details_net_payment_label">Nettobetalning</string>
+    <string name="woopos_orders_details_net_payment_label">Totalt netto</string>
     <string name="woopos_orders_details_refunded_label">Återbetald</string>
     <string name="woopos_orders_details_total_paid_label">Betalat totalt</string>
     <string name="woopos_orders_details_total_label">Totalt</string>
@@ -272,7 +590,6 @@ Language: sv_SE
     <string name="woopos_home_sync_failed_message">Vi kan inte synkronisera din produktkatalog. Kontrollera din internetanslutning och försök igen.</string>
     <string name="woopos_home_sync_failed_title">Kan inte synkronisera</string>
     <string name="woopos_home_syncing_catalog_exit_button">Avsluta POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Synkronisering kommer fortsätta i bakgrunden.</string>
     <string name="woopos_home_syncing_catalog_title">Synkroniserar katalog</string>
     <string name="booking_note_discard_changes_discard">Ignorera ändringarna</string>
     <string name="booking_note_discard_changes_message">Är du säker på att du vill åsidosätta de här ändringarna?</string>
@@ -313,8 +630,7 @@ Language: sv_SE
     <string name="woopos_orders_loading_error_message">Kontrollera din anslutning och försök igen.</string>
     <string name="woopos_orders_loading_error_title">Kan inte ladda beställningar</string>
     <string name="woopos_orders_empty_list_image_description">Inga beställningar</string>
-    <string name="woopos_orders_empty_action_label">Lär dig mer</string>
-    <string name="woopos_orders_empty_list_message">Utforska hur du kan öka din butiksförsäljning.</string>
+    <string name="woopos_orders_empty_action_label">Uppdatera</string>
     <string name="woopos_orders_empty_list_title">Inga beställningar hittades</string>
     <string name="woopos_date_yesterday_at">Igår kl. %s</string>
     <string name="woopos_date_today_at">Idag kl. %s</string>
@@ -489,15 +805,13 @@ Language: sv_SE
     <string name="woopos_scanning_setup_device_selection_title">Konfigurera en streckkodsskanner</string>
     <string name="woopos_scanning_setup_barcode_content_description">Streckkod</string>
     <string name="woopos_scanning_setup_dialog_content_description">Dialogruta för skannerkonfiguration</string>
-    <string name="woopos_eligibility_screen_UK_country_name">Storbritannien</string>
-    <string name="woopos_eligibility_screen_US_country_name">Förenta staterna</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Storbritannien</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Förenta staterna</string>
     <string name="woopos_eligibility_screen_unable_to_load">Hämtningen kunde inte genomföras</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS-systemet är inte tillgängligt för din butiks valuta. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS-systemet är inte tillgängligt för din butiks valuta. I %1$s stöder den för närvarande endast %2$s. Kontrollera din butiks valutainställningar eller kontakta supporten för att få hjälp.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Försäljningsplats måste vara aktiverat för att fortsätta. Aktivera POS-funktionen från din WordPress-adminpanel under WooCommerce-inställningar &gt; Avancerat &gt; Funktioner.</string>
     <string name="woopos_eligibility_reason_check_connection">Kontrollera din internetanslutning och prova att starta om appen. Om problemet kvarstår, kontakta supporten.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Din WooCommerce-version stöds inte. POS-systemet kräver WooCommerce-version %1$s eller senare. Uppdatera till den senaste versionen av WooCommerce.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Se till att WooCommerce-tillägget installeras och aktiveras från din WordPress-adminpanel. Om du fortfarande upplever problem, kontakta supporten för att få hjälp.</string>
     <string name="orderfilters_sales_channel_filter">Försäljningskanal</string>
     <string name="barcode_ean13_content_description">Streckkod EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">Ytterligare hantering</string>
@@ -1180,10 +1494,6 @@ Language: sv_SE
     <string name="delete_product_category_failed">Fel vid borttagning av kategori</string>
     <string name="delete_product_category_success">Produktkategori borttagen</string>
     <string name="update_product_category_success">Produktkategori uppdaterad</string>
-    <string name="domain_picker_suggestions_error">Det gick inte att ladda domänförslag</string>
-    <string name="domain_picker_suggestions_title">Förslag</string>
-    <string name="domain_picker_hint">Skriv en domän</string>
-    <string name="domain_picker_title">Välj en domän</string>
     <string name="analytics_section_see_all">Visa alla butiksanalyser</string>
     <string name="my_store_custom_range_granularity_year">En gång om året</string>
     <string name="my_store_custom_range_granularity_month">En gång i månaden</string>
@@ -1950,7 +2260,6 @@ Language: sv_SE
     <string name="store_onboarding_launch_store_back_to_store_button">Tillbaka till min butik</string>
     <string name="store_onboarding_launch_store_share_url_button">Dela URL</string>
     <string name="store_onboarding_launch_store_button">Publicera min butik</string>
-    <string name="domains_search_domains">Sök domäner</string>
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>
     <string name="login_site_credentials_custom_login_url">Det gick inte att logga in, eftersom vi inte kan identifiera inloggnings-URL:en för din butik</string>
@@ -1995,41 +2304,12 @@ Language: sv_SE
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
-    <string name="domain_registration_generic_error">Ett fel uppstod under domänregistrering</string>
-    <string name="domain_registration_state_picker_dialog_title">Välj delstat</string>
-    <string name="domain_registration_country_picker_dialog_title">Välj land</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Registrerar domännamn …</string>
-    <string name="domain_contact_information_register_domain_button">Registrera domän</string>
-    <string name="domain_contact_information_postal_code_hint">Postnummer</string>
-    <string name="domain_contact_information_state_not_available_hint">Delstat (Inte tillgänglig)</string>
-    <string name="domain_contact_information_state_hint">Delstat</string>
-    <string name="domain_contact_information_city_hint">Ort</string>
-    <string name="domain_contact_information_address_hint_two">Adress 2</string>
-    <string name="domain_contact_information_address_hint">Adress</string>
-    <string name="domain_contact_information_country_hint">Land</string>
-    <string name="domain_contact_information_country_code_hint">Landskod</string>
-    <string name="domain_contact_information_phone_number_hint">Telefon</string>
-    <string name="domain_contact_information_organization_hint">Organisation (valfritt)</string>
-    <string name="domain_contact_information_description">För din bekvämlighet har vi förfyllt din WordPress.com\n        kontaktinformation. Granska det för att vara säker på att det är rätt information du vill använda för denna domän.</string>
-    <string name="domain_contact_information_title">Kontaktinformation för domän</string>
-    <string name="domain_privacy_option_off_title">Registrera publikt</string>
-    <string name="domain_privacy_option_on_title">Registrera privat med integritetsskydd</string>
-    <string name="domain_registration_contact_form_input_error">Ange en giltig %s</string>
-    <string name="domain_registration_privacy_protection_tos">I och med att du registrerar denna domän godkänner du våra &lt;a href=\'\'&gt;användarvillkor&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">Domänägare måste uppge kontaktinformation i en publik databas som omfattar alla domäner. Med integritetsskydd publicerar vi våra uppgifter istället för dina, och vidarebefordrar sedan privat eventuella meddelanden till dig.</string>
-    <string name="domain_registration_privacy_protection_title">Integritetsskydd</string>
-    <string name="domains_access_error_title">Endast butiksadministratörer kan komma åt domäninställningar</string>
     <string name="login_jetpack_installation_continue_magic_link">Eller fortsätt med magisk länk</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Ange lösenordet för ditt WordPress.com-konto för att installera Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Ange lösenordet för ditt WordPress.com-konto för att ansluta till Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att installera Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att ansluta Jetpack</string>
-    <string name="domains_purchase_successful_settings_notice">Du hittar domäninställningarna via Inställningar &gt; Domäner</string>
-    <string name="domains_purchase_successful_delay_notice">Din webbplatsadress håller på att konfigureras. Det kan dröja upp till 30 minuter innan din domän börjar fungera.</string>
-    <string name="domains_purchase_successful_heading">Grattis till dina köp</string>
-    <string name="domains_free_with_credits">Gratis första året</string>
     <string name="settings_confirm_logout_site_credentials">Är du säker på att du vill logga ut från ditt konto?</string>
-    <string name="domains_generic_error_title">Kan inte ladda webbplatsdomäner</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d har slutförts</string>
     <string name="store_onboarding_task_launch_store_description">Publicera din webbplats till världen när du vill!</string>
     <string name="store_onboarding_task_launch_store_title">Lansera din butik</string>
@@ -2040,19 +2320,6 @@ Language: sv_SE
     <string name="card_reader_payment_failed_device_is_not_supported">Din enhet stöds inte. Kontakta support för mer detaljer</string>
     <string name="card_reader_payment_failed_nfc_disabled">Appen kunde inte aktivera kortläsaren, eftersom NFC-chippet är inaktiverat</string>
     <string name="card_reader_payment_failed_canceled">Transaktionen avbröts</string>
-    <string name="domains_redirect_notice">Den köpta domänen kommer att omdirigera användare till</string>
-    <string name="domains_select_domain">Välj domän</string>
-    <string name="domains_add_domain_button_title">Lägg till en domän</string>
-    <string name="domains_your_domains">Domänerna för din webbplats</string>
-    <string name="domains_primary_address">Primär webbplatsadress</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om domäner och hur man vidtar domänrelaterade åtgärder.</string>
-    <string name="domains_search_for_domain_button_title">Sök efter en domän</string>
-    <string name="domains_purchase_redirect_notice">Den köpta domänen kommer omdirigera användare till din primära adress.</string>
-    <string name="domains_claim_your_free_domain_link">Gör anspråk på domän</string>
-    <string name="domains_claim_your_free_domain_description">Ditt paket inkluderar en gratis domännamnsregistrering i ett år.</string>
-    <string name="domains_claim_your_free_domain_title">Gör anspråk på din gratisdomän</string>
-    <string name="domains_your_free_store_address">Din gratis butiksadress</string>
-    <string name="domains">Domäner</string>
     <string name="feedback_banner_ipp_cta_button">Dela feedback</string>
     <string name="feedback_banner_ipp_message_beginner">Betygsätt din första upplevelse av personliga betalningar.</string>
     <string name="feedback_banner_ipp_title_beginner">Gillar du att använda personliga betalningar?</string>
@@ -2071,7 +2338,6 @@ Language: sv_SE
     <string name="analytics_session_card_title">Sessioner</string>
     <string name="analytics_session_no_data">Inga sessioner denna period</string>
     <string name="date_compared_to">Jämfört med</string>
-    <string name="domain">Domän</string>
     <string name="login_application_passwords_help">Vad är applikationslösenord?</string>
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
@@ -2087,7 +2353,6 @@ Language: sv_SE
     <string name="product_bulk_update_regular_price">Uppdatera ordinarie pris</string>
     <string name="variations_bulk_creation_no_candidates_message">Alla variationer har redan genererats.</string>
     <string name="variations_bulk_creation_no_candidates_title">Inga variationer att generera</string>
-    <string name="domain_picker_empty_suggestions">Inga tillgängliga domäner för denna sökning</string>
     <string name="variations_bulk_creation_progress_title">Genererar varianter</string>
     <string name="variations_bulk_creation_confirmation_message">Detta kommer skapa en ny variation för varje möjlig kombination av variationsattribut (%1$d variationer).</string>
     <string name="variations_bulk_creation_confirmation_title">Generera alla varianter?</string>
@@ -2144,7 +2409,6 @@ Language: sv_SE
     <string name="update_simulated_reader">Uppdatera simulerad kortläsare</string>
     <string name="login_jetpack_connect">Anslut Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Anslut butik</string>
-    <string name="domain_picker_subtitle">Det är här människor kommer hitta dig på Internet. Oroa dig inte, du kan ändra detta senare.</string>
     <string name="analytics_visitors_subtitle">Besökare</string>
     <string name="or_use_password_below_qr_code_scan_option">Eller logga in med lösenord</string>
     <string name="simulated_reader_toast">Den simulerade kortläsaren har inaktiverats</string>
@@ -3767,7 +4031,6 @@ Language: sv_SE
     <string name="dashboard_top_performers_empty">Ingen aktivitet denna period</string>
     <string name="dashboard_stats_error_content_description">Felbild</string>
     <string name="dashboard_stats_error">Det gick inte att hämta data</string>
-    <string name="dashboard_stats_revenue">Intäkter</string>
     <string name="dashboard_stats_orders">Ordrar</string>
     <string name="dashboard_stats_visitors">Besökare</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>
@@ -3834,6 +4097,8 @@ Language: sv_SE
         <item>Anpassat paket</item>
         <item>Tjänstepaket</item>
     </string-array>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d stjärnor eller under</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d stjärna eller under</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Delsumma artiklar (%d artikel)</item>
         <item quantity="other">Delsumma artiklar (%d artiklar)</item>

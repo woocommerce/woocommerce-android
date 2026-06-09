@@ -1,25 +1,38 @@
 package com.woocommerce.android.ui.moremenu.domain
 
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
-class MoreMenuRepositoryTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class MoreMenuRepositoryTest : BaseUnitTest() {
 
     lateinit var sut: MoreMenuRepository
 
     val selectedSite: SelectedSite = mock()
+    val getWooVersion: GetWooCorePluginCachedVersion = mock()
+    val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
+        on { isFeatureUnsupported(any()) } doReturn false
+    }
 
     @Before
     fun setUp() {
         sut = MoreMenuRepository(
             selectedSite,
-            mock(),
+            getWooVersion,
+            ciabSiteGateKeeper,
         )
     }
 
@@ -63,5 +76,18 @@ class MoreMenuRepositoryTest {
 
         // then
         assertThat(isUpgradesEnabled).isFalse
+    }
+
+    @Test
+    fun `given Inbox feature is unsupported, when checking inbox, then inbox is disabled`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.exists()).thenReturn(true)
+        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Inbox)).thenReturn(true)
+
+        // WHEN
+        val isInboxEnabled = sut.isInboxEnabled()
+
+        // THEN
+        assertThat(isInboxEnabled).isFalse
     }
 }

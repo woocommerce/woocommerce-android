@@ -40,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 242
+        return 243
     }
 
     override fun getDbName(): String {
@@ -2308,6 +2308,10 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 242 -> migrate(version) {
                     db.execSQL("DROP TABLE IF EXISTS HTTPAuthModel")
+                }
+
+                243 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS AccountModel")
                 }
             }
         }

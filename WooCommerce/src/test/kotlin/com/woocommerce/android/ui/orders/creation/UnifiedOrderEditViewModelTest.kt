@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
@@ -108,6 +109,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var feedbackRepository: FeedbackRepository
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
+    private lateinit var ciabOrderStatusMapper: CIABOrderStatusMapper
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -142,13 +144,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             } doReturn MutableLiveData(HashMap())
         }
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.getEmptyOrder(Date(), Date())))
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(Order.getEmptyOrder(Date(), Date())))
         }
         createOrderItemUseCase = mock {
-            onBlocking { invoke(123, null) } doReturn defaultOrderItem
-            onBlocking { invoke(456, null) } doReturn createOrderItem(456)
-            onBlocking { invoke(789, null) } doReturn createOrderItem(789)
-            onBlocking { invoke(1, 2) } doReturn createOrderItem(1, 2)
+            on { invoke(123, null) } doReturn defaultOrderItem
+            on { invoke(456, null) } doReturn createOrderItem(456)
+            on { invoke(789, null) } doReturn createOrderItem(789)
+            on { invoke(1, 2) } doReturn createOrderItem(1, 2)
             ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
         }
         parameterRepository = mock {
@@ -163,7 +165,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
         }
         orderCreateEditRepository = mock {
-            onBlocking {
+            on {
                 createOrUpdateOrder(defaultOrderValue, source = OrderCreationSource.STORE_MANAGEMENT)
             } doReturn Result.success(defaultOrderValue)
         }
@@ -172,7 +174,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         @Suppress("UNCHECKED_CAST")
         orderCreationProductMapper = mock {
-            onBlocking { toOrderProducts(any(), any()) } doAnswer { invocationOnMock ->
+            on { toOrderProducts(any(), any()) } doAnswer { invocationOnMock ->
                 val args = invocationOnMock.arguments
                 (args.first() as? List<Order.Item>)?.let { list ->
                     if (list.isEmpty()) {
@@ -195,7 +197,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         selectedSite = mock()
         taxRateToAddress = mock()
         getAutoTaxRateSetting = mock {
-            onBlocking { invoke() } doReturn null
+            on { invoke() } doReturn null
         }
         getTaxRatePercentageValueText = mock()
         getTaxRateLabel = mock()
@@ -203,7 +205,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         mapFeeLineToCustomAmountUiModel = mock()
         totalsHelper = mock()
         getShippingMethodsWithOtherValue = mock {
-            onBlocking { invoke() } doReturn flowOf(
+            on { invoke() } doReturn flowOf(
                 listOf(
                     ShippingMethod(
                         id = "other",
@@ -213,7 +215,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
         feedbackRepository = mock {
-            onBlocking {
+            on {
                 getFeatureFeedbackSetting(eq(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES))
             } doReturn FeatureFeedbackSettings(
                 feature = FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
@@ -222,6 +224,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         fetchProductByIdentifier = mock()
         wooPosSurveysNotificationScheduler = mock()
+        ciabOrderStatusMapper = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -514,7 +517,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         val throwable = WooException(error = wooError)
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(throwable))
+            on { invoke(any(), any()) } doReturn flowOf(Failed(throwable))
         }
 
         createSut()
@@ -2179,6 +2182,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             feedbackRepository = feedbackRepository,
             fetchProductByIdentifier = fetchProductByIdentifier,
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
+            ciabOrderStatusMapper = ciabOrderStatusMapper,
         )
     }
 

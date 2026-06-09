@@ -34,7 +34,7 @@ class TapToPayAvailabilityStatusTest {
     }
     private val deviceFeatures = mock<DeviceFeatures>()
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureUnsupported(CIABAffectedFeature.WooPayments) }.thenReturn(false)
+        on { isFeatureUnsupported(CIABAffectedFeature.InPersonPayments) }.thenReturn(false)
     }
 
     private val availabilityStatus = TapToPayAvailabilityStatus(
@@ -107,7 +107,7 @@ class TapToPayAvailabilityStatusTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.WooPayments)).thenReturn(true)
+        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.InPersonPayments)).thenReturn(true)
 
         val result = availabilityStatus.invoke()
 

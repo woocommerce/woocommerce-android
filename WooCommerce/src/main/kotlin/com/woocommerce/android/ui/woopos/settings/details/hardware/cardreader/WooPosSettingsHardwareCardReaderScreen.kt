@@ -36,7 +36,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderIndicatorDot
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosReaderStatusText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -89,8 +92,8 @@ private fun WooPosSettingsHardwareCardReaderContent(
                 .verticalScroll(rememberScrollState()),
         ) {
             when (state) {
-                is WooPosSettingsHardwareCardReaderUiState.Connected -> {
-                    ConnectedContent(
+                is WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth -> {
+                    ConnectedBluetoothContent(
                         readerName = state.readerName,
                         batteryLevel = state.batteryLevel,
                         firmwareVersion = state.firmwareVersion ?: stringResource(
@@ -99,6 +102,15 @@ private fun WooPosSettingsHardwareCardReaderContent(
                         isSoftwareUpdateAvailable = state.isSoftwareUpdateAvailable,
                         onDisconnectClicked = onDisconnectClicked,
                         onUpdateClick = onUpdateClick,
+                        onDocumentationClicked = onDocumentationClicked,
+                    )
+                }
+
+                is WooPosSettingsHardwareCardReaderUiState.Connected.Phone -> {
+                    ConnectedPhoneContent(
+                        readerName = state.readerName,
+                        fingerprintSuffix = state.fingerprintSuffix,
+                        onDisconnectClicked = onDisconnectClicked,
                         onDocumentationClicked = onDocumentationClicked,
                     )
                 }
@@ -115,7 +127,7 @@ private fun WooPosSettingsHardwareCardReaderContent(
 }
 
 @Composable
-private fun ConnectedContent(
+private fun ConnectedBluetoothContent(
     readerName: String,
     batteryLevel: Float?,
     firmwareVersion: String,
@@ -140,19 +152,10 @@ private fun ConnectedContent(
                 modifier = Modifier
                     .padding(WooPosSpacing.Medium.value)
             ) {
-                Row {
-                    WooPosSettingsDetailsMenuItemInfo(
-                        title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
-                        subtitle = readerName,
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    WooPosOutlinedButtonSmall(
-                        text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
-                        onClick = onDisconnectClicked
-                    )
-                }
+                WooPosSettingsDetailsMenuItemInfo(
+                    title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
+                    subtitle = readerName,
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
@@ -183,6 +186,83 @@ private fun ConnectedContent(
                             onClick = onUpdateClick
                         )
                     }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    WooPosReaderIndicatorDot(
+                        size = 14.dp,
+                        color = WooPosTheme.colors.success,
+                        modifier = Modifier.padding(start = WooPosSpacing.Medium.value),
+                    )
+                    WooPosReaderStatusText(
+                        title = stringResource(R.string.woopos_reader_connected),
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    WooPosOutlinedButtonSmall(
+                        text = stringResource(R.string.woopos_settings_card_reader_disconnect_button),
+                        onClick = onDisconnectClicked
+                    )
+                }
+            }
+        }
+
+        WooPosSettingsDetailsMenuItem(
+            title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
+            subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
+            onClick = onDocumentationClicked
+        )
+    }
+}
+
+@Composable
+internal fun ConnectedPhoneContent(
+    readerName: String,
+    fingerprintSuffix: String?,
+    onDisconnectClicked: () -> Unit,
+    onDocumentationClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+    ) {
+        WooPosCard(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier.padding(WooPosSpacing.Medium.value)
+            ) {
+                Row {
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
+                        subtitle = readerName,
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    WooPosOutlinedButtonSmall(
+                        text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
+                        onClick = onDisconnectClicked
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                WooPosSettingsDetailsMenuItemInfo(
+                    title = stringResource(R.string.woopos_settings_card_reader_transport_title),
+                    subtitle = stringResource(R.string.woopos_settings_card_reader_transport_wifi),
+                )
+
+                if (fingerprintSuffix != null) {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_fingerprint_title),
+                        subtitle = fingerprintSuffix,
+                    )
                 }
             }
         }
@@ -233,7 +313,7 @@ private fun UpdateFirmwareBanner() {
                 imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(WooPosIconSize.Medium.value)
             )
 
             Column(modifier = Modifier.weight(1f)) {
@@ -272,14 +352,31 @@ fun WooPosSettingsHardwareCardReaderScreenNotConnectedPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosSettingsHardwareCardReaderScreenConnectedPreview() {
+fun WooPosSettingsHardwareCardReaderScreenConnectedBluetoothPreview() {
     WooPosTheme {
         WooPosSettingsHardwareCardReaderContent(
-            uiState = WooPosSettingsHardwareCardReaderUiState.Connected(
+            uiState = WooPosSettingsHardwareCardReaderUiState.Connected.Bluetooth(
                 readerName = "Stripe Reader M2",
                 batteryLevel = 0.75f,
                 firmwareVersion = "1.2.3",
                 isSoftwareUpdateAvailable = true
+            ),
+            onConnectClicked = { },
+            onDisconnectClicked = { },
+            onDocumentationClicked = { },
+            onUpdateClick = { }
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsHardwareCardReaderScreenConnectedPhonePreview() {
+    WooPosTheme {
+        WooPosSettingsHardwareCardReaderContent(
+            uiState = WooPosSettingsHardwareCardReaderUiState.Connected.Phone(
+                readerName = "Andrey's Pixel 7",
+                fingerprintSuffix = "AB4F",
             ),
             onConnectClicked = { },
             onDisconnectClicked = { },

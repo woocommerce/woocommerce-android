@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
@@ -42,7 +43,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
-import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
@@ -111,12 +111,13 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        DASHBOARD_REVENUE_STATS_TYPE,
         ACTIVE_TOP_PERFORMERS_GRANULARITY,
         DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
-        CUSTOM_DOMAINS_SOURCE,
+        ENABLE_SIMULATED_EFTPOS,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
@@ -150,6 +151,7 @@ object AppPrefs {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
         AUTO_TAX_RATE_ID,
     }
 
@@ -172,6 +174,12 @@ object AppPrefs {
 
         // last connected card reader's id
         LAST_CONNECTED_CARD_READER_ID,
+
+        // last connected phone reader's stable device id (for Woo POS remote tap-to-pay)
+        LAST_CONNECTED_PHONE_DEVICE_ID,
+
+        // this phone's stable device id when it advertises itself as a Woo POS remote tap-to-pay reader
+        WOO_POS_REMOTE_READER_DEVICE_UUID,
 
         // show card reader tutorial after a reader is connected
         SHOW_CARD_READER_CONNECTED_TUTORIAL,
@@ -280,6 +288,10 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
+    var isEftposEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, false)
+        set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_EFTPOS, value)
+
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateFrequencyUiModel.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
@@ -340,14 +352,32 @@ object AppPrefs {
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
 
+    var isAiAssistantEarlyAccessNoticeDismissed: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED,
+            default = false,
+        )
+        set(value) {
+            val committed = getPreferences()
+                .edit()
+                .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
+                .commit()
+            check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
+
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
-    fun isFeatureFlagOverrideEnabled(flag: FeatureFlag, defaultValue: Boolean): Boolean {
-        return getBoolean(getFeatureFlagKey(flag), defaultValue)
+    fun getFeatureFlagOverride(flag: FeatureFlag): Boolean? {
+        val key = getFeatureFlagKey(flag)
+        return if (exists(key)) getBoolean(key, false) else null
     }
 
     fun setFeatureFlagOverride(flag: FeatureFlag, enabled: Boolean) {
         setBoolean(getFeatureFlagKey(flag), enabled)
+    }
+
+    fun removeFeatureFlagOverride(flag: FeatureFlag) {
+        remove(getFeatureFlagKey(flag))
     }
 
     private fun getFeatureFlagKey(flag: FeatureFlag) =
@@ -577,6 +607,18 @@ object AppPrefs {
     fun getLastConnectedCardReaderId() = getString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID).orNullIfEmpty()
 
     fun removeLastConnectedCardReaderId() = remove(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID)
+
+    fun setLastConnectedPhoneDeviceId(deviceId: String) =
+        setString(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID, deviceId)
+
+    fun getLastConnectedPhoneDeviceId() =
+        getString(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID).orNullIfEmpty()
+
+    fun removeLastConnectedPhoneDeviceId() = remove(UndeletablePrefKey.LAST_CONNECTED_PHONE_DEVICE_ID)
+
+    var wooPosRemoteReaderDeviceUUID: String
+        get() = getString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, "")
+        set(value) = setString(UndeletablePrefKey.WOO_POS_REMOTE_READER_DEVICE_UUID, value)
 
     fun getShowCardReaderConnectedTutorial() = getBoolean(UndeletablePrefKey.SHOW_CARD_READER_CONNECTED_TUTORIAL, true)
 
@@ -1000,6 +1042,12 @@ object AppPrefs {
 
     fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
+    fun setDashboardRevenueStatsType(typeName: String) {
+        setString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE, typeName)
+    }
+
+    fun getDashboardRevenueStatsType() = getString(DeletablePrefKey.DASHBOARD_REVENUE_STATS_TYPE)
+
     fun setActiveTopPerformersTab(selectionName: String) {
         setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)
     }
@@ -1011,12 +1059,6 @@ object AppPrefs {
     }
 
     fun getActiveTopPerformersTab() = getString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY)
-
-    fun setCustomDomainsSource(source: String) {
-        setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
-    }
-
-    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, DomainFlowSource.SETTINGS.name)
 
     fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
         setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
@@ -1409,7 +1451,7 @@ object AppPrefs {
     }
 
     private fun remove(keyName: String) {
-        getPreferences().edit().remove(keyName).apply()
+        getPreferences().edit { remove(keyName) }
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())

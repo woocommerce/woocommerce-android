@@ -43,7 +43,7 @@ class DuplicateProductTest : BaseUnitTest() {
         // given
         val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(sku = "not an empty value"))
         productDetailRepository.stub {
-            onBlocking { addProduct(any<ProductAggregate>()) } doReturn Pair(true, 123)
+            on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, 123)
         }
 
         // when
@@ -70,17 +70,17 @@ class DuplicateProductTest : BaseUnitTest() {
             val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(numVariations = 15))
             val duplicatedProductId = 456L
             productDetailRepository.stub {
-                onBlocking { addProduct(any<ProductAggregate>()) } doReturn Pair(true, duplicatedProductId)
+                on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, duplicatedProductId)
             }
 
             val variationsOfProductToDuplicate =
                 ProductTestUtils.generateProductVariationList(productToDuplicate.remoteId)
                     .map { it.copy(sku = "not an empty value") }
             variationRepository.stub {
-                onBlocking {
+                on {
                     fetchProductVariations(eq(productToDuplicate.remoteId), any())
                 } doReturn variationsOfProductToDuplicate
-                onBlocking { createVariations(any(), any()) } doReturn Result.success(Unit)
+                on { createVariations(any(), any()) } doReturn Result.success(Unit)
             }
 
             // when

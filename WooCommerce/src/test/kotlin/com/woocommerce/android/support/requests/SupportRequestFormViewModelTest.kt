@@ -12,6 +12,9 @@ import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetEx
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatAnalyticsTracker
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketRoute
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -36,6 +40,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var zendeskSettings: ZendeskSettings
     private lateinit var selectedSite: SelectedSite
     private lateinit var tracks: AnalyticsTrackerWrapper
+    private lateinit var aiSupportChatAnalyticsTracker: AiSupportChatAnalyticsTracker
     private val savedState = SavedStateHandle()
 
     @Before
@@ -122,7 +127,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(
+            zendeskTicketRepository,
+            times(1)
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     @Test
@@ -139,7 +147,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(
+            zendeskTicketRepository,
+            never()
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
 
     @Test
@@ -208,6 +219,71 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given prefill data, when submit request is triggered, then prefilled values are submitted`() = testBlocking {
+        // Given
+        val context = mock<android.content.Context>()
+        sut.onPrefillReceived(
+            SupportRequestFormViewModel.Prefill(
+                ticketType = TicketType.Payments,
+                subject = "WooPayments Support Request",
+                siteAddress = "https://example.com",
+                message = "Transcript"
+            )
+        )
+
+        // When
+        sut.submitSupportRequest(context, HelpOrigin.AI_TROUBLESHOOTING, listOf("in_app_support_escalate"))
+
+        // Then
+        verify(zendeskTicketRepository).createRequest(
+            context = eq(context),
+            origin = eq(HelpOrigin.AI_TROUBLESHOOTING),
+            ticketType = eq(TicketType.Payments),
+            selectedSite = any(),
+            subject = eq("WooPayments Support Request"),
+            description = eq("Transcript"),
+            extraTags = eq(listOf("in_app_support_escalate")),
+            siteAddress = eq("https://example.com"),
+            diagnosticLog = anyOrNull()
+        )
+    }
+
+    @Test
+    fun `given existing form data, when prefill data is received, then existing values are not overwritten`() =
+        testBlocking {
+            // Given
+            val context = mock<android.content.Context>()
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.onSubjectChanged("Edited subject")
+            sut.onSiteAddressChanged("https://edited.example.com")
+            sut.onMessageChanged("Edited message")
+
+            // When
+            sut.onPrefillReceived(
+                SupportRequestFormViewModel.Prefill(
+                    ticketType = TicketType.Payments,
+                    subject = "WooPayments Support Request",
+                    siteAddress = "https://example.com",
+                    message = "Transcript"
+                )
+            )
+            sut.submitSupportRequest(context, HelpOrigin.AI_TROUBLESHOOTING, listOf("in_app_support_escalate"))
+
+            // Then
+            verify(zendeskTicketRepository).createRequest(
+                context = eq(context),
+                origin = eq(HelpOrigin.AI_TROUBLESHOOTING),
+                ticketType = eq(TicketType.MobileApp),
+                selectedSite = any(),
+                subject = eq("Edited subject"),
+                description = eq("Edited message"),
+                extraTags = eq(listOf("in_app_support_escalate")),
+                siteAddress = eq("https://edited.example.com"),
+                diagnosticLog = anyOrNull()
+            )
+        }
+
+    @Test
     fun `when onUserIdentitySet is called, then run the expected actions`() = testBlocking {
         // Given
         val email = "email@test.com"
@@ -215,24 +291,82 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         // When
         sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), email, name)
+        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), null, email, name)
 
         // Then
         verify(zendeskSettings).supportEmail = email
         verify(zendeskSettings).supportName = name
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(
+            zendeskTicketRepository,
+            times(1)
+        ).createRequest(any(), any(), any(), any(), any(), any(), any(), any(), anyOrNull())
     }
+
+    @Test
+    fun `given ai support chat context, when submit request succeeds, then ticket created analytics are tracked`() =
+        testBlocking {
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(
+                context = mock(),
+                helpOrigin = HelpOrigin.AI_TROUBLESHOOTING,
+                extraTags = listOf("in_app_support_escalate"),
+                aiSupportChatTicketAnalyticsContext = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker).trackTicketCreated(
+                route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                context = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+        }
+
+    @Test
+    fun `given ai support chat context, when submit request fails, then ticket failed analytics are tracked`() =
+        testBlocking {
+            // Given
+            val error = Exception("Zendesk failed")
+            configureMocks(requestResult = Result.failure(error))
+
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(
+                context = mock(),
+                helpOrigin = HelpOrigin.AI_TROUBLESHOOTING,
+                extraTags = listOf("in_app_support_escalate"),
+                aiSupportChatTicketAnalyticsContext = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT
+            )
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker).trackTicketCreationFailed(
+                route = AiSupportChatTicketRoute.SUPPORT_FORM,
+                context = AI_SUPPORT_CHAT_ANALYTICS_CONTEXT,
+                error = error
+            )
+        }
+
+    @Test
+    fun `given regular support form, when submit request succeeds, then ai chat ticket analytics are not tracked`() =
+        testBlocking {
+            // When
+            sut.onHelpOptionSelected(TicketType.MobileApp)
+            sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+            // Then
+            verify(aiSupportChatAnalyticsTracker, never()).trackTicketCreated(any(), any())
+        }
 
     private fun configureMocks(requestResult: Result<Request?>) {
         zendeskSettings = mock()
         tracks = mock()
+        aiSupportChatAnalyticsTracker = mock()
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
             on { getIfExists() }.then { testSite }
         }
         zendeskTicketRepository = mock {
-            onBlocking {
+            on {
                 createRequest(
                     any(),
                     any(),
@@ -241,7 +375,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     any(),
                     any(),
                     any(),
-                    any()
+                    any(),
+                    anyOrNull()
                 )
             } doReturn flowOf(requestResult)
         }
@@ -251,7 +386,17 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
             zendeskSettings = zendeskSettings,
             selectedSite = selectedSite,
             tracks = tracks,
+            aiSupportChatAnalyticsTracker = aiSupportChatAnalyticsTracker,
             savedState = savedState
+        )
+    }
+
+    private companion object {
+        val AI_SUPPORT_CHAT_ANALYTICS_CONTEXT = AiSupportChatTicketAnalyticsContext(
+            entryPoint = "help_and_support",
+            supportArea = "mobile-app",
+            supportAreaConfidence = "high",
+            chatTopic = "woo_mobile_issue_mobile_app"
         )
     }
 }

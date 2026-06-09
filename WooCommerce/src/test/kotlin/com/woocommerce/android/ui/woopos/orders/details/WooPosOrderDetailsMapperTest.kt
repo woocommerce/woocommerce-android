@@ -9,16 +9,19 @@ import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -29,7 +32,10 @@ import java.math.BigDecimal
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosOrderDetailsMapperTest : BaseUnitTest() {
+class WooPosOrderDetailsMapperTest {
+    @Rule
+    @JvmField
+    val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val resourceProvider: ResourceProvider = mock()
     private val getProductById: WooPosGetProductById = mock()
@@ -74,7 +80,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
                 discountCode = null,
                 taxes = "$0.00",
                 shipping = null,
-                refunds = emptyList(),
+                refundsState = RefundsState.Loaded(refunds = emptyList()),
                 netPayment = null,
             )
         )
@@ -152,7 +158,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         OrderTestUtils.generateTestOrder().copy(items = items)
 
     @Test
-    fun `given order is paid, when mapOrderDetails, then totalPaid equals formatted total`() = testBlocking {
+    fun `given order is paid, when mapOrderDetails, then totalPaid equals formatted total`() = runTest {
         whenever(formatPrice(paidOrder.total, paidOrder.currency)).thenReturn("$106.00")
 
         val result = sut.mapOrderDetails(paidOrder, RefundsFetchResult.Success(emptyList()))
@@ -161,7 +167,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order is unpaid, when mapOrderDetails, then totalPaid equals formatted zero`() = testBlocking {
+    fun `given order is unpaid, when mapOrderDetails, then totalPaid equals formatted zero`() = runTest {
         val unpaidOrder = paidOrder.copy(datePaid = null)
         whenever(formatPrice(unpaidOrder.total, unpaidOrder.currency)).thenReturn("$106.00")
         whenever(formatPrice(BigDecimal.ZERO, unpaidOrder.currency)).thenReturn("$0.00")
@@ -172,29 +178,29 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order is paid, when mapOrderDetailsWithoutActions, then totalPaid equals formatted total`() =
-        testBlocking {
+    fun `given order is paid, when mapOrderDetailsWithoutRefunds, then totalPaid equals formatted total`() =
+        runTest {
             whenever(formatPrice(paidOrder.total)).thenReturn("$106.00")
 
-            val result = sut.mapOrderDetailsWithoutActions(paidOrder)
+            val result = sut.mapOrderDetailsWithoutRefunds(paidOrder)
 
             assertThat(result.totalPaid).isEqualTo("$106.00")
         }
 
     @Test
-    fun `given order is unpaid, when mapOrderDetailsWithoutActions, then totalPaid equals formatted zero`() =
-        testBlocking {
+    fun `given order is unpaid, when mapOrderDetailsWithoutRefunds, then totalPaid equals formatted zero`() =
+        runTest {
             val unpaidOrder = paidOrder.copy(datePaid = null)
             whenever(formatPrice(unpaidOrder.total)).thenReturn("$106.00")
             whenever(formatPrice(BigDecimal.ZERO)).thenReturn("$0.00")
 
-            val result = sut.mapOrderDetailsWithoutActions(unpaidOrder)
+            val result = sut.mapOrderDetailsWithoutRefunds(unpaidOrder)
 
             assertThat(result.totalPaid).isEqualTo("$0.00")
         }
 
     @Test
-    fun `given refunds with items, when mapOrderDetails, then refundedLineItems are populated`() = testBlocking {
+    fun `given refunds with items, when mapOrderDetails, then refundedLineItems are populated`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -228,7 +234,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given multiple refunds for same item, when mapOrderDetails, then quantities are aggregated`() = testBlocking {
+    fun `given multiple refunds for same item, when mapOrderDetails, then quantities are aggregated`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -263,7 +269,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given refunds with no items, when mapOrderDetails, then refundedLineItems is empty`() = testBlocking {
+    fun `given refunds with no items, when mapOrderDetails, then refundedLineItems is empty`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -283,7 +289,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given refund fetch error, when mapOrderDetails, then refundedLineItems is empty`() = testBlocking {
+    fun `given refund fetch error, when mapOrderDetails, then refundedLineItems is empty`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -300,8 +306,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order without refunds, when mapOrderDetailsWithoutActions, then lineItems loaded and refunds empty`() =
-        testBlocking {
+    fun `given order without refunds, when mapOrderDetailsWithoutRefunds, then lineItems loaded and refunds empty`() =
+        runTest {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
@@ -310,7 +316,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val order = createOrder(orderItems)
 
             // WHEN
-            val result = sut.mapOrderDetailsWithoutActions(order)
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
 
             // THEN
             val lineItems = (result.lineItems as LineItemsState.Loaded).items
@@ -319,8 +325,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order with partial refund, when mapOrderDetailsWithoutActions, then both lineItems are loading`() =
-        testBlocking {
+    fun `given order with partial refund, when mapOrderDetailsWithoutRefunds, then both lineItems are loading`() =
+        runTest {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
@@ -329,7 +335,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             val order = createOrder(orderItems).copy(refundTotal = BigDecimal("2.00"))
 
             // WHEN
-            val result = sut.mapOrderDetailsWithoutActions(order)
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
 
             // THEN
             assertThat(result.lineItems).isInstanceOf(LineItemsState.Loading::class.java)
@@ -337,8 +343,8 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given fully refunded order, when mapOrderDetailsWithoutActions, then lineItems loaded empty and refundedLineItems loading`() =
-        testBlocking {
+    fun `given fully refunded order, when mapOrderDetailsWithoutRefunds, then lineItems loaded empty and refundedLineItems loading`() =
+        runTest {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
@@ -350,7 +356,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             )
 
             // WHEN
-            val result = sut.mapOrderDetailsWithoutActions(order)
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
 
             // THEN
             assertThat((result.lineItems as LineItemsState.Loaded).items).isEmpty()
@@ -358,7 +364,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given refunds for multiple items, when mapOrderDetails, then each item has separate entry`() = testBlocking {
+    fun `given refunds for multiple items, when mapOrderDetails, then each item has separate entry`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -392,7 +398,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given fully refunded item, when mapOrderDetails, then item is excluded from lineItems`() = testBlocking {
+    fun `given fully refunded item, when mapOrderDetails, then item is excluded from lineItems`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -422,7 +428,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no refunds, when mapOrderDetails, then all items shown in lineItems`() = testBlocking {
+    fun `given no refunds, when mapOrderDetails, then all items shown in lineItems`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -444,7 +450,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
 
     @Test
     fun `given refunded item not found in order, when buildRefundedLineItems, then refund item name is used as fallback`() =
-        testBlocking {
+        runTest {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
@@ -476,7 +482,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
 
     @Test
     fun `given same product in different line items, when one is refunded, then only that line item is affected`() =
-        testBlocking {
+        runTest {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
@@ -519,7 +525,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given refund with tax, when buildRefundedLineItems, then prices exclude tax`() = testBlocking {
+    fun `given refund with tax, when buildRefundedLineItems, then prices exclude tax`() = runTest {
         // GIVEN
         setupDefaults()
         val orderItems = listOf(
@@ -552,7 +558,7 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
 
     @Test
     fun `given refund with negative quantity, when buildRefundedLineItems, then quantity is shown as positive`() =
-        testBlocking {
+        runTest {
             // GIVEN
             setupDefaults()
             val orderItems = listOf(
@@ -588,4 +594,229 @@ class WooPosOrderDetailsMapperTest : BaseUnitTest() {
             assertThat(result.first().qtyAndUnitPrice).isEqualTo("1 x $4.00")
             assertThat(result.first().lineTotal).isEqualTo("$4.00")
         }
+
+    @Test
+    fun `given order with partial refund, when mapOrderDetailsWithoutRefunds, then refundsState is Loading`() =
+        runTest {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems).copy(refundTotal = BigDecimal("2.00"))
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
+
+            // THEN
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loading)
+        }
+
+    @Test
+    fun `given fully refunded order, when mapOrderDetailsWithoutRefunds, then refundsState is Loading`() =
+        runTest {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems).copy(
+                status = Order.Status.Refunded,
+                refundTotal = BigDecimal("4.00")
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
+
+            // THEN
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loading)
+        }
+
+    @Test
+    fun `given order without refunds, when mapOrderDetailsWithoutRefunds, then refundsState is Loaded empty`() =
+        runTest {
+            // GIVEN
+            setupDefaults()
+            val orderItems = listOf(
+                createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+            )
+            val order = createOrder(orderItems)
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
+
+            // THEN
+            assertThat(result.breakdown.refundsState).isEqualTo(RefundsState.Loaded(refunds = emptyList()))
+        }
+
+    @Test
+    fun `given order with fee line, when mapOrderDetails, then custom amount row is appended after products`() =
+        runTest {
+            // GIVEN
+            setupDefaults()
+            val order = createOrder(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+                )
+            ).copy(
+                feesLines = listOf(createFeeLine(id = 99L, name = "Gift wrap", total = BigDecimal("2.50")))
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+            // THEN
+            val lineItems = (result.lineItems as LineItemsState.Loaded).items
+            assertThat(lineItems).hasSize(2)
+            assertThat(lineItems[0].isLumpSum).isFalse()
+            assertThat(lineItems[1].isLumpSum).isTrue()
+            assertThat(lineItems[1].name).isEqualTo("Gift wrap")
+            assertThat(lineItems[1].lineTotal).isEqualTo("$2.50")
+        }
+
+    @Test
+    fun `given taxable fee line, when mapOrderDetails, then row includesTax is true`() = runTest {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(
+                    id = 1L,
+                    name = "Service charge",
+                    total = BigDecimal("5.00"),
+                    taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+                )
+            )
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+        // THEN
+        val row = (result.lineItems as LineItemsState.Loaded).items.single()
+        assertThat(row.isLumpSum).isTrue()
+        assertThat(row.includesTax).isTrue()
+    }
+
+    @Test
+    fun `given non-taxable fee line, when mapOrderDetails, then row includesTax is false`() = runTest {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(
+                    id = 1L,
+                    name = "Tip",
+                    total = BigDecimal("1.00"),
+                    taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+                )
+            )
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+        // THEN
+        assertThat((result.lineItems as LineItemsState.Loaded).items.single().includesTax).isFalse()
+    }
+
+    @Test
+    fun `given unknown tax status fee line, when mapOrderDetails, then row includesTax is false`() = runTest {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(
+                    id = 1L,
+                    name = "Service charge",
+                    total = BigDecimal("3.50"),
+                    taxStatus = Order.FeeLine.FeeLineTaxStatus.UNKNOWN,
+                )
+            )
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(emptyList()))
+
+        // THEN
+        assertThat((result.lineItems as LineItemsState.Loaded).items.single().includesTax).isFalse()
+    }
+
+    @Test
+    fun `given fee line refunded by id, when mapOrderDetails, then fee row is excluded`() = runTest {
+        // GIVEN
+        setupDefaults()
+        val order = createOrder(items = emptyList()).copy(
+            feesLines = listOf(
+                createFeeLine(id = 1L, name = "Gift wrap", total = BigDecimal("2.50")),
+                createFeeLine(id = 2L, name = "Tip", total = BigDecimal("1.00")),
+            )
+        )
+        val refund = Refund(
+            id = 1L,
+            dateCreated = Date(),
+            amount = BigDecimal("2.50"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = listOf(
+                Refund.FeeLine(id = 1L, name = "Gift wrap", totalTax = BigDecimal.ZERO, total = BigDecimal("-2.50"))
+            ),
+        )
+
+        // WHEN
+        val result = sut.mapOrderDetails(order, RefundsFetchResult.Success(listOf(refund)))
+
+        // THEN
+        val rows = (result.lineItems as LineItemsState.Loaded).items
+        assertThat(rows).hasSize(1)
+        assertThat(rows.single().name).isEqualTo("Tip")
+    }
+
+    @Test
+    fun `given order with fee line, when mapOrderDetailsWithoutRefunds, then custom amount row is appended`() =
+        runTest {
+            // GIVEN
+            setupDefaults()
+            val order = createOrder(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, name = "Cup", price = BigDecimal("4.00")),
+                )
+            ).copy(
+                feesLines = listOf(
+                    createFeeLine(
+                        id = 99L,
+                        name = "Service charge",
+                        total = BigDecimal("3.00"),
+                        taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+                    )
+                )
+            )
+
+            // WHEN
+            val result = sut.mapOrderDetailsWithoutRefunds(order)
+
+            // THEN
+            val rows = (result.lineItems as LineItemsState.Loaded).items
+            assertThat(rows).hasSize(2)
+            assertThat(rows.last().isLumpSum).isTrue()
+            assertThat(rows.last().includesTax).isTrue()
+            assertThat(rows.last().name).isEqualTo("Service charge")
+        }
+
+    private fun createFeeLine(
+        id: Long,
+        name: String,
+        total: BigDecimal,
+        totalTax: BigDecimal = BigDecimal.ZERO,
+        taxStatus: Order.FeeLine.FeeLineTaxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+    ) = Order.FeeLine(
+        id = id,
+        name = name,
+        total = total,
+        totalTax = totalTax,
+        taxStatus = taxStatus,
+        taxes = emptyList(),
+    )
 }

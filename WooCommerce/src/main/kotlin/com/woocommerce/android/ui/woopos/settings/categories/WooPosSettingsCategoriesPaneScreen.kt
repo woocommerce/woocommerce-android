@@ -21,11 +21,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -35,6 +35,7 @@ fun WooPosSettingsCategoriesPaneScreen(
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
     modifier: Modifier = Modifier,
+    showSelection: Boolean = true,
     viewModel: WooPosSettingsCategoriesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -45,6 +46,7 @@ fun WooPosSettingsCategoriesPaneScreen(
         fixedCategories = state.fixedCategories,
         selectedCategory = selectedCategory,
         onCategorySelected = onCategorySelected,
+        showSelection = showSelection,
     )
 }
 
@@ -55,6 +57,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
     fixedCategories: List<WooPosSettingsCategory>,
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
+    showSelection: Boolean = true,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -68,7 +71,7 @@ internal fun WooPosSettingsCategoriesPaneScreenContent(
             scrollableCategories.forEach { item ->
                 CategoryItem(
                     item = item,
-                    isSelected = item == selectedCategory,
+                    isSelected = showSelection && item == selectedCategory,
                     onClick = {
                         onCategorySelected(item)
                     },
@@ -141,7 +144,7 @@ private fun FixedCategoryItem(
                 imageVector = ImageVector.vectorResource(item.icon),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(WooPosIconSize.Medium.value)
             )
 
             Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))

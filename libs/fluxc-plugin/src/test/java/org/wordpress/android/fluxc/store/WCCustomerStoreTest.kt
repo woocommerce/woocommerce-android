@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -36,7 +35,7 @@ class WCCustomerStoreTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val restClient: CustomerRestClient = mock()
 
@@ -91,6 +90,62 @@ class WCCustomerStoreTest {
         // then
         assertThat(result.isError).isTrue
         assertThat(result.error).isEqualTo(TEST_ERROR)
+    }
+
+    @Test
+    fun `when customers are fetched successfully, then mapped customer models are cached`() = runTest {
+        // given
+        val customerDto = fakeCustomerDTO(id = DEFAULT_REMOTE_CUSTOMER_ID)
+        val expectedCustomer = fakeWCCustomerModel(
+            remoteCustomerId = DEFAULT_REMOTE_CUSTOMER_ID,
+            localSiteId = DEFAULT_SITE_ID
+        )
+
+        doReturn(WooPayload(arrayOf(customerDto)))
+            .whenever(restClient)
+            .fetchCustomers(
+                site = DEFAULT_SITE_MODEL,
+                search = "jo",
+                email = "customer@example.com",
+                include = listOf(DEFAULT_REMOTE_CUSTOMER_ID),
+                orderby = "email",
+                order = "asc",
+                page = 2,
+                perPage = 50,
+            )
+
+        // when
+        val result = sut.fetchCustomers(
+            site = DEFAULT_SITE_MODEL,
+            search = "jo",
+            email = "customer@example.com",
+            include = listOf(DEFAULT_REMOTE_CUSTOMER_ID),
+            orderby = "email",
+            order = "asc",
+            page = 2,
+            perPage = 50,
+        )
+
+        // then
+        assertThat(result.isError).isFalse
+        assertThat(result.model).containsExactly(expectedCustomer)
+        assertThat(customerDao.getCustomersForSite(DEFAULT_SITE_MODEL.localId())).containsExactly(expectedCustomer)
+    }
+
+    @Test
+    fun `when customer fetch fails, then error is returned and customers are not cached`() = runTest {
+        // given
+        doReturn(WooPayload<Array<CustomerDTO>>(TEST_ERROR))
+            .whenever(restClient)
+            .fetchCustomers(DEFAULT_SITE_MODEL)
+
+        // when
+        val result = sut.fetchCustomers(DEFAULT_SITE_MODEL)
+
+        // then
+        assertThat(result.isError).isTrue
+        assertThat(result.error).isEqualTo(TEST_ERROR)
+        assertThat(customerDao.getCustomersForSite(DEFAULT_SITE_MODEL.localId())).isEmpty()
     }
 
     @Test

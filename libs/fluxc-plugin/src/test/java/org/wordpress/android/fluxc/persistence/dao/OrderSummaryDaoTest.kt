@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -20,10 +19,9 @@ import org.wordpress.android.fluxc.utils.FakeOrderSummaryGenerator.asOrderSummar
 
 @RunWith(RobolectricTestRunner::class)
 class OrderSummaryDaoTest {
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: OrderSummaryDao
 
@@ -35,7 +33,7 @@ class OrderSummaryDaoTest {
 
     @Before
     fun setUp() {
-        sut = databaseRule.db.orderSummaryDao
+        sut = wcDatabaseRule.db.orderSummaryDao
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class CarrierPredefinedPackagesDTO {
     val usps: USPSPackageDTO? = null
+    val fedex: FedExPackageDTO? = null
 
     @SerializedName("dhlexpress")
     val dhlExpress: DomesticAndInternationalGroupDTO? = null
@@ -32,6 +33,11 @@ class USPSPackageDTO {
 class DomesticAndInternationalGroupDTO {
     @SerializedName("domestic_and_international")
     val domesticAndInternationalPackages: CarrierPackageGroupDTO? = null
+}
+
+class FedExPackageDTO {
+    val express: CarrierPackageGroupDTO? = null
+    val international: CarrierPackageGroupDTO? = null
 }
 
 class CarrierPackageGroupDTO {

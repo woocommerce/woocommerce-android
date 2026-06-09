@@ -16,6 +16,8 @@ import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
+import org.wordpress.android.fluxc.persistence.dao.WooPushNotificationPreferencesDao
 import org.wordpress.android.util.AppLog
 import java.io.File
 import javax.inject.Inject
@@ -134,6 +136,8 @@ interface WCDatabaseModule {
 
         @Provides internal fun provideOrderShipmentProvidersDao(database: WCAndroidDatabase) = database.orderShipmentProvidersDao
 
+        @Provides internal fun provideOrderFulfillmentDao(database: WCAndroidDatabase) = database.orderFulfillmentDao
+
         @Provides internal fun provideOrderShipmentTrackingDao(database: WCAndroidDatabase) = database.orderShipmentTrackingDao
 
         @Provides internal fun provideTaxClassDao(database: WCAndroidDatabase) = database.taxClassDao
@@ -168,6 +172,18 @@ interface WCDatabaseModule {
 
         @Provides internal fun provideShippingLabelCreationEligibilityDao(database: WCAndroidDatabase) =
             database.shippingLabelCreationEligibilityDao
+
+        @Provides
+        internal fun provideWooPushNotificationPreferencesDao(
+            database: WCAndroidDatabase
+        ): WooPushNotificationPreferencesDao = database.wooPushNotificationPreferencesDao
+
+        @Provides fun provideSupportChatBookmarkDao(database: WCAndroidDatabase): SupportChatBookmarkDao {
+            return database.supportChatBookmarkDao
+        }
+
+        @Provides fun provideAnalyticsScheduledImportDao(database: WCAndroidDatabase) =
+            database.analyticsScheduledImportDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

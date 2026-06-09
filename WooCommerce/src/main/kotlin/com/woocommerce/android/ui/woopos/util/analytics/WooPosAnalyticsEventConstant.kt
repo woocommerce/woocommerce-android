@@ -17,6 +17,7 @@ object WooPosAnalyticsEventConstant {
     enum class ItemsListItemType(val value: String) {
         PRODUCT("product"),
         COUPON("coupon"),
+        CUSTOM_AMOUNT("custom_amount"),
         LOADING("loading"),
         ERROR("error");
 
@@ -47,7 +48,8 @@ object WooPosAnalyticsEventConstant {
         SEARCH_RESULT("search"),
         SEARCH_RESULT_LOCAL("search_result_local"),
         POPULAR_PRODUCTS("pre_search"),
-        BARCODE_SCANNER("scanner");
+        BARCODE_SCANNER("scanner"),
+        CUSTOM_AMOUNT_FORM("custom_amount_form");
 
         override fun toString(): String {
             return value
@@ -98,7 +100,6 @@ object WooPosAnalyticsEventConstant {
     }
 
     enum class SyncErrorType(val value: String) {
-        CATALOG_TOO_LARGE("catalog_too_large"),
         NETWORK_ERROR("network_error"),
         DATABASE_ERROR("database_error"),
         INVALID_RESPONSE("invalid_response"),

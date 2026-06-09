@@ -5,10 +5,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -56,7 +56,7 @@ fun BarcodeScannerScreen(
             )
         }
         is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {
-            AlertDialog(
+            PermissionAlertDialog(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
@@ -66,7 +66,7 @@ fun BarcodeScannerScreen(
             )
         }
         is BarcodeScanningViewModel.PermissionState.PermanentlyDenied -> {
-            AlertDialog(
+            PermissionAlertDialog(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
@@ -82,7 +82,7 @@ fun BarcodeScannerScreen(
 }
 
 @Composable
-private fun AlertDialog(
+private fun PermissionAlertDialog(
     title: String,
     message: String,
     ctaLabel: String,
@@ -106,7 +106,7 @@ private fun AlertDialog(
             ) {
                 Text(
                     ctaLabel,
-                    color = MaterialTheme.colors.secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.padding(8.dp)
                 )
             }
@@ -119,7 +119,7 @@ private fun AlertDialog(
             ) {
                 Text(
                     dismissCtaLabel,
-                    color = MaterialTheme.colors.secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.padding(8.dp)
                 )
             }
@@ -132,7 +132,7 @@ private fun AlertDialog(
 @Composable
 fun DeniedOnceAlertDialog() {
     WooThemeWithBackground {
-        AlertDialog(
+        PermissionAlertDialog(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_cta_label),
@@ -148,7 +148,7 @@ fun DeniedOnceAlertDialog() {
 @Composable
 fun DeniedPermanentlyAlertDialog() {
     WooThemeWithBackground {
-        AlertDialog(
+        PermissionAlertDialog(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),

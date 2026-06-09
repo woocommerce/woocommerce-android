@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.filters.domain
 
+import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.DateRange.CUSTOM_RANGE
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class GetWCOrderListDescriptorWithFilters @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository,
     private val selectedSite: SelectedSite,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val ciabOrderStatusMapper: CIABOrderStatusMapper
 ) {
     operator fun invoke(): WCOrderListDescriptor {
         val selectedDateRange = orderFiltersRepository.getCurrentFilterSelection(DATE_RANGE)
@@ -27,8 +29,9 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             .firstOrNull()
         val rangeStartAndEnd = selectedDateRange.getBeforeAndAfterFrom(orderFiltersRepository, dateUtils)
 
-        val orderStatusFilters = orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
-            .joinToString(separator = ",")
+        val orderStatusFilters = ciabOrderStatusMapper.resolveFilterKeys(
+            orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
+        ).joinToString(separator = ",")
 
         val salesChannelFilters = orderFiltersRepository.getCurrentFilterSelection(SALES_CHANNEL)
         val createdViaFilter = salesChannelFilters

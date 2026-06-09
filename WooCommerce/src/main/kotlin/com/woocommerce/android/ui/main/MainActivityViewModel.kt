@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.main
 
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
@@ -23,7 +21,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS
 import com.woocommerce.android.notifications.local.LocalNotificationType.WOO_POS_SURVEY_POTENTIAL_USER_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType.Jetpack
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -38,6 +36,7 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.shortcuts.AppShortcut
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -63,6 +62,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
+    private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
     ageEligibilityChecker: AgeEligibilityChecker,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
@@ -118,7 +118,8 @@ class MainActivityViewModel @Inject constructor(
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
-            val isSiteSpecificNotification = it.remoteSiteId != 0L
+            val isSiteSpecificNotification = it.remoteSiteId != 0L &&
+                currentSite.connectionType != SiteConnectionType.ApplicationPasswords
             if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
                 changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
@@ -139,7 +140,7 @@ class MainActivityViewModel @Inject constructor(
             }
 
             is ResolveAppLink.Action.ViewOrderDetail -> {
-                triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
+                triggerEvent(ViewOrderDetail(event.orderId))
             }
 
             ResolveAppLink.Action.ViewStats -> {
@@ -185,6 +186,7 @@ class MainActivityViewModel @Inject constructor(
         when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
+            NotificationChannelType.STOCK -> triggerEvent(ViewMyStoreStats)
             NotificationChannelType.OTHER -> if (notification.isBlazeNotification) {
                 triggerEvent(ViewBlazeCampaignList)
             } else {
@@ -194,26 +196,19 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
-        notificationHandler.markNotificationTapped(notification.remoteNoteId)
-        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
+        notificationHandler.markNotificationTapped(localPushId)
+        notificationHandler.removeTappedNotificationAndSummaryIfNeeded(localPushId, notification)
         when (notification.noteType) {
             is WooNotificationType.NewOrder -> {
-                when {
-                    siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
-                        ViewOrderDetail(
-                            notification.uniqueId,
-                            notification.remoteNoteId
-                        )
-                    )
-
-                    else -> triggerEvent(ViewOrderList)
-                }
+                triggerEvent(ViewOrderDetail(notification.uniqueId))
             }
 
             is WooNotificationType.ProductReview -> {
                 analyticsTrackerWrapper.track(REVIEW_OPEN)
                 triggerEvent(ViewReviewDetail(notification.uniqueId))
             }
+
+            is WooNotificationType.Stock -> triggerEvent(ViewProductDetail(notification.uniqueId))
 
             is WooNotificationType.BlazeStatusUpdate -> triggerEvent(
                 ViewBlazeCampaignDetail(campaignId = notification.uniqueId.toString())
@@ -261,9 +256,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
-        val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
-            !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
-            selectedSite.get().connectionType == Jetpack
+        val shouldShowNotificationsPermissionBar = systemVersionUtilsWrapper.isAtLeastT() &&
+            !hasNotificationsPermission &&
+            !prefs.getWasNotificationsPermissionBarDismissed()
 
         if (_isNotificationPermissionCardVisible.value != shouldShowNotificationsPermissionBar) {
             _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
@@ -283,7 +278,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun onNotificationsPermissionBarDismissButtonTapped() {
         analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
-        AppPrefs.setWasNotificationsPermissionBarDismissed(true)
+        prefs.setWasNotificationsPermissionBarDismissed(true)
         _isNotificationPermissionCardVisible.update { false }
     }
 
@@ -380,7 +375,8 @@ class MainActivityViewModel @Inject constructor(
 
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
-    data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ViewOrderDetail(val uniqueId: Long) : Event()
+    data class ViewProductDetail(val uniqueId: Long) : Event()
     data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
     object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()

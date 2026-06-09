@@ -33,7 +33,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,14 +47,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -63,17 +71,24 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.rememberRetained
+import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsViewModel
+import com.woocommerce.android.ui.woopos.orders.details.refund.REFUND_REASON_RESULT_KEY
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundScreen
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundDetailsDialog
+import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListState
+import com.woocommerce.android.ui.woopos.orders.list.WooPosOrdersListViewModel
+import com.woocommerce.android.ui.woopos.orders.list.WooPosScreenType
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.ui.woopos.util.ext.isWooPosPhoneLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -82,50 +97,148 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    navigatedFromEmailReceiptSent: Boolean,
-    refundReasonResult: String? = null,
+    backStackEntry: NavBackStackEntry,
 ) {
-    val viewModel: WooPosOrdersViewModel = hiltViewModel()
-    val state by viewModel.state.collectAsState()
+    val isPhoneLayout = LocalContext.current.isWooPosPhoneLayout()
+    val listViewModel: WooPosOrdersListViewModel = hiltViewModel()
+    val detailViewModel: WooPosOrderDetailsViewModel = hiltViewModel()
 
-    if (navigatedFromEmailReceiptSent) {
-        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+    val listState by listViewModel.state.collectAsState()
+    val detailState by detailViewModel.state.collectAsState()
+
+    val emailReceiptSent = backStackEntry.savedStateHandle
+        .getStateFlow(EMAIL_RECEIPT_SENT, false)
+        .collectAsState()
+
+    LaunchedEffect(emailReceiptSent.value) {
+        if (emailReceiptSent.value) {
+            detailViewModel.onBackFromSuccessfullySendingEmailReceipt()
+            backStackEntry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
+        }
     }
 
-    val context = LocalContext.current
+    val refundReasonResult = backStackEntry.savedStateHandle
+        .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)
+        .collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collectLatest { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
+    LaunchedEffect(refundReasonResult.value) {
+        if (refundReasonResult.value != null) {
+            backStackEntry.savedStateHandle.remove<String>(REFUND_REASON_RESULT_KEY)
+        }
+    }
+
+    var detailPaneIssueRefundOrderId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var detailPaneIssueRefundInstanceId by rememberSaveable { mutableIntStateOf(0) }
+    var detailPaneIssueRefundDismissRequestToken by rememberSaveable { mutableIntStateOf(0) }
+    var detailPaneIssueRefundHasPendingChanges by rememberSaveable { mutableStateOf(false) }
+    var pendingOrderSelectionAfterRefundDismiss by rememberSaveable { mutableStateOf<Long?>(null) }
+    var pendingOrderSelectionConfirmation by rememberSaveable { mutableStateOf<Long?>(null) }
+    val detailPaneIssueRefundHandler = remember { WooPosDetailPaneIssueRefundHandler() }
+    val handleOrdersUIEvent: (WooPosOrdersUIEvent) -> Unit = { event ->
+        val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
+            ?.action as? WooPosOrdersState.OrderAction.IssueRefund
+        if (issueRefundAction != null) {
+            detailPaneIssueRefundInstanceId += 1
+            detailPaneIssueRefundOrderId = issueRefundAction.orderId
+            detailPaneIssueRefundDismissRequestToken = 0
+            detailPaneIssueRefundHasPendingChanges = false
+            pendingOrderSelectionAfterRefundDismiss = null
+            pendingOrderSelectionConfirmation = null
+        } else {
+            detailViewModel.onUIEvent(event)
+        }
+    }
+
+    val handleIssueRefundDismissed = {
+        val action = detailPaneIssueRefundHandler.handleIssueRefundDismissed(
+            refundedOrderId = detailPaneIssueRefundOrderId,
+            pendingOrderSelectionAfterRefundDismiss = pendingOrderSelectionAfterRefundDismiss,
+        )
+        detailPaneIssueRefundOrderId = null
+        detailPaneIssueRefundHasPendingChanges = false
+        detailViewModel.onBackFromIssueRefund(action.refundedOrderId)
+        action.orderIdToSelect?.let { orderId ->
+            listViewModel.onOrderSelected(orderId, WooPosScreenType.DualPane)
+        }
+        pendingOrderSelectionAfterRefundDismiss = null
+    }
+
+    val handleIssueRefundDismissRequestRejected = {
+        pendingOrderSelectionAfterRefundDismiss = null
+    }
+
+    val requestRefundDismissBeforeOrderSelection: (Long) -> Unit = { orderId ->
+        pendingOrderSelectionAfterRefundDismiss = orderId
+        detailPaneIssueRefundDismissRequestToken += 1
+    }
+
+    val handleOrderSelected: (Long) -> Unit = if (isPhoneLayout) {
+        { orderId ->
+            listViewModel.onOrderSelected(orderId, WooPosScreenType.SinglePane)
+            onNavigationEvent(WooPosNavigationEvent.OpenOrderDetails(orderId))
+        }
+    } else {
+        { orderId ->
+            val action = detailPaneIssueRefundHandler.handleOrderSelected(
+                orderId = orderId,
+                currentRefundOrderId = detailPaneIssueRefundOrderId,
+                hasPendingChanges = detailPaneIssueRefundHasPendingChanges,
+            )
+            when (action) {
+                is WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.SelectOrder ->
+                    listViewModel.onOrderSelected(action.orderId, WooPosScreenType.DualPane)
+                WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.Ignore -> Unit
+                is WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.ConfirmPendingSelection ->
+                    pendingOrderSelectionConfirmation = action.orderId
+                is WooPosDetailPaneIssueRefundHandler.OrderSelectionAction.RequestRefundDismiss ->
+                    requestRefundDismissBeforeOrderSelection(action.orderId)
+            }
         }
     }
 
     WooPosOrdersScreen(
-        state = state,
-        isSingleOrderMode = viewModel.isSingleOrderMode,
-        scrollToTopEvent = viewModel.scrollToTopEvent,
+        listState = listState,
+        detailState = detailState,
+        isSingleOrderMode = detailViewModel.isSingleOrderMode,
+        isPhoneLayout = isPhoneLayout,
+        scrollToTopEvent = listViewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-        onRefresh = viewModel::onRefresh,
-        onOrderSelected = viewModel::onOrderSelected,
-        onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
-        onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
-        onSearchEvent = viewModel::onSearchEvent,
-        onSearchErrorRetry = viewModel::onSearchErrorRetry,
-        onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
-        onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
-        onUIEvent = viewModel::onUIEvent,
-        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
-        onRefundDetailsDialogDismissed = viewModel::onRefundDetailsDialogDismissed,
+        onRefresh = listViewModel::onRefresh,
+        onOrderSelected = handleOrderSelected,
+        onEndOfOrdersListReached = listViewModel::onEndOfOrdersListReached,
+        onPaginationErrorTryAgain = listViewModel::onPaginationErrorTryAgain,
+        onSearchEvent = listViewModel::onSearchEvent,
+        onSearchErrorRetry = listViewModel::onSearchErrorRetry,
+        onOrdersEmptyActionClicked = listViewModel::onOrdersEmptyActionClicked,
+        onOrdersLoadingErrorRetryButtonClicked = listViewModel::onOrdersLoadingErrorRetryButtonClicked,
+        onUIEvent = handleOrdersUIEvent,
+        onRetryDetailLoad = detailViewModel::retryLoadOrder,
+        onRefundDetailsDialogDismissed = detailViewModel::onRefundDetailsDialogDismissed,
+        detailPaneIssueRefundOrderId = detailPaneIssueRefundOrderId,
+        detailPaneIssueRefundInstanceId = detailPaneIssueRefundInstanceId,
+        detailPaneIssueRefundDismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+        refundReasonUpdate = refundReasonResult.value,
+        onIssueRefundDismissed = handleIssueRefundDismissed,
+        onIssueRefundPendingChangesChanged = { detailPaneIssueRefundHasPendingChanges = it },
+        onIssueRefundDismissRequestRejected = handleIssueRefundDismissRequestRejected,
+        pendingOrderSelectionConfirmation = pendingOrderSelectionConfirmation,
+        onPendingOrderSelectionConfirmationDismissed = { pendingOrderSelectionConfirmation = null },
+        onPendingOrderSelectionConfirmed = {
+            pendingOrderSelectionConfirmation?.let { orderId ->
+                pendingOrderSelectionConfirmation = null
+                requestRefundDismissBeforeOrderSelection(orderId)
+            }
+        },
         onNavigationEvent = onNavigationEvent,
-        refundReasonUpdate = refundReasonResult
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun WooPosOrdersScreen(
-    state: WooPosOrdersState,
+    listState: WooPosOrdersListState,
+    detailState: WooPosOrderDetailsState,
     isSingleOrderMode: Boolean = false,
+    isPhoneLayout: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
@@ -137,69 +250,70 @@ private fun WooPosOrdersScreen(
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit,
+    onRetryDetailLoad: () -> Unit,
     onRefundDetailsDialogDismissed: () -> Unit,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    detailPaneIssueRefundOrderId: Long? = null,
+    detailPaneIssueRefundInstanceId: Int = 0,
+    detailPaneIssueRefundDismissRequestToken: Int = 0,
     refundReasonUpdate: String? = null,
+    onIssueRefundDismissed: () -> Unit = {},
+    onIssueRefundPendingChangesChanged: (Boolean) -> Unit = {},
+    onIssueRefundDismissRequestRejected: () -> Unit = {},
+    pendingOrderSelectionConfirmation: Long? = null,
+    onPendingOrderSelectionConfirmationDismissed: () -> Unit = {},
+    onPendingOrderSelectionConfirmed: () -> Unit = {},
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit = {},
 ) {
     BackHandler { onBackClicked() }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        when (state) {
-            is WooPosOrdersState.Content -> if (isSingleOrderMode) {
-                SingleOrderDetails(
-                    state = state,
-                    onUIEvent = onUIEvent
-                )
-            } else {
-                OrdersListWithDetails(
-                    state = state,
-                    scrollToTopEvent = scrollToTopEvent,
-                    onRefresh = onRefresh,
-                    onOrderSelected = onOrderSelected,
-                    onEndOfOrdersListReached = onEndOfOrdersListReached,
-                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                    onSearchEvent = onSearchEvent,
-                    onSearchErrorRetry = onSearchErrorRetry,
-                    onUIEvent = onUIEvent
-                )
-            }
-
-            is WooPosOrdersState.Empty -> OrdersEmpty(
-                onActionClicked = onOrdersEmptyActionClicked,
-                modifier = Modifier.statusBarsPadding()
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isSingleOrderMode) {
+            SingleOrderModeContent(
+                detailState = detailState,
+                detailPaneIssueRefundOrderId = detailPaneIssueRefundOrderId,
+                detailPaneIssueRefundInstanceId = detailPaneIssueRefundInstanceId,
+                detailPaneIssueRefundDismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+                refundReasonUpdate = refundReasonUpdate,
+                onUIEvent = onUIEvent,
+                onRetryDetailLoad = onRetryDetailLoad,
+                onIssueRefundDismissed = onIssueRefundDismissed,
+                onIssueRefundPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                onIssueRefundDismissRequestRejected = onIssueRefundDismissRequestRejected,
+                onNavigationEvent = onNavigationEvent,
             )
-
-            is WooPosOrdersState.Error -> OrdersError(
-                onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
-                modifier = Modifier.statusBarsPadding()
+        } else {
+            OrdersListModeContent(
+                listState = listState,
+                detailState = detailState,
+                isPhoneLayout = isPhoneLayout,
+                detailPaneIssueRefundOrderId = detailPaneIssueRefundOrderId,
+                detailPaneIssueRefundInstanceId = detailPaneIssueRefundInstanceId,
+                detailPaneIssueRefundDismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+                refundReasonUpdate = refundReasonUpdate,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onSearchEvent = onSearchEvent,
+                onSearchErrorRetry = onSearchErrorRetry,
+                onOrdersEmptyActionClicked = onOrdersEmptyActionClicked,
+                onOrdersLoadingErrorRetryButtonClicked = onOrdersLoadingErrorRetryButtonClicked,
+                onUIEvent = onUIEvent,
+                onRetryDetailLoad = onRetryDetailLoad,
+                onIssueRefundDismissed = onIssueRefundDismissed,
+                onIssueRefundPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                onIssueRefundDismissRequestRejected = onIssueRefundDismissRequestRejected,
+                onNavigationEvent = onNavigationEvent,
             )
-
-            is WooPosOrdersState.Loading -> if (isSingleOrderMode) {
-                OrderDetailsLoadingPane(
-                    showOrderNumber = false,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(
-                            start = WooPosSpacing.Medium.value,
-                            end = WooPosSpacing.Medium.value,
-                            bottom = WooPosSpacing.XLarge.value
-                        )
-                )
-            } else {
-                WooPosOrdersLoadingScreen()
-            }
         }
 
-        if (state.searchInputState is WooPosSearchInputState.Closed) {
+        if (listState.searchInputState is WooPosSearchInputState.Closed &&
+            !(isSingleOrderMode && detailPaneIssueRefundOrderId != null)
+        ) {
             val toolbarTitle = if (isSingleOrderMode) {
-                val orderNumber = (state as? WooPosOrdersState.Content)
-                    ?.selectedDetails?.number.orEmpty()
+                val orderNumber = (detailState as? WooPosOrderDetailsState.Loaded)
+                    ?.details?.number.orEmpty()
                 stringResource(R.string.woopos_order_title, orderNumber)
             } else {
                 stringResource(R.string.woopos_orders_title)
@@ -213,46 +327,260 @@ private fun WooPosOrdersScreen(
             )
         }
 
-        if (state is WooPosOrdersState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
-                    WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate
-                    )
-                }
-                is WooPosOrdersState.Content.DialogState.RefundDetails -> {
-                    WooPosRefundDetailsDialog(
-                        dialogState = dialogState,
-                        onDismissRequest = onRefundDetailsDialogDismissed,
-                    )
-                }
-                WooPosOrdersState.Content.DialogState.Hidden -> Unit
+        val loadedDetailState = detailState as? WooPosOrderDetailsState.Loaded
+        if (loadedDetailState != null) {
+            OrdersDialogs(
+                dialogState = loadedDetailState.dialogState,
+                onRefundDetailsDialogDismissed = onRefundDetailsDialogDismissed,
+            )
+        }
+
+        WooPosDiscardRefundChangesDialog(
+            isVisible = pendingOrderSelectionConfirmation != null,
+            onDismissRequest = onPendingOrderSelectionConfirmationDismissed,
+            onDiscardChanges = onPendingOrderSelectionConfirmed,
+        )
+    }
+}
+
+@Composable
+private fun SingleOrderModeContent(
+    detailState: WooPosOrderDetailsState,
+    detailPaneIssueRefundOrderId: Long?,
+    detailPaneIssueRefundInstanceId: Int,
+    detailPaneIssueRefundDismissRequestToken: Int,
+    refundReasonUpdate: String?,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetryDetailLoad: () -> Unit,
+    onIssueRefundDismissed: () -> Unit,
+    onIssueRefundPendingChangesChanged: (Boolean) -> Unit,
+    onIssueRefundDismissRequestRejected: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+) {
+    if (detailPaneIssueRefundOrderId != null) {
+        WooPosIssueRefundScreen(
+            orderId = detailPaneIssueRefundOrderId,
+            onNavigationEvent = onNavigationEvent,
+            refundReasonUpdate = refundReasonUpdate,
+            onDismissed = onIssueRefundDismissed,
+            viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
+                detailPaneIssueRefundInstanceId,
+            dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+            onPendingChangesChanged = onIssueRefundPendingChangesChanged,
+            onDismissRequestRejected = onIssueRefundDismissRequestRejected,
+            modifier = Modifier.fillMaxSize()
+        )
+    } else {
+        when (detailState) {
+            is WooPosOrderDetailsState.Loaded -> {
+                SingleOrderDetails(detailState = detailState, onUIEvent = onUIEvent)
+            }
+            is WooPosOrderDetailsState.Loading -> {
+                OrderDetailsLoadingPane(
+                    showOrderNumber = false,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                            bottom = WooPosSpacing.XLarge.value
+                        )
+                )
+            }
+            is WooPosOrderDetailsState.Error -> {
+                OrdersError(
+                    onRetryClicked = onRetryDetailLoad,
+                    modifier = Modifier.statusBarsPadding()
+                )
+            }
+            is WooPosOrderDetailsState.Idle -> {
+                // Nothing to show in single order mode when idle
             }
         }
     }
 }
 
 @Composable
-private fun OrderDetailsPane(
-    state: WooPosOrdersState.Content,
+private fun OrdersListModeContent(
+    listState: WooPosOrdersListState,
+    detailState: WooPosOrderDetailsState,
+    isPhoneLayout: Boolean,
+    detailPaneIssueRefundOrderId: Long?,
+    detailPaneIssueRefundInstanceId: Int,
+    detailPaneIssueRefundDismissRequestToken: Int,
+    refundReasonUpdate: String?,
+    scrollToTopEvent: SharedFlow<Unit>,
+    onRefresh: () -> Unit,
+    onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onSearchErrorRetry: () -> Unit,
+    onOrdersEmptyActionClicked: () -> Unit,
+    onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetryDetailLoad: () -> Unit,
+    onIssueRefundDismissed: () -> Unit,
+    onIssueRefundPendingChangesChanged: (Boolean) -> Unit,
+    onIssueRefundDismissRequestRejected: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+) {
+    when (listState) {
+        is WooPosOrdersListState.Content -> {
+            if (isPhoneLayout) {
+                OrdersListPane(
+                    state = listState,
+                    isSelectable = false,
+                    scrollToTopEvent = scrollToTopEvent,
+                    onRefresh = onRefresh,
+                    isRefreshing = listState.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                    onOrderSelected = onOrderSelected,
+                    onEndOfOrdersListReached = onEndOfOrdersListReached,
+                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                    onSearchEvent = onSearchEvent,
+                    onSearchErrorRetry = onSearchErrorRetry,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceBright)
+                )
+            } else {
+                OrdersListWithDetails(
+                    listContent = listState,
+                    detailState = detailState,
+                    detailPaneIssueRefundOrderId = detailPaneIssueRefundOrderId,
+                    detailPaneIssueRefundInstanceId = detailPaneIssueRefundInstanceId,
+                    detailPaneIssueRefundDismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+                    refundReasonUpdate = refundReasonUpdate,
+                    scrollToTopEvent = scrollToTopEvent,
+                    onRefresh = onRefresh,
+                    onOrderSelected = onOrderSelected,
+                    onEndOfOrdersListReached = onEndOfOrdersListReached,
+                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                    onSearchEvent = onSearchEvent,
+                    onSearchErrorRetry = onSearchErrorRetry,
+                    onUIEvent = onUIEvent,
+                    onRetryDetailLoad = onRetryDetailLoad,
+                    onIssueRefundDismissed = onIssueRefundDismissed,
+                    onIssueRefundPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                    onIssueRefundDismissRequestRejected = onIssueRefundDismissRequestRejected,
+                    onNavigationEvent = onNavigationEvent,
+                )
+            }
+        }
+        is WooPosOrdersListState.Empty -> OrdersEmpty(
+            onActionClicked = onOrdersEmptyActionClicked,
+            modifier = Modifier.statusBarsPadding()
+        )
+        is WooPosOrdersListState.Error -> OrdersError(
+            onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
+            modifier = Modifier.statusBarsPadding()
+        )
+        is WooPosOrdersListState.Loading -> WooPosOrdersLoadingScreen(
+            isPhoneLayout = isPhoneLayout
+        )
+    }
+}
+
+@Composable
+private fun OrdersDialogs(
+    dialogState: WooPosOrderDetailsState.DialogState,
+    onRefundDetailsDialogDismissed: () -> Unit,
+) {
+    val retainedDialog = rememberRetained(
+        when (dialogState) {
+            is WooPosOrderDetailsState.DialogState.RefundDetails -> dialogState
+            WooPosOrderDetailsState.DialogState.Hidden -> null
+        }
+    )
+
+    when (retainedDialog) {
+        is WooPosOrderDetailsState.DialogState.RefundDetails -> {
+            WooPosRefundDetailsDialog(
+                dialogState = retainedDialog,
+                isVisible = dialogState is WooPosOrderDetailsState.DialogState.RefundDetails,
+                onDismissRequest = onRefundDetailsDialogDismissed,
+            )
+        }
+        WooPosOrderDetailsState.DialogState.Hidden,
+        null -> Unit
+    }
+}
+
+@Composable
+private fun WooPosDiscardRefundChangesDialog(
+    isVisible: Boolean,
+    onDismissRequest: () -> Unit,
+    onDiscardChanges: () -> Unit,
+) {
+    WooPosDialogWrapper(
+        isVisible = isVisible,
+        dialogBackgroundContentDescription = stringResource(
+            R.string.woopos_refund_discard_changes_dialog_background_content_description
+        ),
+        onCloseClick = onDismissRequest,
+        onDismissRequest = onDismissRequest,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            WooPosText(
+                text = stringResource(R.string.woopos_refund_discard_changes_title),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosText(
+                text = stringResource(R.string.woopos_refund_discard_changes_message),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
+
+            WooPosButton(
+                text = stringResource(R.string.woopos_refund_discard_changes_discard),
+                onClick = onDiscardChanges,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButton(
+                text = stringResource(R.string.keep_editing),
+                onClick = onDismissRequest,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrderDetailsPane(
+    detailState: WooPosOrderDetailsState,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetryDetailLoad: () -> Unit,
     modifier: Modifier = Modifier,
     showOrderNumber: Boolean = true,
+    foldPrimaryAction: Boolean = false,
 ) {
     Box(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
-        when {
-            state.selectedDetails != null -> {
+        when (detailState) {
+            is WooPosOrderDetailsState.Loaded -> {
                 WooPosOrderDetails(
                     modifier = Modifier.fillMaxHeight(),
-                    details = state.selectedDetails,
+                    details = detailState.details,
                     showOrderNumber = showOrderNumber,
+                    foldPrimaryAction = foldPrimaryAction,
                     onUIEvent = onUIEvent
                 )
             }
-            state.items is WooPosOrdersState.Content.Items.Searching -> {
+            is WooPosOrderDetailsState.Loading -> {
                 OrderDetailsLoadingPane(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -265,7 +593,18 @@ private fun OrderDetailsPane(
                         )
                 )
             }
-            else -> {
+            is WooPosOrderDetailsState.Error -> {
+                WooPosErrorScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = stringResource(id = R.string.woopos_orders_loading_error_title),
+                    reason = detailState.message,
+                    primaryButton = WooPosErrorScreenButtonState(
+                        text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
+                        click = onRetryDetailLoad
+                    )
+                )
+            }
+            is WooPosOrderDetailsState.Idle -> {
                 WooPosEmptyScreen(
                     modifier = Modifier.fillMaxSize(),
                     icon = WooPosIcons.OrdersEmpty,
@@ -280,7 +619,12 @@ private fun OrderDetailsPane(
 
 @Composable
 private fun OrdersListWithDetails(
-    state: WooPosOrdersState.Content,
+    listContent: WooPosOrdersListState.Content,
+    detailState: WooPosOrderDetailsState,
+    detailPaneIssueRefundOrderId: Long?,
+    detailPaneIssueRefundInstanceId: Int,
+    detailPaneIssueRefundDismissRequestToken: Int,
+    refundReasonUpdate: String?,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
@@ -288,14 +632,19 @@ private fun OrdersListWithDetails(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onRetryDetailLoad: () -> Unit,
+    onIssueRefundDismissed: () -> Unit,
+    onIssueRefundPendingChangesChanged: (Boolean) -> Unit,
+    onIssueRefundDismissRequestRejected: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
-            state = state,
+            state = listContent,
             scrollToTopEvent = scrollToTopEvent,
             onRefresh = onRefresh,
-            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            isRefreshing = listContent.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = onOrderSelected,
             onEndOfOrdersListReached = onEndOfOrdersListReached,
             onPaginationErrorTryAgain = onPaginationErrorTryAgain,
@@ -306,24 +655,42 @@ private fun OrdersListWithDetails(
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceBright)
         )
-        OrderDetailsPane(
-            state = state,
-            onUIEvent = onUIEvent,
-            showOrderNumber = true,
-            modifier = Modifier.weight(0.7f)
-        )
+        if (detailPaneIssueRefundOrderId != null) {
+            WooPosIssueRefundScreen(
+                orderId = detailPaneIssueRefundOrderId,
+                onNavigationEvent = onNavigationEvent,
+                refundReasonUpdate = refundReasonUpdate,
+                onDismissed = onIssueRefundDismissed,
+                viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
+                    detailPaneIssueRefundInstanceId,
+                dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+                onPendingChangesChanged = onIssueRefundPendingChangesChanged,
+                onDismissRequestRejected = onIssueRefundDismissRequestRejected,
+                modifier = Modifier.weight(0.7f)
+            )
+        } else {
+            OrderDetailsPane(
+                detailState = detailState,
+                onUIEvent = onUIEvent,
+                onRetryDetailLoad = onRetryDetailLoad,
+                showOrderNumber = true,
+                modifier = Modifier.weight(0.7f)
+            )
+        }
     }
 }
 
 @Composable
 private fun SingleOrderDetails(
-    state: WooPosOrdersState.Content,
+    detailState: WooPosOrderDetailsState.Loaded,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     OrderDetailsPane(
-        state = state,
+        detailState = detailState,
         onUIEvent = onUIEvent,
+        onRetryDetailLoad = {},
         showOrderNumber = false,
+        foldPrimaryAction = true,
         modifier = Modifier.fillMaxSize()
     )
 }
@@ -331,7 +698,7 @@ private fun SingleOrderDetails(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun OrdersListPane(
-    state: WooPosOrdersState.Content,
+    state: WooPosOrdersListState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
@@ -340,7 +707,8 @@ private fun OrdersListPane(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSelectable: Boolean = true,
 ) {
     Column(
         modifier = modifier.statusBarsPadding()
@@ -377,6 +745,7 @@ private fun OrdersListPane(
             OrdersList(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
+                isSelectable = isSelectable,
                 scrollToTopEvent = scrollToTopEvent,
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
@@ -400,7 +769,8 @@ private fun OrdersListPane(
 @Composable
 private fun OrdersList(
     modifier: Modifier = Modifier,
-    state: WooPosOrdersState.Content,
+    state: WooPosOrdersListState.Content,
+    isSelectable: Boolean = true,
     scrollToTopEvent: SharedFlow<Unit>,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
@@ -408,10 +778,11 @@ private fun OrdersList(
     onSearchErrorRetry: () -> Unit
 ) {
     when (val items = state.items) {
-        is WooPosOrdersState.Content.Items.Loaded -> {
+        is WooPosOrdersListState.Content.Items.Loaded -> {
             LoadedOrdersList(
                 modifier = modifier,
                 items = items.items,
+                isSelectable = isSelectable,
                 paginationState = state.paginationState,
                 scrollToTopEvent = scrollToTopEvent,
                 onOrderSelected = onOrderSelected,
@@ -420,13 +791,13 @@ private fun OrdersList(
             )
         }
 
-        is WooPosOrdersState.Content.Items.Searching -> {
+        is WooPosOrdersListState.Content.Items.Searching -> {
             WooPosOrdersListLoadingPane(
                 modifier = modifier.imePadding()
             )
         }
 
-        is WooPosOrdersState.Content.Items.Error -> {
+        is WooPosOrdersListState.Content.Items.Error -> {
             Box(
                 modifier = modifier,
                 contentAlignment = Alignment.Center
@@ -446,7 +817,7 @@ private fun OrdersList(
             }
         }
 
-        is WooPosOrdersState.Content.Items.NothingFound -> {
+        is WooPosOrdersListState.Content.Items.NothingFound -> {
             WooPosEmptyScreen(
                 modifier = modifier
                     .imePadding()
@@ -462,7 +833,8 @@ private fun OrdersList(
 @Composable
 private fun LoadedOrdersList(
     modifier: Modifier = Modifier,
-    items: Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState>,
+    items: List<WooPosOrdersState.OrderItemViewState>,
+    isSelectable: Boolean = true,
     paginationState: WooPosPaginationState,
     scrollToTopEvent: SharedFlow<Unit>,
     onOrderSelected: (Long) -> Unit,
@@ -501,7 +873,7 @@ private fun LoadedOrdersList(
         contentPadding = PaddingValues(WooPosSpacing.Medium.value),
         state = listState,
     ) {
-        items(items.keys.toList(), key = { it.id }) { item ->
+        items(items, key = { it.id }) { item ->
             WooPosCard(
                 modifier = modifier
                     .wrapContentHeight(),
@@ -509,7 +881,7 @@ private fun LoadedOrdersList(
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 elevation = WooPosElevation.Medium,
                 shadowType = ShadowType.Soft,
-                isSelected = item.isSelected,
+                isSelected = isSelectable && item.isSelected,
             ) {
                 Row(
                     modifier = Modifier
@@ -660,22 +1032,20 @@ fun WooPosOrdersScreenPreview() {
     )
 
     val details1 = sampleOrderDetails(id = 1L, number = "#014")
-    val details2 = sampleOrderDetails(id = 2L, number = "#013")
 
     WooPosTheme {
         WooPosOrdersScreen(
-            state = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.Loaded(
-                    items = mapOf(
-                        item1 to WooPosOrdersState.OrderDetailsViewState.Computed(orderId = 1L, details = details1),
-                        item2 to WooPosOrdersState.OrderDetailsViewState.Computed(orderId = 2L, details = details2)
-                    )
+            listState = WooPosOrdersListState.Content(
+                items = WooPosOrdersListState.Content.Items.Loaded(
+                    items = listOf(item1, item2)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
-                selectedDetails = details1,
-                paginationState = WooPosPaginationState.None,
-                dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                paginationState = WooPosPaginationState.None
+            ),
+            detailState = WooPosOrderDetailsState.Loaded(
+                details = details1,
+                dialogState = WooPosOrderDetailsState.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -688,9 +1058,8 @@ fun WooPosOrdersScreenPreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
-            onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {}
+            onRetryDetailLoad = {},
+            onRefundDetailsDialogDismissed = {}
         )
     }
 }
@@ -698,23 +1067,21 @@ fun WooPosOrdersScreenPreview() {
 @WooPosPreview
 @Composable
 fun WooPosOrdersSearchErrorStatePreview() {
-    val details = sampleOrderDetails()
     WooPosTheme {
         WooPosOrdersScreen(
-            state = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.Error(
-                    title = stringResource(R.string.woopos_search_orders_error_title),
-                    message = stringResource(R.string.woopos_search_orders_error_description)
+            listState = WooPosOrdersListState.Content(
+                items = WooPosOrdersListState.Content.Items.Error(
+                    title = "Search error",
+                    message = "Please try again"
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
-                selectedDetails = details,
-                paginationState = WooPosPaginationState.None,
-                dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                paginationState = WooPosPaginationState.None
             ),
+            detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
@@ -726,9 +1093,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
-            onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {}
+            onRetryDetailLoad = {},
+            onRefundDetailsDialogDismissed = {}
         )
     }
 }
@@ -736,23 +1102,21 @@ fun WooPosOrdersSearchErrorStatePreview() {
 @WooPosPreview
 @Composable
 fun WooPosOrdersNothingFoundStatePreview() {
-    val details = sampleOrderDetails()
     WooPosTheme {
         WooPosOrdersScreen(
-            state = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.NothingFound(
-                    title = stringResource(R.string.woopos_search_orders_empty_title),
-                    message = stringResource(R.string.woopos_search_orders_empty_description)
+            listState = WooPosOrdersListState.Content(
+                items = WooPosOrdersListState.Content.Items.NothingFound(
+                    title = "Nothing found",
+                    message = "Try a different search"
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
-                selectedDetails = details,
-                paginationState = WooPosPaginationState.None,
-                dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                paginationState = WooPosPaginationState.None
             ),
+            detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
@@ -764,9 +1128,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
-            onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {}
+            onRetryDetailLoad = {},
+            onRefundDetailsDialogDismissed = {}
         )
     }
 }
@@ -776,10 +1139,11 @@ fun WooPosOrdersNothingFoundStatePreview() {
 fun WooPosOrdersEmptyStatePreview() {
     WooPosTheme {
         WooPosOrdersScreen(
-            state = WooPosOrdersState.Empty(
+            listState = WooPosOrdersListState.Empty(
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
             ),
+            detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
@@ -791,9 +1155,8 @@ fun WooPosOrdersEmptyStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
+            onRetryDetailLoad = {},
             onRefundDetailsDialogDismissed = {},
-            onNavigationEvent = {},
         )
     }
 }
@@ -843,18 +1206,20 @@ private fun sampleOrderDetails(
         discountCode = "8qew4mnq",
         taxes = "$0.00",
         shipping = null,
-        refunds = listOf(
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                label = "Refund #1",
-                amount = "-$3.00",
-                date = "Aug 29, 2025 at 12:26 PM",
-                reason = "Customer bought an extra item.",
-            ),
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
-                label = "Refund #2",
-                amount = "-$2.00",
-                date = "Aug 30, 2025 at 2:15 PM",
-                reason = null,
+        refundsState = WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState.Loaded(
+            refunds = listOf(
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #1",
+                    amount = "-$3.00",
+                    date = "Aug 29, 2025 at 12:26 PM",
+                    reason = "Customer bought an extra item.",
+                ),
+                WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundRow(
+                    label = "Refund #2",
+                    amount = "-$2.00",
+                    date = "Aug 30, 2025 at 2:15 PM",
+                    reason = null,
+                ),
             ),
         ),
         netPayment = "$12.00"
@@ -862,10 +1227,8 @@ private fun sampleOrderDetails(
     total = "$17.00",
     totalPaid = "$17.00",
     paymentMethodTitle = "WooCommerce In-Person Payments",
-    actionsState = WooPosOrdersState.OrderActionsState.Loaded(
-        listOf(
-            WooPosOrdersState.OrderAction.IssueRefund(id),
-            WooPosOrdersState.OrderAction.EmailReceipt(id)
-        )
+    actions = listOf(
+        WooPosOrdersState.OrderAction.IssueRefund(id),
+        WooPosOrdersState.OrderAction.EmailReceipt(id)
     )
 )

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsState
 import com.woocommerce.android.ui.woopos.settings.details.hardware.WooPosHardwareSettingsScreen
@@ -35,11 +36,15 @@ fun WooPosSettingsDetailPaneScreen(
     onBack: () -> Unit,
     onShowProductInfoDialog: () -> Unit,
     onShowScanningSetupDialog: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    showBackOnRoot: Boolean = false,
+    registerBackHandler: Boolean = true,
 ) {
     val currentDestination = state.currentDestination
+    val showBack = state.canGoBack || showBackOnRoot
 
-    BackHandler(enabled = state.canGoBack) {
+    BackHandler(enabled = registerBackHandler && showBack) {
         onBack()
     }
 
@@ -54,7 +59,7 @@ fun WooPosSettingsDetailPaneScreen(
                     end = WooPosSpacing.Medium.value,
                 ),
             titleText = stringResource(state.currentDestination.titleRes),
-            onBackClicked = if (state.canGoBack) onBack else null,
+            onBackClicked = if (showBack) onBack else null,
             titleStyle = WooPosTypography.Heading,
             titleFontWeight = FontWeight.Bold
         )
@@ -95,7 +100,7 @@ fun WooPosSettingsDetailPaneScreen(
                 }
 
                 is WooPosSettingsDetailDestination.Store.Overview -> {
-                    WooPosSettingsStoreScreen()
+                    WooPosSettingsStoreScreen(onNavigationEvent = onNavigationEvent)
                 }
 
                 is WooPosSettingsDetailDestination.LocalCatalog.Overview -> {

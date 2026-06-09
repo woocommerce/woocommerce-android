@@ -11,6 +11,7 @@ data class BookingDto(
     @SerializedName("cost") val cost: String,
     @SerializedName("currency") val currency: String,
     @SerializedName("customer_id") val customerId: Long,
+    @SerializedName("user_id") val userId: Long = 0,
     @SerializedName("product_id") val productId: Long,
     @SerializedName("resource_id") val resourceId: Long,
     @SerializedName("date_created") val dateCreated: Long,

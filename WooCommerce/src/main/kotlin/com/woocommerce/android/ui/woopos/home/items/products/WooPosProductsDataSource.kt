@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosProductsSearchInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosSearchProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -20,6 +19,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSync
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -57,11 +59,10 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource,
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
+    private val syncRepository: WooPosLocalCatalogSyncRepository,
 ) {
     enum class SyncStrategy {
         REMOTE,
-        LOCAL_CATALOG,
         LOCAL_CATALOG_FILE,
     }
 
@@ -69,26 +70,22 @@ class WooPosProductsDataSource @Inject constructor(
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> if (fileApproachEnabled()) {
-                SyncStrategy.LOCAL_CATALOG_FILE
-            } else {
-                SyncStrategy.LOCAL_CATALOG
-            }
+            localDbDataSource -> SyncStrategy.LOCAL_CATALOG_FILE
             remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
     }
 
-    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
+    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = channelFlow {
         when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
                 remoteDataSource.prepopulateCache().fold(
                     onSuccess = {
-                        emit(WooPosPrepopulatingDataStatus.Completed)
+                        send(WooPosPrepopulatingDataStatus.Completed)
                     },
                     onFailure = {
-                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
             }
@@ -96,24 +93,46 @@ class WooPosProductsDataSource @Inject constructor(
             is WooPosFullSyncRequirement.NotRequired,
             is WooPosFullSyncRequirement.NonBlockingRequired -> {
                 activeSource = localDbDataSource
-                emit(WooPosPrepopulatingDataStatus.Completed)
+                send(WooPosPrepopulatingDataStatus.Completed)
             }
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
-                emit(WooPosPrepopulatingDataStatus.Syncing)
+                send(WooPosPrepopulatingDataStatus.Syncing)
                 activeSource = localDbDataSource
+
+                val progressJob = launch {
+                    syncRepository.syncState.collect { state ->
+                        when (state) {
+                            is WooPosFileBasedSyncAction.SyncState.Preparing ->
+                                send(WooPosPrepopulatingDataStatus.SyncPreparing)
+
+                            is WooPosFileBasedSyncAction.SyncState.Progress ->
+                                send(
+                                    WooPosPrepopulatingDataStatus.SyncProgress(
+                                        processed = state.processed,
+                                        total = state.total
+                                    )
+                                )
+
+                            null -> Unit
+                        }
+                    }
+                }
+
                 localDbDataSource.prepopulateCache().fold(
                     onSuccess = {
-                        emit(WooPosPrepopulatingDataStatus.Completed)
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Completed)
                     },
                     onFailure = {
-                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
             }
 
             is WooPosFullSyncRequirement.Error -> {
-                emit(WooPosPrepopulatingDataStatus.Failed(requirement.message))
+                send(WooPosPrepopulatingDataStatus.Failed(requirement.message))
             }
         }
     }
@@ -184,6 +203,8 @@ class WooPosProductsDataSource @Inject constructor(
 
     sealed class WooPosPrepopulatingDataStatus {
         data object Syncing : WooPosPrepopulatingDataStatus()
+        data object SyncPreparing : WooPosPrepopulatingDataStatus()
+        data class SyncProgress(val processed: Int, val total: Int) : WooPosPrepopulatingDataStatus()
         data object Completed : WooPosPrepopulatingDataStatus()
         data class Failed(val error: String) : WooPosPrepopulatingDataStatus()
     }

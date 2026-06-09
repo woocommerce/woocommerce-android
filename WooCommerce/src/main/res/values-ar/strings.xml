@@ -1,11 +1,330 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-09 15:58:01+0000
+Translation-Revision-Date: 2026-05-19 13:55:24+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">حدث خطأ ما في أثناء عمل المساعد.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">لم يتمكن المساعد من الانتهاء بعد عدة خطوات.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">التأكيد غير متوفر حتى الآن. يُرجى المحاولة مرة أخرى من الدردشة.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">تم إيقاف الطلب.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">لست متأكدًا ما إذا كان هذا التغيير قد تم تطبيقه أم لا. يُرجى التحقق في متجرك قبل القيام بأي شيء آخر.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">تعذر على المساعد إكمال هذا الطلب.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">تعذر على المساعد إتمام هذه العملية في المتجر.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">تعذّر على خدمة المساعد إكمال هذه الاستجابة. يُرجى إعادة المحاولة لاحقًا.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">انتهت مهلة الطلب. حاول مرة أخرى.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">المساعد مشغول الآن. يُرجى المحاولة مرة أخرى خلال لحظات.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">لم يتمكن المساعد من الوصول إلى متجرك. يُرجى تسجيل الدخول مرة أخرى، ثم إعادة فتح المساعد.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">تعذر الاتصال. تحقق من اتصالك وحاول مجددًا.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">إلغاء</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">تأكيد</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">تأكيد ⁦%1$s⁩؟</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">إعادة المحاولة</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">أكمِل التغيير المعلّق أعلاه.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">إيقاف الاستجابة</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">إرسال رسالة</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">اسأل عن متجرك</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">فتح التحليلات لـ ⁦%1$s⁩</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">غير متاح</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">متوسط قيمة الطلب</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">إجمالي الطلبات</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">صافي المبيعات</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">إجمالي المبيعات</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">تجاهل إشعار الوصول المبكر</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">تقديم ملاحظات</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">مرحبًا! هذه مجرد البداية، والمزيد في الطريق. أخبرنا عما ينقصك وما تود الحصول على مساعدة بشأنه!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">الوصول المبكر</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">إرسال اقتراح: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">اعرض أحدث عملائي. اعرض قائمة تضم ما يصل إلى 10 عملاء مرتبة حسب تاريخ التسجيل، مع عرض الأحدث أولاً.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">هل هناك أي طلبات تحتاج إلى اهتمامي؟ اعرض لي الطلبات الأخيرة المعلقة، أو قيد الانتظار، أو قيد المعالجة.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">ما الذي يوشك على النفاد؟ اعرض قائمة بالمنتجات غير المتوافرة في المخزون أو المنخفضة في المخزون لأعرف ما يجب إعادة تخزينه.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">كيف حال إيراداتي هذا الأسبوع؟ أظهِر لي إجمالي المبيعات لهذا الأسبوع وقارنها بإجمالي المبيعات في الأسبوع الماضي.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">من هم أحدث عملائي؟</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">هل تحتاج أي طلبات إلى اهتمامي؟</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">ما الذي يوشك على النفاد؟</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">كيف حال الإيرادات هذا الأسبوع؟</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">ما الذي يمكنني المساعدة به؟</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">البطاقات</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">العملاء</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">التحليلات</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">التباينات</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">المنتجات</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">الطلبات</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">المساعد يعمل: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">التحقق من متجرك</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">التحقق من العملاء</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">التحقق من التحليلات</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">تحديث المنتجات</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">التحقق من المنتجات</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">تحديث الطلبات</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">التحقق من الطلبات</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">المساعد يفكر</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">المساعد: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">أنت: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">الانتقال إلى الأحدث</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">بدء محادثة جديدة</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">الرجوع</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">المساعد</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">+⁦%1$d⁩ إضافي</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">تم الإلغاء</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">تم التأكيد</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">تغيير معلَّق</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">إيقاف التشغيل</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">تم التحديث</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">وحدة SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">حالة المخزون</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">المخزون</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">تخفيض</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">السعر</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">الاسم</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">البريد الإلكتروني للفوترة</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">ملاحظة العميل</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">الحالة</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">مراجعة ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">تحديث التباين رقم ⁦%1$s⁩ للمنتج رقم ⁦%2$s⁩</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث تباين المنتج</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من المنتجات</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من المنتجات</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث العديد من المنتجات</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">تحديث المنتج ⁦%1$s⁩ (رقم ⁦%2$s⁩)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">تحديث المنتج رقم ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث منتج</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات: إرسال رسائل بريد إلكتروني إلى العملاء</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات: إرسال رسائل بريد إلكتروني إلى العميل</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث العديد من الطلبات</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">تحديث الطلب رقم ⁦%1$s⁩: إرسال رسائل بريد إلكتروني إلى العميل</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">تحديث الطلب رقم ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث طلب</string>
+    <string name="woopos_remote_ttp_explainer_got_it">فهمت</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">استخدم نفس شبكة Wi-Fi وسجّل الدخول إلى نفس المتجر على كلا الجهازين. يجب أن يعمل هاتفك بنظام Android 13 أو أحدث، وأن يدعم تقنية NFC وميزة Tap-to-Pay.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">التحقق من التوافق</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">افتح Woo على هاتفك، ثم انتقل إلى الإعدادات ← المدفوعات ← وضع قارئ البطاقات.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">إعداد هاتفك</string>
+    <string name="woopos_remote_ttp_explainer_intro">استخدم تطبيق Woo على هاتفك لتلقي المدفوعات بالبطاقات.</string>
+    <string name="woopos_remote_ttp_explainer_title">لا يوجد قارئ بطاقات؟ لا توجد مشكلة</string>
+    <string name="woopos_remote_ttp_hint_strip_text">استخدم هاتف Android كقارئ بطاقات</string>
+    <string name="woopos_card_reader_unknown_reader_name">قارئ غير معروف</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">قارئ البلوتوث</string>
+    <string name="woopos_card_reader_phone_icon_content_description">قارئ الهاتف</string>
+    <string name="woopos_remote_payment_failed_generic">حدث خطأ ما. يُرجى المحاولة مرة أخرى.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">انقطع الاتصال بقارئ الهاتف. يُرجى إعادة الاتصال والمحاولة مرة أخرى.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">امنح إذن الوصول إلى الموقع لاستخدام ميزة Tap to Pay.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">تعذر بدء ميزة Tap to Pay: ⁦%1$s⁩</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">تعذر بدء ميزة Tap to Pay. يُرجى المحاولة مرة أخرى.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">جارٍ إعداد ميزة Tap to Pay</string>
+    <string name="woopos_tap_to_pay_preparing_title">الاستعداد</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">رسم توضيحي لميزة Tap to Pay على الهاتف</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">الدفع باستخدام ميزة Tap to Pay</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">استخدم هذا الجهاز لقبول المدفوعات بالبطاقات غير التلامسية.</string>
+    <string name="woopos_tap_to_pay_promoted_title">ميزة Tap to Pay</string>
+    <string name="woopos_payment_method_picker_dialog_title">اختيار طريقة الدفع</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">وسم الطلب كمدفوع</string>
+    <string name="woopos_payment_method_scan_to_pay_label">ميزة Scan To Pay</string>
+    <string name="woopos_payment_method_other_methods_label">طرق الدفع الأخرى</string>
+    <string name="woopos_payment_method_all_methods_label">كل طرق الدفع</string>
+    <string name="woopos_payment_method_tap_to_pay_label">ميزة Tap to Pay</string>
+    <string name="woopos_payment_method_card_reader_label">قارئ البطاقة</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">بصمة الإصبع</string>
+    <string name="woopos_settings_card_reader_transport_wifi">شبكة Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">النقل</string>
+    <string name="woopos_settings_card_reader_disconnect_button">فصل</string>
+    <string name="woopos_remote_reader_connect_failed_generic">فشل الاتصال</string>
+    <string name="ai_assistant_variation_card_id_title">تباين ⁦%1$d⁩</string>
+    <string name="ai_support_chat_connectivity_action">الدردشة مع الدعم</string>
+    <string name="ai_support_chat_connectivity_initial_message">ساعدني على حل مشكلة اتصال متجري.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">فشل</string>
+    <string name="ai_support_chat_diagnostics_status_passed">نجح</string>
+    <string name="ai_support_chat_diagnostics_status_running">قيد التشغيل</string>
+    <string name="ai_support_chat_diagnostics_status_pending">معلق</string>
+    <string name="ai_support_chat_diagnostics_continue">متابعة إلى الدردشة</string>
+    <string name="ai_support_chat_diagnostics_retry">إعادة المحاولة</string>
+    <string name="ai_support_chat_diagnostics_failure">فشلت بعض عمليات التحقق. يمكنك المحاولة مرة أخرى أو متابعة الدردشة باستخدام هذه النتائج.</string>
+    <string name="ai_support_chat_diagnostics_success">اكتملت عمليات التشخيص</string>
+    <string name="ai_support_chat_diagnostics_title">جارٍ التحقق من متجرك…</string>
+    <string name="ai_support_chat_issue_other">شيء آخر</string>
+    <string name="ai_support_chat_issue_receiving_notifications">لا أتلقى تنبيهات</string>
+    <string name="ai_support_chat_issue_loading_analytics">لا يتم تحميل التحليلات الخاصة بي</string>
+    <string name="ai_support_chat_issue_loading_products">لا يمكنني رؤية منتجاتي</string>
+    <string name="ai_support_chat_issue_loading_orders">لا يمكنني رؤية طلباتي</string>
+    <string name="ai_support_chat_issue_picker_title">ما الذي ترغب في حل مشكلاته؟</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">يُرجى وصف مشكلتك بمزيد من التفاصيل حتى أتمكن من المساعدة.</string>
+    <string name="ai_support_chat_typing">جارٍ التفكير…</string>
+    <string name="ai_support_chat_send_error">يتعذر إرسال رسالتك. تحقق من اتصالك وحاول مجددًا.</string>
+    <string name="ai_support_chat_send">إرسال</string>
+    <string name="ai_support_chat_input_hint">مراسلة الذكاء الاصطناعي لحل المشكلات</string>
+    <string name="ai_support_chat_greeting">مرحبًا! أخبرني بما يحدث في متجرك، وسأساعد في حل مشكلاته.</string>
+    <string name="ai_support_chat_placeholder">قريبًا</string>
+    <string name="ai_support_chat_screen_title">حل المشكلات بالذكاء الاصطناعي</string>
+    <string name="ai_support_chat_help_row_subtitle">الدردشة مع مساعد الذكاء الاصطناعي لدينا لتشخيص مشكلات المتجر</string>
+    <string name="ai_support_chat_help_row_title">حل المشكلات بالذكاء الاصطناعي</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">اختر أعلى تقييم لإرسال تنبيه.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">المراجعات حتى مستوى تقييم معيّن</string>
+    <string name="settings_notifs_new_reviews_all_description">إرسال تنبيه بينغ لكل مراجعة، بغض النظر عن مستوى التقييم.</string>
+    <string name="settings_notifs_new_reviews_all_title">جميع المراجعات الجديدة</string>
+    <string name="settings_notifs_new_reviews_enable_description">احصل على تنبيه عندما يترك شخص ما مراجعة لأحد منتجاتك.</string>
+    <string name="settings_notifs_stock_backorder_description">عندما يطلب أحد العملاء منتجًا غير متوفر في المخزون حاليًا.</string>
+    <string name="settings_notifs_stock_backorder_title">قيد الطلب المسبق</string>
+    <string name="settings_notifs_stock_out_of_stock_description">عندما يصل متغير المنتج إلى صفر.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">غير متوفر في المخزون</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">تعذّر تحميل الحدّ المعيّن على مستوى المتجر</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">يمكن للمنتجات استخدام الحدّ الخاص بها أو الحدّ المعيّن على مستوى المتجر. &lt;a href=\'\'&gt;اعرض الحدّ المعيّن على مستوى المتجر&lt;/a&gt; لرؤية القيمة الحالية.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">يمكن للمنتجات استخدام الحدّ الخاص بها أو الحدّ المعيّن على مستوى المتجر &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;تحرير الحدّ المعيّن على مستوى المتجر&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">عندما يصل متغير المنتج إلى حدّ المخزون المنخفض الخاص به.</string>
+    <string name="settings_notifs_stock_low_stock_title">مخزون منخفض</string>
+    <string name="settings_notifs_stock_enable_description">تلَقَّ تنبيهات عند حدوث تغييرات في مخزون المنتجات وتحتاج إلى انتباهك.</string>
+    <string name="settings_notifs_stock_enable_title">تفعيل تنبيهات المخزون</string>
+    <string name="settings_notifs_new_orders_threshold">الحدّ (⁦%1$s⁩)</string>
+    <string name="settings_notifs_new_orders_high_value_description">تصفية الطلبات التي تتجاوز الحد الذي حددته.</string>
+    <string name="settings_notifs_new_orders_high_value_title">الطلبات عالية القيمة فقط</string>
+    <string name="settings_notifs_new_orders_all_description">تحقق من كل طلب، بغض النظر عن القيمة.</string>
+    <string name="settings_notifs_new_orders_all_title">جميع الطلبات</string>
+    <string name="settings_notifs_notify_me_for">أخطرني بشأن</string>
+    <string name="settings_notifs_new_orders_enable_description">احصل على تنبيهات عند تقديم طلب في متجرك.</string>
+    <string name="settings_notifs_error_update">حدث خطأ عند تحديث إعدادات التنبيهات الخاصة بك.</string>
+    <string name="settings_notifs_error_fetch">حدث خطأ أثناء جلب إعدادات التنبيهات الخاصة بك.</string>
+    <string name="settings_notifs_enable_title">تمكين التنبيهات</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;فعّل التنبيهات&lt;/a&gt; من إعدادات جهازك لتلقي تنبيهات المتجر.</string>
+    <string name="card_reader_mode_location_permission_open_settings">افتح الإعدادات</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">تم حظر صلاحية الوصول إلى الموقع. افتح الإعدادات وامنح إذن الموقع لاستخدام ميزة tap-to-pay على هذا الهاتف.</string>
+    <string name="card_reader_mode_location_permission_continue">متابعة</string>
+    <string name="card_reader_mode_location_permission_subtitle">يتطلب نظام التشغيل Android الوصول إلى الموقع لاستخدام ميزة tap-to-pay على هذا الهاتف. يبقى موقعك على هذا الجهاز.</string>
+    <string name="card_reader_mode_location_permission_header">صلاحية الوصول إلى الموقع مطلوبة</string>
+    <string name="card_reader_mode_error_close">إغلاق</string>
+    <string name="card_reader_mode_error_subtitle">تحقق من اتصال شبكة Wi-Fi ثم حاول مرة أخرى.</string>
+    <string name="card_reader_mode_error_header">فشل بدء وضع قارئ البطاقة</string>
+    <string name="card_reader_mode_starting_subtitle">جارٍ إعداد الاكتشاف على الشبكة المحلية…</string>
+    <string name="card_reader_mode_starting_header">جارٍ بدء وضع قارئ البطاقة</string>
+    <string name="card_reader_mode_settings_row_label">وضع قارئ البطاقة</string>
+    <string name="card_reader_mode_cancel">إلغاء</string>
+    <string name="card_reader_mode_waiting_subtitle">في انتظار الدفع…</string>
+    <string name="card_reader_mode_waiting_header">مقترن بجهاز لوحي</string>
+    <string name="card_reader_mode_ready_to_pair_store">المتجر: ⁦%1$s⁩</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">افتح Woo POS على جهازك اللوحي واختر هذا الهاتف.</string>
+    <string name="card_reader_mode_ready_to_pair_header">جاهز للاقتران</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">فتح AI Assistant</string>
+    <string name="dashboard_ai_assistant_entry_point_label">اطرح أسئلة حول متجرك…</string>
+    <string name="notification_channel_stock_title">إشعارات المخزون</string>
+    <string name="woopos_card_reader_update_battery_low_message_with_level">مستوى بطارية القارئ هو %d%%، وهو منخفض جدًا لتثبيت هذا التحديث. يُرجى شحن القارئ إلى 50%% على الأقل ثم المحاولة مجددًا.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">مستوى بطارية القارئ منخفض جدًا لتثبيت هذا التحديث. يُرجى شحن القارئ إلى 50% على الأقل ثم المحاولة مجددًا.</string>
+    <string name="woopos_card_reader_update_failed_title">فشل التحديث</string>
+    <string name="woopos_card_reader_update_completed_title">تم تحديث البرنامج</string>
+    <string name="woopos_card_reader_cancel_anyway_button">إلغاء على أي حال</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">لا يُنصح بإلغاء تحديث البرنامج أثناء تنفيذه. سيؤدي الإلغاء إلى حظر اتصال القارئ الخاص بك.</string>
+    <string name="woopos_card_reader_update_optional_message">يتطلب برنامج قارئ البطاقات تحديثًا لضمان استمرار عمله بسلاسة.</string>
+    <string name="woopos_card_reader_update_required_message">يتعين تحديث برنامج قارئ البطاقات لتمكين تحصيل المدفوعات. سيؤدي الإلغاء إلى حظر اتصال القارئ الخاص بك.</string>
+    <string name="woopos_card_reader_update_progress">مُكتمل بنسبة %d%%</string>
+    <string name="woopos_card_reader_updating_optional_title">جارٍ تحديث برنامج القارئ لديك</string>
+    <string name="woopos_card_reader_updating_title">جارٍ تحديث البرنامج</string>
+    <string name="woopos_card_reader_cancel_button">إلغاء</string>
+    <string name="woopos_card_reader_retry_button">إعادة المحاولة</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">الكود البريدي للمتجر مفقود أو غير صالح. يُرجى تحديث عنوان متجرك في إعدادات WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">كود بريدي غير صالح</string>
+    <string name="woopos_card_reader_invalid_address_message">عنوان متجرك مفقود أو غير مكتمل. يُرجى تحديث عنوان متجرك في إعدادات WooCommerce.</string>
+    <string name="woopos_card_reader_invalid_address_title">عنوان التاجر غير صالح</string>
+    <string name="woopos_card_reader_grant_permission_button">منح الصلاحية</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">يتطلب الاتصال بقارئ البطاقات الحصول على صلاحية استخدام تقنية البلوتوث.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">صلاحية استخدام تقنية البلوتوث مطلوبة</string>
+    <string name="woopos_card_reader_location_permission_message">يتطلب الاتصال بقارئ البطاقات عبر البلوتوث صلاحية الموقع.</string>
+    <string name="woopos_card_reader_location_permission_title">صلاحية الموقع مطلوبة</string>
+    <string name="woopos_card_reader_enable_location_button">تمكين الموقع</string>
+    <string name="woopos_card_reader_location_disabled_message">قم بتمكين الموقع للاتصال بقارئ البطاقات.</string>
+    <string name="woopos_card_reader_location_disabled_title">الموقع غير مفعّل</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">تمكين البلوتوث</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">قم بتمكين تقنية البلوتوث للاتصال بقارئ البطاقات.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">البلوتوث غير مفعّل</string>
+    <string name="woopos_card_reader_battery_low_message">مستوى بطارية القارئ منخفض جدًا. يُرجى شحن القارئ ثم المحاولة مجددًا.</string>
+    <string name="woopos_card_reader_battery_low_title">البطارية منخفضة جدًا</string>
+    <string name="woopos_card_reader_connected_title">اكتمل الاتصال</string>
+    <string name="woopos_card_reader_connecting_failed_title">فشل الاتصال</string>
+    <string name="woopos_card_reader_connecting_message">يُرجى الانتظار بينما يتم الاتصال بالقارئ الخاص بك</string>
+    <string name="woopos_card_reader_connecting_title">جارٍ الاتصال</string>
+    <string name="woopos_card_reader_multiple_found_description">اختيار قارئ</string>
+    <string name="woopos_card_reader_multiple_found_title">تم العثور على مجموعة من قارئات البطاقات</string>
+    <string name="woopos_card_reader_keep_searching_button">مواصلة البحث</string>
+    <string name="woopos_card_reader_connect_button">الاتصال</string>
+    <string name="woopos_card_reader_found_description">هل ترغب في الاتصال بهذا القارئ؟</string>
+    <string name="woopos_card_reader_found_title">تم العثور على %s</string>
+    <string name="woopos_card_reader_scanning_failed_title">فشل الفحص</string>
+    <string name="woopos_card_reader_scanning_instruction">تأكد من أن القارئ مشحون وقيد التشغيل</string>
+    <string name="woopos_card_reader_scanning_title">جارٍ البحث عن قارئ</string>
+    <string name="woopos_card_reader_close_content_description">إغلاق</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">مربع حوار اتصال قارئ البطاقة</string>
+    <string name="woopos_orders_empty_list_message">ستظهر الطلبات هنا بمجرد بدء معالجة المبيعات عبر نقطة البيع.</string>
+    <string name="woopos_battery_critical">بطارية قارئ البطاقات حرجة</string>
+    <string name="woopos_battery_low">بطارية قارئ البطاقات منخفضة</string>
+    <string name="woopos_reader_reconnecting">جارٍ إعادة الاتصال…</string>
+    <string name="more_menu_button_ai_assistant_description">اسأل عن متجرك</string>
+    <string name="more_menu_button_ai_assistant">AI Assistant</string>
+    <string name="settings_notifs_new_reviews_subtitle">كل المراجعات</string>
+    <string name="settings_notifs_new_reviews">مراجعات جديدة</string>
+    <string name="settings_notifs_stock_subtitle">جميع تنبيهات المخزون</string>
+    <string name="settings_notifs_stock">المخزون</string>
+    <string name="settings_notifs_new_orders_subtitle">جميع الطلبات</string>
+    <string name="settings_notifs_new_orders">طلبات جديدة</string>
+    <string name="settings_push_notifications">التنبيهات الفورية</string>
+    <string name="settings_logout_dialog_message">جارٍ تسجيل الخروج.</string>
+    <string name="card_reader_detail_reconnecting_cancel">إلغاء إعادة الاتصال</string>
+    <string name="card_reader_detail_reconnecting_header">جارٍ إعادة الاتصال بقارئ البطاقات…</string>
+    <string name="dashboard_stats_order_date_type_update_error">يتعذر تحديث نوع الطلب. يُرجى المحاولة مرة أخرى.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">هذا إعداد على مستوى المتجر، ويتحكم أيضًا في خيار \"نوع التاريخ\" ضمن إعدادات تحليلات مشرف WooCommerce.</string>
+    <string name="dashboard_stats_completed_orders_description">احتساب الطلبات وفق تاريخ اكتمالها.</string>
+    <string name="dashboard_stats_placed_orders_description">احتساب الطلبات وفق تاريخ إنشائها أو تقديمها.</string>
+    <string name="dashboard_stats_paid_orders_description">احتساب الطلبات وفق تاريخ سداد قيمتها.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">اختر الطلبات التي ترغب في تضمينها ضمن مؤشرات الأداء لديك للفترة الزمنية المحددة.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">نوع تاريخ الطلب</string>
+    <string name="dashboard_stats_completed_orders">الطلبات المكتملة</string>
+    <string name="dashboard_stats_placed_orders">الطلبات المُقدَّمة</string>
+    <string name="dashboard_stats_paid_orders">الطلبات المدفوعة</string>
+    <string name="dashboard_stats_revenue_type_total">الإجمالي</string>
+    <string name="dashboard_stats_revenue_type_net">الصافي</string>
+    <string name="dashboard_stats_revenue_type_gross">الإجمالي قبل الخصومات</string>
+    <string name="booking_reschedule_change_team_member">تغيير عضو الفريق</string>
+    <string name="booking_reschedule_screen_title">إعادة جدولة الحجز</string>
+    <string name="booking_details_reschedule_button">إعادة الجدولة</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">أوافق على &lt;a href=\"fedex-tos\"&gt;شروط خدمة FedEx&lt;/a&gt;.</string>
+    <string name="wpp_shipping_fedex_tos_description">لشراء بطاقات الشحن من FedEx، يلزم الموافقة على الشروط التالية:</string>
+    <string name="wpp_shipping_fedex_tos_title">شروط خدمة FedEx</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">تعذّر تحميل أسعار الشحن. يُرجى إضافة الاسم الأول واسم العائلة إلى عنوان الوجهة ثم المحاولة مرة أخرى.</string>
+    <string name="woopos_settings_receipt_edit_button">تحرير معلومات الإيصال</string>
+    <string name="woopos_home_syncing_catalog_progress">⁦%1$d⁩ من ⁦%2$d⁩ العناصر</string>
+    <string name="woopos_home_syncing_catalog_preparing">جارٍ إعداد الكتالوج…</string>
+    <string name="product_type_bookable_service_desc">خدمة يمكن للعملاء حجزها عبر الإنترنت</string>
+    <string name="product_type_bookable_service_title">الخدمة</string>
+    <string name="settings_troubleshoot_connection">حل مشكلات الاتصال</string>
+    <string name="connectivity_tool_copy">نسخ</string>
+    <string name="connectivity_tool_technical_details_copied">نُسخت التفاصيل الفنية إلى الحافظة.</string>
+    <string name="connectivity_tool_technical_details_title">التفاصيل الفنية</string>
+    <string name="connectivity_tool_view_technical_details">عرض التفاصيل الفنية</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">جارٍ جلب منتجات متجرك</string>
+    <string name="user_role_access_error_fetch_failed">تعذّر التحقق من دورك في هذا المتجر. يُرجى المحاولة مرة أخرى. يُرجى التواصل مع الدعم إذا استمرت هذه المشكلة.</string>
+    <string name="woopos_eligibility_learn_more_label">التعرُّف على المزيد</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">اقبل المدفوعات بصفة شخصية مقابل 2.70% + 0.10 دولار لكل معاملة. &lt;b&gt;قم بالترقية إلى الخطة الاحترافية&lt;/b&gt; للوصول إلى ميزة \"الضغط للدفع\" على هاتفك ونظام نقطة البيع الكامل لدينا مع المخزون في الوقت الفعلي ومزامنة الطلب.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">اقبل المدفوعات بصفة شخصية مقابل 2.70% + 0.10 دولار لكل معاملة. قم بالترقية إلى الخطة الاحترافية للوصول إلى ميزة \"الضغط للدفع\" على هاتفك ونظام نقطة البيع الكامل لدينا مع المخزون في الوقت الفعلي ومزامنة الطلب.</string>
+    <string name="woopos_eligibility_ciab_title">مطلوب خطة احترافية.</string>
+    <string name="ciab_order_status_open">فتح</string>
+    <string name="booking_payment_status_authorization_voided">تم إلغاء المصادقة</string>
+    <string name="booking_payment_status_authorized">تمت المصادقة</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">يتعذر شراء ملصق الشحن. يُرجى إكمال عنوان المنشأ.</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">العنوان الأصلي مفقود أو غير صالح</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">تم إلغاء المصادقة</string>
+    <string name="woopos_bookings_payment_status_authorized">تمت المصادقة</string>
+    <string name="woopos_orders_details_refund_details_background">خلفية مربع تفاصيل عملية استرداد الأموال</string>
+    <string name="woopos_orders_details_refund_total">إجمالي الأموال المُستردّة.</string>
+    <string name="woopos_orders_details_refund_tax">الضريبة</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">الإجمالي الفرعي للعناصر(%d عناصر)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">الإجمالي الفرعي للعناصر(%d عنصر)</string>
+    <string name="woopos_orders_details_refund_view_details">عرض التفاصيل</string>
+    <string name="woopos_orders_details_refund_label_numbered">عملية استرداد الأموال رقم ⁦%1$d⁩</string>
+    <string name="woopos_orders_details_refunded_products_title">المنتجات المستردة</string>
+    <string name="woopos_home_syncing_catalog_subtitle">يمكنك مغادرة هذه الصفحة وسيستمر التزامن في الخلفية.</string>
+    <string name="woopos_home_syncing_catalog_hint">قد تستغرق مزامنة الكتالوج بضع دقائق.</string>
+    <string name="woo_push_notifications_introduction_connected_body">إنك على بعد خطوة واحدة من تلقي تنبيهات الطلبات والمراجعات الجديدة والمزيد.</string>
+    <string name="woo_push_notifications_introduction_connected_title">تلقي تنبيهات الدفع الخاصة بمتجرك</string>
+    <string name="my_store_widget_push_notifications_description">يمكنك تفعيل التنبيهات الدفع للاطلاع على الطلبات والتقييمات الجديدة.</string>
     <string name="woopos_search_products_and_variations">البحث عن المنتجات والأنواع</string>
     <string name="woopos_bookings_details_customer_guest_badge">ضيف</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">تحديث الإضافة</string>
@@ -132,7 +451,6 @@ Language: ar
     <string name="restart">إعادة البدء</string>
     <string name="dev_feature_flags">علامات الميزات</string>
     <string name="settings_enable_push_notifications">تمكين التنبيهات المنبثقة</string>
-    <string name="my_store_widget_push_notifications_description">اربط متجرك بـ WordPress.com لتلقي تنبيهات بشأن الطلبات الجديدة والمراجعات.</string>
     <string name="my_store_widget_push_notifications_menu_title">تمكين التنبيهات المنبثقة</string>
     <string name="my_store_widget_push_notifications_title">لا تفوت أي طلب جديد</string>
     <string name="woo_pos_promo_title">نقطة البيع من WooCommerce</string>
@@ -242,7 +560,7 @@ Language: ar
     <string name="woopos_search_orders">البحث عن الطلبات</string>
     <string name="woopos_orders_details_totals_card_content_description">تفاصيل إجمالي الطلب</string>
     <string name="woopos_orders_details_products_list_content_description">قائمة منتجات الطلب</string>
-    <string name="woopos_orders_details_net_payment_label">الدفع الصافي</string>
+    <string name="woopos_orders_details_net_payment_label">إجمالي الصافي</string>
     <string name="woopos_orders_details_refunded_label">اكتمل استرداد المبالغ المدفوعة</string>
     <string name="woopos_orders_details_total_paid_label">إجمالي المبلغ المدفوع</string>
     <string name="woopos_orders_details_total_label">الإجمالي</string>
@@ -272,7 +590,6 @@ Language: ar
     <string name="woopos_home_sync_failed_message">تعذّر علينا مزامنة كتالوج المنتج. يُرجى التحقق من اتصالك بالإنترنت وإعادة المحاولة.</string>
     <string name="woopos_home_sync_failed_title">تعذر المزامنة</string>
     <string name="woopos_home_syncing_catalog_exit_button">إنهاء POS</string>
-    <string name="woopos_home_syncing_catalog_subtitle">تستمر المزامنة في الخلفية</string>
     <string name="woopos_home_syncing_catalog_title">مزامنة الكتالوج</string>
     <string name="booking_note_discard_changes_discard">تجاهل التغييرات</string>
     <string name="booking_note_discard_changes_message">هل أنت متأكد من رغبتك في تجاهل هذه التغييرات؟</string>
@@ -313,8 +630,7 @@ Language: ar
     <string name="woopos_orders_loading_error_message">يُرجى التحقق من الاتصال بالشبكة وإعادة المحاولة.</string>
     <string name="woopos_orders_loading_error_title">يتعذر تحميل الطلبات</string>
     <string name="woopos_orders_empty_list_image_description">لا توجد طلبات</string>
-    <string name="woopos_orders_empty_action_label">معرفة المزيد</string>
-    <string name="woopos_orders_empty_list_message">استكشف كيف يمكنك زيادة مبيعات متجرك.</string>
+    <string name="woopos_orders_empty_action_label">تحديث</string>
     <string name="woopos_orders_empty_list_title">لم يتم العثور على طلبات</string>
     <string name="woopos_date_yesterday_at">بالأمس في %s</string>
     <string name="woopos_date_today_at">اليوم في %s</string>
@@ -489,15 +805,13 @@ Language: ar
     <string name="woopos_scanning_setup_device_selection_title">إعداد الماسح الضوئي للرمز الشريطي</string>
     <string name="woopos_scanning_setup_barcode_content_description">الرمز الشريطي</string>
     <string name="woopos_scanning_setup_dialog_content_description">مربع حوار إعداد الماسح الضوئي</string>
-    <string name="woopos_eligibility_screen_UK_country_name">المملكة المتحدة</string>
-    <string name="woopos_eligibility_screen_US_country_name">الولايات المتحدة</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">المملكة المتحدة</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">الولايات المتحدة</string>
     <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">لا يتوافر نظام نقطة البيع لعملة متجرك. ُيرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">يجب تمكين نقطة البيع للمتابعة. يُرجى تمكين ميزة نقطة البيع من مشرفك في WordPress ضمن إعدادات WooCommerce &gt; الإعدادات المتقدمة &gt; الميزات.</string>
     <string name="woopos_eligibility_reason_check_connection">تحقق من اتصالك بالإنترنت وحاول إعادة تشغيل التطبيق. إذا استمرت المشكلة، فيرجى التواصل مع الدعم.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">إصدارك من WooCommerce غير مدعوم. يتطلب نظام نقطة البيع الإصدار ⁦%1$s⁩ من WooCommerce أو إصدار أحدث. يُرجى التحديث إلى آخر إصدار من WooCommerce.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">يُرجى التأكد من تثبيت إضافة WooCommerce وتفعيلها من مشرفك في WordPress. يرجى التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="orderfilters_sales_channel_filter">قناة المبيعات</string>
     <string name="barcode_ean13_content_description">الرمز الشريطي EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">معالجة إضافية</string>
@@ -1180,10 +1494,6 @@ Language: ar
     <string name="delete_product_category_failed">خطأ في أثناء حذف التصنيف</string>
     <string name="delete_product_category_success">تم حذف تصنيف المنتج</string>
     <string name="update_product_category_success">تم تحديث تصنيف المنتج</string>
-    <string name="domain_picker_suggestions_error">يتعذر تحميل اقتراحات النطاق</string>
-    <string name="domain_picker_suggestions_title">اقتراحات</string>
-    <string name="domain_picker_hint">كتابة نطاق</string>
-    <string name="domain_picker_title">اختيار نطاق</string>
     <string name="analytics_section_see_all">مشاهدة كل تحليلات المتجر</string>
     <string name="my_store_custom_range_granularity_year">سنويًا</string>
     <string name="my_store_custom_range_granularity_month">شهريًا</string>
@@ -1950,7 +2260,6 @@ Language: ar
     <string name="store_onboarding_launch_store_back_to_store_button">العودة إلى متجري</string>
     <string name="store_onboarding_launch_store_share_url_button">مشاركة عنوان URL</string>
     <string name="store_onboarding_launch_store_button">نشر متجري</string>
-    <string name="domains_search_domains">البحث في النطاقات</string>
     <string name="login_site_credentials_http_error">فشل تسجيل الدخول باستخدام رمز الحالة ⁦%1$s⁩</string>
     <string name="login_site_credentials_custom_admin_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لمسؤول متجرك</string>
     <string name="login_site_credentials_custom_login_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لتسجيل الدخول إلى متجرك</string>
@@ -1995,41 +2304,12 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
-    <string name="domain_registration_generic_error">حدث خطأ في أثناء تسجيل النطاق</string>
-    <string name="domain_registration_state_picker_dialog_title">تحديد الولاية</string>
-    <string name="domain_registration_country_picker_dialog_title">تحديد الدولة</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">جاري تسجيل اسم النطاق…</string>
-    <string name="domain_contact_information_register_domain_button">تسجيل اسم نطاق</string>
-    <string name="domain_contact_information_postal_code_hint">الرمز البريدي</string>
-    <string name="domain_contact_information_state_not_available_hint">الحالة (غير متوفرة)</string>
-    <string name="domain_contact_information_state_hint">الولاية</string>
-    <string name="domain_contact_information_city_hint">المدينة</string>
-    <string name="domain_contact_information_address_hint_two">العنوان 2</string>
-    <string name="domain_contact_information_address_hint">العنوان</string>
-    <string name="domain_contact_information_country_hint">الدولة</string>
-    <string name="domain_contact_information_country_code_hint">رمز الدولة</string>
-    <string name="domain_contact_information_phone_number_hint">الهاتف</string>
-    <string name="domain_contact_information_organization_hint">المؤسسة (اختياري)</string>
-    <string name="domain_contact_information_description">قمنا بتعبئة معلومات جهات الاتصال الخاصة بك مسبقًا على حسابك في WordPress.com من أجل راحتك.\n        يرجى المراجعة للتأكد من صحة المعلومات التي ترغب في استخدامها لهذا النطاق.</string>
-    <string name="domain_contact_information_title">معلومات الاتصال الخاصة بالنطاق</string>
-    <string name="domain_privacy_option_off_title">التسجيل بشكل علني</string>
-    <string name="domain_privacy_option_on_title">التسجيل بشكل خاص مع ميزة الحماية من الخصوصية</string>
-    <string name="domain_registration_contact_form_input_error">الرجاء إدخال عنوان %s صالح</string>
-    <string name="domain_registration_privacy_protection_tos">يعني تسجيل هذا النطاق أنك توافق على &lt;a href=\'\'&gt;شروط الخدمة التي نُقرها&lt;/a&gt;</string>
-    <string name="domain_registration_privacy_protection_description">يتعين على مالكي النطاق مشاركة معلومات الاتصال في قاعدة بيانات عامة لجميع النطاقات.\n        مع ميزة حماية الخصوصية، ننشر معلوماتنا الخاصة بدلاً من معلوماتك، وإعادة توجيه أي اتصال إليك بشكل سري.</string>
-    <string name="domain_registration_privacy_protection_title">حماية الخصوصية</string>
-    <string name="domains_access_error_title">لا يمكن لمسؤولي المتجر سوى الوصول إلى إعدادات النطاق</string>
     <string name="login_jetpack_installation_continue_magic_link">أو الاستمرار في استخدام Magic Link</string>
     <string name="login_jetpack_installation_enter_wpcom_password">إدخال كلمة مرور حسابك على ووردبريس.كوم لتثبيت Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_password">إدخال كلمة مرور حسابك على ووردبريس.كوم للاتصال بـ Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">تسجيل الدخول باستخدام حسابك على ووردبريس.كوم لتثبيت Jetpack</string>
     <string name="login_jetpack_connection_enter_wpcom_email">تسجيل الدخول باستخدام حسابك على ووردبريس.كوم للاتصال Jetpack.</string>
-    <string name="domains_purchase_successful_settings_notice">يمكنك العثور على إعدادات النطاق ضمن الإعدادات &gt; النطاقات</string>
-    <string name="domains_purchase_successful_delay_notice">يجري إعداد عنوان موقعك. قد يستغرق الأمر ما يصل إلى 30 دقيقة لكي يبدأ نطاقك بالعمل.</string>
-    <string name="domains_purchase_successful_heading">تهانينا على إتمام عملية الشراء الخاصة بك</string>
-    <string name="domains_free_with_credits">مجاني للسنة الأولى</string>
     <string name="settings_confirm_logout_site_credentials">هل أنت متأكد من رغبتك في تسجيل الخروج من حسابك؟</string>
-    <string name="domains_generic_error_title">يتعذر تحميل نطاقات المواقع</string>
     <string name="store_onboarding_completed_tasks_status">تم إكمال ⁦%1$d⁩/%2$d</string>
     <string name="store_onboarding_task_launch_store_description">انشر موقعك أمام العالم في أي وقت تريده!</string>
     <string name="store_onboarding_task_launch_store_title">بدء متجرك</string>
@@ -2040,19 +2320,6 @@ Language: ar
     <string name="card_reader_payment_failed_device_is_not_supported">جهازك غير مدعوم. يرجى الاتصال بالدعم للحصول على مزيد من التفاصيل</string>
     <string name="card_reader_payment_failed_nfc_disabled">يتعذر على التطبيق تمكين قارئ البطاقات؛ لأن رقاقة NFC معطّلة</string>
     <string name="card_reader_payment_failed_canceled">تم إلغاء المعاملة</string>
-    <string name="domains_redirect_notice">سيُعيد النطاق المشترى توجيه المستخدمين إلى</string>
-    <string name="domains_select_domain">تحديد نطاق</string>
-    <string name="domains_add_domain_button_title">إضافة نطاق</string>
-    <string name="domains_your_domains">نطاقات موقعك</string>
-    <string name="domains_primary_address">عنوان الموقع الأساسي</string>
-    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;تعرّف إلى المزيد&lt;/u&gt;&lt;/a&gt; عن النطاقات وكيفية اتخاذ إجراءات مرتبطة بالنطاق.</string>
-    <string name="domains_search_for_domain_button_title">البحث عن نطاق</string>
-    <string name="domains_purchase_redirect_notice">سيُعيد النطاق المشترى توجيه المستخدمين إلى عنوان الأساسي.</string>
-    <string name="domains_claim_your_free_domain_link">المطالبة بالنطاق</string>
-    <string name="domains_claim_your_free_domain_description">لديك تسجيل نطاق مجاني مدته عام واحد ضمن خطتك.</string>
-    <string name="domains_claim_your_free_domain_title">طالب بنطاقك المجاني</string>
-    <string name="domains_your_free_store_address">عنوان متجرك المجاني</string>
-    <string name="domains">النطاقات</string>
     <string name="feedback_banner_ipp_cta_button">مشاركة الملاحظات.</string>
     <string name="feedback_banner_ipp_message_beginner">قيِّم تجربتك الأولى مع ميزة المدفوعات الشخصية.</string>
     <string name="feedback_banner_ipp_title_beginner">هل تستمتع بميزة المدفوعات الشخصية لديك؟</string>
@@ -2071,7 +2338,6 @@ Language: ar
     <string name="analytics_session_card_title">الجلسات</string>
     <string name="analytics_session_no_data">ليست هناك جلسات لهذه الفترة</string>
     <string name="date_compared_to">تمت المقارنة مع</string>
-    <string name="domain">نطاق</string>
     <string name="login_application_passwords_help">ما المقصود بكلمات مرور التطبيقات؟</string>
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
     <string name="login_open_installation_page">فتح صفحة التثبيت</string>
@@ -2087,7 +2353,6 @@ Language: ar
     <string name="product_bulk_update_regular_price">تحديث السعر العادي</string>
     <string name="variations_bulk_creation_no_candidates_message">يتم إنشاء كل التباينات بالفعل.</string>
     <string name="variations_bulk_creation_no_candidates_title">لا توجد تباينات مطلوب إنشائها</string>
-    <string name="domain_picker_empty_suggestions">لا توجد نطاقات متوفرة لهذا البحث</string>
     <string name="variations_bulk_creation_progress_title">إنشاء تباينات</string>
     <string name="variations_bulk_creation_confirmation_message">سيؤدي ذلك إلى إنشاء تباين جديد لكل مجموعة محتملة من سمات التباين (⁦%1$d⁩ من التباينات).</string>
     <string name="variations_bulk_creation_confirmation_title">هل تريد إنشاء كل التباينات؟</string>
@@ -2144,7 +2409,6 @@ Language: ar
     <string name="update_simulated_reader">تحديث قارئ البطاقة المحاكي</string>
     <string name="login_jetpack_connect">الاتصال بـ Jetpack</string>
     <string name="login_jetpack_installation_screen_title">ربط المتجر</string>
-    <string name="domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييره لاحقًا.</string>
     <string name="analytics_visitors_subtitle">الزائرون</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
@@ -3767,7 +4031,6 @@ Language: ar
     <string name="dashboard_top_performers_empty">لا يوجد أي نشاط في هذه الفترة</string>
     <string name="dashboard_stats_error_content_description">صورة الخطأ</string>
     <string name="dashboard_stats_error">حدث خطأ أثناء إحضار البيانات</string>
-    <string name="dashboard_stats_revenue">الإيرادات</string>
     <string name="dashboard_stats_orders">الطلبات</string>
     <string name="dashboard_stats_visitors">الزائرون</string>
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>
@@ -3834,6 +4097,8 @@ Language: ar
         <item>حزمة مخصصة</item>
         <item>حزمة الخدمة</item>
     </string-array>
+    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ من النجوم أو أقل</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">⁦%1$d⁩ من النجوم أو أقل</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="zero">الإجمالي الفرعي للعناصر (%d من العناصر)</item>
         <item quantity="one">الإجمالي الفرعي للعناصر (%d من العناصر)</item>

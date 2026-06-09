@@ -3,22 +3,17 @@ package org.wordpress.android.fluxc.network.rest.wpcom.site
 import android.content.Context
 import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
-import com.android.volley.DefaultRetryPolicy
 import com.android.volley.RequestQueue
-import com.android.volley.VolleyError
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.apache.commons.text.StringEscapeUtils
-import org.json.JSONException
-import org.json.JSONObject
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.Payload
+import org.wordpress.android.fluxc.action.SiteAction
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
-import org.wordpress.android.fluxc.model.JetpackCapability
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -33,104 +28,45 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
-import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
-import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType
-import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferEligibilityResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferError
-import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferStatusResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
-import org.wordpress.android.fluxc.store.SiteStore.DeleteSiteError
 import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainError
 import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainErrorType
 import org.wordpress.android.fluxc.store.SiteStore.DesignatedPrimaryDomainPayload
-import org.wordpress.android.fluxc.store.SiteStore.DomainAvailabilityError
-import org.wordpress.android.fluxc.store.SiteStore.DomainAvailabilityErrorType
-import org.wordpress.android.fluxc.store.SiteStore.DomainAvailabilityResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.DomainAvailabilityStatus
-import org.wordpress.android.fluxc.store.SiteStore.DomainMappabilityStatus
-import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedCountriesError
-import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedCountriesErrorType
-import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedCountriesResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesError
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesErrorType
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedJetpackCapabilitiesPayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedPrivateAtomicCookiePayload
-import org.wordpress.android.fluxc.store.SiteStore.InitiateAutomatedTransferResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesError
-import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesErrorType
-import org.wordpress.android.fluxc.store.SiteStore.NewSiteError
-import org.wordpress.android.fluxc.store.SiteStore.NewSiteErrorType
-import org.wordpress.android.fluxc.store.SiteStore.PlansError
-import org.wordpress.android.fluxc.store.SiteStore.PrivateAtomicCookieError
-import org.wordpress.android.fluxc.store.SiteStore.QuickStartCompletedResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.QuickStartError
-import org.wordpress.android.fluxc.store.SiteStore.QuickStartErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
-import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.UNAUTHORIZED
-import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.UNKNOWN_SITE
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.BLOCK_SEARCH_ENGINE
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.COMING_SOON
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainError
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainErrorType.EMPTY_RESULTS
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T.API
-import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
-import java.io.UnsupportedEncodingException
 import java.net.URI
-import java.net.URLEncoder
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
-import kotlin.math.max
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "TooManyFunctions", "LongParameterList")
 @Singleton
 class SiteRestClient @Inject constructor(
     appContext: Context?,
     dispatcher: Dispatcher?,
     @Named("regular") requestQueue: RequestQueue?,
-    private val appSecrets: AppSecrets,
     private val wpComGsonRequestBuilder: WPComGsonRequestBuilder,
     private val jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder,
     private val coroutineEngine: CoroutineEngine,
     accessToken: AccessToken?,
     userAgent: UserAgent?
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
-    data class NewSiteResponsePayload(
-        val newSiteRemoteId: Long = 0,
-        val siteUrl: String? = null,
-        val dryRun: Boolean = false
-    ) : Payload<NewSiteError>()
-
-    data class DeleteSiteResponsePayload(val site: SiteModel? = null) : Payload<DeleteSiteError>()
-
-    class ExportSiteResponsePayload : Payload<BaseNetworkError>()
-    data class IsWPComResponsePayload(
-        val url: String,
-        val isWPCom: Boolean = false
-    ) : Payload<BaseNetworkError>()
-
-    data class FetchWPComSiteResponsePayload(
-        val checkedUrl: String,
-        val site: SiteModel? = null
-    ) : Payload<SiteError>()
-
     /**
      *  Fetches the user's sites from WPCom.
      *  Since the V1.2 endpoint doesn't return the plan features, we will handle the fetch by following two
@@ -281,7 +217,6 @@ class SiteRestClient @Inject constructor(
                 // Keep existing fields, and update only fields fetched from the root endpoint
                 site.apply {
                     name = result.data.name
-                    description = result.data.description
                     timezone = result.data.gmtOffset
                     hasWooCommerce = result.data.namespaces?.any {
                         it.startsWith(WOO_API_NAMESPACE_PREFIX)
@@ -339,103 +274,6 @@ class SiteRestClient @Inject constructor(
      *
      * @return the response of the API call  as [NewSiteResponsePayload]
      */
-    @Suppress("ComplexMethod", "LongParameterList")
-    suspend fun newSite(
-        siteName: String?,
-        siteTitle: String?,
-        language: String,
-        timeZoneId: String?,
-        visibility: SiteVisibility,
-        segmentId: Long?,
-        siteDesign: String?,
-        findAvailableUrl: Boolean?,
-        dryRun: Boolean,
-        siteCreationFlow: String? = null
-    ): NewSiteResponsePayload {
-        val url = WPCOMREST.sites.new_.urlV1_1
-        val body = mutableMapOf<String, Any>()
-        val options = mutableMapOf<String, Any>()
-
-        body["lang_id"] = language
-
-        determineVisibility(visibility, body, options)
-
-        body["validate"] = if (dryRun) "1" else "0"
-        body["client_id"] = appSecrets.appId
-        body["client_secret"] = appSecrets.appSecret
-        findAvailableUrl?.let { body["find_available_url"] = it.toString() }
-
-        if (siteTitle != null) {
-            body["blog_title"] = siteTitle
-        }
-        body["blog_name"] = siteName ?: siteTitle ?: ""
-        siteName ?: run {
-            body["find_available_url"] = "1"
-            options["site_creation_flow"] = "with-design-picker"
-        }
-
-        if (segmentId != null) {
-            options["site_segment"] = segmentId
-        }
-        if (siteDesign != null) {
-            options["template"] = siteDesign
-        }
-        if (timeZoneId != null) {
-            options["timezone_string"] = timeZoneId
-        }
-        if (siteCreationFlow != null) {
-            options["site_creation_flow"] = siteCreationFlow
-        }
-
-        // Add site options if available
-        if (options.isNotEmpty()) {
-            body["options"] = options
-        }
-
-        // Disable retries and increase timeout for site creation (it can sometimes take a long time to complete)
-        val response = wpComGsonRequestBuilder.syncPostRequest(
-                this,
-                url,
-                null,
-                body,
-                NewSiteResponse::class.java,
-                DefaultRetryPolicy(NEW_SITE_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
-        )
-        return when (response) {
-            is Success -> {
-                var siteId: Long = 0
-                if (response.data.blog_details != null) {
-                    try {
-                        siteId = response.data.blog_details.blogid.toLong()
-                    } catch (e: NumberFormatException) {
-                        // No op: In dry run mode, returned newSiteRemoteId is "Array"
-                    }
-                }
-                NewSiteResponsePayload(siteId, response.data.blog_details?.url, dryRun)
-            }
-            is Error -> {
-                volleyErrorToAccountResponsePayload(response.error.volleyError, dryRun)
-            }
-        }
-    }
-
-    private fun determineVisibility(
-        visibility: SiteVisibility,
-        body: MutableMap<String, Any>,
-        options: MutableMap<String, Any>
-    ) {
-        when (visibility) {
-            PRIVATE, BLOCK_SEARCH_ENGINE, PUBLIC -> {
-                body["public"] = visibility.value().toString()
-            }
-
-            COMING_SOON -> {
-                body["public"] = BLOCK_SEARCH_ENGINE.value().toString()
-                options["wpcom_public_coming_soon"] = "1"
-            }
-        }
-    }
-
     suspend fun launchSite(site: SiteModel): Response<Unit> {
         val url = WPCOMV2.sites.site(site.siteId).launch.url
         return wpComGsonRequestBuilder.syncPostRequest(
@@ -445,55 +283,6 @@ class SiteRestClient @Inject constructor(
             body = mapOf("site" to site.siteId),
             Unit::class.java
         )
-    }
-
-    fun fetchPlans(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).plans.urlV1_3
-        val request = WPComGsonRequest.buildGetRequest(url, null, PlansResponse::class.java,
-                { response, _ ->
-                    val plans = response.plansList
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newFetchedPlansAction(FetchedPlansPayload(site, plans))
-                    )
-                }
-        ) { error ->
-            val plansError = PlansError(error.apiError, error.message)
-            val payload = FetchedPlansPayload(site, plansError)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedPlansAction(payload))
-        }
-        add(request)
-    }
-
-    fun deleteSite(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).delete.urlV1_1
-        val request = WPComGsonRequest.buildPostRequest(url, null,
-                SiteWPComRestResponse::class.java,
-                { _, _ ->
-                    val payload = DeleteSiteResponsePayload(site)
-                    mDispatcher.dispatch(SiteActionBuilder.newDeletedSiteAction(payload))
-                }
-        ) { error ->
-            val payload = DeleteSiteResponsePayload(site)
-            payload.error = DeleteSiteError(error.apiError, error.message)
-            mDispatcher.dispatch(SiteActionBuilder.newDeletedSiteAction(payload))
-        }
-        add(request)
-    }
-
-    fun exportSite(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).exports.start.urlV1_1
-        val request = WPComGsonRequest.buildPostRequest(url, null,
-                ExportSiteResponse::class.java,
-                { _, _ ->
-                    val payload = ExportSiteResponsePayload()
-                    mDispatcher.dispatch(SiteActionBuilder.newExportedSiteAction(payload))
-                }
-        ) { error ->
-            val payload = ExportSiteResponsePayload()
-            payload.error = error
-            mDispatcher.dispatch(SiteActionBuilder.newExportedSiteAction(payload))
-        }
-        add(request)
     }
 
     @Suppress("LongParameterList")
@@ -643,84 +432,6 @@ class SiteRestClient @Inject constructor(
         }
     }
 
-    @Suppress("SwallowedException")
-    fun fetchWPComSiteByUrl(siteUrl: String) {
-        val sanitizedUrl: String
-        try {
-            val uri = URI.create(UrlUtils.addUrlSchemeIfNeeded(siteUrl, false))
-            sanitizedUrl = URLEncoder.encode(UrlUtils.removeScheme(uri.toString()), "UTF-8")
-        } catch (e: IllegalArgumentException) {
-            val payload = FetchWPComSiteResponsePayload(siteUrl)
-            payload.error = SiteError(INVALID_SITE)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedWpcomSiteByUrlAction(payload))
-            return
-        } catch (e: UnsupportedEncodingException) {
-            // This should be impossible (it means an Android device without UTF-8 support)
-            throw IllegalStateException(e)
-        }
-        val requestUrl = WPCOMREST.sites.siteUrl(sanitizedUrl).urlV1_1
-        val request = WPComGsonRequest.buildGetRequest(requestUrl, null,
-                SiteWPComRestResponse::class.java,
-                { response, _ ->
-                    val payload = FetchWPComSiteResponsePayload(siteUrl, siteResponseToSiteModel(response))
-                    mDispatcher.dispatch(SiteActionBuilder.newFetchedWpcomSiteByUrlAction(payload))
-                }
-        ) { error ->
-            val payload = FetchWPComSiteResponsePayload(siteUrl)
-            val siteErrorType = when (error.apiError) {
-                "unauthorized" -> UNAUTHORIZED
-                "unknown_blog" -> UNKNOWN_SITE
-                else -> SiteErrorType.GENERIC_ERROR
-            }
-            payload.error = SiteError(siteErrorType)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedWpcomSiteByUrlAction(payload))
-        }
-        addUnauthedRequest(request)
-    }
-
-    fun checkUrlIsWPCom(testedUrl: String) {
-        val url = WPCOMREST.sites.urlV1_1 + testedUrl
-        val request = WPComGsonRequest.buildGetRequest(url, null,
-                SiteWPComRestResponse::class.java,
-                { _, _ ->
-                    val payload = IsWPComResponsePayload(testedUrl, true)
-                    mDispatcher.dispatch(SiteActionBuilder.newCheckedIsWpcomUrlAction(payload))
-                }
-        ) { error ->
-            val payload = IsWPComResponsePayload(testedUrl)
-            if ("unauthorized" != error.apiError && "unknown_blog" != error.apiError) {
-                payload.error = error
-            }
-            mDispatcher.dispatch(SiteActionBuilder.newCheckedIsWpcomUrlAction(payload))
-        }
-        addUnauthedRequest(request)
-    }
-
-    /**
-     * Performs an HTTP GET call to v1.3 /domains/$domainName/is-available/ endpoint. Upon receiving a response
-     * (success or error) a [SiteAction.CHECKED_DOMAIN_AVAILABILITY] action is dispatched with a
-     * payload of type [DomainAvailabilityResponsePayload].
-     *
-     * [DomainAvailabilityResponsePayload.isError] can be used to check the request result.
-     */
-    fun checkDomainAvailability(domainName: String) {
-        val url = WPCOMREST.domains.domainName(domainName).is_available.urlV1_3
-        val request = WPComGsonRequest.buildGetRequest(url, null, DomainAvailabilityResponse::class.java,
-                { response, _ ->
-                    val payload = responseToDomainAvailabilityPayload(response)
-                    mDispatcher.dispatch(SiteActionBuilder.newCheckedDomainAvailabilityAction(payload))
-                }
-        ) { error -> // Domain availability API should always return a response for a valid,
-            // authenticated user. Therefore, only GENERIC_ERROR is identified here.
-            val domainAvailabilityError = DomainAvailabilityError(
-                    DomainAvailabilityErrorType.GENERIC_ERROR, error.message
-            )
-            val payload = DomainAvailabilityResponsePayload(domainAvailabilityError)
-            mDispatcher.dispatch(SiteActionBuilder.newCheckedDomainAvailabilityAction(payload))
-        }
-        add(request)
-    }
-
     /**
      * Performs an HTTP GET call to v1.1 /domains/supported-states/$countryCode endpoint. Upon receiving a response
      * (success or error) a [SiteAction.FETCHED_DOMAIN_SUPPORTED_STATES] action is dispatched with a
@@ -746,45 +457,6 @@ class SiteRestClient @Inject constructor(
         add(request)
     }
 
-    /**
-     * Performs an HTTP GET call to v1.1 /domains/supported-countries/ endpoint. Upon receiving a response
-     * (success or error) a [SiteAction.FETCHED_DOMAIN_SUPPORTED_COUNTRIES] action is dispatched with a
-     * payload of type [DomainSupportedCountriesResponsePayload].
-     *
-     * [DomainSupportedCountriesResponsePayload.isError] can be used to check the request result.
-     */
-    fun fetchSupportedCountries() {
-        val url = WPCOMREST.domains.supported_countries.urlV1_1
-        val request = WPComGsonRequest.buildGetRequest<List<SupportedCountryResponse>>(url, null,
-                object : TypeToken<List<SupportedCountryResponse>>() {}.type,
-                { response, _ ->
-                    val payload = DomainSupportedCountriesResponsePayload(response)
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newFetchedDomainSupportedCountriesAction(payload)
-                    )
-                },
-                { error -> // Supported Countries API should always return a response for a valid,
-                    // authenticated user. Therefore, only GENERIC_ERROR is identified here.
-                    val domainSupportedCountriesError = DomainSupportedCountriesError(
-                            DomainSupportedCountriesErrorType.GENERIC_ERROR,
-                            error.message
-                    )
-                    val payload = DomainSupportedCountriesResponsePayload(domainSupportedCountriesError)
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newFetchedDomainSupportedCountriesAction(payload)
-                    )
-                })
-        add(request)
-    }
-
-    suspend fun fetchAllDomains(noWpCom: Boolean = true, resolveStatus: Boolean = true): Response<AllDomainsResponse> {
-        val url = WPCOMREST.all_domains.urlV1_1
-        val params = mapOf(
-            "no_wpcom" to noWpCom.toString(),
-            "resolve_status" to resolveStatus.toString()
-        )
-        return wpComGsonRequestBuilder.syncGetRequest(this, url, params, AllDomainsResponse::class.java)
-    }
     suspend fun fetchSiteDomains(site: SiteModel): Response<DomainsResponse> {
         val url = WPCOMREST.sites.site(site.siteId).domains.urlV1_1
         return wpComGsonRequestBuilder.syncGetRequest(this, url, mapOf(), DomainsResponse::class.java)
@@ -824,257 +496,32 @@ class SiteRestClient @Inject constructor(
         add(request)
     }
 
-    // Automated Transfers
-    fun checkAutomatedTransferEligibility(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).automated_transfers.eligibility.urlV1_1
-        val request = WPComGsonRequest
-                .buildGetRequest(url, null, AutomatedTransferEligibilityCheckResponse::class.java,
-                        { response, _ ->
-                            val strErrorCodes = mutableListOf<String>()
-                            if (response.errors != null) {
-                                for (eligibilityError in response.errors) {
-                                    strErrorCodes.add(eligibilityError.code)
-                                }
-                            }
-                            mDispatcher.dispatch(
-                                    SiteActionBuilder.newCheckedAutomatedTransferEligibilityAction(
-                                            AutomatedTransferEligibilityResponsePayload(
-                                                    site, response.isEligible,
-                                                    strErrorCodes
-                                            )
-                                    )
-                            )
-                        }
-                ) { networkError ->
-                    val payloadError = AutomatedTransferError(
-                            networkError.apiError, networkError.message
-                    )
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newCheckedAutomatedTransferEligibilityAction(
-                                    AutomatedTransferEligibilityResponsePayload(site, payloadError)
-                            )
-                    )
-                }
-        add(request)
-    }
-
-    fun initiateAutomatedTransfer(site: SiteModel, pluginSlugToInstall: String) {
-        val url = WPCOMREST.sites.site(site.siteId).automated_transfers.initiate.urlV1_1
-        val params = mutableMapOf<String, Any>()
-        params["plugin"] = pluginSlugToInstall
-        val request = WPComGsonRequest
-                .buildPostRequest(url, params, InitiateAutomatedTransferResponse::class.java,
-                        { response, _ ->
-                            val payload = InitiateAutomatedTransferResponsePayload(
-                                    site, pluginSlugToInstall,
-                                    response.success
-                            )
-                            mDispatcher.dispatch(SiteActionBuilder.newInitiatedAutomatedTransferAction(payload))
-                        }
-                ) { networkError ->
-                    val payload = InitiateAutomatedTransferResponsePayload(site, pluginSlugToInstall)
-                    payload.error = AutomatedTransferError(networkError.apiError, networkError.message)
-                    mDispatcher.dispatch(SiteActionBuilder.newInitiatedAutomatedTransferAction(payload))
-                }
-        add(request)
-    }
-
-    fun checkAutomatedTransferStatus(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).automated_transfers.status.urlV1_1
-        val request = WPComGsonRequest
-                .buildGetRequest(url, null, AutomatedTransferStatusResponse::class.java,
-                        { response, _ ->
-                            mDispatcher.dispatch(
-                                    SiteActionBuilder.newCheckedAutomatedTransferStatusAction(
-                                            AutomatedTransferStatusResponsePayload(
-                                                    site, response.status,
-                                                    response.currentStep, response.totalSteps
-                                            )
-                                    )
-                            )
-                        }
-                ) { networkError ->
-                    val error = AutomatedTransferError(
-                            networkError.apiError, networkError.message
-                    )
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newCheckedAutomatedTransferStatusAction(
-                                    AutomatedTransferStatusResponsePayload(site, error)
-                            )
-                    )
-                }
-        add(request)
-    }
-
-    fun completeQuickStart(site: SiteModel, variant: String) {
-        val url = WPCOMREST.sites.site(site.siteId).mobile_quick_start.urlV1_1
-        val params = mutableMapOf<String, Any>()
-        params["variant"] = variant
-        val request = WPComGsonRequest
-                .buildPostRequest(url, params, QuickStartCompletedResponse::class.java,
-                        { response, _ ->
-                            mDispatcher.dispatch(
-                                    SiteActionBuilder.newCompletedQuickStartAction(
-                                            QuickStartCompletedResponsePayload(site, response.success)
-                                    )
-                            )
-                        }
-                ) { networkError ->
-                    val error = QuickStartError(
-                            QuickStartErrorType.GENERIC_ERROR, networkError.message
-                    )
-                    val payload = QuickStartCompletedResponsePayload(site, false)
-                    payload.error = error
-                    mDispatcher.dispatch(SiteActionBuilder.newCompletedQuickStartAction(payload))
-                }
-        add(request)
-    }
-
-    fun fetchAccessCookie(site: SiteModel) {
-        val params = mutableMapOf<String, String>()
-        val url = WPCOMV2.sites.site(site.siteId).atomic_auth_proxy.read_access_cookies.url
-        val request = WPComGsonRequest.buildGetRequest(url, params,
-                PrivateAtomicCookieResponse::class.java,
-                { response, _ ->
-                    if (response != null) {
-                        mDispatcher.dispatch(
-                                SiteActionBuilder
-                                        .newFetchedPrivateAtomicCookieAction(
-                                                FetchedPrivateAtomicCookiePayload(site, response)
-                                        )
-                        )
-                    } else {
-                        AppLog.e(API, "Failed to fetch private atomic cookie for " + site.url)
-                        val payload = FetchedPrivateAtomicCookiePayload(
-                                site, null
-                        )
-                        payload.error = PrivateAtomicCookieError(
-                                AccessCookieErrorType.INVALID_RESPONSE, "Empty response"
-                        )
-                        mDispatcher.dispatch(SiteActionBuilder.newFetchedPrivateAtomicCookieAction(payload))
-                    }
-                }
-        ) { error ->
-            val cookieError = PrivateAtomicCookieError(
-                    AccessCookieErrorType.GENERIC_ERROR, error.message
-            )
-            val payload = FetchedPrivateAtomicCookiePayload(site, null)
-            payload.error = cookieError
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedPrivateAtomicCookieAction(payload))
-        }
-        add(request)
-    }
-
-    fun fetchJetpackCapabilities(remoteSiteId: Long) {
-        val params = mutableMapOf<String, String>()
-        val url = WPCOMV2.sites.site(remoteSiteId).rewind.capabilities.url
-        val request = WPComGsonRequest.buildGetRequest(url, params,
-                JetpackCapabilitiesResponse::class.java,
-                { response, _ ->
-                    if (response?.capabilities != null) {
-                        val payload = responseToJetpackCapabilitiesPayload(remoteSiteId, response)
-                        mDispatcher.dispatch(SiteActionBuilder.newFetchedJetpackCapabilitiesAction(payload))
-                    } else {
-                        AppLog.e(API, "Failed to fetch jetpack capabilities for site with id: $remoteSiteId")
-                        val error = JetpackCapabilitiesError(
-                                JetpackCapabilitiesErrorType.GENERIC_ERROR,
-                                "Empty response"
-                        )
-                        val payload = FetchedJetpackCapabilitiesPayload(remoteSiteId, error)
-                        mDispatcher.dispatch(SiteActionBuilder.newFetchedJetpackCapabilitiesAction(payload))
-                    }
-                }
-        ) { error ->
-            val jetpackError = JetpackCapabilitiesError(JetpackCapabilitiesErrorType.GENERIC_ERROR, error.message)
-            val payload = FetchedJetpackCapabilitiesPayload(remoteSiteId, jetpackError)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedJetpackCapabilitiesAction(payload))
-        }
-        add(request)
-    }
-
     @Suppress("LongMethod", "ComplexMethod")
     private fun siteResponseToSiteModel(from: SiteWPComRestResponse): SiteModel {
         val site = SiteModel()
         site.siteId = from.ID
         site.url = from.URL
         site.name = StringEscapeUtils.unescapeHtml4(from.name)
-        site.description = StringEscapeUtils.unescapeHtml4(from.description)
         site.setIsJetpackConnected(from.jetpack && from.jetpack_connection)
         site.setIsJetpackInstalled(from.jetpack)
         site.setIsJetpackCPConnected(from.jetpack_connection && !from.jetpack)
-        site.setIsVisible(from.visible)
         site.setIsPrivate(from.is_private)
-        site.setIsComingSoon(from.is_coming_soon)
-        site.organizationId = from.organization_id
         // Depending of user's role, options could be "hidden", for instance an "Author" can't read site options.
         if (from.options != null) {
-            site.setIsFeaturedImageSupported(from.options.featured_images_enabled)
-            site.setIsVideoPressSupported(from.options.videopress_enabled)
-            site.setIsAutomatedTransfer(from.options.is_automated_transfer)
             site.setIsWpComStore(from.options.is_wpcom_store)
             site.publishedStatus = from.options.blog_public
             site.hasWooCommerce = from.options.woocommerce_is_active
             site.adminUrl = from.options.admin_url
             site.loginUrl = from.options.login_url
             site.timezone = from.options.gmt_offset
-            site.frameNonce = from.options.frame_nonce
-            site.unmappedUrl = from.options.unmapped_url
             site.jetpackVersion = from.options.jetpack_version
-            site.softwareVersion = from.options.software_version
             site.setIsWPComAtomic(from.options.is_wpcom_atomic)
-            site.setIsWpForTeamsSite(from.options.is_wpforteams_site)
-            site.showOnFront = from.options.show_on_front
-            site.pageOnFront = from.options.page_on_front
-            site.pageForPosts = from.options.page_for_posts
             site.canBlaze = from.options.can_blaze
-            site.setIsPublicizePermanentlyDisabled(from.options.publicize_permanently_disabled)
-            if (from.options.active_modules != null) {
-                site.activeModules = from.options.active_modules.joinToString(",")
-            }
             from.options.jetpack_connection_active_plugins?.let {
                 site.activeJetpackConnectionPlugins = it.joinToString(",")
             }
             from.jetpack_modules?.let {
                 site.jetpackModules = it.joinToString(",")
-            }
-            try {
-                site.maxUploadSize = java.lang.Long.valueOf(from.options.max_upload_size)
-            } catch (e: NumberFormatException) {
-                // Do nothing - the value probably wasn't set ('false'), but we don't want to overwrite any existing
-                // value we stored earlier, as /me/sites/ and /sites/$site/ can return different responses for this
-            }
-
-            // Set the memory limit for media uploads on the site. Normally, this is just WP_MAX_MEMORY_LIMIT,
-            // but it's possible for a site to have its php memory_limit > WP_MAX_MEMORY_LIMIT, and have
-            // WP_MEMORY_LIMIT == memory_limit, in which WP_MEMORY_LIMIT reflects the real limit for media uploads.
-            val wpMemoryLimit = StringUtils.stringToLong(from.options.wp_memory_limit)
-            val wpMaxMemoryLimit = StringUtils.stringToLong(from.options.wp_max_memory_limit)
-            if (wpMemoryLimit > 0 || wpMaxMemoryLimit > 0) {
-                // Only update the value if we received one from the server - otherwise, the original value was
-                // probably not set ('false'), but we don't want to overwrite any existing value we stored earlier,
-                // as /me/sites/ and /sites/$site/ can return different responses for this
-                site.memoryLimit = max(wpMemoryLimit, wpMaxMemoryLimit)
-            }
-
-            val bloggingPromptsSettings = from.options.blogging_prompts_settings
-
-            bloggingPromptsSettings?.let {
-                site.setIsBloggingPromptsOptedIn(it.prompts_reminders_opted_in)
-                site.setIsBloggingPromptsCardOptedIn(it.prompts_card_opted_in)
-                site.setIsPotentialBloggingSite(it.is_potential_blogging_site)
-                site.setIsBloggingReminderOnMonday(it.reminders_days["monday"] ?: false)
-                site.setIsBloggingReminderOnTuesday(it.reminders_days["tuesday"] ?: false)
-                site.setIsBloggingReminderOnWednesday(it.reminders_days["wednesday"] ?: false)
-                site.setIsBloggingReminderOnThursday(it.reminders_days["thursday"] ?: false)
-                site.setIsBloggingReminderOnFriday(it.reminders_days["friday"] ?: false)
-                site.setIsBloggingReminderOnSaturday(it.reminders_days["saturday"] ?: false)
-                site.setIsBloggingReminderOnSunday(it.reminders_days["sunday"] ?: false)
-                try {
-                    site.bloggingReminderHour = it.reminders_time.split(".")[0].toInt()
-                    site.bloggingReminderMinute = it.reminders_time.split(".")[1].toInt()
-                } catch (ex: NumberFormatException) {
-                    AppLog.e(API, "Received malformed blogging reminder time: " + ex.message)
-                }
             }
         }
         if (from.plan != null) {
@@ -1088,46 +535,14 @@ class SiteRestClient @Inject constructor(
             }
             site.planShortName = from.plan.product_name_short
             site.planProductSlug = from.plan.product_slug
-            site.hasFreePlan = from.plan.is_free
         }
         if (from.capabilities != null) {
-            site.hasCapabilityEditPages = from.capabilities.edit_pages
-            site.hasCapabilityEditPosts = from.capabilities.edit_posts
-            site.hasCapabilityEditOthersPosts = from.capabilities.edit_others_posts
-            site.hasCapabilityEditOthersPages = from.capabilities.edit_others_pages
-            site.hasCapabilityDeletePosts = from.capabilities.delete_posts
-            site.hasCapabilityDeleteOthersPosts = from.capabilities.delete_others_posts
-            site.hasCapabilityEditThemeOptions = from.capabilities.edit_theme_options
-            site.hasCapabilityEditUsers = from.capabilities.edit_users
-            site.hasCapabilityListUsers = from.capabilities.list_users
-            site.hasCapabilityManageCategories = from.capabilities.manage_categories
             site.hasCapabilityManageOptions = from.capabilities.manage_options
-            site.hasCapabilityActivateWordads = from.capabilities.activate_wordads
-            site.hasCapabilityPromoteUsers = from.capabilities.promote_users
-            site.hasCapabilityPublishPosts = from.capabilities.publish_posts
-            site.hasCapabilityUploadFiles = from.capabilities.upload_files
-            site.hasCapabilityDeleteUser = from.capabilities.delete_user
-            site.hasCapabilityRemoveUsers = from.capabilities.remove_users
-            site.hasCapabilityViewStats = from.capabilities.view_stats
-        }
-        if (from.quota != null) {
-            site.spaceAvailable = from.quota.space_available
-            site.spaceAllowed = from.quota.space_allowed
-            site.spaceUsed = from.quota.space_used
-            site.spacePercentUsed = from.quota.percent_used
-        }
-        if (from.icon != null) {
-            site.iconUrl = from.icon.img
         }
         if (from.meta != null) {
             if (from.meta.links != null) {
                 site.xmlRpcUrl = from.meta.links.xmlrpc
             }
-        }
-        if (from.zendesk_site_meta != null) {
-            site.zendeskPlan = from.zendesk_site_meta.plan
-            site.zendeskAddOns = from.zendesk_site_meta.addon
-                    ?.let { TextUtils.join(",", from.zendesk_site_meta.addon) } ?: ""
         }
         // Only set the isWPCom flag for "pure" WPCom sites
         if (!from.jetpack_connection) {
@@ -1135,8 +550,6 @@ class SiteRestClient @Inject constructor(
         }
         site.origin = SiteModel.ORIGIN_WPCOM_REST
         site.planActiveFeatures = (from.plan?.features?.active?.joinToString(",")).orEmpty()
-        site.wasEcommerceTrial = from.was_ecommerce_trial
-        site.setIsSingleUserSite(from.single_user_site)
 
         site.setIsGardenSite(from.is_garden)
         site.gardenName = from.garden_name
@@ -1150,55 +563,11 @@ class SiteRestClient @Inject constructor(
         return site
     }
 
-    @Suppress("SwallowedException")
-    private fun volleyErrorToAccountResponsePayload(
-        error: VolleyError,
-        dryRun: Boolean = false
-    ): NewSiteResponsePayload {
-        val payload = NewSiteResponsePayload(dryRun = dryRun)
-        payload.error = NewSiteError(NewSiteErrorType.GENERIC_ERROR, "")
-        if (error.networkResponse != null && error.networkResponse.data != null) {
-            val jsonString = String(error.networkResponse.data)
-            try {
-                val errorObj = JSONObject(jsonString)
-                payload.error = NewSiteError(
-                        NewSiteErrorType.fromString((errorObj["error"] as String)),
-                        (errorObj["message"] as String)
-                )
-            } catch (e: JSONException) {
-                // Do nothing (keep default error)
-            }
-        }
-        return payload
-    }
-
-    private fun responseToDomainAvailabilityPayload(
-        response: DomainAvailabilityResponse
-    ): DomainAvailabilityResponsePayload {
-        val status = DomainAvailabilityStatus.fromString(response.status!!)
-        val mappable = DomainMappabilityStatus.fromString(response.mappable!!)
-        val supportsPrivacy = response.supports_privacy
-        return DomainAvailabilityResponsePayload(status, mappable, supportsPrivacy)
-    }
-
-    private fun responseToJetpackCapabilitiesPayload(
-        remoteSiteId: Long,
-        response: JetpackCapabilitiesResponse
-    ): FetchedJetpackCapabilitiesPayload {
-        val capabilities = mutableListOf<JetpackCapability>()
-        for (item in response.capabilities ?: listOf()) {
-            capabilities.add(JetpackCapability.fromString(item))
-        }
-        return FetchedJetpackCapabilitiesPayload(remoteSiteId, capabilities)
-    }
-
     companion object {
-        private const val NEW_SITE_TIMEOUT_MS = 90000
         @VisibleForTesting
-        const val SITE_FIELDS = "ID,URL,name,description,jetpack,jetpack_connection,visible,is_private," +
-            "options,plan,capabilities,quota,icon,meta,zendesk_site_meta,organization_id," +
-            "was_ecommerce_trial,single_user_site,jetpack_modules,is_garden,garden_name,garden_partner"
-        private const val ROOT_ENDPOINT_FIELDS = "name,description,gmt_offset,namespaces,authentication"
+        const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
+            "options,plan,capabilities,meta,jetpack_modules,is_garden,garden_name,garden_partner"
+        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"

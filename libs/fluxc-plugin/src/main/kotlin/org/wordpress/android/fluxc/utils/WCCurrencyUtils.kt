@@ -3,10 +3,13 @@ package org.wordpress.android.fluxc.utils
 import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
+import java.math.BigDecimal
+import java.math.RoundingMode.HALF_UP
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Currency
 import java.util.Locale
+import kotlin.math.pow
 
 object WCCurrencyUtils {
     /**
@@ -52,6 +55,17 @@ object WCCurrencyUtils {
         }
 
         return decimalFormat.format(rawValue)
+    }
+
+    fun cleanFullFormattedCurrencyInput(text: CharSequence?, decimals: Int): BigDecimal? {
+        val nonNumericPattern = Regex("[^0-9\\-]")
+        var cleanValue = text.toString().replace(nonNumericPattern, "").toBigDecimalOrNull() ?: return null
+
+        if (decimals > 0) {
+            cleanValue = cleanValue.divide(BigDecimal(10f.pow(decimals).toInt()), decimals, HALF_UP)
+        }
+
+        return cleanValue
     }
 
     /**

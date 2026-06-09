@@ -128,3 +128,4 @@ google-upload-credentials.json
 **/.codex/**/*.local.*
 
 .grepai/
+docs/superpowers

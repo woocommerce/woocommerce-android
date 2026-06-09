@@ -11,7 +11,9 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.notifications.ActiveNotificationData
 import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
@@ -85,38 +87,47 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val notification = notificationModel.toAppModel(resourceProvider)
-        val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
-        val isRegisteredForWooPush =
-            registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY ||
-                registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
-        val pushUserId = messageData[PUSH_ARG_USER]
+        if (notificationModel.type == NotificationModel.Kind.UNKNOWN) {
+            wooLog.d(NOTIFICATIONS, "Discarding push notification with unknown type")
+            return
+        }
 
-        // We need to filter out duplicate notifications from the WPCOM system
-        if (!isWooSiteVisible(notification.remoteSiteId)) {
+        val notification = notificationModel.toAppModel(resourceProvider)
+        val notificationSource = messageData.detectNotificationSource(notification.remoteNoteId)
+        val pushUserId = messageData[PUSH_ARG_USER]
+        val hasWpComAccessToken = accountStore.hasAccessToken()
+
+        if (hasWpComAccessToken && !isWooSiteVisible(notification.remoteSiteId)) {
             wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
             return
         }
-        if (isRegisteredForWooPush) {
-            if (notification.remoteNoteId > 0L) {
+
+        if (notificationSource == NotificationSource.WPCOM) {
+            if (!hasWpComAccessToken) {
+                wooLog.e(NOTIFICATIONS, "User is not logged in!")
+                return
+            }
+
+            if (notification.remoteNoteId == 0L) {
+                wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
+                return
+            }
+
+            // At this point, pushUserId is always set server side, but better to double check it here.
+            if (accountStore.account.userId.toString() != pushUserId) {
+                wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+                return
+            }
+
+            val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
+            if (registrationStatusResult.isWooRegistered) {
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
-        } else if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        } else if (notification.remoteNoteId == 0L) {
-            // At this point 'note_id' is always available in the notification bundle.
-            wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
-            return
-        } else if (accountStore.account.userId.toString() != pushUserId) {
-            // At this point, pushUserId is always set server side, but better to double check it here.
-            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-            return
         }
 
         dispatchBackgroundEvents(notificationModel)
-        handleWooNotification(notification)
+        handleWooNotification(notification, notificationSource)
     }
 
     private fun isWooSiteVisible(siteId: Long): Boolean = runBlocking {
@@ -145,15 +156,17 @@ class NotificationMessageHandler @Inject constructor(
         }
     }
 
-    private fun handleWooNotification(notification: Notification) {
+    private fun handleWooNotification(notification: Notification, source: NotificationSource) {
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId)
+        val analyticsId = notification.buildAnalyticsId(source)
         with(notificationBuilder) {
             if (isNotificationsEnabled()) {
                 analyticsTracker.trackNotificationAnalytics(
                     stat = PUSH_NOTIFICATION_RECEIVED,
                     siteId = notification.remoteSiteId,
-                    remoteNoteId = notification.remoteNoteId,
-                    noteTypeTrackingValue = notification.noteType.trackingValue
+                    notificationId = analyticsId,
+                    noteTypeTrackingValue = notification.noteType.trackingValue,
+                    source = source
                 )
                 analyticsTracker.flush()
             }
@@ -164,6 +177,8 @@ class NotificationMessageHandler @Inject constructor(
             buildAndDisplayWooNotification(
                 pushId = localPushId,
                 notification = notification,
+                source = source,
+                analyticsId = analyticsId,
                 isGroupNotification = isGroupNotification
             )
 
@@ -178,7 +193,9 @@ class NotificationMessageHandler @Inject constructor(
                 buildAndDisplayWooGroupNotification(
                     inboxMessage = message,
                     subject = subject,
-                    notification = notification
+                    notification = notification,
+                    source = source,
+                    analyticsId = analyticsId
                 )
             }
         }
@@ -212,19 +229,11 @@ class NotificationMessageHandler @Inject constructor(
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
      */
-    fun markNotificationTapped(remoteNoteId: Long) {
+    fun markNotificationTapped(localPushId: Int) {
         with(notificationBuilder) {
             getActiveNotifications()
-                .firstOrNull { it.remoteNoteId == remoteNoteId }
-                ?.let {
-                    analyticsTracker.trackNotificationAnalytics(
-                        stat = PUSH_NOTIFICATION_TAPPED,
-                        siteId = it.remoteSiteId,
-                        remoteNoteId = it.remoteNoteId,
-                        noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
-                    )
-                    analyticsTracker.flush()
-                }
+                .firstOrNull { it.id == localPushId }
+                ?.let { it.trackTapped() }
         }
     }
 
@@ -234,15 +243,7 @@ class NotificationMessageHandler @Inject constructor(
     fun markNotificationsOfTypeTapped(type: NotificationChannelType) {
         notificationBuilder.getActiveNotifications()
             .filter { it.channelType == type.name && !it.isGroupSummary }
-            .forEach {
-                analyticsTracker.trackNotificationAnalytics(
-                    stat = PUSH_NOTIFICATION_TAPPED,
-                    siteId = it.remoteSiteId,
-                    remoteNoteId = it.remoteNoteId,
-                    noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
-                )
-                analyticsTracker.flush()
-            }
+            .forEach { it.trackTapped() }
     }
 
     fun removeAllNotificationsFromSystemsBar() {
@@ -264,11 +265,68 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Synchronized
+    fun removeTappedNotificationAndSummaryIfNeeded(localPushId: Int, notification: Notification) {
+        with(notificationBuilder) {
+            cancelNotification(localPushId)
+
+            val hasRemainingChildrenInGroup = getActiveNotifications().any {
+                !it.isGroupSummary &&
+                    it.id != localPushId &&
+                    it.channelType == notification.channelType.name &&
+                    it.remoteSiteId == notification.remoteSiteId
+            }
+
+            if (!hasRemainingChildrenInGroup) {
+                cancelNotification(notification.getGroupPushId())
+            }
+        }
+    }
+
+    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         with(notificationBuilder) {
             getActiveNotifications()
                 .filter { it.channelType == type.name && it.remoteSiteId == remoteSiteId }
                 .forEach { cancelNotification(it.id) }
+        }
+    }
+
+    private fun Map<String, String>.detectNotificationSource(remoteNoteId: Long): NotificationSource =
+        when {
+            this[PUSH_ARG_USER] != null || remoteNoteId != 0L -> NotificationSource.WPCOM
+            else -> NotificationSource.WOO_DRIVEN
+        }
+
+    private fun ActiveNotificationData.trackTapped() {
+        analyticsTracker.trackNotificationAnalytics(
+            stat = PUSH_NOTIFICATION_TAPPED,
+            siteId = remoteSiteId,
+            notificationId = analyticsId,
+            noteTypeTrackingValue = noteTypeTrackingValue.orEmpty(),
+            source = source
+        )
+        analyticsTracker.flush()
+    }
+
+    private fun Notification.buildAnalyticsId(source: NotificationSource): String? = when (source) {
+        NotificationSource.WPCOM -> remoteNoteId.takeIf { it != 0L }?.toString()
+        NotificationSource.WOO_DRIVEN -> buildWooDrivenAnalyticsId()
+    }
+
+    /**
+     * Builds the stable `<siteId>:<type>:<entity-id>` analytics id for a Woo-driven notification,
+     * or `null` when the type has no segment (Blaze, local reminder) or the entity id is zero.
+     */
+    private fun Notification.buildWooDrivenAnalyticsId(): String? {
+        val wooTypeSegment = when (noteType) {
+            is WooNotificationType.NewOrder -> NotificationModel.Kind.STORE_ORDER.name
+            is WooNotificationType.ProductReview -> NotificationModel.Kind.COMMENT.name
+            is WooNotificationType.Stock -> NotificationModel.Kind.STORE_STOCK.name
+            else -> null
+        }
+        return when {
+            wooTypeSegment == null || uniqueId == 0L -> null
+            else -> "$remoteSiteId:$wooTypeSegment:$uniqueId"
         }
     }
 }

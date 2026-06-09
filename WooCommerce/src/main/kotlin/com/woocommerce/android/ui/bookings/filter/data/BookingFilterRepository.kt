@@ -89,7 +89,7 @@ class BookingFilterRepository @Inject constructor(
             val customerNameKey = customerNameKey(siteId)
             val customer = bookingFilters.customer
             if (customer != null) {
-                prefs[customerIdKey] = customer.customerId
+                prefs[customerIdKey] = customer.userId
                 prefs[customerNameKey] = customer.customerName
             } else {
                 // Clear if not provided
@@ -161,7 +161,7 @@ class BookingFilterRepository @Inject constructor(
         val customerId = this[customerIdKey(siteId)]
         val customerName = this[customerNameKey(siteId)]
         return if (customerId != null && customerName != null) {
-            BookingsFilterOption.Customer(customerId = customerId, customerName = customerName)
+            BookingsFilterOption.Customer(userId = customerId, customerName = customerName)
         } else {
             null
         }

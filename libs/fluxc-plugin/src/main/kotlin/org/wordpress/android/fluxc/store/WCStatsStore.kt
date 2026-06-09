@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.WCVisitorStatsSummary
+import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -87,6 +88,17 @@ class WCStatsStore @Inject internal constructor(
         val endDate: String,
         val forced: Boolean = false,
         val revenueRangeId: String,
+        val orderDateType: WCAnalyticsOrderDateType? = null,
+        val currency: String? = null,
+    ) : Payload<BaseNetworkError>()
+
+    class FetchOrdersStatsPayload(
+        val site: SiteModel,
+        val granularity: StatsGranularity,
+        val startDate: String,
+        val endDate: String,
+        val forced: Boolean = false,
+        val orderStatsRangeId: String,
     ) : Payload<BaseNetworkError>()
 
     class FetchRevenueStatsResponsePayload(
@@ -409,7 +421,40 @@ class WCStatsStore @Inject internal constructor(
                 endDate = endDate,
                 perPage = ORDER_REVENUE_QUANTITY,
                 forceRefresh = payload.forced,
-                revenueRangeId = payload.revenueRangeId
+                revenueRangeId = payload.revenueRangeId,
+                currency = payload.currency,
+                orderDateType = payload.orderDateType,
+            )
+
+            with(result) {
+                return@withDefaultContext if (isError || stats == null) {
+                    OnWCRevenueStatsChanged(granularity)
+                        .also { it.error = error }
+                } else {
+                    revenueStatsDao.insert(stats)
+                    OnWCRevenueStatsChanged(
+                        granularity,
+                        stats.startDate,
+                        stats.endDate,
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun fetchOrdersStats(payload: FetchOrdersStatsPayload): OnWCRevenueStatsChanged {
+        val startDate = payload.startDate
+        val endDate = payload.endDate
+
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchOrdersStats") {
+            val result = wcOrderStatsClient.fetchOrdersStats(
+                site = payload.site,
+                granularity = payload.granularity,
+                startDate = startDate,
+                endDate = endDate,
+                perPage = ORDER_REVENUE_QUANTITY,
+                forceRefresh = payload.forced,
+                orderStatsRangeId = payload.orderStatsRangeId,
             )
 
             with(result) {

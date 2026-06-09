@@ -40,13 +40,13 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
 
     private val buildProductPreviewProperties: BuildProductPreviewProperties = mock()
     private val generateProductWithAI: GenerateProductWithAI = mock {
-        onBlocking { invoke(any()) } doSuspendableAnswer {
+        on { invoke(any()) } doSuspendableAnswer {
             delay(100)
             Result.success(SAMPLE_PRODUCT)
         }
     }
     private val saveAiGeneratedProduct: SaveAiGeneratedProduct = mock {
-        onBlocking { invoke(any(), anyOrNull()) } doSuspendableAnswer {
+        on { invoke(any(), anyOrNull()) } doSuspendableAnswer {
             delay(100)
             AiProductSaveResult.Success(1L)
         }

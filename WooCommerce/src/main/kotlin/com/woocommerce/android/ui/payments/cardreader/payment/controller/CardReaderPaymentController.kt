@@ -29,7 +29,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalI
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.TRY_ANOTHER_READ_METHOD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
@@ -55,6 +54,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentE
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
+import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentIntentConfig
+import com.woocommerce.android.ui.payments.cardreader.payment.TerminalPaymentPreparationResolver
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderInteracRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment
@@ -69,8 +70,10 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CompletionHandlerException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -85,7 +88,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.reflect.KMutableProperty0
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
-private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
 @Suppress("LongParameterList", "LargeClass")
 class CardReaderPaymentController(
@@ -114,6 +116,7 @@ class CardReaderPaymentController(
     private val allowCancelledStatus: Boolean = false,
 ) {
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     private val _paymentState: MutableStateFlow<CardReaderPaymentOrRefundState> =
         MutableStateFlow(CardReaderPaymentState.LoadingData(::onCancelPaymentFlow))
@@ -292,8 +295,18 @@ class CardReaderPaymentController(
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
                 countryCode = countryCode,
-                feeAmount = calculateFeeInCents(countryCode),
-                channel = determinePaymentChannel(paymentOrRefund)
+                feeAmount = TerminalPaymentIntentConfig.calculateApplicationFeeInCents(
+                    countryCode = countryCode,
+                    orderTotal = order.total,
+                    currencyCode = order.currency,
+                ),
+                channel = determinePaymentChannel(paymentOrRefund),
+                cardPresentCaptureMethod = TerminalPaymentIntentConfig.cardPresentCaptureMethod(countryCode),
+                terminalPaymentPreparation = terminalPaymentPreparationResolver.resolve(
+                    countryCode = countryCode,
+                    site = site,
+                    onRouteCheckFailed = ::logTerminalPaymentPreparationRouteCheckFailed,
+                ),
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(
@@ -317,14 +330,6 @@ class CardReaderPaymentController(
             InitializingPayment -> {
                 _paymentState.value =
                     CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
-            }
-
-            CollectingPayment -> {
-                _paymentState.value = paymentStateProvider.provideCollectingPaymentState(
-                    cardReaderType,
-                    amountLabel,
-                    ::onCancelPaymentFlow
-                )
             }
 
             ProcessingPayment -> {
@@ -640,16 +645,17 @@ class CardReaderPaymentController(
         when (val state = _paymentState.value) {
             is CardReaderInteracRefundState.CollectingInteracRefund -> {
                 _paymentState.value = state.copy(
-                    cardReaderHint = cardReaderHint.toHintLabel(true)
+                    cardReaderHint = cardReaderHint.toHintLabel(true),
+                    isDismissBlocked = cardReaderHint == REMOVE_CARD,
                 )
             }
 
-            is CardReaderPaymentState.CollectingPayment.BuiltInReaderCollectPaymentState ->
+            is CardReaderPaymentState.ProcessingPayment.BuiltInReaderProcessingPayment ->
                 _paymentState.value = state.copy(
                     cardReaderHint = cardReaderHint.toHintLabel(false)
                 )
 
-            is CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState ->
+            is CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment ->
                 _paymentState.value = state.copy(
                     cardReaderHint = cardReaderHint.toHintLabel(false)
                 )
@@ -784,11 +790,23 @@ class CardReaderPaymentController(
         }
     }
 
+    @OptIn(InternalCoroutinesApi::class)
     fun stop() {
-        paymentDataForRetry?.let {
-            cardReaderManager.cancelPayment(it)
+        try {
+            paymentDataForRetry?.let {
+                cardReaderManager.cancelPayment(it)
+            }
+        } catch (e: IllegalStateException) {
+            WooLog.e(WooLog.T.CARD_READER, "Failed to cancel card reader payment", e)
+        } finally {
+            try {
+                // Stripe Terminal can throw from a coroutine cancellation handler while it is waiting for
+                // a network response; coroutines wrap that in CompletionHandlerException.
+                scope.cancel()
+            } catch (e: CompletionHandlerException) {
+                WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
+            }
         }
-        scope.cancel()
     }
 
     fun onBackPressed() {
@@ -861,12 +879,12 @@ class CardReaderPaymentController(
         }
     }
 
-    private fun calculateFeeInCents(countryCode: String) =
-        if (countryCode == "CA") {
-            CANADA_FEE_FLAT_IN_CENTS
-        } else {
-            null
-        }
+    private fun logTerminalPaymentPreparationRouteCheckFailed() {
+        WooLog.i(
+            WooLog.T.CARD_READER,
+            "Skipping terminal payment preparation because the WCPay endpoint could not be verified."
+        )
+    }
 
     private fun determinePaymentChannel(flow: CardReaderFlowParam.PaymentOrRefund): PaymentInfo.PaymentChannel? =
         when (flow) {

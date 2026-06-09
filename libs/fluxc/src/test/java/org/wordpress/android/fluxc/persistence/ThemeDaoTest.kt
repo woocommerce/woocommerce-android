@@ -1,37 +1,28 @@
 package org.wordpress.android.fluxc.persistence
 
-import androidx.room.Room
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
 import org.wordpress.android.fluxc.utils.createTestTheme
-import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
 class ThemeDaoTest {
+    @Rule
+    @JvmField
+    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
+
     private lateinit var dao: ThemeDao
-    private lateinit var db: WPAndroidDatabase
 
     @Before
-    fun createDb() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        db = Room.inMemoryDatabaseBuilder(
-            context, WPAndroidDatabase::class.java
-        ).allowMainThreadQueries().build()
-        dao = db.themeDao()
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
+    fun setUp() {
+        dao = wpDatabaseRule.db.themeDao()
     }
 
     @Test

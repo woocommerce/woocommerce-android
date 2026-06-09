@@ -1,5 +1,6 @@
 package com.woocommerce.android.support.requests
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -24,6 +26,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.ui.aisupportchat.AiSupportChatTicketAnalyticsContext
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,6 +46,23 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private val extraTags by lazy {
         intent.extras?.getStringArrayList(EXTRA_TAGS_KEY) ?: emptyList()
+    }
+
+    private val diagnosticLog by lazy {
+        intent.extras?.getString(DIAGNOSTIC_LOG_KEY)
+    }
+
+    private val prefill by lazy {
+        SupportRequestFormViewModel.Prefill(
+            ticketType = intent.extras?.parcelable(PREFILL_TICKET_TYPE_KEY),
+            subject = intent.extras?.getString(PREFILL_SUBJECT_KEY).orEmpty(),
+            siteAddress = intent.extras?.getString(PREFILL_SITE_ADDRESS_KEY).orEmpty(),
+            message = intent.extras?.getString(PREFILL_MESSAGE_KEY).orEmpty()
+        )
+    }
+
+    private val aiSupportChatTicketAnalyticsContext by lazy {
+        intent.extras?.parcelable<AiSupportChatTicketAnalyticsContext>(AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY)
     }
 
     private var progressDialog: CustomProgressDialog? = null
@@ -72,6 +92,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             setupActionBar()
             observeViewEvents(this)
             observeViewModelEvents(this)
+            if (savedInstanceState == null) {
+                applyPrefill(this)
+            }
         }
         viewModel.onViewCreated()
 
@@ -127,7 +150,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             viewModel.submitSupportRequest(
                 context = this,
                 helpOrigin = helpOrigin,
-                extraTags = extraTags
+                extraTags = extraTags,
+                diagnosticLog = diagnosticLog,
+                aiSupportChatTicketAnalyticsContext = aiSupportChatTicketAnalyticsContext
             )
         }
     }
@@ -157,6 +182,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun showRequestCreationSuccessDialog() {
+        setResult(Activity.RESULT_OK)
         WooDialog.showDialog(
             activity = this,
             titleId = R.string.support_request_success_title,
@@ -197,25 +223,62 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 context = this,
                 helpOrigin = helpOrigin,
                 extraTags = extraTags,
+                diagnosticLog = diagnosticLog,
                 selectedEmail = email,
-                selectedName = name
+                selectedName = name,
+                aiSupportChatTicketAnalyticsContext = aiSupportChatTicketAnalyticsContext
             )
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
+    private fun applyPrefill(binding: ActivitySupportRequestFormBinding) {
+        viewModel.onPrefillReceived(prefill)
+
+        binding.requestSubject.setTextIfDifferent(prefill.subject)
+        binding.requestSiteAddress.setTextIfDifferent(prefill.siteAddress)
+        binding.requestMessage.setText(prefill.message)
+        when (prefill.ticketType) {
+            TicketType.MobileApp -> binding.helpOptionsGroup.check(binding.mobileAppOption.id)
+            TicketType.InPersonPayments -> binding.helpOptionsGroup.check(binding.ippOption.id)
+            TicketType.Payments -> binding.helpOptionsGroup.check(binding.paymentsOption.id)
+            TicketType.WooPlugin -> binding.helpOptionsGroup.check(binding.wooPluginOption.id)
+            TicketType.OtherPlugins -> binding.helpOptionsGroup.check(binding.otherOption.id)
+            null -> Unit
+        }
+    }
+
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+        private const val DIAGNOSTIC_LOG_KEY = "DIAGNOSTIC_LOG_KEY"
+        private const val PREFILL_TICKET_TYPE_KEY = "PREFILL_TICKET_TYPE_KEY"
+        private const val PREFILL_SUBJECT_KEY = "PREFILL_SUBJECT_KEY"
+        private const val PREFILL_SITE_ADDRESS_KEY = "PREFILL_SITE_ADDRESS_KEY"
+        private const val PREFILL_MESSAGE_KEY = "PREFILL_MESSAGE_KEY"
+        private const val AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY = "AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY"
 
         @JvmStatic
+        @Suppress("LongParameterList")
         fun createIntent(
             context: Context,
             origin: HelpOrigin,
-            extraTags: java.util.ArrayList<String>
+            extraTags: java.util.ArrayList<String>,
+            diagnosticLog: String? = null,
+            preselectedTicketType: TicketType? = null,
+            prefilledSubject: String? = null,
+            prefilledSiteAddress: String? = null,
+            prefilledMessage: String? = null,
+            aiSupportChatTicketAnalyticsContext: AiSupportChatTicketAnalyticsContext? = null
         ) = Intent(context, SupportRequestFormActivity::class.java).apply {
             putExtra(ORIGIN_KEY, origin)
             putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
+            diagnosticLog?.let { putExtra(DIAGNOSTIC_LOG_KEY, it) }
+            preselectedTicketType?.let { putExtra(PREFILL_TICKET_TYPE_KEY, it) }
+            prefilledSubject?.let { putExtra(PREFILL_SUBJECT_KEY, it) }
+            prefilledSiteAddress?.let { putExtra(PREFILL_SITE_ADDRESS_KEY, it) }
+            prefilledMessage?.let { putExtra(PREFILL_MESSAGE_KEY, it) }
+            aiSupportChatTicketAnalyticsContext?.let { putExtra(AI_SUPPORT_CHAT_ANALYTICS_CONTEXT_KEY, it) }
         }
     }
 }

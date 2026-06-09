@@ -1,6 +1,7 @@
 /orders/
 /orders/<id>/
 /orders/<id>/notes/
+/orders/<id>/fulfillments/
 /orders/<id>/shipment-trackings/
 /orders/<id>/shipment-trackings/<tracking>#String/
 /orders/<id>/shipment-trackings/providers/
@@ -10,6 +11,7 @@
 /orders/batch
 
 /products/<id>/
+/products/<id>/availability/
 /products/<id>/variations/
 /products/<id>/variations/<variation_id>
 /products/<id>/variations/batch
@@ -46,6 +48,7 @@
 /reports/customers
 
 /reports/orders/totals/
+/reports/orders/stats/
 /reports/products/totals/
 /reports/revenue/stats/
 
@@ -69,6 +72,7 @@
 
 /payments/connection_tokens
 /payments/orders/<id>/capture_terminal_payment
+/payments/orders/<id>/prepare_terminal_payment
 /payments/accounts
 /payments/charges/<charge_id>#String/
 
@@ -141,3 +145,4 @@
 
 /push-tokens
 /push-tokens/<id>
+/preferences

@@ -14,12 +14,14 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -33,6 +35,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.O
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderUpdatePaymentDetails
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.SortOrder
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
+import org.wordpress.android.fluxc.persistence.dao.OrderFulfillmentDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
@@ -68,6 +71,7 @@ class WCOrderStore @Inject internal constructor(
     private val ordersDaoDecorator: OrdersDaoDecorator,
     private val orderNotesDao: OrderNotesDao,
     private val metaDataDao: MetaDataDao,
+    private val orderFulfillmentDao: OrderFulfillmentDao,
     private val orderShipmentProvidersDao: OrderShipmentProvidersDao,
     private val orderShipmentTrackingDao: OrderShipmentTrackingDao,
     private val orderStatusDao: OrderStatusDao,
@@ -209,6 +213,17 @@ class WCOrderStore @Inject internal constructor(
         var site: SiteModel,
         var orderId: Long,
         var trackings: List<WCOrderShipmentTrackingModel> = emptyList()
+    ) : Payload<OrderError>() {
+        constructor(error: OrderError, site: SiteModel, orderId: Long) :
+            this(site, orderId) {
+            this.error = error
+        }
+    }
+
+    class FetchOrderFulfillmentsResponsePayload(
+        var site: SiteModel,
+        var orderId: Long,
+        var fulfillments: List<WCOrderFulfillmentModel> = emptyList()
     ) : Payload<OrderError>() {
         constructor(error: OrderError, site: SiteModel, orderId: Long) :
             this(site, orderId) {
@@ -489,6 +504,9 @@ class WCOrderStore @Inject internal constructor(
     suspend fun getShipmentTrackingsForOrder(site: SiteModel, orderId: Long): List<WCOrderShipmentTrackingModel> =
         orderShipmentTrackingDao.getShipmentTrackings(site.localId(), RemoteId(orderId))
 
+    suspend fun getOrderFulfillmentsForOrder(site: SiteModel, orderId: Long): List<WCOrderFulfillmentModel> =
+        orderFulfillmentDao.getOrderFulfillments(site.localId(), RemoteId(orderId))
+
     suspend fun getShipmentTrackingByTrackingNumber(site: SiteModel, orderId: Long, trackingNumber: String) =
         orderShipmentTrackingDao.getShipmentTrackingByNumber(site.localId(), RemoteId(orderId), trackingNumber)
 
@@ -594,10 +612,27 @@ class WCOrderStore @Inject internal constructor(
         orderBy: OrderBy = OrderBy.DATE,
         sortOrder: SortOrder = SortOrder.DESCENDING,
         statusFilter: String? = null,
-        deleteOldData: Boolean = page == 1
+        searchQuery: String? = null,
+        customer: Long? = null,
+        include: List<Long>? = null,
+        after: String? = null,
+        before: String? = null,
+        deleteOldData: Boolean = page == 1 && statusFilter.isNullOrEmpty() && searchQuery.isNullOrEmpty(),
     ): WooResult<List<OrderEntity>> {
         return coroutineEngine.withDefaultContext(API, this, "fetchOrders") {
-            val result = wcOrderRestClient.fetchOrders(site, count, page, orderBy, sortOrder, statusFilter)
+            val result = wcOrderRestClient.fetchOrders(
+                site = site,
+                count = count,
+                page = page,
+                orderBy = orderBy,
+                sortOrder = sortOrder,
+                statusFilter = statusFilter,
+                searchQuery = searchQuery,
+                customer = customer,
+                include = include,
+                after = after,
+                before = before,
+            )
 
             return@withDefaultContext if (result.isError) {
                 WooResult(WooError(API_ERROR, SERVER_ERROR, result.error.message))
@@ -710,12 +745,14 @@ class WCOrderStore @Inject internal constructor(
         site: SiteModel,
         orderId: Long,
         email: String,
-        forceEmailUpdate: Boolean
+        forceEmailUpdate: Boolean,
+        templateId: String?
     ) = wcOrderRestClient.sendOrderPOSSpecificReceipt(
         site,
         orderId,
         email,
-        forceEmailUpdate
+        forceEmailUpdate,
+        templateId
     )
 
     suspend fun updateOrderBillingEmail(
@@ -811,6 +848,22 @@ class WCOrderStore @Inject internal constructor(
 
                 // Save new shipment trackings to the database
                 result.trackings.forEach { orderShipmentTrackingDao.upsertShipmentTracking(it) }
+                OnOrderChanged()
+            }
+        }
+    }
+
+    suspend fun fetchOrderFulfillments(orderId: Long, site: SiteModel): OnOrderChanged {
+        return coroutineEngine.withDefaultContext(API, this, "fetchOrderFulfillments") {
+            val result = wcOrderRestClient.fetchOrderFulfillments(site, orderId)
+            return@withDefaultContext if (result.isError) {
+                OnOrderChanged(orderError = result.error)
+            } else {
+                orderFulfillmentDao.replaceAll(
+                    siteId = result.site.localId(),
+                    orderId = RemoteId(result.orderId),
+                    fulfillments = result.fulfillments
+                )
                 OnOrderChanged()
             }
         }
@@ -1072,34 +1125,45 @@ class WCOrderStore @Inject internal constructor(
         newStatus: WCOrderStatusModel
     ): WooResult<UpdateOrdersStatusResult> {
         val result = wcOrderRestClient.batchUpdateOrdersStatus(site, orderIds, newStatus.statusKey)
+        return result.toUpdateOrdersStatusResult()
+    }
 
-        return if (!result.isError) {
-            val orders = result.response
-            val updatedOrders = mutableListOf<Long>()
-            val failedOrders = mutableListOf<FailedOrder>()
+    @Suppress("NestedBlockDepth")
+    suspend fun batchUpdateOrders(
+        site: SiteModel,
+        updateRequests: Map<Long, UpdateOrderRequest>
+    ): WooResult<UpdateOrdersStatusResult> {
+        val result = wcOrderRestClient.batchUpdateOrders(site, updateRequests)
+        return result.toUpdateOrdersStatusResult()
+    }
 
-            orders.forEach { response ->
-                when (response) {
-                    is BatchOrderApiResponse.OrderResponse.Success -> {
-                        response.order.id?.let { updatedOrders.add(it) }
-                    }
+    private fun BulkUpdateOrderStatusResponsePayload.toUpdateOrdersStatusResult(): WooResult<UpdateOrdersStatusResult> {
+        if (isError) {
+            return WooResult(WooError(API_ERROR, SERVER_ERROR, error.message))
+        }
 
-                    is BatchOrderApiResponse.OrderResponse.Error -> {
-                        failedOrders.add(
-                            FailedOrder(
-                                id = response.id,
-                                errorCode = response.error.code,
-                                errorMessage = response.error.message,
-                                errorStatus = response.error.data.status
-                            )
+        val updatedOrders = mutableListOf<Long>()
+        val failedOrders = mutableListOf<FailedOrder>()
+
+        response.forEach { orderResponse ->
+            when (orderResponse) {
+                is BatchOrderApiResponse.OrderResponse.Success -> {
+                    orderResponse.order.id?.let { updatedOrders.add(it) }
+                }
+
+                is BatchOrderApiResponse.OrderResponse.Error -> {
+                    failedOrders.add(
+                        FailedOrder(
+                            id = orderResponse.id,
+                            errorCode = orderResponse.error.code,
+                            errorMessage = orderResponse.error.message,
+                            errorStatus = orderResponse.error.data.status
                         )
-                    }
+                    )
                 }
             }
-
-            WooResult(UpdateOrdersStatusResult(updatedOrders, failedOrders))
-        } else {
-            WooResult(WooError(API_ERROR, SERVER_ERROR, result.error.message))
         }
+
+        return WooResult(UpdateOrdersStatusResult(updatedOrders, failedOrders))
     }
 }

@@ -55,6 +55,7 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_CREATE)
 
         sut.onOrderFetched()
+        sut.onOrderFulfillmentsFetched()
         sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
         sut.onShipmentsFetchingCompleted()
@@ -73,6 +74,7 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_DESTROY)
 
         sut.onOrderFetched()
+        sut.onOrderFulfillmentsFetched()
         sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
         sut.onRefundsFetched()

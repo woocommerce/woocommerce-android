@@ -14,6 +14,8 @@ sealed class WooPosNavigationEvent {
         val orderId: Long,
         val source: CashPaymentSource = CashPaymentSource.CHECKOUT,
     ) : WooPosNavigationEvent()
+    data class OpenMarkOrderAsPaid(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenScanToPay(val orderId: Long) : WooPosNavigationEvent()
     data class OpenCardPayment(
         val orderId: Long,
         val source: CardPaymentSource = CardPaymentSource.CHECKOUT,
@@ -41,5 +43,9 @@ sealed class WooPosNavigationEvent {
     data class OpenPaymentSuccess(
         val orderId: Long,
         val source: PaymentSuccessSource,
+    ) : WooPosNavigationEvent()
+    data class OpenWebView(
+        val url: String,
+        val title: String = "",
     ) : WooPosNavigationEvent()
 }

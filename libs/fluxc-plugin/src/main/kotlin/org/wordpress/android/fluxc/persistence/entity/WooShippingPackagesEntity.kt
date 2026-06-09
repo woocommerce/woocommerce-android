@@ -51,6 +51,7 @@ data class WooShippingPackagesEntity(
 
     enum class CarrierType(val id: String) {
         USPS("usps"),
+        FEDEX("fedex"),
         DHL("dhlexpress"),
         UPS("upsdap");
 

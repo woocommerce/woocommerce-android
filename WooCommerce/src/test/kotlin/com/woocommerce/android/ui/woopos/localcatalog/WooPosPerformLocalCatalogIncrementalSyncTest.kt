@@ -2,13 +2,11 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -16,7 +14,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -30,8 +27,6 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
-    private val prefsRepo: WooPosPreferencesRepository = mock()
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -42,8 +37,6 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         networkStatus = networkStatus,
         isLocalCatalogSupported = isLocalCatalogSupported,
         wooPosLogWrapper = wooPosLogWrapper,
-        prefsRepo = prefsRepo,
-        fileApproachEnabled = fileApproachEnabled,
         analyticsTracker = analyticsTracker,
         appCoroutineScope = TestScope(testDispatcher)
     )
@@ -57,7 +50,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         val site = SiteModel().apply { id = 123 }
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(false)
+        whenever(isLocalCatalogSupported()).thenReturn(false)
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
@@ -132,7 +125,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
@@ -155,7 +148,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
@@ -165,56 +158,6 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync after successful payment")
         verify(wooPosLogWrapper).e("Sync after successful payment failed: Network timeout")
-    }
-
-    @Test
-    fun `given sync fails with catalog too large and file-based flag disabled, when execute called, then disables periodic sync`() = runTest(
-        testScheduler
-    ) {
-        // GIVEN
-        val sut = createSut()
-        val site = SiteModel().apply { id = 789 }
-        val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-            error = "Catalog exceeds limit",
-        )
-
-        whenever(fileApproachEnabled.invoke()).thenReturn(false)
-        whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
-        whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
-
-        // WHEN
-        sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        testScheduler.advanceUntilIdle()
-
-        // THEN
-        verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
-    }
-
-    @Test
-    fun `given sync fails with file-based flag enabled, when execute called, then logs failure but does not disable periodic sync`() = runTest(
-        testScheduler
-    ) {
-        // GIVEN
-        val sut = createSut()
-        val site = SiteModel().apply { id = 789 }
-        val syncResult = PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
-
-        whenever(fileApproachEnabled.invoke()).thenReturn(true)
-        whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
-        whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
-
-        // WHEN
-        sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        testScheduler.advanceUntilIdle()
-
-        // THEN
-        verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
-        verify(wooPosLogWrapper).e("Sync periodic hourly failed: Network timeout")
-        verify(prefsRepo, never()).disablePeriodicSyncForSite(site.localId())
     }
 
     @Test
@@ -232,7 +175,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(isLocalCatalogSupported()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN & THEN

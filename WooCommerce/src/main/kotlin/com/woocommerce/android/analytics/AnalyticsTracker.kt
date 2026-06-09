@@ -377,8 +377,27 @@ class AnalyticsTracker private constructor(
         const val VALUE_ORDER_SHIPPING_LINES_FEEDBACK = "order_shipping_lines"
         const val VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK = "woo_pos_potential_user"
         const val VALUE_WOO_POS_CURRENT_USER_FEEDBACK = "woo_pos_current_user"
+        const val VALUE_AI_ASSISTANT_FEEDBACK = "ai_assistant"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
+
+        // -- AI support chat
+        const val KEY_SUPPORT_CHAT_ENTRY_POINT = "entry_point"
+        const val KEY_SUPPORT_CHAT_IS_AUTHENTICATED = "is_authenticated"
+        const val KEY_SUPPORT_CHAT_IS_RESUMED_CHAT = "is_resumed_chat"
+        const val KEY_SUPPORT_CHAT_ISSUE_TYPE = "issue_type"
+        const val KEY_SUPPORT_CHAT_FAILED_TEST = "failed_test"
+        const val KEY_SUPPORT_CHAT_IS_FIRST_MESSAGE = "is_first_message"
+        const val KEY_SUPPORT_CHAT_HAS_DIAGNOSTICS_CONTEXT = "has_diagnostics_context"
+        const val KEY_SUPPORT_CHAT_SUPPORT_AREA = "support_area"
+        const val KEY_SUPPORT_CHAT_SUPPORT_AREA_CONFIDENCE = "support_area_confidence"
+        const val KEY_SUPPORT_CHAT_HAS_CHAT_TOPIC = "has_chat_topic"
+        const val KEY_SUPPORT_CHAT_FORWARD_TO_HUMAN_SUPPORT = "forward_to_human_support"
+        const val KEY_SUPPORT_CHAT_RATING = "rating"
+        const val KEY_SUPPORT_CHAT_CHAT_TOPIC = "chat_topic"
+        const val KEY_SUPPORT_CHAT_USER_MESSAGE_COUNT = "user_message_count"
+        const val KEY_SUPPORT_CHAT_TRIGGER = "trigger"
+        const val KEY_SUPPORT_CHAT_ROUTE = "route"
 
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
@@ -408,9 +427,12 @@ class AnalyticsTracker private constructor(
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
 
         // -- Connectivity Tool
-        const val VALUE_INTERNET = "internet"
-        const val VALUE_SITE = "site"
-        const val VALUE_JETPACK_TUNNEL = "jetpack_tunnel"
+        const val KEY_CONNECTIVITY_TEST = "test"
+        const val VALUE_CONNECTIVITY_INTERNET = "internet"
+        const val VALUE_CONNECTIVITY_WP_COM = "wpCom"
+        const val VALUE_CONNECTIVITY_SITE = "site"
+        const val VALUE_CONNECTIVITY_ORDERS = "orders"
+        const val VALUE_CONNECTIVITY_PRODUCTS = "products"
 
         enum class DownloadableFileAction(val value: String) {
             ADDED("added"),

@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.RefundsState
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -42,7 +43,8 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> emptyList()
         }
         val nonRefundedItems = getNonRefundedItems(order, refunds)
-        val lineItems = buildLineItems(order, nonRefundedItems)
+        val lineItems = buildLineItems(order, nonRefundedItems) +
+            buildCustomAmountRows(order, refunds)
         val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
         val actions = orderActionsProvider.getAvailableActions(order)
@@ -66,11 +68,11 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO, order.currency)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions)
+            actions = actions
         )
     }
 
-    suspend fun mapOrderDetailsWithoutActions(
+    suspend fun mapOrderDetailsWithoutRefunds(
         order: Order
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = orderStatusMapper.mapOrderStatus(order.status)
@@ -79,14 +81,17 @@ class WooPosOrderDetailsMapper @Inject constructor(
         val lineItems = when {
             isFullyRefunded -> LineItemsState.Loaded(emptyList())
             hasPartialRefund -> LineItemsState.Loading
-            else -> LineItemsState.Loaded(buildLineItems(order))
+            else -> LineItemsState.Loaded(buildLineItems(order) + buildCustomAmountRows(order))
         }
         val refundedLineItems = when {
             isFullyRefunded || hasPartialRefund -> LineItemsState.Loading
             else -> LineItemsState.Loaded(emptyList())
         }
+        val hasRefunds = isFullyRefunded || hasPartialRefund
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
-        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo).let {
+            if (hasRefunds) it.copy(refundsState = RefundsState.Loading) else it
+        }
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,
@@ -106,7 +111,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 formatPrice(BigDecimal.ZERO)
             },
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState.Loading
+            actions = orderActionsProvider.getAvailableActions(order)
         )
     }
 
@@ -130,7 +135,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
             is RefundsFetchResult.Error -> emptyList()
         }
         val items = getNonRefundedItems(order, refunds)
-        return buildLineItems(order, items)
+        return buildLineItems(order, items) + buildCustomAmountRows(order, refunds)
     }
 
     suspend fun buildLineItemsForSingleRefund(
@@ -170,6 +175,32 @@ class WooPosOrderDetailsMapper @Inject constructor(
                 )
             }
         }.awaitAll()
+    }
+
+    private fun buildCustomAmountRows(
+        order: Order,
+        refunds: List<Refund> = emptyList()
+    ): List<LineItemRow> {
+        if (order.feesLines.isEmpty()) return emptyList()
+        val refundedFeeIds = refunds.flatMap { it.feeLines }.map { it.id }.toSet()
+        return order.feesLines
+            .filter { it.id !in refundedFeeIds }
+            .map { feeLine ->
+                LineItemRow(
+                    id = feeLine.id,
+                    name = feeLine.name.orEmpty(),
+                    attributesDescription = null,
+                    qtyAndUnitPrice = "",
+                    lineTotal = formatPrice(feeLine.total, order.currency),
+                    imageUrl = null,
+                    isLumpSum = true,
+                    includesTax = when (feeLine.taxStatus) {
+                        Order.FeeLine.FeeLineTaxStatus.TAXABLE -> true
+                        Order.FeeLine.FeeLineTaxStatus.NONE,
+                        Order.FeeLine.FeeLineTaxStatus.UNKNOWN -> false
+                    },
+                )
+            }
     }
 
     private suspend fun buildLineItems(

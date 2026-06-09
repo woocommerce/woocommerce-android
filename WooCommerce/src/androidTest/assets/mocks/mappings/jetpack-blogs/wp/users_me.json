@@ -7,7 +7,7 @@
         "equalTo": "true"
       },
       "path": {
-        "matches": "wp/v2/users/me(.*)"
+        "matches": "/wp/v2/users/me(.*)"
       },
       "query": {
         "matches": "(.*)context\":\"edit(.*)"

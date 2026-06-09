@@ -17,7 +17,6 @@ sealed class PosLocalCatalogSyncResult {
         val pollAttempts: Int? = null,
         val lastGenerationState: String? = null
     ) : PosLocalCatalogSyncResult() {
-        class CatalogTooLarge(error: String) : Failure(error)
         class NetworkError(
             error: String,
             pollAttempts: Int? = null,
@@ -56,7 +55,6 @@ sealed class PosLocalCatalogSyncResult {
             is DatabaseError -> DatabaseError(error, pollAttempts, lastGenerationState)
             is InvalidResponse -> InvalidResponse(error, pollAttempts, lastGenerationState)
             is CatalogGenerationTimeout -> CatalogGenerationTimeout(error, pollAttempts, lastGenerationState)
-            is CatalogTooLarge -> this
             is UnexpectedError -> UnexpectedError(error, pollAttempts, lastGenerationState)
         }
     }

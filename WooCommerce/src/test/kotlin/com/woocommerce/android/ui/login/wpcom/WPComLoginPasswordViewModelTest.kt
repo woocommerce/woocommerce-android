@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
@@ -45,6 +46,7 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
+    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: WPComLoginPasswordViewModel
 
@@ -57,7 +59,8 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
             wpComLoginRepository = wpComLoginRepository,
             accountRepository = accountRepository,
             resourceProvider = resourceProvider,
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            registerDevice = registerDevice
         )
     }
 

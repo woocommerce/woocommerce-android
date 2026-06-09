@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -36,6 +37,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val fetchJetpackStatus: FetchJetpackStatus,
+    featureFlagRepository: FeatureFlagRepository,
     private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -48,7 +50,9 @@ class JetpackBenefitsViewModel @Inject constructor(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
             isLoadingDialogShown = false,
-            isPushNotificationsBenefitVisible = !FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2.isEnabled(),
+            isPushNotificationsBenefitVisible = !featureFlagRepository.isEnabled(
+                FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1
+            ),
         )
     )
     val viewState = _viewState.asLiveData()

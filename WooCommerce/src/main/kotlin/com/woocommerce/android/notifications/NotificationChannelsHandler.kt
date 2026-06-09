@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
+import com.woocommerce.android.notifications.NotificationChannelType.STOCK
 import com.woocommerce.android.util.WooLog
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,6 +44,11 @@ class NotificationChannelsHandler @Inject constructor(
             ?: return NewOrderNotificationSoundStatus.DEFAULT
 
         return channel.getNewOrderNotificationSoundStatus()
+    }
+
+    fun isNotificationChannelEnabled(channelType: NotificationChannelType): Boolean {
+        val channel = notificationManagerCompat.getNotificationChannel(channelType.getChannelId()) ?: return true
+        return channel.importance != NotificationManager.IMPORTANCE_NONE
     }
 
     private fun createChannels() {
@@ -100,6 +106,7 @@ class NotificationChannelsHandler @Inject constructor(
             when (this) {
                 NEW_ORDER -> R.string.notification_channel_order_id
                 REVIEW -> R.string.notification_channel_review_id
+                STOCK -> R.string.notification_channel_stock_id
                 OTHER -> R.string.notification_channel_general_id
             }
         )
@@ -113,6 +120,7 @@ class NotificationChannelsHandler @Inject constructor(
             when (this) {
                 NEW_ORDER -> R.string.notification_channel_order_title
                 REVIEW -> R.string.notification_channel_review_title
+                STOCK -> R.string.notification_channel_stock_title
                 OTHER -> R.string.notification_channel_general_title
             }
         )

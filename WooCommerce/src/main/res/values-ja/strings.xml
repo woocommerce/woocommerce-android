@@ -1,11 +1,330 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-20 10:35:12+0000
+Translation-Revision-Date: 2026-05-19 09:55:33+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">アシスタントの作業中にエラーが発生しました。</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">アシスタントは数ステップ後に完了できませんでした。</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">まだ確認できません。 チャットからもう一度お試しください。</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">リクエストを停止しました。</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">その変更が適用されたかどうか不明です。 他に試す前に、ストアで確認してください。</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">アシスタントはそのリクエストを完了できませんでした。</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">アシスタントはそのストアアクションを完了できませんでした。</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">アシスタントサービスはこの回答を完了できませんでした。 後でもう一度お試しください。</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">このリクエストはタイムアウトしました。 もう一度お試しください。</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">アシスタントはただいま対応中です。 しばらくしてからもう一度お試しください。</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">アシスタントはストアにアクセスできませんでした。 もう一度サインインして、アシスタントを再度開いてください。</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">接続できませんでした。 接続を確認して、もう一度お試しください。</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">キャンセル</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">確認</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">%1$s を確認しますか ?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">再試行</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">上記の保留中の変更を解決します。</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">回答を停止</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">メッセージを送信</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">ストアについて質問する</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">%1$s のアナリティクスを開く </string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">利用できません</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">平均注文金額</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">注文合計</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">純売上高</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">合計売上高</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">早期アクセス通知を非表示にする</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">フィードバックを残す</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">こんにちは ! まだ始まったばかりです。今後さらに機能が追加されます。 不足している点やサポートが必要な点をお知らせください。</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">早期アクセス</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">提案を送信: %1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">最新の顧客を表示します。 登録日順に並べ替えられた最大10人の顧客を最新の方からリストします。</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">注意が必要な注文はありますか ? 保留中、承認待ち、または処理中の最近の注文を表示します。</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">何の在庫が少なくなっていますか ? 在庫切れまたは在庫が少ない商品をリストにして、再入荷するものを確認します。</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">今週の収益はどうなっていますか ? 今週の合計売上高と、その先週との比較を表示します。</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">最新の顧客は誰ですか ?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">注意が必要な注文はありますか ?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">何の在庫が少なくなっていますか ?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">今週の収益はどうなっていますか ?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">どのようなサポートが必要ですか ?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">カード</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">顧客</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">アナリティクス</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">バリエーション</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">商品</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">注文</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">アシスタントが動作しています: %1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">ストアを確認しています</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">顧客を確認しています</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">アナリティクスを確認しています</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">商品を更新しています</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">商品を確認しています</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">注文を更新しています</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">注文を確認しています</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">アシスタントが考えています</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">アシスタント: %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">あなた: %1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">最新に移動</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">新しい会話を始める</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">戻る</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">アシスタント</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">その他%1$d個</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">キャンセル済み</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">確認済み</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">保留中の変更</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">オフ</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">更新済み</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">在庫状況</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">在庫</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">セール</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">価格</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">名前</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">請求先メールアドレス</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">顧客メモ</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">ステータス</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">%1$s をレビュー </string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">商品番号%2$sのバリエーション番号%1$sを更新</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">商品バリエーションを更新</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d件の商品を更新</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">%1$d件の商品を更新</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">多数の商品を更新</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">商品%1$s (番号%2$s) を更新</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">商品番号%1$sを更新</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">商品を更新</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d件の注文を更新: メール顧客</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">%1$d件の注文を更新: 顧客にメールを送信</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d件の注文を更新</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">%1$d件の注文を更新</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">多数の注文を更新</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">注文番号%1$sを更新: 顧客にメールを送信</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">注文番号%1$sを更新</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">注文を更新</string>
+    <string name="woopos_remote_ttp_explainer_got_it">OK</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">同じ Wi-Fi を使用し、両方の端末で同じストアにログインします。 お使いのスマートフォンには、Android 13以降または NFC、および Tap-to-Pay のサポートが必要です。</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">互換性を確認</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">スマートフォンで Woo を開き、「設定→支払い→カードリーダーモード」に移動します。</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">スマートフォンを設定</string>
+    <string name="woopos_remote_ttp_explainer_intro">スマートフォンの Woo アプリを使用してカード払いを行います。</string>
+    <string name="woopos_remote_ttp_explainer_title">カードリーダーがありませんか ? ご心配はいりません</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Android スマートフォンをカードリーダーとして使用する</string>
+    <string name="woopos_card_reader_unknown_reader_name">不明なリーダー</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Bluetooth リーダー</string>
+    <string name="woopos_card_reader_phone_icon_content_description">スマートフォンリーダー</string>
+    <string name="woopos_remote_payment_failed_generic">エラーが発生しました。 もう一度お試しください。</string>
+    <string name="woopos_remote_payment_failed_connection_lost">スマートフォンリーダーとの接続が切断されました。 再接続してもう一度お試しください。</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Tap to Pay を使用するには、位置情報の使用を許可してください。</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Tap to Pay を開始できませんでした: %1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Tap to Pay を開始できませんでした。 もう一度お試しください。</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Tap to Pay on iPhone を準備しています</string>
+    <string name="woopos_tap_to_pay_preparing_title">準備しています</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Tap to Pay on phone のイラスト</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Tap to Pay で支払う</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">この端末を使用して、非接触型カードでの支払いを受け付けます。</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tap To Pay</string>
+    <string name="woopos_payment_method_picker_dialog_title">支払い方法を選択</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">支払い済みとしてマーク</string>
+    <string name="woopos_payment_method_scan_to_pay_label">スキャンして支払う</string>
+    <string name="woopos_payment_method_other_methods_label">他の支払い方法</string>
+    <string name="woopos_payment_method_all_methods_label">すべての支払い方法</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tap To Pay</string>
+    <string name="woopos_payment_method_card_reader_label">カードリーダー</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">指紋</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">輸送</string>
+    <string name="woopos_settings_card_reader_disconnect_button">連携解除</string>
+    <string name="woopos_remote_reader_connect_failed_generic">連携に失敗しました</string>
+    <string name="ai_assistant_variation_card_id_title">バリエーション %1$d</string>
+    <string name="ai_support_chat_connectivity_action">サポートとチャット</string>
+    <string name="ai_support_chat_connectivity_initial_message">ストア連携のトラブルシューティングにご協力ください。</string>
+    <string name="ai_support_chat_diagnostics_status_failed">失敗</string>
+    <string name="ai_support_chat_diagnostics_status_passed">OK</string>
+    <string name="ai_support_chat_diagnostics_status_running">実行中</string>
+    <string name="ai_support_chat_diagnostics_status_pending">保留中</string>
+    <string name="ai_support_chat_diagnostics_continue">チャットに進む</string>
+    <string name="ai_support_chat_diagnostics_retry">再試行</string>
+    <string name="ai_support_chat_diagnostics_failure">一部のチェックに失敗しました。 もう一度お試しいただくか、これらの結果でチャットを続けることができます。</string>
+    <string name="ai_support_chat_diagnostics_success">診断が完了しました</string>
+    <string name="ai_support_chat_diagnostics_title">ストアを確認しています…</string>
+    <string name="ai_support_chat_issue_other">その他</string>
+    <string name="ai_support_chat_issue_receiving_notifications">通知を受信していません</string>
+    <string name="ai_support_chat_issue_loading_analytics">アナリティクスが読み込まれていません</string>
+    <string name="ai_support_chat_issue_loading_products">商品を表示できません</string>
+    <string name="ai_support_chat_issue_loading_orders">注文を表示できません</string>
+    <string name="ai_support_chat_issue_picker_title">何のトラブルシューティングを行いますか ?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">問題の内容をもう少し詳しく教えてください。お手伝いします。</string>
+    <string name="ai_support_chat_typing">考えています…</string>
+    <string name="ai_support_chat_send_error">メッセージを送信できません。 接続を確認して、もう一度お試しください。</string>
+    <string name="ai_support_chat_send">送信</string>
+    <string name="ai_support_chat_input_hint">メッセージ AI のトラブルシューティング</string>
+    <string name="ai_support_chat_greeting">こんにちは ! ストアの状況を教えてください。トラブルシューティングをお手伝いします。</string>
+    <string name="ai_support_chat_placeholder">まもなく公開予定</string>
+    <string name="ai_support_chat_screen_title">AI トラブルシューティング</string>
+    <string name="ai_support_chat_help_row_subtitle">AI アシスタントとチャットして、ストアの問題を診断する</string>
+    <string name="ai_support_chat_help_row_title">AI トラブルシューティング</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">通知を送信する最も高い評価を選択します。</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">評価までのレビュー</string>
+    <string name="settings_notifs_new_reviews_all_description">評価に関係なく、すべてのレビューに対してピンバックします。</string>
+    <string name="settings_notifs_new_reviews_all_title">すべての新しいレビュー</string>
+    <string name="settings_notifs_new_reviews_enable_description">誰かがあなたの商品の1つにレビューを残したときに通知を受け取ります。</string>
+    <string name="settings_notifs_stock_backorder_description">顧客が現在在庫切れのアイテムを注文したとき。</string>
+    <string name="settings_notifs_stock_backorder_title">お取り寄せ</string>
+    <string name="settings_notifs_stock_out_of_stock_description">商品バリエーションが0に達したとき。</string>
+    <string name="settings_notifs_stock_out_of_stock_title">在庫なし</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">ストア全体のしきい値を読み込めません</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">商品は、独自のしきい値またはストア全体のしきい値を使用できます。 &lt;a href=\'\'&gt;ストア全体のしきい値を表示&lt;/a&gt;して、現在の値を確認します。</string>
+    <string name="settings_notifs_stock_low_stock_threshold">商品は、独自のしきい値または &lt;b&gt;%1$s&lt;/b&gt; のストア全体のしきい値を使用できます。 &lt;a href=\'\'&gt;ストア全体のしきい値を編集&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">商品バリエーションが在庫不足のしきい値に達した場合。</string>
+    <string name="settings_notifs_stock_low_stock_title">在庫少</string>
+    <string name="settings_notifs_stock_enable_description">商品の在庫変更に注意が必要な場合に通知を受け取ります。</string>
+    <string name="settings_notifs_stock_enable_title">在庫通知を有効化</string>
+    <string name="settings_notifs_new_orders_threshold">しきい値 (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_description">しきい値を超える注文に絞り込みます。</string>
+    <string name="settings_notifs_new_orders_high_value_title">高額注文のみ</string>
+    <string name="settings_notifs_new_orders_all_description">値に関係なく、すべての注文に対してピンバックします。</string>
+    <string name="settings_notifs_new_orders_all_title">すべての新しい注文</string>
+    <string name="settings_notifs_notify_me_for">通知する対象: </string>
+    <string name="settings_notifs_new_orders_enable_description">ストアで注文が行われたときに通知を受け取ります。</string>
+    <string name="settings_notifs_error_update">通知設定を更新する際にエラーが発生しました。</string>
+    <string name="settings_notifs_error_fetch">通知設定を取得する際にエラーが発生しました。</string>
+    <string name="settings_notifs_enable_title">通知を有効化</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">お使いの端末で&lt;a href=\'\'&gt;通知設定を有効化して&lt;/a&gt;、ストア通知を受信します。</string>
+    <string name="card_reader_mode_location_permission_open_settings">設定を開く</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">位置情報へのアクセス権限がブロックされました 「設定」を開き、「位置情報」へのアクセスを許可して、このスマートフォンで tap-to-pay を使用します。</string>
+    <string name="card_reader_mode_location_permission_continue">続行</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android に位置情報へのアクセスを許可して、このスマートフォンで tap-to-pay を使用します。 位置情報はこの端末に残ります。</string>
+    <string name="card_reader_mode_location_permission_header">位置情報へのアクセス許可が必要です</string>
+    <string name="card_reader_mode_error_close">閉じる</string>
+    <string name="card_reader_mode_error_subtitle">Wi-Fi 接続を確認して、もう一度お試しください。</string>
+    <string name="card_reader_mode_error_header">カードリーダーモードの開始に失敗しました</string>
+    <string name="card_reader_mode_starting_subtitle">ローカルネットワークで検出を設定しています…</string>
+    <string name="card_reader_mode_starting_header">カードリーダーモードを開始しています</string>
+    <string name="card_reader_mode_settings_row_label">カードリーダーモード</string>
+    <string name="card_reader_mode_cancel">キャンセル</string>
+    <string name="card_reader_mode_waiting_subtitle">支払い待ちです…</string>
+    <string name="card_reader_mode_waiting_header">タブレットとペアリングされました</string>
+    <string name="card_reader_mode_ready_to_pair_store">ストア: %1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">タブレットで Woo POS を開き、このスマートフォンを選択します。</string>
+    <string name="card_reader_mode_ready_to_pair_header">ペアリングの準備ができました</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">AI アシスタントを開く</string>
+    <string name="dashboard_ai_assistant_entry_point_label">ストアについて質問する…</string>
+    <string name="notification_channel_stock_title">在庫アラート</string>
+    <string name="woopos_card_reader_update_battery_low_message_with_level">リーダーのバッテリー残量が%d%% しかないため、この更新をインストールできません。 リーダーを50%% 以上充電して、もう一度お試しください。</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">リーダーのバッテリー残量が少なすぎるため、この更新をインストールできません。 リーダーを50% 以上充電して、もう一度お試しください。</string>
+    <string name="woopos_card_reader_update_failed_title">更新が失敗しました</string>
+    <string name="woopos_card_reader_update_completed_title">ソフトウェアが更新されました</string>
+    <string name="woopos_card_reader_cancel_anyway_button">キャンセルする</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">実行中のソフトウェア更新をキャンセルすることは推奨されません。 キャンセルするとリーダーの接続がブロックされます。</string>
+    <string name="woopos_card_reader_update_optional_message">カードリーダーのソフトウェアを更新して順調な動作が継続するようにする必要があります</string>
+    <string name="woopos_card_reader_update_required_message">支払いを受け取るには、カードリーダーのソフトウェアを更新する必要があります。 キャンセルするとリーダーの接続がブロックされます。</string>
+    <string name="woopos_card_reader_update_progress">%d%% 完了</string>
+    <string name="woopos_card_reader_updating_optional_title">リーダーのソフトウェアを更新しています</string>
+    <string name="woopos_card_reader_updating_title">ソフトウェアを更新しています</string>
+    <string name="woopos_card_reader_cancel_button">キャンセル</string>
+    <string name="woopos_card_reader_retry_button">再試行</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">ストアの郵便番号が入力されていないか、無効です。 WooCommerce 設定でストアの住所を更新してください。</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">郵便番号が無効です</string>
+    <string name="woopos_card_reader_invalid_address_message">ストアの住所が入力されていないか、不完全です。 WooCommerce 設定でストアの住所を更新してください。</string>
+    <string name="woopos_card_reader_invalid_address_title">マーチャント住所が無効です</string>
+    <string name="woopos_card_reader_grant_permission_button">権限を付与</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">カードリーダーに接続するには Bluetooth の権限が必要です。</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth の権限が必要です</string>
+    <string name="woopos_card_reader_location_permission_message">Bluetooth 経由でカードリーダーに接続するには、位置情報の権限が必要です。</string>
+    <string name="woopos_card_reader_location_permission_title">位置情報の権限が必要です</string>
+    <string name="woopos_card_reader_enable_location_button">位置情報を有効化</string>
+    <string name="woopos_card_reader_location_disabled_message">位置情報を有効化してカードリーダーに接続します。</string>
+    <string name="woopos_card_reader_location_disabled_title">位置情報がオフです</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Bluetooth を有効化</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Bluetooth を有効化してカードリーダーに接続します。</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth がオフです</string>
+    <string name="woopos_card_reader_battery_low_message">リーダーのバッテリー残量が非常に少なくなっています。 リーダーを充電して、もう一度お試しください。</string>
+    <string name="woopos_card_reader_battery_low_title">バッテリー残量が少なすぎます</string>
+    <string name="woopos_card_reader_connected_title">接続済み</string>
+    <string name="woopos_card_reader_connecting_failed_title">接続に失敗しました</string>
+    <string name="woopos_card_reader_connecting_message">リーダーに接続する間、しばらくお待ちください</string>
+    <string name="woopos_card_reader_connecting_title">接続を開始中</string>
+    <string name="woopos_card_reader_multiple_found_description">リーダーを選択</string>
+    <string name="woopos_card_reader_multiple_found_title">複数のリーダーが見つかりました</string>
+    <string name="woopos_card_reader_keep_searching_button">検索を続ける</string>
+    <string name="woopos_card_reader_connect_button">接続</string>
+    <string name="woopos_card_reader_found_description">このリーダーに接続しますか ?</string>
+    <string name="woopos_card_reader_found_title">%s 件検出</string>
+    <string name="woopos_card_reader_scanning_failed_title">スキャンに失敗しました</string>
+    <string name="woopos_card_reader_scanning_instruction">リーダーが充電され、オンになっていることを確認してください</string>
+    <string name="woopos_card_reader_scanning_title">リーダーをスキャンしています</string>
+    <string name="woopos_card_reader_close_content_description">閉じる</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">カードリーダー接続ダイアログ</string>
+    <string name="woopos_orders_empty_list_message">POS で売上の処理を開始すると、注文がここに表示されます。</string>
+    <string name="woopos_battery_critical">カードリーダーのバッテリー残量が極めて少ない</string>
+    <string name="woopos_battery_low">カードリーダーのバッテリー残量が少ない</string>
+    <string name="woopos_reader_reconnecting">再接続中…</string>
+    <string name="more_menu_button_ai_assistant_description">ストアについて尋ねる</string>
+    <string name="more_menu_button_ai_assistant">AI アシスタント</string>
+    <string name="settings_notifs_new_reviews_subtitle">すべてのレビュー</string>
+    <string name="settings_notifs_new_reviews">新しいレビュー</string>
+    <string name="settings_notifs_stock_subtitle">すべての在庫アラート</string>
+    <string name="settings_notifs_stock">在庫</string>
+    <string name="settings_notifs_new_orders_subtitle">すべての注文</string>
+    <string name="settings_notifs_new_orders">新しい注文</string>
+    <string name="settings_push_notifications">プッシュ通知</string>
+    <string name="settings_logout_dialog_message">ログアウトしています。</string>
+    <string name="card_reader_detail_reconnecting_cancel">再接続をキャンセル</string>
+    <string name="card_reader_detail_reconnecting_header">カードリーダーに再接続しています…</string>
+    <string name="dashboard_stats_order_date_type_update_error">注文タイプを更新できません。 もう一度お試しください。</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">これはストア全体の設定であり、WooCommerce の管理分析設定の「日付タイプ」オプションも制御します。</string>
+    <string name="dashboard_stats_completed_orders_description">完了としてマークされた日付に注文をカウントします。</string>
+    <string name="dashboard_stats_placed_orders_description">注文が行われた日付または作成された日付に注文をカウントします。</string>
+    <string name="dashboard_stats_paid_orders_description">注文が支払われた日付に注文をカウントします。</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">選択した時間範囲のパフォーマンスメトリクスに含める注文を選択します。</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">注文日の種類</string>
+    <string name="dashboard_stats_completed_orders">完了した注文</string>
+    <string name="dashboard_stats_placed_orders">注文済み注文</string>
+    <string name="dashboard_stats_paid_orders">支払い済み注文</string>
+    <string name="dashboard_stats_revenue_type_total">合計</string>
+    <string name="dashboard_stats_revenue_type_net">純額</string>
+    <string name="dashboard_stats_revenue_type_gross">総額</string>
+    <string name="booking_reschedule_change_team_member">チームメンバーを変更</string>
+    <string name="booking_reschedule_screen_title">予約を変更</string>
+    <string name="booking_details_reschedule_button">予約変更</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">&lt;a href=\"fedex-tos\"&gt;FedEx 利用規約&lt;/a&gt;に同意します。</string>
+    <string name="wpp_shipping_fedex_tos_description">FedEx の配送ラベルを購入するには、以下の条件に同意する必要があります。</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx 利用規約</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">配送料金を読み込めませんでした。 配送先の住所に姓と名を追加して、もう一度お試しください。</string>
+    <string name="woopos_settings_receipt_edit_button">領収書情報を編集</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d/%2$dのアイテム</string>
+    <string name="woopos_home_syncing_catalog_preparing">カタログを準備中…</string>
+    <string name="product_type_bookable_service_desc">顧客がオンラインで予約できるサービス</string>
+    <string name="product_type_bookable_service_title">サービス</string>
+    <string name="settings_troubleshoot_connection">接続をトラブルシューティング</string>
+    <string name="connectivity_tool_copy">コピー</string>
+    <string name="connectivity_tool_technical_details_copied">技術詳細がクリップボードにコピーされました。</string>
+    <string name="connectivity_tool_technical_details_title">技術詳細</string>
+    <string name="connectivity_tool_view_technical_details">技術詳細を表示</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">ストアで商品を取得しています</string>
+    <string name="user_role_access_error_fetch_failed">このストアでの権限グループを認証できませんでした。 もう一度お試しください。 問題が解決しない場合は、サポートにお問い合わせください。</string>
+    <string name="woopos_eligibility_learn_more_label">さらに詳しく</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 &lt;b&gt;Pro にアップグレード&lt;/b&gt;すると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 Pro にアップグレードすると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
+    <string name="woopos_eligibility_ciab_title">Pro プランが必要です</string>
+    <string name="ciab_order_status_open">開く</string>
+    <string name="booking_payment_status_authorization_voided">認証が無効化されました</string>
+    <string name="booking_payment_status_authorized">認証済み</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">配送ラベルを購入できません。 配送元住所を入力してください。</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">配送元住所がないか、無効です</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">認証が無効化されました</string>
+    <string name="woopos_bookings_payment_status_authorized">認証済み</string>
+    <string name="woopos_orders_details_refund_details_background">返金詳細ダイアログの背景</string>
+    <string name="woopos_orders_details_refund_total">払戻総額</string>
+    <string name="woopos_orders_details_refund_tax">税</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">商品小計 (%d個)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">商品小計 (%d個)</string>
+    <string name="woopos_orders_details_refund_view_details">詳細を表示</string>
+    <string name="woopos_orders_details_refund_label_numbered">返金 #%1$d</string>
+    <string name="woopos_orders_details_refunded_products_title">返金済み商品</string>
+    <string name="woopos_home_syncing_catalog_subtitle">ここを離れても同期はバックグラウンドで続行されます。</string>
+    <string name="woopos_home_syncing_catalog_hint">カタログの同期には数分かかる場合があります。</string>
+    <string name="woo_push_notifications_introduction_connected_body">新規注文やレビューなどの通知を受け取るまで、あと一歩です。</string>
+    <string name="woo_push_notifications_introduction_connected_title">ストアのプッシュ通知を取得</string>
+    <string name="my_store_widget_push_notifications_description">プッシュ通知を有効にすると、新規注文やレビューを常に把握できます。</string>
     <string name="woopos_search_products_and_variations">商品とバリエーションを検索…</string>
     <string name="woopos_bookings_details_customer_guest_badge">ゲスト</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">プラグインを更新</string>
@@ -132,7 +451,6 @@ Language: ja_JP
     <string name="restart">再開</string>
     <string name="dev_feature_flags">機能フラグ</string>
     <string name="settings_enable_push_notifications">プッシュ通知を有効化</string>
-    <string name="my_store_widget_push_notifications_description">ストアを WordPress.com に連携して、新規注文やレビューに関するアラートを受け取ります。</string>
     <string name="my_store_widget_push_notifications_menu_title">プッシュ通知を有効化</string>
     <string name="my_store_widget_push_notifications_title">新規注文を見逃さない</string>
     <string name="woo_pos_promo_title">WooCommerce の POS</string>
@@ -242,7 +560,7 @@ Language: ja_JP
     <string name="woopos_search_orders">注文を検索</string>
     <string name="woopos_orders_details_totals_card_content_description">注文合計の内訳</string>
     <string name="woopos_orders_details_products_list_content_description">注文商品リスト</string>
-    <string name="woopos_orders_details_net_payment_label">支払額 (正味)</string>
+    <string name="woopos_orders_details_net_payment_label">純合計</string>
     <string name="woopos_orders_details_refunded_label">返金済み</string>
     <string name="woopos_orders_details_total_paid_label">支払い合計</string>
     <string name="woopos_orders_details_total_label">合計</string>
@@ -272,7 +590,6 @@ Language: ja_JP
     <string name="woopos_home_sync_failed_message">商品カタログを同期できません。 インターネット接続を確認し、もう一度お試しください。</string>
     <string name="woopos_home_sync_failed_title">同期できません</string>
     <string name="woopos_home_syncing_catalog_exit_button">POS を終了</string>
-    <string name="woopos_home_syncing_catalog_subtitle">同期はバックグラウンドで続行されます。</string>
     <string name="woopos_home_syncing_catalog_title">カタログを同期中</string>
     <string name="booking_note_discard_changes_discard">変更を破棄</string>
     <string name="booking_note_discard_changes_message">この変更を破棄してもよいですか ?</string>
@@ -313,8 +630,7 @@ Language: ja_JP
     <string name="woopos_orders_loading_error_message">連携を確認して、もう一度お試しください。</string>
     <string name="woopos_orders_loading_error_title">注文を読み込めません</string>
     <string name="woopos_orders_empty_list_image_description">注文はありません</string>
-    <string name="woopos_orders_empty_action_label">さらに詳しく</string>
-    <string name="woopos_orders_empty_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
+    <string name="woopos_orders_empty_action_label">再読み込み</string>
     <string name="woopos_orders_empty_list_title">注文がありません</string>
     <string name="woopos_date_yesterday_at">昨日 %s</string>
     <string name="woopos_date_today_at">本日 %s</string>
@@ -489,15 +805,13 @@ Language: ja_JP
     <string name="woopos_scanning_setup_device_selection_title">バーコードスキャナーを設定</string>
     <string name="woopos_scanning_setup_barcode_content_description">バーコード</string>
     <string name="woopos_scanning_setup_dialog_content_description">スキャナー設定ダイアログ</string>
-    <string name="woopos_eligibility_screen_UK_country_name">イギリス</string>
-    <string name="woopos_eligibility_screen_US_country_name">米国</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">イギリス</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">米国</string>
     <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">続行するには POS を有効にする必要があります。 「WooCommerce 設定」&gt;「高度な設定」&gt;「機能」の WordPress 管理画面から POS 機能を有効にしてください。</string>
     <string name="woopos_eligibility_reason_check_connection">インターネット接続を確認してアプリを再起動してください。問題が解消されない場合はサポートにご連絡ください。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">お使いの WooCommerce バージョンはサポートされていません。 POS システムには WooCommerce バージョン %1$s以上が必要です。 最新バージョンの WooCommerce に更新してください。</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">WordPress 管理画面から WooCommerce プラグインをインストールおよび有効化してください。 問題が解決しない場合は、サポートにご連絡ください。</string>
     <string name="orderfilters_sales_channel_filter">販売経路</string>
     <string name="barcode_ean13_content_description">バーコード EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">追加の処理</string>
@@ -1180,10 +1494,6 @@ Language: ja_JP
     <string name="delete_product_category_failed">カテゴリーの削除中にエラーが発生しました</string>
     <string name="delete_product_category_success">商品カテゴリーを削除しました</string>
     <string name="update_product_category_success">商品カテゴリーを更新しました</string>
-    <string name="domain_picker_suggestions_error">ドメインの提案を読み込めません</string>
-    <string name="domain_picker_suggestions_title">提案</string>
-    <string name="domain_picker_hint">ドメインを入力</string>
-    <string name="domain_picker_title">ドメインを選択</string>
     <string name="analytics_section_see_all">すべてのストアアナリティクスを表示</string>
     <string name="my_store_custom_range_granularity_year">毎年</string>
     <string name="my_store_custom_range_granularity_month">毎月</string>
@@ -1950,7 +2260,6 @@ Language: ja_JP
     <string name="store_onboarding_launch_store_back_to_store_button">ストアに戻る</string>
     <string name="store_onboarding_launch_store_share_url_button">共有 URL</string>
     <string name="store_onboarding_launch_store_button">ストアを公開</string>
-    <string name="domains_search_domains">ドメインを検索</string>
     <string name="login_site_credentials_http_error">ステータスコード%1$sのためログインに失敗しました</string>
     <string name="login_site_credentials_custom_admin_url">ストアの管理 URL を識別できないためログインできません</string>
     <string name="login_site_credentials_custom_login_url">ストアのログイン URL を識別できないためログインできません</string>
@@ -1995,41 +2304,12 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_try_payment">支払いを試す</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="domain_registration_generic_error">ドメイン登録中にエラーが発生しました</string>
-    <string name="domain_registration_state_picker_dialog_title">都道府県を選択</string>
-    <string name="domain_registration_country_picker_dialog_title">国を選択</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">ドメイン名を登録しています…</string>
-    <string name="domain_contact_information_register_domain_button">ドメインを登録</string>
-    <string name="domain_contact_information_postal_code_hint">郵便番号</string>
-    <string name="domain_contact_information_state_not_available_hint">状態 (使用不可)</string>
-    <string name="domain_contact_information_state_hint">都道府県</string>
-    <string name="domain_contact_information_city_hint">市区町村</string>
-    <string name="domain_contact_information_address_hint_two">住所2</string>
-    <string name="domain_contact_information_address_hint">住所</string>
-    <string name="domain_contact_information_country_hint">国</string>
-    <string name="domain_contact_information_country_code_hint">国コード</string>
-    <string name="domain_contact_information_phone_number_hint">電話</string>
-    <string name="domain_contact_information_organization_hint">組織 (任意)</string>
-    <string name="domain_contact_information_description">WordPress.com 連絡先情報にはデータが事前に\n入力されています。このドメインに使用する情報として正しいことをご確認ください。</string>
-    <string name="domain_contact_information_title">ドメインの連絡先情報</string>
-    <string name="domain_privacy_option_off_title">公開として登録</string>
-    <string name="domain_privacy_option_on_title">プライバシー保護付きで非公開として登録</string>
-    <string name="domain_registration_contact_form_input_error">有効な%sを入力してください</string>
-    <string name="domain_registration_privacy_protection_tos">このドメインを登録することで、当社の&lt;a href=\'\'&gt;利用規約&lt;/a&gt;に合意したことになります</string>
-    <string name="domain_registration_privacy_protection_description">ドメイン所有者は、すべてのドメインのパブリックデータベースで連絡先情報を共有する必要があります。\nプライバシー保護として、お客様に関する情報の代わりに弊社に関する情報を公開し、お客様には個別でコミュニケーションを転送します。</string>
-    <string name="domain_registration_privacy_protection_title">プライバシー保護</string>
-    <string name="domains_access_error_title">ストア管理者のみがドメイン設定にアクセスできます</string>
     <string name="login_jetpack_installation_continue_magic_link">またはマジックリンクを使用して続行します</string>
     <string name="login_jetpack_installation_enter_wpcom_password">WordPress.com アカウントのパスワードを入力して Jetpack をインストールする</string>
     <string name="login_jetpack_connection_enter_wpcom_password">WordPress.com アカウントのパスワードを入力して Jetpack に連携する</string>
     <string name="login_jetpack_installation_enter_wpcom_email">WordPress.com アカウントでログインして Jetpack をインストールする</string>
     <string name="login_jetpack_connection_enter_wpcom_email">WordPress.com アカウントでログインして Jetpack を連携する</string>
-    <string name="domains_purchase_successful_settings_notice">「設定」-&gt;「ドメイン」にドメイン設定があります。</string>
-    <string name="domains_purchase_successful_delay_notice">サイトアドレスをセットアップしています。 ドメインが使用可能になるまでに最大で30分かかる場合があります。</string>
-    <string name="domains_purchase_successful_heading">購入完了です</string>
-    <string name="domains_free_with_credits">1年目は無料</string>
     <string name="settings_confirm_logout_site_credentials">アカウントからログアウトしてもよろしいですか ?</string>
-    <string name="domains_generic_error_title">サイトドメインを読み込めません</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 完了</string>
     <string name="store_onboarding_task_launch_store_description">いつでも好きなときに、自分のサイトを世界中に公開できます。</string>
     <string name="store_onboarding_task_launch_store_title">ストアを立ち上げる</string>
@@ -2040,19 +2320,6 @@ Language: ja_JP
     <string name="card_reader_payment_failed_device_is_not_supported">お使いの端末はサポートされていません。 詳細についてはサポートにお問い合わせください。</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC チップが無効になっているため、アプリでカードリーダーを有効化できませんでした</string>
     <string name="card_reader_payment_failed_canceled">取引はキャンセルされました</string>
-    <string name="domains_redirect_notice">購入したドメインにアクセスするとこちらに転送されます:</string>
-    <string name="domains_select_domain">ドメインを選択</string>
-    <string name="domains_add_domain_button_title">ドメインを追加</string>
-    <string name="domains_your_domains">あなたのサイトドメイン</string>
-    <string name="domains_primary_address">主要サイトのアドレス</string>
-    <string name="domains_learn_more">ドメインやドメインに関連する対処方法についての&lt;a href=\'\'&gt;&lt;u&gt;詳細はこちら&lt;/u&gt;&lt;/a&gt;をご覧ください。</string>
-    <string name="domains_search_for_domain_button_title">ドメインを検索</string>
-    <string name="domains_purchase_redirect_notice">購入したドメインにアクセスするとメインアドレスに転送されます。</string>
-    <string name="domains_claim_your_free_domain_link">ドメインを取得する</string>
-    <string name="domains_claim_your_free_domain_description">このプランには、1年間の無料ドメイン登録が含まれています。</string>
-    <string name="domains_claim_your_free_domain_title">無料ドメインを取得</string>
-    <string name="domains_your_free_store_address">無料ストアのアドレス</string>
-    <string name="domains">ドメイン</string>
     <string name="feedback_banner_ipp_cta_button">フィードバックを共有</string>
     <string name="feedback_banner_ipp_message_beginner">初めてのオフラインでの支払い体験を評価してください。</string>
     <string name="feedback_banner_ipp_title_beginner">オフラインでの支払いはいかがですか ?</string>
@@ -2071,7 +2338,6 @@ Language: ja_JP
     <string name="analytics_session_card_title">セッション</string>
     <string name="analytics_session_no_data">この期間にはセッションがありません</string>
     <string name="date_compared_to">次との比較:</string>
-    <string name="domain">ドメイン</string>
     <string name="login_application_passwords_help">アプリケーションパスワードとは</string>
     <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
     <string name="login_open_installation_page">インストールページを開く</string>
@@ -2087,7 +2353,6 @@ Language: ja_JP
     <string name="product_bulk_update_regular_price">通常価格を更新</string>
     <string name="variations_bulk_creation_no_candidates_message">すべてのバリエーションはすでに生成されています。</string>
     <string name="variations_bulk_creation_no_candidates_title">生成するバリエーションはありません</string>
-    <string name="domain_picker_empty_suggestions">この検索で利用できるドメインがありません</string>
     <string name="variations_bulk_creation_progress_title">バリエーションを生成しています</string>
     <string name="variations_bulk_creation_confirmation_message">この操作を行うと、可能な限りすべてのバリエーション属性の組み合わせ (%1$d件のバリエーション) につきひとつの新しいバリエーションが作成されます。</string>
     <string name="variations_bulk_creation_confirmation_title">すべてのバリエーションを生成しますか ?</string>
@@ -2144,7 +2409,6 @@ Language: ja_JP
     <string name="update_simulated_reader">シミュレートされたカードリーダーを更新</string>
     <string name="login_jetpack_connect">Jetpack を連携</string>
     <string name="login_jetpack_installation_screen_title">ストアを連携</string>
-    <string name="domain_picker_subtitle">ドメインとは、インターネット上で閲覧者があなたを見つける場所です。 後からでも変更できます。</string>
     <string name="analytics_visitors_subtitle">訪問者</string>
     <string name="or_use_password_below_qr_code_scan_option">またはパスワードでログイン</string>
     <string name="simulated_reader_toast">シミュレートされたカードリーダーは無効になりました</string>
@@ -3767,7 +4031,6 @@ Language: ja_JP
     <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
     <string name="dashboard_stats_error_content_description">エラー画像</string>
     <string name="dashboard_stats_error">データを取得する際にエラーが発生しました</string>
-    <string name="dashboard_stats_revenue">収益</string>
     <string name="dashboard_stats_orders">注文</string>
     <string name="dashboard_stats_visitors">訪問者</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>
@@ -3834,6 +4097,8 @@ Language: ja_JP
         <item>カスタムパッケージ</item>
         <item>サービスパッケージ</item>
     </string-array>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d つ星以下</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d つ星以下</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小計 (%d点の商品)</item>
     </plurals>

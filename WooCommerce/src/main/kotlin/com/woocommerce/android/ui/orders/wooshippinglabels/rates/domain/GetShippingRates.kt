@@ -61,3 +61,5 @@ class GetShippingRates @Inject constructor(
 }
 
 class NoAvailableRatesException(@StringRes val messageResId: Int) : Exception("No available rates")
+
+class InvalidDestinationNameRateException : Exception("Invalid destination name")

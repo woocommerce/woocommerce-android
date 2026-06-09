@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.compose.ui.main)
@@ -51,6 +52,8 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.eventbus.android)
     implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.wordpress.utils)
     implementation(libs.apache.commons.text)
     implementation(project(":libs:fluxc"))
@@ -70,4 +73,5 @@ dependencies {
     testFixturesCompileOnly(libs.junit)
     testFixturesCompileOnly(libs.mockito.kotlin)
     testFixturesCompileOnly(libs.androidx.arch.core.testing)
+    testFixturesImplementation(project(":libs:fluxc-plugin"))
 }

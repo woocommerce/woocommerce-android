@@ -97,7 +97,6 @@ import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -442,7 +441,7 @@ class OrderDetailFragment :
             }
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
-                showInstallWcShippingBanner(it)
+                showInstallWcShippingBanner(it, new.isWcShippingBannerEnabled)
             }
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
@@ -603,9 +602,9 @@ class OrderDetailFragment :
         )
     }
 
-    private fun showInstallWcShippingBanner(isVisible: Boolean) {
+    private fun showInstallWcShippingBanner(isVisible: Boolean, isWcShippingBannerEnabled: Boolean) {
         val banner = binding.orderDetailInstallWcShippingBanner
-        banner.isVisible = isVisible && FeatureFlag.WC_SHIPPING_BANNER.isEnabled()
+        banner.isVisible = isVisible && isWcShippingBannerEnabled
         banner.setClickListeners(
             onInstallWcShipping = { viewModel.onGetWcShippingClicked() },
             onDismiss = { viewModel.onWcShippingBannerDismissed() }

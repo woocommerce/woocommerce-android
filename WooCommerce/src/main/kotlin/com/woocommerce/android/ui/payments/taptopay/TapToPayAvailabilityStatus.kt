@@ -22,7 +22,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
 ) {
     operator fun invoke() =
         when {
-            ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.WooPayments) -> Result.Hidden
+            ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.InPersonPayments) -> Result.Hidden
             !systemVersionUtilsWrapper.isAtLeastR() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable

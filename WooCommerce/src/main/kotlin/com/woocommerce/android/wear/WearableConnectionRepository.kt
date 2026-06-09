@@ -79,7 +79,7 @@ class WearableConnectionRepository @Inject constructor(
         val visitorsCount = stats?.visitors?.values?.sum() ?: 0
         val conversionRate = ordersCount convertedFrom visitorsCount
         val formattedTotalSales = wooCommerceStore.formatCurrencyForDisplay(
-            amount = revenueTotals?.netRevenue ?: 0.0,
+            amount = revenueTotals?.totalSales ?: 0.0,
             site = selectedSite.get(),
             currencyCode = null,
             applyDecimalFormatting = true

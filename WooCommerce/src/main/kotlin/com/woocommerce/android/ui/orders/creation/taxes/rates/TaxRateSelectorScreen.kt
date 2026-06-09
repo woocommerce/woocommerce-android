@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel.ViewState
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -72,7 +71,7 @@ fun TaxRateSelectorScreen(
         backgroundColor = MaterialTheme.colors.surface,
         topBar = { Toolbar(onDismiss, onInfoIconClicked) },
         bottomBar = {
-            if (FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE.isEnabled()) {
+            if (state.isAutoTaxRateFeatureEnabled) {
                 BottomBar(onAutoRateToggleStateToggled, state)
             }
         },

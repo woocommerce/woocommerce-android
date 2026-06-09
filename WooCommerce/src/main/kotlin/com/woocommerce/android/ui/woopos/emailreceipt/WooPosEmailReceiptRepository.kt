@@ -34,11 +34,13 @@ class WooPosEmailReceiptRepository @Inject constructor(
     fun posReceiptsAreEnabled(): Boolean = isWooCoreSupportsPOSReceipts()
 
     private suspend fun sendPOSReceipt(orderId: Long, email: String): Result<Unit> {
+        val templateId = if (supportsAutoTemplateSelection()) null else TEMPLATE_ID_POS_COMPLETED_ORDER
         val sendOrderResult = orderStore.sendOrderPOSSpecificReceipt(
             selectedSite.get(),
             orderId,
             email,
-            forceEmailUpdate = true
+            forceEmailUpdate = true,
+            templateId = templateId
         )
         return if (sendOrderResult.isError) {
             Result.failure(Exception("Failed to send order receipt"))
@@ -66,8 +68,15 @@ class WooPosEmailReceiptRepository @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_RECEIPTS) >= 0
     }
 
+    private fun supportsAutoTemplateSelection(): Boolean {
+        val wooCoreVersion = getWooCoreVersion() ?: return false
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_AUTO_TEMPLATE) >= 0
+    }
+
     private companion object {
         const val WC_VERSION_SUPPORTS_POS_RECEIPTS = "10.0.0"
+        const val WC_VERSION_SUPPORTS_AUTO_TEMPLATE = "10.7.0"
+        const val TEMPLATE_ID_POS_COMPLETED_ORDER = "customer_pos_completed_order"
     }
 
     class WooPosProvideEmailPattern @Inject constructor() {

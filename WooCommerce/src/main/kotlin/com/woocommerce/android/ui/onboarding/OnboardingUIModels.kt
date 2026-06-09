@@ -32,7 +32,7 @@ data object AboutYourStoreTaskRes : OnboardingTaskUiResources(
 )
 
 data object AddProductTaskRes : OnboardingTaskUiResources(
-    icon = R.drawable.ic_onboarding_add_product,
+    icon = R.drawable.ic_tintable_product,
     title = R.string.store_onboarding_task_add_product_title,
     description = R.string.store_onboarding_task_add_product_description,
     labelText = R.string.store_onboarding_task_product_description_ai_generator_text,

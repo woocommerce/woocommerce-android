@@ -91,12 +91,56 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "checkout_cash_payment_tapped"
         }
 
+        data object CheckoutTapToPayPaymentTapped : Event() {
+            override val name: String = "checkout_tap_to_pay_payment_tapped"
+        }
+
         data object CashPaymentTapped : Event() {
             override val name: String = "cash_payment_tapped"
         }
 
         data object CashPaymentFailed : Event() {
             override val name: String = "cash_payment_failed"
+        }
+
+        data object CheckoutScanToPayPaymentTapped : Event() {
+            override val name: String = "checkout_scan_to_pay_payment_tapped"
+        }
+
+        data object ScanToPayPaymentDetectedViaPolling : Event() {
+            override val name: String = "scan_to_pay_payment_detected_via_polling"
+        }
+
+        data object ScanToPayCollectPaymentSuccess : Event() {
+            override val name: String = "scan_to_pay_collect_payment_success"
+        }
+
+        data object ScanToPayPaymentFailed : Event() {
+            override val name: String = "scan_to_pay_payment_failed"
+        }
+
+        data object BackToCheckoutFromScanToPay : Event() {
+            override val name: String = "back_to_checkout_from_scan_to_pay"
+        }
+
+        data object CheckoutMarkAsPaidTapped : Event() {
+            override val name: String = "checkout_mark_as_paid_tapped"
+        }
+
+        data object MarkAsPaidConfirmed : Event() {
+            override val name: String = "mark_as_paid_confirmed"
+        }
+
+        data object MarkAsPaidSuccess : Event() {
+            override val name: String = "mark_as_paid_success"
+        }
+
+        data object MarkAsPaidFailed : Event() {
+            override val name: String = "mark_as_paid_failed"
+        }
+
+        data object BackToCheckoutFromMarkAsPaid : Event() {
+            override val name: String = "back_to_checkout_from_mark_as_paid"
         }
 
         data class CheckoutTapped(val productsInCart: Int, val couponsInCart: Int) : Event() {
@@ -114,6 +158,31 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object ClearCartTapped : Event() {
             override val name: String = "clear_cart_tapped"
+        }
+
+        data object CustomAmountEntryRowTapped : Event() {
+            override val name: String = "custom_amount_entry_row_tapped"
+        }
+
+        data class CustomAmountSubmitted(
+            val mode: Mode,
+            val isTaxable: Boolean,
+        ) : Event() {
+            override val name: String = "custom_amount_submitted"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "mode" to mode.value,
+                        "is_taxable" to isTaxable.toString(),
+                    )
+                )
+            }
+
+            enum class Mode(val value: String) {
+                ADD("add"),
+                EDIT("edit"),
+            }
         }
 
         data object CreateNewOrderTapped : Event() {
@@ -231,10 +300,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             init {
                 addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
             }
-        }
-
-        data object BookingIssueRefundTapped : Event() {
-            override val name: String = "booking_issue_refund_tapped"
         }
 
         data object BookingViewOrderTapped : Event() {
@@ -397,6 +462,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product -> ItemsListItemType.PRODUCT
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> ItemsListItemType.COUPON
+                    is WooPosItemsViewModel.ItemClickedData.CustomAmount -> ItemsListItemType.CUSTOM_AMOUNT
                     is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
                         error("VariableProduct is not a valid item type")
                     }
@@ -405,6 +471,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> null
+                    is WooPosItemsViewModel.ItemClickedData.CustomAmount -> null
                     is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
                         error("VariableProduct is not a valid item type")
                     }
@@ -413,16 +480,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
             constructor(item: WooPosCartItemViewState) : this(
                 source = null,
-                sourceType = ItemsListSourceType.BARCODE_SCANNER,
+                sourceType = if (item is WooPosCartItemViewState.CustomAmount) {
+                    ItemsListSourceType.CUSTOM_AMOUNT_FORM
+                } else {
+                    ItemsListSourceType.BARCODE_SCANNER
+                },
                 itemType = when (item) {
                     is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.CustomAmount -> ItemsListItemType.CUSTOM_AMOUNT
                     is WooPosCartItemViewState.Product.Simple -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Product.Variation -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
                 },
                 productType = when (item) {
                     is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.CustomAmount,
                     is WooPosCartItemViewState.Error,
                     is WooPosCartItemViewState.Loading -> null
 
@@ -465,6 +538,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosCartItemViewState.Product -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.CustomAmount -> ItemsListItemType.CUSTOM_AMOUNT
                     is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
                     is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
                 },
@@ -472,6 +546,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.CustomAmount,
                     is WooPosCartItemViewState.Error,
                     is WooPosCartItemViewState.Loading -> null
                 }
@@ -614,6 +689,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 get() = "reader_ready_for_card_payment"
         }
 
+        data object RemoteTapToPayExplainerShown : Event() {
+            override val name: String = "remote_ttp_explainer_shown"
+        }
+
         data object SimpleProductExplanationDialogShown : Event() {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
@@ -644,6 +723,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object GetSupportTapped : Event() {
             override val name: String = "get_support_tapped"
+        }
+
+        data object EditReceiptTapped : Event() {
+            override val name: String = "edit_receipt_tapped"
         }
 
         data object ViewDocsTapped : Event() {
@@ -875,6 +958,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class IneligibleUIRetryTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
             override val name: String = "ineligible_ui_retry_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason.toAnalyticsReason()
+                    )
+                )
+            }
+        }
+
+        data class IneligibleUILearnMoreTapped(val reason: WooPosLaunchability.NonLaunchabilityReason) : Event() {
+            override val name: String = "ineligible_ui_learn_more_tapped"
 
             init {
                 addProperties(
@@ -1205,6 +1300,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "card_reader_location_missing_tapped"
         }
 
+        data object CardReaderLocationPermissionPreAlertShown : PaymentFlowTrackerEvent() {
+            override val name: String = "card_reader_location_permission_pre_alert_shown"
+        }
+
+        data object CardReaderLocationPermissionRequiredShown : PaymentFlowTrackerEvent() {
+            override val name: String = "card_reader_location_permission_required_shown"
+        }
+
         data object CardReaderLocationSuccess : PaymentFlowTrackerEvent() {
             override val name: String = "card_reader_location_success"
         }
@@ -1332,20 +1435,17 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
-        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound -> "unknown_wc_plugin"
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
-        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired -> "ciab_plan_upgrade_required"
     }
 }
 
 internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
-        SyncStrategy.LOCAL_CATALOG -> "local_catalog"
         SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }

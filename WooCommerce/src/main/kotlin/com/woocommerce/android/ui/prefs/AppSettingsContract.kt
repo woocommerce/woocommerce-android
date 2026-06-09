@@ -8,10 +8,13 @@ interface AppSettingsContract {
         fun logout()
         fun userIsLoggedIn(): Boolean
         fun getAccountDisplayName(): String
+        fun dropView(view: View)
     }
 
     interface View : BaseView<Presenter> {
         fun finishLogout()
         fun confirmLogout()
+        fun showLogoutProgressDialog()
+        fun hideLogoutProgressDialog()
     }
 }

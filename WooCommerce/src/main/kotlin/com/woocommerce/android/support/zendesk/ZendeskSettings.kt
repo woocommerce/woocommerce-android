@@ -32,6 +32,12 @@ class ZendeskSettings @Inject constructor(
             ?.provider()
             ?.requestProvider()
 
+    val uploadProvider
+        get() = Support.INSTANCE
+            .takeIfInitialized()
+            ?.provider()
+            ?.uploadProvider()
+
     /**
      * These two properties are used to keep track of the Zendesk identity set. Since we allow users' to change their
      * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
@@ -117,7 +123,7 @@ class ZendeskSettings @Inject constructor(
      * We should refresh the Zendesk identity when the email or the name has been updated. We also check whether
      * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
      */
-    private fun refreshIdentity() {
+    fun refreshIdentity() {
         instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
     }
 

@@ -53,7 +53,7 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return when (carrier) {
             WooShippingCarrier.FEDEX -> CarrierUI(
                 carrier = carrier,
-                name = "FEDEX",
+                name = "FedEx",
                 logoRes = R.drawable.fedex_logo
             )
 

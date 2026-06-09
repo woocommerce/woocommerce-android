@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
-import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductItemListAdapter(
@@ -32,8 +31,7 @@ class OrderDetailProductItemListAdapter(
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = productItem.product
-            val imageSize = view.resources.getDimensionPixelSize(R.dimen.image_major_50)
-            val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
+            val productImage = productImageMap.get(item.uniqueId)
             view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
             itemView.setOnClickListener {
                 if (item.isVariation) {
@@ -56,8 +54,7 @@ class OrderDetailProductItemListAdapter(
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = groupedItem.product
-            val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_major_50)
-            val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
+            val productImage = productImageMap.get(item.uniqueId)
 
             binding.productInfoGroupedProduct.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
             binding.productInfoGroupedProduct.setOnClickListener {

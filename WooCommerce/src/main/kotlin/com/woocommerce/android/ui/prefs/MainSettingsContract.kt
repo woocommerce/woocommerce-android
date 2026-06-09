@@ -13,21 +13,21 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupEnablePushNotificationsOption()
         fun setupJetpackInstallOption()
-        fun setupApplicationPasswordsSettings()
+        fun setupNotificationsOption()
         fun onNotificationsClicked()
 
-        val isDomainOptionVisible: Boolean
         val isCloseAccountOptionVisible: Boolean
         val isThemePickerOptionVisible: Boolean
+        val isPluginsSectionVisible: Boolean
         val wooPluginVersion: String
     }
 
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
-        fun showNotificationsSettingsScreen()
+        fun showNotificationsSettingsScreen(showSmarterNotifications: Boolean)
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun setEnablePushNotificationsOptionVisible(isVisible: Boolean)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
-        fun handleApplicationPasswordsSettings()
+        fun handleNotificationsOption(showSmarterNotifications: Boolean)
     }
 }

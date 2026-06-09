@@ -75,7 +75,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -90,7 +89,6 @@ val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     backStackEntry: NavBackStackEntry,
-    refundReasonResult: String? = null,
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -138,9 +136,6 @@ fun WooPosBookingsScreen(
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
-        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
-        onNavigationEvent = onNavigationEvent,
-        refundReasonUpdate = refundReasonResult,
     )
 }
 
@@ -156,9 +151,6 @@ private fun WooPosBookingsScreen(
     onPaginationErrorTryAgain: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -195,22 +187,6 @@ private fun WooPosBookingsScreen(
                 .fillMaxWidth()
                 .statusBarsPadding()
         )
-
-        if (state is WooPosBookingsState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
-                    WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate,
-                        disablePartialRefund = true
-                    )
-                }
-                WooPosBookingsState.Content.DialogState.Hidden -> Unit
-                is WooPosBookingsState.Content.DialogState.CancelBooking -> Unit
-            }
-        }
     }
 }
 
@@ -684,8 +660,6 @@ fun WooPosBookingsScreenPreview() {
             onPaginationErrorTryAgain = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
-            onNavigationEvent = {}
         )
     }
 }
@@ -718,8 +692,6 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onPaginationErrorTryAgain = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
-            onNavigationEvent = {}
         )
     }
 }

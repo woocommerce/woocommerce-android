@@ -1,17 +1,14 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +17,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -31,15 +27,12 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var sut: WooPosLocalCatalogSyncRepository
     private var posSyncAction: WooPosSyncAction = mock()
     private var posFileBasedSyncAction: WooPosFileBasedSyncAction = mock()
-    private var posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
-    private var preferencesRepository: WooPosPreferencesRepository = mock()
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var dateTimeProvider: DateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
-    private var fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private var connectionTypeProvider: WooPosConnectionTypeProvider = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
 
@@ -51,17 +44,12 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             computation = UnconfinedTestDispatcher()
         )
 
-        whenever(fileApproachEnabled.invoke()).thenReturn(true)
-
         sut = WooPosLocalCatalogSyncRepository(
             posSyncAction = posSyncAction,
             posFileBasedSyncAction = posFileBasedSyncAction,
-            posCheckCatalogSizeAction = posCheckCatalogSizeAction,
-            fileApproachEnabled = fileApproachEnabled,
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,
             logger = logger,
-            preferencesRepository = preferencesRepository,
             posLocalCatalogStore = posLocalCatalogStore,
             dateTimeProvider = dateTimeProvider,
             analyticsTracker = analyticsTracker,
@@ -73,8 +61,6 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             siteId = 123L
         }
 
-        // Default: catalog size is acceptable
-        givenCatalogSizeAcceptable()
         whenever(connectionTypeProvider.getConnectionType()).thenReturn(ConnectionType.WIFI)
         whenever(posLocalCatalogStore.getProductCount(any())).thenReturn(Result.success(9))
         whenever(posLocalCatalogStore.getVariationCount(any())).thenReturn(Result.success(9))
@@ -105,66 +91,6 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         verify(syncTimestampManager).storeProductsLastSyncTimestamp(any())
         verify(syncTimestampManager).storeVariationsLastSyncTimestamp(any())
         verify(syncTimestampManager).storeFullSyncLastCompletedTimestamp(any())
-    }
-
-    @Test
-    fun `when full sync succeeds, then does not disable periodic sync`() = testBlocking {
-        // GIVEN
-        givenFileBasedFullSyncSucceeds()
-
-        // WHEN
-        sut.syncLocalCatalogFull(site)
-
-        // THEN
-        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
-    }
-
-    @Test
-    fun `when file-based full sync fails, then does not disable periodic sync`() = testBlocking {
-        // GIVEN
-        givenFileBasedFullSyncFails(
-            PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
-        )
-
-        // WHEN
-        sut.syncLocalCatalogFull(site)
-
-        // THEN
-        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
-    }
-
-    @Test
-    fun `when full sync fails with CatalogTooLarge and file-based flag disabled, then disables periodic sync`() = testBlocking {
-        // GIVEN
-        whenever(fileApproachEnabled.invoke()).thenReturn(false)
-        givenCatalogTooLargeForPaginatedFullSync()
-
-        // WHEN
-        sut.syncLocalCatalogFull(site)
-
-        // THEN
-        verify(preferencesRepository).disablePeriodicSyncForSite(any())
-    }
-
-    @Test
-    fun `given file-based flag disabled, when syncing, then sync succeeds`() = testBlocking {
-        // GIVEN
-        whenever(fileApproachEnabled.invoke()).thenReturn(false)
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = 150,
-                    variationsSynced = 50,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
-
-        // WHEN
-        val result = sut.syncLocalCatalogFull(site)
-
-        // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
     }
 
     @Test
@@ -239,10 +165,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when incremental sync fails with catalog too large, then returns CatalogTooLarge failure`() = testBlocking {
+    fun `when incremental sync fails with catalog too large, then returns UnexpectedError failure`() = testBlocking {
         // GIVEN
         val totalPages = 15
-        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
+        val maxPages = 10
         whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
@@ -250,7 +176,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val result = sut.syncLocalCatalogIncremental(site)
 
         // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogTooLarge::class.java)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.UnexpectedError::class.java)
     }
 
     @Test
@@ -357,20 +283,6 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed>())
-    }
-
-    private fun givenCatalogTooLargeForPaginatedFullSync() = runBlocking {
-        whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
-            .thenReturn(
-                WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge(
-                    error = "Too large"
-                )
-            )
-    }
-
-    private fun givenCatalogSizeAcceptable() = runBlocking {
-        whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
-            .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
     }
 
     private suspend fun givenFileBasedFullSyncSucceeds(

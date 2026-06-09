@@ -16,15 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
 
 @Composable
 fun PrivacySettingsScreen(
@@ -71,13 +71,16 @@ fun PrivacySettingsScreen(
     onUsageTrackerClicked: () -> Unit,
     onPoliciesClicked: () -> Unit,
 ) {
-    Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
+    Scaffold(containerColor = MaterialTheme.colorScheme.surface) { paddingValues ->
         AnimatedVisibility(
             visible = state.progressBarVisible,
             enter = slideInVertically(),
             exit = slideOutVertically()
         ) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.24f)
+            )
         }
         Column(
             modifier = Modifier
@@ -85,12 +88,12 @@ fun PrivacySettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.titleLarge,
                 text = stringResource(R.string.settings_privacy_header),
                 modifier = Modifier.padding(top = 16.dp, start = 16.dp)
             )
             Text(
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 text = stringResource(R.string.settings_privacy_statement),
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
             )
@@ -107,9 +110,6 @@ fun PrivacySettingsScreen(
                         onRowClicked = { onAnalyticsSettingChanged(!state.sendUsageStats) }
                     ) {
                         Switch(
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colors.primary
-                            ),
                             modifier = Modifier.padding(horizontal = 8.dp),
                             checked = state.sendUsageStats,
                             onCheckedChange = onAnalyticsSettingChanged,
@@ -161,9 +161,6 @@ fun PrivacySettingsScreen(
                         onRowClicked = { onReportCrashesChanged(!state.crashReportingEnabled) }
                     ) {
                         Switch(
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colors.primary
-                            ),
                             modifier = Modifier.padding(horizontal = 8.dp),
                             checked = state.crashReportingEnabled,
                             onCheckedChange = onReportCrashesChanged,
@@ -187,11 +184,9 @@ private fun OptionRowWithHeader(
     Column(
         modifier = modifier
     ) {
-        Text(
+        SettingsSectionHeader(
             text = sectionHeader,
-            style = MaterialTheme.typography.button,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colors.primary,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         OptionRow(
             onRowClicked,
@@ -227,7 +222,7 @@ fun OptionRow(
         ) {
             Text(
                 text = sectionTitle,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.titleMedium,
             )
             Text(
                 modifier = Modifier.padding(top = 4.dp),
@@ -236,7 +231,7 @@ fun OptionRow(
             )
         }
         if (actionContent != null) {
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .fillMaxHeight()
                     .padding(vertical = 8.dp)
@@ -251,7 +246,7 @@ fun OptionRow(
 // Style of TextAppearance.Woo.Body2
 private fun textAppearanceWooBody2() = TextStyle(
     lineHeight = 20.sp,
-    color = MaterialTheme.colors.onSurface.copy(
+    color = MaterialTheme.colorScheme.onSurface.copy(
         alpha = 0.60f
     ),
     fontSize = 14.sp,

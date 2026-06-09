@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -23,6 +24,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.data.WCLocationModel
+import org.wordpress.android.fluxc.model.settings.AnalyticsScheduledImportSettingEntity
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelCreationEligibility
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
@@ -37,6 +39,7 @@ import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConverter
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
@@ -47,6 +50,7 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
+import org.wordpress.android.fluxc.persistence.dao.OrderFulfillmentDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
@@ -66,6 +70,7 @@ import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelCreationEligibilityDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.persistence.dao.TaxClassDao
 import org.wordpress.android.fluxc.persistence.dao.TaxRateDao
@@ -73,6 +78,7 @@ import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.persistence.dao.VisitorSummaryStatsDao
 import org.wordpress.android.fluxc.persistence.dao.WooPaymentsDepositsOverviewDao
+import org.wordpress.android.fluxc.persistence.dao.WooPushNotificationPreferencesDao
 import org.wordpress.android.fluxc.persistence.dao.WooShippingDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
@@ -93,6 +99,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
+import org.wordpress.android.fluxc.persistence.entity.SupportChatBookmarkEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
 import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
@@ -100,6 +107,7 @@ import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsManualDepositEntity
+import org.wordpress.android.fluxc.persistence.entity.WooPushNotificationPreferencesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingLabelEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingPackagesEntity
 import org.wordpress.android.fluxc.persistence.entity.WooShippingShipmentEntity
@@ -132,11 +140,16 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_62_63
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_71_72
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_77_78
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_79_80
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 79
+const val WC_DATABASE_VERSION = 87
+
+// Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
+@Suppress("MagicNumber")
+private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -174,6 +187,7 @@ const val WC_DATABASE_VERSION = 79
         WCProductSettingsModel::class,
         WCCustomerModel::class,
         WCLocationModel::class,
+        WCOrderFulfillmentModel::class,
         WCOrderShipmentProviderModel::class,
         WCOrderShipmentTrackingModel::class,
         WCUserModel::class,
@@ -192,6 +206,9 @@ const val WC_DATABASE_VERSION = 79
         WCRevenueStatsModel::class,
         WCShippingLabelModel::class,
         WCShippingLabelCreationEligibility::class,
+        WooPushNotificationPreferencesEntity::class,
+        SupportChatBookmarkEntity::class,
+        AnalyticsScheduledImportSettingEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -251,6 +268,13 @@ const val WC_DATABASE_VERSION = 79
         AutoMigration(from = 75, to = 76),
         AutoMigration(from = 76, to = 77),
         AutoMigration(from = 78, to = 79),
+        AutoMigration(from = 80, to = 81),
+        AutoMigration(from = 81, to = 82),
+        AutoMigration(from = 82, to = 83),
+        AutoMigration(from = 83, to = 84),
+        AutoMigration(from = 84, to = 85),
+        AutoMigration(from = 85, to = 86),
+        AutoMigration(from = 86, to = 87),
     ]
 )
 @TypeConverters(
@@ -280,6 +304,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
     abstract val bookingsDao: BookingsDao
     internal abstract val locationsDao: LocationsDao
+    internal abstract val orderFulfillmentDao: OrderFulfillmentDao
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val orderShipmentTrackingDao: OrderShipmentTrackingDao
     internal abstract val customerDao: CustomerDao
@@ -306,6 +331,9 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val revenueStatsDao: RevenueStatsDao
     internal abstract val shippingLabelDao: ShippingLabelDao
     internal abstract val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
+    internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
+    abstract val supportChatBookmarkDao: SupportChatBookmarkDao
+    abstract val analyticsScheduledImportDao: AnalyticsScheduledImportDao
 
     companion object {
         fun buildDb(
@@ -316,7 +344,8 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
-        ).allowMainThreadQueries()
+        ).openHelperFactory(LargeCursorWindowOpenHelperFactory(CURSOR_WINDOW_SIZE_BYTES))
+            .allowMainThreadQueries()
             .addTypeConverter(currencyPositionConverter)
             .addTypeConverter(statsGranularityConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
@@ -341,6 +370,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
             .addMigrations(MIGRATION_62_63)
             .addMigrations(MIGRATION_71_72)
             .addMigrations(MIGRATION_77_78)
+            .addMigrations(MIGRATION_79_80)
             .build()
     }
 

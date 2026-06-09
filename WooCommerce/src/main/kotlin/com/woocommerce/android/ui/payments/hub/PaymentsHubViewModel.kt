@@ -205,9 +205,13 @@ class PaymentsHubViewModel @Inject constructor(
         )
     ).apply {
         addTapToPay()
+        addCardReaderMode()
         addCardReaderManuals()
         addLearnMoreAboutIPP()
     }
+
+    private val isPhoneEligibleAsCardReader: Boolean
+        get() = tapToPayAvailabilityStatus().isAvailable
 
     private fun MutableList<ListItem>.addTapToPay() {
         if (tapToPayAvailabilityStatus().isAvailable) {
@@ -238,13 +242,29 @@ class PaymentsHubViewModel @Inject constructor(
         }
     }
 
+    private fun MutableList<ListItem>.addCardReaderMode() {
+        if (!isPhoneEligibleAsCardReader) return
+        add(
+            NonToggleableListItem(
+                icon = R.drawable.ic_smartphone_24dp,
+                label = UiStringRes(R.string.card_reader_mode_settings_row_label),
+                index = 10,
+                onClick = ::onCardReaderModeClicked,
+            )
+        )
+    }
+
+    private fun onCardReaderModeClicked() {
+        triggerEvent(PaymentsHubEvents.NavigateToCardReaderMode)
+    }
+
     private fun MutableList<ListItem>.addCardReaderManuals() {
         if (countryConfig is CardReaderConfigForSupportedCountry) {
             add(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 10,
+                    index = 11,
                     onClick = { onCardReaderManualsClicked(countryConfig) }
                 )
             )
@@ -256,7 +276,7 @@ class PaymentsHubViewModel @Inject constructor(
             LearnMoreListItem(
                 icon = R.drawable.ic_info_outline_20dp,
                 label = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true),
-                index = 11,
+                index = 12,
                 onClick = ::onLearnMoreIppClicked
             )
         )
@@ -468,7 +488,9 @@ class PaymentsHubViewModel @Inject constructor(
             is PaymentOrRefund -> {
                 // no-op
             }
-            is CardReaderFlowParam.WooPosConnection -> error("Unsupported card reader flow param $params")
+            CardReaderFlowParam.WooPosConnection -> {
+                // no-op
+            }
         }
     }
 
@@ -533,6 +555,8 @@ class PaymentsHubViewModel @Inject constructor(
         ) : PaymentsHubEvents()
 
         object CardReaderUpdateScreen : PaymentsHubEvents()
+
+        data object NavigateToCardReaderMode : PaymentsHubEvents()
     }
 
     enum class CashOnDeliverySource {

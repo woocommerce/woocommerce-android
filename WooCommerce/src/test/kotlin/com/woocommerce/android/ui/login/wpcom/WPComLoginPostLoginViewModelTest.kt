@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
@@ -17,6 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -32,12 +34,14 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
     }
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val registerDevice: RegisterDevice = mock()
 
     private fun createViewModel() = WPComLoginPostLoginViewModel(
         savedStateHandle = SavedStateHandle(),
         selectedSite = selectedSite,
         jetpackActivationRepository = jetpackActivationRepository,
-        analyticsTrackerWrapper = analyticsTrackerWrapper
+        analyticsTrackerWrapper = analyticsTrackerWrapper,
+        registerDevice = registerDevice
     )
 
     @Test
@@ -79,6 +83,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
             assertThat(events.last()).isEqualTo(GoToStore)
         }
 
@@ -97,6 +102,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
+            verify(registerDevice).kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
             assertThat(events.last()).isEqualTo(ShowJetpackCPInstallationScreen)
         }
 }

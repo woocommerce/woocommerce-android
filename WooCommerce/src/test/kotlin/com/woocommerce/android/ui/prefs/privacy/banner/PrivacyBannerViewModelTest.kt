@@ -92,7 +92,7 @@ class PrivacyBannerViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             repository.stub {
                 on { isUserWPCOM() } doReturn true
-                onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
+                on { updateTracksSetting(true) } doReturn Result.failure(Exception())
             }
             sut.analyticsState.observeForever { }
 
@@ -113,10 +113,10 @@ class PrivacyBannerViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         testBlocking {
             // given
             repository.stub {
-                onBlocking { isUserWPCOM() } doReturn false
+                on { isUserWPCOM() } doReturn false
             }
             analyticsTracker.stub {
-                onBlocking { sendUsageStats } doReturn true
+                on { sendUsageStats } doReturn true
             }
             sut.analyticsState.observeForever { }
 
@@ -159,7 +159,7 @@ class PrivacyBannerViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             repository.stub {
                 on { isUserWPCOM() } doReturn true
-                onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
+                on { updateTracksSetting(true) } doReturn Result.failure(Exception())
             }
             sut.analyticsState.observeForever { }
 
@@ -184,10 +184,10 @@ class PrivacyBannerViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         testBlocking {
             // given
             repository.stub {
-                onBlocking { isUserWPCOM() } doReturn false
+                on { isUserWPCOM() } doReturn false
             }
             analyticsTracker.stub {
-                onBlocking { sendUsageStats } doReturn true
+                on { sendUsageStats } doReturn true
             }
             sut.analyticsState.observeForever { }
 
@@ -208,7 +208,7 @@ class PrivacyBannerViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         testBlocking {
             // given
             analyticsTracker.stub {
-                onBlocking { sendUsageStats } doReturn true
+                on { sendUsageStats } doReturn true
             }
             sut.analyticsState.observeForever { }
 

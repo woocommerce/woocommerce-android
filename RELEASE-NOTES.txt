@@ -2,14 +2,77 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.0
+-----
+- [**] Woo POS is now available in Canada, and the POS refund flow is improved [https://github.com/woocommerce/woocommerce-android/pull/15996]
+
+24.9
+-----
+- [*] Woo POS: "Other payment methods" in Checkout now opens as a bottom sheet instead of a fullscreen page (phone) or centered dialog (tablet) [https://github.com/woocommerce/woocommerce-android/pull/15931]
+- [*] Fixed POS Checkout screen clipping content on small phones and in phone landscape [https://github.com/woocommerce/woocommerce-android/pull/15953]
+- [Internal] Added WOO_POS_SCAN_TO_PAY and WOO_POS_MARK_ORDER_AS_COMPLETE feature flags (off in production) for the upcoming Woo POS Scan to Pay and Mark Order as Complete payment methods [https://github.com/woocommerce/woocommerce-android/pull/15928]
+- [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
+- [*] Fixed USPS shipping label customs handling for US territories and added a 30-character limit on customs item descriptions [https://github.com/woocommerce/woocommerce-android/pull/15999]
+- [Internal] Enabled local flag for self-driven push notifications [https://github.com/woocommerce/woocommerce-android/pull/15997]
+- [*] Fixed Woo Shipping label "Shipment details" title not expanding the bottom sheet on tap [https://github.com/woocommerce/woocommerce-android/pull/16020]
+- [*] Fixed Shipping Labels Verify button being briefly tappable when the address form input is invalid [https://github.com/woocommerce/woocommerce-android/pull/16021]
+
+24.8
+-----
+- [*] Fixed the order list flashing when returning from the order detail screen [https://github.com/woocommerce/woocommerce-android/pull/15886]
+- [*] Introducing the AI Assistant: a new way to run your store from your pocket. Rolling out to selected stores. [https://github.com/woocommerce/woocommerce-android/pull/15921]
+- [*] Woo POS: Use your phone as a Tap to Pay card reader for the POS tablet over Wi-Fi [https://github.com/woocommerce/woocommerce-android/pull/15781]
+- [Internal] Added REMOTE_TAP_TO_PAY feature flag (off in production) for the upcoming Woo POS Remote Tap-to-Pay feature [https://github.com/woocommerce/woocommerce-android/pull/15696]
+
+24.7
+-----
+- [***] Performance card on My Store now lets you switch between Gross, Net and Total revenue and pick the order date type (Paid, Placed or Completed) [https://github.com/woocommerce/woocommerce-android/pull/15750]
+- [*] Fixed login getting stuck in a retry loop when an http URL was returned for an HTTPS-only site [https://github.com/woocommerce/woocommerce-android/pull/15846]
+- [*] Fixed a crash when loading the product list on stores with very large product descriptions [https://github.com/woocommerce/woocommerce-android/pull/15693]
+- [Internal] Fixed logout push cleanup sequencing and added a logout loading state in App Settings [https://github.com/woocommerce/woocommerce-android/pull/15667]
+- [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]
+- [*] Stop POS background catalog sync once the initial sync completes for users who never open POS [https://github.com/woocommerce/woocommerce-android/pull/15651]
+- [*] Replaced the POS Orders "Learn more" empty-state button with a "Refresh" action and updated the empty-state copy [https://github.com/woocommerce/woocommerce-android/pull/15694]
+- [*] Fixed product images failing to load when the Photon service is unavailable [https://github.com/woocommerce/woocommerce-android/pull/15646]
+- [***] Fixed bug where POS navigation was reset to home on config change [https://github.com/woocommerce/woocommerce-android/pull/15793]
+
+24.6
+-----
+- [Internal] Removed dead domain purchase flow code (disabled since WOOMOB-504)
+- [*] Display sync progress during initial POS catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15621]
+- [*] [Woo POS] Added ability to edit receipt information from POS settings [https://github.com/woocommerce/woocommerce-android/pull/15572]
+- [*] Fixed POS "Refresh catalog" banner persisting after manual sync from settings or pull-to-refresh [https://github.com/woocommerce/woocommerce-android/pull/15620]
+- [Internal] Migrate PrivacyBannerScreen, PrivacySettingsScreen, and ChangeDueCalculatorScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15595]
+- [Internal] Hide Inbox for CIAB sites in menu and dashboard [https://github.com/woocommerce/woocommerce-android/pull/15623]
+- [Internal] Fixed POS crash when restoring the app after process death [https://github.com/woocommerce/woocommerce-android/pull/15618]
+- [Internal] Extract shared WooPosOrderCreatedData to remove duplicated types in POS event communication [https://github.com/woocommerce/woocommerce-android/pull/15604]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Added an entry point to the troubleshooting screen from app settings [https://github.com/woocommerce/woocommerce-android/pull/15582]
+- [Internal] Added bookable service creation via webview for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15622]
+- [Internal] Migrated SimpleTextEditor, CardReaderManuals, and MediaUploadErrorList screens from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15598]
+- [Internal] Migrated UpdateProductStockStatusScreen and PlanSubscriptionScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15601]
+- [Internal] Tag CIAB support tickets with commerce_in_a_box for proper routing [https://github.com/woocommerce/woocommerce-android/pull/15636]
+- [*] Fixed a startup crash that could happen after the selected site was invalidated in the background [https://github.com/woocommerce/woocommerce-android/pull/15626]
+- [*] Fixed POS catalog sync crash on stores with product variations missing a description [https://github.com/woocommerce/woocommerce-android/pull/15653]
+- [*] Shipping Labels: Improved destination name validation when fetching shipping rates [https://github.com/woocommerce/woocommerce-android/pull/15661]
+
+24.5.1
+-----
+- [Internal] POS: Improved error descriptions in catalog sync failure analytics [https://github.com/woocommerce/woocommerce-android/pull/15643]
+
 24.5
 -----
-
+- [Internal] Hide settings plugins section for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15594]
+- [*] Fixed shipping address showing billing address data when selecting a registered customer during order creation [https://github.com/woocommerce/woocommerce-android/pull/15575]
+- [Internal] Migrate AccountSettingsScreen, BarcodeScannerScreen, and PrivacySettingsPoliciesScreen from Material 2 to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15596]
+- [Internal] Treat CIAB sites like atomic sites during site connection [https://github.com/woocommerce/woocommerce-android/pull/15608]
+- [Internal] Unified local and remote feature flag handling [https://github.com/woocommerce/woocommerce-android/pull/15299]
+- [Internal][WEAR] Update watchface complications dependency to 1.3.0 [https://github.com/woocommerce/woocommerce-android/pull/15577]
 
 24.4
 -----
+- [*] Shipping Labels: Add FedEx carrier support to package selection [https://github.com/woocommerce/woocommerce-android/pull/15533]
 - [Woo POS] We added Refunds feature to Point of Sale [https://github.com/woocommerce/woocommerce-android/pull/15510]
-
 - [Internal] Add full-text search for POS product search with analytics tracking [https://github.com/woocommerce/woocommerce-android/pull/15484]
 - [Internal] Fixed attendance status filter sending invalid API requests when multiple statuses were selected [https://github.com/woocommerce/woocommerce-android/pull/15504]
 - [**] Display net sales instead of total sales on My Store dashboard to match wp-admin [https://github.com/woocommerce/woocommerce-android/pull/15493]

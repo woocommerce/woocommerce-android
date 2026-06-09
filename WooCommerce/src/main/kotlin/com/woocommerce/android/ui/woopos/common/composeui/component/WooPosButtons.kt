@@ -35,14 +35,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
+
+private const val PHONE_FULL_SCREEN_BUTTON_WIDTH_FRACTION = 1.0f
+private const val TABLET_FULL_SCREEN_BUTTON_WIDTH_FRACTION = 0.5f
+
+@Composable
+fun Modifier.wooPosFullScreenActionButton(): Modifier {
+    val fraction = if (currentWooPosBreakpoint() == WooPosBreakpoint.Phone) {
+        PHONE_FULL_SCREEN_BUTTON_WIDTH_FRACTION
+    } else {
+        TABLET_FULL_SCREEN_BUTTON_WIDTH_FRACTION
+    }
+    return this.fillMaxWidth(fraction)
+}
 
 @Composable
 fun WooPosButton(
@@ -53,8 +74,8 @@ fun WooPosButton(
 ) {
     Button(
         modifier = modifier,
-        height = 80.dp,
-        loadingIndicatorSize = 32.dp,
+        height = WooPosComponentSize.Small.value,
+        loadingIndicatorSize = WooPosIconSize.Medium.value.toAdaptiveIconSize(),
         textStyle = WooPosTypography.BodyLarge,
         text = text,
         state = state,
@@ -77,8 +98,8 @@ fun WooPosButtonSmall(
 ) {
     Button(
         modifier = modifier,
-        height = 40.dp,
-        loadingIndicatorSize = 20.dp,
+        height = WooPosComponentSize.XXSmall.value,
+        loadingIndicatorSize = 20.dp.toAdaptiveIconSize(),
         textStyle = WooPosTypography.BodySmall,
         text = text,
         state = state,
@@ -97,6 +118,8 @@ fun WooPosOutlinedButton(
     modifier: Modifier = Modifier,
     text: String,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
+    maxLines: Int = Int.MAX_VALUE,
+    textStyle: WooPosTypography = WooPosTypography.BodyLarge,
     onClick: () -> Unit,
 ) {
     val borderColor = if (state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING) {
@@ -106,9 +129,9 @@ fun WooPosOutlinedButton(
     }
     Button(
         modifier = modifier,
-        height = 80.dp,
-        loadingIndicatorSize = 32.dp,
-        textStyle = WooPosTypography.BodyLarge,
+        height = WooPosComponentSize.Small.value,
+        loadingIndicatorSize = WooPosIconSize.Medium.value.toAdaptiveIconSize(),
+        textStyle = textStyle,
         text = text,
         border = BorderStroke(2.dp, borderColor),
         colors = ButtonDefaults.buttonColors(
@@ -118,6 +141,7 @@ fun WooPosOutlinedButton(
             disabledContentColor = WooPosTheme.colors.onDisabledContainer,
         ),
         state = state,
+        maxLines = maxLines,
         onClick = onClick,
     )
 }
@@ -136,8 +160,8 @@ fun WooPosOutlinedButtonSmall(
     }
     Button(
         modifier = modifier,
-        height = 40.dp,
-        loadingIndicatorSize = 20.dp,
+        height = WooPosComponentSize.XXSmall.value,
+        loadingIndicatorSize = 20.dp.toAdaptiveIconSize(),
         textStyle = WooPosTypography.BodySmall,
         text = text,
         border = BorderStroke(2.dp, borderColor),
@@ -188,7 +212,7 @@ fun WooPosCircularIconButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(56.dp)
+            .size(WooPosComponentSize.XSmall.value)
             .clip(CircleShape)
             .background(backgroundColor)
     ) {
@@ -220,7 +244,7 @@ fun WooPosIconButton(
     ) {
         Icon(
             modifier = Modifier
-                .size(32.dp),
+                .size(WooPosIconSize.Medium.value),
             imageVector = icon,
             contentDescription = contentDescription,
             tint = if (enabled) {
@@ -242,6 +266,7 @@ private fun Button(
     colors: ButtonColors,
     border: BorderStroke? = null,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
+    maxLines: Int = Int.MAX_VALUE,
     onClick: () -> Unit,
 ) {
     val onClickLocal = if (state == WooPosButtonState.ENABLED) {
@@ -271,6 +296,9 @@ private fun Button(
                 text = text,
                 style = textStyle,
                 fontWeight = FontWeight.Bold,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.alpha(if (state == WooPosButtonState.LOADING) 0f else 1f)
             )
             when (state) {
@@ -300,7 +328,7 @@ fun WooPosButtonsPreview() {
         Column(
             modifier = Modifier
                 .padding(WooPosSpacing.Medium.value)
-                .width(600.dp)
+                .width(600.dp.toAdaptiveComponentSize())
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
@@ -377,7 +405,7 @@ fun WooPosSmallButtonsPreview() {
         Column(
             modifier = Modifier
                 .padding(WooPosSpacing.Medium.value)
-                .width(600.dp)
+                .width(600.dp.toAdaptiveComponentSize())
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {

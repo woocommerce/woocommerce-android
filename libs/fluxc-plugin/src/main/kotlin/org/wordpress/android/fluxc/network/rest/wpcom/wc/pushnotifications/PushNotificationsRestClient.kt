@@ -2,14 +2,36 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PushNotificationsRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
+    suspend fun fetchNotificationPreferences(site: SiteModel): WooPayload<WooPushNotificationPreferences> {
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.preferences.pathPushNotifications,
+            clazz = WooPushNotificationPreferences::class.java
+        ).toWooPayload()
+    }
+
+    suspend fun updateNotificationPreferences(
+        site: SiteModel,
+        preferences: WooPushNotificationPreferences
+    ): WooPayload<WooPushNotificationPreferences> {
+        return wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.preferences.pathPushNotifications,
+            clazz = WooPushNotificationPreferences::class.java,
+            body = preferences.toRequestMap()
+        ).toWooPayload()
+    }
 
     suspend fun registerPushToken(
         site: SiteModel,
@@ -35,11 +57,16 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
     suspend fun deletePushToken(
         site: SiteModel,
         pushTokenId: String
-    ): WooPayload<Unit> = wooNetwork.executeDeleteGsonRequest(
-        site = site,
-        path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
-        clazz = Unit::class.java,
-    ).toWooPayload()
+    ): WooPayload<Unit> = when (
+        val response = wooNetwork.executeDeleteGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
+            clazz = Unit::class.java,
+        )
+    ) {
+        is WPAPIResponse.Success -> WooPayload(Unit)
+        is WPAPIResponse.Error -> WooPayload(response.error.toWooError())
+    }
 
     data class PushTokenRegistrationRequest(
         val token: String,

@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -44,6 +45,7 @@ class AddressViewModelTest : BaseUnitTest() {
         on { getCountries() } doReturn listOf(newCountry, newCountryWithoutStates)
         on { getStates(newCountry.code) } doReturn listOf(newState)
     }
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private lateinit var addressViewModel: AddressViewModel
 
@@ -55,11 +57,13 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        whenever(featureFlagRepository.isEnabled(any())).thenReturn(false)
         addressViewModel = AddressViewModel(
             savedStateHandle,
             selectedSite,
             dataStore,
-            GetLocations(dataStore)
+            GetLocations(dataStore),
+            featureFlagRepository
         )
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
         addressViewModel.shouldEnableDoneButton.observeForever(mock())
@@ -110,7 +114,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onScreenDetached()
         // Default view state is first emitted in the test setup (observeForever) and again on onScreenDetached.
         // That's why we're verifying if default view state was emitted 2 times.
-        verify(viewStateObserver, times(2)).onChanged(ViewState())
+        verify(viewStateObserver, times(2)).onChanged(expectedViewState())
     }
 
     @Test
@@ -130,7 +134,7 @@ class AddressViewModelTest : BaseUnitTest() {
             mapOf(SHIPPING to shippingAddress)
         )
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
+            expectedViewState(
                 addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress,
@@ -147,7 +151,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onCountrySelected(SHIPPING, newCountry.code)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
+            expectedViewState(
                 addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(
@@ -170,7 +174,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onCountrySelected(SHIPPING, missingCountryCode)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
+            expectedViewState(
                 addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(
@@ -192,7 +196,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onStateSelected(SHIPPING, newState.code)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
+            expectedViewState(
                 addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(
@@ -215,7 +219,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.onStateSelected(SHIPPING, stateCode)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
+            expectedViewState(
                 addressSelectionStates = mapOf(
                     SHIPPING to AddressSelectionState(
                         address = shippingAddress.copy(state = AmbiguousLocation.Raw(stateCode)),
@@ -284,7 +288,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressViewModel.clearSelectedAddress()
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
-            ViewState(
+            expectedViewState(
                 customerId = null,
                 addressSelectionStates = mapOf(
                     BILLING to AddressSelectionState(
@@ -299,6 +303,23 @@ class AddressViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    private fun expectedViewState(
+        customerId: Long? = null,
+        firstName: String? = null,
+        lastName: String? = null,
+        email: String? = null,
+        addressSelectionStates: Map<AddressViewModel.AddressType, AddressSelectionState> = emptyMap(),
+        isLoading: Boolean = false,
+    ) = ViewState(
+        customerId = customerId,
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        addressSelectionStates = addressSelectionStates,
+        isLoading = isLoading,
+        isBetterCustomerSearchEnabled = false,
+    )
 
     @Test
     fun `when onDeleteCustomerClicked, then emit DeleteCustomer event`() {

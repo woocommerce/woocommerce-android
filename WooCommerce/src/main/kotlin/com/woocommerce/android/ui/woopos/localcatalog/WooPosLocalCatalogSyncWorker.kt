@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlin.time.Duration.Companion.milliseconds
@@ -29,6 +30,7 @@ constructor(
     private val timeProvider: DateTimeProvider,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val syncTimestampManager: WooPosSyncTimestampManager,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -71,19 +73,7 @@ constructor(
                 Result.success()
             }
 
-            is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
-                logger.e(
-                    "Local catalog FULL sync failed: ${fullSyncResult.error}. Permanently " +
-                        "disabling periodic sync for site ${site.url}."
-                )
-                Result.failure()
-            }
-
-            is PosLocalCatalogSyncResult.Failure.NetworkError,
-            is PosLocalCatalogSyncResult.Failure.DatabaseError,
-            is PosLocalCatalogSyncResult.Failure.InvalidResponse,
-            is PosLocalCatalogSyncResult.Failure.UnexpectedError,
-            is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> {
+            is PosLocalCatalogSyncResult.Failure -> {
                 logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()
             }
@@ -120,7 +110,8 @@ constructor(
     }
 
     private suspend fun isPosInactive(): Boolean {
-        val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp() ?: return false
+        val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp()
+            ?: return hasAlreadyCompletedFullSync()
         val daysSinceLastUse = (timeProvider.now() - lastUsedTimestamp).milliseconds.inWholeDays
         return if (daysSinceLastUse > DAYS_SINCE_LAST_USE_THRESHOLD) {
             logger.d(
@@ -131,6 +122,17 @@ constructor(
         } else {
             false
         }
+    }
+
+    private suspend fun hasAlreadyCompletedFullSync(): Boolean {
+        val alreadySynced = syncTimestampManager.getFullSyncLastCompletedTimestamp() != null
+        if (alreadySynced) {
+            logger.d(
+                "POS was never opened and a full catalog sync has already completed, " +
+                    "skipping background full catalog sync."
+            )
+        }
+        return alreadySynced
     }
 
     private suspend fun trackSyncSkipped(skipReason: SyncSkipReason) {

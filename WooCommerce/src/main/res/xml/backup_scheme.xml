@@ -9,10 +9,16 @@
         <exclude
             domain="sharedpref"
             path="com.woocommerce.android_deletable_preferences.xml" />
+        <exclude
+            domain="sharedpref"
+            path="com.woocommerce.android_fluxc-preferences.xml" />
     </cloud-backup>
     <device-transfer>
         <exclude
             domain="sharedpref"
             path="com.woocommerce.android_deletable_preferences.xml" />
+        <exclude
+            domain="sharedpref"
+            path="com.woocommerce.android_fluxc-preferences.xml" />
     </device-transfer>
 </data-extraction-rules>

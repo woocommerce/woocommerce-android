@@ -77,10 +77,10 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     private val wooStore: WooCommerceStore = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderChecker: CardReaderOnboardingChecker = mock {
-        onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
+        on { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock {
-        onBlocking { isCashOnDeliveryEnabled() } doReturn false
+        on { isCashOnDeliveryEnabled() } doReturn false
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
@@ -142,6 +142,28 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given phone is eligible, when screen shown, then card reader mode row present`() {
+        initViewModel()
+
+        assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
+            .anyMatch {
+                it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+            }
+    }
+
+    @Test
+    fun `given phone is not eligible, when screen shown, then card reader mode row is absent`() {
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(CountryNotSupported)
+
+        initViewModel()
+
+        assertThat(viewModel.viewStateData.getOrAwaitValue().rows)
+            .noneMatch {
+                it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+            }
+    }
+
+    @Test
     fun `given supported country, when screen shown, then manual card reader row is present`() {
         val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
@@ -192,6 +214,18 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED)
+    }
+
+    @Test
+    fun `given card reader mode row shown, when user clicks it, then navigate to card reader mode event triggered`() {
+        initViewModel()
+
+        viewModel.viewStateData.getOrAwaitValue().rows.find {
+            it.label == UiStringRes(R.string.card_reader_mode_settings_row_label)
+        }!!.onClick!!.invoke()
+
+        assertThat(viewModel.event.getOrAwaitValue())
+            .isEqualTo(PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderMode)
     }
 
     @Test
@@ -1409,7 +1443,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
         }
 
     @Test
@@ -1547,7 +1581,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
         )
         assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
-        assertThat(learnMoreListItems[0].index).isEqualTo(11)
+        assertThat(learnMoreListItems[0].index).isEqualTo(12)
     }
 
     @Test

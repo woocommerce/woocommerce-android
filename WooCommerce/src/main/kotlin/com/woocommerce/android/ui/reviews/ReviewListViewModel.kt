@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
@@ -19,6 +21,7 @@ import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.Ma
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Success
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -39,13 +42,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReviewListViewModel @Inject constructor(
-    savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val reviewRepository: ReviewListRepository,
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -99,8 +104,11 @@ class ReviewListViewModel @Inject constructor(
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
+            // Fetch after cache check to avoid race where fetchReviewList sets
+            // isSkeletonShown = false before the cache check sets it to true.
+            syncUnreadFilterAvailability()
+            fetchReviewList(loadMore = false)
         }
-        fetchReviewList(loadMore = false)
     }
 
     override fun ReviewModerationConsumer.onReviewModerationSuccess() {
@@ -124,6 +132,7 @@ class ReviewListViewModel @Inject constructor(
     }
 
     fun forceRefreshReviews() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.REVIEWS_LIST_PULLED_TO_REFRESH)
         viewState = viewState.copy(isRefreshing = true)
         fetchReviewList(loadMore = false)
     }
@@ -171,6 +180,7 @@ class ReviewListViewModel @Inject constructor(
                             ReviewListRepository.FetchReviewsResult.NothingFetched -> {
                                 // No action needed
                             }
+
                             is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
                                 if (result.requestResult == SUCCESS) {
                                     val reviews = reviewRepository.getCachedProductReviews()
@@ -240,6 +250,14 @@ class ReviewListViewModel @Inject constructor(
         fetchReviewList(loadMore = false)
     }
 
+    private suspend fun syncUnreadFilterAvailability() {
+        val isUnreadFilterVisible = supportsReviewsReadStatus()
+        viewState = viewState.copy(
+            isUnreadFilterVisible = isUnreadFilterVisible,
+            isUnreadFilterEnabled = viewState.isUnreadFilterEnabled && isUnreadFilterVisible
+        )
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
@@ -255,6 +273,7 @@ class ReviewListViewModel @Inject constructor(
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val hasUnreadReviews: Boolean? = null,
+        val isUnreadFilterVisible: Boolean = true,
         val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 

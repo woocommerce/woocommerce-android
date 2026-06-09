@@ -27,7 +27,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
         on(it.getQuantityString(any(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer { i -> "formatted ${i.arguments[0]}" }
     }
-
     private val sut = WooShippingRatesDomainMapper(
         resourceProvider = resourceProvider,
         currencyFormatter = currencyFormatter

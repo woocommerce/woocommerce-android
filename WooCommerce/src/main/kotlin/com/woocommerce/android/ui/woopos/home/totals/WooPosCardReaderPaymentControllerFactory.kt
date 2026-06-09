@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.reflect.KMutableProperty0
 
@@ -53,6 +54,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentType: PaymentType,
         isTTPPaymentInProgress: KMutableProperty0<Boolean>,
         allowCancelledStatus: Boolean = false,
+        cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
     ): CardReaderPaymentController = CardReaderPaymentController(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -77,8 +79,41 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
             orderId = orderId,
             paymentType = paymentType
         ),
-        cardReaderType = CardReaderType.EXTERNAL,
+        cardReaderType = cardReaderType,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
         allowCancelledStatus = allowCancelledStatus,
+    )
+
+    fun createRefund(
+        orderId: Long,
+        refundAmount: BigDecimal,
+        isTTPPaymentInProgress: KMutableProperty0<Boolean>,
+    ): CardReaderPaymentController = CardReaderPaymentController(
+        cardReaderManager = cardReaderManager,
+        orderRepository = orderRepository,
+        selectedSite = selectedSite,
+        appPrefs = appPrefs,
+        paymentCollectibilityChecker = paymentCollectibilityChecker,
+        interacRefundableChecker = interacRefundableChecker,
+        tracker = tracker,
+        trackCancelledFlow = trackCancelledFlow,
+        currencyFormatter = currencyFormatter,
+        errorMapper = errorMapper,
+        interacRefundErrorMapper = interacRefundErrorMapper,
+        wooStore = wooStore,
+        dispatchers = dispatchers,
+        cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+        paymentStateProvider = paymentStateProvider,
+        cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+        paymentReceiptHelper = paymentReceiptHelper,
+        cardReaderOnboardingChecker = cardReaderOnboardingChecker,
+        paymentReceiptShare = paymentReceiptShare,
+        paymentOrRefund = PaymentOrRefund.Refund(
+            orderId = orderId,
+            refundAmount = refundAmount
+        ),
+        cardReaderType = CardReaderType.EXTERNAL,
+        isTTPPaymentInProgress = isTTPPaymentInProgress,
+        allowCancelledStatus = false,
     )
 }

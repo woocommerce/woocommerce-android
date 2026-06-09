@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -23,10 +22,9 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ProductReviewsDaoTest {
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: ProductReviewsDao
 
@@ -38,7 +36,7 @@ class ProductReviewsDaoTest {
 
     @Before
     fun setUp() {
-        sut = databaseRule.db.productReviewsDao
+        sut = wcDatabaseRule.db.productReviewsDao
     }
 
     @Test

@@ -1,0 +1,68 @@
+package com.woocommerce.android.aiassistant.tools.orders
+
+import com.woocommerce.android.aiassistant.core.chat.AssistantToolHandler
+import com.woocommerce.android.aiassistant.core.chat.ToolCall
+import com.woocommerce.android.aiassistant.core.chat.ToolDescriptor
+import com.woocommerce.android.aiassistant.core.chat.ToolResult
+import com.woocommerce.android.aiassistant.core.chat.ToolSafetyLevel
+import com.woocommerce.android.aiassistant.core.chat.inputSchema
+import com.woocommerce.android.aiassistant.core.chat.parseArgs
+import com.woocommerce.android.aiassistant.di.AiAssistantJson
+import com.woocommerce.android.aiassistant.tools.ToolFailureDiagnosticsFactory
+import com.woocommerce.android.aiassistant.tools.validateAllowedArguments
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.encodeToJsonElement
+import javax.inject.Inject
+
+internal class OrdersGetToolHandler @Inject constructor(
+    private val dataSource: AIOrdersDataSource,
+    @AiAssistantJson private val json: Json,
+    private val diagnosticsFactory: ToolFailureDiagnosticsFactory,
+) : AssistantToolHandler {
+
+    override val descriptor = ToolDescriptor(
+        name = "orders_get",
+        description = "Fetch a single order with full detail including line items, products, order contents, " +
+            "billing/shipping, status, and customer_id. Use when the merchant references a specific order by ID or " +
+            "by a prior-turn order position/reference once its ID is known, especially for contents that order " +
+            "cards do not show. The customer_id can chain into customers_list for follow-up questions about the " +
+            "buyer. Do not call just to re-render an existing order card; show_cards can use existing order " +
+            "references.",
+        inputSchema = inputSchema {
+            integer("id", description = "The order ID.", required = true)
+        },
+        safetyLevel = ToolSafetyLevel.SAFE,
+    )
+
+    override suspend fun execute(call: ToolCall): ToolResult {
+        validateAllowedArguments(call.arguments, ORDERS_GET_ALLOWED_ARGS, descriptor.name).exceptionOrNull()?.let {
+            return ToolResult.ValidationError(call.id, it.message ?: "Invalid arguments")
+        }
+        val args = call.parseArgs<Args>(json).getOrElse {
+            return ToolResult.ValidationError(call.id, "Invalid arguments: ${it.message}")
+        }
+        return dataSource.getOrder(args.id).fold(
+            onSuccess = { order ->
+                ToolResult.Success(
+                    toolCallId = call.id,
+                    structured = json.encodeToJsonElement(order.toOrderDetailResponse()) as JsonObject,
+                )
+            },
+            onFailure = { error ->
+                diagnosticsFactory.transportError(
+                    toolCallId = call.id,
+                    toolName = descriptor.name,
+                    error = error,
+                    retryable = true,
+                )
+            },
+        )
+    }
+
+    @Serializable
+    private data class Args(val id: Long)
+}
+
+private val ORDERS_GET_ALLOWED_ARGS = setOf("id")

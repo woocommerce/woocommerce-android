@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -54,7 +55,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { get() } doReturn selectedSiteFlow.value
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
-        onBlocking { isInboxEnabled() } doReturn true
+        on { isInboxEnabled() } doReturn true
     }
     private val accountStore: AccountStore = mock {
         on { account } doReturn AccountModel().apply {
@@ -62,7 +63,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
     }
     private val planRepository: SitePlanRepository = mock {
-        onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
+        on { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
             name = "",
             expirationDate = ZonedDateTime.now(),
             type = SitePlan.Type.FREE_TRIAL
@@ -77,11 +78,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
 
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled = mock {
-        onBlocking { invoke() } doReturn true
+        on { invoke() } doReturn true
     }
 
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
@@ -119,7 +120,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             observeBookingsVisibility = observeBookingsVisibility,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            ciabSiteGateKeeper = ciabSiteGateKeeper
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
         )
     }
 
@@ -501,10 +502,50 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `given CIAB site, when admin button clicked, then launch url in chrome tab`() = testBlocking {
+        // GIVEN
+        selectedSiteFlow.update {
+            it.apply {
+                setIsGardenSite(true)
+                gardenName = SiteModel.CIAB_GARDEN_NAME
+            }
+        }
+        setup()
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_wс_admin }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        // THEN
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.LaunchUrlInChromeTab::class.java)
+    }
+
+    @Test
+    fun `given non-CIAB site, when admin button clicked, then launch url in authenticated web view`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val button = state.menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_wс_admin }
+        val event = viewModel.event.runAndCaptureValues {
+            button.onClick()
+        }.last()
+
+        // THEN
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView::class.java)
+    }
+
+    @Test
     fun `given CIAB reports payments disabled, when building state, then payments button is hidden`() = testBlocking {
         // GIVEN
         setup {
-            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments))
+            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments))
                 .thenReturn(false)
         }
 
@@ -514,5 +555,21 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         val items = state.menuSections.flatMap { it.items }
         assertThat(items.none { it.title == R.string.more_menu_button_payments }).isTrue()
+    }
+
+    @Test
+    fun `when building state, then ai assistant entry point is not part of more menu`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+
+        // THEN
+        val items = state.menuSections.flatMap { it.items }
+        assertThat(MoreMenuItemButton.Type.entries.map { it.name }).doesNotContain("AiAssistant")
+        assertThat(items.map { it.title }).doesNotContain(R.string.more_menu_button_ai_assistant)
+        assertThat(items.map { it.description }).doesNotContain(R.string.more_menu_button_ai_assistant_description)
+        assertThat(items.map { it.icon }).doesNotContain(R.drawable.ic_more_menu_ai_assistant)
     }
 }

@@ -83,7 +83,7 @@ class WooPosCartViewModelTest {
         )
     private val getProductById: WooPosGetProductById = mock()
     private val getCouponById: WooPosGetCouponById = mock {
-        onBlocking { invoke(any()) }.thenReturn(
+        on { invoke(any()) }.thenReturn(
             Coupon(
                 1L,
                 "coupon_code",
@@ -103,7 +103,7 @@ class WooPosCartViewModelTest {
     }
 
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock {
-        onBlocking { invoke() }.thenReturn("USD")
+        on { invoke() }.thenReturn("USD")
     }
 
     private val getVariationsById: WooPosGetVariationById = mock()
@@ -118,7 +118,7 @@ class WooPosCartViewModelTest {
         }.thenReturn("Item in cart: 1")
     }
     private val formatPrice: WooPosFormatPrice = mock {
-        onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
+        on { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
     }
 
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
@@ -149,6 +149,7 @@ class WooPosCartViewModelTest {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
+    private val customAmountCartHandler: WooPosCustomAmountCartHandler = WooPosCustomAmountCartHandler()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val barcodeEventTracker: WooPosBarcodeEventTracker = mock()
@@ -1757,6 +1758,7 @@ class WooPosCartViewModelTest {
             analyticsTracker,
             trackerData,
             cartItemsUpdater,
+            customAmountCartHandler,
             getCachedStoreCurrency,
             searchByIdentifier,
             wooPosLogWrapper,
@@ -1833,4 +1835,129 @@ class WooPosCartViewModelTest {
             assertThat(errorItem.message).isEqualTo(errorMessage)
             verify(soundHelper).playBarcodeScanFailure()
         }
+
+    @Test
+    fun `given empty cart, when CustomAmountSubmitted received, then row is added`() = runTest {
+        // GIVEN
+        whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.CustomAmountSubmitted(
+                name = "Service",
+                amount = BigDecimal("7.50"),
+                isTaxable = true,
+                editingItemNumber = null,
+            )
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val items = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(items).hasSize(1)
+        val customAmount = items.first() as WooPosCartItemViewState.CustomAmount
+        assertThat(customAmount.name).isEqualTo("Service")
+        assertThat(customAmount.amount).isEqualByComparingTo(BigDecimal("7.50"))
+        assertThat(customAmount.formattedAmount).isEqualTo("$7.50")
+        assertThat(customAmount.isTaxable).isTrue()
+    }
+
+    @Test
+    fun `given empty cart, when first custom amount is submitted, then new transaction lifecycle starts`() = runTest {
+        // GIVEN
+        whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+        val sut = createSut()
+        sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.CustomAmountSubmitted(
+                name = "Service",
+                amount = BigDecimal("7.50"),
+                isTaxable = false,
+                editingItemNumber = null,
+            )
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
+        verify(analyticsTracker).track(InteractionWithCustomerStarted)
+    }
+
+    @Test
+    fun `given existing custom amount, when CustomAmountSubmitted with editingItemNumber, then row is updated in place`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("1.00"))).thenReturn("$1.00")
+            whenever(formatPrice(BigDecimal("2.50"))).thenReturn("$2.50")
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.CustomAmountSubmitted(
+                    name = "Original",
+                    amount = BigDecimal("1.00"),
+                    isTaxable = false,
+                    editingItemNumber = null,
+                )
+            )
+            advanceUntilIdle()
+            val originalItemNumber = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first().itemNumber
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.CustomAmountSubmitted(
+                    name = "Updated",
+                    amount = BigDecimal("2.50"),
+                    isTaxable = true,
+                    editingItemNumber = originalItemNumber,
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val items = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+            assertThat(items).hasSize(1)
+            val updated = items.first() as WooPosCartItemViewState.CustomAmount
+            assertThat(updated.itemNumber).isEqualTo(originalItemNumber)
+            assertThat(updated.name).isEqualTo("Updated")
+            assertThat(updated.amount).isEqualByComparingTo(BigDecimal("2.50"))
+            assertThat(updated.isTaxable).isTrue()
+        }
+
+    @Test
+    fun `given custom amount in cart, when EditCustomAmountClicked, then dialog request event is sent`() = runTest {
+        // GIVEN
+        whenever(formatPrice(BigDecimal("4.00"))).thenReturn("$4.00")
+        val sut = createSut()
+        sut.state.captureValues()
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.CustomAmountSubmitted(
+                name = "Tip",
+                amount = BigDecimal("4.00"),
+                isTaxable = false,
+                editingItemNumber = null,
+            )
+        )
+        advanceUntilIdle()
+        val customAmountItem = WooPosCartItemViewState.CustomAmount(
+            itemNumber = 1,
+            name = "Tip",
+            amount = BigDecimal("4.00"),
+            formattedAmount = "$4.00",
+            isTaxable = false,
+        )
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.EditCustomAmountClicked(customAmountItem))
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.CustomAmountDialogRequested(editing = customAmountItem)
+        )
+    }
 }

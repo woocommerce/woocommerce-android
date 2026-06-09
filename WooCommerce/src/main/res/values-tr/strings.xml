@@ -1,11 +1,329 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-03-09 15:58:37+0000
+Translation-Revision-Date: 2026-05-20 12:55:27+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Asistan çalışırken bir şeyler ters gitti.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Birkaç adımdan sonra asistan bitiremedi.</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Onay henüz mevcut değil. Lütfen sohbette tekrar deneyin.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">İstek durduruldu.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Bu değişikliğin uygulanıp uygulanmadığından emin değilim. Lütfen başka bir şey denemeden önce mağazanızda doğrulayın.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">Asistan bu isteği tamamlayamadı.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">Asistan mağaza işlemini tamamlayamadı.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">Yardımcı hizmet bu yanıtı tamamlayamadı. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">İstek zaman aşımına uğradı. Tekrar deneyin.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">Asistan şu anda meşgul. Birazdan tekrar deneyin.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">Asistan mağazanıza erişemedi. Lütfen tekrar oturum açın, ardından asistanı yeniden açın.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">Bağlantı kurulamadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">İptal Et</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">Onayla</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">%1$s onaylansın mı?</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">Tekrar dene</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">Yukarıdaki beklemedeki değişikliği çözün.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">Yanıtı durdur</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">Mesaj gönder</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">Mağazanız hakkında soru sorun</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">Şunun analizlerini aç: %1$s</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">Kullanılamıyor</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">Ortalama Sipariş Değeri</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">Toplam Sipariş</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">Net Satışlar</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">Toplam Satış</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">Erken erişim bildirimini kapat</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">Geri Bildirim Ver</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">Merhaba! Henüz yeni başlıyoruz, daha fazlası yolda. Nelerin eksik olduğunu ve nelerle ilgili yardım almak istediğinizi bize bildirin!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">ERKEN ERİŞİM</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">Öneri gönderin: %1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">En yeni müşterilerimi göster. En yenisi önce olacak şekilde kayıt tarihine göre sıralanmış en fazla 10 müşteriyi listele.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">İlgilenmem gereken bir sipariş var mı? Beklemede, askıda veya işlenen son siparişleri göster.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">Ne azalıyor? Neyi yeniden stoklayacağımı bilmem için stokta olmayan veya envanterde düşük olan ürünleri listele.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">Bu haftaki kazancım nasıl? Bu haftanın toplam satışlarını ve geçen haftaya kıyasla nasıl olduğunu göster.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">En yeni müşterilerim kimler?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">İlgilenmem gereken bir sipariş var mı?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">Ne azalıyor?</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">Bu haftaki kazanç nasıl?</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">Nasıl yardımcı olabilirim?</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">Kartlar</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">Müşteriler</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">Analizler</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">Varyasyonlar</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">Ürünler</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">Siparişler</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">Asistan çalışıyor: %1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">Mağazanız kontrol ediliyor</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">Müşteriler kontrol ediliyor</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">Analizler kontrol ediliyor</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">Ürünler güncelleniyor</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">Ürünler kontrol ediliyor</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">Siparişler güncelleniyor</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">Siparişler kontrol ediliyor</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">Asistan düşünüyor</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">Asistan: %1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">Siz: %1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">En yeniye geç</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">Yeni sohbet başlatın</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">Geri</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">Asistan</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">%1$d tane daha</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">İptal edildi</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">Onaylandı</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">Değişiklik beklemede</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">Kapalı</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">Güncellendi</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">Stok durumu</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">Stok</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">İndirim</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">Fiyat</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">Ad</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">Fatura e-posta adresi</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">Müşteri notu</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">Durum</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">İnceleme %1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">%2$s numaralı ürün için %1$s numaralı varyasyonu güncelleyin</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">Ürün varyasyonunu güncelleyin</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d ürünü güncelleyin</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">%1$d ürünü güncelleyin</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Birçok ürünü güncelle</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">%1$s (#%2$s) ürününü güncelleyin</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">#%1$s ürününü güncelleyin</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">Ürünü güncelle</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d siparişi güncelle: Müşterilere e-posta gönderilir</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">%1$d siparişi güncelle: Müşteriye e-posta gönderilir</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">%1$d siparişi güncelleyin</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">%1$d siparişi güncelleyin</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">Birçok siparişi güncelleyin</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">%1$s numaralı siparişi güncelle: Müşteriye e-posta gönderilir</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">%1$s numaralı siparişi güncelleyin</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">Bir siparişi güncelle</string>
+    <string name="woopos_remote_ttp_explainer_got_it">Anladım</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">Aynı Wi-Fi bağlantısını kullanın ve her iki cihazda da aynı mağazada oturum açın. Telefonunuzun Android 13 veya daha yeni bir sürümüne, NFC\'ye ve Tap-to-Pay desteğine ihtiyacı var.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">Uyumluluğu kontrol edin</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">Telefonunuzda Woo\'yu açın, ardından Ayarlar → Ödemeler → Kart Okuyucu Modu\'na gidin.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">Telefonunuzu ayarlayın</string>
+    <string name="woopos_remote_ttp_explainer_intro">Kart ödemeleri almak için telefonunuzdaki Woo uygulamasını kullanın.</string>
+    <string name="woopos_remote_ttp_explainer_title">Kart okuyucunuz yok mu? Sorun değil</string>
+    <string name="woopos_remote_ttp_hint_strip_text">Kart okuyucu olarak bir Android telefonu kullanın</string>
+    <string name="woopos_card_reader_unknown_reader_name">Bilinmeyen okuyucu</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">Bluetooth okuyucu</string>
+    <string name="woopos_card_reader_phone_icon_content_description">Telefon okuyucu</string>
+    <string name="woopos_remote_payment_failed_generic">Bir sorun oluştu. Lütfen tekrar deneyin.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">Telefon okuyucuyla bağlantı kesildi. Lütfen yeniden bağlanın ve tekrar deneyin.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">Tap to Pay\'i kullanmak için konum izni verin.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">Tap to Pay başlatılamadı: %1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">Tap to Pay başlatılamadı. Lütfen tekrar deneyin.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">Tap to Pay hazırlanıyor</string>
+    <string name="woopos_tap_to_pay_preparing_title">Hazırlanıyor</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">Telefonda Tap to Pay illüstrasyonu</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">Tap to pay ile ödeyin</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">Temassız kart ödemelerini kabul etmek için bu cihazı kullanın.</string>
+    <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
+    <string name="woopos_payment_method_picker_dialog_title">Ödeme yöntemi seçin</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">Siparişi ödendi olarak işaretle</string>
+    <string name="woopos_payment_method_scan_to_pay_label">Ödemek için tarayın</string>
+    <string name="woopos_payment_method_other_methods_label">Diğer ödeme seçenekleri</string>
+    <string name="woopos_payment_method_all_methods_label">Tüm ödeme yöntemleri</string>
+    <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay</string>
+    <string name="woopos_payment_method_card_reader_label">Kart okuyucu</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">Parmak izi</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">Nakliye</string>
+    <string name="woopos_settings_card_reader_disconnect_button">Bağlantıyı kes</string>
+    <string name="woopos_remote_reader_connect_failed_generic">Bağlantı başarısız oldu</string>
+    <string name="ai_assistant_variation_card_id_title">Varyasyon %1$d</string>
+    <string name="ai_support_chat_connectivity_action">Destek ile sohbet edin</string>
+    <string name="ai_support_chat_connectivity_initial_message">Mağaza bağlantımla ilgili sorunları gidermeme yardımcı ol.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">Başarısız</string>
+    <string name="ai_support_chat_diagnostics_status_passed">Başarılı</string>
+    <string name="ai_support_chat_diagnostics_status_running">Çalışıyor</string>
+    <string name="ai_support_chat_diagnostics_status_pending">Beklemede</string>
+    <string name="ai_support_chat_diagnostics_continue">Sohbete Devam Et</string>
+    <string name="ai_support_chat_diagnostics_retry">Tekrar dene</string>
+    <string name="ai_support_chat_diagnostics_failure">Bazı denetimler başarısız oldu. Bu sonuçlarla tekrar deneyebilir veya sohbet etmeye devam edebilirsiniz.</string>
+    <string name="ai_support_chat_diagnostics_success">Tanılama tamamlandı</string>
+    <string name="ai_support_chat_diagnostics_title">Mağazanız kontrol ediliyor…</string>
+    <string name="ai_support_chat_issue_other">Başka bir şey</string>
+    <string name="ai_support_chat_issue_receiving_notifications">Bildirim almıyorum</string>
+    <string name="ai_support_chat_issue_loading_analytics">Analizlerim yüklenmiyor</string>
+    <string name="ai_support_chat_issue_loading_products">Ürünlerimi göremiyorum</string>
+    <string name="ai_support_chat_issue_loading_orders">Siparişlerimi göremiyorum</string>
+    <string name="ai_support_chat_issue_picker_title">Sorun gidermek istediğiniz konu nedir?</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">Lütfen size yardımcı olabilmem için sorununuzu daha ayrıntılı olarak açıklayın.</string>
+    <string name="ai_support_chat_typing">Düşünüyor…</string>
+    <string name="ai_support_chat_send_error">Mesajınız gönderilemiyor. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="ai_support_chat_send">Gönder</string>
+    <string name="ai_support_chat_input_hint">Yapay Zeka Sorun Gidermesine Mesaj Gönderin</string>
+    <string name="ai_support_chat_greeting">Merhaba! Bana mağazanızda ne olduğunu söyleyin, ben de sorunları gidereyim.</string>
+    <string name="ai_support_chat_placeholder">Çok yakında</string>
+    <string name="ai_support_chat_screen_title">Yapay Zeka Sorun Giderme</string>
+    <string name="ai_support_chat_help_row_subtitle">Mağaza sorunlarını tanımlamak için yapay zeka asistanımızla sohbet edin</string>
+    <string name="ai_support_chat_help_row_title">Yapay Zeka Sorun Giderme</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Bildirim göndermesi gereken en yüksek puanı seçin.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Bir derecelendirmeye kadar kadar inceler</string>
+    <string name="settings_notifs_new_reviews_all_description">Derecelendirme fark etmeksizin her inceleme için bildirim gönderin.</string>
+    <string name="settings_notifs_new_reviews_all_title">Tüm yeni incelemeler</string>
+    <string name="settings_notifs_new_reviews_enable_description">Ürünlerinizden birinde inceleme yapıldığında bildirim alın.</string>
+    <string name="settings_notifs_stock_backorder_description">Bir müşteri şu anda stokta olmayan bir ürün sipariş ettiğinde.</string>
+    <string name="settings_notifs_stock_backorder_title">Yok satıldı</string>
+    <string name="settings_notifs_stock_out_of_stock_description">Bir ürün varyantı sıfıra ulaştığında.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">Stokta yok</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">Mağaza genelindeki eşik yüklenemiyor</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">Ürünler mağaza genelindeki eşik için kendi eşiklerini kullanabilir. Geçerli değeri görmek için &lt;a href=\'\'&gt;mağaza genelindeki eşiği görüntüleyin&lt;/a&gt;.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">Ürünler, kendi eşiklerini veya &lt;b&gt;%1$s&lt;/b&gt; mağaza genelindeki eşiği kullanabilir. &lt;a href=\'\'&gt;Mağaza genelinde eşiği düzenleyin&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">Bir ürün varyantı düşük stok eşiğine ulaştığında.</string>
+    <string name="settings_notifs_stock_low_stock_title">Düşük stok</string>
+    <string name="settings_notifs_stock_enable_description">Ürün stoğu değişiklikleriyle ilgilenmeniz gerektiğinde bildirim alın.</string>
+    <string name="settings_notifs_stock_enable_title">Stok bildirimlerini etkinleştirin</string>
+    <string name="settings_notifs_new_orders_threshold">Eşik (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_description">Eşiğinizin üzerindeki siparişleri filtreleyin.</string>
+    <string name="settings_notifs_new_orders_high_value_title">Sadece yüksek değerli siparişler</string>
+    <string name="settings_notifs_new_orders_all_description">Değere bakılmaksızın her sipariş için bildirim gönderin.</string>
+    <string name="settings_notifs_new_orders_all_title">Tüm yeni siparişler</string>
+    <string name="settings_notifs_notify_me_for">Şunun için bana bildir:</string>
+    <string name="settings_notifs_new_orders_enable_description">Mağazanıza bir sipariş verildiğinde bildirim alın.</string>
+    <string name="settings_notifs_error_update">Bildirim ayarlarınız güncellenirken bir hata oluştu.</string>
+    <string name="settings_notifs_error_fetch">Bildirim ayarlarınız alınırken bir hata oluştu.</string>
+    <string name="settings_notifs_enable_title">Bildirimleri etkinleştir</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">Mağaza bildirimleri almak için cihaz ayarlarınızda &lt;a href=\'\'&gt;bildirimleri açın&lt;/a&gt;.</string>
+    <string name="card_reader_mode_location_permission_open_settings">Ayarları Aç</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">Konum izni engellendi. Bu telefonda tap-to-pay\'i kullanmak için Ayarlar\'ı açın ve Konum izni verin.</string>
+    <string name="card_reader_mode_location_permission_continue">Devam</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android, bu telefonda tap-to-pay\'i kullanmak için konum erişimi gerektirir. Konumunuz bu cihazda kalır.</string>
+    <string name="card_reader_mode_location_permission_header">Konum izni gerekli</string>
+    <string name="card_reader_mode_error_close">Kapat</string>
+    <string name="card_reader_mode_error_subtitle">Wi-Fi bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="card_reader_mode_error_header">Kart Okuyucu Modu başlatılamadı</string>
+    <string name="card_reader_mode_starting_subtitle">Yerel ağda keşif ayarlanıyor…</string>
+    <string name="card_reader_mode_starting_header">Kart Okuyucu Modu Başlatılıyor</string>
+    <string name="card_reader_mode_settings_row_label">Kart Okuyucu Modu</string>
+    <string name="card_reader_mode_cancel">İptal Et</string>
+    <string name="card_reader_mode_waiting_subtitle">Ödeme bekleniyor…</string>
+    <string name="card_reader_mode_waiting_header">Tabletle eşlenmiş</string>
+    <string name="card_reader_mode_ready_to_pair_store">Mağaza: %1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">Tabletinizde Woo POS\'u açın ve bu telefonu seçin.</string>
+    <string name="card_reader_mode_ready_to_pair_header">Eşleştirmeye hazır</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">Yapay Zeka Asistanını açın</string>
+    <string name="dashboard_ai_assistant_entry_point_label">Mağazanız hakkında soru sorun…</string>
+    <string name="notification_channel_stock_title">Stok uyarıları</string>
+    <string name="woopos_card_reader_update_battery_low_message_with_level">Okuyucunun pili %d%%, bu da bu güncellemeyi yüklemek için çok düşük. Lütfen okuyucunuzu en az %%50\'ye kadar şarj edin ve tekrar deneyin.</string>
+    <string name="woopos_card_reader_update_battery_low_message" formatted="false">Okuyucunun pili bu güncellemeyi yüklemek için çok düşük. Lütfen okuyucunuzu en az %50\'ye kadar şarj edin ve tekrar deneyin.</string>
+    <string name="woopos_card_reader_update_failed_title">Güncelleme başarısız</string>
+    <string name="woopos_card_reader_update_completed_title">Yazılım güncellendi</string>
+    <string name="woopos_card_reader_cancel_anyway_button">Yine de iptal et</string>
+    <string name="woopos_card_reader_update_optional_cancel_warning">Bir yazılım güncellemesi devam ederken iptal etmeniz önerilmez. İptal ederseniz okuyucu bağlantınız engellenir.</string>
+    <string name="woopos_card_reader_update_optional_message">Sorunsuz çalışmaya devam etmesi için kart okuyucunuzun yazılımının güncellenmesi gerekir.</string>
+    <string name="woopos_card_reader_update_required_message">Ödeme almak için kart okuyucu yazılımınızın güncellenmesi gerekiyor. İptal ederseniz okuyucu bağlantınız engellenir.</string>
+    <string name="woopos_card_reader_update_progress">%d%% tamamlandı</string>
+    <string name="woopos_card_reader_updating_optional_title">Okuyucunuzun yazılımını güncelleme</string>
+    <string name="woopos_card_reader_updating_title">Yazılım güncelleniyor</string>
+    <string name="woopos_card_reader_cancel_button">İptal Et</string>
+    <string name="woopos_card_reader_retry_button">Tekrar Dene</string>
+    <string name="woopos_card_reader_invalid_postal_code_message">Mağaza posta kodunuz eksik veya geçersiz. Lütfen WooCommerce ayarlarında mağaza adresinizi güncelleyin.</string>
+    <string name="woopos_card_reader_invalid_postal_code_title">Geçersiz posta kodu</string>
+    <string name="woopos_card_reader_invalid_address_message">Mağaza adresiniz eksik veya tamamlanmamış. Lütfen WooCommerce ayarlarında mağaza adresinizi güncelleyin.</string>
+    <string name="woopos_card_reader_invalid_address_title">Geçersiz satıcı adresi</string>
+    <string name="woopos_card_reader_grant_permission_button">İzin verin</string>
+    <string name="woopos_card_reader_bluetooth_permission_message">Kart okuyucuya bağlanmak için Bluetooth izni gereklidir.</string>
+    <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth izni gerekli</string>
+    <string name="woopos_card_reader_location_permission_message">Bluetooth yoluyla bir kart okuyucuya bağlanmak için konum izni gereklidir.</string>
+    <string name="woopos_card_reader_location_permission_title">Konum izni gerekli</string>
+    <string name="woopos_card_reader_enable_location_button">Konumu Etkinleştir</string>
+    <string name="woopos_card_reader_location_disabled_message">Kart okuyucuya bağlanmak için Konumu etkinleştirin.</string>
+    <string name="woopos_card_reader_location_disabled_title">Konum kapalı</string>
+    <string name="woopos_card_reader_enable_bluetooth_button">Bluetooth\'u etkinleştir</string>
+    <string name="woopos_card_reader_bluetooth_disabled_message">Kart okuyucuya bağlanmak için Bluetooth\'u etkinleştirin.</string>
+    <string name="woopos_card_reader_bluetooth_disabled_title">Bluetooth kapalı</string>
+    <string name="woopos_card_reader_battery_low_message">Okuyucunun pili kritik düzeyde düşük. Lütfen okuyucuyu şarj edin ve yeniden deneyin.</string>
+    <string name="woopos_card_reader_battery_low_title">Pil çok düşük</string>
+    <string name="woopos_card_reader_connected_title">Bağlı</string>
+    <string name="woopos_card_reader_connecting_failed_title">Bağlantı başarısız oldu</string>
+    <string name="woopos_card_reader_connecting_message">Okuyucunuz bağlanırken lütfen bekleyin</string>
+    <string name="woopos_card_reader_connecting_title">Bağlanılıyor</string>
+    <string name="woopos_card_reader_multiple_found_description">Okuyucu seçin</string>
+    <string name="woopos_card_reader_multiple_found_title">Birden fazla okuyucu bulundu</string>
+    <string name="woopos_card_reader_keep_searching_button">Aramaya devam et</string>
+    <string name="woopos_card_reader_connect_button">Bağlan</string>
+    <string name="woopos_card_reader_found_description">Bu okuyucuya bağlanmak istiyor musunuz?</string>
+    <string name="woopos_card_reader_found_title">%s bulundu</string>
+    <string name="woopos_card_reader_scanning_failed_title">Tarama başarısız</string>
+    <string name="woopos_card_reader_scanning_instruction">Okuyucunuzun şarjlı ve açık olduğundan emin olun</string>
+    <string name="woopos_card_reader_scanning_title">Okuyucu taranıyor</string>
+    <string name="woopos_card_reader_close_content_description">Kapat</string>
+    <string name="woopos_card_reader_connection_dialog_background_content_description">Kart okuyucu bağlantısı iletişim kutusu</string>
+    <string name="woopos_orders_empty_list_message">POS\'ta satışları işlemeye başladığınızda siparişler burada görünür.</string>
+    <string name="woopos_battery_critical">Kart okuyucu pili kritik</string>
+    <string name="woopos_battery_low">Kart okuyucu pili düşük</string>
+    <string name="woopos_reader_reconnecting">Yeniden bağlantı kuruluyor…</string>
+    <string name="more_menu_button_ai_assistant_description">Mağazanız hakkında soru sorun</string>
+    <string name="more_menu_button_ai_assistant">Yapay Zeka Asistanı</string>
+    <string name="settings_notifs_new_reviews_subtitle">Tüm incelemeler</string>
+    <string name="settings_notifs_new_reviews">Yeni yorumlar</string>
+    <string name="settings_notifs_stock_subtitle">Tüm stok uyarıları</string>
+    <string name="settings_notifs_stock">Stok</string>
+    <string name="settings_notifs_new_orders_subtitle">Tüm siparişler</string>
+    <string name="settings_notifs_new_orders">Yeni siparişler</string>
+    <string name="settings_push_notifications">Anlık bildirimler</string>
+    <string name="settings_logout_dialog_message">Oturumunuz kapatılıyor.</string>
+    <string name="card_reader_detail_reconnecting_cancel">Yeniden bağlantıyı iptal et</string>
+    <string name="card_reader_detail_reconnecting_header">Kart okuyucuya yeniden bağlanıyor…</string>
+    <string name="dashboard_stats_order_date_type_update_error">Sipariş türü güncellenemiyor. Lütfen tekrar deneyin.</string>
+    <string name="dashboard_stats_order_date_type_sheet_footer">Bu, mağaza genelinde kullanılan ve aynı zamanda WooCommerce yönetici analizleri ayarlarında \"Tarih türü\" seçeneğini de kontrol eden bir ayardır.</string>
+    <string name="dashboard_stats_completed_orders_description">Tamamlandı olarak işaretlendikleri tarihteki siparişleri sayın.</string>
+    <string name="dashboard_stats_placed_orders_description">Verildikleri veya oluşturuldukları tarihteki siparişleri sayın.</string>
+    <string name="dashboard_stats_paid_orders_description">Siparişin ödendiği tarihteki siparişleri sayın.</string>
+    <string name="dashboard_stats_order_date_type_sheet_description">Seçilen zaman aralığı için performans ölçümlerinize hangi siparişlerin dahil edileceğini seçin.</string>
+    <string name="dashboard_stats_order_date_type_sheet_title">Sipariş tarihi türü</string>
+    <string name="dashboard_stats_completed_orders">Tamamlanmış siparişler</string>
+    <string name="dashboard_stats_placed_orders">Verilen siparişler</string>
+    <string name="dashboard_stats_paid_orders">Ödenen siparişler</string>
+    <string name="dashboard_stats_revenue_type_total">Toplam</string>
+    <string name="dashboard_stats_revenue_type_net">Net</string>
+    <string name="dashboard_stats_revenue_type_gross">Brüt</string>
+    <string name="booking_reschedule_change_team_member">Ekip üyesini değiştir</string>
+    <string name="wpp_shipping_fedex_tos_description">FedEx gönderim etiketleri satın almak için aşağıdaki koşulları kabul etmeniz gerekir:</string>
+    <string name="booking_reschedule_screen_title">Rezervasyonu yeniden zamanlayın</string>
+    <string name="booking_details_reschedule_button">Yeniden zamanla</string>
+    <string name="wpp_shipping_fedex_tos_condition_terms">&lt;a href=\"fedex-tos\"&gt;FedEx Hizmet Koşulları&lt;/a&gt;\'nı kabul ediyorum.</string>
+    <string name="wpp_shipping_fedex_tos_title">FedEx Hizmet Koşulları</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Gönderim ücretlerini yükleyemedik. Lütfen hedef adrese bir ad ve soyadı ekleyin ve yeniden deneyin.</string>
+    <string name="product_type_bookable_service_desc">Müşterilerin çevrimiçi olarak rezervasyon yapabileceği bir hizmet</string>
+    <string name="woopos_settings_receipt_edit_button">Makbuz bilgilerini düzenle</string>
+    <string name="woopos_home_syncing_catalog_progress">%1$d/%2$d öğe</string>
+    <string name="woopos_home_syncing_catalog_preparing">Katalog hazırlanıyor…</string>
+    <string name="product_type_bookable_service_title">Hizmet</string>
+    <string name="settings_troubleshoot_connection">Bağlantı Sorununu Giderin</string>
+    <string name="connectivity_tool_copy">Kopyala</string>
+    <string name="connectivity_tool_technical_details_copied">Teknik ayrıntılar panonuza kopyalandı.</string>
+    <string name="connectivity_tool_technical_details_title">Teknik ayrıntılar</string>
+    <string name="orderlist_connectivity_tool_store_products_check_title">Mağazanızdaki ürünler alınıyor</string>
+    <string name="user_role_access_error_fetch_failed">Bu mağazadaki rolünüzü doğrulayamadık. Lütfen tekrar deneyin. Sorun devam ederse desteğe başvurun.</string>
+    <string name="connectivity_tool_view_technical_details">VideoPress teknik bilgileri</string>
+    <string name="woopos_eligibility_learn_more_label">Daha Fazla Bilgi Edinin</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için &lt;b&gt;Pro\'ya yükseltin&lt;/b&gt;.</string>
+    <string name="woopos_eligibility_reason_ciab_plan_upgrade">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için Pro\'ya yükseltin.</string>
+    <string name="woopos_eligibility_ciab_title">Pro paket gerekli</string>
+    <string name="ciab_order_status_open">Açık</string>
+    <string name="booking_payment_status_authorized">Kimlik Doğrulandı</string>
+    <string name="woo_shipping_address_notification_origin_missing_or_invalid">Menşe adresi eksik veya geçersiz</string>
+    <string name="booking_payment_status_authorization_voided">Yetkilendirme İptal Edildi</string>
+    <string name="woo_shipping_labels_purchase_origin_address_error">Gönderim etiketi satın alınamıyor. Lütfen menşe adresini tamamlayın.</string>
+    <string name="woopos_bookings_payment_status_authorized">Kimlik Doğrulandı</string>
+    <string name="woopos_orders_details_refund_tax">Vergi</string>
+    <string name="woopos_bookings_payment_status_authorization_voided">Yetkilendirme İptal Edildi</string>
+    <string name="woopos_orders_details_refund_details_background">Para iadesi ayrıntıları iletişim kutusu arka planı</string>
+    <string name="woopos_orders_details_refund_total">Para iadesi toplamı</string>
+    <string name="woopos_orders_details_refund_items_subtotal_other">Öğe alt toplamı (%d öğe)</string>
+    <string name="woopos_orders_details_refund_items_subtotal_one">Öğe alt toplamı (%d öğe)</string>
+    <string name="woopos_orders_details_refund_view_details">Ayrıntıları görüntüle</string>
+    <string name="woopos_orders_details_refund_label_numbered">%1$d numaralı para iadesi</string>
+    <string name="woopos_orders_details_refunded_products_title">İade Edilen Ürünler</string>
+    <string name="woopos_home_syncing_catalog_hint">Katalog senkronizasyonu birkaç dakika sürebilir.</string>
+    <string name="woo_push_notifications_introduction_connected_body">Yeni siparişler, yorumlar ve daha fazlası için bildirim almanıza bir adım kaldı.</string>
+    <string name="woo_push_notifications_introduction_connected_title">Mağazanız için anlık bildirimler alın</string>
+    <string name="my_store_widget_push_notifications_description">Yeni siparişler ve incelemeler hakkında bilgi edinmek için anlık bildirimleri etkinleştirin.</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Ayrılabilirsiniz; senkronizasyon işlemi arka planda devam eder.</string>
     <string name="woopos_search_products_and_variations">Ürünleri ve varyasyonları arayın</string>
     <string name="woopos_bookings_details_customer_guest_badge">Misafir</string>
     <string name="woo_push_notifications_connection_steps_update_plugin">Eklentiyi güncelle</string>
@@ -134,7 +452,6 @@ Language: tr
     <string name="settings_enable_push_notifications">Anlık Bildirimleri Etkinleştir</string>
     <string name="my_store_widget_push_notifications_menu_title">Anlık bildirimleri etkinleştir</string>
     <string name="my_store_widget_push_notifications_title">Yeni bir siparişi asla kaçırmayın</string>
-    <string name="my_store_widget_push_notifications_description">Yeni siparişler ve yorumlar için uyarı almak üzere mağazanızı WordPress.com adresine bağlayın.</string>
     <string name="woo_pos_promo_title">WooCommerce\'den Satış Noktası</string>
     <string name="woopos_orders_refund_reason_save">Kaydet</string>
     <string name="woopos_orders_refund_reason_add">Ekle</string>
@@ -242,7 +559,7 @@ Language: tr
     <string name="woopos_search_orders">Siparişleri ara</string>
     <string name="woopos_orders_details_totals_card_content_description">Sipariş toplamları dökümü</string>
     <string name="woopos_orders_details_products_list_content_description">Sipariş ürünleri listesi</string>
-    <string name="woopos_orders_details_net_payment_label">Net ödeme</string>
+    <string name="woopos_orders_details_net_payment_label">Toplam Net</string>
     <string name="woopos_orders_details_refunded_label">Geri ödeme yapıldı</string>
     <string name="woopos_orders_details_total_paid_label">Toplam ödenen</string>
     <string name="woopos_orders_details_total_label">Toplam</string>
@@ -272,7 +589,6 @@ Language: tr
     <string name="woopos_home_sync_failed_message">Ürün kataloğunuzu senkronize edemiyoruz. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="woopos_home_sync_failed_title">Senkronize edilemiyor</string>
     <string name="woopos_home_syncing_catalog_exit_button">POS\'tan çık</string>
-    <string name="woopos_home_syncing_catalog_subtitle">Senkronizasyon arka planda devam edecek.</string>
     <string name="woopos_home_syncing_catalog_title">Katalog senkronize ediliyor</string>
     <string name="booking_note_discard_changes_discard">Değişiklikleri iptal et</string>
     <string name="booking_note_discard_changes_message">Bu değişiklikleri atmak istediğinizden emin misiniz?</string>
@@ -311,8 +627,6 @@ Language: tr
     <string name="woopos_orders_pagination_error_title">Daha fazla sipariş yüklenemiyor</string>
     <string name="woopos_bookings_status_cancelled">İptal edildi</string>
     <string name="woopos_orders_empty_list_image_description">Sipariş yok</string>
-    <string name="woopos_orders_empty_action_label">Daha fazla bilgi edinin</string>
-    <string name="woopos_orders_empty_list_message">Mağaza satışlarınızı nasıl artırabileceğinizi keşfedin.</string>
     <string name="woopos_orders_empty_list_title">Sipariş bulunamadı</string>
     <string name="woopos_date_yesterday_at">Dün, %s</string>
     <string name="woopos_date_today_at">Bugün şu saatte: %s</string>
@@ -321,6 +635,7 @@ Language: tr
     <string name="woopos_orders_loading_error_title">Siparişler yüklenemiyor</string>
     <string name="woopos_settings_local_catalog_refresh_button">Kataloğu güncelle</string>
     <string name="woopos_orders_loading_error_message">Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="woopos_orders_empty_action_label">Yenile</string>
     <string name="woopos_settings_local_catalog_settings">Veri Kullanımını Yönetin</string>
     <string name="woopos_settings_local_catalog_status">Katalog Durumu</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Katalog ayarlarını yönetin</string>
@@ -489,15 +804,13 @@ Language: tr
     <string name="woopos_scanning_setup_device_selection_title">Bir barkod tarayıcı ayarlama</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barkod</string>
     <string name="woopos_scanning_setup_dialog_content_description">Tarayıcı kurulum iletişim kutusu</string>
-    <string name="woopos_eligibility_screen_UK_country_name">İngiltere</string>
-    <string name="woopos_eligibility_screen_US_country_name">ABD</string>
+    <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">İngiltere</string>
+    <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ABD</string>
     <string name="woopos_eligibility_screen_unable_to_load">Yüklenemedi</string>
     <string name="woopos_eligibility_reason_unsupported_currency_generic">POS sistemi, mağazanızın para biriminde kullanılamıyor. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">Devam etmek için Satış Noktası\'nın etkinleştirilmesi gerekir. Lütfen WooCommerce ayarları &gt; Gelişmiş &gt; Özellikler bölümündeki WordPress yöneticinizden POS özelliğini etkinleştirin.</string>
     <string name="woopos_eligibility_reason_check_connection">İnternet bağlantınızı kontrol edip uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse lütfen destek ekibine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">WooCommerce sürümünüz desteklenmiyor. POS sistemi için WooCommerce %1$s sürümü veya üzeri gerekiyor. Lütfen WooCommerce\'ün en son sürümüne güncelleyin.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Lütfen WooCommerce eklentisinin kurulduğundan ve WordPress yöneticinizden etkinleştirildiğinden emin olun. Hâlâ bir sorun varsa lütfen yardım için destek birimine başvurun.</string>
     <string name="orderfilters_sales_channel_filter">Satış Kanalı</string>
     <string name="barcode_ean13_content_description">Barkod EAN13</string>
     <string name="woo_shipping_rate_option_carbon_neutral">Karbon nötr</string>
@@ -1172,7 +1485,6 @@ Language: tr
     <string name="store_onboarding_launch_store_rendering_preview_label">Önizleme oluşturuluyor…</string>
     <string name="settings_store_name">Mağaza adı</string>
     <string name="product_update_category_dialog_title">Kategori güncelleniyor</string>
-    <string name="domain_picker_suggestions_error">Alan adı önerileri yüklenemiyor</string>
     <string name="plugins_error_message">Yüklü eklentiler yüklenirken bir hata oluştu</string>
     <string name="plugin_state_inactive">Etkin değil</string>
     <string name="plugin_state_update_available">Güncelleme mevcut (%s)</string>
@@ -1181,13 +1493,10 @@ Language: tr
     <string name="delete_product_category_failed">Kategori silinirken hata oluştu</string>
     <string name="delete_product_category_success">Ürün kategorisi silindi</string>
     <string name="update_product_category_success">Ürün kategorisi güncellendi</string>
-    <string name="domain_picker_suggestions_title">Öneriler</string>
-    <string name="domain_picker_hint">Bir alan adı yazın</string>
     <string name="my_store_custom_range_granularity_year">Yıllık</string>
     <string name="my_store_custom_range_granularity_month">Aylık</string>
     <string name="my_store_custom_range_granularity_week">Haftalık</string>
     <string name="store_name_default">Mağaza adı</string>
-    <string name="domain_picker_title">Bir alan adı seçin</string>
     <string name="my_store_custom_range_granularity_day">Günlük</string>
     <string name="my_store_custom_range_granularity_hour">Saatlik</string>
     <string name="my_store_custom_range_granularity_label">%s aralığı</string>
@@ -1321,11 +1630,11 @@ Language: tr
     <string name="blaze_campaign_edit_ad_change_image_button">Görseli değiştir</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Uygula</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s gün</string>
+    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Tamam</string>
     <string name="blaze_campaign_budget_impressions_title">İzlenimler</string>
     <string name="blaze_campaign_budget_update_button">Güncelle</string>
     <string name="blaze_campaign_budget_edit_duration_button">Düzenle</string>
-    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_budget_reach_forecast">Gün başına ulaşılan tahmini insan sayısı</string>
     <string name="blaze_campaign_budget_days_duration">%1$s gün için</string>
     <string name="blaze_campaign_budget_toolbar_title">Bütçenizi oluşturun</string>
@@ -1648,8 +1957,8 @@ Language: tr
     <string name="store_onboarding_task_name_store_title">Mağazanıza ad verin</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC\'yi Etkinleştir</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Küçük Miktarda Tedarik Paketi (işaretleme gerekli)</string>
-    <string name="shipping_label_hazmat_option_limited_quantity">SINIRLI MİKTARDA Kara Paketi - Aerosoller, sprey dezenfektanlar, sprey boya, saç spreyi, propan, bütan, temizlik ürünleri vb. - Parfümler, oje, oje çıkarıcı, çözücüler, el dezenfektanı, ispirto, etanol bazlı ürünler vb. - Diğer sınırlı miktardaki yüzey malzemeleri (kozmetikler, temizlik ürünleri, boyalar vb.)</string>
     <string name="shipping_label_hazmat_option_lighters">Çakmak Paketi - Onaylı Çakmaklar</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">SINIRLI MİKTARDA Kara Paketi - Aerosoller, sprey dezenfektanlar, sprey boya, saç spreyi, propan, bütan, temizlik ürünleri vb. - Parfümler, oje, oje çıkarıcı, çözücüler, el dezenfektanı, ispirto, etanol bazlı ürünler vb. - Diğer sınırlı miktardaki yüzey malzemeleri (kozmetikler, temizlik ürünleri, boyalar vb.)</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000 Tüketici Malları Paketi - Hava Yoluna Uygun ID8000 Tüketici Malları (Yanıcı olmayan aerosoller, Alev alabilen ve yanabilen sıvılar, Toksik Madde, Çeşitli tehlikeli maddeler)</string>
     <string name="shipping_label_hazmat_option_ground_only">Yalnızca Karaya Uygun Tehlikeli Maddeler (Listede yer almayan ancak yalnızca yüzeyle sınırlı olan maddeler için)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">İstisnai Miktarda Tedarik Paketi (örneğin, küçük hacimlerde yanıcı sıvılar, aşındırıcı, toksik veya çevreye zararlı maddeler - işaretleme gereklidir)</string>
@@ -1948,7 +2257,6 @@ Language: tr
     <string name="store_onboarding_launch_store_back_to_store_button">Mağazama Dön</string>
     <string name="store_onboarding_launch_store_share_url_button">URL paylaş</string>
     <string name="store_onboarding_launch_store_button">Mağazamı yayınla</string>
-    <string name="domains_search_domains">Alan adı ara</string>
     <string name="upgrades_upgradeable_caption">%1$d günlük ücretsiz deneme süresindesiniz. Ücretsiz deneme süresi %2$s tarihinde sona erecek. Yeni özelliklerin kilidini açmak ve mağazanızın çalışmaya devam etmesini sağlamak için yükseltin.</string>
     <string name="free_trial_days_left">Deneme sürenizde %1$s kaldı.</string>
     <string name="login_site_credentials_http_error">Durum kodu %1$s ile giriş başarısız oldu</string>
@@ -1993,43 +2301,14 @@ Language: tr
     <string name="jetpack_benefits_fetching_status">Jetpack Durumu Alınıyor</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Alan adı kaydediliyor…</string>
-    <string name="domain_registration_country_picker_dialog_title">Ülke seçin</string>
-    <string name="domain_registration_state_picker_dialog_title">Eyalet seçin</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="domain_registration_generic_error">Alan adı kaydı sırasında bir hata oluştu</string>
-    <string name="domain_contact_information_phone_number_hint">Telefon</string>
-    <string name="domain_contact_information_country_code_hint">Ülke kodu</string>
-    <string name="domain_contact_information_country_hint">Ülke</string>
-    <string name="domain_contact_information_address_hint">Adres</string>
-    <string name="domain_contact_information_address_hint_two">Adres 2</string>
-    <string name="domain_contact_information_city_hint">Şehir</string>
-    <string name="domain_contact_information_state_hint">Eyalet</string>
-    <string name="domain_contact_information_state_not_available_hint">Eyalet (mevcut değil)</string>
-    <string name="domain_contact_information_postal_code_hint">Posta kodu</string>
-    <string name="domain_contact_information_register_domain_button">Alan adı kaydet</string>
-    <string name="domain_contact_information_description">Size kolaylık olması için, WordPress.com iletişim bilgilerinizi önceden doldurduk. Lütfen bu bilgilerin bu alan adında kullanmak istediğiniz doğru bilgiler olduğundan emin olmak için gözden geçirin.</string>
-    <string name="domain_contact_information_organization_hint">Kuruluş (isteğe bağlı)</string>
-    <string name="domain_registration_privacy_protection_description">Alan adı sahiplerinin, tüm alan adlarının herkese açık bir veritabanında iletişim bilgilerini paylaşmaları gerekir. Privacy Protection özelliğiyle sizin bilgileriniz yerine kendi bilgilerimizi yayımlıyoruz ve her türlü iletişimi size gizlice iletiyoruz.</string>
-    <string name="domain_registration_contact_form_input_error">Lütfen geçerli bir %s girin</string>
-    <string name="domain_privacy_option_on_title">Gizlilik koruması ile özel olarak kaydet</string>
-    <string name="domain_privacy_option_off_title">Herkese açık olarak kaydet</string>
-    <string name="domain_contact_information_title">Alan adı iletişim bilgileri</string>
-    <string name="domain_registration_privacy_protection_tos">Bu alan adını kaydederek &lt;a href=\'\'&gt;şartlar ve hükümler&lt;/a&gt;\'i kabul etmiş olursunuz</string>
-    <string name="domain_registration_privacy_protection_title">Gizlilik koruması</string>
-    <string name="domains_access_error_title">Alan adı ayarlarına yalnızca mağaza yöneticileri erişebilir</string>
     <string name="login_jetpack_installation_continue_magic_link">Veya Sihirli Bağlantıyı kullanmaya devam edin</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Jetpack\'i yüklemek için WordPress.com hesabınızın şifresini girin</string>
     <string name="login_jetpack_connection_enter_wpcom_password">Jetpack\'e bağlanmak için WordPress.com hesabınızın şifresini girin</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Jetpack\'i yüklemek için WordPress.com hesabınızla oturum açın</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Jetpack\'i bağlamak için WordPress.com hesabınızla oturum açın.</string>
-    <string name="domains_purchase_successful_settings_notice">Alan adı ayarlarını Ayarlar &gt; Alan Adları\'nda bulabilirsiniz.</string>
-    <string name="domains_purchase_successful_delay_notice">Site adresiniz oluşturuluyor. Alan adınızın çalışmaya başlaması 30 dakika kadar sürebilir.</string>
-    <string name="domains_purchase_successful_heading">Satın aldığınız için tebrikler</string>
-    <string name="domains_free_with_credits">İlk yıl ücretsiz</string>
     <string name="settings_confirm_logout_site_credentials">Hesabınızla açılan oturumu kapatmak istediğinizden emin misiniz?</string>
-    <string name="domains_generic_error_title">Site alan adları yüklenemiyor </string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d tamamlandı</string>
     <string name="store_onboarding_task_launch_store_description">Sitenizi istediğiniz zaman dünyaya yayımlayın!</string>
     <string name="store_onboarding_task_launch_store_title">Mağazanızı yayınlayın</string>
@@ -2040,19 +2319,6 @@ Language: tr
     <string name="card_reader_payment_failed_device_is_not_supported">Cihazınız desteklenmiyor. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC çipi devre dışı olduğu için uygulama kart okuyucuyu etkinleştiremedi</string>
     <string name="card_reader_payment_failed_canceled">İşlem iptal edildi</string>
-    <string name="domains_redirect_notice">Satın alınan alan adı kullanıcıları şuraya yönlendirecek</string>
-    <string name="domains_select_domain">Alan adı seç</string>
-    <string name="domains_add_domain_button_title">Alan adı ekle</string>
-    <string name="domains_your_domains">Sitenizin alan adları</string>
-    <string name="domains_primary_address">Birincil site adresi</string>
-    <string name="domains_learn_more">Alan adları ve alan adlarıyla ilgili işlemlerin nasıl yapılacağı hakkında &lt;a href=\'\'&gt;&lt;u&gt;daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="domains_search_for_domain_button_title">Bir alan adı ara</string>
-    <string name="domains_purchase_redirect_notice">Satın alınan alan adı, kullanıcıları birincil adresinize yönlendirir.</string>
-    <string name="domains_claim_your_free_domain_link">Alan Adı Al</string>
-    <string name="domains_claim_your_free_domain_description">Paketiniz ücretsiz bir yıllık alan adı kaydını içerir.</string>
-    <string name="domains_claim_your_free_domain_title">Ücretsiz alan adınızı talep edin</string>
-    <string name="domains_your_free_store_address">Ücretsiz mağaza adresiniz</string>
-    <string name="domains">Alan adları</string>
     <string name="feedback_banner_ipp_cta_button">Görüşlerinizi paylaşın</string>
     <string name="feedback_banner_ipp_message_beginner">İlk şahsen ödeme deneyiminizi puanlayın.</string>
     <string name="feedback_banner_ipp_title_beginner">Şahsen ödemenizden memnun kaldınız mı?</string>
@@ -2070,7 +2336,6 @@ Language: tr
     <string name="analytics_session_card_title">Oturumlar</string>
     <string name="analytics_session_no_data">Bu oturumda seans yok</string>
     <string name="date_compared_to">Şununla karşılaştırma:</string>
-    <string name="domain">Alan Adı</string>
     <string name="card_reader_type_selection_bluetooth_reader">Kart Okuyucu</string>
     <string name="login_application_passwords_help">Uygulama Şifreleri nedir?</string>
     <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
@@ -2097,7 +2362,6 @@ Language: tr
     <string name="variation_add_new">Yeni varyasyon ekle</string>
     <string name="variation_list_add">Varyasyon ekle</string>
     <string name="variation_add_all">Tüm varyasyonları oluştur</string>
-    <string name="domain_picker_empty_suggestions">Bu arama için uygun alan adı yok</string>
     <string name="login_jetpack_installation_exit_without_connection">Bağlanmadan Çıkış Yap</string>
     <string name="login_jetpack_installation_continue_connection">Bağlantıya devam et</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">Mağazanıza erişmek için tekrar bağlanmayı deneyin.</string>
@@ -2145,7 +2409,6 @@ Language: tr
     <string name="login_jetpack_connect">Jetpack\'e bağlan</string>
     <string name="login_jetpack_installation_screen_title">Mağazayı Bağla</string>
     <string name="analytics_visitors_subtitle">Ziyaretçiler</string>
-    <string name="domain_picker_subtitle">Bu, insanların sizi internette bulacakları yerdir. Endişelenmeyin, daha sonra değiştirebilirsiniz.</string>
     <string name="or_use_password_below_qr_code_scan_option">Veya şifre ile giriş yapın</string>
     <string name="simulated_reader_toast">Simüle Kart Okuyucu devre dışı bırakıldı</string>
     <string name="variations_bulk_update_stock_quantity_success">Güncellenen stok miktarı</string>
@@ -3774,7 +4037,6 @@ Language: tr
     <string name="orderlist_error_fetch_generic">Sipariş alınırken hata</string>
     <string name="dashboard_stats_error_content_description">Görsel hatası</string>
     <string name="dashboard_stats_error">Veri almada hata</string>
-    <string name="dashboard_stats_revenue">Kazanç</string>
     <string name="dashboard_stats_orders">Siparişler</string>
     <string name="dashboard_stats_visitors">Ziyaretçiler</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
@@ -3834,6 +4096,8 @@ Language: tr
         <item>Özelleştirilmiş paket</item>
         <item>Hizmet paketi</item>
     </string-array>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d yıldız veya altı</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d yıldız veya altı</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Ürün alt toplamı (%d ürün)</item>
         <item quantity="other">Ürün alt toplamı (%d ürün)</item>

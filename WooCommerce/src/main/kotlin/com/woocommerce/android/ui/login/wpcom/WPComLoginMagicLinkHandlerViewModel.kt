@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -19,12 +20,14 @@ class WPComLoginMagicLinkHandlerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
     jetpackActivationRepository: JetpackActivationRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val registerDevice: RegisterDevice
 ) : WPComLoginPostLoginViewModel(
     savedStateHandle,
     selectedSite,
     jetpackActivationRepository,
-    analyticsTrackerWrapper
+    analyticsTrackerWrapper,
+    registerDevice
 ) {
     private val navArgs: WPComLoginMagicLinkHandlerFragmentArgs by savedStateHandle.navArgs()
 

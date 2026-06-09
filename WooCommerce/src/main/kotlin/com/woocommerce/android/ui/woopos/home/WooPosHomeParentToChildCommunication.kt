@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
@@ -51,9 +52,22 @@ sealed class ParentToChildrenEvent {
     data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
         enum class PaymentMethod {
             CARD,
-            CASH
+            CASH,
+            SCAN_TO_PAY,
+            EXTERNAL,
         }
     }
+
+    data class CustomAmountSubmitted(
+        val name: String,
+        val amount: BigDecimal,
+        val isTaxable: Boolean,
+        val editingItemNumber: Int? = null,
+    ) : ParentToChildrenEvent()
+
+    data class ShowCustomAmountForm(
+        val editing: WooPosCartItemViewState.CustomAmount? = null,
+    ) : ParentToChildrenEvent()
 
     sealed class SearchEvent : ParentToChildrenEvent() {
         data class ChangedQuery(val query: String) : SearchEvent()
@@ -62,41 +76,7 @@ sealed class ParentToChildrenEvent {
         object Started : SearchEvent()
     }
 
-    data class OrderCreated(
-        val updatedProducts: List<ProductInfo>,
-        val updatedCoupons: List<CouponInfo>,
-    ) : ParentToChildrenEvent() {
-        sealed class ProductInfo(
-            open val id: Long,
-            open val name: String,
-            open val finalPrice: BigDecimal,
-            open val basePrice: BigDecimal,
-            open val quantity: Float,
-        ) {
-            data class Simple(
-                override val id: Long,
-                override val name: String,
-                override val finalPrice: BigDecimal,
-                override val basePrice: BigDecimal,
-                override val quantity: Float,
-            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
-
-            data class Variation(
-                override val id: Long,
-                override val name: String,
-                override val finalPrice: BigDecimal,
-                override val basePrice: BigDecimal,
-                override val quantity: Float,
-                val variationId: Long,
-            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
-        }
-
-        data class CouponInfo(
-            val id: Long,
-            val code: String,
-            val discountAmount: BigDecimal,
-        )
-    }
+    data class OrderCreated(val data: WooPosOrderCreatedData) : ParentToChildrenEvent()
 
     sealed class SettingsEvent : ParentToChildrenEvent() {
         data object RetrySyncRequested : SettingsEvent()

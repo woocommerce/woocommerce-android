@@ -2,8 +2,6 @@ package com.woocommerce.android.config
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,9 +37,5 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
             WooLog.i(WooLog.T.UTILS, "Successfully fetched WPCom remote feature flags")
             Result.success(Unit)
         }
-    }
-
-    suspend fun isRemoteFeatureFlagEnabled(key: String): Boolean = withContext(Dispatchers.IO) {
-        featureFlagsStore.getFeatureFlagsByKey(key).firstOrNull()?.value ?: false
     }
 }

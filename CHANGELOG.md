@@ -1,6 +1,21 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.9
+Collect physical payments using WooCommerce In-Person Payments and a card reader in Australia, Austria, Belgium, Canada, Finland, France, Germany, Ireland, Italy, Luxembourg, the Netherlands, New Zealand, Portugal, Singapore, Spain, the UK, and the US. Tap to Pay is available in Canada, the UK, and the US. Start a new order – or find an existing one that’s pending payment – then seamlessly accept payment. We’ve also improved USPS shipping label customs handling for US territories.
+
+## 24.8
+Say hello to your new AI Assistant—a smarter way to run your store right from your pocket. Rolling out to selected stores, it helps you stay on top of your shop with a tap. We've also smoothed out the order list so it no longer flashes when you head back from an order's details.
+
+## 24.7
+The My Store Performance card now lets you switch between Gross, Net, and Total revenue and pick your order date type (Paid, Placed, or Completed). We also fixed POS navigation resetting on rotation, refreshed the POS Orders empty state, and squashed bugs in the product list and image loading.
+
+## 24.6
+Selling with Woo POS is smoother than ever! See sync progress during the initial catalog setup, edit receipt info right from POS settings, and enjoy cleaner refresh handling. This release also fixes a startup crash, resolves POS sync issues on stores with product variations, and improves Shipping Label address validation.
+
+## 24.5
+Creating orders for registered customers is now more reliable. We fixed an issue where billing details could appear in the shipping address, helping you send orders to the right destination.
+
 ## 24.4
 Manage returns effortlessly with the new Refunds feature in WooCommerce POS. Your store dashboard now shows net sales to match wp-admin accurately. We've also fixed the Woo Shipping label purchase flow when origin address details are incomplete.
 

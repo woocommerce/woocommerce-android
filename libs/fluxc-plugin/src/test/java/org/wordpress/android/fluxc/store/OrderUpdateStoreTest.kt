@@ -24,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
@@ -45,12 +44,12 @@ class OrderUpdateStoreTest {
     private lateinit var sut: OrderUpdateStore
     private lateinit var orderRestClient: OrderRestClient
 
-    private val siteSqlUtils: SiteSqlUtils = mock {
-        on { getSiteWithLocalId(any()) } doReturn site
+    private val siteStore: SiteStore = mock {
+        on { getSiteByLocalId(any()) } doReturn site
     }
     private val orderSummaryDao: OrderSummaryDao = mock()
     private val ordersDaoDecorator: OrdersDaoDecorator = mock {
-        onBlocking { getOrder(TEST_REMOTE_ORDER_ID, TEST_LOCAL_SITE_ID) } doReturn initialOrder
+        on { getOrder(TEST_REMOTE_ORDER_ID, TEST_LOCAL_SITE_ID) } doReturn initialOrder
     }
     private val metaDataDao: MetaDataDao = mock()
 
@@ -63,7 +62,7 @@ class OrderUpdateStoreTest {
                 ),
                 wcOrderRestClient = orderRestClient,
                 ordersDaoDecorator = ordersDaoDecorator,
-                siteSqlUtils = siteSqlUtils,
+                siteStore = siteStore,
                 orderSummaryDao = orderSummaryDao,
                 metaDataDao = metaDataDao
         )
@@ -80,7 +79,7 @@ class OrderUpdateStoreTest {
 
         setUp {
             orderRestClient = mock {
-                onBlocking { updateCustomerOrderNote(initialOrder, site, UPDATED_CUSTOMER_NOTE) }.doReturn(
+                on { updateCustomerOrderNote(initialOrder, site, UPDATED_CUSTOMER_NOTE) }.doReturn(
                         RemoteOrderPayload.Updating(
                                 updatedOrder,
                                 site
@@ -115,7 +114,7 @@ class OrderUpdateStoreTest {
         val specificOrderError = "order error"
         setUp {
             orderRestClient = mock {
-                onBlocking { updateCustomerOrderNote(initialOrder, site, UPDATED_CUSTOMER_NOTE) }.doReturn(
+                on { updateCustomerOrderNote(initialOrder, site, UPDATED_CUSTOMER_NOTE) }.doReturn(
                         RemoteOrderPayload.Updating(
                                 error = OrderError(message = specificOrderError),
                                 initialOrder,
@@ -190,7 +189,7 @@ class OrderUpdateStoreTest {
 
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     updateBothOrderAddresses(
                             initialOrder,
                             site,
@@ -229,7 +228,7 @@ class OrderUpdateStoreTest {
 
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     updateShippingAddress(
                             initialOrder,
                             site,
@@ -261,7 +260,7 @@ class OrderUpdateStoreTest {
         // given
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     updateShippingAddress(
                             initialOrder, site, emptyShippingDto.copy(first_name = UPDATED_SHIPPING_FIRST_NAME)
                     )
@@ -330,7 +329,7 @@ class OrderUpdateStoreTest {
         // given
         setUp {
             orderRestClient = mock()
-            whenever(siteSqlUtils.getSiteWithLocalId(any())).thenReturn(null)
+            whenever(siteStore.getSiteByLocalId(any())).thenReturn(null)
         }
 
         // when
@@ -359,7 +358,7 @@ class OrderUpdateStoreTest {
         // given
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     updateBillingAddress(
                             initialOrder, site, emptyBillingDto
                     )
@@ -389,7 +388,7 @@ class OrderUpdateStoreTest {
         // given
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     updateBillingAddress(
                             initialOrder, site, emptyBillingDto.copy(email = "custom@mail.com")
                     )
@@ -431,7 +430,7 @@ class OrderUpdateStoreTest {
 
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     createOrder(any(), any(), anyOrNull())
                 }.doReturn(
                     WooPayload(newOrder)
@@ -473,7 +472,7 @@ class OrderUpdateStoreTest {
 
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     updateOrder(any(), any(), any())
                 }.doReturn(
                     WooPayload(updatedOrder)
@@ -511,7 +510,7 @@ class OrderUpdateStoreTest {
     fun `should delete local copy of order when delete request succeeds`(): Unit = runBlocking {
         setUp {
             orderRestClient = mock {
-                onBlocking {
+                on {
                     deleteOrder(any(), any(), any())
                 }.doReturn(
                     WooPayload(Unit)

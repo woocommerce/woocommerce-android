@@ -112,6 +112,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val locationId = "location_id"
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
     private val useInterac = false
+    private val useEftpos = false
 
     @Before
     fun setUp() = testBlocking {
@@ -138,6 +139,24 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false, true)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(LocationPermissionRationale::class.java)
+        }
+
+    @Test
+    fun `given should show permissions rationale, when connection flow started, then pre alert event tracked`() =
+        testBlocking {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false, true)
+
+            verify(tracker).trackLocationPermissionPreAlertShown()
+        }
+
+    @Test
+    fun `given permissions not granted, when permissions requested, then required shown event tracked`() =
+        testBlocking {
+            (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(false, false)
+
+            (viewModel.event.value as RequestLocationPermissions).onPermissionsRequestResult(false)
+
+            verify(tracker).trackLocationPermissionRequiredShown()
         }
 
     @Test
@@ -322,7 +341,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -335,7 +354,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onBluetoothRuntimePermissionsRequestResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -347,7 +366,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as RequestBluetoothRuntimePermissions)
                 .onBluetoothRuntimePermissionsRequestResult(false)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -361,7 +380,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
+            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, useEftpos, BuildConfig.DEBUG)
         }
 
     @Test
@@ -1568,8 +1587,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).toSavedStateHandle()
         return CardReaderConnectViewModel(
             savedState = savedState,
-            storeManagementPaymentsFlowTracker = tracker,
-            pointOfSalePaymentsFlowTracker = tracker,
+            tracker = tracker,
             dispatchers = coroutinesTestRule.testDispatchers,
             appPrefs = appPrefs,
             developerOptionsRepository = developerOptionsRepository,

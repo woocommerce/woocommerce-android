@@ -163,6 +163,12 @@ sealed class Carrier(
         logoRes = R.drawable.usps_logo
     )
 
+    data object FEDEX : Carrier(
+        id = CarrierType.FEDEX.id,
+        name = "FedEx",
+        logoRes = R.drawable.fedex_logo
+    )
+
     data object DHL : Carrier(
         id = CarrierType.DHL.id,
         name = "DHL",

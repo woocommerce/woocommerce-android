@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,10 +38,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -54,6 +51,7 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.customer.compose.CustomerSummaryRow
 import com.woocommerce.android.ui.orders.creation.customerlist.Button
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewState
 import com.woocommerce.android.ui.orders.creation.customerlist.SearchMode
@@ -193,43 +191,12 @@ private fun CustomerListItem(
     customer: CustomerListViewState.CustomerList.Item.Customer,
     onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = true,
-                role = Role.Button,
-                onClick = { onCustomerSelected(customer.payload) }
-            )
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.minor_100)
-            )
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Row {
-                Text(
-                    text = customer.name.render(),
-                    color = colorResource(id = R.color.color_on_surface),
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.W500,
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = customer.username.render(),
-                    color = colorResource(id = R.color.color_on_surface_medium),
-                    style = MaterialTheme.typography.subtitle1,
-                )
-            }
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = customer.email.render(),
-                color = colorResource(id = R.color.color_on_surface),
-                style = MaterialTheme.typography.body2,
-            )
-        }
-    }
+    CustomerSummaryRow(
+        name = customer.name.render(),
+        username = customer.username.render(),
+        email = customer.email.render(),
+        onClick = { onCustomerSelected(customer.payload) },
+    )
 }
 
 @Composable

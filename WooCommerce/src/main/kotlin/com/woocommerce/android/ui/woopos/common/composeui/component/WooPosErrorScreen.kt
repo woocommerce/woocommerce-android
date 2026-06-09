@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -48,7 +48,7 @@ fun WooPosErrorScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             Icon(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(WooPosComponentSize.Small.value),
                 imageVector = icon,
                 contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
                 tint = WooPosTheme.colors.unspecified,
@@ -75,7 +75,7 @@ fun WooPosErrorScreen(
                 WooPosButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = WooPosErrorAndEmptyStateButtonModifier
+                    modifier = Modifier.wooPosFullScreenActionButton()
                 )
             }
             secondaryButton?.let {
@@ -83,7 +83,7 @@ fun WooPosErrorScreen(
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
-                    modifier = WooPosErrorAndEmptyStateButtonModifier
+                    modifier = Modifier.wooPosFullScreenActionButton()
                 )
             }
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))

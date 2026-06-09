@@ -63,9 +63,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
-        onBlocking { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
-        onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
-        onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
+        on { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
+        on { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
+        on { getSiteByLocalId(testSite.id) } doReturn testSite
     }
     private var isJetpackConnected: Boolean = false
     private val selectedSite: SelectedSite = mock()
@@ -78,7 +78,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
-    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -102,8 +101,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override val applicationName: String = clientId
                 override suspend fun isEnabledForJetpackAccess(): Boolean = true
             },
-            resourceProvider = resourceProvider,
-            registerDevice = registerDevice
+            resourceProvider = resourceProvider
         )
     }
 
@@ -273,7 +271,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {
@@ -317,7 +315,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
+    fun `given user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
         setup {
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
@@ -328,7 +326,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {
@@ -380,5 +378,41 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(event).isInstanceOf(LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen::class.java)
             assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).url)
                 .isEqualTo(urlAuthFull)
+        }
+
+    @Test
+    fun `given canonical site URL is https but siteAddress is http, when login fails with INVALID_NONCE, then ViewModel retries with the canonical https URL and succeeds`() =
+        testBlocking {
+            val canonicalHttpsAddress = "https://site.com"
+            val canonicalSite = SiteModel().apply {
+                hasWooCommerce = true
+                url = canonicalHttpsAddress
+            }
+            val invalidNonce = CookieNonceAuthenticationException(
+                errorMessage = UiStringText("INVALID_NONCE"),
+                errorType = Nonce.CookieNonceErrorType.INVALID_NONCE,
+                networkStatusCode = null
+            )
+
+            setup {
+                whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                    .thenReturn(Result.failure(invalidNonce))
+                whenever(wpApiSiteRepository.fetchSite(siteAddress))
+                    .thenReturn(Result.success(canonicalSite))
+                whenever(wpApiSiteRepository.login(canonicalHttpsAddress, testUsername, testPassword))
+                    .thenReturn(Result.success(Unit))
+                whenever(wpApiSiteRepository.fetchSite(canonicalHttpsAddress, testUsername, testPassword))
+                    .thenReturn(Result.success(canonicalSite))
+            }
+
+            viewModel.viewState.observeForTesting {
+                viewModel.onUsernameChanged(testUsername)
+                viewModel.onPasswordChanged(testPassword)
+                viewModel.onContinueClick()
+            }
+
+            verify(wpApiSiteRepository).login(siteAddress, testUsername, testPassword)
+            verify(wpApiSiteRepository).login(canonicalHttpsAddress, testUsername, testPassword)
+            assertThat(viewModel.event.value).isEqualTo(LoggedIn(canonicalSite.id))
         }
 }

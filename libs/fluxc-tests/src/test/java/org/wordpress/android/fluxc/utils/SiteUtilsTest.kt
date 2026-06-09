@@ -10,6 +10,7 @@ import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
+@Suppress("UnitTestNamingRule")
 class SiteUtilsTest {
     companion object {
         const val UTC8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
