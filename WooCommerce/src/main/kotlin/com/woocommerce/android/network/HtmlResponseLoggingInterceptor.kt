@@ -35,7 +35,8 @@ class HtmlResponseLoggingInterceptor(
 
         /**
          * Builds a log message when [response] is an HTML response, or returns `null` otherwise.
-         * Side-effect free so it can be unit tested without touching the logger.
+         * Uses [Response.peekBody] so the response body is left intact for the caller, and keeps
+         * the logging decision testable without touching the logger.
          */
         internal fun buildLogMessage(request: Request, response: Response): String? {
             val contentType = response.header("Content-Type") ?: return null
