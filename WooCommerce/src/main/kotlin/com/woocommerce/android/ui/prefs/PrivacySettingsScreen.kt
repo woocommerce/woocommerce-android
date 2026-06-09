@@ -36,15 +36,15 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.designsystem.WooTheme
-import com.woocommerce.android.ui.compose.designsystem.component.WooBodyText
-import com.woocommerce.android.ui.compose.designsystem.component.WooLinearProgressIndicator
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageTitle
-import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeader
-import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRow
-import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchSettingsRow
-import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
-import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.designsystem.compose.WooTheme
+import com.woocommerce.android.ui.designsystem.compose.component.WooBodyText
+import com.woocommerce.android.ui.designsystem.compose.component.WooLinearProgressIndicator
+import com.woocommerce.android.ui.designsystem.compose.component.WooPageTitle
+import com.woocommerce.android.ui.designsystem.compose.component.WooSectionHeader
+import com.woocommerce.android.ui.designsystem.compose.component.WooSettingsRow
+import com.woocommerce.android.ui.designsystem.compose.component.WooSwitchSettingsRow
+import com.woocommerce.android.ui.designsystem.compose.component.WooTopAppBar
+import com.woocommerce.android.ui.designsystem.compose.foundation.WooDesignSystemThemeWithBackground
 
 @Composable
 fun PrivacySettingsScreen(

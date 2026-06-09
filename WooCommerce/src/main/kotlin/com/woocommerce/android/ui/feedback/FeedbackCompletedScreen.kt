@@ -37,11 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.designsystem.WooTheme
-import com.woocommerce.android.ui.compose.designsystem.component.WooLinkedBodyText
-import com.woocommerce.android.ui.compose.designsystem.component.WooPrimaryButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
-import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.designsystem.compose.WooTheme
+import com.woocommerce.android.ui.designsystem.compose.component.WooLinkedBodyText
+import com.woocommerce.android.ui.designsystem.compose.component.WooPrimaryButton
+import com.woocommerce.android.ui.designsystem.compose.component.WooTopAppBar
+import com.woocommerce.android.ui.designsystem.compose.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable

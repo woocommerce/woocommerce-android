@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import com.woocommerce.android.ui.compose.designsystem.foundation.LegacyWooFoundation
+import com.woocommerce.android.ui.designsystem.compose.foundation.LegacyWooFoundation
 import androidx.compose.material.MaterialTheme as Material2Theme
 import androidx.compose.material.Surface as Material2Surface
 
