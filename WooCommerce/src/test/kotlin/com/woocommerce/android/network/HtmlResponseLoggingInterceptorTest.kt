@@ -29,9 +29,23 @@ class HtmlResponseLoggingInterceptorTest {
 
         assertThat(message).isNotNull()
         assertThat(message).contains("https://public-api.wordpress.com/rest/v1.1/sites/123/posts")
+        assertThat(message).contains("Method: GET")
         assertThat(message).contains("Status: 503")
         assertThat(message).contains("Content-Type: text/html; charset=UTF-8")
         assertThat(message).contains(htmlBody)
+    }
+
+    @Test
+    fun `when request is HEAD, then no message is built even for an HTML response`() {
+        val message = buildLogMessage(
+            request = Request.Builder()
+                .url("https://static-grouse-ferret.jurassic.ninja/")
+                .head()
+                .build(),
+            response = response(200, "text/html; charset=UTF-8", "")
+        )
+
+        assertThat(message).isNull()
     }
 
     @Test

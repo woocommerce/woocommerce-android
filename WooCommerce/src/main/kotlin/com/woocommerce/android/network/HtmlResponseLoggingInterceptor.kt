@@ -2,6 +2,7 @@ package com.woocommerce.android.network
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.util.WooLog
+import java.net.HttpURLConnection
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
@@ -41,17 +42,26 @@ class HtmlResponseLoggingInterceptor(
         internal fun buildLogMessage(request: Request, response: Response): String? {
             val contentType = response.header("Content-Type") ?: return null
             if (!contentType.contains("text/html", ignoreCase = true)) return null
+            // HEAD/204/304 responses carry headers but no body (e.g. the WP REST API
+            // discovery HEAD probe to the site root), so there is nothing useful to capture.
+            if (!hasInspectableBody(request, response)) return null
 
             val bodyPreview = response.peekBody(MAX_BODY_PREVIEW_BYTES).string()
             return buildString {
                 appendLine("[HTML Response Detected]")
                 appendLine("  Endpoint: ${redactSensitiveParams(request.url)}")
+                appendLine("  Method: ${request.method}")
                 appendLine("  Status: ${response.code}")
                 appendLine("  Content-Type: $contentType")
                 appendLine("  Body preview: $bodyPreview")
                 append("  Redirect: ${response.header("Location") ?: "(none)"}")
             }
         }
+
+        private fun hasInspectableBody(request: Request, response: Response): Boolean =
+            request.method != "HEAD" &&
+                response.code != HttpURLConnection.HTTP_NO_CONTENT &&
+                response.code != HttpURLConnection.HTTP_NOT_MODIFIED
 
         private fun redactSensitiveParams(url: HttpUrl): String {
             if (url.queryParameterNames.none { it.lowercase() in SENSITIVE_PARAMS }) {
