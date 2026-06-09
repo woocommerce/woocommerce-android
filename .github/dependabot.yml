@@ -50,5 +50,3 @@ updates:
     groups:
       ruby-minor-and-patch:
         update-types: [minor, patch]
-    reviewers:
-      - "woocommerce/apps-infra-tooling"

@@ -413,7 +413,6 @@ class SiteStoreUnitTest {
         automatedTransferSite.setIsJetpackInstalled(true)
         automatedTransferSite.setIsJetpackConnected(true)
         automatedTransferSite.setIsWPCom(false)
-        automatedTransferSite.setIsAutomatedTransfer(true)
 
         mSiteStorePersistence.insertOrUpdateSite(automatedTransferSite)
 
@@ -424,11 +423,11 @@ class SiteStoreUnitTest {
     @Throws(NoSuchMethodException::class, IllegalAccessException::class, InvocationTargetException::class)
     fun testBatchInsertSiteNoDuplicateWPCom() {
         val siteList: MutableList<SiteModel?> = ArrayList()
-        siteList.add(SiteUtils.generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true, true))
-        siteList.add(SiteUtils.generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true, true))
-        siteList.add(SiteUtils.generateTestSite(3, "https://pony3.com", "https://pony3.com/xmlrpc.php", true, true))
-        siteList.add(SiteUtils.generateTestSite(4, "https://pony4.com", "https://pony4.com/xmlrpc.php", true, true))
-        siteList.add(SiteUtils.generateTestSite(5, "https://pony5.com", "https://pony5.com/xmlrpc.php", true, true))
+        siteList.add(SiteUtils.generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true))
+        siteList.add(SiteUtils.generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true))
+        siteList.add(SiteUtils.generateTestSite(3, "https://pony3.com", "https://pony3.com/xmlrpc.php", true))
+        siteList.add(SiteUtils.generateTestSite(4, "https://pony4.com", "https://pony4.com/xmlrpc.php", true))
+        siteList.add(SiteUtils.generateTestSite(5, "https://pony5.com", "https://pony5.com/xmlrpc.php", true))
 
         val sites = SitesModel(siteList)
 
@@ -507,9 +506,9 @@ class SiteStoreUnitTest {
     @Throws(DuplicateSiteException::class)
     fun testUpdateSiteUniqueConstraintFail() {
         // Create 2 test sites
-        val site1 = SiteUtils.generateTestSite(0, "https://pony1.com", "https://pony1.com/xmlrpc.php", false, true)
+        val site1 = SiteUtils.generateTestSite(0, "https://pony1.com", "https://pony1.com/xmlrpc.php", false)
         mSiteStorePersistence.insertOrUpdateSite(site1)
-        val site2 = SiteUtils.generateTestSite(0, "https://pony2.com", "https://pony2.com/xmlrpc.php", false, true)
+        val site2 = SiteUtils.generateTestSite(0, "https://pony2.com", "https://pony2.com/xmlrpc.php", false)
         mSiteStorePersistence.insertOrUpdateSite(site2)
 
         // Update the second site and reuse the site url and id from the first
@@ -610,43 +609,5 @@ class SiteStoreUnitTest {
         for (site in sitesToKeep) {
             assertTrue(mSiteStore.getSiteBySiteId(site.siteId) != null)
         }
-    }
-
-    @Test
-    @Throws(DuplicateSiteException::class)
-    fun testInsertAndRetrieveForActiveModules() {
-        val site = SiteUtils.generateWPComSite()
-        val activeModules = (SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE
-            + ","
-            + SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS)
-        site.activeModules = activeModules
-
-        mSiteStorePersistence.insertOrUpdateSite(site)
-
-        val siteFromDb = mSiteSqlUtils.getSites()[0]
-        assertTrue(siteFromDb.isActiveModuleEnabled(SiteModel.ACTIVE_MODULES_KEY_PUBLICIZE))
-        assertTrue(siteFromDb.isActiveModuleEnabled(SiteModel.ACTIVE_MODULES_KEY_SHARING_BUTTONS))
-    }
-
-    @Test
-    @Throws(DuplicateSiteException::class)
-    fun testInsertAndRetrieveForPublicizePermanentlyDisabled() {
-        val site = SiteUtils.generateWPComSite()
-        site.setIsPublicizePermanentlyDisabled(true)
-
-        mSiteStorePersistence.insertOrUpdateSite(site)
-
-        val siteFromDb = mSiteSqlUtils.getSites()[0]
-        assertTrue(siteFromDb.isPublicizePermanentlyDisabled)
-    }
-
-    @Test
-    fun testZendeskPlanAndAddonsInsertionAndRetrieval() {
-        val siteModel = SiteUtils.generateSiteWithZendeskMetaData()
-        WellSql.insert(siteModel).execute()
-
-        val siteFromDb = mSiteStore.sites[0]
-        assertEquals(siteModel.zendeskPlan, siteFromDb.zendeskPlan)
-        assertEquals(siteModel.zendeskAddOns, siteFromDb.zendeskAddOns)
     }
 }
