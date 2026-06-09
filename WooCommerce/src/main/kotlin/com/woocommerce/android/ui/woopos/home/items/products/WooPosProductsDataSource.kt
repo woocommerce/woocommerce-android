@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSync
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosCatalogFileBlockedException
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
@@ -126,7 +127,12 @@ class WooPosProductsDataSource @Inject constructor(
                     },
                     onFailure = {
                         progressJob.cancel()
-                        send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                        send(
+                            WooPosPrepopulatingDataStatus.Failed(
+                                error = it.message ?: "Unknown error",
+                                isServerPermissionsError = it is WooPosCatalogFileBlockedException
+                            )
+                        )
                     }
                 )
             }
@@ -206,7 +212,10 @@ class WooPosProductsDataSource @Inject constructor(
         data object SyncPreparing : WooPosPrepopulatingDataStatus()
         data class SyncProgress(val processed: Int, val total: Int) : WooPosPrepopulatingDataStatus()
         data object Completed : WooPosPrepopulatingDataStatus()
-        data class Failed(val error: String) : WooPosPrepopulatingDataStatus()
+        data class Failed(
+            val error: String,
+            val isServerPermissionsError: Boolean = false
+        ) : WooPosPrepopulatingDataStatus()
     }
 }
 
