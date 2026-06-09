@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosCatalogFileBlockedException
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.io.IOException
@@ -33,6 +35,7 @@ class WooPosProductsDataSourceTest {
     private val syncRepository: WooPosLocalCatalogSyncRepository = mock {
         on { syncState }.thenReturn(MutableStateFlow(null))
     }
+    private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion = mock()
 
     @Rule
     @JvmField
@@ -140,7 +143,7 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given prepopulate fails with catalog blocked exception, when prepopulate cache, then failed is server permissions error`() =
+    fun `given catalog blocked and woo at or above fix version, when prepopulate cache, then failed is server permissions error`() =
         runTest {
             // GIVEN
             whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
@@ -149,6 +152,7 @@ class WooPosProductsDataSourceTest {
             whenever(localDbDataSource.prepopulateCache()).thenReturn(
                 Result.failure(WooPosCatalogFileBlockedException())
             )
+            whenever(isWooBelowCatalogFixVersion()).thenReturn(false)
             val sut = createSut()
 
             // WHEN
@@ -157,7 +161,94 @@ class WooPosProductsDataSourceTest {
             // THEN
             val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
             assertThat(status.isServerPermissionsError).isTrue()
+            assertThat(sut.didFallBackDueToCatalogBlock()).isFalse()
+            verify(remoteDataSource, never()).prepopulateCache()
         }
+
+    @Test
+    fun `given catalog blocked and woo below fix version, when prepopulate cache, then falls back to remote`() =
+        runTest {
+            // GIVEN
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.BlockingRequired
+            )
+            whenever(localDbDataSource.prepopulateCache()).thenReturn(
+                Result.failure(WooPosCatalogFileBlockedException())
+            )
+            whenever(isWooBelowCatalogFixVersion()).thenReturn(true)
+            whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+            val sut = createSut()
+
+            // WHEN
+            val result = sut.prepopulateCache().toList()
+
+            // THEN
+            assertThat(result.last())
+                .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Completed::class.java)
+            assertThat(sut.didFallBackDueToCatalogBlock()).isTrue()
+            assertThat(sut.getCurrentSyncStrategy()).isEqualTo(WooPosProductsDataSource.SyncStrategy.REMOTE)
+            verify(remoteDataSource).prepopulateCache()
+        }
+
+    @Test
+    fun `given catalog blocked and woo below fix version and remote also fails, when prepopulate cache, then emits failed`() =
+        runTest {
+            // GIVEN
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.BlockingRequired
+            )
+            whenever(localDbDataSource.prepopulateCache()).thenReturn(
+                Result.failure(WooPosCatalogFileBlockedException())
+            )
+            whenever(isWooBelowCatalogFixVersion()).thenReturn(true)
+            whenever(remoteDataSource.prepopulateCache()).thenReturn(
+                Result.failure(IOException("No network connection"))
+            )
+            val sut = createSut()
+
+            // WHEN
+            val result = sut.prepopulateCache().toList()
+
+            // THEN
+            assertThat(result.last())
+                .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed::class.java)
+        }
+
+    @Test
+    fun `given generic failure, when prepopulate cache, then does not fall back to remote`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.BlockingRequired
+        )
+        whenever(localDbDataSource.prepopulateCache()).thenReturn(
+            Result.failure(IOException("Download failed with code: 404"))
+        )
+        val sut = createSut()
+
+        // WHEN
+        sut.prepopulateCache().toList()
+
+        // THEN
+        assertThat(sut.didFallBackDueToCatalogBlock()).isFalse()
+        verify(remoteDataSource, never()).prepopulateCache()
+    }
+
+    @Test
+    fun `when fall back to remote due to catalog block, then uses remote and completes`() = runTest {
+        // GIVEN
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        val sut = createSut()
+
+        // WHEN
+        val result = sut.fallBackToRemoteDueToCatalogBlock().toList()
+
+        // THEN
+        assertThat(result.last())
+            .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Completed::class.java)
+        assertThat(sut.didFallBackDueToCatalogBlock()).isTrue()
+        assertThat(sut.getCurrentSyncStrategy()).isEqualTo(WooPosProductsDataSource.SyncStrategy.REMOTE)
+        verify(remoteDataSource).prepopulateCache()
+    }
 
     @Test
     fun `given prepopulate fails with generic exception, when prepopulate cache, then failed is not server permissions error`() =
@@ -362,5 +453,6 @@ class WooPosProductsDataSourceTest {
         localDbDataSource = localDbDataSource,
         syncStatusChecker = syncStatusChecker,
         syncRepository = syncRepository,
+        isWooBelowCatalogFixVersion = isWooBelowCatalogFixVersion,
     )
 }
