@@ -131,11 +131,6 @@ class HelpActivity : AppCompatActivity() {
             binding.featureFlagsContainer.setOnClickListener { showFeatureFlagsOverride() }
         }
 
-        binding.advancedLoggingToggle.isChecked = AppPrefs.isAdvancedHtmlErrorLoggingEnabled()
-        binding.advancedLoggingToggle.setOnCheckedChangeListener { _, isChecked ->
-            AppPrefs.setAdvancedHtmlErrorLoggingEnabled(isChecked)
-        }
-
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {

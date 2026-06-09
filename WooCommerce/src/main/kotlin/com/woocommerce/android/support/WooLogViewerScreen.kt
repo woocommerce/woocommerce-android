@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -106,6 +108,14 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
             contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
         ) {
             item {
+                AdvancedErrorLoggingToggle(
+                    isEnabled = state.isAdvancedErrorLoggingEnabled,
+                    onToggled = state.onAdvancedErrorLoggingToggled
+                )
+                HorizontalDivider()
+            }
+
+            item {
                 Text(
                     text = stringResource(R.string.logviewer_log_files_list_header),
                     style = MaterialTheme.typography.titleLarge,
@@ -139,6 +149,38 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun AdvancedErrorLoggingToggle(
+    isEnabled: Boolean,
+    onToggled: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onToggled(!isEnabled) }
+            .padding(16.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.support_advanced_error_logging),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = stringResource(R.string.support_advanced_error_logging_detail),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Switch(
+            checked = isEnabled,
+            onCheckedChange = onToggled
+        )
     }
 }
 
@@ -399,7 +441,9 @@ private fun LogFilesListPreview() {
     )
     val state = WooLogViewerViewModel.UiState.LogFilesList(
         logFiles = logFiles,
-        onLogFileSelected = {}
+        onLogFileSelected = {},
+        isAdvancedErrorLoggingEnabled = false,
+        onAdvancedErrorLoggingToggled = {}
     )
     WooTheme {
         LogFilesListScreen(state)
