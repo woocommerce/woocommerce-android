@@ -48,6 +48,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var hasSeenAnalyticsScheduledImportInfo by AppPrefs::hasSeenAnalyticsScheduledImportInfo
 
+    var qrLoginRolloutBucket by AppPrefs::qrLoginRolloutBucket
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 
