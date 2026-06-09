@@ -25,7 +25,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -47,6 +46,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.StatsInfoFooter
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -76,6 +76,7 @@ fun DashboardTopPerformersWidgetCard(
 ) {
     topPerformersViewModel.topPerformersState.observeAsState().value?.let { topPerformersState ->
         val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
+        val isScheduledImportEnabled by parentViewModel.isScheduledImportEnabled.observeAsState(false)
         val selectedDateRange by topPerformersViewModel.selectedDateRange.observeAsState()
         WidgetCard(
             titleResource = topPerformersState.titleStringRes,
@@ -95,6 +96,8 @@ fun DashboardTopPerformersWidgetCard(
                     topPerformersState = topPerformersState,
                     selectedDateRange = selectedDateRange,
                     lastUpdateState = lastUpdateState,
+                    showDelayedFooter = isScheduledImportEnabled,
+                    onDelayedStatsInfoClick = parentViewModel::onDelayedStatsInfoClicked,
                     onTabSelected = topPerformersViewModel::onRangeChanged,
                     onEditCustomRangeTapped = topPerformersViewModel::onEditCustomRangeTapped
                 )
@@ -122,6 +125,8 @@ fun DashboardTopPerformersContent(
     topPerformersState: TopPerformersState?,
     selectedDateRange: TopPerformersDateRange?,
     lastUpdateState: String?,
+    showDelayedFooter: Boolean,
+    onDelayedStatsInfoClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
     onEditCustomRangeTapped: () -> Unit,
 ) {
@@ -144,7 +149,9 @@ fun DashboardTopPerformersContent(
             else -> {
                 TopPerformersContent(
                     topPerformersState = topPerformersState,
-                    lastUpdateState = lastUpdateState
+                    lastUpdateState = lastUpdateState,
+                    showDelayedFooter = showDelayedFooter,
+                    onDelayedStatsInfoClick = onDelayedStatsInfoClick
                 )
             }
         }
@@ -187,6 +194,8 @@ private fun HandleEvents(
 private fun TopPerformersContent(
     topPerformersState: TopPerformersState?,
     lastUpdateState: String?,
+    showDelayedFooter: Boolean,
+    onDelayedStatsInfoClick: () -> Unit,
 ) {
     Column {
         Row(
@@ -214,17 +223,13 @@ private fun TopPerformersContent(
             )
         }
 
-        if (!lastUpdateState.isNullOrEmpty()) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .align(Alignment.CenterHorizontally),
-                text = lastUpdateState,
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector),
-                textAlign = TextAlign.Center
-            )
+        val footerText = if (showDelayedFooter) {
+            stringResource(id = R.string.dashboard_stats_delayed_footer)
+        } else {
+            lastUpdateState
+        }
+        if (!footerText.isNullOrEmpty()) {
+            StatsInfoFooter(text = footerText, onInfoClick = onDelayedStatsInfoClick)
         }
     }
 }
@@ -432,6 +437,8 @@ private fun TopPerformersWidgetCardPreview() {
             topPerformersState = topPerformersState,
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
+            showDelayedFooter = false,
+            onDelayedStatsInfoClick = {},
             onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
@@ -439,6 +446,8 @@ private fun TopPerformersWidgetCardPreview() {
             topPerformersState = topPerformersState.copy(isLoading = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
+            showDelayedFooter = false,
+            onDelayedStatsInfoClick = {},
             onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
@@ -446,6 +455,8 @@ private fun TopPerformersWidgetCardPreview() {
             topPerformersState = topPerformersState.copy(error = DashboardTopPerformersViewModel.ErrorType.Generic),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
+            showDelayedFooter = false,
+            onDelayedStatsInfoClick = {},
             onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
@@ -453,6 +464,8 @@ private fun TopPerformersWidgetCardPreview() {
             topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
+            showDelayedFooter = true,
+            onDelayedStatsInfoClick = {},
             onTabSelected = {},
             onEditCustomRangeTapped = {}
         )

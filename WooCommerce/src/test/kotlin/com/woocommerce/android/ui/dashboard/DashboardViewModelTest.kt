@@ -13,6 +13,7 @@ import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificati
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
+import com.woocommerce.android.ui.dashboard.data.AnalyticsScheduledImportRepository
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.captureValues
@@ -72,6 +73,9 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock {
         on { invoke() } doReturn flowOf(false)
     }
+    private val analyticsScheduledImportRepository: AnalyticsScheduledImportRepository = mock {
+        on { observeIsEnabled() } doReturn flowOf(false)
+    }
     private lateinit var viewModel: DashboardViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit) {
@@ -87,6 +91,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
+            analyticsScheduledImportRepository = analyticsScheduledImportRepository,
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
             shouldShowEnablePushNotificationsUi = shouldShowEnablePushNotificationsUi,
             feedbackPrefs = feedbackPrefs,
@@ -716,6 +721,58 @@ class DashboardViewModelTest : BaseUnitTest() {
         jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
         assertThat(jetpackBenefitsBanner!!.show).isFalse()
     }
+
+    @Test
+    fun `given scheduled import is enabled, when dashboard starts, then isScheduledImportEnabled is true`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+            }
+
+            // THEN
+            assertThat(viewModel.isScheduledImportEnabled.getOrAwaitValue()).isTrue()
+        }
+
+    @Test
+    fun `given no cached scheduled import setting, when dashboard starts, then isScheduledImportEnabled is false`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(false))
+            }
+
+            // THEN
+            assertThat(viewModel.isScheduledImportEnabled.getOrAwaitValue()).isFalse()
+        }
+
+    @Test
+    fun `when dashboard starts, then scheduled import setting is refreshed from remote`() =
+        testBlocking {
+            // GIVEN
+            setup {}
+
+            // THEN
+            verify(analyticsScheduledImportRepository).refresh()
+        }
+
+    @Test
+    fun `given import enabled, when delayed stats info clicked, then info event is emitted with current state`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+            }
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onDelayedStatsInfoClicked()
+            }.last()
+
+            // THEN
+            assertThat(event)
+                .isEqualTo(DashboardViewModel.DashboardEvent.OpenScheduledImportInfo(isEnabled = true))
+        }
 
     private companion object {
         fun dashboardWidget(
