@@ -105,6 +105,16 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   expiry/removal plan.
 - Bridge components such as `WooTopAppBar` may need component-level compatibility for title
   alignment, typography, nav/action treatment, divider/elevation, height, and insets.
+- `WooTopAppBar` temporarily uses an internal root-provided appearance so migrated screens can keep one
+  component tree: `WooDesignSystemTheme` provides `DesignSystem`, while `WooThemeWithBackground` through
+  `LegacyWooFoundation` provides `LegacyCompatible`. This compatibility code is removable when
+  legacy-compatible root rollout support is retired. Screens must not pass an appearance override or check
+  feature flags, root type, or theme class directly.
+- This compatibility path is scoped to top bars and descriptor actions supported by inspected sources:
+  `WooTopAppBarAction.Icon` for navigation-button icon actions and `WooTopAppBarAction.Text` for action-side
+  label actions.
+  Menus, overflow, loading, destructive states, badges, and mixed icon/text buttons remain future work until a
+  migration needs them.
 - Fragment-hosted Compose layout migration means replacing XML/View layout content with Compose while keeping Fragments, XML nav graphs, SafeArgs, ViewModels, navigation, and Store app event ownership.
 - Compose layout migration is optional per screen, not required for all screens.
 - Some screens require substantial work and should stay XML/View while receiving targeted token/style updates when needed.

@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooTertiaryButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarAction
 import com.woocommerce.android.ui.compose.designsystem.component.WooVerticalDivider
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -123,14 +124,17 @@ private fun CatalogContent() {
                 navigationIconContentDescription = "Back",
                 onNavigationClick = {},
                 windowInsets = WindowInsets(0),
-                actions = {
-                    WooOutlinedIconButton(
+                actions = listOf(
+                    WooTopAppBarAction.Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                         contentDescription = "Open",
                         onClick = {},
-                        emphasis = WooIconButtonEmphasis.Primary,
-                    )
-                },
+                    ),
+                    WooTopAppBarAction.Text(
+                        text = "Done",
+                        onClick = {},
+                    ),
+                ),
             )
         },
         contentSpacing = WooTheme.spacing.space6,
@@ -507,19 +511,17 @@ private fun LongTextPreviewContent() {
                 navigationIconContentDescription = "Back",
                 onNavigationClick = {},
                 windowInsets = WindowInsets(0),
-                actions = {
-                    WooOutlinedIconButton(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_help_24dp),
-                        contentDescription = "Help",
+                actions = listOf(
+                    WooTopAppBarAction.Text(
+                        text = "Save",
                         onClick = {},
-                    )
-                    WooOutlinedIconButton(
+                    ),
+                    WooTopAppBarAction.Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                         contentDescription = "Open",
                         onClick = {},
-                        emphasis = WooIconButtonEmphasis.Primary,
-                    )
-                },
+                    ),
+                ),
             )
         },
     ) {

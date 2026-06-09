@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooTertiaryButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarAction
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.preview.PreviewOnlyCatalogScreenshotSection
 
@@ -116,6 +117,20 @@ private fun TopBarLongTitleLight() {
 @Composable
 private fun TopBarLongTitleDark() {
     ScreenshotSurface(dark = true, pad = false) { TopBarLongTitle() }
+}
+
+@PreviewTest
+@Preview(name = "Top app bar long text action 1.5x - light", widthDp = PHONE_WIDTH_DP, fontScale = 1.5f)
+@Composable
+private fun TopBarLongTextActionLargeFontLight() {
+    ScreenshotSurface(dark = false, pad = false) { TopBarLongTextAction() }
+}
+
+@PreviewTest
+@Preview(name = "Top app bar long text action 1.5x - dark", widthDp = PHONE_WIDTH_DP, fontScale = 1.5f)
+@Composable
+private fun TopBarLongTextActionLargeFontDark() {
+    ScreenshotSurface(dark = true, pad = false) { TopBarLongTextAction() }
 }
 
 @PreviewTest
@@ -485,19 +500,39 @@ private fun TopBarLongTitle() {
         navigationIconContentDescription = "Back",
         onNavigationClick = {},
         windowInsets = WindowInsets(0),
-        actions = {
-            WooOutlinedIconButton(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_help_24dp),
-                contentDescription = "Help",
+        actions = listOf(
+            WooTopAppBarAction.Text(
+                text = "Save",
                 onClick = {},
-            )
-            WooOutlinedIconButton(
+            ),
+            WooTopAppBarAction.Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                 contentDescription = "Open",
                 onClick = {},
-                emphasis = WooIconButtonEmphasis.Primary,
-            )
-        },
+            ),
+        ),
+    )
+}
+
+@Composable
+private fun TopBarLongTextAction() {
+    WooTopAppBar(
+        title = "Products",
+        navigationIcon = ImageVector.vectorResource(R.drawable.ic_back_24dp),
+        navigationIconContentDescription = "Back",
+        onNavigationClick = {},
+        windowInsets = WindowInsets(0),
+        actions = listOf(
+            WooTopAppBarAction.Text(
+                text = "Complete setup changes",
+                onClick = {},
+            ),
+            WooTopAppBarAction.Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
+                contentDescription = "Open",
+                onClick = {},
+            ),
+        ),
     )
 }
 

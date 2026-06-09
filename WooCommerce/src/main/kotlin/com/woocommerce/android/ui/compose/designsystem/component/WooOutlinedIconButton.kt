@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton as MaterialOutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +25,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooStroke
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import androidx.compose.material3.OutlinedIconButton as MaterialOutlinedIconButton
 
 @Composable
 fun WooOutlinedIconButton(

@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooPadding
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooSpacing
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooText
+import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooTopAppBarAppearance
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooPadding
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooSpacing
@@ -31,4 +32,9 @@ object WooTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalWooPadding.current
+
+    internal val topAppBarAppearance: WooTopAppBarAppearance
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalWooTopAppBarAppearance.current
 }

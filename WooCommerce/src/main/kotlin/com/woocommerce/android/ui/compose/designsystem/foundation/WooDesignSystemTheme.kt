@@ -10,6 +10,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import com.woocommerce.android.ui.compose.designsystem.WooTopAppBarAppearance
 
 @Composable
 fun WooDesignSystemTheme(
@@ -23,6 +24,7 @@ fun WooDesignSystemTheme(
     ProvideWooFoundation(
         colors = colors,
         typography = typography,
+        topAppBarAppearance = WooTopAppBarAppearance.DesignSystem,
         content = {
             MaterialTheme(
                 colorScheme = colors.toMaterialColorScheme(),
@@ -55,6 +57,7 @@ internal fun LegacyWooFoundation(content: @Composable () -> Unit) {
     ProvideWooFoundation(
         colors = legacyWooColors(),
         typography = LegacyWooTypography,
+        topAppBarAppearance = WooTopAppBarAppearance.LegacyCompatible,
         content = content,
     )
 }
@@ -65,6 +68,7 @@ private fun ProvideWooFoundation(
     typography: WooTypography,
     spacing: WooSpacing = DefaultWooSpacing,
     padding: WooPadding = DefaultWooPadding,
+    topAppBarAppearance: WooTopAppBarAppearance = WooTopAppBarAppearance.DesignSystem,
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
@@ -72,6 +76,7 @@ private fun ProvideWooFoundation(
         LocalWooText provides typography,
         LocalWooSpacing provides spacing,
         LocalWooPadding provides padding,
+        LocalWooTopAppBarAppearance provides topAppBarAppearance,
     ) {
         content()
     }
@@ -83,4 +88,11 @@ internal val LocalWooSpacing = staticCompositionLocalOf<WooSpacing> {
 
 internal val LocalWooPadding = staticCompositionLocalOf<WooPadding> {
     error("WooTheme.padding is not available. Wrap content in WooDesignSystemTheme or WooThemeWithBackground.")
+}
+
+internal val LocalWooTopAppBarAppearance = staticCompositionLocalOf<WooTopAppBarAppearance> {
+    error(
+        "WooTheme.topAppBarAppearance is not available. Wrap content in WooDesignSystemTheme or " +
+            "WooThemeWithBackground."
+    )
 }
