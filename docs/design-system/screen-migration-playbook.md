@@ -133,6 +133,11 @@ Compose `WooTopAppBar` changes ownership and structure, not only colors.
    orientation previews when the screen is sensitive to those dimensions.
 12. Verify pilot screens with screenshot review, targeted tests when behavior changes, and an
    accessibility regression check against the original screen.
+   When using the Android preview screenshot plugin, prefer target-filtered commands such as
+   `--tests '*ScreenName*'` for update/validate runs so a pilot does not force unrelated screenshot
+   references into the same PR. For legacy-compatible dark previews, set preview `uiMode` to night
+   instead of only passing `useDarkTheme = true`; the legacy-compatible foundation can depend on
+   Android night resources as well as Compose dark-theme state.
 13. Verify design-system components under `WooThemeWithBackground` do not fall back to static
    `LightWooColors` or other hardcoded light defaults.
 14. Verify existing non-migrated screens using `WooThemeWithBackground` do not visually regress.
