@@ -83,6 +83,12 @@ class DashboardViewModel @Inject constructor(
             SelectionType.YEAR_TO_DATE,
             SelectionType.CUSTOM
         )
+
+        // Cards backed by the /reports endpoints that render the delayed-stats footer.
+        private val DELAYED_STATS_CARD_TYPES = setOf(
+            DashboardWidget.Type.STATS,
+            DashboardWidget.Type.POPULAR_PRODUCTS
+        )
     }
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
@@ -169,6 +175,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onDelayedStatsInfoClicked() {
+        appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo = true
         triggerEvent(DashboardEvent.OpenScheduledImportInfo(isEnabled = _isScheduledImportEnabled.value))
     }
 
@@ -204,7 +211,22 @@ class DashboardViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
         triggerEvent(RefreshJitm)
+        maybeShowScheduledImportNotice()
     }
+
+    private fun maybeShowScheduledImportNotice() {
+        val shouldShow = _isScheduledImportEnabled.value &&
+            hasVisibleDelayedStatsCard() &&
+            !appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo
+        if (shouldShow) {
+            triggerEvent(DashboardEvent.ShowScheduledImportNotice)
+        }
+    }
+
+    private fun hasVisibleDelayedStatsCard(): Boolean =
+        dashboardCardsState.value?.widgets
+            ?.filterIsInstance<DashboardWidgetUiModel.ConfigurableWidget>()
+            ?.any { it.widget.type in DELAYED_STATS_CARD_TYPES && it.isVisible } == true
 
     fun onResume() {
         _refreshTrigger.tryEmit(RefreshEvent())
@@ -416,6 +438,8 @@ class DashboardViewModel @Inject constructor(
         data object OpenWooPushNotificationsIntroduction : DashboardEvent()
 
         data class OpenScheduledImportInfo(val isEnabled: Boolean) : DashboardEvent()
+
+        data object ShowScheduledImportNotice : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)

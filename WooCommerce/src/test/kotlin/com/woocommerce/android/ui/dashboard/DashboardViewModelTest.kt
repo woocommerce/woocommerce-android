@@ -774,6 +774,103 @@ class DashboardViewModelTest : BaseUnitTest() {
                 .isEqualTo(DashboardViewModel.DashboardEvent.OpenScheduledImportInfo(isEnabled = true))
         }
 
+    @Test
+    fun `when delayed stats info is clicked, then the info sheet is marked as seen`() = testBlocking {
+        // GIVEN
+        setup {}
+
+        // WHEN
+        viewModel.onDelayedStatsInfoClicked()
+
+        // THEN
+        verify(appPrefsWrapper).hasSeenAnalyticsScheduledImportInfo = true
+    }
+
+    @Test
+    fun `given import enabled and info not seen, when pull to refresh, then scheduled import notice is shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo).thenReturn(false)
+            }
+            // Activate the cards state so a delayed-stats card (STATS) is visible
+            viewModel.dashboardCardsState.getOrAwaitValue()
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }.last()
+
+            // THEN
+            assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `given the info sheet has been seen, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo).thenReturn(true)
+            }
+            // Activate the cards state so a delayed-stats card is visible (isolates the seen-flag gate)
+            viewModel.dashboardCardsState.getOrAwaitValue()
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `given import disabled, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(false))
+            }
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `given no delayed-stats card is visible, when pull to refresh, then scheduled import notice is not shown`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
+                whenever(dashboardRepository.widgets).thenReturn(
+                    flowOf(
+                        listOf(
+                            dashboardWidget(DashboardWidget.Type.STATS, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.POPULAR_PRODUCTS, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.ORDERS, isSelected = true)
+                        )
+                    )
+                )
+            }
+            // Activate the cards state; the delayed-stats cards (STATS, POPULAR_PRODUCTS) are not visible
+            viewModel.dashboardCardsState.getOrAwaitValue()
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onPullToRefresh()
+            }
+
+            // THEN
+            assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
     private companion object {
         fun dashboardWidget(
             type: DashboardWidget.Type,

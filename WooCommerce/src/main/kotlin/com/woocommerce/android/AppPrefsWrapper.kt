@@ -46,6 +46,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
 
+    var hasSeenAnalyticsScheduledImportInfo by AppPrefs::hasSeenAnalyticsScheduledImportInfo
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 
