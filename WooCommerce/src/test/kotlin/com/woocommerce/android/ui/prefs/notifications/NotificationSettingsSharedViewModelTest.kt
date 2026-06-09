@@ -66,12 +66,18 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
                 R.string.settings_notifs_new_orders_subtitle -> "All orders"
                 R.string.settings_notifs_new_reviews_subtitle -> "All reviews"
                 R.string.settings_notifs_stock_subtitle -> "All stock alerts"
+                R.string.settings_notifs_stock_no_alerts_subtitle -> "No alerts"
+                R.string.settings_notifs_stock_low_stock_title -> "Low stock"
+                R.string.settings_notifs_stock_out_of_stock_title -> "Out of stock"
+                R.string.settings_notifs_stock_backorder_title -> "On backorder"
                 else -> invocation.arguments[0].toString()
             }
         }
         on { getString(any(), anyVararg()) } doAnswer { invocation ->
             when (invocation.arguments[0] as Int) {
                 R.string.settings_notifs_new_orders_high_value_subtitle -> "Orders over ${invocation.arguments[1]}"
+                R.string.settings_notifs_stock_two_subtitle ->
+                    "${invocation.arguments[1]} and ${invocation.arguments[2]}"
                 else -> invocation.arguments[0].toString()
             }
         }
@@ -322,7 +328,7 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
 
             val stockItem = notificationTypeItems.first { it.type == NotificationType.STOCK }
             assertThat(stockItem.isEnabled).isFalse()
-            assertThat(stockItem.subtitle).isEqualTo("All stock alerts")
+            assertThat(stockItem.subtitle).isEqualTo("Out of stock")
 
             val orderViewState = viewModel.newOrderNotificationSettingsViewState.captureValues().last()
             assertThat(orderViewState.notificationsEnabled).isFalse()
@@ -340,6 +346,72 @@ class NotificationSettingsSharedViewModelTest : BaseUnitTest() {
             assertThat(stockViewState.lowStockNotificationsEnabled).isFalse()
             assertThat(stockViewState.outOfStockNotificationsEnabled).isTrue()
             assertThat(stockViewState.backorderNotificationsEnabled).isFalse()
+        }
+
+    @Test
+    fun `given all stock types enabled, when loaded, then stock subtitle shows all stock alerts`() =
+        testBlocking {
+            setup {
+                mockSuccessfulFetch(
+                    WooPushNotificationPreferences(
+                        storeStock = StoreStockPreferences(
+                            enabled = true,
+                            lowStock = true,
+                            outOfStock = true,
+                            onBackorder = true
+                        )
+                    )
+                )
+            }
+            advanceUntilIdle()
+
+            val stockItem = viewModel.notificationTypeItems.captureValues().last()
+                .first { it.type == NotificationType.STOCK }
+            assertThat(stockItem.subtitle).isEqualTo("All stock alerts")
+        }
+
+    @Test
+    fun `given two stock types enabled, when loaded, then stock subtitle joins their names`() =
+        testBlocking {
+            setup {
+                mockSuccessfulFetch(
+                    WooPushNotificationPreferences(
+                        storeStock = StoreStockPreferences(
+                            enabled = true,
+                            lowStock = true,
+                            outOfStock = true,
+                            onBackorder = false
+                        )
+                    )
+                )
+            }
+            advanceUntilIdle()
+
+            val stockItem = viewModel.notificationTypeItems.captureValues().last()
+                .first { it.type == NotificationType.STOCK }
+            assertThat(stockItem.subtitle).isEqualTo("Low stock and Out of stock")
+        }
+
+    @Test
+    fun `given no stock types enabled, when loaded, then stock subtitle shows no alerts`() =
+        testBlocking {
+            setup {
+                mockSuccessfulFetch(
+                    WooPushNotificationPreferences(
+                        storeStock = StoreStockPreferences(
+                            enabled = true,
+                            lowStock = false,
+                            outOfStock = false,
+                            onBackorder = false
+                        )
+                    )
+                )
+            }
+            advanceUntilIdle()
+
+            val stockItem = viewModel.notificationTypeItems.captureValues().last()
+                .first { it.type == NotificationType.STOCK }
+            assertThat(stockItem.subtitle).isEqualTo("No alerts")
         }
 
     @Test
