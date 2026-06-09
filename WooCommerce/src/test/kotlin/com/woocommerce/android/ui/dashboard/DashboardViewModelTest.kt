@@ -794,6 +794,8 @@ class DashboardViewModelTest : BaseUnitTest() {
                 whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
                 whenever(appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo).thenReturn(false)
             }
+            // Activate the cards state so a delayed-stats card (STATS) is visible
+            viewModel.dashboardCardsState.getOrAwaitValue()
 
             // WHEN
             val event = viewModel.event.runAndCaptureValues {
@@ -812,6 +814,8 @@ class DashboardViewModelTest : BaseUnitTest() {
                 whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
                 whenever(appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo).thenReturn(true)
             }
+            // Activate the cards state so a delayed-stats card is visible (isolates the seen-flag gate)
+            viewModel.dashboardCardsState.getOrAwaitValue()
 
             // WHEN
             val events = viewModel.event.runAndCaptureValues {
@@ -846,9 +850,17 @@ class DashboardViewModelTest : BaseUnitTest() {
             setup {
                 whenever(analyticsScheduledImportRepository.observeIsEnabled()).thenReturn(flowOf(true))
                 whenever(dashboardRepository.widgets).thenReturn(
-                    flowOf(listOf(dashboardWidget(DashboardWidget.Type.ORDERS)))
+                    flowOf(
+                        listOf(
+                            dashboardWidget(DashboardWidget.Type.STATS, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.POPULAR_PRODUCTS, isSelected = false),
+                            dashboardWidget(DashboardWidget.Type.ORDERS, isSelected = true)
+                        )
+                    )
                 )
             }
+            // Activate the cards state; the delayed-stats cards (STATS, POPULAR_PRODUCTS) are not visible
+            viewModel.dashboardCardsState.getOrAwaitValue()
 
             // WHEN
             val events = viewModel.event.runAndCaptureValues {

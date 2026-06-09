@@ -126,8 +126,6 @@ class DashboardViewModel @Inject constructor(
     private val _isScheduledImportEnabled = MutableStateFlow(false)
     val isScheduledImportEnabled: LiveData<Boolean> = _isScheduledImportEnabled.asLiveData()
 
-    private val _hasVisibleDelayedStatsCard = MutableStateFlow(false)
-
     private val refreshingOnBackground = MutableStateFlow(-1)
 
     fun displayRefreshingIndicator() {
@@ -174,13 +172,6 @@ class DashboardViewModel @Inject constructor(
         launch {
             analyticsScheduledImportRepository.refresh()
         }
-        launch {
-            dashboardRepository.widgets.collect { widgets ->
-                _hasVisibleDelayedStatsCard.value = widgets.any {
-                    it.type in DELAYED_STATS_CARD_TYPES && it.isVisible
-                }
-            }
-        }
     }
 
     fun onDelayedStatsInfoClicked() {
@@ -225,12 +216,17 @@ class DashboardViewModel @Inject constructor(
 
     private fun maybeShowScheduledImportNotice() {
         val shouldShow = _isScheduledImportEnabled.value &&
-            _hasVisibleDelayedStatsCard.value &&
+            hasVisibleDelayedStatsCard() &&
             !appPrefsWrapper.hasSeenAnalyticsScheduledImportInfo
         if (shouldShow) {
             triggerEvent(DashboardEvent.ShowScheduledImportNotice)
         }
     }
+
+    private fun hasVisibleDelayedStatsCard(): Boolean =
+        dashboardCardsState.value?.widgets
+            ?.filterIsInstance<DashboardWidgetUiModel.ConfigurableWidget>()
+            ?.any { it.widget.type in DELAYED_STATS_CARD_TYPES && it.isVisible } == true
 
     fun onResume() {
         _refreshTrigger.tryEmit(RefreshEvent())
