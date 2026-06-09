@@ -1,6 +1,8 @@
 package com.woocommerce.android.di
 
 import com.automattic.android.tracks.crashlogging.CrashLoggingOkHttpInterceptorProvider
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.network.HtmlResponseLoggingInterceptor
 import com.woocommerce.android.performance.WooRequestFormatter
 import dagger.Module
 import dagger.Provides
@@ -18,4 +20,11 @@ class InterceptorModule {
     @Named("network-interceptors")
     fun provideMonitoring(): Interceptor = CrashLoggingOkHttpInterceptorProvider
         .createInstance(WooRequestFormatter)
+
+    @Provides
+    @IntoSet
+    @Named("interceptors")
+    fun provideHtmlResponseLoggingInterceptor(
+        appPrefsWrapper: AppPrefsWrapper
+    ): Interceptor = HtmlResponseLoggingInterceptor(appPrefsWrapper)
 }
