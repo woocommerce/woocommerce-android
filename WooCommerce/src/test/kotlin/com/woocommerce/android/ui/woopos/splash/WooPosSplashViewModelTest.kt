@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
@@ -34,6 +35,7 @@ class WooPosSplashViewModelTest {
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
     private val preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository =
         mock()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
 
     @Rule
     @JvmField
@@ -316,6 +318,51 @@ class WooPosSplashViewModelTest {
         verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenExitPosTapped)
     }
 
+    @Test
+    fun `when continue with basic sync is clicked, then falls back to remote and state is Loaded`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(
+                WooPosPrepopulatingDataStatus.Failed(
+                    "Download failed with code: 403",
+                    isServerPermissionsError = true
+                )
+            )
+        )
+        val sut = createSut()
+        whenever(productsDataSource.fallBackToRemoteDueToCatalogBlock()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Completed)
+        )
+
+        // WHEN
+        sut.onContinueWithBasicSyncClicked()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CatalogBlockedContinueWithBasicSyncTapped)
+    }
+
+    @Test
+    fun `given sync fell back due to catalog block, when loaded, then tracks LocalCatalogBlockedFellBackToRemote`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.prepopulateCache()).thenReturn(
+                flowOf(WooPosPrepopulatingDataStatus.Completed)
+            )
+            whenever(productsDataSource.getCurrentSyncStrategy())
+                .thenReturn(WooPosProductsDataSource.SyncStrategy.REMOTE)
+            whenever(productsDataSource.didFallBackDueToCatalogBlock()).thenReturn(true)
+            whenever(getWooCoreVersion()).thenReturn("10.9.0")
+
+            // WHEN
+            createSut()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.LocalCatalogBlockedFellBackToRemote("10.9.0")
+            )
+        }
+
     private fun createSut(): WooPosSplashViewModel {
         return WooPosSplashViewModel(
             productsDataSource,
@@ -325,6 +372,7 @@ class WooPosSplashViewModelTest {
             ordersCache,
             ordersDataSource,
             preferencesRepository,
+            getWooCoreVersion,
             CoroutineScope(coroutinesTestRule.testDispatcher),
         )
     }

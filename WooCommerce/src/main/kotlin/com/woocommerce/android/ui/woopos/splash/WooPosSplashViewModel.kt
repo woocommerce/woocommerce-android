@@ -10,13 +10,16 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CatalogBlockedContinueWithBasicSyncTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogBlockedFellBackToRemote
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenExitPosTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SplashScreenErrorShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SplashScreenRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.FlowCollector
@@ -36,6 +39,7 @@ class WooPosSplashViewModel @Inject constructor(
     private val ordersCache: WooPosOrdersInMemoryCache,
     private val ordersDataSource: WooPosOrdersDataSource,
     private val preferencesRepository: WooPosPreferencesRepository,
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
@@ -70,6 +74,14 @@ class WooPosSplashViewModel @Inject constructor(
             analyticsTracker.track(SplashScreenRetryTapped)
             val retryStartTime = System.currentTimeMillis()
             productsDataSource.prepopulateCache().collect(syncStateCollector(retryStartTime))
+        }
+    }
+
+    fun onContinueWithBasicSyncClicked() {
+        viewModelScope.launch {
+            analyticsTracker.track(CatalogBlockedContinueWithBasicSyncTapped)
+            val startTime = System.currentTimeMillis()
+            productsDataSource.fallBackToRemoteDueToCatalogBlock().collect(syncStateCollector(startTime))
         }
     }
 
@@ -126,6 +138,10 @@ class WooPosSplashViewModel @Inject constructor(
             addProperties(mapOf("waiting_time" to waitingTimeSeconds.toString()))
         }
         analyticsTracker.track(event)
+
+        if (productsDataSource.didFallBackDueToCatalogBlock()) {
+            analyticsTracker.track(LocalCatalogBlockedFellBackToRemote(getWooCoreVersion()))
+        }
     }
 
     private fun prepopulateOrdersCache() {
