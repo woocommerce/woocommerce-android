@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosCatalogFileBlockedEx
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFileBasedSyncAction
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWithFts
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
@@ -32,7 +31,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -63,7 +61,6 @@ class WooPosProductsDataSource @Inject constructor(
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
-    private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion,
 ) {
     enum class SyncStrategy {
         REMOTE,
@@ -71,8 +68,6 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
-
-    private var lastSyncFellBackDueToCatalogBlock = false
 
     fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
@@ -82,10 +77,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
-    fun didFallBackDueToCatalogBlock(): Boolean = lastSyncFellBackDueToCatalogBlock
-
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = channelFlow {
-        lastSyncFellBackDueToCatalogBlock = false
         when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
@@ -105,7 +97,45 @@ class WooPosProductsDataSource @Inject constructor(
                 send(WooPosPrepopulatingDataStatus.Completed)
             }
 
-            is WooPosFullSyncRequirement.BlockingRequired -> blockingFullSync()
+            is WooPosFullSyncRequirement.BlockingRequired -> {
+                send(WooPosPrepopulatingDataStatus.Syncing)
+                activeSource = localDbDataSource
+
+                val progressJob = launch {
+                    syncRepository.syncState.collect { state ->
+                        when (state) {
+                            is WooPosFileBasedSyncAction.SyncState.Preparing ->
+                                send(WooPosPrepopulatingDataStatus.SyncPreparing)
+
+                            is WooPosFileBasedSyncAction.SyncState.Progress ->
+                                send(
+                                    WooPosPrepopulatingDataStatus.SyncProgress(
+                                        processed = state.processed,
+                                        total = state.total
+                                    )
+                                )
+
+                            null -> Unit
+                        }
+                    }
+                }
+
+                localDbDataSource.prepopulateCache().fold(
+                    onSuccess = {
+                        progressJob.cancel()
+                        send(WooPosPrepopulatingDataStatus.Completed)
+                    },
+                    onFailure = {
+                        progressJob.cancel()
+                        send(
+                            WooPosPrepopulatingDataStatus.Failed(
+                                error = it.message ?: "Unknown error",
+                                isServerPermissionsError = it is WooPosCatalogFileBlockedException
+                            )
+                        )
+                    }
+                )
+            }
 
             is WooPosFullSyncRequirement.Error -> {
                 send(WooPosPrepopulatingDataStatus.Failed(requirement.message))
@@ -113,61 +143,12 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
-    private suspend fun ProducerScope<WooPosPrepopulatingDataStatus>.blockingFullSync() {
-        send(WooPosPrepopulatingDataStatus.Syncing)
-        activeSource = localDbDataSource
-
-        val progressJob = launch {
-            syncRepository.syncState.collect { state ->
-                when (state) {
-                    is WooPosFileBasedSyncAction.SyncState.Preparing ->
-                        send(WooPosPrepopulatingDataStatus.SyncPreparing)
-
-                    is WooPosFileBasedSyncAction.SyncState.Progress ->
-                        send(
-                            WooPosPrepopulatingDataStatus.SyncProgress(
-                                processed = state.processed,
-                                total = state.total
-                            )
-                        )
-
-                    null -> Unit
-                }
-            }
-        }
-
-        localDbDataSource.prepopulateCache().fold(
-            onSuccess = {
-                progressJob.cancel()
-                send(WooPosPrepopulatingDataStatus.Completed)
-            },
-            onFailure = { error ->
-                progressJob.cancel()
-                if (error is WooPosCatalogFileBlockedException && isWooBelowCatalogFixVersion()) {
-                    prepopulateFromRemoteAsFallback()
-                } else {
-                    send(
-                        WooPosPrepopulatingDataStatus.Failed(
-                            error = error.message ?: "Unknown error",
-                            isServerPermissionsError = error is WooPosCatalogFileBlockedException
-                        )
-                    )
-                }
-            }
-        )
-    }
-
     /**
-     * Switches the active source to the legacy remote loader and prepopulates from it. Used both
-     * for the silent fallback (Woo < 11) and the user-triggered "Continue with basic sync" skip
-     * shown on the catalog-blocked error screen (Woo >= 11).
+     * Switches the active source to the legacy remote loader and prepopulates from it, so POS keeps
+     * working when the catalog file is blocked. Whether this happens silently (Woo < 11) or only
+     * after the user taps through the error screen (Woo >= 11) is the caller's decision.
      */
     fun fallBackToRemoteDueToCatalogBlock(): Flow<WooPosPrepopulatingDataStatus> = channelFlow {
-        prepopulateFromRemoteAsFallback()
-    }
-
-    private suspend fun ProducerScope<WooPosPrepopulatingDataStatus>.prepopulateFromRemoteAsFallback() {
-        lastSyncFellBackDueToCatalogBlock = true
         activeSource = remoteDataSource
         remoteDataSource.prepopulateCache().fold(
             onSuccess = { send(WooPosPrepopulatingDataStatus.Completed) },

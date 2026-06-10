@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosCatalogFileBlockedException
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +34,6 @@ class WooPosProductsDataSourceTest {
     private val syncRepository: WooPosLocalCatalogSyncRepository = mock {
         on { syncState }.thenReturn(MutableStateFlow(null))
     }
-    private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion = mock()
 
     @Rule
     @JvmField
@@ -143,7 +141,7 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given catalog blocked and woo at or above fix version, when prepopulate cache, then failed is server permissions error`() =
+    fun `given catalog blocked, when prepopulate cache, then failed is server permissions error and no auto fallback`() =
         runTest {
             // GIVEN
             whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
@@ -152,86 +150,16 @@ class WooPosProductsDataSourceTest {
             whenever(localDbDataSource.prepopulateCache()).thenReturn(
                 Result.failure(WooPosCatalogFileBlockedException())
             )
-            whenever(isWooBelowCatalogFixVersion()).thenReturn(false)
             val sut = createSut()
 
             // WHEN
             val result = sut.prepopulateCache().toList()
 
-            // THEN
+            // THEN — the data source only reports the block; deciding to fall back is the caller's job
             val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
             assertThat(status.isServerPermissionsError).isTrue()
-            assertThat(sut.didFallBackDueToCatalogBlock()).isFalse()
             verify(remoteDataSource, never()).prepopulateCache()
         }
-
-    @Test
-    fun `given catalog blocked and woo below fix version, when prepopulate cache, then falls back to remote`() =
-        runTest {
-            // GIVEN
-            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-                WooPosFullSyncRequirement.BlockingRequired
-            )
-            whenever(localDbDataSource.prepopulateCache()).thenReturn(
-                Result.failure(WooPosCatalogFileBlockedException())
-            )
-            whenever(isWooBelowCatalogFixVersion()).thenReturn(true)
-            whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.prepopulateCache().toList()
-
-            // THEN
-            assertThat(result.last())
-                .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Completed::class.java)
-            assertThat(sut.didFallBackDueToCatalogBlock()).isTrue()
-            assertThat(sut.getCurrentSyncStrategy()).isEqualTo(WooPosProductsDataSource.SyncStrategy.REMOTE)
-            verify(remoteDataSource).prepopulateCache()
-        }
-
-    @Test
-    fun `given catalog blocked and woo below fix version and remote also fails, when prepopulate cache, then emits failed`() =
-        runTest {
-            // GIVEN
-            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-                WooPosFullSyncRequirement.BlockingRequired
-            )
-            whenever(localDbDataSource.prepopulateCache()).thenReturn(
-                Result.failure(WooPosCatalogFileBlockedException())
-            )
-            whenever(isWooBelowCatalogFixVersion()).thenReturn(true)
-            whenever(remoteDataSource.prepopulateCache()).thenReturn(
-                Result.failure(IOException("No network connection"))
-            )
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.prepopulateCache().toList()
-
-            // THEN
-            assertThat(result.last())
-                .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed::class.java)
-        }
-
-    @Test
-    fun `given generic failure, when prepopulate cache, then does not fall back to remote`() = runTest {
-        // GIVEN
-        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.BlockingRequired
-        )
-        whenever(localDbDataSource.prepopulateCache()).thenReturn(
-            Result.failure(IOException("Download failed with code: 404"))
-        )
-        val sut = createSut()
-
-        // WHEN
-        sut.prepopulateCache().toList()
-
-        // THEN
-        assertThat(sut.didFallBackDueToCatalogBlock()).isFalse()
-        verify(remoteDataSource, never()).prepopulateCache()
-    }
 
     @Test
     fun `when fall back to remote due to catalog block, then uses remote and completes`() = runTest {
@@ -245,7 +173,6 @@ class WooPosProductsDataSourceTest {
         // THEN
         assertThat(result.last())
             .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Completed::class.java)
-        assertThat(sut.didFallBackDueToCatalogBlock()).isTrue()
         assertThat(sut.getCurrentSyncStrategy()).isEqualTo(WooPosProductsDataSource.SyncStrategy.REMOTE)
         verify(remoteDataSource).prepopulateCache()
     }
@@ -453,6 +380,5 @@ class WooPosProductsDataSourceTest {
         localDbDataSource = localDbDataSource,
         syncStatusChecker = syncStatusChecker,
         syncRepository = syncRepository,
-        isWooBelowCatalogFixVersion = isWooBelowCatalogFixVersion,
     )
 }
