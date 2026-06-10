@@ -6,6 +6,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.WooPosPrepopulatingDataStatus
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
@@ -40,6 +41,7 @@ class WooPosSplashViewModel @Inject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
+    private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
@@ -80,8 +82,8 @@ class WooPosSplashViewModel @Inject constructor(
     fun onContinueWithBasicSyncClicked() {
         viewModelScope.launch {
             analyticsTracker.track(CatalogBlockedContinueWithBasicSyncTapped)
-            val startTime = System.currentTimeMillis()
-            productsDataSource.fallBackToRemoteDueToCatalogBlock().collect(syncStateCollector(startTime))
+            // The catalog already loaded via the remote fallback; "Got it" just dismisses the notice.
+            _state.value = WooPosSplashState.Loaded
         }
     }
 
@@ -122,8 +124,40 @@ class WooPosSplashViewModel @Inject constructor(
             }
 
             is WooPosPrepopulatingDataStatus.Failed -> {
-                analyticsTracker.track(SplashScreenErrorShown)
-                _state.value = WooPosSplashState.SyncFailed(state.error, state.isServerPermissionsError)
+                if (state.isServerPermissionsError) {
+                    // A blocked catalog file always falls back to basic (remote) sync so POS keeps
+                    // working. On Woo < 11 we just enter POS; on Woo >= 11 we first surface the host
+                    // issue, which the user dismisses with "Got it".
+                    fallBackToRemoteForBlockedCatalog(startTime, blockedError = state.error)
+                } else {
+                    analyticsTracker.track(SplashScreenErrorShown)
+                    _state.value = WooPosSplashState.SyncFailed(state.error)
+                }
+            }
+        }
+    }
+
+    private suspend fun fallBackToRemoteForBlockedCatalog(startTime: Long, blockedError: String) {
+        analyticsTracker.track(LocalCatalogBlockedFellBackToRemote(getWooCoreVersion()))
+        val mustAcknowledgeHostIssue = !isWooBelowCatalogFixVersion()
+        productsDataSource.fallBackToRemoteDueToCatalogBlock().collect { status ->
+            when (status) {
+                WooPosPrepopulatingDataStatus.Completed -> {
+                    trackPosLoaded(startTime)
+                    if (mustAcknowledgeHostIssue) {
+                        analyticsTracker.track(SplashScreenErrorShown)
+                        _state.value = WooPosSplashState.SyncFailed(blockedError, isServerPermissionsError = true)
+                    } else {
+                        _state.value = WooPosSplashState.Loaded
+                    }
+                }
+
+                is WooPosPrepopulatingDataStatus.Failed -> {
+                    analyticsTracker.track(SplashScreenErrorShown)
+                    _state.value = WooPosSplashState.SyncFailed(status.error)
+                }
+
+                else -> Unit
             }
         }
     }
@@ -138,10 +172,6 @@ class WooPosSplashViewModel @Inject constructor(
             addProperties(mapOf("waiting_time" to waitingTimeSeconds.toString()))
         }
         analyticsTracker.track(event)
-
-        if (productsDataSource.didFallBackDueToCatalogBlock()) {
-            analyticsTracker.track(LocalCatalogBlockedFellBackToRemote(getWooCoreVersion()))
-        }
     }
 
     private fun prepopulateOrdersCache() {
