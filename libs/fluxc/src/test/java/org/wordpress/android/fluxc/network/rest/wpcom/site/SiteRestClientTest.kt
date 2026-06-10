@@ -277,7 +277,6 @@ class SiteRestClientTest {
         val result = restClient.fetchSite(jetpackCPSite)
 
         assertThat(result.name).isEqualTo(response.name)
-        assertThat(result.description).isEqualTo(response.description)
         assertThat(result.applicationPasswordsAuthorizeUrl).isEqualTo(
             response.authentication?.applicationPasswords?.endpoints?.authorization
         )
@@ -315,7 +314,6 @@ class SiteRestClientTest {
         assertThat(result.sites).hasSize(1)
         val site = result.sites[0]
         assertThat(site.name).isEqualTo(rootResponse.name)
-        assertThat(site.description).isEqualTo(rootResponse.description)
         assertThat(site.applicationPasswordsAuthorizeUrl).isEqualTo(
             rootResponse.authentication?.applicationPasswords?.endpoints?.authorization
         )

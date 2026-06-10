@@ -87,6 +87,10 @@ class DeveloperOptionsRepository @Inject constructor(
         appPrefs.savedPrivacySettings = isChecked
     }
 
+    fun resetAnalyticsScheduledImportNoticeSeen() {
+        appPrefs.hasSeenAnalyticsScheduledImportInfo = false
+    }
+
     private fun reinitializeSimulatedReaderIfNeeded() {
         if (cardReaderManager.initialized) {
             cardReaderManager.reinitializeSimulatedTerminal(

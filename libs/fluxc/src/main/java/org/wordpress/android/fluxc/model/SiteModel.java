@@ -23,10 +23,8 @@ import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Objects;
 
-// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 @Table
 @RawConstraints({"UNIQUE (SITE_ID, URL)"})
 public class SiteModel extends Payload<BaseNetworkError> implements Identifiable, Serializable {
@@ -44,8 +42,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public static final long VIP_PLAN_ID = 31337;
 
-    public static final String ACTIVE_MODULES_KEY_PUBLICIZE = "publicize";
-    public static final String ACTIVE_MODULES_KEY_SHARING_BUTTONS = "sharedaddy";
     public static final String CIAB_GARDEN_NAME = "commerce";
 
     @PrimaryKey
@@ -63,38 +59,15 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     @Column
     private String mName;
     @Column
-    private String mDescription;
-    @Column
     private boolean mIsWPCom;
     @Column
     private boolean mIsWPComAtomic;
     @Column
     private int mPublishedStatus = -1;
     @Column
-    private boolean mIsFeaturedImageSupported;
-    @Column
-    private boolean mIsWpForTeamsSite;
-    @Column
-    private String mDefaultCommentStatus = "open";
-    @Column
     private String mTimezone; // Expressed as an offset relative to GMT (e.g. '-8')
     @Column
-    private String mFrameNonce; // only wpcom and Jetpack sites
-    @Column
-    private long mMaxUploadSize; // only set for Jetpack sites
-    @Column
-    private long mMemoryLimit; // only set for Jetpack sites
-    @Column
     private int mOrigin = ORIGIN_UNKNOWN; // Does this site come from a WPCOM REST or XMLRPC fetch_sites call?
-    @Column
-    private int mOrganizationId = -1;
-
-    @Column
-    private String mShowOnFront;
-    @Column
-    private long mPageOnFront = -1;
-    @Column
-    private long mPageForPosts = -1;
 
     // Self hosted specifics
     // The siteId for self hosted sites. Jetpack sites will also have a mSiteId, which is their id on wpcom
@@ -108,10 +81,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     private String mXmlRpcUrl;
     @Column
     private String mWpApiRestUrl;
-    @Column
-    private String mSoftwareVersion;
-    @Column
-    private boolean mIsSelfHostedAdmin;
 
     // Self hosted user's profile data
     @Column
@@ -135,126 +104,28 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     @Column
     private String mJetpackUserEmail;
     @Column
-    private boolean mIsAutomatedTransfer;
-    @Column
     private boolean mIsWpComStore;
     @Column
     private boolean mHasWooCommerce;
 
     // WPCom specifics
     @Column
-    private boolean mIsVisible = true;
-    @Column
     private boolean mIsPrivate;
-    @Column
-    private boolean mIsComingSoon;
-    @Column
-    private boolean mIsVideoPressSupported;
     @Column
     private long mPlanId;
     @Column
     private String mPlanShortName;
     @Column
     private String mPlanProductSlug;
-    @Column
-    private String mIconUrl;
-    @Column
-    private boolean mHasFreePlan;
-    @Column
-    private String mUnmappedUrl;
-    @Column
-    private String mWebEditor;
-    @Column
-    private String mMobileEditor;
 
     // WPCom capabilities
     @Column
-    private boolean mHasCapabilityEditPages;
-    @Column
-    private boolean mHasCapabilityEditPosts;
-    @Column
-    private boolean mHasCapabilityEditOthersPosts;
-    @Column
-    private boolean mHasCapabilityEditOthersPages;
-    @Column
-    private boolean mHasCapabilityDeletePosts;
-    @Column
-    private boolean mHasCapabilityDeleteOthersPosts;
-    @Column
-    private boolean mHasCapabilityEditThemeOptions;
-    @Column
-    private boolean mHasCapabilityEditUsers;
-    @Column
-    private boolean mHasCapabilityListUsers;
-    @Column
-    private boolean mHasCapabilityManageCategories;
-    @Column
     private boolean mHasCapabilityManageOptions;
-    @Column
-    private boolean mHasCapabilityActivateWordads;
-    @Column
-    private boolean mHasCapabilityPromoteUsers;
-    @Column
-    private boolean mHasCapabilityPublishPosts;
-    @Column
-    private boolean mHasCapabilityUploadFiles;
-    @Column
-    private boolean mHasCapabilityDeleteUser;
-    @Column
-    private boolean mHasCapabilityRemoveUsers;
-    @Column
-    private boolean mHasCapabilityViewStats;
-
-    // WPCOM and Jetpack Disk Quota information
-    @Column
-    private long mSpaceAvailable;
-    @Column
-    private long mSpaceAllowed;
-    @Column
-    private long mSpaceUsed;
-    @Column
-    private double mSpacePercentUsed;
-
-    @Column
-    private String mActiveModules;
-    @Column
-    private boolean mIsPublicizePermanentlyDisabled;
     @Column
     private String mActiveJetpackConnectionPlugins;
     @Column
     private String mJetpackModules;
 
-    // Zendesk meta
-    @Column
-    private String mZendeskPlan;
-    @Column
-    private String mZendeskAddOns;
-
-    // Blogging Reminder options
-    @Column
-    private boolean mIsBloggingPromptsOptedIn;
-    @Column
-    private boolean mIsBloggingPromptsCardOptedIn;
-    @Column
-    private boolean mIsPotentialBloggingSite;
-    @Column
-    private boolean mIsBloggingReminderOnMonday;
-    @Column
-    private boolean mIsBloggingReminderOnTuesday;
-    @Column
-    private boolean mIsBloggingReminderOnWednesday;
-    @Column
-    private boolean mIsBloggingReminderOnThursday;
-    @Column
-    private boolean mIsBloggingReminderOnFriday;
-    @Column
-    private boolean mIsBloggingReminderOnSaturday;
-    @Column
-    private boolean mIsBloggingReminderOnSunday;
-    @Column
-    private int mBloggingReminderHour;
-    @Column
-    private int mBloggingReminderMinute;
     @Column
     private String mApplicationPasswordsAuthorizeUrl;
     @Column
@@ -262,10 +133,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     // Comma-separated list of active features in the site's plan
     @Column
     private String mPlanActiveFeatures;
-    @Column
-    private Boolean mWasEcommerceTrial;
-    @Column
-    private Boolean mIsSingleUserSite;
     @Column
     private boolean mIsGardenSite;
     @Column
@@ -338,14 +205,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mName = name;
     }
 
-    public String getDescription() {
-        return mDescription;
-    }
-
-    public void setDescription(String description) {
-        mDescription = description;
-    }
-
     public boolean isWPCom() {
         return mIsWPCom;
     }
@@ -394,14 +253,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mSelfHostedSiteId = selfHostedSiteId;
     }
 
-    public boolean isSelfHostedAdmin() {
-        return mIsSelfHostedAdmin;
-    }
-
-    public void setIsSelfHostedAdmin(boolean selfHostedAdmin) {
-        mIsSelfHostedAdmin = selfHostedAdmin;
-    }
-
     public String getEmail() {
         return mEmail;
     }
@@ -418,44 +269,12 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mDisplayName = displayName;
     }
 
-    public boolean isVisible() {
-        return mIsVisible;
-    }
-
-    public void setIsVisible(boolean visible) {
-        mIsVisible = visible;
-    }
-
     public boolean isPrivate() {
         return mIsPrivate;
     }
 
     public void setIsPrivate(boolean isPrivate) {
         mIsPrivate = isPrivate;
-    }
-
-    public boolean isFeaturedImageSupported() {
-        return mIsFeaturedImageSupported;
-    }
-
-    public void setIsFeaturedImageSupported(boolean featuredImageSupported) {
-        mIsFeaturedImageSupported = featuredImageSupported;
-    }
-
-    public String getDefaultCommentStatus() {
-        return mDefaultCommentStatus;
-    }
-
-    public void setDefaultCommentStatus(String defaultCommentStatus) {
-        mDefaultCommentStatus = defaultCommentStatus;
-    }
-
-    public String getSoftwareVersion() {
-        return mSoftwareVersion;
-    }
-
-    public void setSoftwareVersion(String softwareVersion) {
-        mSoftwareVersion = softwareVersion;
     }
 
     public String getAdminUrl() {
@@ -466,94 +285,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mAdminUrl = adminUrl;
     }
 
-    public boolean isVideoPressSupported() {
-        return mIsVideoPressSupported;
-    }
-
-    public void setIsVideoPressSupported(boolean videoPressSupported) {
-        mIsVideoPressSupported = videoPressSupported;
-    }
-
-    public boolean getHasCapabilityEditPages() {
-        return mHasCapabilityEditPages;
-    }
-
-    public void setHasCapabilityEditPages(boolean hasCapabilityEditPages) {
-        mHasCapabilityEditPages = hasCapabilityEditPages;
-    }
-
-    public boolean getHasCapabilityEditPosts() {
-        return mHasCapabilityEditPosts;
-    }
-
-    public void setHasCapabilityEditPosts(boolean capabilityEditPosts) {
-        mHasCapabilityEditPosts = capabilityEditPosts;
-    }
-
-    public boolean getHasCapabilityEditOthersPosts() {
-        return mHasCapabilityEditOthersPosts;
-    }
-
-    public void setHasCapabilityEditOthersPosts(boolean capabilityEditOthersPosts) {
-        mHasCapabilityEditOthersPosts = capabilityEditOthersPosts;
-    }
-
-    public boolean getHasCapabilityEditOthersPages() {
-        return mHasCapabilityEditOthersPages;
-    }
-
-    public void setHasCapabilityEditOthersPages(boolean capabilityEditOthersPages) {
-        mHasCapabilityEditOthersPages = capabilityEditOthersPages;
-    }
-
-    public boolean getHasCapabilityDeletePosts() {
-        return mHasCapabilityDeletePosts;
-    }
-
-    public void setHasCapabilityDeletePosts(boolean capabilityDeletePosts) {
-        mHasCapabilityDeletePosts = capabilityDeletePosts;
-    }
-
-    public boolean getHasCapabilityDeleteOthersPosts() {
-        return mHasCapabilityDeleteOthersPosts;
-    }
-
-    public void setHasCapabilityDeleteOthersPosts(boolean capabilityDeleteOthersPosts) {
-        mHasCapabilityDeleteOthersPosts = capabilityDeleteOthersPosts;
-    }
-
-    public boolean getHasCapabilityEditThemeOptions() {
-        return mHasCapabilityEditThemeOptions;
-    }
-
-    public void setHasCapabilityEditThemeOptions(boolean capabilityEditThemeOptions) {
-        mHasCapabilityEditThemeOptions = capabilityEditThemeOptions;
-    }
-
-    public boolean getHasCapabilityEditUsers() {
-        return mHasCapabilityEditUsers;
-    }
-
-    public void setHasCapabilityEditUsers(boolean capabilityEditUsers) {
-        mHasCapabilityEditUsers = capabilityEditUsers;
-    }
-
-    public boolean getHasCapabilityListUsers() {
-        return mHasCapabilityListUsers;
-    }
-
-    public void setHasCapabilityListUsers(boolean capabilityListUsers) {
-        mHasCapabilityListUsers = capabilityListUsers;
-    }
-
-    public boolean getHasCapabilityManageCategories() {
-        return mHasCapabilityManageCategories;
-    }
-
-    public void setHasCapabilityManageCategories(boolean capabilityManageCategories) {
-        mHasCapabilityManageCategories = capabilityManageCategories;
-    }
-
     public boolean getHasCapabilityManageOptions() {
         return mHasCapabilityManageOptions;
     }
@@ -562,100 +293,12 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mHasCapabilityManageOptions = capabilityManageOptions;
     }
 
-    public boolean getHasCapabilityActivateWordads() {
-        return mHasCapabilityActivateWordads;
-    }
-
-    public void setHasCapabilityActivateWordads(boolean capabilityActivateWordads) {
-        mHasCapabilityActivateWordads = capabilityActivateWordads;
-    }
-
-    public boolean getHasCapabilityPromoteUsers() {
-        return mHasCapabilityPromoteUsers;
-    }
-
-    public void setHasCapabilityPromoteUsers(boolean capabilityPromoteUsers) {
-        mHasCapabilityPromoteUsers = capabilityPromoteUsers;
-    }
-
-    public boolean getHasCapabilityPublishPosts() {
-        return mHasCapabilityPublishPosts;
-    }
-
-    public void setHasCapabilityPublishPosts(boolean capabilityPublishPosts) {
-        mHasCapabilityPublishPosts = capabilityPublishPosts;
-    }
-
-    public boolean getHasCapabilityUploadFiles() {
-        return mHasCapabilityUploadFiles;
-    }
-
-    public void setHasCapabilityUploadFiles(boolean capabilityUploadFiles) {
-        mHasCapabilityUploadFiles = capabilityUploadFiles;
-    }
-
-    public boolean getHasCapabilityDeleteUser() {
-        return mHasCapabilityDeleteUser;
-    }
-
-    public void setHasCapabilityDeleteUser(boolean capabilityDeleteUser) {
-        mHasCapabilityDeleteUser = capabilityDeleteUser;
-    }
-
-    public boolean getHasCapabilityRemoveUsers() {
-        return mHasCapabilityRemoveUsers;
-    }
-
-    public void setHasCapabilityRemoveUsers(boolean capabilityRemoveUsers) {
-        mHasCapabilityRemoveUsers = capabilityRemoveUsers;
-    }
-
-    public boolean getHasCapabilityViewStats() {
-        return mHasCapabilityViewStats;
-    }
-
-    public void setHasCapabilityViewStats(boolean capabilityViewStats) {
-        mHasCapabilityViewStats = capabilityViewStats;
-    }
-
     public String getTimezone() {
         return mTimezone;
     }
 
     public void setTimezone(String timezone) {
         mTimezone = timezone;
-    }
-
-    public String getFrameNonce() {
-        return mFrameNonce;
-    }
-
-    public void setFrameNonce(String frameNonce) {
-        mFrameNonce = frameNonce;
-    }
-
-    public long getMaxUploadSize() {
-        return mMaxUploadSize;
-    }
-
-    public void setMaxUploadSize(long maxUploadSize) {
-        mMaxUploadSize = maxUploadSize;
-    }
-
-    public boolean hasMaxUploadSize() {
-        return mMaxUploadSize > 0;
-    }
-
-    public long getMemoryLimit() {
-        return mMemoryLimit;
-    }
-
-    public void setMemoryLimit(long memoryLimit) {
-        mMemoryLimit = memoryLimit;
-    }
-
-    public boolean hasMemoryLimit() {
-        return mMemoryLimit > 0;
     }
 
     public String getPlanShortName() {
@@ -680,46 +323,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public void setPlanId(long planId) {
         mPlanId = planId;
-    }
-
-    public String getIconUrl() {
-        return mIconUrl;
-    }
-
-    public void setIconUrl(String iconUrl) {
-        mIconUrl = iconUrl;
-    }
-
-    public boolean getHasFreePlan() {
-        return mHasFreePlan;
-    }
-
-    public void setHasFreePlan(boolean hasFreePlan) {
-        mHasFreePlan = hasFreePlan;
-    }
-
-    public String getUnmappedUrl() {
-        return mUnmappedUrl;
-    }
-
-    public void setUnmappedUrl(String unMappedUrl) {
-        mUnmappedUrl = unMappedUrl;
-    }
-
-    public String getWebEditor() {
-        return mWebEditor;
-    }
-
-    public void setWebEditor(String webEditor) {
-        mWebEditor = webEditor;
-    }
-
-    public String getMobileEditor() {
-        return mMobileEditor;
-    }
-
-    public void setMobileEditor(String mobileEditor) {
-        mMobileEditor = mobileEditor;
     }
 
     public boolean isJetpackInstalled() {
@@ -762,14 +365,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mJetpackUserEmail = jetpackUserEmail;
     }
 
-    public boolean isAutomatedTransfer() {
-        return mIsAutomatedTransfer;
-    }
-
-    public void setIsAutomatedTransfer(boolean automatedTransfer) {
-        mIsAutomatedTransfer = automatedTransfer;
-    }
-
     public boolean isWpComStore() {
         return mIsWpComStore;
     }
@@ -799,108 +394,12 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         return isWPCom() || getOrigin() == ORIGIN_WPCOM_REST;
     }
 
-    public void setSpaceAvailable(long spaceAvailable) {
-        mSpaceAvailable = spaceAvailable;
-    }
-
-    public long getSpaceAvailable() {
-        return mSpaceAvailable;
-    }
-
-    public void setSpaceAllowed(long spaceAllowed) {
-        mSpaceAllowed = spaceAllowed;
-    }
-
-    public long getSpaceAllowed() {
-        return mSpaceAllowed;
-    }
-
-    public void setSpaceUsed(long spaceUsed) {
-        mSpaceUsed = spaceUsed;
-    }
-
-    public long getSpaceUsed() {
-        return mSpaceUsed;
-    }
-
-    public void setSpacePercentUsed(double spacePercentUsed) {
-        mSpacePercentUsed = spacePercentUsed;
-    }
-
-    public double getSpacePercentUsed() {
-        return mSpacePercentUsed;
-    }
-
-    public boolean hasDiskSpaceQuotaInformation() {
-        return mSpaceAllowed > 0;
-    }
-
     public boolean isWPComAtomic() {
         return mIsWPComAtomic;
     }
 
     public void setIsWPComAtomic(boolean isWPComAtomic) {
         mIsWPComAtomic = isWPComAtomic;
-    }
-
-    public boolean isWpForTeamsSite() {
-        return mIsWpForTeamsSite;
-    }
-
-    public void setIsWpForTeamsSite(boolean wpForTeamsSite) {
-        mIsWpForTeamsSite = wpForTeamsSite;
-    }
-
-    public boolean isComingSoon() {
-        return mIsComingSoon;
-    }
-
-    public void setIsComingSoon(boolean isComingSoon) {
-        mIsComingSoon = isComingSoon;
-    }
-
-    public boolean isPrivateWPComAtomic() {
-        return isWPComAtomic() && (isPrivate() || isComingSoon());
-    }
-
-    public String getShowOnFront() {
-        return mShowOnFront;
-    }
-
-    public void setShowOnFront(String showOnFront) {
-        mShowOnFront = showOnFront;
-    }
-
-    public long getPageOnFront() {
-        return mPageOnFront;
-    }
-
-    public void setPageOnFront(long pageOnFront) {
-        mPageOnFront = pageOnFront;
-    }
-
-    public long getPageForPosts() {
-        return mPageForPosts;
-    }
-
-    public void setPageForPosts(long pageForPosts) {
-        mPageForPosts = pageForPosts;
-    }
-
-    public boolean isPublicizePermanentlyDisabled() {
-        return mIsPublicizePermanentlyDisabled;
-    }
-
-    public void setIsPublicizePermanentlyDisabled(boolean publicizePermanentlyDisabled) {
-        mIsPublicizePermanentlyDisabled = publicizePermanentlyDisabled;
-    }
-
-    public String getActiveModules() {
-        return mActiveModules;
-    }
-
-    public void setActiveModules(String activeModules) {
-        mActiveModules = activeModules;
     }
 
     public String getActiveJetpackConnectionPlugins() {
@@ -920,173 +419,8 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         mJetpackModules = jetpackModules;
     }
 
-    public boolean isActiveModuleEnabled(String moduleName) {
-        if (mActiveModules != null) {
-            String[] activeModules = mActiveModules.split(",");
-            return Arrays.asList(activeModules).contains(moduleName);
-        }
-        return false;
-    }
-
     public boolean isAdmin() {
         return mHasCapabilityManageOptions;
-    }
-
-    public boolean supportsSharing() {
-        return supportsPublicize() || supportsShareButtons();
-    }
-
-    public boolean supportsPublicize() {
-        // Publicize is only supported via REST
-        if (getOrigin() != ORIGIN_WPCOM_REST) {
-            return false;
-        }
-
-        if (!getHasCapabilityPublishPosts()) {
-            return false;
-        }
-
-        if (isJetpackConnected()) {
-            // For Jetpack, check if the module is enabled
-            return isActiveModuleEnabled(ACTIVE_MODULES_KEY_PUBLICIZE);
-        } else {
-            // For WordPress.com, check if it is not disabled
-            return !isPublicizePermanentlyDisabled();
-        }
-    }
-
-    public boolean supportsShareButtons() {
-        // Share Button settings are only supported via REST, and for admins
-        if (!isAdmin() || getOrigin() != ORIGIN_WPCOM_REST) {
-            return false;
-        }
-
-        if (isJetpackConnected()) {
-            // For Jetpack, check if the module is enabled
-            return isActiveModuleEnabled(ACTIVE_MODULES_KEY_SHARING_BUTTONS);
-        } else {
-            return true;
-        }
-    }
-
-    public String getZendeskPlan() {
-        return mZendeskPlan;
-    }
-
-    public void setZendeskPlan(String zendeskPlan) {
-        mZendeskPlan = zendeskPlan;
-    }
-
-    public String getZendeskAddOns() {
-        return mZendeskAddOns;
-    }
-
-    public void setZendeskAddOns(String zendeskAddOns) {
-        mZendeskAddOns = zendeskAddOns;
-    }
-
-    public int getOrganizationId() {
-        return mOrganizationId;
-    }
-
-    public void setOrganizationId(int organizationId) {
-        mOrganizationId = organizationId;
-    }
-
-    public boolean isBloggingPromptsOptedIn() {
-        return mIsBloggingPromptsOptedIn;
-    }
-
-    public void setIsBloggingPromptsOptedIn(boolean bloggingPromptsOptedIn) {
-        mIsBloggingPromptsOptedIn = bloggingPromptsOptedIn;
-    }
-
-    public boolean isBloggingPromptsCardOptedIn() {
-        return mIsBloggingPromptsCardOptedIn;
-    }
-
-    public void setIsBloggingPromptsCardOptedIn(boolean bloggingPromptsCardOptedIn) {
-        mIsBloggingPromptsCardOptedIn = bloggingPromptsCardOptedIn;
-    }
-
-    public boolean isPotentialBloggingSite() {
-        return mIsPotentialBloggingSite;
-    }
-
-    public void setIsPotentialBloggingSite(boolean potentialBloggingSite) {
-        mIsPotentialBloggingSite = potentialBloggingSite;
-    }
-
-    public boolean isBloggingReminderOnMonday() {
-        return mIsBloggingReminderOnMonday;
-    }
-
-    public void setIsBloggingReminderOnMonday(boolean bloggingReminderOnMonday) {
-        mIsBloggingReminderOnMonday = bloggingReminderOnMonday;
-    }
-
-    public boolean isBloggingReminderOnTuesday() {
-        return mIsBloggingReminderOnTuesday;
-    }
-
-    public void setIsBloggingReminderOnTuesday(boolean bloggingReminderOnTuesday) {
-        mIsBloggingReminderOnTuesday = bloggingReminderOnTuesday;
-    }
-
-    public boolean isBloggingReminderOnWednesday() {
-        return mIsBloggingReminderOnWednesday;
-    }
-
-    public void setIsBloggingReminderOnWednesday(boolean bloggingReminderOnWednesday) {
-        mIsBloggingReminderOnWednesday = bloggingReminderOnWednesday;
-    }
-
-    public boolean isBloggingReminderOnThursday() {
-        return mIsBloggingReminderOnThursday;
-    }
-
-    public void setIsBloggingReminderOnThursday(boolean bloggingReminderOnThursday) {
-        mIsBloggingReminderOnThursday = bloggingReminderOnThursday;
-    }
-
-    public boolean isBloggingReminderOnFriday() {
-        return mIsBloggingReminderOnFriday;
-    }
-
-    public void setIsBloggingReminderOnFriday(boolean bloggingReminderOnFriday) {
-        mIsBloggingReminderOnFriday = bloggingReminderOnFriday;
-    }
-
-    public boolean isBloggingReminderOnSaturday() {
-        return mIsBloggingReminderOnSaturday;
-    }
-
-    public void setIsBloggingReminderOnSaturday(boolean bloggingReminderOnSaturday) {
-        mIsBloggingReminderOnSaturday = bloggingReminderOnSaturday;
-    }
-
-    public boolean isBloggingReminderOnSunday() {
-        return mIsBloggingReminderOnSunday;
-    }
-
-    public void setIsBloggingReminderOnSunday(boolean bloggingReminderOnSunday) {
-        mIsBloggingReminderOnSunday = bloggingReminderOnSunday;
-    }
-
-    public int getBloggingReminderHour() {
-        return mBloggingReminderHour;
-    }
-
-    public void setBloggingReminderHour(int bloggingReminderHour) {
-        mBloggingReminderHour = bloggingReminderHour;
-    }
-
-    public int getBloggingReminderMinute() {
-        return mBloggingReminderMinute;
-    }
-
-    public void setBloggingReminderMinute(int bloggingReminderMinute) {
-        mBloggingReminderMinute = bloggingReminderMinute;
     }
 
     public String getApplicationPasswordsAuthorizeUrl() {
@@ -1118,32 +452,12 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         this.mCanBlaze = canBlaze;
     }
 
-    public Boolean getWasEcommerceTrial() {
-        return mWasEcommerceTrial;
-    }
-
-    public void setWasEcommerceTrial(Boolean wasEcommerceTrial) {
-        mWasEcommerceTrial = wasEcommerceTrial;
-    }
-
-    public boolean isHostedAtWPCom() {
-        return !isJetpackInstalled();
-    }
-
     public String getPlanActiveFeatures() {
         return mPlanActiveFeatures;
     }
 
     public void setPlanActiveFeatures(final String planActiveFeatures) {
         this.mPlanActiveFeatures = planActiveFeatures;
-    }
-
-    public Boolean isSingleUserSite() {
-        return mIsSingleUserSite;
-    }
-
-    public void setIsSingleUserSite(Boolean isSingleUserSite) {
-        mIsSingleUserSite = isSingleUserSite;
     }
 
     public boolean isGardenSite() {
@@ -1185,97 +499,36 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mIsWPCom == siteModel.mIsWPCom &&
                 mIsWPComAtomic == siteModel.mIsWPComAtomic &&
                 mPublishedStatus == siteModel.mPublishedStatus &&
-                mIsFeaturedImageSupported == siteModel.mIsFeaturedImageSupported &&
-                mIsWpForTeamsSite == siteModel.mIsWpForTeamsSite &&
-                mMaxUploadSize == siteModel.mMaxUploadSize &&
-                mMemoryLimit == siteModel.mMemoryLimit &&
                 mOrigin == siteModel.mOrigin &&
-                mOrganizationId == siteModel.mOrganizationId &&
-                mPageOnFront == siteModel.mPageOnFront &&
-                mPageForPosts == siteModel.mPageForPosts &&
                 mSelfHostedSiteId == siteModel.mSelfHostedSiteId &&
-                mIsSelfHostedAdmin == siteModel.mIsSelfHostedAdmin &&
                 mIsJetpackInstalled == siteModel.mIsJetpackInstalled &&
                 mIsJetpackConnected == siteModel.mIsJetpackConnected &&
                 mIsJetpackCPConnected == siteModel.mIsJetpackCPConnected &&
-                mIsAutomatedTransfer == siteModel.mIsAutomatedTransfer &&
                 mIsWpComStore == siteModel.mIsWpComStore &&
                 mHasWooCommerce == siteModel.mHasWooCommerce &&
-                mIsVisible == siteModel.mIsVisible &&
                 mIsPrivate == siteModel.mIsPrivate &&
-                mIsComingSoon == siteModel.mIsComingSoon &&
-                mIsVideoPressSupported == siteModel.mIsVideoPressSupported &&
                 mPlanId == siteModel.mPlanId &&
-                mHasFreePlan == siteModel.mHasFreePlan &&
-                mHasCapabilityEditPages == siteModel.mHasCapabilityEditPages &&
-                mHasCapabilityEditPosts == siteModel.mHasCapabilityEditPosts &&
-                mHasCapabilityEditOthersPosts == siteModel.mHasCapabilityEditOthersPosts &&
-                mHasCapabilityEditOthersPages == siteModel.mHasCapabilityEditOthersPages &&
-                mHasCapabilityDeletePosts == siteModel.mHasCapabilityDeletePosts &&
-                mHasCapabilityDeleteOthersPosts == siteModel.mHasCapabilityDeleteOthersPosts &&
-                mHasCapabilityEditThemeOptions == siteModel.mHasCapabilityEditThemeOptions &&
-                mHasCapabilityEditUsers == siteModel.mHasCapabilityEditUsers &&
-                mHasCapabilityListUsers == siteModel.mHasCapabilityListUsers &&
-                mHasCapabilityManageCategories == siteModel.mHasCapabilityManageCategories &&
                 mHasCapabilityManageOptions == siteModel.mHasCapabilityManageOptions &&
-                mHasCapabilityActivateWordads == siteModel.mHasCapabilityActivateWordads &&
-                mHasCapabilityPromoteUsers == siteModel.mHasCapabilityPromoteUsers &&
-                mHasCapabilityPublishPosts == siteModel.mHasCapabilityPublishPosts &&
-                mHasCapabilityUploadFiles == siteModel.mHasCapabilityUploadFiles &&
-                mHasCapabilityDeleteUser == siteModel.mHasCapabilityDeleteUser &&
-                mHasCapabilityRemoveUsers == siteModel.mHasCapabilityRemoveUsers &&
-                mHasCapabilityViewStats == siteModel.mHasCapabilityViewStats &&
-                mSpaceAvailable == siteModel.mSpaceAvailable &&
-                mSpaceAllowed == siteModel.mSpaceAllowed &&
-                mSpaceUsed == siteModel.mSpaceUsed &&
-                Double.compare(mSpacePercentUsed, siteModel.mSpacePercentUsed) == 0 &&
-                mIsPublicizePermanentlyDisabled == siteModel.mIsPublicizePermanentlyDisabled &&
-                mIsBloggingPromptsOptedIn == siteModel.mIsBloggingPromptsOptedIn &&
-                mIsBloggingPromptsCardOptedIn == siteModel.mIsBloggingPromptsCardOptedIn &&
-                mIsPotentialBloggingSite == siteModel.mIsPotentialBloggingSite &&
-                mIsBloggingReminderOnMonday == siteModel.mIsBloggingReminderOnMonday &&
-                mIsBloggingReminderOnTuesday == siteModel.mIsBloggingReminderOnTuesday &&
-                mIsBloggingReminderOnWednesday == siteModel.mIsBloggingReminderOnWednesday &&
-                mIsBloggingReminderOnThursday == siteModel.mIsBloggingReminderOnThursday &&
-                mIsBloggingReminderOnFriday == siteModel.mIsBloggingReminderOnFriday &&
-                mIsBloggingReminderOnSaturday == siteModel.mIsBloggingReminderOnSaturday &&
-                mIsBloggingReminderOnSunday == siteModel.mIsBloggingReminderOnSunday &&
-                mBloggingReminderHour == siteModel.mBloggingReminderHour &&
-                mBloggingReminderMinute == siteModel.mBloggingReminderMinute &&
                 Objects.equals(mUrl, siteModel.mUrl) &&
                 Objects.equals(mAdminUrl, siteModel.mAdminUrl) &&
                 Objects.equals(mLoginUrl, siteModel.mLoginUrl) &&
                 Objects.equals(mName, siteModel.mName) &&
-                Objects.equals(mDescription, siteModel.mDescription) &&
-                Objects.equals(mDefaultCommentStatus, siteModel.mDefaultCommentStatus) &&
                 Objects.equals(mTimezone, siteModel.mTimezone) &&
-                Objects.equals(mFrameNonce, siteModel.mFrameNonce) &&
-                Objects.equals(mShowOnFront, siteModel.mShowOnFront) &&
                 Objects.equals(mUsername, siteModel.mUsername) &&
                 Objects.equals(mPassword, siteModel.mPassword) &&
                 Objects.equals(mXmlRpcUrl, siteModel.mXmlRpcUrl) &&
                 Objects.equals(mWpApiRestUrl, siteModel.mWpApiRestUrl) &&
-                Objects.equals(mSoftwareVersion, siteModel.mSoftwareVersion) &&
                 Objects.equals(mEmail, siteModel.mEmail) &&
                 Objects.equals(mDisplayName, siteModel.mDisplayName) &&
                 Objects.equals(mJetpackVersion, siteModel.mJetpackVersion) &&
                 Objects.equals(mJetpackUserEmail, siteModel.mJetpackUserEmail) &&
                 Objects.equals(mPlanShortName, siteModel.mPlanShortName) &&
                 Objects.equals(mPlanProductSlug, siteModel.mPlanProductSlug) &&
-                Objects.equals(mIconUrl, siteModel.mIconUrl) &&
-                Objects.equals(mUnmappedUrl, siteModel.mUnmappedUrl) &&
-                Objects.equals(mWebEditor, siteModel.mWebEditor) &&
-                Objects.equals(mMobileEditor, siteModel.mMobileEditor) &&
-                Objects.equals(mActiveModules, siteModel.mActiveModules) &&
                 Objects.equals(mActiveJetpackConnectionPlugins, siteModel.mActiveJetpackConnectionPlugins) &&
                 Objects.equals(mJetpackModules, siteModel.mJetpackModules) &&
-                Objects.equals(mZendeskPlan, siteModel.mZendeskPlan) &&
-                Objects.equals(mZendeskAddOns, siteModel.mZendeskAddOns) &&
                 Objects.equals(mApplicationPasswordsAuthorizeUrl, siteModel.mApplicationPasswordsAuthorizeUrl) &&
                 Objects.equals(mCanBlaze, siteModel.mCanBlaze) &&
                 Objects.equals(mPlanActiveFeatures, siteModel.mPlanActiveFeatures) &&
-                Objects.equals(mWasEcommerceTrial, siteModel.mWasEcommerceTrial) &&
-                Objects.equals(mIsSingleUserSite, siteModel.mIsSingleUserSite) &&
                 mIsGardenSite == siteModel.mIsGardenSite &&
                 Objects.equals(mGardenName, siteModel.mGardenName) &&
                 Objects.equals(mGardenPartner, siteModel.mGardenPartner);
@@ -1289,29 +542,16 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mAdminUrl,
                 mLoginUrl,
                 mName,
-                mDescription,
                 mIsWPCom,
                 mIsWPComAtomic,
                 mPublishedStatus,
-                mIsFeaturedImageSupported,
-                mIsWpForTeamsSite,
-                mDefaultCommentStatus,
                 mTimezone,
-                mFrameNonce,
-                mMaxUploadSize,
-                mMemoryLimit,
                 mOrigin,
-                mOrganizationId,
-                mShowOnFront,
-                mPageOnFront,
-                mPageForPosts,
                 mSelfHostedSiteId,
                 mUsername,
                 mPassword,
                 mXmlRpcUrl,
                 mWpApiRestUrl,
-                mSoftwareVersion,
-                mIsSelfHostedAdmin,
                 mEmail,
                 mDisplayName,
                 mIsJetpackInstalled,
@@ -1319,66 +559,18 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mIsJetpackCPConnected,
                 mJetpackVersion,
                 mJetpackUserEmail,
-                mIsAutomatedTransfer,
                 mIsWpComStore,
                 mHasWooCommerce,
-                mIsVisible,
                 mIsPrivate,
-                mIsComingSoon,
-                mIsVideoPressSupported,
                 mPlanId,
                 mPlanShortName,
                 mPlanProductSlug,
-                mIconUrl,
-                mHasFreePlan,
-                mUnmappedUrl,
-                mWebEditor,
-                mMobileEditor,
-                mHasCapabilityEditPages,
-                mHasCapabilityEditPosts,
-                mHasCapabilityEditOthersPosts,
-                mHasCapabilityEditOthersPages,
-                mHasCapabilityDeletePosts,
-                mHasCapabilityDeleteOthersPosts,
-                mHasCapabilityEditThemeOptions,
-                mHasCapabilityEditUsers,
-                mHasCapabilityListUsers,
-                mHasCapabilityManageCategories,
                 mHasCapabilityManageOptions,
-                mHasCapabilityActivateWordads,
-                mHasCapabilityPromoteUsers,
-                mHasCapabilityPublishPosts,
-                mHasCapabilityUploadFiles,
-                mHasCapabilityDeleteUser,
-                mHasCapabilityRemoveUsers,
-                mHasCapabilityViewStats,
-                mSpaceAvailable,
-                mSpaceAllowed,
-                mSpaceUsed,
-                mSpacePercentUsed,
-                mActiveModules,
-                mIsPublicizePermanentlyDisabled,
                 mActiveJetpackConnectionPlugins,
                 mJetpackModules,
-                mZendeskPlan,
-                mZendeskAddOns,
-                mIsBloggingPromptsOptedIn,
-                mIsBloggingPromptsCardOptedIn,
-                mIsPotentialBloggingSite,
-                mIsBloggingReminderOnMonday,
-                mIsBloggingReminderOnTuesday,
-                mIsBloggingReminderOnWednesday,
-                mIsBloggingReminderOnThursday,
-                mIsBloggingReminderOnFriday,
-                mIsBloggingReminderOnSaturday,
-                mIsBloggingReminderOnSunday,
-                mBloggingReminderHour,
-                mBloggingReminderMinute,
                 mApplicationPasswordsAuthorizeUrl,
                 mCanBlaze,
                 mPlanActiveFeatures,
-                mWasEcommerceTrial,
-                mIsSingleUserSite,
                 mIsGardenSite,
                 mGardenName,
                 mGardenPartner);
