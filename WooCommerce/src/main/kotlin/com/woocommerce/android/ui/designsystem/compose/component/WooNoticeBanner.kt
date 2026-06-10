@@ -52,7 +52,7 @@ fun WooNoticeBanner(
             if (leadingIcon != null) {
                 CompositionLocalProvider(LocalContentColor provides colors.contentColor) {
                     Box(
-                        modifier = Modifier.size(NOTICE_ICON_SIZE),
+                        modifier = Modifier.size(NOTICE_ICON_SIZE).align(Alignment.CenterVertically),
                         contentAlignment = Alignment.Center,
                     ) {
                         leadingIcon()
