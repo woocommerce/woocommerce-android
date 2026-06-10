@@ -32,6 +32,8 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.designsystem.DesignSystemMode
+import com.woocommerce.android.ui.designsystem.defaultDesignSystemMode
 import com.woocommerce.android.ui.designsystem.xml.designSystemXmlLayoutInflater
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
@@ -79,6 +81,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     @Suppress("ForbiddenComment", "LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentSettingsMainBinding.bind(view)
+
+        binding.settingsContentTopDivider.isVisible = defaultDesignSystemMode() == DesignSystemMode.LEGACY
 
         presenter.takeView(this)
 

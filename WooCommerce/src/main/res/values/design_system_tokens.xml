@@ -12,5 +12,5 @@
     <dimen name="design_system_toolbar_height">64dp</dimen>
     <dimen name="design_system_toolbar_button_size">48dp</dimen>
     <dimen name="design_system_toolbar_button_visual_inset">4dp</dimen>
-    <dimen name="design_system_toolbar_divider_height">1dp</dimen>
+    <dimen name="design_system_toolbar_divider_height">@dimen/design_system_stroke_extra_thin</dimen>
 </resources>
