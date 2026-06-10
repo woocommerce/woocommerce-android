@@ -82,6 +82,7 @@ class AppSettingsActivity :
         val designSystemMode = defaultDesignSystemMode()
         val toolbarView = inflateToolbar(designSystemMode)
         toolbar = toolbarView
+        configureAppBar(designSystemMode)
         binding.appBarLayout.addView(toolbarView)
         toolbarDivider = createToolbarDivider(designSystemMode)
         toolbarDivider?.let(binding.appBarLayout::addView)
@@ -154,6 +155,15 @@ class AppSettingsActivity :
         return (toolbarInflater.inflate(R.layout.view_toolbar, binding.appBarLayout, false) as Toolbar).apply {
             applyDesignSystemToolbarLayout(mode)
         }
+    }
+
+    private fun configureAppBar(mode: DesignSystemMode) {
+        if (mode == DesignSystemMode.LEGACY) return
+
+        binding.appBarLayout.stateListAnimator = null
+        binding.appBarLayout.elevation = 0f
+        binding.appBarLayout.translationZ = 0f
+        binding.appBarLayout.isLiftOnScroll = false
     }
 
     private fun createToolbarDivider(mode: DesignSystemMode): View? {
