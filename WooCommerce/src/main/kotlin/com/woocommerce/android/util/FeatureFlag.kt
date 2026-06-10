@@ -30,7 +30,6 @@ enum class FeatureFlag(
     BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2", localValue = PackageUtils.isDebugBuild()),
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate", localValue = PackageUtils.isDebugBuild()),
     POS_PRODUCTS_FTS("pos_products_fts", localValue = PackageUtils.isDebugBuild()),
-    POS_BOOKINGS("pos_bookings", localValue = PackageUtils.isDebugBuild()),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks", localValue = PackageUtils.isDebugBuild()),
     BOOKINGS_RESCHEDULE("bookings_reschedule", localValue = PackageUtils.isDebugBuild()),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1"),
@@ -41,4 +40,5 @@ enum class FeatureFlag(
     IPP_COUNTRY_EXPANSION("woo_ipp_country_expansion"),
     IPP_COUNTRY_EXPANSION_EU_EXTENDED("woo_ipp_country_expansion_eu_extended"),
     IPP_AUSTRALIA_WOOPAYMENTS("woo_ipp_australia_woopayments"),
+    QR_LOGIN("woo_qr_code_login", localValue = true),
 }

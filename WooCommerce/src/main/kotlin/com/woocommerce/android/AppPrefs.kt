@@ -75,6 +75,7 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
+        HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
@@ -232,7 +233,9 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
 
-        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
+
+        QR_LOGIN_ROLLOUT_BUCKET
     }
 
     fun init(context: Context) {
@@ -360,6 +363,21 @@ object AppPrefs {
                 .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
                 .commit()
             check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
+
+    var hasSeenAnalyticsScheduledImportInfo: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
+            default = false,
+        )
+        set(value) = setBoolean(key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO, value = value)
+
+    var qrLoginRolloutBucket: Int?
+        get() = UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET
+            .takeIf { exists(it) }
+            ?.let { getInt(it) }
+        set(value) {
+            value?.let { setInt(UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET, it) }
         }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"

@@ -77,7 +77,6 @@ sealed class ChildToParentEvent {
         data object ExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()
         data object ToOrders : NavigationEvent()
-        data object ToBookings : NavigationEvent()
     }
 
     sealed class SearchEvent : ChildToParentEvent() {

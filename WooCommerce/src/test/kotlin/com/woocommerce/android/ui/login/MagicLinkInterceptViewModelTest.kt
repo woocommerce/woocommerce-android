@@ -19,7 +19,9 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.login.LoginAnalyticsListener
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MagicLinkInterceptViewModelTest : BaseUnitTest() {
@@ -31,6 +33,7 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
         on { get() } doReturn site
     }
     private val fetchJetpackStatus: FetchJetpackStatus = mock()
+    private val loginAnalyticsListener: LoginAnalyticsListener = mock()
 
     private lateinit var viewModel: MagicLinkInterceptViewModel
 
@@ -41,7 +44,8 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
             savedState = SavedStateHandle(),
             magicLinkInterceptRepository = magicLinkInterceptRepository,
             selectedSite = selectedSite,
-            fetchJetpackStatus = fetchJetpackStatus
+            fetchJetpackStatus = fetchJetpackStatus,
+            loginAnalyticsListener = loginAnalyticsListener
         )
     }
 
@@ -139,6 +143,28 @@ class MagicLinkInterceptViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `given magic link succeeds, when handling magic link, then track signed in as wpcom`() = testBlocking {
+        setup {
+            givenAuthTokenUpdateResult(RequestResult.SUCCESS)
+        }
+
+        viewModel.handleMagicLink("authToken", flow = null)
+
+        verify(loginAnalyticsListener).trackAnalyticsSignIn(true)
+    }
+
+    @Test
+    fun `given magic link fails, when handling magic link, then do not track signed in`() = testBlocking {
+        setup {
+            givenAuthTokenUpdateResult(RequestResult.ERROR)
+        }
+
+        viewModel.handleMagicLink("authToken", flow = null)
+
+        verifyNoInteractions(loginAnalyticsListener)
+    }
 
     private suspend fun givenAuthTokenUpdateResult(result: RequestResult) {
         given(magicLinkInterceptRepository.updateMagicLinkAuthToken("authToken")).willReturn(result)
