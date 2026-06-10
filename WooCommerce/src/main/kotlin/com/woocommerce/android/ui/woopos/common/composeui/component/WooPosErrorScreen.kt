@@ -33,8 +33,7 @@ fun WooPosErrorScreen(
     message: String,
     reason: String,
     primaryButton: WooPosErrorScreenButtonState? = null,
-    secondaryButton: WooPosErrorScreenButtonState? = null,
-    tertiaryButton: WooPosErrorScreenButtonState? = null
+    secondaryButton: WooPosErrorScreenButtonState? = null
 ) {
     Column(
         modifier = modifier
@@ -87,14 +86,6 @@ fun WooPosErrorScreen(
                     modifier = Modifier.wooPosFullScreenActionButton()
                 )
             }
-            tertiaryButton?.let {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                WooPosOutlinedButton(
-                    text = it.text,
-                    onClick = it.click,
-                    modifier = Modifier.wooPosFullScreenActionButton()
-                )
-            }
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
     }
@@ -117,29 +108,6 @@ fun WooPosErrorStatePreview() {
                 click = { }
             ),
             secondaryButton = WooPosErrorScreenButtonState(
-                text = stringResource(R.string.cancel),
-                click = { }
-            )
-        )
-    }
-}
-
-@Composable
-@WooPosPreview
-fun WooPosErrorStateThreeButtonsPreview() {
-    WooPosTheme {
-        WooPosErrorScreen(
-            message = stringResource(R.string.woopos_totals_main_error_label),
-            reason = "Reason",
-            primaryButton = WooPosErrorScreenButtonState(
-                text = stringResource(R.string.retry),
-                click = { }
-            ),
-            secondaryButton = WooPosErrorScreenButtonState(
-                text = "Continue with basic sync",
-                click = { }
-            ),
-            tertiaryButton = WooPosErrorScreenButtonState(
                 text = stringResource(R.string.cancel),
                 click = { }
             )

@@ -185,21 +185,24 @@ private fun SyncFailed(
         text = stringResource(R.string.woopos_home_syncing_catalog_exit_button),
         click = onExitPosClicked
     )
-    val continueWithBasicSyncButton = WooPosErrorScreenButtonState(
-        text = stringResource(R.string.woopos_home_sync_failed_continue_basic_sync_button),
-        click = onContinueWithBasicSyncClicked
-    )
+    // A blocked catalog file is a permanent host issue, so retrying is pointless — offer to proceed
+    // with basic sync instead. Every other failure can be transient, so it keeps the Retry action.
+    val primaryButton = if (isServerPermissionsError) {
+        WooPosErrorScreenButtonState(
+            text = stringResource(R.string.woopos_home_sync_failed_blocked_continue_button),
+            click = onContinueWithBasicSyncClicked
+        )
+    } else {
+        WooPosErrorScreenButtonState(
+            text = stringResource(R.string.woopos_home_sync_failed_retry_button),
+            click = onRetryClicked
+        )
+    }
     WooPosErrorScreen(
         message = stringResource(R.string.woopos_home_sync_failed_title),
         reason = stringResource(reason),
-        primaryButton = WooPosErrorScreenButtonState(
-            text = stringResource(R.string.woopos_home_sync_failed_retry_button),
-            click = onRetryClicked
-        ),
-        // On a blocked file (Woo >= 11) we offer the legacy "basic sync" escape hatch; for any
-        // other failure the only secondary action is to exit.
-        secondaryButton = if (isServerPermissionsError) continueWithBasicSyncButton else exitButton,
-        tertiaryButton = if (isServerPermissionsError) exitButton else null
+        primaryButton = primaryButton,
+        secondaryButton = exitButton
     )
 }
 
