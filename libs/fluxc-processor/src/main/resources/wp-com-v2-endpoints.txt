@@ -71,6 +71,10 @@
 /auth/qr-code/validate
 /auth/qr-code/authenticate
 
+/auth/qr-code-app/scan
+/auth/qr-code-app/session-status
+/auth/qr-code-app/exchange
+
 /iap/products
 /iap/orders
 

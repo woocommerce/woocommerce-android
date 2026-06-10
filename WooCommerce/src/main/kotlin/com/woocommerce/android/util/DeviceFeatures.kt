@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -14,4 +15,7 @@ class DeviceFeatures @Inject constructor(
 
     fun isNFCAvailable(): Boolean =
         NfcAdapter.getDefaultAdapter(context) != null
+
+    fun hasCamera(): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 }

@@ -71,13 +71,6 @@ object WooPosIcons {
             tertiaryColor = WooPosTheme.colors.tertiaryIconColor
         )
 
-    val BookingsEmpty: ImageVector
-        @Composable
-        get() = bookingsEmpty(
-            bodyColor = MaterialTheme.colorScheme.secondary,
-            detailColor = MaterialTheme.colorScheme.primary,
-        )
-
     val CardReaderScanning: ImageVector
         @Composable
         get() = if (isSystemInDarkTheme()) {
@@ -980,124 +973,6 @@ object WooPosIcons {
             }
         }.build()
     }
-
-    private fun bookingsEmpty(
-        bodyColor: Color,
-        detailColor: Color,
-    ): ImageVector {
-        return ImageVector.Builder(
-            name = "BookingsEmpty",
-            defaultWidth = 48.dp,
-            defaultHeight = 48.dp,
-            viewportWidth = 48f,
-            viewportHeight = 48f
-        ).apply {
-            // Calendar body
-            path(fill = SolidColor(bodyColor)) {
-                moveTo(6.208f, 19.544f)
-                verticalLineTo(44.13f)
-                curveTo(6.208f, 46.586f, 7.57f, 48f, 9.975f, 48f)
-                horizontalLineTo(38.026f)
-                curveTo(40.431f, 48f, 41.793f, 46.578f, 41.793f, 44.13f)
-                verticalLineTo(19.544f)
-                curveTo(41.793f, 17.088f, 40.431f, 15.674f, 38.026f, 15.674f)
-                horizontalLineTo(9.975f)
-                curveTo(7.57f, 15.665f, 6.208f, 17.088f, 6.208f, 19.544f)
-                close()
-            }
-            // Dot row 1 col 1
-            path(fill = SolidColor(detailColor)) {
-                moveTo(15.543f, 33.768f)
-                curveTo(16.638f, 33.768f, 17.561f, 32.897f, 17.561f, 31.75f)
-                curveTo(17.561f, 30.604f, 16.69f, 29.733f, 15.543f, 29.733f)
-                curveTo(14.397f, 29.733f, 13.526f, 30.604f, 13.526f, 31.75f)
-                curveTo(13.526f, 32.897f, 14.397f, 33.768f, 15.543f, 33.768f)
-                close()
-            }
-            // Dot row 1 col 2
-            path(fill = SolidColor(detailColor)) {
-                moveTo(24f, 33.768f)
-                curveTo(25.094f, 33.768f, 26.017f, 32.897f, 26.017f, 31.75f)
-                curveTo(26.017f, 30.604f, 25.146f, 29.733f, 24f, 29.733f)
-                curveTo(22.853f, 29.733f, 21.982f, 30.604f, 21.982f, 31.75f)
-                curveTo(21.982f, 32.897f, 22.913f, 33.768f, 24f, 33.768f)
-                close()
-            }
-            // Dot row 1 col 3
-            path(fill = SolidColor(detailColor)) {
-                moveTo(32.457f, 33.768f)
-                curveTo(33.551f, 33.768f, 34.474f, 32.897f, 34.474f, 31.75f)
-                curveTo(34.474f, 30.604f, 33.603f, 29.733f, 32.457f, 29.733f)
-                curveTo(31.31f, 29.733f, 30.44f, 30.604f, 30.44f, 31.75f)
-                curveTo(30.44f, 32.897f, 31.37f, 33.768f, 32.457f, 33.768f)
-                close()
-            }
-            // Dot row 2 col 1
-            path(fill = SolidColor(detailColor)) {
-                moveTo(15.543f, 42.431f)
-                curveTo(16.638f, 42.431f, 17.561f, 41.56f, 17.561f, 40.414f)
-                curveTo(17.561f, 39.267f, 16.69f, 38.396f, 15.543f, 38.396f)
-                curveTo(14.397f, 38.396f, 13.526f, 39.267f, 13.526f, 40.414f)
-                curveTo(13.526f, 41.56f, 14.397f, 42.431f, 15.543f, 42.431f)
-                close()
-            }
-            // Dot row 2 col 2
-            path(fill = SolidColor(detailColor)) {
-                moveTo(24f, 42.431f)
-                curveTo(25.094f, 42.431f, 26.017f, 41.56f, 26.017f, 40.414f)
-                curveTo(26.017f, 39.267f, 25.146f, 38.396f, 24f, 38.396f)
-                curveTo(22.853f, 38.396f, 21.982f, 39.267f, 21.982f, 40.414f)
-                curveTo(21.982f, 41.56f, 22.913f, 42.431f, 24f, 42.431f)
-                close()
-            }
-            // Dot row 2 col 3
-            path(fill = SolidColor(detailColor)) {
-                moveTo(32.457f, 42.431f)
-                curveTo(33.551f, 42.431f, 34.474f, 41.56f, 34.474f, 40.414f)
-                curveTo(34.474f, 39.267f, 33.603f, 38.396f, 32.457f, 38.396f)
-                curveTo(31.31f, 38.396f, 30.44f, 39.267f, 30.44f, 40.414f)
-                curveTo(30.44f, 41.56f, 31.37f, 42.431f, 32.457f, 42.431f)
-                close()
-            }
-            // Header bar
-            path(fill = SolidColor(detailColor)) {
-                moveTo(6.208f, 19.544f)
-                verticalLineTo(24.156f)
-                horizontalLineTo(41.793f)
-                verticalLineTo(19.544f)
-                curveTo(41.793f, 17.088f, 40.431f, 15.674f, 38.026f, 15.674f)
-                horizontalLineTo(9.975f)
-                curveTo(7.57f, 15.674f, 6.208f, 17.096f, 6.208f, 19.544f)
-                close()
-            }
-            // Right tab
-            path(fill = SolidColor(bodyColor)) {
-                moveTo(33.008f, 8.002f)
-                horizontalLineTo(31.672f)
-                curveTo(30.198f, 8.002f, 29.327f, 8.821f, 29.327f, 10.347f)
-                verticalLineTo(18.208f)
-                curveTo(29.327f, 19.683f, 30.146f, 20.553f, 31.672f, 20.553f)
-                horizontalLineTo(33.008f)
-                curveTo(34.482f, 20.553f, 35.353f, 19.734f, 35.353f, 18.208f)
-                verticalLineTo(10.347f)
-                curveTo(35.353f, 8.873f, 34.534f, 8.002f, 33.008f, 8.002f)
-                close()
-            }
-            // Left tab
-            path(fill = SolidColor(bodyColor)) {
-                moveTo(16.319f, 8.002f)
-                horizontalLineTo(14.983f)
-                curveTo(13.509f, 8.002f, 12.639f, 8.821f, 12.639f, 10.347f)
-                verticalLineTo(18.208f)
-                curveTo(12.639f, 19.683f, 13.458f, 20.553f, 14.983f, 20.553f)
-                horizontalLineTo(16.319f)
-                curveTo(17.794f, 20.553f, 18.664f, 19.734f, 18.664f, 18.208f)
-                verticalLineTo(10.347f)
-                curveTo(18.664f, 8.873f, 17.845f, 8.002f, 16.319f, 8.002f)
-                close()
-            }
-        }.build()
-    }
 }
 
 @Suppress("UnusedPrivateMember")
@@ -1244,16 +1119,6 @@ private fun WooPosIconsPreview() {
                     Image(
                         imageVector = WooPosIcons.CardReaderNotConnected,
                         contentDescription = "CardReaderNotConnected",
-                        modifier = Modifier.size(WooPosComponentSize.Small.value)
-                    )
-                }
-                Box(
-                    modifier = Modifier.size(WooPosComponentSize.Small.value),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        imageVector = WooPosIcons.BookingsEmpty,
-                        contentDescription = "BookingsEmpty",
                         modifier = Modifier.size(WooPosComponentSize.Small.value)
                     )
                 }
