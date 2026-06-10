@@ -383,7 +383,7 @@ DEPENDENCIES
   fastlane-plugin-wpmreleasetoolkit (~> 13.8)
   nokogiri (>= 1.19.3)
   openssl (~> 4.0)
-  rmagick (~> 4.1)
+  rmagick (>= 4.1, < 7)
   rubocop (~> 1.87)
 
 BUNDLED WITH
