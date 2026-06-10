@@ -48,14 +48,12 @@ import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainErrorType.EMPTY_
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
-import kotlin.math.max
 
 @Suppress("LargeClass", "TooManyFunctions", "LongParameterList")
 @Singleton
@@ -219,7 +217,6 @@ class SiteRestClient @Inject constructor(
                 // Keep existing fields, and update only fields fetched from the root endpoint
                 site.apply {
                     name = result.data.name
-                    description = result.data.description
                     timezone = result.data.gmtOffset
                     hasWooCommerce = result.data.namespaces?.any {
                         it.startsWith(WOO_API_NAMESPACE_PREFIX)
@@ -505,83 +502,26 @@ class SiteRestClient @Inject constructor(
         site.siteId = from.ID
         site.url = from.URL
         site.name = StringEscapeUtils.unescapeHtml4(from.name)
-        site.description = StringEscapeUtils.unescapeHtml4(from.description)
         site.setIsJetpackConnected(from.jetpack && from.jetpack_connection)
         site.setIsJetpackInstalled(from.jetpack)
         site.setIsJetpackCPConnected(from.jetpack_connection && !from.jetpack)
-        site.setIsVisible(from.visible)
         site.setIsPrivate(from.is_private)
-        site.setIsComingSoon(from.is_coming_soon)
-        site.organizationId = from.organization_id
         // Depending of user's role, options could be "hidden", for instance an "Author" can't read site options.
         if (from.options != null) {
-            site.setIsFeaturedImageSupported(from.options.featured_images_enabled)
-            site.setIsVideoPressSupported(from.options.videopress_enabled)
-            site.setIsAutomatedTransfer(from.options.is_automated_transfer)
             site.setIsWpComStore(from.options.is_wpcom_store)
             site.publishedStatus = from.options.blog_public
             site.hasWooCommerce = from.options.woocommerce_is_active
             site.adminUrl = from.options.admin_url
             site.loginUrl = from.options.login_url
             site.timezone = from.options.gmt_offset
-            site.frameNonce = from.options.frame_nonce
-            site.unmappedUrl = from.options.unmapped_url
             site.jetpackVersion = from.options.jetpack_version
-            site.softwareVersion = from.options.software_version
             site.setIsWPComAtomic(from.options.is_wpcom_atomic)
-            site.setIsWpForTeamsSite(from.options.is_wpforteams_site)
-            site.showOnFront = from.options.show_on_front
-            site.pageOnFront = from.options.page_on_front
-            site.pageForPosts = from.options.page_for_posts
             site.canBlaze = from.options.can_blaze
-            site.setIsPublicizePermanentlyDisabled(from.options.publicize_permanently_disabled)
-            if (from.options.active_modules != null) {
-                site.activeModules = from.options.active_modules.joinToString(",")
-            }
             from.options.jetpack_connection_active_plugins?.let {
                 site.activeJetpackConnectionPlugins = it.joinToString(",")
             }
             from.jetpack_modules?.let {
                 site.jetpackModules = it.joinToString(",")
-            }
-            try {
-                site.maxUploadSize = java.lang.Long.valueOf(from.options.max_upload_size)
-            } catch (e: NumberFormatException) {
-                // Do nothing - the value probably wasn't set ('false'), but we don't want to overwrite any existing
-                // value we stored earlier, as /me/sites/ and /sites/$site/ can return different responses for this
-            }
-
-            // Set the memory limit for media uploads on the site. Normally, this is just WP_MAX_MEMORY_LIMIT,
-            // but it's possible for a site to have its php memory_limit > WP_MAX_MEMORY_LIMIT, and have
-            // WP_MEMORY_LIMIT == memory_limit, in which WP_MEMORY_LIMIT reflects the real limit for media uploads.
-            val wpMemoryLimit = StringUtils.stringToLong(from.options.wp_memory_limit)
-            val wpMaxMemoryLimit = StringUtils.stringToLong(from.options.wp_max_memory_limit)
-            if (wpMemoryLimit > 0 || wpMaxMemoryLimit > 0) {
-                // Only update the value if we received one from the server - otherwise, the original value was
-                // probably not set ('false'), but we don't want to overwrite any existing value we stored earlier,
-                // as /me/sites/ and /sites/$site/ can return different responses for this
-                site.memoryLimit = max(wpMemoryLimit, wpMaxMemoryLimit)
-            }
-
-            val bloggingPromptsSettings = from.options.blogging_prompts_settings
-
-            bloggingPromptsSettings?.let {
-                site.setIsBloggingPromptsOptedIn(it.prompts_reminders_opted_in)
-                site.setIsBloggingPromptsCardOptedIn(it.prompts_card_opted_in)
-                site.setIsPotentialBloggingSite(it.is_potential_blogging_site)
-                site.setIsBloggingReminderOnMonday(it.reminders_days["monday"] ?: false)
-                site.setIsBloggingReminderOnTuesday(it.reminders_days["tuesday"] ?: false)
-                site.setIsBloggingReminderOnWednesday(it.reminders_days["wednesday"] ?: false)
-                site.setIsBloggingReminderOnThursday(it.reminders_days["thursday"] ?: false)
-                site.setIsBloggingReminderOnFriday(it.reminders_days["friday"] ?: false)
-                site.setIsBloggingReminderOnSaturday(it.reminders_days["saturday"] ?: false)
-                site.setIsBloggingReminderOnSunday(it.reminders_days["sunday"] ?: false)
-                try {
-                    site.bloggingReminderHour = it.reminders_time.split(".")[0].toInt()
-                    site.bloggingReminderMinute = it.reminders_time.split(".")[1].toInt()
-                } catch (ex: NumberFormatException) {
-                    AppLog.e(AppLog.T.API, "Received malformed blogging reminder time: " + ex.message)
-                }
             }
         }
         if (from.plan != null) {
@@ -595,46 +535,14 @@ class SiteRestClient @Inject constructor(
             }
             site.planShortName = from.plan.product_name_short
             site.planProductSlug = from.plan.product_slug
-            site.hasFreePlan = from.plan.is_free
         }
         if (from.capabilities != null) {
-            site.hasCapabilityEditPages = from.capabilities.edit_pages
-            site.hasCapabilityEditPosts = from.capabilities.edit_posts
-            site.hasCapabilityEditOthersPosts = from.capabilities.edit_others_posts
-            site.hasCapabilityEditOthersPages = from.capabilities.edit_others_pages
-            site.hasCapabilityDeletePosts = from.capabilities.delete_posts
-            site.hasCapabilityDeleteOthersPosts = from.capabilities.delete_others_posts
-            site.hasCapabilityEditThemeOptions = from.capabilities.edit_theme_options
-            site.hasCapabilityEditUsers = from.capabilities.edit_users
-            site.hasCapabilityListUsers = from.capabilities.list_users
-            site.hasCapabilityManageCategories = from.capabilities.manage_categories
             site.hasCapabilityManageOptions = from.capabilities.manage_options
-            site.hasCapabilityActivateWordads = from.capabilities.activate_wordads
-            site.hasCapabilityPromoteUsers = from.capabilities.promote_users
-            site.hasCapabilityPublishPosts = from.capabilities.publish_posts
-            site.hasCapabilityUploadFiles = from.capabilities.upload_files
-            site.hasCapabilityDeleteUser = from.capabilities.delete_user
-            site.hasCapabilityRemoveUsers = from.capabilities.remove_users
-            site.hasCapabilityViewStats = from.capabilities.view_stats
-        }
-        if (from.quota != null) {
-            site.spaceAvailable = from.quota.space_available
-            site.spaceAllowed = from.quota.space_allowed
-            site.spaceUsed = from.quota.space_used
-            site.spacePercentUsed = from.quota.percent_used
-        }
-        if (from.icon != null) {
-            site.iconUrl = from.icon.img
         }
         if (from.meta != null) {
             if (from.meta.links != null) {
                 site.xmlRpcUrl = from.meta.links.xmlrpc
             }
-        }
-        if (from.zendesk_site_meta != null) {
-            site.zendeskPlan = from.zendesk_site_meta.plan
-            site.zendeskAddOns = from.zendesk_site_meta.addon
-                    ?.let { TextUtils.join(",", from.zendesk_site_meta.addon) } ?: ""
         }
         // Only set the isWPCom flag for "pure" WPCom sites
         if (!from.jetpack_connection) {
@@ -642,8 +550,6 @@ class SiteRestClient @Inject constructor(
         }
         site.origin = SiteModel.ORIGIN_WPCOM_REST
         site.planActiveFeatures = (from.plan?.features?.active?.joinToString(",")).orEmpty()
-        site.wasEcommerceTrial = from.was_ecommerce_trial
-        site.setIsSingleUserSite(from.single_user_site)
 
         site.setIsGardenSite(from.is_garden)
         site.gardenName = from.garden_name
@@ -659,10 +565,9 @@ class SiteRestClient @Inject constructor(
 
     companion object {
         @VisibleForTesting
-        const val SITE_FIELDS = "ID,URL,name,description,jetpack,jetpack_connection,visible,is_private," +
-            "options,plan,capabilities,quota,icon,meta,zendesk_site_meta,organization_id," +
-            "was_ecommerce_trial,single_user_site,jetpack_modules,is_garden,garden_name,garden_partner"
-        private const val ROOT_ENDPOINT_FIELDS = "name,description,gmt_offset,namespaces,authentication"
+        const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
+            "options,plan,capabilities,meta,jetpack_modules,is_garden,garden_name,garden_partner"
+        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"
