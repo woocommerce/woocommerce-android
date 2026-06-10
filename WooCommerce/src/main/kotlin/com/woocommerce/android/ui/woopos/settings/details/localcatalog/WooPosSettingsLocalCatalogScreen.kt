@@ -333,7 +333,7 @@ fun WooPosSyncErrorDialog(
             WooPosText(
                 text = stringResource(
                     if (isServerPermissionsError) {
-                        R.string.woopos_home_sync_failed_server_permissions_message
+                        R.string.woopos_settings_local_catalog_sync_error_blocked_message
                     } else {
                         R.string.woopos_settings_local_catalog_sync_error_dialog_message
                     }

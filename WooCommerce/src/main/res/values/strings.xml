@@ -3849,6 +3849,7 @@
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_message">The catalog file could not be downloaded from your store due to blocked server permissions. Please contact your hosting provider.</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Retry</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Cancel</string>
 
