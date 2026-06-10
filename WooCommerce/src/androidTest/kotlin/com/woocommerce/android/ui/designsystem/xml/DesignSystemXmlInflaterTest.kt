@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.woocommerce.android.AppPrefs
@@ -187,9 +188,12 @@ class DesignSystemXmlInflaterTest {
                 mode = DesignSystemMode.LEGACY,
             )
 
-            val toolbar = inflater.inflate(R.layout.view_toolbar, null, false) as MaterialToolbar
+            val toolbar = inflater.inflate(R.layout.view_toolbar, AppBarLayout(baseContext), false) as MaterialToolbar
+            toolbar.applyDesignSystemToolbarLayout(DesignSystemMode.LEGACY)
 
             assertThat(inflater).isSameAs(baseInflater)
+            assertThat(toolbar.layoutParams.height)
+                .isEqualTo(baseContext.resources.getDimensionPixelSize(R.dimen.toolbar_height))
             assertThat(toolbar.backgroundColor()).isEqualTo(ContextCompat.getColor(baseContext, R.color.color_toolbar))
         }
     }
@@ -203,9 +207,14 @@ class DesignSystemXmlInflaterTest {
             val baseInflater = LayoutInflater.from(baseContext)
             val inflater = baseContext.designSystemToolbarLayoutInflater(baseInflater)
 
-            val toolbar = inflater.inflate(R.layout.view_toolbar, null, false) as MaterialToolbar
+            val toolbar = inflater.inflate(R.layout.view_toolbar, AppBarLayout(baseContext), false) as MaterialToolbar
+            toolbar.applyDesignSystemToolbarLayout(DesignSystemMode.DESIGN_SYSTEM)
 
             assertThat(inflater).isNotSameAs(baseInflater)
+            assertThat(toolbar.layoutParams.height)
+                .isEqualTo(baseContext.resources.getDimensionPixelSize(R.dimen.design_system_toolbar_height))
+            assertThat(toolbar.minimumHeight)
+                .isEqualTo(baseContext.resources.getDimensionPixelSize(R.dimen.design_system_toolbar_height))
             assertThat(toolbar.backgroundColor()).isEqualTo(
                 ContextCompat.getColor(baseContext, R.color.design_system_surface_default)
             )

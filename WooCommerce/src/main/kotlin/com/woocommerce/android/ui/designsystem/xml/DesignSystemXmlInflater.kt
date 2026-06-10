@@ -3,7 +3,10 @@ package com.woocommerce.android.ui.designsystem.xml
 import android.content.Context
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.annotation.StyleRes
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.designsystem.DesignSystemMode
@@ -43,3 +46,11 @@ fun Context.designSystemToolbarLayoutInflater(
     mode = mode,
     themeOverlay = R.style.ThemeOverlay_Woo_DesignSystem_Toolbar,
 )
+
+fun Toolbar.applyDesignSystemToolbarLayout(mode: DesignSystemMode) {
+    if (mode == DesignSystemMode.LEGACY) return
+
+    updateLayoutParams<ViewGroup.LayoutParams> {
+        height = resources.getDimensionPixelSize(R.dimen.design_system_toolbar_height)
+    }
+}

@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.designsystem.DesignSystemMode
 import com.woocommerce.android.ui.designsystem.defaultDesignSystemMode
+import com.woocommerce.android.ui.designsystem.xml.applyDesignSystemToolbarLayout
 import com.woocommerce.android.ui.designsystem.xml.designSystemToolbarLayoutInflater
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -150,7 +151,9 @@ class AppSettingsActivity :
 
     private fun inflateToolbar(mode: DesignSystemMode): Toolbar {
         val toolbarInflater = designSystemToolbarLayoutInflater(layoutInflater, mode)
-        return toolbarInflater.inflate(R.layout.view_toolbar, binding.appBarLayout, false) as Toolbar
+        return (toolbarInflater.inflate(R.layout.view_toolbar, binding.appBarLayout, false) as Toolbar).apply {
+            applyDesignSystemToolbarLayout(mode)
+        }
     }
 
     private fun createToolbarDivider(mode: DesignSystemMode): View? {

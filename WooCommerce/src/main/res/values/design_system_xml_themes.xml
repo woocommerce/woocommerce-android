@@ -56,6 +56,8 @@
         <item name="android:theme">@style/ThemeOverlay.Woo.DesignSystem.Toolbar.Surface</item>
         <item name="android:background">@color/design_system_surface_default</item>
         <item name="backgroundTint">@color/design_system_surface_default</item>
+        <item name="android:minHeight">@dimen/design_system_toolbar_height</item>
+        <item name="minHeight">@dimen/design_system_toolbar_height</item>
         <item name="titleCentered">true</item>
         <item name="titleTextStyle">@style/TextAppearance.Woo.ToolbarTitle.DesignSystem</item>
         <item name="navigationIconTint">@color/design_system_surface_on_default</item>
@@ -64,6 +66,7 @@
     <style name="Widget.Woo.ToolbarNavigationButton.DesignSystem" parent="Widget.AppCompat.Toolbar.Button.Navigation">
         <item name="android:layout_width">@dimen/design_system_toolbar_button_size</item>
         <item name="android:layout_height">@dimen/design_system_toolbar_button_size</item>
+        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:minWidth">@dimen/design_system_toolbar_button_size</item>
         <item name="android:minHeight">@dimen/design_system_toolbar_button_size</item>
         <item name="android:background">@drawable/ds_toolbar_outlined_button_bg</item>
@@ -75,6 +78,7 @@
     <style name="Widget.Woo.ToolbarActionButton.DesignSystem" parent="Widget.AppCompat.ActionButton">
         <item name="android:layout_width">@dimen/design_system_toolbar_button_size</item>
         <item name="android:layout_height">@dimen/design_system_toolbar_button_size</item>
+        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:minWidth">@dimen/design_system_toolbar_button_size</item>
         <item name="android:minHeight">@dimen/design_system_toolbar_button_size</item>
         <item name="android:background">@drawable/ds_toolbar_outlined_button_bg</item>
@@ -84,6 +88,7 @@
     </style>
 
     <style name="Widget.Woo.ToolbarOverflowButton.DesignSystem" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:background">@drawable/ds_toolbar_outlined_button_bg</item>
         <item name="background">@drawable/ds_toolbar_outlined_button_bg</item>
         <item name="tint">@color/design_system_primary</item>
