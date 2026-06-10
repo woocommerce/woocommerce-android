@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="ThemeOverlay.Woo.DesignSystem.Xml" parent="ThemeOverlay.MaterialComponents">
-        <item name="colorPrimary">@color/woo_purple_40</item>
+        <item name="colorPrimary">@color/design_system_primary</item>
         <item name="colorPrimaryVariant">@color/woo_purple_50</item>
         <item name="colorSecondary">@color/woo_black_80</item>
         <item name="colorSecondaryVariant">@color/woo_black_900</item>
         <item name="colorOnPrimary">@color/woo_white</item>
         <item name="colorOnSecondary">@color/woo_white</item>
 
-        <item name="android:colorBackground">@color/woo_gray_100</item>
-        <item name="colorSurface">@color/woo_black_900</item>
-        <item name="colorOnSurface">@color/woo_white</item>
+        <item name="android:colorBackground">@color/design_system_background_section</item>
+        <item name="colorSurface">@color/design_system_surface_default</item>
+        <item name="colorOnSurface">@color/design_system_surface_on_default</item>
         <item name="colorError">@color/color_error</item>
         <item name="colorOnError">@color/color_on_error</item>
-        <item name="colorAccent">@color/woo_purple_40</item>
-        <item name="colorControlNormal">@color/woo_purple_40</item>
-        <item name="android:colorControlActivated">@color/woo_purple_40</item>
+        <item name="colorAccent">@color/design_system_primary</item>
+        <item name="colorControlNormal">@color/design_system_primary</item>
+        <item name="android:colorControlActivated">@color/design_system_primary</item>
 
         <item name="textAppearanceSubtitle1">@style/TextAppearance.Woo.Subtitle1</item>
         <item name="textAppearanceBody2">@style/TextAppearance.Woo.Body2</item>

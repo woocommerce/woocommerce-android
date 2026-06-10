@@ -182,23 +182,22 @@ Compose `WooTopAppBar` changes ownership and structure, not only colors.
   toolbar/chrome inflated outside that subtree is out of scope for the bridge and should be handled
   by a separate scoped chrome decision.
 - Prefer component-level compatibility driven by the active foundation.
-- For a simple retained XML/View screen with no menu, search, or collapsing behavior, a per-screen
-  Compose `WooTopAppBar` island above the retained XML body is acceptable. Hide the Activity toolbar
-  with `AppBarStatus.Hidden`, keep the XML content bridged at the inflater boundary, and configure the
-  top bar through the same default design-system foundation path used by `composeView`.
 - Under the legacy-compatible foundation, `WooTopAppBar` should stay close to the existing Activity
   toolbar for title alignment, title typography, nav icon treatment, action colors,
   divider/elevation, height, and insets.
 - Under the design-system foundation, `WooTopAppBar` should render the real design-system app bar.
-- Prefer a Compose `WooTopAppBar` island over XML toolbar reimplementation unless a later decision
-  explicitly chooses an XML/View chrome adapter.
+- For retained XML/View screens that keep Activity toolbar ownership, prefer a scoped XML toolbar
+  overlay over a Compose toolbar island. Inflate only the toolbar through the design-system overlay,
+  gate it through `DesignSystemMode`, keep `setSupportActionBar(...)` and View title/up/menu behavior
+  untouched, and use the same promoted token resources read by Compose.
+- `AppSettingsActivity` is the first retained XML toolbar-overlay pilot. The overlay is Activity-wide
+  for settings screens when the design-system flag is on; this is accepted because the flag is the
+  rollback path and settings screens share one toolbar host.
 - Do not treat simple-toolbar adoption as proof for menu, search, or collapsing toolbar screens.
-  Those need a dedicated audit or pilot because View menus and `SearchView` behavior must be mapped to
-  `WooTopAppBarAction` and Compose search affordances, and may expose component API gaps. The likely
-  direction for those pilots is still per-screen Compose chrome ownership: hide the Activity toolbar
-  for that screen and render `WooTopAppBar` or related Compose chrome in the screen. Do not reopen
-  Activity-owned toolbar bridging as the default just because the screen has additional toolbar-owned
-  affordances.
+  Those need a dedicated audit or pilot because View menus, overflow, and `SearchView` action views
+  are not exercised by the settings pilot. The likely direction for those retained XML pilots is the
+  same scoped XML toolbar overlay, not a separate Compose toolbar island, but the action/menu/search
+  styling contract must be proven before applying it to higher-risk list screens.
 - Do not add a duplicate screen implementation just to preserve legacy toolbar chrome.
 
 ## Workflow
@@ -213,12 +212,12 @@ Compose `WooTopAppBar` changes ownership and structure, not only colors.
    `DesignSystemMode.DESIGN_SYSTEM`. If a pilot opts into the design-system mode, do it only at the
    approved root boundary: the Compose root for Compose screens, or the inflater boundary for retained
    XML/View bridge screens.
-5. If the adopted screen replaces the activity toolbar, set the Fragment's `activityAppBarStatus` to `AppBarStatus.Hidden`,
-   render `WooTopAppBar` inside the screen `Scaffold` or a narrow ComposeView island above retained XML content, and pass
-   navigation callbacks from the Fragment. Use `WindowInsets(0)` for the Compose top bar unless the screen is intentionally
-   edge-to-edge, so a Fragment-hosted screen does not add a second status-bar inset. Defer menu/search/collapsing toolbar
-   screens to a dedicated audit or pilot rather than fitting them into a simple top-bar island; their likely direction is
-   the same per-screen Compose chrome ownership with additional menu/search/collapsing behavior mapping.
+5. If retained XML adoption needs Activity toolbar styling, first decide whether the Activity toolbar
+   can remain the behavior owner. If yes, prefer the scoped XML toolbar overlay: inflate the toolbar
+   with a design-system overlay, leave `setSupportActionBar(...)` and existing View menu/title/up
+   contracts intact, and verify sibling impact under the feature flag. If the screen truly needs
+   Compose chrome ownership, set `activityAppBarStatus` to hidden and render `WooTopAppBar` inside the
+   Compose screen tree. Defer menu/search/collapsing toolbar screens to a dedicated audit or pilot.
 6. Treat source examples as component and token guidance, not as a mandate to copy an iOS table layout onto Android. Preserve the
    screen's existing surface/background relationship unless design explicitly asks for a stronger grouping treatment. Rows that
    use surface-keyed content colors should sit on `WooTheme.colors.surface.default`; avoid adding new cards or dividers unless

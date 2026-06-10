@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.prefs
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
@@ -14,6 +16,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -26,6 +29,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.designsystem.DesignSystemMode
+import com.woocommerce.android.ui.designsystem.defaultDesignSystemMode
+import com.woocommerce.android.ui.designsystem.xml.designSystemToolbarLayoutInflater
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
@@ -66,11 +72,18 @@ class AppSettingsActivity :
 
     private lateinit var binding: ActivityAppSettingsBinding
     private var toolbar: Toolbar? = null
+    private var toolbarDivider: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityAppSettingsBinding.inflate(layoutInflater)
+        val designSystemMode = defaultDesignSystemMode()
+        val toolbarView = inflateToolbar(designSystemMode)
+        toolbar = toolbarView
+        binding.appBarLayout.addView(toolbarView)
+        toolbarDivider = createToolbarDivider(designSystemMode)
+        toolbarDivider?.let(binding.appBarLayout::addView)
         setContentView(binding.root)
 
         binding.root.doOnApplyWindowInsets(
@@ -91,7 +104,6 @@ class AppSettingsActivity :
 
         presenter.takeView(this)
 
-        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -126,11 +138,30 @@ class AppSettingsActivity :
             when ((f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 AppBarStatus.Hidden -> {
                     toolbar?.isVisible = false
+                    toolbarDivider?.isVisible = false
                 }
                 is AppBarStatus.Visible -> {
                     toolbar?.isVisible = true
+                    toolbarDivider?.isVisible = true
                 }
             }
+        }
+    }
+
+    private fun inflateToolbar(mode: DesignSystemMode): Toolbar {
+        val toolbarInflater = designSystemToolbarLayoutInflater(layoutInflater, mode)
+        return toolbarInflater.inflate(R.layout.view_toolbar, binding.appBarLayout, false) as Toolbar
+    }
+
+    private fun createToolbarDivider(mode: DesignSystemMode): View? {
+        if (mode == DesignSystemMode.LEGACY) return null
+
+        return View(this).apply {
+            layoutParams = AppBarLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                resources.getDimensionPixelSize(R.dimen.design_system_toolbar_divider_height)
+            )
+            setBackgroundColor(ContextCompat.getColor(context, R.color.design_system_outline_variant))
         }
     }
 

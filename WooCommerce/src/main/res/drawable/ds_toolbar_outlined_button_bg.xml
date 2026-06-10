@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/color_ripple_overlay">
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke
+                android:width="@dimen/design_system_stroke_extra_thin"
+                android:color="@color/design_system_outline_variant" />
+            <corners android:radius="@dimen/design_system_radius_large" />
+        </shape>
+    </item>
+</ripple>

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.designsystem
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -22,6 +23,15 @@ internal class DesignSystemModeResolver(
 fun Fragment.defaultDesignSystemMode(): DesignSystemMode {
     val featureFlagRepository = EntryPoints.get(
         requireContext().applicationContext,
+        DesignSystemFeatureFlagEntryPoint::class.java
+    ).featureFlagRepository()
+
+    return DesignSystemModeResolver(featureFlagRepository).resolveDefaultMode()
+}
+
+fun Context.defaultDesignSystemMode(): DesignSystemMode {
+    val featureFlagRepository = EntryPoints.get(
+        applicationContext,
         DesignSystemFeatureFlagEntryPoint::class.java
     ).featureFlagRepository()
 

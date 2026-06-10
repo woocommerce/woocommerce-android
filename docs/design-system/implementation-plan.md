@@ -166,8 +166,16 @@ Expected output:
   `BaseFragment(R.layout...)` screens can opt in without rewriting root inflation.
 - Default/no explicit XML bridge mode follows `FeatureFlag.NEW_DESIGN_SYSTEM`; legacy mode preserves
   existing View styling; design-system mode applies only to the opted-in screen root.
+- The PR7 pilot target is `MainSettingsFragment` retained XML content, with an `AppSettingsActivity`
+  toolbar overlay inflated through the same `DesignSystemMode`. The toolbar overlay is Activity-wide
+  for settings screens under the flag because the existing Activity owns toolbar/title/up behavior.
 - Use Material/theme attrs first. Add custom Woo attrs or promoted Android resources only for
   semantic gaps proven by the pilot.
+- Use promoted Android resources for token primitives needed by XML and update Compose to read those
+  same resources. Do not duplicate Kotlin/Compose and XML primitive values.
+- Menu, overflow, `SearchView`, and collapsing-toolbar behavior are not validated by this settings
+  pilot. Later retained XML menu/search screens should likely follow the same XML toolbar overlay
+  direction, but require a dedicated menu/SearchView audit and pilot before applying it.
 - Preserve existing Fragment hosting, XML nav graphs, ViewModel, adapters, analytics, strings, and
   product behavior.
 - Verify before/after screenshots in light and dark mode for legacy and design-system paths.

@@ -123,6 +123,15 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   label actions.
   Menus, overflow, loading, destructive states, badges, and mixed icon/text buttons remain future work until a
   migration needs them.
+- Retained XML/View screens that keep Activity toolbar ownership can use a scoped XML toolbar overlay
+  instead of a Compose toolbar island. PR7 applies this to `AppSettingsActivity` toolbar inflation:
+  `DesignSystemMode` selects legacy or DS toolbar styling, `setSupportActionBar(...)` and View
+  title/up/menu contracts remain untouched, and token primitives shared with Compose are promoted to
+  Android resources.
+- The settings toolbar pilot exercises menu-less toolbar chrome only. Menu, overflow, `SearchView`,
+  and collapsing toolbar styling need a later retained XML menu/search pilot. The expected direction
+  for those screens is likely the same XML toolbar overlay, but only after the action-view styling
+  contract is audited and proven.
 - Fragment-hosted Compose layout migration means replacing XML/View layout content with Compose while keeping Fragments, XML nav graphs, SafeArgs, ViewModels, navigation, and Store app event ownership.
 - Compose layout migration is optional per screen, not required for all screens.
 - Some screens require substantial work and should stay XML/View while receiving targeted token/style updates when needed.

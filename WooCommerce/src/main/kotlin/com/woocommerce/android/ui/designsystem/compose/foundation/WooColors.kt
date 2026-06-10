@@ -125,12 +125,27 @@ internal val LocalWooColors = staticCompositionLocalOf<WooColors> {
     error("WooTheme.colors is not available. Wrap content in WooDesignSystemTheme or WooThemeWithBackground.")
 }
 
-internal fun wooColors(useDarkTheme: Boolean): WooColors =
-    if (useDarkTheme) {
+@Composable
+internal fun wooColors(useDarkTheme: Boolean): WooColors {
+    val colors = if (useDarkTheme) {
         DarkWooColors
     } else {
         LightWooColors
     }
+
+    return colors.copy(
+        primary = colorResource(R.color.design_system_primary),
+        background = colors.background.copy(
+            section = colorResource(R.color.design_system_background_section),
+        ),
+        surface = colors.surface.copy(
+            default = colorResource(R.color.design_system_surface_default),
+            onDefault = colorResource(R.color.design_system_surface_on_default),
+            onLowest = colorResource(R.color.design_system_surface_on_lowest),
+        ),
+        outlineVariant = colorResource(R.color.design_system_outline_variant),
+    )
+}
 
 // Resource-backed bridge for rendering DS components under the legacy theme root.
 @Composable

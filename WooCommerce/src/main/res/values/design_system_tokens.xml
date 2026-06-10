@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="design_system_primary">#873EFF</color>
+    <color name="design_system_background_section">#F2F2F8</color>
+    <color name="design_system_surface_default">#FFFFFF</color>
+    <color name="design_system_surface_on_default">#1E1E1E</color>
+    <color name="design_system_surface_on_lowest">#B2B7C0</color>
+    <color name="design_system_outline_variant">#D2D2D8</color>
+
+    <dimen name="design_system_radius_large">12dp</dimen>
+    <dimen name="design_system_stroke_extra_thin">0.5dp</dimen>
+    <dimen name="design_system_toolbar_button_size">48dp</dimen>
+    <dimen name="design_system_toolbar_divider_height">1dp</dimen>
+</resources>

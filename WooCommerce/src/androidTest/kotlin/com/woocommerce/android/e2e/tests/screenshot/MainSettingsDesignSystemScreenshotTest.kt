@@ -84,7 +84,7 @@ class MainSettingsDesignSystemScreenshotTest : TestBase(failOnUnmatchedWireMockR
             .thenTakeScreenshot<SettingsScreen>(lowerScreenshotName)
         saveScreenshot(lowerScreenshotName)
 
-        val betaFeaturesScreenshotName = "beta-features-non-opted-xml-$modeName-$theme"
+        val betaFeaturesScreenshotName = "beta-features-settings-toolbar-$modeName-$theme"
         settingsScreen
             .openBetaFeatures()
             .thenTakeScreenshot<BetaFeaturesScreen>(betaFeaturesScreenshotName)
@@ -114,8 +114,15 @@ class MainSettingsDesignSystemScreenshotTest : TestBase(failOnUnmatchedWireMockR
         screenshotsDirectory.mkdirs()
 
         val screenshot = File(screenshotsDirectory, "$name.png")
-        check(UiDevice.getInstance(instrumentation).takeScreenshot(screenshot)) {
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        check(uiDevice.takeScreenshot(screenshot)) {
             "Unable to capture screenshot: ${screenshot.absolutePath}"
         }
+        uiDevice.executeShellCommand("mkdir -p $DEVICE_SCREENSHOT_DIRECTORY")
+        uiDevice.executeShellCommand("cp ${screenshot.absolutePath} $DEVICE_SCREENSHOT_DIRECTORY/$name.png")
+    }
+
+    private companion object {
+        const val DEVICE_SCREENSHOT_DIRECTORY = "/sdcard/Download/pr7-main-settings-screenshots"
     }
 }

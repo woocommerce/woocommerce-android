@@ -9,11 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
 import androidx.annotation.AttrRes
-import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.designsystem.DesignSystemMode
@@ -27,6 +28,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import androidx.appcompat.R as AppCompatR
 import com.google.android.material.R as MaterialR
 
 @HiltAndroidTest
@@ -105,7 +107,7 @@ class DesignSystemXmlInflaterTest {
             val root = LayoutInflater.from(baseContext).inflate(R.layout.fragment_settings_beta, null, false)
 
             assertThat(root.backgroundColor()).isEqualTo(baseContext.colorSurface())
-            assertThat(root.backgroundColor()).isNotEqualTo(baseContext.designSystemXmlColorSurface())
+            assertThat(root.context).isSameAs(baseContext)
         }
     }
 
@@ -139,7 +141,8 @@ class DesignSystemXmlInflaterTest {
             val root = inflater.inflate(R.layout.fragment_settings_beta, null, false)
 
             assertThat(root.backgroundColor()).isEqualTo(baseContext.designSystemXmlColorSurface())
-            assertThat(baseContext.colorSurface()).isNotEqualTo(baseContext.designSystemXmlColorSurface())
+            assertThat(root.context).isNotSameAs(baseContext)
+            assertThat(baseContext.colorSurface()).isEqualTo(baseContext.designSystemXmlColorSurface())
         }
     }
 
@@ -160,31 +163,57 @@ class DesignSystemXmlInflaterTest {
     }
 
     @Test
-    fun givenMainSettingsLayoutWhenInflatedThenComposeToolbarIslandPrecedesXmlContent() {
+    fun givenMainSettingsLayoutWhenInflatedThenRetainedXmlContentIsRoot() {
         withThemedFragment { fragment ->
             val inflater = fragment.designSystemXmlLayoutInflater(
                 inflater = LayoutInflater.from(fragment.requireContext()),
                 mode = DesignSystemMode.DESIGN_SYSTEM,
             )
 
-            val root = inflater.inflate(R.layout.fragment_settings_main, null, false) as ViewGroup
-            val toolbarId = appContext.resources.getIdentifier(
-                "main_settings_top_app_bar",
-                "id",
-                appContext.packageName
-            )
-            val contentId = appContext.resources.getIdentifier(
-                "main_settings_scroll_content",
-                "id",
-                appContext.packageName
+            val root = inflater.inflate(R.layout.fragment_settings_main, null, false) as ScrollView
+
+            assertThat(root.getChildAt(0)).isInstanceOf(ViewGroup::class.java)
+            assertThat(root.context.colorSurface()).isEqualTo(fragment.requireContext().designSystemXmlColorSurface())
+        }
+    }
+
+    @Test
+    fun givenExplicitLegacyModeWhenInflatingToolbarThenLegacyToolbarValuesAreUsed() {
+        withThemedFragment { fragment ->
+            val baseContext = fragment.requireContext()
+            val baseInflater = LayoutInflater.from(baseContext)
+            val inflater = baseContext.designSystemToolbarLayoutInflater(
+                inflater = baseInflater,
+                mode = DesignSystemMode.LEGACY,
             )
 
-            assertThat(toolbarId).isNotEqualTo(0)
-            assertThat(contentId).isNotEqualTo(0)
-            assertThat(root.getChildAt(0)).isInstanceOf(ComposeView::class.java)
-            assertThat(root.getChildAt(1)).isInstanceOf(ScrollView::class.java)
-            assertThat(root.findViewById<ComposeView>(toolbarId)).isNotNull
-            assertThat(root.findViewById<ScrollView>(contentId)).isNotNull
+            val toolbar = inflater.inflate(R.layout.view_toolbar, null, false) as MaterialToolbar
+
+            assertThat(inflater).isSameAs(baseInflater)
+            assertThat(toolbar.backgroundColor()).isEqualTo(ContextCompat.getColor(baseContext, R.color.color_toolbar))
+        }
+    }
+
+    @Test
+    fun givenDefaultModeAndFlagEnabledWhenInflatingToolbarThenDesignSystemToolbarValuesAreUsed() {
+        AppPrefs.setFeatureFlagOverride(FeatureFlag.NEW_DESIGN_SYSTEM, true)
+
+        withThemedFragment { fragment ->
+            val baseContext = fragment.requireContext()
+            val baseInflater = LayoutInflater.from(baseContext)
+            val inflater = baseContext.designSystemToolbarLayoutInflater(baseInflater)
+
+            val toolbar = inflater.inflate(R.layout.view_toolbar, null, false) as MaterialToolbar
+
+            assertThat(inflater).isNotSameAs(baseInflater)
+            assertThat(toolbar.backgroundColor()).isEqualTo(
+                ContextCompat.getColor(baseContext, R.color.design_system_surface_default)
+            )
+            assertThat(toolbar.isTitleCentered).isTrue()
+            assertThat(toolbar.context.resolveResourceId(AppCompatR.attr.actionButtonStyle))
+                .isEqualTo(R.style.Widget_Woo_ToolbarActionButton_DesignSystem)
+            assertThat(toolbar.context.resolveResourceId(AppCompatR.attr.toolbarNavigationButtonStyle))
+                .isEqualTo(R.style.Widget_Woo_ToolbarNavigationButton_DesignSystem)
         }
     }
 
@@ -192,7 +221,13 @@ class DesignSystemXmlInflaterTest {
         block(ContextFragment(ContextThemeWrapper(appContext, R.style.Theme_Woo_DayNight)))
     }
 
-    private fun View.backgroundColor(): Int = (background as ColorDrawable).color
+    private fun View.backgroundColor(): Int =
+        when (val background = background) {
+            is ColorDrawable -> background.color
+            is MaterialShapeDrawable -> background.fillColor?.defaultColor
+                ?: error("MaterialShapeDrawable has no fill color")
+            else -> error("Unsupported background type: ${background::class.java.name}")
+        }
 
     private fun Context.colorSurface(): Int = resolveColor(MaterialR.attr.colorSurface)
 
@@ -208,6 +243,13 @@ class DesignSystemXmlInflaterTest {
         } else {
             typedValue.data
         }
+    }
+
+    private fun Context.resolveResourceId(@AttrRes attr: Int): Int {
+        val typedValue = TypedValue()
+        check(theme.resolveAttribute(attr, typedValue, true)) { "Attribute $attr was not resolved" }
+
+        return typedValue.resourceId
     }
 
     private class ContextFragment(

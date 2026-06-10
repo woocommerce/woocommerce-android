@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="design_system_background_section">#101517</color>
+    <color name="design_system_surface_default">#232529</color>
+    <color name="design_system_surface_on_default">#FFFFFF</color>
+    <color name="design_system_surface_on_lowest">#626068</color>
+    <color name="design_system_outline_variant">#5E5E63</color>
+</resources>

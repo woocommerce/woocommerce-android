@@ -9,10 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <include layout="@layout/view_toolbar" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="wrap_content" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
@@ -23,4 +20,3 @@
         app:navGraph="@navigation/nav_graph_settings" />
 
 </LinearLayout>
-

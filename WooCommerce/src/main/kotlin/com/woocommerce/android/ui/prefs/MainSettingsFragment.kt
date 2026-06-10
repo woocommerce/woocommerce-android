@@ -9,12 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
@@ -36,11 +32,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.configureComposeView
-import com.woocommerce.android.ui.designsystem.compose.component.WooTopAppBar
 import com.woocommerce.android.ui.designsystem.xml.designSystemXmlLayoutInflater
-import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -53,7 +45,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainSettingsFragment : BaseFragment(R.layout.fragment_settings_main), MainSettingsContract.View {
+class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSettingsContract.View {
     companion object {
         const val TAG = "main-settings"
     }
@@ -71,8 +63,6 @@ class MainSettingsFragment : BaseFragment(R.layout.fragment_settings_main), Main
 
     private lateinit var settingsListener: AppSettingsListener
 
-    override val activityAppBarStatus = AppBarStatus.Hidden
-
     override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater =
         designSystemXmlLayoutInflater(super.onGetLayoutInflater(savedInstanceState))
 
@@ -82,11 +72,6 @@ class MainSettingsFragment : BaseFragment(R.layout.fragment_settings_main), Main
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsMainBinding.inflate(inflater, container, false)
-        configureComposeView(binding.mainSettingsTopAppBar) {
-            MainSettingsTopAppBar(
-                onNavigationClick = ::navigateUpOrFinish,
-            )
-        }
 
         return binding.root
     }
@@ -343,24 +328,4 @@ class MainSettingsFragment : BaseFragment(R.layout.fragment_settings_main), Main
             binding.optionStoreName.isVisible ||
             binding.optionEnablePushNotifications.isVisible
     }
-
-    private fun navigateUpOrFinish() {
-        AnalyticsTracker.trackBackPressed(this)
-        if (!findNavController().navigateUp()) {
-            requireActivity().finish()
-        }
-    }
-}
-
-@Composable
-private fun MainSettingsTopAppBar(
-    onNavigationClick: () -> Unit,
-) {
-    WooTopAppBar(
-        title = stringResource(R.string.settings),
-        navigationIcon = ImageVector.vectorResource(R.drawable.ic_back_24dp),
-        navigationIconContentDescription = stringResource(R.string.back),
-        onNavigationClick = onNavigationClick,
-        windowInsets = WindowInsets(0),
-    )
 }

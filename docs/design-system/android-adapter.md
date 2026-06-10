@@ -149,6 +149,16 @@ Top app bar/chrome migration is not just a token change. Moving from the Activit
   divider/elevation, height, and insets.
 - Prefer component-level compatibility driven by the active foundation instead of screen-level
   duplicate implementations.
+- Retained XML/View screens that keep Activity-owned toolbar behavior can use a scoped XML toolbar
+  overlay at the Activity toolbar inflation boundary instead of replacing the toolbar with Compose.
+  Resolve that overlay through `DesignSystemMode`, keep `setSupportActionBar(...)`, title, up, and
+  menu contracts untouched, and read the same promoted Android token resources used by Compose.
+- The PR7 retained XML/View pilot applies this only to `AppSettingsActivity` toolbar inflation. When
+  the feature flag is on, all settings screens hosted by that Activity get the DS-skinned toolbar;
+  this sibling impact is accepted because `FeatureFlag.NEW_DESIGN_SYSTEM` remains the kill switch.
+- Menu, overflow, `SearchView`, and collapsing toolbar styling are not proven by the menu-less
+  settings pilot. Future menu/search retained XML screens should likely use the same XML toolbar
+  overlay direction, but only after a dedicated action-menu/SearchView audit and pilot.
 
 ## Token Strategy
 
@@ -265,3 +275,6 @@ Views, dialogs/menus/popups, direct-resource styles, drawables/selectors, and da
 When XML/View screens need design-system styling, promote only the required token primitive values to Android resources and update Compose to read those same resources.
 
 Do not globally apply design-system XML/View styles in i1 foundation work. Add targeted XML/View style usage only when a non-migrated XML/View screen needs design-system styling.
+
+For retained XML toolbar overlays, apply XML styles only at the known toolbar inflation boundary.
+Do not move those toolbar styles into the app theme or broad `Woo.*` style remapping.
