@@ -3,10 +3,10 @@
 source 'https://rubygems.org'
 
 gem 'danger-dangermattic', '~> 1.2'
-gem 'fastlane', '~> 2.235'
+gem 'fastlane', '~> 2.236'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 0.10'
 gem 'nokogiri', '>= 1.19.3' # GHSA-c4rq-3m3g-8wgx — drop floor once toolkit is on >= 14.4.1
-gem 'rubocop', '~> 1.86'
+gem 'rubocop', '~> 1.87'
 
 # Security: https://github.com/lostisland/faraday/pull/1665
 # Faraday 2.0 is not compatible with Fastlane
