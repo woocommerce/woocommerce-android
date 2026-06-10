@@ -343,6 +343,58 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
+    fun `when continue with basic sync is clicked, then tracks LocalCatalogBlockedFellBackToRemote`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(
+                WooPosPrepopulatingDataStatus.Failed(
+                    "Download failed with code: 403",
+                    isServerPermissionsError = true
+                )
+            )
+        )
+        val sut = createSut()
+        whenever(productsDataSource.fallBackToRemoteDueToCatalogBlock()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Completed)
+        )
+        whenever(productsDataSource.getCurrentSyncStrategy())
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.REMOTE)
+        whenever(productsDataSource.didFallBackDueToCatalogBlock()).thenReturn(true)
+        whenever(getWooCoreVersion()).thenReturn("11.2.0")
+
+        // WHEN
+        sut.onContinueWithBasicSyncClicked()
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.LocalCatalogBlockedFellBackToRemote("11.2.0")
+        )
+    }
+
+    @Test
+    fun `given remote also fails, when continue with basic sync is clicked, then state is SyncFailed`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(
+                WooPosPrepopulatingDataStatus.Failed(
+                    "Download failed with code: 403",
+                    isServerPermissionsError = true
+                )
+            )
+        )
+        val sut = createSut()
+        whenever(productsDataSource.fallBackToRemoteDueToCatalogBlock()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Failed("Network error"))
+        )
+
+        // WHEN
+        sut.onContinueWithBasicSyncClicked()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.SyncFailed("Network error"))
+    }
+
+    @Test
     fun `given sync fell back due to catalog block, when loaded, then tracks LocalCatalogBlockedFellBackToRemote`() =
         runTest {
             // GIVEN
