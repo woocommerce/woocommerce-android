@@ -14,6 +14,8 @@ object AppUrls {
     const val AUTOMATTIC_HIRING = "https://automattic.com/work-with-us"
     const val AUTOMATTIC_AI_GUIDELINES = "https://automattic.com/ai-guidelines/"
 
+    const val ANALYTICS_SCHEDULED_IMPORT_DOCS = "https://woocommerce.com/document/woocommerce-analytics/#section-24"
+
     const val WOOCOMMERCE_UPGRADE = "https://woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
     const val WOOCOMMERCE_WEB_OPTIONS = "https://woocommerce.com/tracking-and-opt-outs/"
