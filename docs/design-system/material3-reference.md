@@ -5,7 +5,7 @@ defaults and Compose semantics. It is for the Store Management App design-system
 out of scope.
 
 Use this as a semantic baseline, not as a public API mandate. The i1 adapter still owns stable
-`WooTheme` and component APIs under `com.woocommerce.android.ui.compose.designsystem`.
+`WooTheme` and component APIs under `com.woocommerce.android.ui.designsystem.compose`.
 
 Store design-system APIs should expose source-backed authoring roles through `WooTheme`.
 `MaterialTheme` is still populated from source values so Material 3 components, defaults, and

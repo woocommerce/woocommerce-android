@@ -4,10 +4,11 @@ This playbook is for AI-assisted Store Management App screen migrations.
 
 Migration is optional per screen. Do not assume every XML/View screen should be migrated to Compose.
 
-There are two supported adoption outcomes:
+There are three supported adoption outcomes:
 
 - XML/View layout to Fragment-hosted Compose layout migration.
 - Existing Compose screen adopting the design-system theme, tokens, and components.
+- Retained XML/View screen adopting a targeted design-system bridge.
 
 ## Candidate Assessment
 
@@ -34,7 +35,8 @@ High-risk screens require explicit confirmation before editing. High-risk signal
 - Many navigation branches or multiple child fragments.
 - No reliable preview or screenshot baseline.
 
-If the screen is high-risk, stop and ask whether it should be migrated, partially updated with View/XML styles, or deferred.
+If the screen is high-risk, stop and ask whether it should be migrated, updated through the XML/View
+design-system bridge, partially updated with narrow Compose islands, or deferred.
 
 Agents do not decide to migrate heavy screens on their own. Agents should assess the screen, explain the risk, recommend an option, and ask the user before editing when substantial migration work is likely.
 
@@ -76,6 +78,77 @@ It does not mean:
 - Migrating unrelated legacy components.
 - Changing product copy or behavior without an explicit product decision.
 
+## XML/View Design-System Bridge Boundary
+
+Some high-traffic screens are too risky for a full Compose migration but still need visual alignment
+with the design-system rollout. Product lists, order lists, editing flows, adapter-heavy screens, and
+screens with custom Views may fall into this category.
+
+XML/View bridge adoption means:
+
+- Keep the existing Fragment, XML nav graph, ViewModel, adapters, custom Views, analytics, strings,
+  and product behavior.
+- Keep the screen primarily XML/View.
+- Apply a screen-level theme-overlay bridge only at an opted-in screen root.
+- Prefer an `onGetLayoutInflater(...)` helper for Fragment roots that already use
+  `BaseFragment(R.layout...)`; per-layout inflate helpers are secondary conveniences.
+- Use the shared design-system rollout mode rather than a Compose-only or XML-only selector.
+- Use Material/theme attrs first for broad foundation roles such as surface, on-surface, primary,
+  error, shape, and text appearances.
+- Add custom Woo design-system attrs or promoted Android resources only for semantic gaps proven by
+  the target screen.
+- Convert only the visible direct-resource gaps needed by the target screen.
+- Verify before/after screenshots in light and dark mode.
+
+It does not mean:
+
+- Global app theme replacement.
+- Global remapping of all existing XML `Woo.*`, `TextAppearance.Woo.*`, color, typography, or widget
+  styles.
+- A parallel XML design system that duplicates Compose-owned token primitive values.
+- A product list, order list, or editing-flow redesign.
+- Silent restyling of unaudited XML/View screens.
+
+The bridge is useful but limited. Theme overlays solve attribute resolution; they do not affect
+styles, layouts, drawables, selectors, or custom views that hardcode `@color`, `@dimen`, concrete
+`TextAppearance`, or programmatic resource lookups. Each retained XML/View screen needs a short audit
+before opting in.
+
+Use a Green/Yellow/Red bridge assessment:
+
+- Green: root and rows inherit context cleanly; visible styles are mostly attr-driven. Use the
+  overlay helper and minimal style updates.
+- Yellow: context mostly propagates, but a few direct resources, drawables, or custom views block
+  parity. Use the overlay plus targeted attr/resource conversion.
+- Red: many stale inflaters, programmatic colors, custom views, direct drawables, fragile layout
+  behavior, or broad row rewrites are required. Avoid a wholesale bridge; defer, migrate later, or
+  use a narrow Compose island for a clean component boundary.
+
+Before bridge adoption, audit:
+
+- Whether the Fragment root can be inflated through a cloned inflater with a theme overlay.
+- Whether adapters inflate rows from `parent.context`.
+- Whether custom views inflate children from their constructor context.
+- Whether dialogs, popup windows, menus, toolbar action views, or child fragments inflate with an
+  unrelated context.
+- Which visible styles use direct `@color`, `@dimen`, concrete drawables, or programmatic resource
+  lookups.
+- Whether dark mode has coherent values for every new attr or promoted resource.
+
+Rows should inherit the overlaid parent context naturally through `LayoutInflater.from(parent.context)`.
+Do not pass wrapped contexts through adapters manually unless a screen-specific audit shows no safer
+option.
+
+Use narrow Compose islands only when an isolated XML subcomponent would need more styling work than a
+clean replacement, such as a banner, empty state, chip group, status block, or CTA section.
+
+The first retained XML/View bridge pilot should be chosen during that PR's planning. Pick a screen
+that is complex enough to exercise real bridge mechanics but low traffic enough to keep blast radius
+small. Prefer at least two representative signals: XML Fragment root, adapter row inflation, custom
+`Woo.*` XML styles, toolbar/chrome, empty/loading state, light/dark sensitivity, or a small
+direct-resource gap. Avoid product/order/payment editing, scanners, WebView, heavy selection flows,
+and broad product or order list redesign for the first bridge pilot.
+
 ## Rollout Boundary
 
 Migrated screens use one design-system component tree. Do not create permanent `LegacyScreen` and
@@ -86,11 +159,15 @@ Migrated screens use one design-system component tree. Do not create permanent `
   design-system foundation.
 - Flag on renders the same screen under `WooDesignSystemThemeWithBackground` with the real
   design-system foundation.
-- Explicit `ComposeTheme.LEGACY` forces the legacy-compatible foundation.
-- Explicit `ComposeTheme.DESIGN_SYSTEM` forces the real design-system foundation.
+- Explicit `DesignSystemMode.LEGACY` forces the legacy-compatible foundation.
+- Explicit `DesignSystemMode.DESIGN_SYSTEM` forces the real design-system foundation.
 - Screen code should not branch between legacy and design-system UI trees.
 - Temporary full-screen fallbacks are allowed only for genuinely high-risk migrations and must include
   an expiry/removal plan.
+
+`DesignSystemMode` is the shared rollout selector for Compose roots and XML/View bridge roots. If a
+branch still uses the earlier Compose-only `ComposeTheme` name, rename and move it when XML/View bridge
+support is added instead of adding a second XML selector.
 
 Design-system components must render under both foundations. If a component only works under
 `WooDesignSystemThemeWithBackground`, fix the foundation/component contract instead of adding a
@@ -101,25 +178,47 @@ per-screen fallback.
 Top app bar/chrome migration is a bridge-component concern. Moving from the Activity toolbar to
 Compose `WooTopAppBar` changes ownership and structure, not only colors.
 
+- A retained XML/View screen-level bridge affects only the opted-in content subtree. Activity-owned
+  toolbar/chrome inflated outside that subtree is out of scope for the bridge and should be handled
+  by a separate scoped chrome decision.
 - Prefer component-level compatibility driven by the active foundation.
+- For a simple retained XML/View screen with no menu, search, or collapsing behavior, a per-screen
+  Compose `WooTopAppBar` island above the retained XML body is acceptable. Hide the Activity toolbar
+  with `AppBarStatus.Hidden`, keep the XML content bridged at the inflater boundary, and configure the
+  top bar through the same default design-system foundation path used by `composeView`.
 - Under the legacy-compatible foundation, `WooTopAppBar` should stay close to the existing Activity
   toolbar for title alignment, title typography, nav icon treatment, action colors,
   divider/elevation, height, and insets.
 - Under the design-system foundation, `WooTopAppBar` should render the real design-system app bar.
+- Prefer a Compose `WooTopAppBar` island over XML toolbar reimplementation unless a later decision
+  explicitly chooses an XML/View chrome adapter.
+- Do not treat simple-toolbar adoption as proof for menu, search, or collapsing toolbar screens.
+  Those need a dedicated audit or pilot because View menus and `SearchView` behavior must be mapped to
+  `WooTopAppBarAction` and Compose search affordances, and may expose component API gaps. The likely
+  direction for those pilots is still per-screen Compose chrome ownership: hide the Activity toolbar
+  for that screen and render `WooTopAppBar` or related Compose chrome in the screen. Do not reopen
+  Activity-owned toolbar bridging as the default just because the screen has additional toolbar-owned
+  affordances.
 - Do not add a duplicate screen implementation just to preserve legacy toolbar chrome.
 
 ## Workflow
 
 1. Capture the baseline: current layout, Fragment/dialog host, navigation, analytics, strings, images, and accessibility.
 2. Decide whether the screen is a good candidate and which adoption outcome applies.
-3. Keep the existing host. For XML/View migration, replace the layout with `composeView`; for existing Compose adoption, keep the current Compose root.
-4. Keep one screen implementation. Let the default `composeView` theme follow the feature flag unless
-   the task explicitly requires forcing `ComposeTheme.LEGACY` or `ComposeTheme.DESIGN_SYSTEM`. If a
-   pilot opts into the design-system theme, do it only at the Compose root.
+3. Keep the existing host. For XML/View migration, replace the layout with `composeView`; for existing
+   Compose adoption, keep the current Compose root; for XML/View bridge adoption, keep the XML root
+   and inflate it through the approved screen-level theme-overlay helper.
+4. Keep one screen implementation. Let the default `composeView` mode follow the feature flag unless
+   the task explicitly requires forcing `DesignSystemMode.LEGACY` or
+   `DesignSystemMode.DESIGN_SYSTEM`. If a pilot opts into the design-system mode, do it only at the
+   approved root boundary: the Compose root for Compose screens, or the inflater boundary for retained
+   XML/View bridge screens.
 5. If the adopted screen replaces the activity toolbar, set the Fragment's `activityAppBarStatus` to `AppBarStatus.Hidden`,
-   render `WooTopAppBar` inside the screen `Scaffold`, and pass navigation callbacks from the Fragment. Use `WindowInsets(0)`
-   for the Compose top bar unless the screen is intentionally edge-to-edge, so a Fragment-hosted screen does not add a second
-   status-bar inset.
+   render `WooTopAppBar` inside the screen `Scaffold` or a narrow ComposeView island above retained XML content, and pass
+   navigation callbacks from the Fragment. Use `WindowInsets(0)` for the Compose top bar unless the screen is intentionally
+   edge-to-edge, so a Fragment-hosted screen does not add a second status-bar inset. Defer menu/search/collapsing toolbar
+   screens to a dedicated audit or pilot rather than fitting them into a simple top-bar island; their likely direction is
+   the same per-screen Compose chrome ownership with additional menu/search/collapsing behavior mapping.
 6. Treat source examples as component and token guidance, not as a mandate to copy an iOS table layout onto Android. Preserve the
    screen's existing surface/background relationship unless design explicitly asks for a stronger grouping treatment. Rows that
    use surface-keyed content colors should sit on `WooTheme.colors.surface.default`; avoid adding new cards or dividers unless
@@ -142,8 +241,12 @@ Compose `WooTopAppBar` changes ownership and structure, not only colors.
    `LightWooColors` or other hardcoded light defaults.
 14. Verify existing non-migrated screens using `WooThemeWithBackground` do not visually regress.
 15. Verify `composeView` behavior: default/no explicit opt-in follows the feature flag, explicit
-   `ComposeTheme.DESIGN_SYSTEM` forces the real design-system foundation, and explicit
-   `ComposeTheme.LEGACY` uses the legacy-compatible foundation.
+   `DesignSystemMode.DESIGN_SYSTEM` forces the real design-system foundation, and explicit
+   `DesignSystemMode.LEGACY` uses the legacy-compatible foundation.
+16. For XML/View bridge adoption, verify the bridge behavior: default/no explicit opt-in follows
+   `FeatureFlag.NEW_DESIGN_SYSTEM`, the legacy path preserves existing View styling, the design-system
+   path is scoped to the opted-in screen root, RecyclerView rows inherit through `parent.context`,
+   and sibling screens are not restyled.
 
 ## Android Migration Skill
 
@@ -164,6 +267,8 @@ For each migrated or adopted screen, an agent must report a short candidate asse
 - What design-system components and `WooTheme` foundations were used.
 - Whether the screen uses a single design-system component tree in both foundation states.
 - What stayed in XML/View or legacy Compose and why.
+- For XML/View bridge adoption, the Green/Yellow/Red bridge assessment and the inflation/style audit
+  summary.
 - Preview coverage added, including both foundation states when applicable.
 - Verification performed.
 - Accessibility checks performed.

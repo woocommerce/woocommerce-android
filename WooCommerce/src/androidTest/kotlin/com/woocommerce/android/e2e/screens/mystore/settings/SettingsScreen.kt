@@ -14,8 +14,14 @@ class SettingsScreen : Screen {
     constructor() : super(R.id.option_help_and_support)
 
     fun openBetaFeatures(): BetaFeaturesScreen {
+        scrollTo(R.id.option_beta_features)
         clickOn(R.id.option_beta_features)
         return BetaFeaturesScreen()
+    }
+
+    fun scrollToLowerContent(): SettingsScreen {
+        scrollTo(R.id.btn_option_logout)
+        return this
     }
 
     fun goBackToMoreMenuScreen(): MoreMenuScreen {

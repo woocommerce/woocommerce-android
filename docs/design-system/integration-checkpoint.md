@@ -46,7 +46,8 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Code should publicly expose only production-ready tokens/components.
 - In-progress i1 areas can be documented, tracked, or preview-only until stable.
 - Preview-only components should not be exposed as reusable product-screen APIs.
-- Preview-only implementations should stay private/internal to catalog or preview files under `designsystem.preview`.
+- Preview-only implementations should stay private/internal to catalog or preview files under
+  `designsystem.compose.preview`.
 - New design-system components are Compose-first and Material 3-only.
 - Existing Material 2 usage can remain until touched.
 - Use Material 3 wrappers as the default implementation strategy; build custom components only when Material 3 is too different.
@@ -57,8 +58,12 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Do not add more thin Material 3 wrappers beyond the initial production subset unless a later design-system decision explicitly expands the catalog.
 - Component names use the `Woo` prefix inside the design-system package.
 - Do not use `WooDs*` or `WC*` for new design-system components.
-- Package root: `com.woocommerce.android.ui.compose.designsystem`.
-- Suggested subpackages: `foundation`, `component`, and `preview`.
+- Package root: `com.woocommerce.android.ui.designsystem`.
+- Suggested subpackages: `compose`, `compose.foundation`, `compose.component`, `compose.preview`,
+  and `xml`.
+- Earlier Compose-only work started under `com.woocommerce.android.ui.compose.designsystem`; when the
+  XML/View bridge PR lands, move those APIs mechanically into `ui.designsystem.compose` before adding
+  XML bridge APIs.
 - Use a separate opt-in `WooDesignSystemTheme`, Material 3-only.
 - `WooDesignSystemTheme` is the migration-era wrapper name while the legacy
   `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper exists. Do not introduce `WooNewTheme`.
@@ -71,8 +76,11 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   legacy app resources.
 - `WooDesignSystemThemeWithBackground` uses the real design-system foundation.
 - `FeatureFlag.NEW_DESIGN_SYSTEM` controls the default `composeView` root wrapper. Explicit
-  `ComposeTheme.LEGACY` forces the legacy-compatible foundation, and explicit
-  `ComposeTheme.DESIGN_SYSTEM` forces the real design-system foundation.
+  `DesignSystemMode.LEGACY` forces the legacy-compatible foundation, and explicit
+  `DesignSystemMode.DESIGN_SYSTEM` forces the real design-system foundation.
+- The rollout selector should be shared by Compose and XML/View bridge code. If implementation still
+  uses the Compose-only name `ComposeTheme`, rename and move it to `DesignSystemMode` when the XML/View
+  bridge PR lands. Do not introduce a separate XML-specific mode enum.
 - The new `WooTheme` accessor lives under the design-system package. This intentionally accepts temporary
   simple-name overlap with the legacy `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper until the
   legacy wrapper is removed; new design-system code should not import the legacy wrapper.
@@ -88,7 +96,7 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   component-specific contrast is still required before using them for text, essential icons, or
   required state communication.
 - PR 2 foundation scope includes color, typography, spacing, radius, elevation, icon sizing, and interaction/state tokens.
-- Add an explicit theme selector to `composeView`; default/no explicit selection follows
+- Add an explicit mode selector to `composeView`; default/no explicit selection follows
   `FeatureFlag.NEW_DESIGN_SYSTEM`.
 - New design-system foundations, components, preview catalog entries, and pilot updates should use `androidx.compose.ui.tooling.preview.PreviewLightDark` for light/dark previews.
 - Design-system component previews should wrap content in `WooDesignSystemTheme`, not
@@ -118,14 +126,32 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Fragment-hosted Compose layout migration means replacing XML/View layout content with Compose while keeping Fragments, XML nav graphs, SafeArgs, ViewModels, navigation, and Store app event ownership.
 - Compose layout migration is optional per screen, not required for all screens.
 - Some screens require substantial work and should stay XML/View while receiving targeted token/style updates when needed.
+- Important retained XML/View screens may adopt a screen-level theme-overlay bridge instead of full
+  Compose migration when they need visual alignment but migration risk is too high.
+- XML bridge adoption is opt-in at the screen root, not a global app theme replacement or broad
+  `Woo.*` XML style remap.
+- The primary XML bridge helper should support `onGetLayoutInflater(...)` so existing
+  `BaseFragment(R.layout...)` screens can keep root inflation and binding structure.
+- XML bridge work should use Material/theme attrs first and add custom Woo attrs or promoted Android
+  resources only for semantic gaps proven by the target screen.
+- RecyclerView rows should inherit the overlaid context through `LayoutInflater.from(parent.context)`;
+  do not pass wrapped contexts through adapters manually unless a screen-specific audit proves it is
+  necessary.
 - Agents should assess and recommend, but must ask the user before migrating heavy screens.
 - Agents may proceed on assigned screens that pass the candidate checklist; if high-risk signals appear during exploration, they stop and ask before editing.
 - Agents must include a short candidate assessment in migration or adoption output.
 - Pilot docs should record post-implementation findings only when there is non-trivial learning to preserve.
 - First existing-Compose pilot: update `PrivacySettingsFragment` to consume the opt-in design-system layer without changing its hosting model or product behavior.
 - First XML/View pilot: migrate `FeedbackCompletedFragment` from XML/View layout to Fragment-hosted Compose and consume the new opt-in design-system layer.
-- The pilots should become the AI-agent templates for the two likely outcomes.
-- Pilot order: run `PrivacySettingsFragment` first, then `FeedbackCompletedFragment`, after foundations/components/previews and the `composeView` theme selector are available.
+- Third pilot: retain one XML/View screen and adopt a targeted screen-level design-system bridge
+  without full Compose migration.
+- The retained XML/View pilot target should be chosen during that PR's planning. It should be complex
+  enough to test real bridge mechanics but low traffic enough to avoid putting a major commerce
+  workflow at risk.
+- The pilots should become the AI-agent templates for the three likely outcomes.
+- Pilot order: run `PrivacySettingsFragment` first, then `FeedbackCompletedFragment`, after
+  foundations/components/previews and the `composeView` mode selector are available.
+- Then run the retained XML/View bridge pilot before the final AI migration playbook update.
 
 ## Considered Approaches
 
@@ -158,6 +184,23 @@ High-risk screens require explicit confirmation before editing. High-risk signal
 - Product, order, payment editing, or fulfillment flows.
 - Many navigation branches or multiple child fragments.
 - No reliable preview or screenshot baseline.
+
+## Retained XML/View Bridge Pilot Criteria
+
+The retained XML/View bridge pilot should not be a major product, order, or payment workflow. It
+should still exercise enough View complexity to validate the bridge:
+
+- Low traffic or low blast radius.
+- XML Fragment root that can be inflated through a cloned themed inflater.
+- At least two representative bridge signals, such as adapter row inflation, custom `Woo.*` XML
+  styles, toolbar/chrome, empty/loading state, light/dark sensitivity, or a small direct-resource gap.
+- Existing behavior, navigation, analytics, strings, and adapters can remain intact.
+- Before/after visual evidence is feasible in light and dark mode.
+
+Avoid pilot targets that require WebView, scanners/camera/media pickers, heavy selection
+infrastructure, broad adapter rewrites, or product/order list redesign. Product list and order list
+remain important future proving grounds, but they should not be the first retained XML/View bridge
+pilot.
 
 ## AI-Agent Documentation Needed
 

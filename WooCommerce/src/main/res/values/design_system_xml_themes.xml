@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ThemeOverlay.Woo.DesignSystem.Xml" parent="ThemeOverlay.MaterialComponents">
+        <item name="colorPrimary">@color/woo_purple_40</item>
+        <item name="colorPrimaryVariant">@color/woo_purple_60</item>
+        <item name="colorSecondary">@color/woo_purple_5</item>
+        <item name="colorSecondaryVariant">@color/woo_purple_10</item>
+        <item name="colorOnPrimary">@color/woo_white</item>
+        <item name="colorOnSecondary">@color/woo_purple_40</item>
+
+        <item name="android:colorBackground">@color/woo_gray_6</item>
+        <item name="colorSurface">@color/woo_gray_0</item>
+        <item name="colorOnSurface">@color/woo_black</item>
+        <item name="colorError">@color/color_error</item>
+        <item name="colorOnError">@color/color_on_error</item>
+        <item name="colorAccent">@color/woo_purple_40</item>
+        <item name="colorControlNormal">@color/woo_purple_40</item>
+        <item name="android:colorControlActivated">@color/woo_purple_40</item>
+
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Woo.Subtitle1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Woo.Body2</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Woo.Caption</item>
+
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Theme.Woo.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Theme.Woo.LargeComponent</item>
+
+        <item name="switchStyle">@style/Woo.Switch</item>
+        <item name="android:listDivider">@drawable/list_divider</item>
+        <item name="settingsToggleOptionStyle">@style/Widget.Woo.Settings.OptionToggle</item>
+        <item name="settingsOptionValueStyle">@style/Widget.Woo.Settings.OptionValue</item>
+        <item name="settingsCategoryHeaderStyle">@style/Widget.Woo.Settings.CategoryHeader</item>
+        <item name="settingsButtonStyle">@style/Widget.Woo.Settings.Button</item>
+    </style>
+</resources>

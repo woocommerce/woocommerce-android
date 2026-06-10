@@ -15,17 +15,24 @@ This document defines how the Store Management App adopts the Woo Mobile Design 
 
 ## Package
 
-New Compose APIs live under:
+Store design-system APIs should live under:
 
 ```text
-com.woocommerce.android.ui.compose.designsystem
+com.woocommerce.android.ui.designsystem
 ```
 
 Suggested subpackages:
 
-- `foundation`: theme, color, typography, spacing, shape, elevation, and token helpers.
-- `component`: production-ready Woo Mobile Design System components.
-- `preview`: preview wrappers, sample data, and catalog-only helpers.
+- `compose`: Compose theme wrappers and shared Compose-facing APIs.
+- `compose.foundation`: theme, color, typography, spacing, shape, elevation, and token helpers.
+- `compose.component`: production-ready Woo Mobile Design System Compose components.
+- `compose.preview`: preview wrappers, sample data, and catalog-only helpers.
+- `xml`: XML/View bridge helpers and XML-specific theme-overlay APIs.
+
+Earlier Compose-only PRs started under `com.woocommerce.android.ui.compose.designsystem`. When
+XML/View bridge support is added, move those APIs mechanically into the shared
+`ui.designsystem.compose` package before adding XML bridge APIs. Keep that move behavior-neutral and
+reviewable separately from the retained XML/View pilot.
 
 ## Public API Rules
 
@@ -39,29 +46,34 @@ Suggested subpackages:
   wrapper is removed.
 - Use `WooTheme` as the design-system foundation accessor object for theme-scoped values such as
   colors, typography, spacing, and padding.
-- The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
+- The new `WooTheme` accessor lives under `com.woocommerce.android.ui.designsystem.compose`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
 - Do not expose raw Figma variable names as public Android API.
 - Public APIs should expose only production-ready tokens and components.
 - In-progress i1 areas may be documented, tracked, or preview-only until signed off.
 - Preview-only components should not be exposed as reusable product-screen APIs.
-- Keep preview-only implementations private/internal to catalog or preview files under `designsystem.preview`.
+- Keep preview-only implementations private/internal to catalog or preview files under
+  `designsystem.compose.preview`.
 
 ## Theme Root Strategy
 
 Both Store Compose theme roots must satisfy the design-system foundation contract.
 
-- `ComposeTheme.LEGACY` uses `WooThemeWithBackground`.
-- `ComposeTheme.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground`.
+- `DesignSystemMode.LEGACY` uses `WooThemeWithBackground`.
+- `DesignSystemMode.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground`.
 - Default/no explicit `composeView` theme follows `FeatureFlag.NEW_DESIGN_SYSTEM`.
-- Explicit `ComposeTheme.DESIGN_SYSTEM` still forces the real design-system foundation.
-- Explicit `ComposeTheme.LEGACY` still forces the legacy-compatible foundation.
+- Explicit `DesignSystemMode.DESIGN_SYSTEM` still forces the real design-system foundation.
+- Explicit `DesignSystemMode.LEGACY` still forces the legacy-compatible foundation.
 - Do not replace `WooThemeWithBackground` with `WooDesignSystemThemeWithBackground` while the flag is
   off.
 - Existing Material 2 usage can remain until touched.
 - Do not globally remap existing `Woo*`, `WC*`, XML styles, colors, typography, or app theme
   resources for i1.
+
+The rollout selector should be shared by Compose and XML/View bridge code. If existing implementation
+uses the Compose-only name `ComposeTheme`, rename and move it to `DesignSystemMode` when the XML/View
+bridge PR lands. Do not introduce a second XML-specific mode enum.
 
 `WooDesignSystemThemeWithBackground` provides the real design-system foundation. `WooThemeWithBackground`
 continues to provide the legacy app look and must also provide design-system composition locals using
@@ -76,11 +88,11 @@ composeView {
 ```
 
 Default hosting lets the feature flag choose the root wrapper. Ordinary migrated screens should use
-that default. Use explicit theme selection only when a screen, preview, or test intentionally needs to
+that default. Use explicit mode selection only when a screen, preview, or test intentionally needs to
 force a foundation:
 
 ```kotlin
-composeView(theme = ComposeTheme.DESIGN_SYSTEM) {
+composeView(mode = DesignSystemMode.DESIGN_SYSTEM) {
     FeedbackCompletedScreen(...)
 }
 ```
@@ -190,26 +202,65 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 
 ## Pilot Strategy
 
-Use two initial pilots so the adapter validates both likely adoption outcomes:
+Use three pilots so the adapter validates the likely adoption outcomes:
 
 - `PrivacySettingsFragment`: existing Compose screen adopting the design-system theme, tokens, and components.
 - `FeedbackCompletedFragment`: XML/View layout to Fragment-hosted Compose layout migration.
+- A retained XML/View screen: targeted screen-level XML bridge without full Compose migration.
 
-Run `PrivacySettingsFragment` first, then `FeedbackCompletedFragment`, after foundations/components/previews and the `composeView` theme selector are available. Existing Compose adoption is the lower-risk canary for the design-system APIs; the XML/View pilot then validates the larger migration workflow.
+Run `PrivacySettingsFragment` first, then `FeedbackCompletedFragment`, after
+foundations/components/previews and the `composeView` mode selector are available. Existing Compose
+adoption is the lower-risk canary for the design-system APIs; the XML/View-to-Compose pilot then
+validates the larger migration workflow.
 
-Both pilots must preserve existing product behavior, navigation, analytics, strings, and Store app architecture boundaries.
+After those two pilots, run one retained XML/View bridge pilot before the final AI migration playbook
+pass. Choose the exact screen during that PR's planning. The target should be complex enough to test
+real XML/View bridge mechanics but low traffic enough to avoid putting a major commerce workflow at
+risk. Prefer a screen with at least two of: XML Fragment root, adapter row inflation, custom `Woo.*`
+XML styles, toolbar/chrome, empty/loading state, light/dark sensitivity, or a small direct-resource
+gap. Avoid product/order/payment editing, scanners, WebView, heavy selection flows, and broad product
+or order list redesign.
+
+All pilots must preserve existing product behavior, navigation, analytics, strings, and Store app architecture boundaries.
 
 ## Delivery Sequence
 
 Follow `docs/design-system/implementation-plan.md`.
 
-The intended sequence is docs first, then foundations/theme, then components/previews, then `composeView` theme selection, then `PrivacySettingsFragment`, then `FeedbackCompletedFragment`, then playbook updates from the pilots.
+The intended sequence is docs first, then foundations/theme, then components/previews, then
+`composeView` mode selection, then `PrivacySettingsFragment`, then `FeedbackCompletedFragment`, then
+a retained XML/View bridge pilot, then final playbook updates from all three pilots.
 
 ## View/XML Compatibility
 
 Fragment-hosted Compose layout migration is preferred for new and substantially redesigned Store screens, but it is optional.
 
 Some screens should remain XML/View because migration would require substantial work. Those screens can still receive targeted token/style updates if doing so is low-risk and does not force a global theme replacement.
+
+High-traffic retained XML/View screens may adopt a screen-level design-system bridge instead of a
+full Compose migration. The bridge should be opt-in at the screen root, using a themed inflation
+context such as `ContextThemeWrapper` plus `LayoutInflater.cloneInContext(...)`, so the screen can
+resolve design-system-aware XML attrs without changing the Activity or app theme.
+
+The primary helper should support the existing Fragment layout-resource pattern by overriding
+`onGetLayoutInflater(...)` and returning a cloned inflater for the opted-in screen. Per-layout inflate
+helpers can exist as narrow conveniences, but they should not be the main integration model because
+many Store Fragments already let `BaseFragment(R.layout...)` own root inflation and bind in
+`onViewCreated(...)`.
+
+XML bridge opt-in should follow the same shared `DesignSystemMode` decision as Compose roots:
+default/no explicit mode follows `FeatureFlag.NEW_DESIGN_SYSTEM`, legacy mode preserves existing View
+styling, and design-system mode applies only to the opted-in screen root.
+
+Use Material/theme attrs first for generic foundation roles such as surface, on-surface, primary,
+error, shape, and text appearances. Add custom Woo design-system attrs or promoted Android resources
+only for semantic gaps that Material attrs cannot express, such as product/order status colors,
+notice/banner roles, skeleton/loading colors, chips/tags, or commerce-specific emphasis.
+
+Theme overlays solve attribute resolution, not full visual migration. They do not affect XML that
+hardcodes direct `@color`, `@dimen`, concrete drawables, selectors, or programmatic resource lookups.
+Before opting in a retained View screen, audit root inflation, RecyclerView row inflation, custom
+Views, dialogs/menus/popups, direct-resource styles, drawables/selectors, and dark-mode values.
 
 When XML/View screens need design-system styling, promote only the required token primitive values to Android resources and update Compose to read those same resources.
 

@@ -11,7 +11,7 @@ app-shell ownership, or complex data semantics.
 
 ## Production API Scope
 
-Before the two pilots begin, production-ready APIs should exist for the original baseline:
+Before the initial pilots begin, production-ready APIs should exist for the original baseline:
 
 - Top/navigation bar.
 - Page title/body/link text styles or wrappers.
@@ -79,18 +79,18 @@ Preview coverage is required for every component. Screenshot verification is req
 | Page Header | `WooPageHeader`; text primitives `WooPageTitle`, `WooBodyText`, `WooLinkedBodyText`, `WooLinkText` | Figma-backed custom page-header bar plus standalone text/link primitives | production_initial | Light/dark, title, optional right actions, divider, long title, large font | `WooPageHeader` maps to Figma Page Header page node `1168:11407` and component node `1168:11650`: a 64dp surface bar with left-aligned `headlineSmall.strong` title, 24dp horizontal inset, optional 40dp right action area, and bottom divider. Text wrappers remain production primitives for page content intros, but PR3 no longer exposes a separate title/body/link composition under the Page Header name. Accessibility contract: page-header title is a heading; links are underlined and use link annotations/listeners instead of color-only styling. |
 | Radio Button | `WooRadioButton` | Material 3 `RadioButton` wrapper | production_initial | Light/dark, selected, unselected, disabled | Public scope is the controlled radio primitive only. Radio rows/groups remain future work because label association and group semantics should be validated in a real form screen. Accessibility contract: caller owns selected state and label/group association. |
 | Search | `WooSearchField` | Material 3 `OutlinedTextField` wrapper | production_initial | Light/dark, query, placeholder, clear action, disabled clear state, focused/unfocused, large font, RTL | Public scope is a controlled search field only. Search layout, results, filters, and focus orchestration remain screen-owned. Accessibility contract: caller supplies placeholder/labels, clear action has a label, value remains caller-owned, and the clear action follows the field enabled state. |
-| Segment Control | Private catalog sample under `designsystem.preview` | Preview-only custom sample until design is signed off | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, selected state | Kept preview-only because the i1 source marks Segment Control in progress. A public API would get ahead of the signed-off selected, disabled, focus, and sizing model. |
-| Sheets | Private catalog sample under `designsystem.preview` | Preview-only visual sample | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, content sample | Kept preview-only because a production sheet API must define modal state, dismissal choreography, navigation/event ownership, pane/title semantics, and content insets. Those decisions need a real screen adoption target, not only the visual catalog. |
-| Tab Bar | Private catalog sample under `designsystem.preview` | Figma-backed custom bottom navigation preview-only sample | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, selected/unselected items | Kept preview-only because bottom Tab Bar is app-shell navigation. A public API before an app-shell migration would need back-stack ownership, selected destination semantics, labels, badges, and system inset behavior. Represents Figma Tab Bar page node `919:10678`, tab-bar `1392:40868`, active item `1388:40618`. |
+| Segment Control | Private catalog sample under `designsystem.compose.preview` | Preview-only custom sample until design is signed off | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, selected state | Kept preview-only because the i1 source marks Segment Control in progress. A public API would get ahead of the signed-off selected, disabled, focus, and sizing model. |
+| Sheets | Private catalog sample under `designsystem.compose.preview` | Preview-only visual sample | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, content sample | Kept preview-only because a production sheet API must define modal state, dismissal choreography, navigation/event ownership, pane/title semantics, and content insets. Those decisions need a real screen adoption target, not only the visual catalog. |
+| Tab Bar | Private catalog sample under `designsystem.compose.preview` | Figma-backed custom bottom navigation preview-only sample | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, selected/unselected items | Kept preview-only because bottom Tab Bar is app-shell navigation. A public API before an app-shell migration would need back-stack ownership, selected destination semantics, labels, badges, and system inset behavior. Represents Figma Tab Bar page node `919:10678`, tab-bar `1392:40868`, active item `1388:40618`. |
 | Tabs | `WooTabRow`, `WooTab` | Material 3 `PrimaryTabRow` and `Tab` wrappers | needs_android_mapping | Light/dark, selected/unselected, long labels, large font | This API covers Store-style text top tabs, but it is not visual parity for the Figma Tab Bar source. Figma Tab Bar page node `919:10678`, tab-bar `1392:40868`, and active tab item `1388:40618` describe a bottom/icon tab bar, which remains preview-only app-shell scope in PR3. Keep `WooTabRow` out of pilot adoption until a source-backed top-tabs design or explicit Store migration need is approved. Accessibility contract: caller owns selected index/value; selected state is semantic; labels remain visible with predictable overflow. |
-| Table | Private catalog sample under `designsystem.preview` | Preview-only custom sample | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, row density sample | Kept preview-only because a production table API needs data model, column sizing, scrolling rules, sorting/selection behavior, and table accessibility semantics. The current source only supports a static visual sample. |
+| Table | Private catalog sample under `designsystem.compose.preview` | Preview-only custom sample | preview_only | `WooDesignSystemComponentCatalogPreview` light/dark, row density sample | Kept preview-only because a production table API needs data model, column sizing, scrolling rules, sorting/selection behavior, and table accessibility semantics. The current source only supports a static visual sample. |
 | Progress Indicator | `WooLinearProgressIndicator`, `WooCircularProgressIndicator` | Thin Material 3 wrapper | production | Light/dark, indeterminate, determinate | Not listed as an i1 Figma component. Accessibility review result: Material progress semantics preserved; determinate progress uses Material 3 lambda overloads and coerces values into `0f..1f`. |
 
 ## Production Checklist
 
 Before a component is marked `production`:
 
-- It uses `Woo` naming inside `com.woocommerce.android.ui.compose.designsystem`.
+- It uses `Woo` naming inside `com.woocommerce.android.ui.designsystem.compose`.
 - It is wrapped by `WooDesignSystemTheme` in design-system previews.
 - It reads production foundation values through `WooTheme.*`, except where a Material 3 API requires `MaterialTheme`
   interop values.
@@ -104,7 +104,8 @@ Before a component is marked `production`:
 
 ## Preview-Only Boundary
 
-Preview-only components may exist only as private/internal catalog or preview implementations, preferably under `designsystem.preview`.
+Preview-only components may exist only as private/internal catalog or preview implementations,
+preferably under `designsystem.compose.preview`.
 Under the revised PR3 scope, preview-only is limited to components with concrete blockers: Segment Control,
 Sheets, bottom Tab Bar, and Table. PR3 keeps only group-level catalog/screenshot entry points module-visible for
 previews; individual unsettled samples are file-private.

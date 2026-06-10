@@ -71,18 +71,22 @@ Implement the full i1 component catalog with previews.
 
 Expected output:
 
-- Compose-first, Material 3-only design-system components under `com.woocommerce.android.ui.compose.designsystem`.
+- Compose-first, Material 3-only design-system components under the Store design-system Compose
+  package. Initial Compose-only work may start under `com.woocommerce.android.ui.compose.designsystem`;
+  the XML/View bridge PR should mechanically move it to `com.woocommerce.android.ui.designsystem.compose`.
 - `Woo` component naming.
 - Material 3 wrappers where the mapping is close.
 - Custom components only where Material 3 is materially different.
 - Component catalog status updates.
 - Light and dark previews for every component using `@PreviewLightDark`.
-- Production APIs for the subset needed by the two pilots and low-risk primitives.
+- Production APIs for the subset needed by the initial pilots and low-risk primitives.
 - Private/internal preview catalog implementations for unsettled components.
 
 Production screens should consume only production-ready components. In-progress components can remain preview-only.
 
-Preview-only implementations should stay private/internal to the catalog or preview files, preferably under `designsystem.preview`, so migration agents do not import unsettled APIs into product screens.
+Preview-only implementations should stay private/internal to the catalog or preview files, preferably
+under `designsystem.compose.preview`, so migration agents do not import unsettled APIs into product
+screens.
 
 The initial production subset should cover top/navigation bar, page title/body/link text styles or wrappers, primary button, settings cell/row, section header, switch, icon button, divider, progress indicator, and the spacing/radius/color/typography tokens they depend on.
 
@@ -97,17 +101,19 @@ Bridge components such as `WooTopAppBar` may need deeper compatibility than toke
 component-level compatibility driven by the active foundation over screen-level duplicate
 implementations.
 
-### 4. `composeView` Theme Selector
+### 4. `composeView` Mode Selector
 
-Add explicit theme selection to the Store app `composeView` helper.
+Add explicit design-system mode selection to the Store app `composeView` helper.
 
 Expected output:
 
-- Default/no explicit theme selection follows `FeatureFlag.NEW_DESIGN_SYSTEM`.
-- `ComposeTheme.LEGACY` uses `WooThemeWithBackground` with the legacy-compatible design-system
+- Default/no explicit mode selection follows `FeatureFlag.NEW_DESIGN_SYSTEM`.
+- `DesignSystemMode.LEGACY` uses `WooThemeWithBackground` with the legacy-compatible design-system
   foundation.
-- `ComposeTheme.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground` with the real
+- `DesignSystemMode.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground` with the real
   design-system foundation.
+- If this PR initially introduced the Compose-only `ComposeTheme` name, the XML/View bridge PR
+  renames and moves it to shared `DesignSystemMode`.
 - Existing non-migrated screens using `WooThemeWithBackground` do not visually regress.
 - No duplicate legacy/design-system screen implementations are introduced.
 
@@ -132,18 +138,51 @@ Expected output:
 
 - Existing Fragment, nav graph destinations, SafeArgs, analytics, strings, and behavior remain.
 - One screen implementation uses design-system components in both foundation states.
-- The root wrapper remains controlled by `composeView` theme selection and
+- The root wrapper remains controlled by `composeView` mode selection and
   `FeatureFlag.NEW_DESIGN_SYSTEM`.
 - The XML layout is removed only after the Compose replacement is verified.
 - Real findings are added to the screen migration playbook.
 
-### 7. AI Migration Playbook Updates
+### 7. Retained XML/View Bridge Pilot
 
-Update docs based on the two pilots before asking AI agents to migrate additional screens.
+Add one pilot for a retained XML/View screen that adopts the design-system foundation through a
+screen-level XML bridge instead of migrating to Compose.
 
 Expected output:
 
-- Concrete examples from both adoption outcomes.
+- Select the exact pilot screen during PR planning, not in advance.
+- Use a screen that is complex enough to test real XML/View bridge mechanics but low traffic enough
+  to avoid putting a major commerce workflow at risk.
+- Prefer a target with at least two of: XML Fragment root, adapter row inflation, custom `Woo.*` XML
+  styles, toolbar/chrome, empty/loading state, light/dark sensitivity, or a small direct-resource gap.
+- Avoid product/order/payment editing, scanners, WebView, heavy selection flows, and broad product or
+  order list redesign.
+- Move existing Compose design-system APIs from `com.woocommerce.android.ui.compose.designsystem` to
+  `com.woocommerce.android.ui.designsystem.compose` as a behavior-neutral package change.
+- Rename and move the Compose-only rollout selector to a shared `DesignSystemMode`, then use that
+  selector for both `composeView` and XML/View bridge opt-in.
+- Add XML/View bridge APIs under `com.woocommerce.android.ui.designsystem.xml`.
+- The primary XML helper supports `onGetLayoutInflater(...)` so existing
+  `BaseFragment(R.layout...)` screens can opt in without rewriting root inflation.
+- Default/no explicit XML bridge mode follows `FeatureFlag.NEW_DESIGN_SYSTEM`; legacy mode preserves
+  existing View styling; design-system mode applies only to the opted-in screen root.
+- Use Material/theme attrs first. Add custom Woo attrs or promoted Android resources only for
+  semantic gaps proven by the pilot.
+- Preserve existing Fragment hosting, XML nav graphs, ViewModel, adapters, analytics, strings, and
+  product behavior.
+- Verify before/after screenshots in light and dark mode for legacy and design-system paths.
+- Add only non-trivial findings to the screen migration playbook.
+
+Keep this PR targeted. The package move, shared mode rename, XML bridge helper, and retained
+XML/View pilot should be separated into reviewable commits when practical.
+
+### 8. AI Migration Playbook Updates
+
+Update docs based on the three pilots before asking AI agents to migrate additional screens.
+
+Expected output:
+
+- Concrete examples from all three adoption outcomes.
 - Known pitfalls.
 - Component usage examples.
 - Verification checklist refinements.
@@ -161,6 +200,9 @@ Expected output:
 - No raw Figma variable names in public Android API.
 - No parallel Kotlin/Compose and XML resource definitions for the same token primitive values.
 - No global design-system XML/View style application in PR 2.
+- Retained XML/View bridge work is opt-in per screen and must not silently restyle sibling screens.
+- The retained XML/View pilot target is selected during that PR's planning, using the low-traffic but
+  complex-enough criteria above.
 - Agents must ask before migrating heavy screens.
 - Agents may proceed on assigned screens that pass the candidate checklist.
 - Agents must include a short candidate assessment in migration or adoption output.
