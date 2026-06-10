@@ -249,7 +249,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when full sync fails with catalog file blocked, then tracks catalog_file_download_failed`() =
+    fun `when full sync fails with catalog file blocked, then tracks catalog_file_blocked`() =
         testBlocking {
             // GIVEN
             givenFileBasedFullSyncFails(
@@ -265,7 +265,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             verify(analyticsTracker).track(
                 argThat {
                     this is WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed &&
-                        errorType == WooPosAnalyticsEventConstant.SyncErrorType.CATALOG_FILE_DOWNLOAD_FAILED
+                        errorType == WooPosAnalyticsEventConstant.SyncErrorType.CATALOG_FILE_BLOCKED
                 }
             )
         }
