@@ -176,6 +176,11 @@ private fun SyncFailed(
     onContinueWithBasicSyncClicked: () -> Unit,
     onExitPosClicked: () -> Unit
 ) {
+    val title = if (isServerPermissionsError) {
+        R.string.woopos_home_sync_failed_blocked_title
+    } else {
+        R.string.woopos_home_sync_failed_title
+    }
     val reason = if (isServerPermissionsError) {
         R.string.woopos_home_sync_failed_server_permissions_message
     } else {
@@ -199,7 +204,7 @@ private fun SyncFailed(
         )
     }
     WooPosErrorScreen(
-        message = stringResource(R.string.woopos_home_sync_failed_title),
+        message = stringResource(title),
         reason = stringResource(reason),
         primaryButton = primaryButton,
         secondaryButton = exitButton

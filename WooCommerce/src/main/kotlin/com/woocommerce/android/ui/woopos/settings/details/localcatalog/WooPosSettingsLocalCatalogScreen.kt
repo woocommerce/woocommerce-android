@@ -322,7 +322,13 @@ fun WooPosSyncErrorDialog(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
             WooPosText(
-                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
+                text = stringResource(
+                    if (isServerPermissionsError) {
+                        R.string.woopos_settings_local_catalog_sync_error_blocked_title
+                    } else {
+                        R.string.woopos_settings_local_catalog_sync_error_dialog_title
+                    }
+                ),
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
