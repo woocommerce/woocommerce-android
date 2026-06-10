@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
-import com.woocommerce.android.ui.woopos.bookings.bookingsScreen
-import com.woocommerce.android.ui.woopos.bookings.note.bookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.cardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.cashPaymentScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.webViewScreen
@@ -41,8 +39,6 @@ fun NavGraphBuilder.mainGraph(
         settingsScreen(onNavigationEvent = onNavigationEvent)
         ordersScreen(onNavigationEvent = onNavigationEvent)
         refundReasonScreen(onNavigationEvent = onNavigationEvent)
-        bookingsScreen(onNavigationEvent = onNavigationEvent)
-        bookingNoteScreen(onNavigationEvent = onNavigationEvent)
         paymentSuccessScreen(onNavigationEvent = onNavigationEvent)
         webViewScreen(onNavigationEvent = onNavigationEvent)
     }

@@ -18,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -332,9 +331,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             width = Dimension.fillToConstraints
         }
 
-        val bookingInfo = row.bookingInfo
         when {
-            bookingInfo != null -> BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
             row.isLumpSum -> {
                 if (row.includesTax) {
                     WooPosText(
@@ -361,37 +358,6 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
                 end.linkTo(parent.end)
             }
         )
-    }
-}
-
-@Composable
-private fun BookingInfoContent(
-    bookingInfo: WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo,
-    modifier: Modifier = Modifier,
-) {
-    when (bookingInfo) {
-        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loading ->
-            WooPosShimmerText(
-                text = stringResource(R.string.woopos_orders_details_booking_info_shimmer_placeholder),
-                style = WooPosTypography.BodyMedium.style,
-                modifier = modifier
-            )
-
-        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded ->
-            WooPosText(
-                text = bookingInfo.text,
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                modifier = modifier
-            )
-
-        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Error ->
-            WooPosText(
-                text = bookingInfo.text,
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                modifier = modifier
-            )
     }
 }
 
@@ -715,9 +681,6 @@ fun WooPosOrderDetailsPreview() {
                     qtyAndUnitPrice = "1 x $55.00",
                     lineTotal = "$55.00",
                     imageUrl = null,
-                    bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
-                        "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
-                    )
                 ),
                 WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
                     id = 901,

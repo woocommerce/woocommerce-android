@@ -20,8 +20,6 @@ const val PAYMENT_SUCCESS_ROUTE =
 
 enum class PaymentSuccessSource {
     CARD_CHECKOUT,
-    CARD_BOOKINGS,
-    CASH_BOOKINGS,
     SCAN_TO_PAY,
     MARK_ORDER_AS_COMPLETE,
 }

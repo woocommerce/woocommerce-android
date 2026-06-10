@@ -2,9 +2,6 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
-import com.woocommerce.android.ui.woopos.bookings.BOOKINGS_ROUTE
-import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
-import com.woocommerce.android.ui.woopos.bookings.note.navigateToBookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.authenticatedwebview.navigateToWebViewScreen
@@ -33,12 +30,12 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.BackFromSplashClicked -> activity.finish()
 
         is WooPosNavigationEvent.OpenHomeFromSplash -> navigateToHomeScreen()
-        is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId, event.source)
+        is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId)
         is WooPosNavigationEvent.OpenMarkOrderAsPaid -> navigateToMarkOrderAsCompleteScreen(event.orderId)
         is WooPosNavigationEvent.OpenScanToPay -> navigateToScanToPayScreen(event.orderId)
 
         is WooPosNavigationEvent.OpenCardPayment ->
-            navigateToCardPaymentScreen(event.orderId, event.source, event.showCashPaymentButton)
+            navigateToCardPaymentScreen(event.orderId, event.showCashPaymentButton)
 
         is WooPosNavigationEvent.GoBackWithResult -> {
             previousBackStackEntry
@@ -73,22 +70,9 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.OpenOrderDetails ->
             navigateToOrderDetailsScreen(event.orderId)
 
-        is WooPosNavigationEvent.OpenBookings ->
-            navigateToBookingsScreen()
-
         is WooPosNavigationEvent.NavigateToCashPayment -> {
-            navigateToCashPaymentScreen(event.orderId, event.source)
+            navigateToCashPaymentScreen(event.orderId)
         }
-
-        is WooPosNavigationEvent.NavigateBackToBookingsAfterPayment -> {
-            getBackStackEntry(BOOKINGS_ROUTE)
-                .savedStateHandle
-                .set(event.key, event.value)
-            popBackStack(BOOKINGS_ROUTE, inclusive = false)
-        }
-
-        is WooPosNavigationEvent.OpenBookingNote ->
-            navigateToBookingNoteScreen(event.bookingId)
 
         is WooPosNavigationEvent.OpenPaymentSuccess ->
             navigateToPaymentSuccessScreen(
