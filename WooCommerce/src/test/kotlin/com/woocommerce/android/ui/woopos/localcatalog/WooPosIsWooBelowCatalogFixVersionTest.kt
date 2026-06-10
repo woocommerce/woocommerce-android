@@ -1,17 +1,25 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class WooPosIsWooBelowCatalogFixVersionTest {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val fetchWooVersion: FetchActiveWCPluginVersion = mock()
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private lateinit var sut: WooPosIsWooBelowCatalogFixVersion
 
