@@ -163,6 +163,43 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
+    fun `given prepopulation fails with server permissions error, when vm created, then SyncFailed is server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.prepopulateCache()).thenReturn(
+                flowOf(
+                    WooPosPrepopulatingDataStatus.Failed(
+                        "Download failed with code: 403",
+                        isServerPermissionsError = true
+                    )
+                )
+            )
+
+            // WHEN
+            val sut = createSut()
+
+            // THEN
+            assertThat(sut.state.value).isEqualTo(
+                WooPosSplashState.SyncFailed("Download failed with code: 403", isServerPermissionsError = true)
+            )
+        }
+
+    @Test
+    fun `given prepopulation fails without server permissions error, when vm created, then SyncFailed is not server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.prepopulateCache()).thenReturn(
+                flowOf(WooPosPrepopulatingDataStatus.Failed("Test error"))
+            )
+
+            // WHEN
+            val sut = createSut()
+
+            // THEN
+            assertThat((sut.state.value as WooPosSplashState.SyncFailed).isServerPermissionsError).isFalse()
+        }
+
+    @Test
     fun `given popular products fetch fails, when vm created, then state is Loaded`() = runTest {
         // GIVEN
         whenever(popularProductsProvider.fetchAndCachePopularProducts()).thenReturn(

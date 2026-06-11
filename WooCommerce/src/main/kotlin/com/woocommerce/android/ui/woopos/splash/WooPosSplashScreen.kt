@@ -69,6 +69,7 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         }
         is WooPosSplashState.SyncFailed -> {
             SyncFailed(
+                isServerPermissionsError = currentState.isServerPermissionsError,
                 onRetryClicked = { viewModel.onRetrySync() },
                 onExitPosClicked = {
                     onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
@@ -169,12 +170,18 @@ private fun SyncingCatalog(
 
 @Composable
 private fun SyncFailed(
+    isServerPermissionsError: Boolean,
     onRetryClicked: () -> Unit,
     onExitPosClicked: () -> Unit
 ) {
+    val reason = if (isServerPermissionsError) {
+        R.string.woopos_home_sync_failed_server_permissions_message
+    } else {
+        R.string.woopos_home_sync_failed_message
+    }
     WooPosErrorScreen(
         message = stringResource(R.string.woopos_home_sync_failed_title),
-        reason = stringResource(R.string.woopos_home_sync_failed_message),
+        reason = stringResource(reason),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_home_sync_failed_retry_button),
             click = onRetryClicked

@@ -73,6 +73,13 @@ constructor(
                 Result.success()
             }
 
+            is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> {
+                logger.e(
+                    "Local catalog FULL sync failed (catalog file blocked): ${fullSyncResult.error}. Not retrying."
+                )
+                Result.failure()
+            }
+
             is PosLocalCatalogSyncResult.Failure -> {
                 logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()

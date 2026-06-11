@@ -111,7 +111,7 @@ class WooPosSplashViewModel @Inject constructor(
 
             is WooPosPrepopulatingDataStatus.Failed -> {
                 analyticsTracker.track(SplashScreenErrorShown)
-                _state.value = WooPosSplashState.SyncFailed(state.error)
+                _state.value = WooPosSplashState.SyncFailed(state.error, state.isServerPermissionsError)
             }
         }
     }

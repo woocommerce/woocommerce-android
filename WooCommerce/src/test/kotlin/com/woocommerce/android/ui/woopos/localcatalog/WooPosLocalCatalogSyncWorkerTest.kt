@@ -257,6 +257,35 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when full sync fails with catalog blocked, then returns failure without retry`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(PosLocalCatalogSyncResult.Failure.CatalogFileBlocked(error = "blocked"))
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `when full sync fails with a non-blocking error, then returns retry`() = testBlocking {
+        // GIVEN
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(PosLocalCatalogSyncResult.Failure.NetworkError(error = "boom"))
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.retry())
+    }
+
+    @Test
     fun `given full sync fails, when worker executes, then incremental sync is not called`() = testBlocking {
         // GIVEN
         whenever(syncRepository.syncLocalCatalogFull(site))

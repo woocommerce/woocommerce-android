@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosCatalogFileBlockedException
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
@@ -19,6 +20,7 @@ import org.junit.Rule
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.io.IOException
 import kotlin.test.Test
 
 @Suppress("UnusedFlow")
@@ -136,6 +138,46 @@ class WooPosProductsDataSourceTest {
         assertThat(status).isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed::class.java)
         verify(localDbDataSource).prepopulateCache()
     }
+
+    @Test
+    fun `given prepopulate fails with catalog blocked exception, when prepopulate cache, then failed is server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.BlockingRequired
+            )
+            whenever(localDbDataSource.prepopulateCache()).thenReturn(
+                Result.failure(WooPosCatalogFileBlockedException())
+            )
+            val sut = createSut()
+
+            // WHEN
+            val result = sut.prepopulateCache().toList()
+
+            // THEN
+            val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
+            assertThat(status.isServerPermissionsError).isTrue()
+        }
+
+    @Test
+    fun `given prepopulate fails with generic exception, when prepopulate cache, then failed is not server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.BlockingRequired
+            )
+            whenever(localDbDataSource.prepopulateCache()).thenReturn(
+                Result.failure(IOException("Download failed with code: 404"))
+            )
+            val sut = createSut()
+
+            // WHEN
+            val result = sut.prepopulateCache().toList()
+
+            // THEN
+            val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
+            assertThat(status.isServerPermissionsError).isFalse()
+        }
 
     @Test
     fun `given sync error, when prepopulate cache, then no active source is set`() = runTest {
