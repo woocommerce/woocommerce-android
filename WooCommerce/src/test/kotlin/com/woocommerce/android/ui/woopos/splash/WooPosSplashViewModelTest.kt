@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.splash
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.WooPosPrepopulatingDataStatus
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooBelowCatalogFixVersion
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
@@ -10,6 +11,7 @@ import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
@@ -34,6 +36,8 @@ class WooPosSplashViewModelTest {
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
     private val preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository =
         mock()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    private val isWooBelowCatalogFixVersion: WooPosIsWooBelowCatalogFixVersion = mock()
 
     @Rule
     @JvmField
@@ -43,13 +47,14 @@ class WooPosSplashViewModelTest {
     fun setup() = runTest {
         whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
         whenever(productsDataSource.prepopulateCache()).thenReturn(
-            flowOf(WooPosPrepopulatingDataStatus.Syncing, WooPosPrepopulatingDataStatus.Completed)
+            flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
-        whenever(productsDataSource.prepopulateCache()).thenReturn(
+        whenever(productsDataSource.fallBackToRemoteDueToCatalogBlock()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
         whenever(productsDataSource.getCurrentSyncStrategy())
             .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG_FILE)
+        whenever(isWooBelowCatalogFixVersion()).thenReturn(false)
         whenever(ordersDataSource.loadOrders()).thenReturn(emptyFlow())
     }
 
@@ -163,7 +168,7 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given prepopulation fails with server permissions error, when vm created, then SyncFailed is server permissions error`() =
+    fun `given catalog blocked and woo at or above fix version, when vm created, then shows host issue screen`() =
         runTest {
             // GIVEN
             whenever(productsDataSource.prepopulateCache()).thenReturn(
@@ -174,15 +179,59 @@ class WooPosSplashViewModelTest {
                     )
                 )
             )
+            whenever(isWooBelowCatalogFixVersion()).thenReturn(false)
+
+            // WHEN
+            val sut = createSut()
+
+            // THEN — POS falls back to remote, then surfaces the host issue for the user to acknowledge
+            assertThat(sut.state.value).isEqualTo(
+                WooPosSplashState.SyncFailed("Download failed with code: 403", isServerPermissionsError = true)
+            )
+        }
+
+    @Test
+    fun `given catalog blocked and woo below fix version, when vm created, then silently loads via remote`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.prepopulateCache()).thenReturn(
+                flowOf(
+                    WooPosPrepopulatingDataStatus.Failed(
+                        "Download failed with code: 403",
+                        isServerPermissionsError = true
+                    )
+                )
+            )
+            whenever(isWooBelowCatalogFixVersion()).thenReturn(true)
 
             // WHEN
             val sut = createSut()
 
             // THEN
-            assertThat(sut.state.value).isEqualTo(
-                WooPosSplashState.SyncFailed("Download failed with code: 403", isServerPermissionsError = true)
-            )
+            assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
         }
+
+    @Test
+    fun `given catalog blocked and remote fallback also fails, when vm created, then state is SyncFailed`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(
+                WooPosPrepopulatingDataStatus.Failed(
+                    "Download failed with code: 403",
+                    isServerPermissionsError = true
+                )
+            )
+        )
+        whenever(productsDataSource.fallBackToRemoteDueToCatalogBlock()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Failed("Network error"))
+        )
+
+        // WHEN
+        val sut = createSut()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.SyncFailed("Network error"))
+    }
 
     @Test
     fun `given prepopulation fails without server permissions error, when vm created, then SyncFailed is not server permissions error`() =
@@ -316,6 +365,53 @@ class WooPosSplashViewModelTest {
         verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenExitPosTapped)
     }
 
+    @Test
+    fun `given host issue screen is shown, when got it is clicked, then enters POS`() = runTest {
+        // GIVEN — Woo >= 11 blocked: POS already fell back to remote and is showing the host-issue screen
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(
+                WooPosPrepopulatingDataStatus.Failed(
+                    "Download failed with code: 403",
+                    isServerPermissionsError = true
+                )
+            )
+        )
+        whenever(isWooBelowCatalogFixVersion()).thenReturn(false)
+        val sut = createSut()
+        assertThat(sut.state.value).isInstanceOf(WooPosSplashState.SyncFailed::class.java)
+
+        // WHEN
+        sut.onContinueWithBasicSyncClicked()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CatalogBlockedContinueWithBasicSyncTapped)
+    }
+
+    @Test
+    fun `given catalog blocked, when vm created, then tracks LocalCatalogBlockedFellBackToRemote with version`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.prepopulateCache()).thenReturn(
+                flowOf(
+                    WooPosPrepopulatingDataStatus.Failed(
+                        "Download failed with code: 403",
+                        isServerPermissionsError = true
+                    )
+                )
+            )
+            whenever(isWooBelowCatalogFixVersion()).thenReturn(true)
+            whenever(getWooCoreVersion()).thenReturn("10.9.0")
+
+            // WHEN
+            createSut()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.LocalCatalogBlockedFellBackToRemote("10.9.0")
+            )
+        }
+
     private fun createSut(): WooPosSplashViewModel {
         return WooPosSplashViewModel(
             productsDataSource,
@@ -325,6 +421,8 @@ class WooPosSplashViewModelTest {
             ordersCache,
             ordersDataSource,
             preferencesRepository,
+            getWooCoreVersion,
+            isWooBelowCatalogFixVersion,
             CoroutineScope(coroutinesTestRule.testDispatcher),
         )
     }

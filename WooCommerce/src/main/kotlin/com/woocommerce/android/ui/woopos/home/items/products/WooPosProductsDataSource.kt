@@ -143,6 +143,19 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Switches the active source to the legacy remote loader and prepopulates from it, so POS keeps
+     * working when the catalog file is blocked. Whether this happens silently (Woo < 11) or only
+     * after the user taps through the error screen (Woo >= 11) is the caller's decision.
+     */
+    fun fallBackToRemoteDueToCatalogBlock(): Flow<WooPosPrepopulatingDataStatus> = channelFlow {
+        activeSource = remoteDataSource
+        remoteDataSource.prepopulateCache().fold(
+            onSuccess = { send(WooPosPrepopulatingDataStatus.Completed) },
+            onFailure = { send(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error")) }
+        )
+    }
+
     fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
         activeSource?.fetchFirstProductsPage(forceRefresh)
             ?: error("FetchFirstPage - Data source not selected")

@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.io.IOException
@@ -140,7 +141,7 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given prepopulate fails with catalog blocked exception, when prepopulate cache, then failed is server permissions error`() =
+    fun `given catalog blocked, when prepopulate cache, then failed is server permissions error and no auto fallback`() =
         runTest {
             // GIVEN
             whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
@@ -154,10 +155,27 @@ class WooPosProductsDataSourceTest {
             // WHEN
             val result = sut.prepopulateCache().toList()
 
-            // THEN
+            // THEN — the data source only reports the block; deciding to fall back is the caller's job
             val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
             assertThat(status.isServerPermissionsError).isTrue()
+            verify(remoteDataSource, never()).prepopulateCache()
         }
+
+    @Test
+    fun `when fall back to remote due to catalog block, then uses remote and completes`() = runTest {
+        // GIVEN
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        val sut = createSut()
+
+        // WHEN
+        val result = sut.fallBackToRemoteDueToCatalogBlock().toList()
+
+        // THEN
+        assertThat(result.last())
+            .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Completed::class.java)
+        assertThat(sut.getCurrentSyncStrategy()).isEqualTo(WooPosProductsDataSource.SyncStrategy.REMOTE)
+        verify(remoteDataSource).prepopulateCache()
+    }
 
     @Test
     fun `given prepopulate fails with generic exception, when prepopulate cache, then failed is not server permissions error`() =
