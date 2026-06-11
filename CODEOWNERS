@@ -1,8 +1,12 @@
-/WooCommerce/src/androidTest/ @woocommerce/mobile-ui-testing-squad
+Gemfile*       @wordpress-mobile/apps-infra-tooling
+*.gemspec      @wordpress-mobile/apps-infra-tooling
+.ruby-version  @wordpress-mobile/apps-infra-tooling
+.bundle/       @wordpress-mobile/apps-infra-tooling
+.rubocop*.yml  @wordpress-mobile/apps-infra-tooling
+fastlane/      @wordpress-mobile/apps-infra-tooling
 
-# Dependabot
-/gradle/libs.versions.toml @woocommerce/android-developers
-Gemfile*       @woocommerce/apps-infra-tooling
-.ruby-version  @woocommerce/apps-infra-tooling
-.bundle/       @woocommerce/apps-infra-tooling
-.rubocop*.yml  @woocommerce/apps-infra-tooling
+# CI and automation
+.buildkite/            @wordpress-mobile/apps-infra-tooling
+.github/workflows/     @wordpress-mobile/apps-infra-tooling
+.github/dependabot.yml @wordpress-mobile/apps-infra-tooling
+Dangerfile*            @wordpress-mobile/apps-infra-tooling
