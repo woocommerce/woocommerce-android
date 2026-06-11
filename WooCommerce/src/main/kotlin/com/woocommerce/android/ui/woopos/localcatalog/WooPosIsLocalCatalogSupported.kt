@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.extensions.semverCompareTo
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import javax.inject.Inject
@@ -17,6 +19,8 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
     private val posTabShouldBeVisible: WooPosTabShouldBeVisible,
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val wooPosLogWrapper: WooPosLogWrapper,
+    private val selectedSite: SelectedSite,
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
@@ -28,6 +32,12 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
 
         if (!isSyncApproachSupported()) {
             return false
+        }
+
+        if (isFileAccessBlocked()) {
+            return false.also {
+                wooPosLogWrapper.d("Local Catalog not supported: file access blocked (403).")
+            }
         }
 
         val tabVisibleResult = posTabShouldBeVisible()
@@ -61,6 +71,11 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
     private suspend fun isFileBasedSyncSupported(): Boolean {
         val wooVersion = getWooVersion() ?: fetchWooVersion() ?: return false
         return wooVersion.semverCompareTo(WC_FILE_BASED_SYNC_MIN_VERSION) >= 0
+    }
+
+    private suspend fun isFileAccessBlocked(): Boolean {
+        val site = selectedSite.getOrNull() ?: return false
+        return preferencesRepository.isLocalCatalogFileAccessBlocked(site.localId())
     }
 
     companion object {

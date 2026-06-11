@@ -143,6 +143,21 @@ class WooPosPreferencesRepository @Inject constructor(
     private fun buildFileBasedSyncPollAttemptsKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Int> =
         intPreferencesKey("pos_file_based_sync_poll_attempts_${siteId.value}")
 
+    suspend fun isLocalCatalogFileAccessBlocked(siteId: LocalOrRemoteId.LocalId): Boolean {
+        val key = buildLocalCatalogFileAccessBlockedKey(siteId)
+        return dataStore.data.map { it[key] ?: false }.first()
+    }
+
+    suspend fun setLocalCatalogFileAccessBlocked(siteId: LocalOrRemoteId.LocalId, blocked: Boolean) {
+        val key = buildLocalCatalogFileAccessBlockedKey(siteId)
+        dataStore.edit { preferences ->
+            preferences[key] = blocked
+        }
+    }
+
+    private fun buildLocalCatalogFileAccessBlockedKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
+        booleanPreferencesKey("pos_local_catalog_file_access_blocked_${siteId.value}")
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.id}_v2_$key")
 
