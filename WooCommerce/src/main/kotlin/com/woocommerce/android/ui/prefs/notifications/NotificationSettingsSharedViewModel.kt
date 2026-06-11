@@ -563,7 +563,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         when (type) {
             NotificationType.NEW_ORDERS -> preferences.storeOrder?.getOrderSubtitle().orEmpty()
             NotificationType.NEW_REVIEWS -> preferences.storeReview?.getReviewSubtitle().orEmpty()
-            NotificationType.STOCK -> resourceProvider.getString(R.string.settings_notifs_stock_subtitle)
+            NotificationType.STOCK -> getStockSubtitle(preferences.storeStock)
         }
 
     private fun StoreOrderPreferences.getOrderSubtitle(): String {
@@ -583,6 +583,28 @@ class NotificationSettingsSharedViewModel @Inject constructor(
                 one = R.string.settings_notifs_new_reviews_selected_rating_one
             )
         } ?: resourceProvider.getString(R.string.settings_notifs_new_reviews_subtitle)
+    }
+
+    private fun getStockSubtitle(stockPreferences: StoreStockPreferences?): String {
+        val enabledTitles = buildList {
+            if (stockPreferences?.lowStock ?: true) add(R.string.settings_notifs_stock_low_stock_title)
+            if (stockPreferences?.outOfStock ?: true) add(R.string.settings_notifs_stock_out_of_stock_title)
+            if (stockPreferences?.onBackorder ?: true) add(R.string.settings_notifs_stock_backorder_title)
+        }
+        return when {
+            enabledTitles.isEmpty() ->
+                resourceProvider.getString(R.string.settings_notifs_stock_no_alerts_subtitle)
+            enabledTitles.size == STOCK_NOTIFICATION_TYPE_COUNT ->
+                resourceProvider.getString(R.string.settings_notifs_stock_subtitle)
+            enabledTitles.size == 1 ->
+                resourceProvider.getString(enabledTitles.first())
+            else ->
+                resourceProvider.getString(
+                    R.string.settings_notifs_stock_two_subtitle,
+                    resourceProvider.getString(enabledTitles[0]),
+                    resourceProvider.getString(enabledTitles[1])
+                )
+        }
     }
 
     private fun NotificationType.isNotificationChannelEnabled(): Boolean {
@@ -658,6 +680,7 @@ class NotificationSettingsSharedViewModel @Inject constructor(
         const val MAX_REVIEW_RATING = 5
         private const val DEFAULT_SELECTED_REVIEW_RATING = 2
         private const val DEFAULT_ORDER_THRESHOLD_AMOUNT = 100
+        private const val STOCK_NOTIFICATION_TYPE_COUNT = 3
         private val MIN_ORDER_THRESHOLD_AMOUNT = BigDecimal.ONE
         private const val NOTIFICATION_PREFERENCES_SAVE_DEBOUNCE_MS = 1000L
     }
