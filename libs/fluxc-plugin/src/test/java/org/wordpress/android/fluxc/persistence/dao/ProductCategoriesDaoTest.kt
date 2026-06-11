@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -29,7 +28,7 @@ class ProductCategoriesDaoTest {
 
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     @Before
     fun setUp() {

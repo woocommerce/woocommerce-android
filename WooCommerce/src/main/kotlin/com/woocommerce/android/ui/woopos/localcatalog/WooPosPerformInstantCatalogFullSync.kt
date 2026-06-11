@@ -117,6 +117,10 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
                 )
                 Result.success(Unit)
             }
+            is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> {
+                wooPosLogWrapper.e("Blocking full sync failed (catalog file blocked): ${syncResult.error}")
+                Result.failure(WooPosCatalogFileBlockedException())
+            }
             is PosLocalCatalogSyncResult.Failure -> {
                 wooPosLogWrapper.e("Blocking full sync failed: ${syncResult.error}")
                 Result.failure(Exception(syncResult.error))

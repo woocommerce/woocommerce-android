@@ -293,6 +293,7 @@ private fun SettingLocalCatalogItemShimmer() {
 fun WooPosSyncErrorDialog(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
+    isServerPermissionsError: Boolean = false,
     onRetry: () -> Unit,
     onDismissRequest: () -> Unit
 ) {
@@ -321,7 +322,13 @@ fun WooPosSyncErrorDialog(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
             WooPosText(
-                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
+                text = stringResource(
+                    if (isServerPermissionsError) {
+                        R.string.woopos_settings_local_catalog_sync_error_blocked_title
+                    } else {
+                        R.string.woopos_settings_local_catalog_sync_error_dialog_title
+                    }
+                ),
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -330,7 +337,13 @@ fun WooPosSyncErrorDialog(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosText(
-                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_message),
+                text = stringResource(
+                    if (isServerPermissionsError) {
+                        R.string.woopos_settings_local_catalog_sync_error_blocked_message
+                    } else {
+                        R.string.woopos_settings_local_catalog_sync_error_dialog_message
+                    }
+                ),
                 style = WooPosTypography.BodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )

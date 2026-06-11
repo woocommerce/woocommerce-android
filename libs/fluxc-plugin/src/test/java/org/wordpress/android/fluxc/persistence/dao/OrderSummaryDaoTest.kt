@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.dao
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -14,26 +13,17 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
-import org.wordpress.android.fluxc.persistence.AccountMapper
-import org.wordpress.android.fluxc.persistence.AccountStorePersistence
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.utils.FakeOrderSummaryGenerator.asOrderSummaries
 
 @RunWith(RobolectricTestRunner::class)
 class OrderSummaryDaoTest {
-
     @Rule
     @JvmField
-    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
-
-    @Rule
-    @JvmField
-    val wpDatabaseRule = WPDatabaseTestRule(ApplicationProvider.getApplicationContext())
+    val wcDatabaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private lateinit var sut: OrderSummaryDao
-    private lateinit var siteSqlUtils: SiteSqlUtils
 
     val site = SiteModel().apply {
         email = "test@example.org"
@@ -44,7 +34,6 @@ class OrderSummaryDaoTest {
     @Before
     fun setUp() {
         sut = wcDatabaseRule.db.orderSummaryDao
-        siteSqlUtils = SiteSqlUtils(AccountStorePersistence(wpDatabaseRule.db, AccountMapper()))
     }
 
     @Test
@@ -77,7 +66,7 @@ class OrderSummaryDaoTest {
         val orderSummaries = (1..3).asOrderSummaries(site.localId())
         sut.upsertOrderSummaries(orderSummaries)
 
-        siteSqlUtils.deleteSite(site)
+        SiteSqlUtils().deleteSite(site)
 
         val result = sut.getOrderSummaries(
             site.localId(),

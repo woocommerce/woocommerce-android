@@ -14,26 +14,17 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersCoordinator
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemsState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -51,7 +42,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
     private val orderDetailsMapper: WooPosOrderDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
-    private val bookingInfoMapper: WooPosBookingInfoMapper,
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
 ) : ViewModel() {
@@ -64,9 +54,6 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         if (singleOrderId != null) WooPosOrderDetailsState.Loading else WooPosOrderDetailsState.Idle
     )
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
-
-    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>(extraBufferCapacity = 1)
-    val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private var loadOrderJob: Job? = null
     private var sideLoadJob: Job? = null
@@ -149,14 +136,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private fun handleActionClicked(action: OrderAction) {
         when (action) {
             is OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is OrderAction.IssueRefund -> emitNav(WooPosNavigationEvent.OpenIssueRefund(action.orderId))
+            is OrderAction.IssueRefund -> Unit
         }
     }
-
-    private fun emitNav(event: WooPosNavigationEvent) {
-        viewModelScope.launch { _navigationEvent.emit(event) }
-    }
-
     private fun onEmailReceiptButtonClicked(orderId: Long) {
         viewModelScope.launch {
             ordersAnalyticsTracker.trackOrderDetailsEmailReceiptTapped()
@@ -164,8 +146,8 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onBackFromIssueRefund() {
-        refreshSelectedOrder()
+    fun onBackFromIssueRefund(orderId: Long? = null) {
+        refreshOrderAfterIssueRefund(orderId)
     }
 
     fun onRefundDetailsDialogDismissed() {
@@ -244,55 +226,21 @@ class WooPosOrderDetailsViewModel @Inject constructor(
                         refundedLineItems = LineItemsState.Loaded(refundedLineItems)
                     )
                 )
-
-                val updatedLoaded = _state.value as? WooPosOrderDetailsState.Loaded
-                if (updatedLoaded != null) {
-                    sideLoadBookings(orderId, updatedLoaded.details)
-                }
             }
         }
     }
 
-    private fun sideLoadBookings(
-        orderId: Long,
-        details: Details
-    ) {
-        val loadedItems = (details.lineItems as? LineItemsState.Loaded)?.items ?: return
-        val loadingItems = loadedItems.filter { it.bookingInfo is BookingInfo.Loading }
-        if (loadingItems.isEmpty()) return
-
-        viewModelScope.launch {
-            val results = coroutineScope {
-                loadingItems.map { item ->
-                    async {
-                        val bookingId = (item.bookingInfo as BookingInfo.Loading).bookingId
-                        item.id to bookingInfoMapper.fetchBookingInfo(bookingId)
-                    }
-                }.awaitAll()
-            }.toMap()
-
-            val currentLoaded = _state.value as? WooPosOrderDetailsState.Loaded ?: return@launch
-            if (currentLoaded.details.id != orderId) return@launch
-
-            val currentItems = (currentLoaded.details.lineItems as? LineItemsState.Loaded)?.items
-                ?: return@launch
-            _state.value = currentLoaded.copy(
-                details = currentLoaded.details.copy(
-                    lineItems = LineItemsState.Loaded(
-                        currentItems.map { lineItem ->
-                            results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
-                        }
-                    )
-                )
-            )
-        }
+    private fun refreshSelectedOrder() {
+        refreshOrderAfterIssueRefund(orderId = null)
     }
 
-    private fun refreshSelectedOrder() {
-        val current = _state.value as? WooPosOrderDetailsState.Loaded ?: return
-        val selectedOrderId = current.details.id
+    private fun refreshOrderAfterIssueRefund(orderId: Long?) {
+        val current = _state.value as? WooPosOrderDetailsState.Loaded
+        val selectedOrderId = orderId ?: current?.details?.id ?: return
 
-        sideLoadJob?.cancel()
+        if (current?.details?.id == selectedOrderId) {
+            sideLoadJob?.cancel()
+        }
         refreshOrderJob?.cancel()
         refreshOrderJob = viewModelScope.launch {
             // Fetch + notify run atomically so the list row is always refreshed when the cache
@@ -303,7 +251,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
                     coordinator.notifyOrderRefreshed(it.id)
                 }
             } ?: return@launch
-            applyOrderUpdate(updated)
+            if ((_state.value as? WooPosOrderDetailsState.Loaded)?.details?.id == updated.id) {
+                applyOrderUpdate(updated)
+            }
         }
     }
 

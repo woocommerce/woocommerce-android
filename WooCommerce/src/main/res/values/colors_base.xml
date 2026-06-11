@@ -108,6 +108,10 @@
     <color name="prologue_login_background_color">@color/woo_purple_70</color>
     <color name="prologue_login_shape_color">@color/woo_purple_40</color>
     <color name="prologue_login_button_color">@color/white</color>
+    <color name="prologue_login_on_background">@color/woo_white</color>
+    <color name="prologue_login_on_background_secondary">@color/woo_white_alpha_087</color>
+    <color name="prologue_login_on_background_tertiary">@color/woo_white_alpha_060</color>
+    <color name="prologue_login_url_badge_background">@color/woo_white_alpha_012</color>
 
     <!--
         Rating widget colors

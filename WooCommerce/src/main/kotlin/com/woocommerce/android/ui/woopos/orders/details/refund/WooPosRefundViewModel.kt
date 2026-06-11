@@ -3,12 +3,13 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
-import com.woocommerce.android.ui.woopos.orders.WooPosLoadPaymentGateway
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.RoundingMode
 
@@ -41,12 +41,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val calculateRefundTax: WooPosCalculateRefundTax,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val loadPaymentGateway: WooPosLoadPaymentGateway,
     private val getPaymentMethod: WooPosGetPaymentMethod,
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor,
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val cardReaderFacade: WooPosCardReaderFacade,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -62,6 +62,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var cachedNumberOfDecimalPoints: Int? = null
     private var cachedTaxRoundAtSubtotal: Boolean? = null
     private var contentStateBeforeRefund: WooPosRefundState.Content? = null
+    private var refundJob: Job? = null
+    private var pendingReaderConnectionRefund: PendingReaderConnectionRefund? = null
+
+    init {
+        observeReaderConnectionForPendingRefund()
+    }
 
     private suspend fun fetchSiteSettings(): Result<Int> {
         val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
@@ -210,8 +216,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     fun onDismissRequest(): Boolean {
         val currentState = _state.value
-        val isProcessing = currentState is WooPosRefundState.Content &&
-            currentState.step == WooPosRefundState.Content.RefundStep.Processing
+        val isProcessing = currentState is WooPosRefundState.Content && currentState.step.isNonCancelable()
 
         // Don't allow dismissal during processing to ensure user sees the result
         return !isProcessing
@@ -233,7 +238,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     )
                 }
             }
-            WooPosRefundUIEvent.CancelRefund -> Unit
+            WooPosRefundUIEvent.CancelRefund -> cancelRefundSubmission()
             else -> {
                 val currentState = _state.value as? WooPosRefundState.Content ?: return
                 handleContentStateEvent(event, currentState)
@@ -244,14 +249,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private fun handleRefundFlowDismissed() {
         val currentState = _state.value
         if (currentState is WooPosRefundState.Content &&
-            currentState.step != WooPosRefundState.Content.RefundStep.Processing
+            !currentState.step.isNonCancelable()
         ) {
             val refundStep = when (currentState.step) {
                 WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
                 WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
                 WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
-                WooPosRefundState.Content.RefundStep.Processing ->
-                    error("Processing step should be unreachable in handleRefundFlowDismissed")
+                WooPosRefundState.Content.RefundStep.PreparingReader -> "preparing_reader"
+                WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
+                is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "ready_for_refund"
+                WooPosRefundState.Content.RefundStep.Processing,
+                WooPosRefundState.Content.RefundStep.ProcessingRefund,
+                WooPosRefundState.Content.RefundStep.NotifyingStore ->
+                    error("Non-cancelable step should be unreachable in handleRefundFlowDismissed")
             }
 
             viewModelScope.launch {
@@ -261,6 +271,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
         }
 
+        cancelRefundSubmission()
         _state.value = WooPosRefundState.Loading
         loadingJob?.cancel()
     }
@@ -280,8 +291,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(refundReason = event.reason)
             WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
+            WooPosRefundUIEvent.BackToConfirmRefundClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
             WooPosRefundUIEvent.BackToReviewClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+            WooPosRefundUIEvent.ConnectReaderClicked -> handleConnectReaderClicked()
             WooPosRefundUIEvent.OnRefundConfirmed -> {
                 trackConfirmRefundTapped(currentState)
                 processRefund(currentState)
@@ -292,6 +306,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.RetryCreateRefund,
             WooPosRefundUIEvent.CancelRefund -> Unit
         }
+    }
+
+    private fun handleConnectReaderClicked() {
+        resumePendingRefundIfReaderConnected()
     }
 
     private fun trackConfirmRefundTapped(currentState: WooPosRefundState.Content) {
@@ -361,10 +379,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
         ).copy(step = currentState.step)
     }
 
-    @Suppress("LongMethod")
     private fun processRefund(contentState: WooPosRefundState.Content) {
         viewModelScope.launch {
-            if (contentState.step == WooPosRefundState.Content.RefundStep.Processing) {
+            if (refundJob?.isActive == true || contentState.step.isNonCancelable()) {
                 return@launch
             }
 
@@ -400,52 +417,149 @@ class WooPosRefundViewModel @AssistedInject constructor(
             val selectedItems = contentState.refundableItems.filter { it.uniqueId in contentState.selectedItemIds }
             val refundItems = groupRefundItems(selectedItems, order, numberOfDecimalPoints)
 
-            val paymentGatewayResult = loadPaymentGateway(order)
-            if (paymentGatewayResult.isFailure) {
-                WooLog.e(
-                    WooLog.T.POS,
-                    "${paymentGatewayResult.exceptionOrNull()?.message}"
+            submitRefund(
+                contentState = contentState,
+                request = WooPosRefundSubmissionRequest(
+                    order = order,
+                    refundAmount = contentState.total,
+                    refundReason = contentState.refundReason,
+                    refundItems = refundItems,
                 )
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
-                return@launch
-            }
-
-            val paymentGateway = paymentGatewayResult.getOrThrow()
-
-            val result = refundStore.createItemsRefund(
-                site = selectedSite.get(),
-                orderId = contentState.orderId,
-                amount = contentState.total,
-                reason = contentState.refundReason,
-                restockItems = true,
-                autoRefund = paymentGateway.supportsRefunds,
-                items = refundItems
             )
+        }
+    }
 
-            if (result.isError) {
-                analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
-                _state.value = WooPosRefundState.Error(
-                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
-            } else {
-                analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
-                val receiptSentMessage = currentOrder?.billingAddress?.email
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { email ->
-                        resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
-                    }
-                _state.value = WooPosRefundState.RefundSuccess(
-                    orderId = contentState.orderId,
-                    orderNumber = contentState.orderNumber,
-                    refundedAmount = contentState.formattedTotal,
-                    paymentMethod = contentState.paymentMethod,
-                    receiptSentMessage = receiptSentMessage
+    private fun submitRefund(
+        contentState: WooPosRefundState.Content,
+        request: WooPosRefundSubmissionRequest,
+    ) {
+        refundJob?.cancel()
+        refundJob = viewModelScope.launch {
+            refundSubmissionProcessor.submit(request).collect { submissionState ->
+                handleRefundSubmissionState(
+                    contentState = contentState,
+                    request = request,
+                    submissionState = submissionState,
                 )
             }
         }
     }
+
+    private suspend fun handleRefundSubmissionState(
+        contentState: WooPosRefundState.Content,
+        request: WooPosRefundSubmissionRequest,
+        submissionState: WooPosRefundSubmissionState,
+    ) {
+        when (submissionState) {
+            WooPosRefundSubmissionState.Processing -> {
+                _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
+            }
+
+            WooPosRefundSubmissionState.PreparingReader -> {
+                _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.PreparingReader)
+            }
+
+            WooPosRefundSubmissionState.ReaderConnectionRequired -> {
+                handleReaderConnectionRequired(contentState, request)
+            }
+
+            is WooPosRefundSubmissionState.WaitingForCard -> {
+                _state.value = contentState.copy(
+                    step = WooPosRefundState.Content.RefundStep.ReadyForRefund(
+                        cardReaderHint = submissionState.cardReaderHint,
+                        isDismissBlocked = submissionState.isDismissBlocked,
+                    )
+                )
+            }
+
+            WooPosRefundSubmissionState.ProcessingReaderRefund -> {
+                _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.ProcessingRefund)
+            }
+
+            WooPosRefundSubmissionState.NotifyingStore -> {
+                _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.NotifyingStore)
+            }
+
+            WooPosRefundSubmissionState.Success -> {
+                handleRefundSubmissionSuccess(contentState, request)
+            }
+
+            is WooPosRefundSubmissionState.Failure -> {
+                handleRefundSubmissionFailure(submissionState)
+            }
+        }
+    }
+
+    private fun handleReaderConnectionRequired(
+        contentState: WooPosRefundState.Content,
+        request: WooPosRefundSubmissionRequest,
+    ) {
+        pendingReaderConnectionRefund = PendingReaderConnectionRefund(
+            contentState = contentState,
+            request = request,
+        )
+        _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.ReaderDisconnected)
+        resumePendingRefundIfReaderConnected()
+    }
+
+    private suspend fun handleRefundSubmissionSuccess(
+        contentState: WooPosRefundState.Content,
+        request: WooPosRefundSubmissionRequest,
+    ) {
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+        val receiptSentMessage = request.order.billingAddress.email
+            .takeIf { it.isNotBlank() }
+            ?.let { email ->
+                resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
+            }
+        _state.value = WooPosRefundState.RefundSuccess(
+            orderId = contentState.orderId,
+            orderNumber = contentState.orderNumber,
+            refundedAmount = contentState.formattedTotal,
+            paymentMethod = contentState.paymentMethod,
+            receiptSentMessage = receiptSentMessage
+        )
+    }
+
+    private suspend fun handleRefundSubmissionFailure(
+        submissionState: WooPosRefundSubmissionState.Failure,
+    ) {
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
+        _state.value = WooPosRefundState.Error(
+            message = submissionState.message,
+            errorType = WooPosRefundState.Error.ErrorType.Processing,
+            canRetry = submissionState.canRetry,
+        )
+    }
+
+    private fun cancelRefundSubmission() {
+        refundJob?.cancel()
+        refundJob = null
+        pendingReaderConnectionRefund = null
+    }
+
+    private fun observeReaderConnectionForPendingRefund() {
+        viewModelScope.launch {
+            cardReaderFacade.readerStatus.collect { readerStatus ->
+                if (readerStatus is Connected) {
+                    resumePendingRefundIfReaderConnected()
+                }
+            }
+        }
+    }
+
+    private fun resumePendingRefundIfReaderConnected() {
+        if (cardReaderFacade.readerStatus.value !is Connected) return
+        val pending = pendingReaderConnectionRefund ?: return
+        pendingReaderConnectionRefund = null
+        submitRefund(
+            contentState = pending.contentState,
+            request = pending.request,
+        )
+    }
+
+    private data class PendingReaderConnectionRefund(
+        val contentState: WooPosRefundState.Content,
+        val request: WooPosRefundSubmissionRequest,
+    )
 }

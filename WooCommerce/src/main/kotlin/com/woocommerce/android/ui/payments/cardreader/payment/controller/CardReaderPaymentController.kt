@@ -70,8 +70,10 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CompletionHandlerException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -643,7 +645,8 @@ class CardReaderPaymentController(
         when (val state = _paymentState.value) {
             is CardReaderInteracRefundState.CollectingInteracRefund -> {
                 _paymentState.value = state.copy(
-                    cardReaderHint = cardReaderHint.toHintLabel(true)
+                    cardReaderHint = cardReaderHint.toHintLabel(true),
+                    isDismissBlocked = cardReaderHint == REMOVE_CARD,
                 )
             }
 
@@ -787,11 +790,23 @@ class CardReaderPaymentController(
         }
     }
 
+    @OptIn(InternalCoroutinesApi::class)
     fun stop() {
-        paymentDataForRetry?.let {
-            cardReaderManager.cancelPayment(it)
+        try {
+            paymentDataForRetry?.let {
+                cardReaderManager.cancelPayment(it)
+            }
+        } catch (e: IllegalStateException) {
+            WooLog.e(WooLog.T.CARD_READER, "Failed to cancel card reader payment", e)
+        } finally {
+            try {
+                // Stripe Terminal can throw from a coroutine cancellation handler while it is waiting for
+                // a network response; coroutines wrap that in CompletionHandlerException.
+                scope.cancel()
+            } catch (e: CompletionHandlerException) {
+                WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
+            }
         }
-        scope.cancel()
     }
 
     fun onBackPressed() {

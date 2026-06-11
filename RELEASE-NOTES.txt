@@ -4,7 +4,8 @@
 
 25.0
 -----
-
+- [*] Added age-eligibility verification to comply with Google Play age requirements [https://github.com/woocommerce/woocommerce-android/pull/16048]
+- [**] Woo POS is now available in Canada, and the POS refund flow is improved [https://github.com/woocommerce/woocommerce-android/pull/15996]
 
 24.9
 -----
@@ -14,7 +15,12 @@
 - [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
 - [*] Fixed USPS shipping label customs handling for US territories and added a 30-character limit on customs item descriptions [https://github.com/woocommerce/woocommerce-android/pull/15999]
 - [Internal] Enabled local flag for self-driven push notifications [https://github.com/woocommerce/woocommerce-android/pull/15997]
+<<<<<<< merge/release-24.9-into-trunk
 - [*] Fixed Woo POS failing to load products on stores whose web server blocks access to the catalog file [https://github.com/woocommerce/woocommerce-android/pull/16059]
+=======
+- [*] Fixed Woo Shipping label "Shipment details" title not expanding the bottom sheet on tap [https://github.com/woocommerce/woocommerce-android/pull/16020]
+- [*] Fixed Shipping Labels Verify button being briefly tappable when the address form input is invalid [https://github.com/woocommerce/woocommerce-android/pull/16021]
+>>>>>>> trunk
 
 24.8
 -----
@@ -27,6 +33,7 @@
 -----
 - [***] Performance card on My Store now lets you switch between Gross, Net and Total revenue and pick the order date type (Paid, Placed or Completed) [https://github.com/woocommerce/woocommerce-android/pull/15750]
 - [*] Fixed login getting stuck in a retry loop when an http URL was returned for an HTTPS-only site [https://github.com/woocommerce/woocommerce-android/pull/15846]
+- [*] Improved error messaging when the product catalog fails to load in POS [https://github.com/woocommerce/woocommerce-android/pull/16050]
 - [*] Fixed a crash when loading the product list on stores with very large product descriptions [https://github.com/woocommerce/woocommerce-android/pull/15693]
 - [Internal] Fixed logout push cleanup sequencing and added a logout loading state in App Settings [https://github.com/woocommerce/woocommerce-android/pull/15667]
 - [Internal] Show the notification permission card for all supported stores on Android 13+ [https://github.com/woocommerce/woocommerce-android/pull/15676/]

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.not
@@ -54,11 +53,9 @@ import org.hamcrest.CoreMatchers.`is` as isEqual
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCStatsStoreTest {
-    private val context = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(context)
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val mockOrderStatsRestClient = mock<OrderStatsRestClient>()
     private val mockBundleStatsRestClient = mock<BundleStatsRestClient>()
