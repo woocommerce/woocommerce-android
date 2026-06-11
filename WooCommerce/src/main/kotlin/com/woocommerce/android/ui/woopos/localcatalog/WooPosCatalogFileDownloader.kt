@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import android.content.Context
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
@@ -11,7 +10,6 @@ import okhttp3.Request
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import java.io.File
 import java.io.IOException
-import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -19,7 +17,6 @@ class WooPosCatalogFileDownloader @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
-    private val preferencesRepository: WooPosPreferencesRepository,
 ) {
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -44,9 +41,6 @@ class WooPosCatalogFileDownloader @Inject constructor(
 
             okHttpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    if (response.code == HttpURLConnection.HTTP_FORBIDDEN) {
-                        preferencesRepository.setLocalCatalogFileAccessBlocked(localSiteId, true)
-                    }
                     val error = "Download failed with code: ${response.code}"
                     logger.e(error)
                     return@withContext Result.failure(IOException(error))

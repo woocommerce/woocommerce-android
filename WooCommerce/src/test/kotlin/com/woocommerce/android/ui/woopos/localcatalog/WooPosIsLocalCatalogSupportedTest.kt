@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -14,10 +12,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
@@ -28,8 +24,6 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var posTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
     private var posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
-    private var selectedSite: SelectedSite = mock()
-    private var preferencesRepository: WooPosPreferencesRepository = mock()
 
     private lateinit var isLocalCatalogSupported: WooPosIsLocalCatalogSupported
 
@@ -39,8 +33,6 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(getWooVersion()).thenReturn("10.5.0")
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(true))
         whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(WooPosLaunchability.Launchable)
-        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { id = 1 })
-        whenever(preferencesRepository.isLocalCatalogFileAccessBlocked(any())).thenReturn(false)
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(
             wooPosLocalCatalogM1Enabled = featureFlagM1Enabled,
@@ -49,8 +41,6 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
             posTabShouldBeVisible = posTabShouldBeVisible,
             posCanBeLaunchedInTab = posCanBeLaunchedInTab,
             wooPosLogWrapper = logger,
-            selectedSite = selectedSite,
-            preferencesRepository = preferencesRepository,
         )
     }
 
@@ -131,18 +121,6 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(
             Result.failure(Exception("Visibility check failed"))
         )
-
-        // WHEN
-        val result = isLocalCatalogSupported()
-
-        // THEN
-        assertThat(result).isFalse()
-    }
-
-    @Test
-    fun `given catalog file access was blocked, when check invoked, then returns false`() = testBlocking {
-        // GIVEN
-        whenever(preferencesRepository.isLocalCatalogFileAccessBlocked(any())).thenReturn(true)
 
         // WHEN
         val result = isLocalCatalogSupported()
