@@ -2,8 +2,9 @@
 
 package org.wordpress.android.fluxc.wc.order
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
@@ -27,7 +28,9 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrderListAction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
@@ -35,12 +38,15 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.BatchOrderApiResp
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.COMPLETED
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderNoteApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.toDataModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.InsertOrder
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -64,12 +70,9 @@ private const val CUSTOM_PAYMENT_METHOD_TITLE = "Pay in Person"
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 internal class WCOrderStoreTest {
-
-    private val context = ApplicationProvider.getApplicationContext<Application>()
-
     @Rule
     @JvmField
-    val databaseRule = DatabaseTestRule(context)
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val orderFetcher: WCOrderFetcher = mock()
     private val orderRestClient: OrderRestClient = mock()
@@ -106,7 +109,7 @@ internal class WCOrderStoreTest {
     @Test
     fun testSimpleInsertionAndRetrieval() {
         runBlocking {
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             ordersDaoDecorator.insertOrUpdateOrder(orderModel)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
 
@@ -120,9 +123,9 @@ internal class WCOrderStoreTest {
     @Test
     fun testGetOrders() {
         runBlocking {
-            val processingOrder = OrderTestUtils.generateSampleOrder(3).saveToDb()
-            OrderTestUtils.generateSampleOrder(4, CoreOrderStatus.ON_HOLD.value).saveToDb()
-            val cancelledOrder = OrderTestUtils.generateSampleOrder(5, CoreOrderStatus.CANCELLED.value).saveToDb()
+            val processingOrder = generateSampleOrder(3).saveToDb()
+            generateSampleOrder(4, CoreOrderStatus.ON_HOLD.value).saveToDb()
+            val cancelledOrder = generateSampleOrder(5, CoreOrderStatus.CANCELLED.value).saveToDb()
 
             val site = SiteModel().apply { id = processingOrder.localSiteId.value }
 
@@ -152,7 +155,7 @@ internal class WCOrderStoreTest {
     @Test
     fun testGetOrderByLocalId() {
         runBlocking {
-            val sampleOrder = OrderTestUtils.generateSampleOrder(3)
+            val sampleOrder = generateSampleOrder(3)
             ordersDaoDecorator.insertOrUpdateOrder(sampleOrder)
 
             val site = SiteModel().apply { this.id = sampleOrder.localSiteId.value }
@@ -169,7 +172,7 @@ internal class WCOrderStoreTest {
     fun testCustomOrderStatus() {
         runBlocking {
             val customStatus = "chronologically-incongruous"
-            val customStatusOrder = OrderTestUtils.generateSampleOrder(3, customStatus)
+            val customStatusOrder = generateSampleOrder(3, customStatus)
             ordersDaoDecorator.insertOrUpdateOrder(customStatusOrder)
 
             val site = SiteModel().apply { id = customStatusOrder.localSiteId.value }
@@ -193,8 +196,8 @@ internal class WCOrderStoreTest {
             val site = SiteModel().apply { id = 6 }
             val orderId = 123L
             val fulfillments = listOf(
-                OrderTestUtils.generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L),
-                OrderTestUtils.generateOrderFulfillment(
+                generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L),
+                generateOrderFulfillment(
                     site.id,
                     orderId,
                     fulfillmentId = 43L,
@@ -225,14 +228,14 @@ internal class WCOrderStoreTest {
         runBlocking {
             val site = SiteModel().apply { id = 6 }
             val orderId = 123L
-            val removedFulfillment = OrderTestUtils.generateOrderFulfillment(
+            val removedFulfillment = generateOrderFulfillment(
                 site.id,
                 orderId,
                 fulfillmentId = 999L
             )
             databaseRule.db.orderFulfillmentDao.upsertOrderFulfillment(removedFulfillment)
 
-            val freshFulfillment = OrderTestUtils.generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L)
+            val freshFulfillment = generateOrderFulfillment(site.id, orderId, fulfillmentId = 42L)
             whenever(orderRestClient.fetchOrderFulfillments(site, orderId)).thenReturn(
                 FetchOrderFulfillmentsResponsePayload(site, orderId, listOf(freshFulfillment))
             )
@@ -246,7 +249,7 @@ internal class WCOrderStoreTest {
 
     @Test
     fun testUpdateOrderStatus() = runBlocking {
-        val orderModel = OrderTestUtils.generateSampleOrder(42)
+        val orderModel = generateSampleOrder(42)
         ordersDaoDecorator.insertOrUpdateOrder(orderModel)
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val result = RemoteOrderPayload.Updating(orderModel.copy(status = CoreOrderStatus.REFUNDED.value), site)
@@ -275,7 +278,7 @@ internal class WCOrderStoreTest {
         runBlocking {
             // GIVEN
             val orderId = 42L
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             val newStatus = WCOrderStatusModel(statusKey = CoreOrderStatus.COMPLETED.value)
             val paymentMethodId = "cod"
@@ -331,8 +334,8 @@ internal class WCOrderStoreTest {
         val notesJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order_notes.json")
         val orderId = 949L
         val localSiteId = 6
-        val noteModels = OrderTestUtils.getOrderNotesFromJsonString(notesJson, localSiteId, orderId)
-        val orderModel = OrderTestUtils.generateSampleOrder(orderId).copy(localSiteId = LocalId(localSiteId.toInt()))
+        val noteModels = getOrderNotesFromJsonString(notesJson, localSiteId, orderId)
+        val orderModel = generateSampleOrder(orderId).copy(localSiteId = LocalId(localSiteId.toInt()))
         val site = SiteModel().apply { id = localSiteId }
         assertEquals(6, noteModels.size)
         orderNotesDao.insertNotes(noteModels[0])
@@ -347,22 +350,22 @@ internal class WCOrderStoreTest {
         runBlocking {
             val site = SiteModel().apply { id = 6 }
             // Convert an order to identifier and restore it from the database
-            OrderTestUtils.generateSampleOrder(3).saveToDb().let { sampleOrder ->
+            generateSampleOrder(3).saveToDb().let { sampleOrder ->
                 assertEquals(sampleOrder, orderStore.getOrderByIdAndSite(3, site))
             }
 
             // Attempt to restore an order that doesn't exist in the database
-            OrderTestUtils.generateSampleOrder(4).let {
+            generateSampleOrder(4).let {
                 assertNull(orderStore.getOrderByIdAndSite(4, site))
             }
 
             // Restore an order that doesn't have a remote ID
-            OrderTestUtils.generateSampleOrder(0).saveToDb().let { draftOrder ->
+            generateSampleOrder(0).saveToDb().let { draftOrder ->
                 assertEquals(draftOrder, orderStore.getOrderByIdAndSite(0, site))
             }
 
             // Restore an order without a local ID by matching site and remote order IDs
-            OrderTestUtils.generateSampleOrder(3).let { duplicateRemoteOrder ->
+            generateSampleOrder(3).let { duplicateRemoteOrder ->
                 assertEquals(duplicateRemoteOrder, orderStore.getOrderByIdAndSite(3, site))
             }
         }
@@ -403,7 +406,7 @@ internal class WCOrderStoreTest {
 
     @Test
     fun testUpdateOrderStatusRequestUpdatesLocalDatabase() = runBlocking {
-        val orderModel = OrderTestUtils.generateSampleOrder(42, orderStatus = CoreOrderStatus.PROCESSING.value)
+        val orderModel = generateSampleOrder(42, orderStatus = CoreOrderStatus.PROCESSING.value)
             .saveToDb()
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val result = RemoteOrderPayload.Updating(orderModel.copy(status = CoreOrderStatus.COMPLETED.value), site)
@@ -433,7 +436,7 @@ internal class WCOrderStoreTest {
 
     @Test
     fun testRevertLocalOrderUpdateIfRemoteUpdateFails() = runBlocking {
-        val orderModel = OrderTestUtils.generateSampleOrder(42, orderStatus = CoreOrderStatus.PROCESSING.value)
+        val orderModel = generateSampleOrder(42, orderStatus = CoreOrderStatus.PROCESSING.value)
             .saveToDb()
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val error = OrderError()
@@ -468,7 +471,7 @@ internal class WCOrderStoreTest {
 
     @Test
     fun testUpdateOrderPaymentMethodRequestUpdatesLocalDatabase() = runBlocking {
-        val orderModel = OrderTestUtils.generateSampleOrder(
+        val orderModel = generateSampleOrder(
             42,
             orderStatus = CoreOrderStatus.PROCESSING.value,
             paymentMethod = "",
@@ -516,7 +519,7 @@ internal class WCOrderStoreTest {
 
     @Test
     fun testRevertLocalPaymentMethodIfRemoteUpdateFails() = runBlocking {
-        val orderModel = OrderTestUtils.generateSampleOrder(
+        val orderModel = generateSampleOrder(
             42,
             orderStatus = CoreOrderStatus.PROCESSING.value,
             paymentMethod = "",
@@ -574,14 +577,14 @@ internal class WCOrderStoreTest {
             val site = SiteModel().apply { id = siteId }
             // When inserting 3 PROCESSING and 1 COMPLETED orders
             for (i in 1L..3L) {
-                OrderTestUtils.generateSampleOrder(
+                generateSampleOrder(
                     siteId = siteId,
                     orderId = i,
                     orderStatus = CoreOrderStatus.PROCESSING.value
                 ).saveToDb()
             }
 
-            OrderTestUtils.generateSampleOrder(
+            generateSampleOrder(
                 siteId = siteId,
                 orderId = 4L,
                 orderStatus = CoreOrderStatus.COMPLETED.value
@@ -609,7 +612,7 @@ internal class WCOrderStoreTest {
     fun testHasOrdersWithoutLocalOrders() {
         runBlocking {
             // Given there are NO orders in the local database
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             val hasOrdersResponse = FetchHasOrdersResponsePayload(site = site, hasOrders = false)
             whenever(orderRestClient.fetchHasOrders(any(), anyOrNull()))
@@ -631,7 +634,7 @@ internal class WCOrderStoreTest {
     fun testHasOrdersWithLocalOrders() {
         runBlocking {
             // Given there are orders in the local database
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             orderModel.saveToDb()
 
@@ -651,7 +654,7 @@ internal class WCOrderStoreTest {
     @Test
     fun testFetchOrdersReceipt() {
         runBlocking {
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             val orderId = 42L
             val expirationDate = "2021-01-05"
@@ -679,7 +682,7 @@ internal class WCOrderStoreTest {
     @Test
     fun testSendOrderReceipt() {
         runBlocking {
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             val orderId = 42L
 
@@ -693,7 +696,7 @@ internal class WCOrderStoreTest {
     fun `given valid site and orderId, when sendOrderPOSSpecificReceipt is called, then sendOrderPOSSpecificReceipt in the rest client is triggered`() {
         runBlocking {
             // GIVEN
-            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val orderModel = generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             val orderId = 42L
             val email = "test@example.com"
@@ -809,11 +812,83 @@ internal class WCOrderStoreTest {
         }
     }
 
+    /* HELPER */
+
+    @Suppress("LongParameterList")
+    private fun generateOrderFulfillment(
+        siteId: Int,
+        orderId: Long,
+        fulfillmentId: Long = 42L,
+        status: String = "fulfilled",
+        isFulfilled: Boolean = true,
+        dateUpdated: String? = "2026-03-18 21:00:00",
+        dateFulfilled: String? = "2026-03-18 14:30:00",
+        trackingNumber: String? = "1Z999AA10123456784",
+        shipmentProvider: String? = "ups",
+        trackingUrl: String? = "https://www.ups.com/track?tracknum=1Z999AA10123456784"
+    ) = WCOrderFulfillmentModel(
+        localSiteId = LocalId(siteId),
+        orderId = RemoteId(orderId),
+        fulfillmentId = fulfillmentId,
+        status = status,
+        isFulfilled = isFulfilled,
+        dateUpdated = dateUpdated,
+        dateFulfilled = dateFulfilled,
+        trackingNumber = trackingNumber,
+        shipmentProvider = shipmentProvider,
+        trackingUrl = trackingUrl
+    )
+
+    @Suppress("LongParameterList")
+    private fun generateSampleOrder(
+        orderId: Long,
+        orderStatus: String = CoreOrderStatus.PROCESSING.value,
+        siteId: Int = 6,
+        modified: String = "1955-11-05T14:15:00Z",
+        paymentMethod: String = "",
+        paymentMethodTitle: String = ""
+    ): OrderEntity {
+        return OrderEntity(
+            orderId = orderId,
+            localSiteId = LocalId(siteId),
+            status = orderStatus,
+            dateModified = modified,
+            dateCreated = "1955-11-05T14:15:00Z",
+            datePaid = "1956-11-05T14:15:00Z",
+            currency = "USD",
+            total = "10.0",
+            paymentMethod = paymentMethod,
+            paymentMethodTitle = paymentMethodTitle,
+        )
+    }
+
+    private fun generateSampleOrderSummary(
+        id: Number,
+        remoteId: Number,
+        modified: String = "1955-11-05T14:15:00Z"
+    ): WCOrderSummaryModel {
+        return WCOrderSummaryModel(
+            siteId = LocalId(id.toInt()),
+            orderId = RemoteId(remoteId.toLong()),
+            dateCreated = "1955-11-05T14:15:00Z",
+        ).apply {
+            dateModified = modified
+        }
+    }
+
+    private fun getOrderNotesFromJsonString(json: String, localSiteId: Int, orderId: Long): List<OrderNoteEntity> {
+        val responseType = object : TypeToken<List<OrderNoteApiResponse>>() {}.type
+        val converted = Gson().fromJson(json, responseType) as? List<OrderNoteApiResponse> ?: emptyList()
+        return converted.map {
+            it.toDataModel(localSiteId = LocalId(localSiteId), orderId = RemoteId(orderId))
+        }
+    }
+
     private fun setupMissingOrders(): MutableMap<WCOrderSummaryModel, OrderEntity?> {
         return mutableMapOf<WCOrderSummaryModel, OrderEntity?>().apply {
             (21L..30L).forEach { index ->
                 put(
-                    OrderTestUtils.generateSampleOrderSummary(
+                    generateSampleOrderSummary(
                         id = index,
                         remoteId = index
                     ),
@@ -829,12 +904,12 @@ internal class WCOrderStoreTest {
             val oneDayAfterBaselineDate = "2021-01-06T12:00:00Z"
             (11L..20L).forEach { index ->
                 put(
-                    OrderTestUtils.generateSampleOrderSummary(
+                    generateSampleOrderSummary(
                         id = index,
                         remoteId = index,
                         modified = oneDayAfterBaselineDate
                     ),
-                    OrderTestUtils.generateSampleOrder(
+                    generateSampleOrder(
                         siteId = site.id,
                         orderId = index,
                         modified = baselineDate
@@ -848,12 +923,12 @@ internal class WCOrderStoreTest {
             val baselineDate = "2021-01-05T12:00:00Z"
             (1L..10L).forEach { index ->
                 put(
-                    OrderTestUtils.generateSampleOrderSummary(
+                    generateSampleOrderSummary(
                         id = index,
                         remoteId = index,
                         modified = baselineDate
                     ),
-                    OrderTestUtils.generateSampleOrder(
+                    generateSampleOrder(
                         siteId = site.id,
                         orderId = index,
                         modified = baselineDate

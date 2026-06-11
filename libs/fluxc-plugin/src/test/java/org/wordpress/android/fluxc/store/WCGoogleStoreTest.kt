@@ -7,8 +7,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.google.WCGoogleAdsCampaignMapper
@@ -24,20 +23,18 @@ import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.CLICKS
 import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.SALES
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 
+@Suppress("UnitTestNamingRule")
 @ExperimentalCoroutinesApi
 class WCGoogleStoreTest {
-    @Mock
-    lateinit var restClient: WCGoogleRestClient
+    private val restClient: WCGoogleRestClient = mock()
 
-    @Mock
-    lateinit var wcGoogleAdsCampaignMapper: WCGoogleAdsCampaignMapper
+    private val wcGoogleAdsCampaignMapper: WCGoogleAdsCampaignMapper = mock()
 
     private lateinit var wcGoogleStore: WCGoogleStore
     private val siteModel = SiteModel()
 
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
         wcGoogleStore = WCGoogleStore(
             restClient = restClient,
             coroutineEngine = initCoroutineEngine(),

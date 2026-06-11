@@ -86,6 +86,7 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
+    val isScheduledImportEnabled by parentViewModel.isScheduledImportEnabled.observeAsState(false)
     val selectedRevenueStatsType = viewModel.selectedRevenueStatsType.observeAsState().value ?: return
     val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
     var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -130,6 +131,8 @@ fun DashboardStatsCard(
                     revenueStatsState = revenueStatsState,
                     visitorsStatsState = visitorsStatsState,
                     lastUpdateState = lastUpdateState,
+                    showDelayedFooter = isScheduledImportEnabled,
+                    onDelayedStatsInfoClick = parentViewModel::onDelayedStatsInfoClicked,
                     selectedRevenueStatsType = selectedRevenueStatsType,
                     selectedOrderDateType = orderDateTypeState.selectedType,
                     dateUtils = viewModel.dateUtils,
@@ -174,6 +177,8 @@ private fun DashboardStatsContent(
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
+    showDelayedFooter: Boolean,
+    onDelayedStatsInfoClick: () -> Unit,
     selectedRevenueStatsType: DashboardStatsViewModel.RevenueStatsType,
     selectedOrderDateType: WCAnalyticsOrderDateType,
     dateUtils: DateUtils,
@@ -209,6 +214,8 @@ private fun DashboardStatsContent(
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
             lastUpdateState = lastUpdateState,
+            showDelayedFooter = showDelayedFooter,
+            onDelayedStatsInfoClick = onDelayedStatsInfoClick,
             selectedRevenueStatsType = selectedRevenueStatsType,
             selectedOrderDateType = selectedOrderDateType,
             dateUtils = dateUtils,
@@ -228,6 +235,8 @@ private fun StatsChart(
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
+    showDelayedFooter: Boolean,
+    onDelayedStatsInfoClick: () -> Unit,
     selectedRevenueStatsType: DashboardStatsViewModel.RevenueStatsType,
     selectedOrderDateType: WCAnalyticsOrderDateType,
     dateUtils: DateUtils,
@@ -275,8 +284,12 @@ private fun StatsChart(
         statsView.loadDashboardStats(dateRange.rangeSelection)
     }
 
-    LaunchedEffect(lastUpdateState) {
-        statsView.showLastUpdate(lastUpdateState)
+    LaunchedEffect(lastUpdateState, showDelayedFooter) {
+        statsView.showStatsFooter(
+            lastUpdateMillis = lastUpdateState,
+            isDelayed = showDelayedFooter,
+            onInfoClick = onDelayedStatsInfoClick
+        )
     }
 
     LaunchedEffect(selectedOrderDateType) {

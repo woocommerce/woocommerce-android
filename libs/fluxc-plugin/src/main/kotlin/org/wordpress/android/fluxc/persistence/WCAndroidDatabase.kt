@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.data.WCLocationModel
+import org.wordpress.android.fluxc.model.settings.AnalyticsScheduledImportSettingEntity
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelCreationEligibility
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
@@ -38,6 +39,7 @@ import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConverter
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
@@ -143,7 +145,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 86
+const val WC_DATABASE_VERSION = 87
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -206,6 +208,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCShippingLabelCreationEligibility::class,
         WooPushNotificationPreferencesEntity::class,
         SupportChatBookmarkEntity::class,
+        AnalyticsScheduledImportSettingEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -271,6 +274,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 83, to = 84),
         AutoMigration(from = 84, to = 85),
         AutoMigration(from = 85, to = 86),
+        AutoMigration(from = 86, to = 87),
     ]
 )
 @TypeConverters(
@@ -329,6 +333,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
     internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
     abstract val supportChatBookmarkDao: SupportChatBookmarkDao
+    abstract val analyticsScheduledImportDao: AnalyticsScheduledImportDao
 
     companion object {
         fun buildDb(

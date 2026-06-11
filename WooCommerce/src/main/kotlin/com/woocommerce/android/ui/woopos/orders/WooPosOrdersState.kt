@@ -51,18 +51,6 @@ object WooPosOrdersState {
                 }
 
                 @Immutable
-                sealed interface BookingInfo {
-                    @Immutable
-                    data class Loading(val bookingId: Long) : BookingInfo
-
-                    @Immutable
-                    data class Loaded(val text: String) : BookingInfo
-
-                    @Immutable
-                    data class Error(val text: String) : BookingInfo
-                }
-
-                @Immutable
                 data class LineItemRow(
                     val id: Long,
                     val name: String,
@@ -70,7 +58,6 @@ object WooPosOrdersState {
                     val qtyAndUnitPrice: String,
                     val lineTotal: String,
                     val imageUrl: String?,
-                    val bookingInfo: BookingInfo? = null,
                     val isLumpSum: Boolean = false,
                     val includesTax: Boolean = false,
                 )

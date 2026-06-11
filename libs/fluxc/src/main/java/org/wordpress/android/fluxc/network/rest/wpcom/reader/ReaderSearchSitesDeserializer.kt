@@ -34,8 +34,6 @@ class ReaderSearchSitesDeserializer : JsonDeserializer<ReaderSearchSitesResponse
             // parse the site meta data
             val jsonSite = jsonFeed.getJsonObject("meta").getJsonObject("data").getJsonObject("site")
             site.isFollowing = jsonSite.getBoolean("is_following")
-            site.description = jsonSite.getString("description", unescapeHtml4 = true)
-            site.iconUrl = jsonSite.getJsonObject("icon").getString("ico")
 
             site
         }

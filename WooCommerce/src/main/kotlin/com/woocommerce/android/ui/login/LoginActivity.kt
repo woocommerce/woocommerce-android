@@ -53,6 +53,9 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginAvailability
+import com.woocommerce.android.ui.login.qrlogin.QrLoginPrologueFragment
+import com.woocommerce.android.ui.login.qrlogin.QrLoginScannerFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -110,7 +113,9 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginSiteCredentialsFragment.Listener {
+    LoginSiteCredentialsFragment.Listener,
+    QrLoginPrologueFragment.Listener,
+    QrLoginScannerFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -127,6 +132,7 @@ class LoginActivity :
         const val SITE_URL_PARAMETER = "siteUrl"
         const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
         const val APP_LOGIN_AUTHORITY = "app-login"
+        const val QR_LOGIN_AUTHORITY = "qr-login"
         const val USERNAME_PARAMETER = "username"
     }
 
@@ -159,6 +165,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var registerDevice: RegisterDevice
+
+    @Inject
+    internal lateinit var qrLoginAvailability: QrLoginAvailability
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -195,6 +204,21 @@ class LoginActivity :
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
                 intent.data?.let { uri -> handleAppLoginUri(uri) }
+            }
+
+            savedInstanceState == null &&
+                intent?.action == Intent.ACTION_VIEW &&
+                intent.data?.authority == QR_LOGIN_AUTHORITY -> {
+                if (qrLoginAvailability.isAvailableForDeepLink()) {
+                    intent.data?.let { uri -> handleQrLoginUri(uri) }
+                } else {
+                    loginAnalyticsListener.trackLoginAccessed()
+                    showPrologue()
+                }
+                // Replace the activity intent so a process restart from recents cannot replay
+                // the single-use token. Mutating fields on the in-memory Intent is not enough —
+                // Android restores getIntent() from the originally launched intent on cold start.
+                setIntent(Intent())
             }
 
             hasJetpackConnectedIntent() -> {
@@ -268,6 +292,44 @@ class LoginActivity :
         } else {
             showPrologueFragment()
         }
+    }
+
+    private fun showQrLoginPrologueFragment() {
+        val existing = supportFragmentManager.findFragmentByTag(QrLoginPrologueFragment.TAG)
+            as? QrLoginPrologueFragment
+        changeFragment(existing ?: QrLoginPrologueFragment(), true, QrLoginPrologueFragment.TAG)
+    }
+
+    override fun onQrLoginScanClicked() {
+        changeFragment(QrLoginScannerFragment(), true, QrLoginScannerFragment.TAG)
+    }
+
+    override fun onQrLoginFallbackClicked() {
+        disableDynamicEdgeToEdge()
+        loginViaSiteAddress()
+    }
+
+    override fun onQrLoginCompleted(localSiteId: Int) {
+        loggedInViaUsernamePassword(arrayListOf(localSiteId))
+    }
+
+    override fun onQrLoginSiteUrlPrefill(siteUrl: String) {
+        disableDynamicEdgeToEdge()
+        loginViaSiteAddress(prefilledSiteUrl = siteUrl)
+    }
+
+    override fun onQrLoginAppLoginCredentials(siteUrl: String, username: String) {
+        disableDynamicEdgeToEdge()
+        showAppLoginSiteCredentials(siteUrl = siteUrl, username = username)
+    }
+
+    override fun onQrLoginAppLoginWpComEmail(siteUrl: String, wpComEmail: String) {
+        disableDynamicEdgeToEdge()
+        showAppLoginWpComEmail(siteUrl = siteUrl, wpComEmail = wpComEmail)
+    }
+
+    override fun onQrLoginHelpClicked() {
+        viewHelpAndSupport(HelpOrigin.LOGIN_WITH_QR_CODE)
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
@@ -353,9 +415,14 @@ class LoginActivity :
     }
 
     override fun onPrimaryButtonClicked() {
-        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
         disableDynamicEdgeToEdge()
-        loginViaSiteAddress()
+        if (qrLoginAvailability.isAvailable()) {
+            unifiedLoginTracker.trackClick(Click.LOGIN_WITH_QR)
+            showQrLoginPrologueFragment()
+        } else {
+            unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
+            loginViaSiteAddress()
+        }
     }
 
     override fun onSecondaryButtonClicked() {
@@ -466,9 +533,12 @@ class LoginActivity :
         changeFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG, false)
     }
 
-    override fun loginViaSiteAddress() {
+    override fun loginViaSiteAddress() = loginViaSiteAddress(prefilledSiteUrl = null)
+
+    private fun loginViaSiteAddress(prefilledSiteUrl: String?) {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
-        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment()
+            ?: WooLoginSiteAddressFragment.newInstance(prefilledSiteUrl)
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
@@ -1018,6 +1088,11 @@ class LoginActivity :
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
     }
 
+    private fun handleQrLoginUri(uri: Uri) {
+        unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
+        changeFragment(QrLoginScannerFragment.forDeepLink(uri.toString()), true, QrLoginScannerFragment.TAG)
+    }
+
     private fun handleAppLoginUri(uri: Uri) {
         unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
         val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER) ?: ""
@@ -1025,25 +1100,13 @@ class LoginActivity :
         val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
         when {
             siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
-                gotWpcomSiteInfo(siteUrl)
-                AnalyticsTracker.track(
-                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                    properties = mapOf(KEY_FLOW to VALUE_WP_COM)
-                )
-                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false)
+                trackAppLoginSuccess(flow = VALUE_WP_COM)
+                showAppLoginWpComEmail(siteUrl = siteUrl, wpComEmail = wpComEmail)
             }
 
             siteUrl.isNotEmpty() && username.isNotEmpty() -> {
-                AnalyticsTracker.track(
-                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
-                    properties = mapOf(KEY_FLOW to VALUE_NO_WP_COM)
-                )
-                showUsernamePasswordScreen(
-                    siteAddress = siteUrl,
-                    inputUsername = username,
-                    endpointAddress = null,
-                    inputPassword = null
-                )
+                trackAppLoginSuccess(flow = VALUE_NO_WP_COM)
+                showAppLoginSiteCredentials(siteUrl = siteUrl, username = username)
             }
 
             else -> {
@@ -1055,6 +1118,37 @@ class LoginActivity :
                 showPrologue()
             }
         }
+    }
+
+    private fun trackAppLoginSuccess(flow: String) {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+            properties = mapOf(KEY_FLOW to flow)
+        )
+    }
+
+    /**
+     * Shared UI entry point for the self-hosted `app-login` flow — used by both the OS-deeplink
+     * handler ([handleAppLoginUri]) and the in-app QR scanner ([onQrLoginAppLoginCredentials]).
+     * Each caller owns its own analytics event with the correct `source` value, so we keep
+     * tracking out of this helper.
+     */
+    private fun showAppLoginSiteCredentials(siteUrl: String, username: String) {
+        showUsernamePasswordScreen(
+            siteAddress = siteUrl,
+            inputUsername = username,
+            endpointAddress = null,
+            inputPassword = null
+        )
+    }
+
+    /**
+     * Shared UI entry point for the WP.com `app-login` flow — symmetric to
+     * [showAppLoginSiteCredentials]. Each caller owns its own analytics event.
+     */
+    private fun showAppLoginWpComEmail(siteUrl: String, wpComEmail: String) {
+        gotWpcomSiteInfo(siteUrl)
+        showEmailPasswordScreen(email = wpComEmail, verifyEmail = false)
     }
 
     private fun keepTrackOfAgeEligibility() {

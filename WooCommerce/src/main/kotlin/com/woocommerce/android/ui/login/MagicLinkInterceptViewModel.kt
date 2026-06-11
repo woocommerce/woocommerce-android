@@ -17,6 +17,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.wordpress.android.login.LoginAnalyticsListener
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +25,8 @@ class MagicLinkInterceptViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val magicLinkInterceptRepository: MagicLinkInterceptRepository,
     private val selectedSite: SelectedSite,
-    private val fetchJetpackStatus: FetchJetpackStatus
+    private val fetchJetpackStatus: FetchJetpackStatus,
+    private val loginAnalyticsListener: LoginAnalyticsListener
 ) : ScopedViewModel(savedState) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -56,6 +58,7 @@ class MagicLinkInterceptViewModel @Inject constructor(
         _isLoading.value = false
         when (requestResult) {
             RequestResult.SUCCESS -> {
+                loginAnalyticsListener.trackAnalyticsSignIn(true)
                 when {
                     flow == MagicLinkFlow.JetpackConnection &&
                         selectedSite.connectionType == SiteConnectionType.ApplicationPasswords -> {
