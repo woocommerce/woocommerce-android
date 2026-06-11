@@ -133,7 +133,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             is PosLocalCatalogSyncResult.Failure.InvalidResponse -> SyncErrorType.INVALID_RESPONSE
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
             is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> SyncErrorType.CATALOG_GENERATION_TIMEOUT
-            is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> SyncErrorType.CATALOG_FILE_DOWNLOAD_FAILED
+            is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> SyncErrorType.CATALOG_FILE_BLOCKED
         }
 
         analyticsTracker.track(

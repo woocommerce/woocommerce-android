@@ -145,7 +145,11 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 is PosLocalCatalogSyncResult.Failure -> {
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(result.error)
+                        ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(
+                            errorMessage = result.error,
+                            isServerPermissionsError =
+                            result is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked
+                        )
                     )
                 }
             }

@@ -3839,8 +3839,9 @@
     <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
+    <string name="woopos_home_sync_failed_blocked_title">Action needed on your store</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
-    <string name="woopos_home_sync_failed_server_permissions_message">The catalog file could not be downloaded from your store due to blocked server permissions. Please contact your hosting provider.</string>
+    <string name="woopos_home_sync_failed_server_permissions_message">Point of Sale can\'t access a file with your product information because your hosting provider is blocking it. Please ask them to allow access to it so Point of Sale keeps working properly.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
     <string name="woopos_home_sync_failed_blocked_continue_button">Got it</string>
     <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
@@ -3933,7 +3934,9 @@
     <string name="woopos_settings_local_catalog_size_format">%1$d products and %2$d variations</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_title">Action needed on your store</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_message">Point of Sale can\'t access a file with your product information because your hosting provider is blocking it. Please ask them to allow access to it so Point of Sale keeps working properly.</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Retry</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Cancel</string>
 
