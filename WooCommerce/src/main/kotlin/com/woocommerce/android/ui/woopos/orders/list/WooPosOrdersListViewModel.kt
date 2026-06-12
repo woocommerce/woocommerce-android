@@ -390,7 +390,7 @@ class WooPosOrdersListViewModel @Inject constructor(
         val newSelectedId = if (isSelectedOrderStillInList) {
             currentSelectedId
         } else {
-            requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+            newFirstOrderId ?: return
         }
 
         val items = orders.map { order ->
