@@ -16,3 +16,6 @@ Dangerfile*            @woocommerce/apps-infra-tooling
 
 # Toolchain and environment pins
 .java-version          @woocommerce/apps-infra-tooling
+
+# Secrets
+.configure-files/     @woocommerce/apps-infra-tooling
