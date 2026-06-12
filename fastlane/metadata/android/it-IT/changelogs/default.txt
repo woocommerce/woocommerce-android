@@ -1,0 +1,2 @@
+24.9:
+Accetta pagamenti di persona con WooCommerce In-Person Payments e lettore di carte in Australia, Austria, Belgio, Canada, Finlandia, Francia, Germania, Irlanda, Italia, Lussemburgo, Paesi Bassi, Nuova Zelanda, Portogallo, Singapore, Spagna, Regno Unito e USA. Tap to Pay è attivo in Canada, Regno Unito e USA. Avvia un ordine o trovane uno in attesa, poi incassa in tutta semplicità. Migliorata anche la gestione doganale delle etichette di spedizione USPS per i territori USA.

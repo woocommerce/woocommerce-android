@@ -1,4 +1,4 @@
-Gérer votre boutique depuis n’importe où
+Gérer votre boutique de n’importe où
 
 Gérez votre entreprise où que vous soyez avec l’application mobile WooCommerce. Ajoutez des produits, créez des commandes, autorisez les paiements rapides et gardez un œil sur les nouvelles ventes et les statistiques clés en temps réel.
 
@@ -8,13 +8,13 @@ Lancez-vous en quelques secondes ! Créez, regroupez et publiez des produits di
 Créez des commandes à la volée
 C’est un jeu d’enfant dès que vous avez créé quelques produits. Choisissez des articles dans votre catalogue, ajoutez les frais d’expédition, puis remplissez les coordonnées du client pour créer rapidement une commande qui se synchronise avec votre inventaire.
 
-Acceptez les paiements en personne
-Recueillez les paiements physiques à l’aide de WooCommerce In-Person Payments et d’un lecteur de carte (option disponible aux États-Unis, au Royaume-Uni et au Canada), Tap to Pay ou un portefeuille numérique tel qu'Apple Pay. Lancez une nouvelle commande (ou trouvez une commande existante en attente de paiement), puis acceptez le paiement en toute transparence.
+Accepter les paiements en personne
+Percevez des paiements physiques à l’aide des paiements en personne WooCommerce et d’un lecteur de carte en Allemagne, en Australie, en Autriche, en Belgique, au Canada, en Espagne, aux États-Unis, en Finlande, en France, en Irlande, en Italie, au Luxembourg, en Nouvelle-Zélande, au Royaume-Uni, aux Pays-Bas, au Portugal et à Singapour. Le service Tap to Pay est disponible au Canada, aux États-Unis et au Royaume-Uni. Commencez une nouvelle commande, ou trouvez une commande existante en attente de paiement, puis acceptez le paiement facilement.
 
-Passer des clics aux briques
-Transformez n’importe quelle tablette en un puissant point de vente avec WooCommerce POS. Recherchez des produits, scannez des codes-barres, appliquez des codes promo et envoyez des reçus par e-mail, toutes vos ventes en ligne et physiques étant synchronisées en temps réel. Disponible aux États-Unis et au Royaume-Uni.
+Passer du virtuel au réel
+Transformez n’importe quelle tablette en un puissant point de vente avec WooCommerce POS. Recherchez des produits, scannez des codes-barres, appliquez des codes promo et envoyez des reçus par e-mail. Toutes vos ventes en ligne et en boutique physique sont synchronisées en temps réel. Disponible aux États-Unis et au Royaume-Uni.
 
-Recevez des notifications lors de chaque vente
+Des notifications lors de chaque vente
 Maintenant que vous vendez activement, ne manquez jamais une commande ou un avis.  Restez au courant en activant les alertes en temps réel et ne manquez pas ce « gling-gling » addictif qui retentit lors de chaque nouvelle vente ! 
 
 Suivez les ventes et les produits les plus vendus

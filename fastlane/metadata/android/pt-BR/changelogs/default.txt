@@ -1,0 +1,2 @@
+24.9:
+Pagamentos físicos com o WooCommerce In-Person Payments e um leitor de cartão na Austrália, Áustria, Bélgica, Canadá, Finlândia, França, Alemanha, Irlanda, Itália, Luxemburgo, Holanda, Nova Zelândia, Portugal, Singapura, Espanha, Reino Unido e EUA. Tap to Pay disponível no Canadá, Reino Unido e EUA Crie um novo pedido ou aceite o pagamento de um existente com pagamento pendente. Também melhoramos o processamento aduaneiro de etiquetas de envio da USPS para territórios dos EUA.

@@ -9,10 +9,10 @@ Crea pedidos sobre la marcha
 Cuando hayas creado algunos productos, te resultará sencillo. Elige los artículos del catálogo, añade el envío y rellena los datos del cliente para crear rápidamente un pedido que se sincronice con el inventario.
 
 Acepta pagos en persona
-Recibe pagos en persona con WooCommerce In-Person Payments y un lector de tarjetas (disponible en Canadá, Reino Unido y Estados Unidos), Tap to Pay o una cartera digital, como Apple Pay. Empieza un nuevo pedido o encuentra uno que esté pendiente de pago, y acepta el pago de forma sencilla.
+Recibe pagos físicos con Pagos en persona de WooCommerce y un lector de tarjetas en Alemania, Australia, Austria, Bélgica, Canadá, España, Estados Unidos, Finlandia, Francia, Irlanda, Italia, Luxemburgo, Nueva Zelanda, Países Bajos, Portugal, Reino Unido y Singapur. Tap to Pay está disponible en Canadá, Reino Unido y Estados Unidos. Empieza un pedido (o encuentra uno que esté pendiente de pago) y acepta el pago sin problemas.
 
-Pasa del comercio en línea a la venta en físico
-Convierte cualquier tableta en un potente punto de venta con WooCommerce POS. Busca productos, escanea códigos de barras, aplica cupones y envía recibos por correo electrónico, con todas tus ventas físicas y en línea sincronizadas en tiempo real. Disponible en EE. UU. y Reino Unido.
+Pasar de clics a construir
+Convierte cualquier tableta en un potente punto de venta con WooCommerce POS. Busca productos, escanea códigos de barras, aplica cupones y envía recibos por correo electrónico, con todas tus ventas físicas y en línea sincronizadas en tiempo real. Disponible en Estados Unidos y Reino Unido.
 
 Recibe notificaciones de todas las ventas
 Ahora que vendes de manera activa, no te pierdas ningún pedido u opinión. Activa las alertas en tiempo real para estar al día y disfruta del adictivo sonido que produce una nueva venta.
