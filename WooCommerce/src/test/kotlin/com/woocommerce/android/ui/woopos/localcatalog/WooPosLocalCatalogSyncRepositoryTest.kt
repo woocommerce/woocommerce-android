@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -16,6 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -245,6 +247,28 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // THEN
         verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed>())
     }
+
+    @Test
+    fun `when full sync fails with catalog file blocked, then tracks catalog_file_blocked`() =
+        testBlocking {
+            // GIVEN
+            givenFileBasedFullSyncFails(
+                PosLocalCatalogSyncResult.Failure.CatalogFileBlocked(
+                    error = "Catalog file blocked by the host"
+                )
+            )
+
+            // WHEN
+            sut.syncLocalCatalogFull(site)
+
+            // THEN
+            verify(analyticsTracker).track(
+                argThat {
+                    this is WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed &&
+                        errorType == WooPosAnalyticsEventConstant.SyncErrorType.CATALOG_FILE_BLOCKED
+                }
+            )
+        }
 
     @Test
     fun `when incremental sync starts, then tracks sync started event`() = testBlocking {

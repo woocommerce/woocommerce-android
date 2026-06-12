@@ -47,7 +47,7 @@ class WooPosSettingsViewModel @Inject constructor(
             childToParentEventReceiver.events.collect { event ->
                 when (event) {
                     is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog -> {
-                        showSyncErrorDialog(event.errorMessage)
+                        showSyncErrorDialog(event.errorMessage, event.isServerPermissionsError)
                     }
                     is ChildToParentEvent.SettingsEvent.ShowCardReaderConnectionDialog -> {
                         showCardReaderConnectionDialog()
@@ -129,9 +129,11 @@ class WooPosSettingsViewModel @Inject constructor(
         }
     }
 
-    fun showSyncErrorDialog(errorMessage: String) {
+    fun showSyncErrorDialog(errorMessage: String, isServerPermissionsError: Boolean = false) {
         _state.update { currentState ->
-            currentState.copy(dialogState = WooPosSettingsDialogState.SyncErrorDialog(errorMessage))
+            currentState.copy(
+                dialogState = WooPosSettingsDialogState.SyncErrorDialog(errorMessage, isServerPermissionsError)
+            )
         }
     }
 

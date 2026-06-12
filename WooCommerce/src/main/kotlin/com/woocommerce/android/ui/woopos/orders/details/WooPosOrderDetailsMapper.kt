@@ -29,7 +29,6 @@ class WooPosOrderDetailsMapper @Inject constructor(
     private val orderStatusMapper: WooPosOrderStatusMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
-    private val bookingInfoMapper: WooPosBookingInfoMapper,
     private val getNonRefundedItems: WooPosGetNonRefundedItems,
     private val groupRefundedItems: WooPosGroupRefundedItems,
 ) {
@@ -216,7 +215,6 @@ class WooPosOrderDetailsMapper @Inject constructor(
                         item.total / item.quantity.toBigDecimal()
                     }
                 val product = getProductById(item.productId)
-                val bookingInfo = item.bookingId?.let { bookingInfoMapper.resolveBookingInfo(it) }
                 LineItemRow(
                     id = item.itemId,
                     name = item.name,
@@ -224,7 +222,6 @@ class WooPosOrderDetailsMapper @Inject constructor(
                     qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice, order.currency)}",
                     lineTotal = formatPrice(item.total, order.currency),
                     imageUrl = product?.firstImageUrl,
-                    bookingInfo = bookingInfo,
                 )
             }
         }.awaitAll()

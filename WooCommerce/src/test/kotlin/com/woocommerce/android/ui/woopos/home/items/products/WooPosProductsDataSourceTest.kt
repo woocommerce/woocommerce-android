@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosCatalogFileBlockedException
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
@@ -17,8 +18,10 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.io.IOException
 import kotlin.test.Test
 
 @Suppress("UnusedFlow")
@@ -136,6 +139,63 @@ class WooPosProductsDataSourceTest {
         assertThat(status).isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed::class.java)
         verify(localDbDataSource).prepopulateCache()
     }
+
+    @Test
+    fun `given catalog blocked, when prepopulate cache, then failed is server permissions error and no auto fallback`() =
+        runTest {
+            // GIVEN
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.BlockingRequired
+            )
+            whenever(localDbDataSource.prepopulateCache()).thenReturn(
+                Result.failure(WooPosCatalogFileBlockedException())
+            )
+            val sut = createSut()
+
+            // WHEN
+            val result = sut.prepopulateCache().toList()
+
+            // THEN — the data source only reports the block; deciding to fall back is the caller's job
+            val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
+            assertThat(status.isServerPermissionsError).isTrue()
+            verify(remoteDataSource, never()).prepopulateCache()
+        }
+
+    @Test
+    fun `when fall back to remote due to catalog block, then uses remote and completes`() = runTest {
+        // GIVEN
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        val sut = createSut()
+
+        // WHEN
+        val result = sut.fallBackToRemoteDueToCatalogBlock().toList()
+
+        // THEN
+        assertThat(result.last())
+            .isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Completed::class.java)
+        assertThat(sut.getCurrentSyncStrategy()).isEqualTo(WooPosProductsDataSource.SyncStrategy.REMOTE)
+        verify(remoteDataSource).prepopulateCache()
+    }
+
+    @Test
+    fun `given prepopulate fails with generic exception, when prepopulate cache, then failed is not server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.BlockingRequired
+            )
+            whenever(localDbDataSource.prepopulateCache()).thenReturn(
+                Result.failure(IOException("Download failed with code: 404"))
+            )
+            val sut = createSut()
+
+            // WHEN
+            val result = sut.prepopulateCache().toList()
+
+            // THEN
+            val status = result.last() as WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed
+            assertThat(status.isServerPermissionsError).isFalse()
+        }
 
     @Test
     fun `given sync error, when prepopulate cache, then no active source is set`() = runTest {

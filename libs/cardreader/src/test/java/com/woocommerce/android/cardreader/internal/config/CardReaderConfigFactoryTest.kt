@@ -1,21 +1,14 @@
 package com.woocommerce.android.cardreader.internal.config
 
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.config.CardReaderConfigForAT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForAustralia
-import com.woocommerce.android.cardreader.config.CardReaderConfigForBE
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.config.CardReaderConfigForDE
-import com.woocommerce.android.cardreader.config.CardReaderConfigForES
 import com.woocommerce.android.cardreader.config.CardReaderConfigForFI
-import com.woocommerce.android.cardreader.config.CardReaderConfigForFR
 import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
 import com.woocommerce.android.cardreader.config.CardReaderConfigForIE
-import com.woocommerce.android.cardreader.config.CardReaderConfigForIT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForLU
 import com.woocommerce.android.cardreader.config.CardReaderConfigForNL
 import com.woocommerce.android.cardreader.config.CardReaderConfigForNZ
-import com.woocommerce.android.cardreader.config.CardReaderConfigForPT
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSG
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
@@ -93,15 +86,12 @@ class CardReaderConfigFactoryTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given country code FR, when getCardReaderConfigFor is called, then France card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("FR"))
-            .isInstanceOf(CardReaderConfigForFR::class.java)
-    }
-
-    @Test
-    fun `given country code DE, when getCardReaderConfigFor is called, then Germany card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("DE"))
-            .isInstanceOf(CardReaderConfigForDE::class.java)
+    fun `given fiscalization country codes, when getCardReaderConfigFor is called, then unsupported returned`() {
+        listOf("AT", "BE", "FR", "IT", "DE", "PT", "ES").forEach { countryCode ->
+            assertThat(cardReaderConfigFactory.getCardReaderConfigFor(countryCode))
+                .`as`("Expected $countryCode to be unsupported")
+                .isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
+        }
     }
 
     @Test
@@ -129,45 +119,15 @@ class CardReaderConfigFactoryTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given country code AT, when getCardReaderConfigFor is called, then Austria card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("AT"))
-            .isInstanceOf(CardReaderConfigForAT::class.java)
-    }
-
-    @Test
-    fun `given country code BE, when getCardReaderConfigFor is called, then Belgium card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("BE"))
-            .isInstanceOf(CardReaderConfigForBE::class.java)
-    }
-
-    @Test
     fun `given country code FI, when getCardReaderConfigFor is called, then Finland card reader config returned`() {
         assertThat(cardReaderConfigFactory.getCardReaderConfigFor("FI"))
             .isInstanceOf(CardReaderConfigForFI::class.java)
     }
 
     @Test
-    fun `given country code IT, when getCardReaderConfigFor is called, then Italy card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("IT"))
-            .isInstanceOf(CardReaderConfigForIT::class.java)
-    }
-
-    @Test
     fun `given country code LU, when getCardReaderConfigFor is called, then Luxembourg card reader config returned`() {
         assertThat(cardReaderConfigFactory.getCardReaderConfigFor("LU"))
             .isInstanceOf(CardReaderConfigForLU::class.java)
-    }
-
-    @Test
-    fun `given country code PT, when getCardReaderConfigFor is called, then Portugal card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("PT"))
-            .isInstanceOf(CardReaderConfigForPT::class.java)
-    }
-
-    @Test
-    fun `given country code ES, when getCardReaderConfigFor is called, then Spain card reader config returned`() {
-        assertThat(cardReaderConfigFactory.getCardReaderConfigFor("ES"))
-            .isInstanceOf(CardReaderConfigForES::class.java)
     }
 
     @Test
