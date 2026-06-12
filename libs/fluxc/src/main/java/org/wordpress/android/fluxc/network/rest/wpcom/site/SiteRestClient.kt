@@ -491,19 +491,22 @@ class SiteRestClient @Inject constructor(
             GenericErrorType.NO_CONNECTION,
             GenericErrorType.NETWORK_ERROR,
             GenericErrorType.TIMEOUT -> {
-                error.volleyError?.cause?.let { cause ->
-                    when (cause) {
-                        is UnknownHostException -> {
-                            cause.message?.contains("public-api.wordpress.com", ignoreCase = true) == true
-                        }
-                        else -> {
-                            error.volleyError.message?.contains("public-api.wordpress.com", ignoreCase = true) == true
-                        }
+                val volleyError = error.volleyError ?: return false
+                val cause = volleyError.cause ?: return volleyError.message.containsWordPressComApiHost()
+                when (cause) {
+                    is UnknownHostException -> cause.message.containsWordPressComApiHost()
+                    else -> {
+                        volleyError.message.containsWordPressComApiHost() ||
+                            cause.message.containsWordPressComApiHost()
                     }
-                } ?: false
+                }
             }
             else -> false
         }
+    }
+
+    private fun String?.containsWordPressComApiHost(): Boolean {
+        return this?.contains("public-api.wordpress.com", ignoreCase = true) == true
     }
 
     /**

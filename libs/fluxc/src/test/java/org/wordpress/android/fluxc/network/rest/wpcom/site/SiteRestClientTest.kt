@@ -39,6 +39,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.util.UrlUtils
+import java.net.UnknownHostException
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
 import java.security.cert.CertificateNotYetValidException
@@ -231,10 +232,13 @@ class SiteRestClientTest {
             }
             initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
 
-            val result = restClient.fetchConnectSiteInfoSync("test.com")
+            val result = restClient.fetchConnectSiteInfoSync("test.com", discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.WPCOM_SITE_SUSPENDED)
+            assertThat(result.error!!.message).isNotNull
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         } finally {
             urlUtilsMock.close()
         }
@@ -250,6 +254,8 @@ class SiteRestClientTest {
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         } finally {
             urlUtilsMock.close()
         }
@@ -289,10 +295,12 @@ class SiteRestClientTest {
                 apiError = "follow_redirects_failed"
             }
 
-            val result = fetchConnectSiteInfoWithError(error)
+            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.REMOTE_SITE_CERTIFICATE_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         }
 
     @Test
@@ -405,7 +413,7 @@ class SiteRestClientTest {
             )
             initGetResponse(ConnectSiteInfoResponse::class.java, null, error)
 
-            val result = restClient.fetchConnectSiteInfoSync("test.com")
+            val result = restClient.fetchConnectSiteInfoSync("test.com", discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.INVALID_SITE)
@@ -421,10 +429,12 @@ class SiteRestClientTest {
                 initCause(CertificateExpiredException("expired"))
             }
 
-            val result = fetchConnectSiteInfoWithInvalidSslError(sslException)
+            val result = fetchConnectSiteInfoWithInvalidSslError(sslException, discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         }
 
     @Test
@@ -434,21 +444,26 @@ class SiteRestClientTest {
                 initCause(CertificateNotYetValidException("not yet valid"))
             }
 
-            val result = fetchConnectSiteInfoWithInvalidSslError(sslException)
+            val result = fetchConnectSiteInfoWithInvalidSslError(sslException, discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         }
 
     @Test
     fun `given message-only SSL certificate validity site info error, when fetching site info, then return certificate validity error`() =
         test {
             val result = fetchConnectSiteInfoWithInvalidSslError(
-                SSLHandshakeException("certificate has expired")
+                SSLHandshakeException("certificate has expired"),
+                discoverWPAPIOnFailure = true
             )
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         }
 
     @Test
@@ -464,10 +479,12 @@ class SiteRestClientTest {
                 )
             )
 
-            val result = fetchConnectSiteInfoWithError(error)
+            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         }
 
     @Test
@@ -494,10 +511,66 @@ class SiteRestClientTest {
                 )
             )
 
-            val result = fetchConnectSiteInfoWithError(error)
+            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
 
             assertThat(result.error).isNotNull
             assertThat(result.error!!.type).isEqualTo(SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
+        }
+
+    @Test
+    fun `given WordPress com no connection error, when fetching site info, then return connectivity error`() =
+        test {
+            val error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.NO_CONNECTION,
+                    VolleyError(UnknownHostException("public-api.wordpress.com"))
+                )
+            )
+
+            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
+        }
+
+    @Test
+    fun `given WordPress com network error, when fetching site info, then return connectivity error`() =
+        test {
+            val error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.NETWORK_ERROR,
+                    VolleyError("Failed to connect to public-api.wordpress.com")
+                )
+            )
+
+            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
+        }
+
+    @Test
+    fun `given WordPress com timeout error, when fetching site info, then return connectivity error`() =
+        test {
+            val error = WPComGsonNetworkError(
+                BaseNetworkError(
+                    GenericErrorType.TIMEOUT,
+                    VolleyError("Timed out connecting to public-api.wordpress.com")
+                )
+            )
+
+            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
+
+            assertThat(result.error).isNotNull
+            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
+            assertThat(result.error!!.wpApiDiscovery).isNull()
+            verifyNoInteractions(discoveryWPAPIRestClient)
         }
 
     @Test
@@ -709,7 +782,8 @@ class SiteRestClientTest {
     }
 
     private suspend fun fetchConnectSiteInfoWithInvalidSslError(
-        sslException: SSLHandshakeException
+        sslException: SSLHandshakeException,
+        discoverWPAPIOnFailure: Boolean = false
     ): ConnectSiteInfoPayload {
         val error = WPComGsonNetworkError(
             BaseNetworkError(
@@ -717,7 +791,7 @@ class SiteRestClientTest {
                 VolleyError(sslException)
             )
         )
-        return fetchConnectSiteInfoWithError(error)
+        return fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure)
     }
 
     private suspend fun fetchConnectSiteInfoWithError(
