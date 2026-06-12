@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils;
 import org.wordpress.android.fluxc.network.discovery.SelfHostedEndpointFinder.DiscoveryError;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload;
+import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked;
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType;
 import org.wordpress.android.login.util.SiteUtils;
@@ -223,7 +224,8 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
         String cleanedUrl = stripKnownPaths(mRequestedSiteAddress);
 
         mAnalyticsListener.trackConnectedSiteInfoRequested(cleanedUrl);
-        mDispatcher.dispatch(SiteActionBuilder.newFetchConnectSiteInfoAction(cleanedUrl));
+        mDispatcher.dispatch(SiteActionBuilder.newFetchConnectSiteInfoAction(
+                new FetchConnectSiteInfoPayload(cleanedUrl, true)));
 
         startProgress();
     }
@@ -404,10 +406,24 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                         )
                 );
             } else {
-                AppLog.e(T.API, "onFetchedConnectSiteInfo has error: " + event.error.message);
-                showError(mSiteAddressErrorMapper.getSiteInfoErrorResId(
+                ConnectSiteInfoFallbackDecision decision = ConnectSiteInfoFallbackDecision.from(
                         event.error,
-                        NetworkUtils.isNetworkAvailable(requireContext())));
+                        mLoginListener.getLoginMode());
+                switch (decision) {
+                    case OFFER_SITE_CREDENTIALS:
+                        mLoginListener.handleSiteAddressError(event.info);
+                        break;
+                    case SHOW_CONNECTION_ERROR:
+                        showError(R.string.error_generic_network);
+                        break;
+                    case NOT_APPLICABLE:
+                    default:
+                        AppLog.e(T.API, "onFetchedConnectSiteInfo has error: " + event.error.message);
+                        showError(mSiteAddressErrorMapper.getSiteInfoErrorResId(
+                                event.error,
+                                NetworkUtils.isNetworkAvailable(requireContext())));
+                        break;
+                }
             }
             endProgressIfNeeded();
         } else {

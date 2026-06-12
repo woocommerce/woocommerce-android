@@ -11,6 +11,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
@@ -29,6 +30,7 @@ import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
+import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
 import org.wordpress.android.fluxc.store.SiteStore.PlansError
@@ -246,5 +248,23 @@ class SiteStoreTest {
         val onSitePlansFetched = siteStore.fetchSitePlans(site)
 
         assertThat(onSitePlansFetched.error.type).isEqualTo(PlansError(PlansErrorType.GENERIC_ERROR, null).type)
+    }
+
+    @Test
+    fun `given default connect site info payload, when action handled, then discovery opt-out is forwarded`() {
+        val action = SiteActionBuilder.newFetchConnectSiteInfoAction(FetchConnectSiteInfoPayload("example.com"))
+
+        siteStore.onAction(action)
+
+        verify(siteRestClient).fetchConnectSiteInfo("example.com", false)
+    }
+
+    @Test
+    fun `given discovery connect site info payload, when action handled, then discovery opt-in is forwarded`() {
+        val action = SiteActionBuilder.newFetchConnectSiteInfoAction(FetchConnectSiteInfoPayload("example.com", true))
+
+        siteStore.onAction(action)
+
+        verify(siteRestClient).fetchConnectSiteInfo("example.com", true)
     }
 }
