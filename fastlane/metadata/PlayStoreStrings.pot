@@ -16,16 +16,16 @@ msgid "This release includes internal updates and maintenance improvements for a
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_250"
+msgid ""
+"25.0:\n"
+"Selling on the go just got smoother. Woo POS is now available in Canada with an improved refund flow, and we've fine-tuned Tap to Pay so it only shows on supported devices—with a clearer message (and setup link) when it's not. We've also added age verification to meet updated store requirements. Happy selling!\n"
+msgstr ""
+
 msgctxt "release_note_249"
 msgid ""
 "24.9:\n"
 "Collect physical payments using WooCommerce In-Person Payments and a card reader in Australia, Austria, Belgium, Canada, Finland, France, Germany, Ireland, Italy, Luxembourg, the Netherlands, New Zealand, Portugal, Singapore, Spain, the UK, and the US. Tap to Pay is available in Canada, the UK, and the US. Start a new order – or find an existing one that’s pending payment – then seamlessly accept payment. We’ve also improved USPS shipping label customs handling for US territories.\n"
-msgstr ""
-
-msgctxt "release_note_248"
-msgid ""
-"24.8:\n"
-"Say hello to your new AI Assistant—a smarter way to run your store right from your pocket. Rolling out to selected stores, it helps you stay on top of your shop with a tap. We've also smoothed out the order list so it no longer flashes when you head back from an order's details.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

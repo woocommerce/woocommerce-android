@@ -1,2 +1,0 @@
-24.9:
-WooCommerce Şahsen Ödemeler ve kart okuyucu kullanarak Avustralya, Avusturya, Belçika, Kanada, Finlandiya, Fransa, Almanya, İrlanda, İtalya, Lüksemburg, Hollanda, Yeni Zelanda, Portekiz, Singapur, İspanya, BK ve ABD'de fiziksel ödemeler alın. Tap to Pay; Kanada, BK ve ABD'de kullanılabilir. Yeni bir sipariş başlatın veya ödeme bekleyen mevcut bir sipariş bulun, ardından ödemeyi sorunsuz bir şekilde kabul edin. ABD bölgeleri için USPS gönderim etiketi gümrük işlemlerini de iyileştirdik.
