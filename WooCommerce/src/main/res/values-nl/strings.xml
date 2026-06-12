@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-19 09:55:38+0000
+Translation-Revision-Date: 2026-06-12 08:05:46+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">Geen meldingen</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s en %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d sterren en minder</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Variatie %1$s (#%2$s) bijwerken voor productnummer%3$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Gast</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Klant %1$s</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Bestelnummer bijwerken %1$s (%2$s): e-mails aan de klant</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">De beschrijving moet uit %1$s tekens of minder bestaan.</string>
+    <string name="woopos_totals_success_payment_qr">Een betaling van %1$s is ontvangen.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Coupon toevoegen</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Achtergrond gedimd. Tik om de betaalmethodekiezer te sluiten.</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Bestelnummer bijwerken %1$s (%2$s)</string>
+    <string name="woopos_totals_success_payment_external">Bestelling %1$s is gemarkeerd als voltooid.</string>
+    <string name="woopos_scan_to_pay_order_note">Klant heeft betaald via Scan to Pay</string>
+    <string name="woopos_scan_to_pay_cancel">Annuleren</string>
+    <string name="woopos_scan_to_pay_retry">Opnieuw proberen</string>
+    <string name="woopos_scan_to_pay_error_message">We konden de betaling niet voorbereiden. Probeer het nog eens.</string>
+    <string name="woopos_scan_to_pay_subtitle">Laat deze code aan de klant zien zodat deze kan betalen via zijn/haar telefoon.</string>
+    <string name="woopos_scan_to_pay_title">Scan om te betalen</string>
+    <string name="woopos_scan_to_pay_total">Totaalbedrag bestelling: %1$s</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">De bestelling kon niet worden geladen. Ga terug en probeer het opnieuw.</string>
+    <string name="woopos_mark_order_as_paid_error_message">De bestelling kon niet bijgewerkt worden. Probeer het opnieuw.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Markeren als betaald</string>
+    <string name="woopos_custom_amount_dialog_cancel">Annuleren</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Aangepast bedrag bijwerken</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Aangepast bedrag toevoegen</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Btw rekenen</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Aangepast bedrag</string>
+    <string name="woopos_custom_amount_dialog_name_label">Naam</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Bedrag</string>
+    <string name="woopos_custom_amount_form_title">Aangepast bedrag</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Aangepast bedrag bewerken</string>
+    <string name="woopos_custom_amount_dialog_title_add">Aangepast bedrag toevoegen</string>
+    <string name="woopos_custom_amount_entry_subtitle">Voeg een eenmalige toeslag toe</string>
+    <string name="woopos_custom_amount_entry_title">Aangepast bedrag</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Verwijderen</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Bewerken</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Inclusief btw</string>
+    <string name="woopos_mark_order_as_paid_note_hint">bijv. Bankoverschrijving van Maria, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_message">Hiermee wordt de %1$s-bestelling gemarkeerd als voltooid. Gebruik dit alleen als je de betaling al op een andere manier hebt ontvangen.</string>
+    <string name="woopos_mark_order_as_paid_title">Markeren als betaald?</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">%s bewerken</string>
+    <string name="ai_support_chat_feedback_not_helpful">Niet nuttig</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">We konden je registratie voor pushberichten niet controleren.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">Dit apparaat is niet geregistreerd om pushberichten voor je winkel te ontvangen.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">We konden geen pushnotificatietoken vinden voor dit apparaat.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Meldingen worden geblokkeerd in Android-instellingen.\n\nSchakel meldingen in voor WooCommerce en keer vervolgens hier terug om door te gaan.</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Aangepast bedrag %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_helpful">Nuttig</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">We konden je analyse-instelling niet controleren.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce Analytics is niet ingeschakeld voor je winkel.\n\nAnalysegegevens zoals omzet- en bestelstatistieken zijn niet beschikbaar totdat deze zijn ingeschakeld.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Er is een probleem met je Jetpack-verbinding.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">We kunnen niet goed werken met de reactie van je site.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">We kunnen momenteel geen verbinding maken met WordPress.com.\n\nProbeer het over een paar minuten opnieuw.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Pushregistratie wordt gecontroleerd</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Meldingskanalen controleren</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Meldingsinstellingen</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Toestemming voor meldingen controleren</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Analyse-instelling wordt gecontroleerd</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Pushmelding-token wordt gecontroleerd</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Voer controles opnieuw uit</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Meldingen registreren …</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Inschakelen analyses …</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Meldingen registreren</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Analyses inschakelen</string>
+    <string name="ai_support_chat_diagnostics_success">Alle controles zonder problemen voltooid</string>
+    <string name="ai_support_chat_resolved_prompt">Markeer de chat als opgelost als je probleem is opgelost, of laat een bericht achter als je andere vragen hebt.</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Meldingsinstellingen openen</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Ondersteuningsverzoek voor plugins</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">Ondersteuningsverzoek WooCommerce-plugin</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Ondersteuningsverzoek kaartlezer</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Ondersteuningsverzoek mobiele app</string>
+    <string name="ai_support_chat_escalation_transcript_header">Hieronder volgt de transcriptie van een in-app AI-ondersteuningschatsessie:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Contactformulier</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Aanvraag versturen</string>
+    <string name="ai_support_chat_escalation_consent_message">We kunnen een ondersteuningsverzoek aanmaken met behulp van deze chattranscriptie, of je kunt het contactformulier openen en de gegevens zelf invoeren.</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">Ondersteuningsverzoek WooPayments</string>
+    <string name="ai_support_chat_escalation_consent_title">Deze chat naar ondersteuning sturen?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">Hiermee worden de chatacties voor dit gesprek gesloten.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Chat markeren als opgelost?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Annuleren</string>
+    <string name="ai_support_chat_mark_resolved">Markeren als opgelost</string>
+    <string name="ai_support_chat_toolbar_contact_support">Neem contact op met de ondersteuning</string>
+    <string name="ai_support_chat_resolved_message">Deze chat is gemarkeerd als opgelost.</string>
+    <string name="ai_support_chat_ticket_created_message">Er is een ondersteuningsticket aangemaakt voor deze chat. We reageren via e-mail.</string>
+    <string name="ai_support_chat_contact_support">Neem contact op met de ondersteuning</string>
+    <string name="ai_support_chat_human_support_message">Het lijkt erop dat je extra hulp nodig hebt. Wil je contact opnemen met ons ondersteuningsteam?</string>
+    <string name="ai_support_chat_suggested_fix_error">Kan deze oplossing niet toepassen. Controleer je netwerkverbinding en probeer het nogmaals.</string>
+    <string name="ai_support_chat_load_history_error">Kan deze chat niet laden. Controleer je netwerkverbinding en probeer het nogmaals.</string>
+    <string name="ai_support_chat_error_dismiss">Negeren</string>
+    <string name="ai_support_chat_error_title">Fout</string>
+    <string name="ai_support_chat_input_hint">Voer een bericht in …</string>
+    <string name="ai_support_chat_greeting">Hallo! Ik ben je Woo Mobile Support-bot. Is er iets waar ik je vandaag mee kan helpen?</string>
+    <string name="ai_support_chat_history_default_title">Ondersteuningsgesprek</string>
+    <string name="ai_support_chat_history_delete_error">Kan chatgeschiedenis niet verwijderen.</string>
+    <string name="ai_support_chat_history_load_error">Kan chatgeschiedenis niet laden.</string>
+    <string name="ai_support_chat_history_empty">Je hebt nog niet met support gechat.</string>
+    <string name="ai_support_chat_history_row_subtitle">Bekijk eerdere ondersteuningsgesprekken opnieuw</string>
+    <string name="ai_support_chat_history_title">Chatgeschiedenis</string>
+    <string name="ai_support_chat_history_row_title">Chatgeschiedenis</string>
+    <string name="ai_support_chat_screen_title">Chat met het ondersteuningsteam</string>
+    <string name="ai_support_chat_help_row_title">Chat met het ondersteuningsteam</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Filter op beoordelingen op of onder de door jou gekozen beoordeling.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Alleen beoordelingen met een lage beoordeling</string>
+    <string name="settings_notifs_new_reviews_all_description">Ping voor elke beoordeling.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Ontvang een melding wanneer er een beoordeling voor je winkel wordt achtergelaten.</string>
+    <string name="settings_notifs_new_orders_threshold">Minimumwaarde (%1$s)</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Inschakelen in apparaatinstellingen</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Bestellingen van meer dan %1$s</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Er is iets fout gegaan terwijl de assistent aan het werk was.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">De assistent kon na verschillende stappen niet voltooien.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d ster en minder</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Bevestiging is nog niet beschikbaar. Probeer het opnieuw via de chat.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Aanvraag gestopt.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Ik weet niet zeker of die wijziging is doorgevoerd. Verifieer in je winkel voordat je iets anders probeert.</string>
@@ -121,7 +231,6 @@ Language: nl
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Betaal met Tap to Pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Gebruik dit apparaat om contactloze kaartbetalingen aan te nemen.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
-    <string name="woopos_payment_method_picker_dialog_title">Kies betaalmethode</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Bestelling markeren als betaald</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scan om te betalen</string>
     <string name="woopos_payment_method_other_methods_label">Andere betaalmethoden</string>
@@ -138,13 +247,10 @@ Language: nl
     <string name="ai_support_chat_connectivity_initial_message">Help me problemen met de verbinding van mijn winkel op te lossen.</string>
     <string name="ai_support_chat_diagnostics_status_failed">Mislukt</string>
     <string name="ai_support_chat_diagnostics_status_passed">Geslaagd</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Kies betaalmethodes</string>
     <string name="ai_support_chat_diagnostics_status_running">Uitvoeren</string>
     <string name="ai_support_chat_diagnostics_status_pending">In behandeling</string>
     <string name="ai_support_chat_diagnostics_continue">Doorgaan met chatten</string>
-    <string name="ai_support_chat_diagnostics_retry">Opnieuw proberen</string>
-    <string name="ai_support_chat_diagnostics_failure">Sommige controles zijn mislukt. Je kunt het opnieuw proberen of doorgaan met chatten met deze resultaten.</string>
-    <string name="ai_support_chat_diagnostics_success">Diagnose voltooid</string>
-    <string name="ai_support_chat_diagnostics_title">Je winkel wordt gecontroleerd …</string>
     <string name="ai_support_chat_issue_other">Iets anders</string>
     <string name="ai_support_chat_issue_receiving_notifications">Ik ontvang geen meldingen</string>
     <string name="ai_support_chat_issue_loading_analytics">Mijn analyses worden niet geladen</string>
@@ -155,17 +261,9 @@ Language: nl
     <string name="ai_support_chat_typing">Aan het denken …</string>
     <string name="ai_support_chat_send_error">Kan je bericht niet verzenden. Controleer je verbinding en probeer het nogmaals.</string>
     <string name="ai_support_chat_send">Verzenden</string>
-    <string name="ai_support_chat_input_hint">Probleemoplossing via AI berichten</string>
-    <string name="ai_support_chat_greeting">Hallo! Vertel me wat er met je winkel gebeurt en ik help je om het probleem op te lossen.</string>
     <string name="ai_support_chat_placeholder">Binnenkort beschikbaar</string>
-    <string name="ai_support_chat_screen_title">AI-probleemoplossing</string>
     <string name="ai_support_chat_help_row_subtitle">Chat met onze AI-assistent om winkelproblemen te diagnosticeren</string>
-    <string name="ai_support_chat_help_row_title">AI-probleemoplossing</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Kies de hoogste waardering die een melding moet verzenden.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Beoordelingen tot een beoordeling</string>
-    <string name="settings_notifs_new_reviews_all_description">Ping voor elke beoordeling, ongeacht de beoordeling.</string>
     <string name="settings_notifs_new_reviews_all_title">Alle nieuwe beoordelingen</string>
-    <string name="settings_notifs_new_reviews_enable_description">Ontvang een melding wanneer iemand een beoordeling over een van je producten achterlaat.</string>
     <string name="settings_notifs_stock_backorder_description">Wanneer een klant een artikel bestelt dat momenteel niet op voorraad is.</string>
     <string name="settings_notifs_stock_backorder_title">In nabestelling</string>
     <string name="settings_notifs_stock_out_of_stock_description">Wanneer een productvariant op nul komt.</string>
@@ -177,10 +275,9 @@ Language: nl
     <string name="settings_notifs_stock_low_stock_title">Lage voorraad</string>
     <string name="settings_notifs_stock_enable_description">Ontvang een melding wanneer wijzigingen in de productvoorraad je aandacht vereisen.</string>
     <string name="settings_notifs_stock_enable_title">Voorraadmeldingen inschakelen</string>
-    <string name="settings_notifs_new_orders_threshold">Drempel (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">Filter om bestellingen boven je drempel te plaatsen.</string>
     <string name="settings_notifs_new_orders_high_value_title">Alleen bestellingen van hoge waarde</string>
     <string name="settings_notifs_new_orders_all_description">Ping voor elke bestelling, ongeacht de waarde.</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filter op bestellingen boven je minimumwaarde.</string>
     <string name="settings_notifs_new_orders_all_title">Alle bestellingen</string>
     <string name="settings_notifs_notify_me_for">Houd me op de hoogte voor</string>
     <string name="settings_notifs_new_orders_enable_description">Ontvang een melding wanneer een bestelling in je winkel wordt geplaatst.</string>
@@ -808,8 +905,6 @@ Language: nl
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">het Verenigd Koninkrijk</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">de Verenigde Staten</string>
     <string name="woopos_eligibility_screen_unable_to_load">Kan niet laden</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Het POS-systeem is niet beschikbaar voor de valuta van je winkel. In %1$sondersteunt het momenteel alleen %2$s. Controleer de valuta-instellingen van je winkel of neem contact op met de ondersteuning voor hulp.</string>
     <string name="woopos_eligibility_reason_check_connection">Controleer je internetverbinding en probeer de app opnieuw te starten. Neem contact op met de ondersteuning als het probleem zich blijft voordoen.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Je WooCommerce-versie wordt niet ondersteund. Het POS-systeem vereist WooCommerce-versie %1$s of hoger. Werk WooCommerce bij naar de nieuwste versie.</string>
     <string name="orderfilters_sales_channel_filter">Verkoopkanaal</string>
@@ -4097,8 +4192,6 @@ Language: nl
         <item>Aangepast pakket</item>
         <item>Servicepakket</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d sterren of lager</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d ster of lager</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotaal artikelen (%d artikel)</item>
         <item quantity="other">Subtotaal artikelen (%d artikelen)</item>
