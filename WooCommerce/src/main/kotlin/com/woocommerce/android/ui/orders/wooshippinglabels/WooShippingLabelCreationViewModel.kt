@@ -135,9 +135,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private var printJob: Job? = null
 
-    // Carrier whose Terms of Service sheet is currently being shown, so the acceptance event
-    // can report the same carrier. Set when navigating to the ToS screen, cleared on acceptance.
-    private var pendingTermsOfServiceCarrier: String? = null
+    // Carrier whose Terms of Service screen is currently being shown, so the acceptance event
+    // can report the same carrier. Backed by savedState so it survives process recreation while
+    // the ToS screen is open. Set when navigating to the ToS screen, cleared on acceptance.
+    private var pendingTermsOfServiceCarrier: String?
+        get() = savedState[PENDING_TOS_CARRIER_KEY]
+        set(value) {
+            savedState[PENDING_TOS_CARRIER_KEY] = value
+        }
 
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
 
@@ -1536,6 +1541,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         private const val CARRIER_FEDEX = "fedex"
         private const val TOS_STATE_SHOWN = "shown"
         private const val TOS_STATE_ACCEPTED = "accepted"
+        private const val PENDING_TOS_CARRIER_KEY = "pending_tos_carrier"
     }
 }
 
