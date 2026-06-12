@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked;
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType;
+import org.wordpress.android.fluxc.store.SiteStore.WPAPIDiscoveryResult;
 import org.wordpress.android.login.util.SiteUtils;
 import org.wordpress.android.login.widgets.WPLoginInputRow;
 import org.wordpress.android.login.widgets.WPLoginInputRow.OnEditorCommitListener;
@@ -409,11 +410,20 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                 ConnectSiteInfoFallbackDecision decision = ConnectSiteInfoFallbackDecision.from(
                         event.error,
                         mLoginListener.getLoginMode());
+                WPAPIDiscoveryResult discovery = event.error.wpApiDiscovery;
                 switch (decision) {
                     case OFFER_SITE_CREDENTIALS:
+                        AppLog.i(T.API, "connect/site-info fallback offered. errorType=" + event.error.type.name()
+                                + ", apiError=" + discovery.connectSiteInfoApiError
+                                + ", message=" + event.error.message
+                                + ", wpApiBaseUrl=" + discovery.wpApiBaseUrl);
                         mLoginListener.handleSiteAddressError(event.info);
                         break;
                     case SHOW_CONNECTION_ERROR:
+                        AppLog.i(T.API, "connect/site-info fallback discovery failed. errorType="
+                                + event.error.type.name()
+                                + ", apiError=" + discovery.connectSiteInfoApiError
+                                + ", message=" + event.error.message);
                         showError(R.string.error_generic_network);
                         break;
                     case NOT_APPLICABLE:
