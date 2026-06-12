@@ -29,8 +29,8 @@ import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
-import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload
+import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
 import org.wordpress.android.fluxc.store.SiteStore.PlansError
