@@ -291,7 +291,6 @@ dependencies {
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
     implementation(project(":libs:ai-assistant:feature"))
-    implementation(project(":libs:ai-assistant:core"))
 
     implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"

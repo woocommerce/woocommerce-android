@@ -118,7 +118,7 @@ fun AssistantRoute(
 }
 
 @Composable
-fun AssistantChatScreen(
+internal fun AssistantChatScreen(
     viewModel: AssistantViewModel,
     onBack: () -> Unit,
     showEarlyAccessNotice: Boolean,
@@ -175,7 +175,7 @@ fun AssistantChatScreen(
 }
 
 @Composable
-fun AssistantChatScreen(
+internal fun AssistantChatScreen(
     state: AssistantUiState,
     inputText: String,
     onInputTextChange: (String) -> Unit,
