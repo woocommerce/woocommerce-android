@@ -433,26 +433,13 @@ class SiteRestClient @Inject constructor(
             error.getCombinedErrorMessage().contains("curl error 60", ignoreCase = true)
     }
 
-    private fun Throwable?.hasCertificateValidityIssue(): Boolean {
-        var throwable = this
-        while (throwable != null) {
-            when (throwable) {
-                is CertificateExpiredException,
-                is CertificateNotYetValidException -> return true
-            }
-
-            if (throwable.message.isCertificateValidityMessage()) {
-                return true
-            }
-
-            if (throwable.isAndroidCertificateValidityException()) {
-                return true
-            }
-
-            throwable = throwable.cause
+    private fun Throwable?.hasCertificateValidityIssue(): Boolean =
+        generateSequence(this) { it.cause }.any { throwable ->
+            throwable is CertificateExpiredException ||
+                throwable is CertificateNotYetValidException ||
+                throwable.message.isCertificateValidityMessage() ||
+                throwable.isAndroidCertificateValidityException()
         }
-        return false
-    }
 
     private fun Throwable.isAndroidCertificateValidityException(): Boolean {
         return this is java.security.cert.CertificateException &&
