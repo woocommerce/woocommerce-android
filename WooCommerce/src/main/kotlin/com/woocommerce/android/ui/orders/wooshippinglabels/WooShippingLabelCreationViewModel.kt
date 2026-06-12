@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CARRIER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
@@ -133,6 +134,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
     private var printJob: Job? = null
+
+    // Carrier whose Terms of Service sheet is currently being shown, so the acceptance event
+    // can report the same carrier. Set when navigating to the ToS screen, cleared on acceptance.
+    private var pendingTermsOfServiceCarrier: String? = null
 
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
 
@@ -942,6 +947,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onCarrierTermsAccepted() {
+        pendingTermsOfServiceCarrier?.let { carrier ->
+            analyticsTracker.track(
+                AnalyticsEvent.WCS_CARRIER_TOS,
+                mapOf(KEY_STATE to TOS_STATE_ACCEPTED, KEY_CARRIER to carrier)
+            )
+            pendingTermsOfServiceCarrier = null
+        }
+
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,
@@ -1080,12 +1093,22 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         )
         when (exception) {
             is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
+                pendingTermsOfServiceCarrier = CARRIER_UPSDAP
+                analyticsTracker.track(
+                    AnalyticsEvent.WCS_CARRIER_TOS,
+                    mapOf(KEY_STATE to TOS_STATE_SHOWN, KEY_CARRIER to CARRIER_UPSDAP)
+                )
                 triggerEvent(
                     NavigateToUPSDAPTermsOfService(originAddress = selectedAddress.shipFrom)
                 )
             }
 
             is WooException if exception.error.apiErrorCode == FEDEX_MISSING_TOS_ERROR_CODE -> {
+                pendingTermsOfServiceCarrier = CARRIER_FEDEX
+                analyticsTracker.track(
+                    AnalyticsEvent.WCS_CARRIER_TOS,
+                    mapOf(KEY_STATE to TOS_STATE_SHOWN, KEY_CARRIER to CARRIER_FEDEX)
+                )
                 triggerEvent(NavigateToFedExTermsOfService)
             }
 
@@ -1507,6 +1530,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         @VisibleForTesting
         const val FEDEX_MISSING_TOS_ERROR_CODE = "missing_fedex_terms_of_service_acceptance"
+
+        // Carrier Terms of Service tracking. Carrier values match the backend IDs (and iOS).
+        private const val CARRIER_UPSDAP = "upsdap"
+        private const val CARRIER_FEDEX = "fedex"
+        private const val TOS_STATE_SHOWN = "shown"
+        private const val TOS_STATE_ACCEPTED = "accepted"
     }
 }
 
