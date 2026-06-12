@@ -1,0 +1,2 @@
+24.9:
+Ta emot fysiska betalningar med WooCommerce In-Person Payments och en kortläsare i Australien, Österrike, Belgien, Kanada, Finland, Frankrike, Tyskland, Irland, Italien, Luxemburg, Nederländerna, Nya Zeeland, Portugal, Singapore, Spanien, Storbritannien och USA. Tryck för att betala finns tillgängligt i Kanada, Storbritannien och USA. Starta en ny beställning och ta enkelt emot betalning. Vi har också förbättrat USPS-tullhanteringen för fraktetiketter för amerikanska territorier.

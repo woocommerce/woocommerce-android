@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-20 12:55:27+0000
+Translation-Revision-Date: 2026-06-12 08:05:06+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">Uyarı yok</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s ve %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d yıldız ve altı</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">#%3$s numaralı ürünün %1$s (#%2$s) varyasyonunu güncelleyin</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">#%1$s numaralı müşteri</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Misafir</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">#%1$s (%2$s) numaralı siparişi güncelle: Müşteriye e-posta gönderilir</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">#%1$s (%2$s) numaralı siparişi güncelle</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Açıklama %1$s karakter veya daha az olmalıdır.</string>
+    <string name="woopos_totals_success_payment_external">%1$s siparişi tamamlanmış olarak işaretlendi.</string>
+    <string name="woopos_totals_success_payment_qr">%1$s ödemesi başarıyla alındı.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Kupon ekle</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Soluk arka plan. Ödeme yöntemi seçiciyi kapatmak için dokunun.</string>
+    <string name="woopos_scan_to_pay_order_note">Müşteri Ödemek için Tara ile ödeme yaptı</string>
+    <string name="woopos_scan_to_pay_cancel">İptal Et</string>
+    <string name="woopos_scan_to_pay_retry">Tekrar dene</string>
+    <string name="woopos_scan_to_pay_error_message">Ödeme hazırlanamadı. Lütfen tekrar deneyin.</string>
+    <string name="woopos_scan_to_pay_total">Sipariş toplamı: %1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">Müşteriye telefonundan ödeme yapması için bu kodu gösterin.</string>
+    <string name="woopos_scan_to_pay_title">Ödemek için tara</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Sipariş yüklenemedi! Geri dönüp tekrar deneyin.</string>
+    <string name="woopos_mark_order_as_paid_error_message">Sipariş güncellenemedi. Tekrar deneyin.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Ödendi olarak işaretle</string>
+    <string name="woopos_mark_order_as_paid_note_hint">ör. Maria\'dan banka transferi, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_message">Bu, %1$s siparişini tamamlandı olarak işaretler. Bunu yalnızca ödemeyi başka bir şekilde zaten aldıysanız kullanın.</string>
+    <string name="woopos_mark_order_as_paid_title">Sipariş ödendi olarak işaretlensin mi?</string>
+    <string name="woopos_custom_amount_dialog_cancel">İptal Et</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Özel tutarı güncelle</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Özel tutar ekle</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Vergileri al</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Özel tutar</string>
+    <string name="woopos_custom_amount_dialog_name_label">Ad</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Tutar</string>
+    <string name="woopos_custom_amount_form_title">Özel tutar</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Özel tutarı düzenle</string>
+    <string name="woopos_custom_amount_dialog_title_add">Özel tutar ekle</string>
+    <string name="woopos_custom_amount_entry_subtitle">Bir kerelik ücret ekleyin</string>
+    <string name="woopos_custom_amount_entry_title">Özel tutar</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Kaldır</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Düzenle</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Vergi dahil</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">Düzenle: %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Özel tutar %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">Yardımcı olmadı</string>
+    <string name="ai_support_chat_feedback_helpful">Yardımcı oldu</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">Anlık bildirim kaydınızı kontrol edemedik.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">Bu cihaz, mağazanız için anlık bildirim almak üzere kayıtlı değil.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">Bu cihaz için bir anlık bildirim belirteci bulamadık.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Android ayarlarında bildirimler engellendi.\n\nWooCommerce için bildirimleri etkinleştirin, ardından devam etmek için buraya dönün.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">Analytics ayarlarınızı kontrol edemedik.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce Analytics, mağazanızda etkinleştirilmedi.\n\nGelir ve sipariş istatistikleri gibi analiz verileri, etkinleştirilene kadar kullanılamaz.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Jetpack bağlantınızla ilgili bir sorun oluştu.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">Sitenizin yanıtında düzgün bir şekilde çalışamıyoruz.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">Şu anda WordPress.com\'a bağlanılamıyor.\n\nBirkaç dakika içinde tekrar deneyin.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Anlık kayıt kontrol ediliyor</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Anlık bildirim belirteci kontrol ediliyor</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Bildirim kanalları kontrol ediliyor</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Uygulama bildirim ayarları kontrol ediliyor</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Bildirim izni kontrol ediliyor</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Analiz ayarı kontrol ediliyor</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Denetimleri Yeniden Çalıştır</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Bildirimler kaydediliyor…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Analizler Etkinleştiriliyor…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Bildirimleri Kaydet</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Bildirim Ayarlarını Aç</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Analizleri Etkinleştir</string>
+    <string name="ai_support_chat_diagnostics_success">Tüm kontroller sorunsuz şekilde tamamlandı</string>
+    <string name="ai_support_chat_resolved_prompt">Sorununuz çözülmüşse lütfen sohbeti çözüldü olarak işaretleyin veya başka sorularınız varsa bir mesaj bırakın.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Eklenti Destek Talebi</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">WooCommerce Eklenti Destek Talebi</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">WooPayments Destek Talebi</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Kart Okuyucu Destek Talebi</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Mobil Uygulama Destek Talebi</string>
+    <string name="ai_support_chat_escalation_transcript_header">Uygulama içi yapay zeka destek sohbet oturumunun dökümü şudur:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">İletişim Formu</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Talep gönder</string>
+    <string name="ai_support_chat_escalation_consent_message">Bu sohbet dökümünü kullanarak bir destek talebi oluşturabiliriz veya iletişim formunu açıp ayrıntıları kendiniz girebilirsiniz.</string>
+    <string name="ai_support_chat_escalation_consent_title">Bu sohbet destek birimine gönderilsin mi?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">Bu işlem, bu görüşmenin sohbet eylemlerini kapatacaktır.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Sohbet çözüldü olarak işaretlensin mi?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">İptal Et</string>
+    <string name="ai_support_chat_mark_resolved">Çözüldü Olarak İşaretle</string>
+    <string name="ai_support_chat_toolbar_contact_support">Desteğe Başvurun</string>
+    <string name="ai_support_chat_resolved_message">Bu sohbet çözüldü olarak işaretlendi.</string>
+    <string name="ai_support_chat_ticket_created_message">Bu sohbet için bir destek bileti oluşturuldu. E-postayla yanıt vereceğiz.</string>
+    <string name="ai_support_chat_contact_support">Desteğe Başvurun</string>
+    <string name="ai_support_chat_human_support_message">Daha fazla yardıma ihtiyacınız olabilir gibi görünüyor. Destek ekibimizle iletişime geçmek ister misiniz?</string>
+    <string name="ai_support_chat_suggested_fix_error">Bu düzeltme uygulanamıyor. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="ai_support_chat_load_history_error">Bu sohbet yüklenemiyor. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="ai_support_chat_error_dismiss">Kapat</string>
+    <string name="ai_support_chat_error_title">Hata</string>
+    <string name="ai_support_chat_input_hint">Bir mesaj yazın…</string>
+    <string name="ai_support_chat_greeting">Merhaba! Woo Mobil Destek Robotunuzum. Bugün size yardımcı olabileceğim bir şey var mı?</string>
+    <string name="ai_support_chat_history_default_title">Destek görüşmesi</string>
+    <string name="ai_support_chat_history_delete_error">Sohbet geçmişi silinemiyor.</string>
+    <string name="ai_support_chat_history_load_error">Sohbet geçmişi yüklenemiyor.</string>
+    <string name="ai_support_chat_history_empty">Henüz destekle sohbet etmediniz.</string>
+    <string name="ai_support_chat_history_title">Sohbet geçmişi</string>
+    <string name="ai_support_chat_history_row_subtitle">Geçmiş destek görüşmelerini yeniden ziyaret edin</string>
+    <string name="ai_support_chat_history_row_title">Sohbet geçmişi</string>
+    <string name="ai_support_chat_screen_title">Destek ile sohbet edin</string>
+    <string name="ai_support_chat_help_row_title">Destek ile sohbet edin</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Seçtiğiniz puandaki veya altındaki incelemeler için filtreleyin.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Sadece düşük puanlı incelemeler</string>
+    <string name="settings_notifs_new_reviews_all_description">Her inceleme için bildirim gönderin.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Mağazanız için bir inceleme yapıldığında bildirim alın.</string>
+    <string name="settings_notifs_new_orders_threshold">Minimum değer (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">%1$s üzerindeki siparişler</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Cihaz ayarlarını açın</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Asistan çalışırken bir şeyler ters gitti.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Birkaç adımdan sonra asistan bitiremedi.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d yıldız ve altı</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Onay henüz mevcut değil. Lütfen sohbette tekrar deneyin.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">İstek durduruldu.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Bu değişikliğin uygulanıp uygulanmadığından emin değilim. Lütfen başka bir şey denemeden önce mağazanızda doğrulayın.</string>
@@ -120,7 +230,6 @@ Language: tr
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Tap to pay ile ödeyin</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Temassız kart ödemelerini kabul etmek için bu cihazı kullanın.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
-    <string name="woopos_payment_method_picker_dialog_title">Ödeme yöntemi seçin</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Siparişi ödendi olarak işaretle</string>
     <string name="woopos_payment_method_scan_to_pay_label">Ödemek için tarayın</string>
     <string name="woopos_payment_method_other_methods_label">Diğer ödeme seçenekleri</string>
@@ -137,13 +246,10 @@ Language: tr
     <string name="ai_support_chat_connectivity_initial_message">Mağaza bağlantımla ilgili sorunları gidermeme yardımcı ol.</string>
     <string name="ai_support_chat_diagnostics_status_failed">Başarısız</string>
     <string name="ai_support_chat_diagnostics_status_passed">Başarılı</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Ödeme yöntemi seçin</string>
     <string name="ai_support_chat_diagnostics_status_running">Çalışıyor</string>
     <string name="ai_support_chat_diagnostics_status_pending">Beklemede</string>
     <string name="ai_support_chat_diagnostics_continue">Sohbete Devam Et</string>
-    <string name="ai_support_chat_diagnostics_retry">Tekrar dene</string>
-    <string name="ai_support_chat_diagnostics_failure">Bazı denetimler başarısız oldu. Bu sonuçlarla tekrar deneyebilir veya sohbet etmeye devam edebilirsiniz.</string>
-    <string name="ai_support_chat_diagnostics_success">Tanılama tamamlandı</string>
-    <string name="ai_support_chat_diagnostics_title">Mağazanız kontrol ediliyor…</string>
     <string name="ai_support_chat_issue_other">Başka bir şey</string>
     <string name="ai_support_chat_issue_receiving_notifications">Bildirim almıyorum</string>
     <string name="ai_support_chat_issue_loading_analytics">Analizlerim yüklenmiyor</string>
@@ -154,17 +260,9 @@ Language: tr
     <string name="ai_support_chat_typing">Düşünüyor…</string>
     <string name="ai_support_chat_send_error">Mesajınız gönderilemiyor. Bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="ai_support_chat_send">Gönder</string>
-    <string name="ai_support_chat_input_hint">Yapay Zeka Sorun Gidermesine Mesaj Gönderin</string>
-    <string name="ai_support_chat_greeting">Merhaba! Bana mağazanızda ne olduğunu söyleyin, ben de sorunları gidereyim.</string>
     <string name="ai_support_chat_placeholder">Çok yakında</string>
-    <string name="ai_support_chat_screen_title">Yapay Zeka Sorun Giderme</string>
     <string name="ai_support_chat_help_row_subtitle">Mağaza sorunlarını tanımlamak için yapay zeka asistanımızla sohbet edin</string>
-    <string name="ai_support_chat_help_row_title">Yapay Zeka Sorun Giderme</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Bildirim göndermesi gereken en yüksek puanı seçin.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Bir derecelendirmeye kadar kadar inceler</string>
-    <string name="settings_notifs_new_reviews_all_description">Derecelendirme fark etmeksizin her inceleme için bildirim gönderin.</string>
     <string name="settings_notifs_new_reviews_all_title">Tüm yeni incelemeler</string>
-    <string name="settings_notifs_new_reviews_enable_description">Ürünlerinizden birinde inceleme yapıldığında bildirim alın.</string>
     <string name="settings_notifs_stock_backorder_description">Bir müşteri şu anda stokta olmayan bir ürün sipariş ettiğinde.</string>
     <string name="settings_notifs_stock_backorder_title">Yok satıldı</string>
     <string name="settings_notifs_stock_out_of_stock_description">Bir ürün varyantı sıfıra ulaştığında.</string>
@@ -176,10 +274,9 @@ Language: tr
     <string name="settings_notifs_stock_low_stock_title">Düşük stok</string>
     <string name="settings_notifs_stock_enable_description">Ürün stoğu değişiklikleriyle ilgilenmeniz gerektiğinde bildirim alın.</string>
     <string name="settings_notifs_stock_enable_title">Stok bildirimlerini etkinleştirin</string>
-    <string name="settings_notifs_new_orders_threshold">Eşik (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">Eşiğinizin üzerindeki siparişleri filtreleyin.</string>
     <string name="settings_notifs_new_orders_high_value_title">Sadece yüksek değerli siparişler</string>
     <string name="settings_notifs_new_orders_all_description">Değere bakılmaksızın her sipariş için bildirim gönderin.</string>
+    <string name="settings_notifs_new_orders_high_value_description">Minimum değerinizin üzerindeki siparişleri filtreleyin.</string>
     <string name="settings_notifs_new_orders_all_title">Tüm yeni siparişler</string>
     <string name="settings_notifs_notify_me_for">Şunun için bana bildir:</string>
     <string name="settings_notifs_new_orders_enable_description">Mağazanıza bir sipariş verildiğinde bildirim alın.</string>
@@ -807,8 +904,6 @@ Language: tr
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">İngiltere</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ABD</string>
     <string name="woopos_eligibility_screen_unable_to_load">Yüklenemedi</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS sistemi, mağazanızın para biriminde kullanılamıyor. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS sistemi, mağazanızın para biriminde kullanılamıyor. Şurada yalnızca %2$s desteklenmektedir: %1$s. Lütfen mağaza para birimi ayarlarınızı kontrol edin veya yardım için destek birimine başvurun.</string>
     <string name="woopos_eligibility_reason_check_connection">İnternet bağlantınızı kontrol edip uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse lütfen destek ekibine başvurun.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">WooCommerce sürümünüz desteklenmiyor. POS sistemi için WooCommerce %1$s sürümü veya üzeri gerekiyor. Lütfen WooCommerce\'ün en son sürümüne güncelleyin.</string>
     <string name="orderfilters_sales_channel_filter">Satış Kanalı</string>
@@ -4096,8 +4191,6 @@ Language: tr
         <item>Özelleştirilmiş paket</item>
         <item>Hizmet paketi</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d yıldız veya altı</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d yıldız veya altı</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Ürün alt toplamı (%d ürün)</item>
         <item quantity="other">Ürün alt toplamı (%d ürün)</item>

@@ -1,4 +1,4 @@
-Run je winkel waar je ook bent
+Run je winkel, waar je ook bent
 
 Beheer je bedrijf onderweg met de mobiele WooCommerce-app. Voeg producten toe, maak bestellingen aan, neem snel betalingen aan en heb zicht op nieuwe aankopen en belangrijke statistieken in real-time.
 
@@ -9,10 +9,10 @@ Maak overal en altijd bestellingen aan
 Heb je je product aangemaakt? Kies dan simpelweg het artikel uit je catalogus, voeg de verzending toe, vul ten slotte de klantgegevens in en je hebt razendsnel een bestelling die met je inventaris synchroniseert.
 
 Ontvang betalingen in hoogsteigen persoon.
-Neem fysieke betalingen aan met WooCommerce Fysieke betalingen en een kaartlezer (beschikbaar in de VS, VK en Canada), Tap to Pay of een digitale portemonnee, zoals Apple Pay. Begin een nieuwe bestelling - of vind een bestaande bestelling die in afwachting is van betaling - en accepteer vervolgens naadloos de betaling.
+Verzamel fysieke betalingen met WooCommerce Fysieke betalingen en een kaartlezer in Australië, Oostenrijk, België, Canada, Finland, Frankrijk, Duitsland, Ierland, Italië, Luxemburg, Nederland, Nieuw-Zeeland, Portugal, Singapore, Spanje, het Verenigd Koninkrijk en de VS. Tap to Pay is beschikbaar in Canada, het Verenigd Koninkrijk en de VS. Begin een nieuwe bestelling - of vind een bestaande bestelling die in afwachting is van betaling - en accepteer vervolgens naadloos de betaling.
 
-Van klikken naar stenen
-Maak van elke tablet een krachtig verkooppunt met WooCommerce POS. Zoek producten, scan streepjescodes, pas kortingsbonnen toe en verstuur een betalingsbewijs via e-mail, waarbij al je online en fysieke verkopen in realtime gesynchroniseerd zijn. Beschikbaar in de VS en het VK.
+Van klikken naar knaken
+Maak van elke tablet een krachtig verkooppunt met WooCommerce POS. Zoek producten, scan streepjescodes, pas kortingsbonnen toe en verstuur e-mailkwitanties, waarbij al je online en fysieke verkopen in realtime gesynchroniseerd zijn. Beschikbaar in de VS en het VK.
 
 Ontvang een melding van elke aankoop
 Nu je aan de slag bent gegaan met verkopen, wil je nooit meer een bestelling of een beoordeling missen. Blijf op de hoogte; schakel realtime meldingen in en wacht op dat verslavende 'katsjing!' bij elke aankoop!
