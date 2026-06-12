@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.0
+Selling on the go just got smoother. Woo POS is now available in Canada with an improved refund flow, and we've fine-tuned Tap to Pay so it only shows on supported devices—with a clearer message (and setup link) when it's not. We've also added age verification to meet updated store requirements. Happy selling!
+
 ## 24.9
 Collect physical payments using WooCommerce In-Person Payments and a card reader in Australia, Austria, Belgium, Canada, Finland, France, Germany, Ireland, Italy, Luxembourg, the Netherlands, New Zealand, Portugal, Singapore, Spain, the UK, and the US. Tap to Pay is available in Canada, the UK, and the US. Start a new order – or find an existing one that’s pending payment – then seamlessly accept payment. We’ve also improved USPS shipping label customs handling for US territories.
 
