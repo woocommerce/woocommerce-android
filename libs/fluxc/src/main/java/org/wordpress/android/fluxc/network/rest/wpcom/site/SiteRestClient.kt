@@ -41,6 +41,8 @@ import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponse
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.REMOTE_SITE_CERTIFICATE_ERROR
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.TLS_CERTIFICATE_VALIDITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainError
@@ -51,9 +53,18 @@ import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import java.net.UnknownHostException
+import java.security.cert.CertificateException
+import java.security.cert.CertificateExpiredException
+import java.security.cert.CertificateNotYetValidException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
+
+private val TLS_CERTIFICATE_VALIDITY_ERROR_TYPES = setOf(
+    GenericErrorType.INVALID_SSL_CERTIFICATE,
+    GenericErrorType.NO_CONNECTION,
+    GenericErrorType.NETWORK_ERROR
+)
 
 @Suppress("LargeClass", "TooManyFunctions", "LongParameterList")
 @Singleton
@@ -392,10 +403,11 @@ class SiteRestClient @Inject constructor(
                 val siteErrorType = when (response.error.apiError) {
                     "connection_disabled" -> SiteErrorType.WPCOM_SITE_SUSPENDED
                     else -> {
-                        if (isWordPressComConnectivityIssue(response.error)) {
-                            WORDPRESS_COM_CONNECTIVITY_ERROR
-                        } else {
-                            INVALID_SITE
+                        when {
+                            isTlsCertificateValidityIssue(response.error) -> TLS_CERTIFICATE_VALIDITY_ERROR
+                            isRemoteSiteCertificateIssue(response.error) -> REMOTE_SITE_CERTIFICATE_ERROR
+                            isWordPressComConnectivityIssue(response.error) -> WORDPRESS_COM_CONNECTIVITY_ERROR
+                            else -> INVALID_SITE
                         }
                     }
                 }
@@ -406,6 +418,45 @@ class SiteRestClient @Inject constructor(
                 response.data.toConnectSiteInfoPayload(siteUrl)
             }
         }
+    }
+
+    private fun isTlsCertificateValidityIssue(error: WPComGsonNetworkError): Boolean {
+        if (error.type !in TLS_CERTIFICATE_VALIDITY_ERROR_TYPES) {
+            return false
+        }
+
+        return error.volleyError.hasCertificateValidityIssue() ||
+            error.getCombinedErrorMessage().isCertificateValidityMessage()
+    }
+
+    private fun isRemoteSiteCertificateIssue(error: WPComGsonNetworkError): Boolean {
+        return error.apiError == "follow_redirects_failed" &&
+            error.getCombinedErrorMessage().contains("curl error 60", ignoreCase = true)
+    }
+
+    private fun Throwable?.hasCertificateValidityIssue(): Boolean =
+        generateSequence(this) { it.cause }.any { throwable ->
+            throwable is CertificateExpiredException ||
+                throwable is CertificateNotYetValidException ||
+                throwable.message.isCertificateValidityMessage() ||
+                throwable.isAndroidCertificateValidityException()
+        }
+
+    private fun Throwable.isAndroidCertificateValidityException(): Boolean {
+        return this is CertificateException &&
+            message?.contains("unacceptable certificate", ignoreCase = true) == true &&
+            // Android Conscrypt can wrap date validity failures as a generic platform CertificateException.
+            // Cause/message matching above remains the portable fallback for other TLS providers.
+            stackTrace.any { stackTraceElement ->
+                stackTraceElement.className == "com.android.org.conscrypt.OpenSSLX509Certificate" &&
+                    stackTraceElement.methodName == "checkValidity"
+            }
+    }
+
+    private fun String?.isCertificateValidityMessage(): Boolean {
+        return this?.contains("certificate has expired", ignoreCase = true) == true ||
+            this?.contains("certificate expired", ignoreCase = true) == true ||
+            this?.contains("not yet valid", ignoreCase = true) == true
     }
 
     /**

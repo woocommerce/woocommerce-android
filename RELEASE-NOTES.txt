@@ -4,6 +4,7 @@
 
 25.1
 -----
+- [*] Improved login error messages for site security certificate issues [https://github.com/woocommerce/woocommerce-android/pull/16042]
 - [Internal] Migrated media upload and media-list endpoints to Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/15550]
 
 25.0
