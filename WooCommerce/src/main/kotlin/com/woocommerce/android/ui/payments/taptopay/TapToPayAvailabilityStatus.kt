@@ -18,7 +18,8 @@ class TapToPayAvailabilityStatus @Inject constructor(
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val wooStore: WooCommerceStore,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
+    private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker,
 ) {
     operator fun invoke() =
         when {
@@ -27,6 +28,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry() -> Result.NotAvailable.CountryNotSupported
+            tapToPayDeviceSupportChecker.isSupported() == false -> Result.NotAvailable.DeviceNotSupported
 
             else -> Result.Available
         }
@@ -48,6 +50,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
             object GooglePlayServicesNotAvailable : NotAvailable()
             object NfcNotAvailable : NotAvailable()
             object CountryNotSupported : NotAvailable()
+            object DeviceNotSupported : NotAvailable()
         }
     }
 }
