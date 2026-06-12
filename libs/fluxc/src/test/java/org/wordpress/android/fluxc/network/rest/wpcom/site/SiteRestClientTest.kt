@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.site
 
+import com.android.volley.NoConnectionError
 import com.android.volley.RequestQueue
 import com.android.volley.VolleyError
 import org.assertj.core.api.Assertions.assertThat
@@ -29,6 +30,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
+import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
@@ -397,7 +399,7 @@ class SiteRestClientTest {
             val sslException = SSLHandshakeException("Unacceptable certificate").apply {
                 initCause(certificateException)
             }
-            val volleyError = com.android.volley.NoConnectionError(sslException)
+            val volleyError = NoConnectionError(sslException)
             val error = WPComGsonNetworkError(
                 BaseNetworkError(
                     GenericErrorType.NO_CONNECTION,
@@ -621,7 +623,7 @@ class SiteRestClientTest {
 
     private suspend fun fetchConnectSiteInfoWithInvalidSslError(
         sslException: SSLHandshakeException
-    ): org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload {
+    ): ConnectSiteInfoPayload {
         val error = WPComGsonNetworkError(
             BaseNetworkError(
                 GenericErrorType.INVALID_SSL_CERTIFICATE,
@@ -633,7 +635,7 @@ class SiteRestClientTest {
 
     private suspend fun fetchConnectSiteInfoWithError(
         error: WPComGsonNetworkError
-    ): org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload {
+    ): ConnectSiteInfoPayload {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
         try {
             whenever(UrlUtils.addUrlSchemeIfNeeded(any(), any())).thenAnswer { it.arguments[0] as String }

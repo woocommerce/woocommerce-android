@@ -53,6 +53,7 @@ import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import java.net.UnknownHostException
+import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
 import java.security.cert.CertificateNotYetValidException
 import javax.inject.Inject
@@ -442,7 +443,7 @@ class SiteRestClient @Inject constructor(
         }
 
     private fun Throwable.isAndroidCertificateValidityException(): Boolean {
-        return this is java.security.cert.CertificateException &&
+        return this is CertificateException &&
             message?.contains("unacceptable certificate", ignoreCase = true) == true &&
             // Android Conscrypt can wrap date validity failures as a generic platform CertificateException.
             // Cause/message matching above remains the portable fallback for other TLS providers.
