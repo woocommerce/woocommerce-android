@@ -55,7 +55,6 @@ import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
-import java.net.UnknownHostException
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
 import java.security.cert.CertificateNotYetValidException
@@ -430,18 +429,25 @@ class SiteRestClient @Inject constructor(
             apiError == "connection_disabled" -> SiteError(SiteErrorType.WPCOM_SITE_SUSPENDED, message)
             isTlsCertificateValidityIssue(this) -> SiteError(TLS_CERTIFICATE_VALIDITY_ERROR, message)
             isRemoteSiteCertificateIssue(this) -> SiteError(REMOTE_SITE_CERTIFICATE_ERROR, message)
-            isWordPressComConnectivityIssue(this) -> SiteError(WORDPRESS_COM_CONNECTIVITY_ERROR, message)
+            isWordPressComConnectivityIssue(this) -> SiteError(
+                WORDPRESS_COM_CONNECTIVITY_ERROR,
+                message,
+                wpApiDiscovery = toWPAPIDiscoveryResult(discoverWPAPIOnFailure)
+            )
             else -> SiteError(
                 INVALID_SITE,
                 message,
-                wpApiDiscovery = if (discoverWPAPIOnFailure) {
-                    WPAPIDiscoveryResult(connectSiteInfoApiError = apiError)
-                } else {
-                    null
-                }
+                wpApiDiscovery = toWPAPIDiscoveryResult(discoverWPAPIOnFailure)
             )
         }
     }
+
+    private fun WPComGsonNetworkError.toWPAPIDiscoveryResult(discoverWPAPIOnFailure: Boolean) =
+        if (discoverWPAPIOnFailure) {
+            WPAPIDiscoveryResult(connectSiteInfoApiError = apiError)
+        } else {
+            null
+        }
 
     private fun isTlsCertificateValidityIssue(error: WPComGsonNetworkError): Boolean {
         if (error.type !in TLS_CERTIFICATE_VALIDITY_ERROR_TYPES) {
@@ -490,23 +496,9 @@ class SiteRestClient @Inject constructor(
         return when (error.type) {
             GenericErrorType.NO_CONNECTION,
             GenericErrorType.NETWORK_ERROR,
-            GenericErrorType.TIMEOUT -> {
-                val volleyError = error.volleyError ?: return false
-                val cause = volleyError.cause ?: return volleyError.message.containsWordPressComApiHost()
-                when (cause) {
-                    is UnknownHostException -> cause.message.containsWordPressComApiHost()
-                    else -> {
-                        volleyError.message.containsWordPressComApiHost() ||
-                            cause.message.containsWordPressComApiHost()
-                    }
-                }
-            }
+            GenericErrorType.TIMEOUT -> true
             else -> false
         }
-    }
-
-    private fun String?.containsWordPressComApiHost(): Boolean {
-        return this?.contains("public-api.wordpress.com", ignoreCase = true) == true
     }
 
     /**

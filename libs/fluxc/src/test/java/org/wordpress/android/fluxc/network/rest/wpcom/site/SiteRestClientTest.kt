@@ -39,7 +39,6 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.util.UrlUtils
-import java.net.UnknownHostException
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
 import java.security.cert.CertificateNotYetValidException
@@ -520,57 +519,39 @@ class SiteRestClientTest {
         }
 
     @Test
-    fun `given WordPress com no connection error, when fetching site info, then return connectivity error`() =
+    fun `given opted-in no connection site info error, when fetching site info, then discovery state is attached`() =
         test {
-            val error = WPComGsonNetworkError(
-                BaseNetworkError(
-                    GenericErrorType.NO_CONNECTION,
-                    VolleyError(UnknownHostException("public-api.wordpress.com"))
-                )
-            )
-
-            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
-
-            assertThat(result.error).isNotNull
-            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
-            assertThat(result.error!!.wpApiDiscovery).isNull()
-            verifyNoInteractions(discoveryWPAPIRestClient)
+            assertOptedInConnectivityErrorDiscoversWPAPI(GenericErrorType.NO_CONNECTION)
         }
 
     @Test
-    fun `given WordPress com network error, when fetching site info, then return connectivity error`() =
+    fun `given opted-in network site info error, when fetching site info, then discovery state is attached`() =
         test {
-            val error = WPComGsonNetworkError(
-                BaseNetworkError(
-                    GenericErrorType.NETWORK_ERROR,
-                    VolleyError("Failed to connect to public-api.wordpress.com")
-                )
-            )
-
-            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
-
-            assertThat(result.error).isNotNull
-            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
-            assertThat(result.error!!.wpApiDiscovery).isNull()
-            verifyNoInteractions(discoveryWPAPIRestClient)
+            assertOptedInConnectivityErrorDiscoversWPAPI(GenericErrorType.NETWORK_ERROR)
         }
 
     @Test
-    fun `given WordPress com timeout error, when fetching site info, then return connectivity error`() =
+    fun `given opted-in timeout site info error, when fetching site info, then discovery state is attached`() =
         test {
-            val error = WPComGsonNetworkError(
-                BaseNetworkError(
-                    GenericErrorType.TIMEOUT,
-                    VolleyError("Timed out connecting to public-api.wordpress.com")
-                )
-            )
+            assertOptedInConnectivityErrorDiscoversWPAPI(GenericErrorType.TIMEOUT)
+        }
 
-            val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
+    @Test
+    fun `given default no connection site info error, when fetching site info, then discovery is not attempted`() =
+        test {
+            assertDefaultConnectivityErrorSkipsWPAPIDiscovery(GenericErrorType.NO_CONNECTION)
+        }
 
-            assertThat(result.error).isNotNull
-            assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
-            assertThat(result.error!!.wpApiDiscovery).isNull()
-            verifyNoInteractions(discoveryWPAPIRestClient)
+    @Test
+    fun `given default network site info error, when fetching site info, then discovery is not attempted`() =
+        test {
+            assertDefaultConnectivityErrorSkipsWPAPIDiscovery(GenericErrorType.NETWORK_ERROR)
+        }
+
+    @Test
+    fun `given default timeout site info error, when fetching site info, then discovery is not attempted`() =
+        test {
+            assertDefaultConnectivityErrorSkipsWPAPIDiscovery(GenericErrorType.TIMEOUT)
         }
 
     @Test
@@ -807,5 +788,33 @@ class SiteRestClientTest {
         } finally {
             urlUtilsMock.close()
         }
+    }
+
+    private suspend fun assertOptedInConnectivityErrorDiscoversWPAPI(type: GenericErrorType) {
+        val error = WPComGsonNetworkError(BaseNetworkError(type, VolleyError("Android connectivity failure")))
+        whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("test.com")).thenReturn("https://test.com/wp-json/")
+        whenever(discoveryWPAPIRestClient.verifyWPAPIV2Support("https://test.com/wp-json/"))
+            .thenReturn("https://test.com/wp-json/")
+
+        val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
+
+        assertThat(result.error).isNotNull
+        assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
+        assertThat(result.error!!.wpApiDiscovery).isNotNull
+        assertThat(result.error!!.wpApiDiscovery!!.connectSiteInfoApiError).isEqualTo(error.apiError)
+        assertThat(result.error!!.wpApiDiscovery!!.wpApiBaseUrl).isEqualTo("https://test.com/wp-json/")
+        verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("test.com")
+        verify(discoveryWPAPIRestClient).verifyWPAPIV2Support("https://test.com/wp-json/")
+    }
+
+    private suspend fun assertDefaultConnectivityErrorSkipsWPAPIDiscovery(type: GenericErrorType) {
+        val error = WPComGsonNetworkError(BaseNetworkError(type, VolleyError("Android connectivity failure")))
+
+        val result = fetchConnectSiteInfoWithError(error)
+
+        assertThat(result.error).isNotNull
+        assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
+        assertThat(result.error!!.wpApiDiscovery).isNull()
+        verifyNoInteractions(discoveryWPAPIRestClient)
     }
 }

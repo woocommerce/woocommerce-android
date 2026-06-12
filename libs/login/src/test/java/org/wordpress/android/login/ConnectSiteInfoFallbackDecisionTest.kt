@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.WPAPIDiscoveryResult
 
 class ConnectSiteInfoFallbackDecisionTest {
@@ -36,6 +37,18 @@ class ConnectSiteInfoFallbackDecisionTest {
     fun `given discovered WP API base URL in Woo login mode, when creating fallback decision, then offer site credentials`() {
         val error = SiteError(
             INVALID_SITE,
+            wpApiDiscovery = WPAPIDiscoveryResult(wpApiBaseUrl = "https://example.com/wp-json/")
+        )
+
+        val decision = ConnectSiteInfoFallbackDecision.from(error, LoginMode.WOO_LOGIN_MODE)
+
+        assertThat(decision).isEqualTo(ConnectSiteInfoFallbackDecision.OFFER_SITE_CREDENTIALS)
+    }
+
+    @Test
+    fun `given discovered connectivity error in Woo login mode, when creating fallback decision, then offer site credentials`() {
+        val error = SiteError(
+            WORDPRESS_COM_CONNECTIVITY_ERROR,
             wpApiDiscovery = WPAPIDiscoveryResult(wpApiBaseUrl = "https://example.com/wp-json/")
         )
 
