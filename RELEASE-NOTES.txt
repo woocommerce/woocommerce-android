@@ -6,7 +6,7 @@
 -----
 - [*] Improved login error messages for site security certificate issues [https://github.com/woocommerce/woocommerce-android/pull/16042]
 - [Internal] Migrated media upload and media-list endpoints to Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/15550]
-- [Internal] Added tracking events for UPS and FedEx carrier Terms of Service (shown/accepted) [https://github.com/woocommerce/woocommerce-android/pull/16065]
+- [*] Added tracking events for UPS and FedEx carrier Terms of Service (shown/accepted) [https://github.com/woocommerce/woocommerce-android/pull/16065]
 
 25.0
 -----
