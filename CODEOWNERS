@@ -7,6 +7,9 @@ Gemfile*       @woocommerce/apps-infra-tooling
 .bundle/       @woocommerce/apps-infra-tooling
 .rubocop*.yml  @woocommerce/apps-infra-tooling
 fastlane/      @woocommerce/apps-infra-tooling
+# Store-listing localization is content, not infra — disown it to avoid
+# pinging the team on translation-only release churn.
+fastlane/metadata/
 
 # CI and automation
 .buildkite/            @woocommerce/apps-infra-tooling
