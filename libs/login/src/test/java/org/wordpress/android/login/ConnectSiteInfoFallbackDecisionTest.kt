@@ -58,11 +58,20 @@ class ConnectSiteInfoFallbackDecisionTest {
     }
 
     @Test
-    fun `given discovery state without WP API base URL in Woo login mode, when creating fallback decision, then show error`() {
+    fun `given invalid site discovery without WP API base URL in Woo login mode, when creating decision, then show original error`() {
         val error = SiteError(INVALID_SITE, wpApiDiscovery = WPAPIDiscoveryResult())
 
         val decision = ConnectSiteInfoFallbackDecision.from(error, LoginMode.WOO_LOGIN_MODE)
 
-        assertThat(decision).isEqualTo(ConnectSiteInfoFallbackDecision.SHOW_CONNECTION_ERROR)
+        assertThat(decision).isEqualTo(ConnectSiteInfoFallbackDecision.SHOW_ORIGINAL_ERROR)
+    }
+
+    @Test
+    fun `given connectivity discovery without WP API base URL in Woo login mode, when creating decision, then show original error`() {
+        val error = SiteError(WORDPRESS_COM_CONNECTIVITY_ERROR, wpApiDiscovery = WPAPIDiscoveryResult())
+
+        val decision = ConnectSiteInfoFallbackDecision.from(error, LoginMode.WOO_LOGIN_MODE)
+
+        assertThat(decision).isEqualTo(ConnectSiteInfoFallbackDecision.SHOW_ORIGINAL_ERROR)
     }
 }

@@ -419,12 +419,14 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                                 + ", wpApiBaseUrl=" + discovery.wpApiBaseUrl);
                         mLoginListener.handleSiteAddressError(event.info);
                         break;
-                    case SHOW_CONNECTION_ERROR:
+                    case SHOW_ORIGINAL_ERROR:
                         AppLog.i(T.API, "connect/site-info fallback discovery failed. errorType="
                                 + event.error.type.name()
                                 + ", apiError=" + discovery.connectSiteInfoApiError
                                 + ", message=" + event.error.message);
-                        showError(R.string.error_generic_network);
+                        showError(mSiteAddressErrorMapper.getSiteInfoErrorResId(
+                                event.error,
+                                NetworkUtils.isNetworkAvailable(requireContext())));
                         break;
                     case NOT_APPLICABLE:
                     default:
