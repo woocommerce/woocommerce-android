@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsVi
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +48,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
+    private val networkStatus: WooPosNetworkStatus,
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
@@ -249,6 +251,10 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
         refreshOrderJob?.cancel()
         refreshOrderJob = viewModelScope.launch {
+            if (!networkStatus.isConnected()) {
+                _refreshFailedEvent.emit(Unit)
+                return@launch
+            }
             // Fetch + notify run atomically so the list row is always refreshed when the cache
             // is updated, even if the user has already selected a different order. Only the
             // detail-pane work below is cancellable and skipped on selection change.
