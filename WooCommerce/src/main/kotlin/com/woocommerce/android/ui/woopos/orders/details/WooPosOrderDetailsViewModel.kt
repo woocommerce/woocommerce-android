@@ -23,8 +23,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -54,6 +57,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         if (singleOrderId != null) WooPosOrderDetailsState.Loading else WooPosOrderDetailsState.Idle
     )
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
+
+    private val _refreshFailedEvent = MutableSharedFlow<Unit>()
+    val refreshFailedEvent: SharedFlow<Unit> = _refreshFailedEvent.asSharedFlow()
 
     private var loadOrderJob: Job? = null
     private var sideLoadJob: Job? = null
@@ -246,11 +252,15 @@ class WooPosOrderDetailsViewModel @Inject constructor(
             // Fetch + notify run atomically so the list row is always refreshed when the cache
             // is updated, even if the user has already selected a different order. Only the
             // detail-pane work below is cancellable and skipped on selection change.
-            val updated = withContext(NonCancellable) {
-                ordersDataSource.refreshOrderById(selectedOrderId).getOrNull()?.also {
+            val refreshResult = withContext(NonCancellable) {
+                ordersDataSource.refreshOrderById(selectedOrderId).onSuccess {
                     coordinator.notifyOrderRefreshed(it.id)
                 }
-            } ?: return@launch
+            }
+            val updated = refreshResult.getOrElse {
+                _refreshFailedEvent.emit(Unit)
+                return@launch
+            }
             if ((_state.value as? WooPosOrderDetailsState.Loaded)?.details?.id == updated.id) {
                 applyOrderUpdate(updated)
             }

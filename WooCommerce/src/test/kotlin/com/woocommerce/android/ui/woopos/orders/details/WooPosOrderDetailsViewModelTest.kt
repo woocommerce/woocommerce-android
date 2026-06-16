@@ -526,6 +526,50 @@ class WooPosOrderDetailsViewModelTest {
             collectorJob.cancel()
         }
 
+    @Test
+    fun `given refresh fails, when back from issue refund, then refresh failed event emitted`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        coordinator.selectOrder(1L)
+        advanceUntilIdle()
+        val events = mutableListOf<Unit>()
+        val collectorJob = launch { viewModel.refreshFailedEvent.collect { events.add(it) } }
+        advanceUntilIdle()
+        doReturn(Result.failure<Order>(RuntimeException("network error")))
+            .whenever(dataSource).refreshOrderById(1L)
+
+        // WHEN
+        viewModel.onBackFromIssueRefund()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(events).hasSize(1)
+
+        collectorJob.cancel()
+    }
+
+    @Test
+    fun `given refresh succeeds, when back from issue refund, then refresh failed event not emitted`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        coordinator.selectOrder(1L)
+        advanceUntilIdle()
+        val events = mutableListOf<Unit>()
+        val collectorJob = launch { viewModel.refreshFailedEvent.collect { events.add(it) } }
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(events).isEmpty()
+
+        collectorJob.cancel()
+    }
+
     // endregion
 
     // region Retry
