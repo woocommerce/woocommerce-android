@@ -59,7 +59,7 @@ fun CreateTestOrderDialog(
         ) {
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(id = R.string.try_test_order_heading),
+                text = stringResource(id = R.string.place_first_order_heading),
                 style = MaterialTheme.typography.h5,
                 textAlign = TextAlign.Center
             )
@@ -81,12 +81,12 @@ fun CreateTestOrderDialog(
             val context = LocalContext.current
 
             TestOrderStep(1, annotatedStringRes(R.string.try_test_order_step_1))
-            TestOrderStep(2, annotatedStringRes(R.string.try_test_order_step_2))
+            TestOrderStep(2, annotatedStringRes(R.string.place_first_order_step_2))
             TestOrderStep(3, annotatedStringRes(R.string.try_test_order_step_3))
             TestOrderStep(
                 4,
                 clickableAnnotatedStringRes(
-                    stringResId = R.string.try_test_order_step_4,
+                    stringResId = R.string.place_first_order_step_4,
                     onUrlClick = {
                         ChromeCustomTabUtils.launchUrl(context, AppUrls.WOOPAYMENTS_FEES_NOT_REFUNDABLE)
                     }
@@ -99,7 +99,7 @@ fun CreateTestOrderDialog(
                     .fillMaxWidth(),
                 onClick = onStartTestOrderButtonClick
             ) {
-                Text(stringResource(id = R.string.try_test_order_button))
+                Text(stringResource(id = R.string.place_first_order_button))
             }
         }
     }
