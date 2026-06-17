@@ -74,10 +74,12 @@
         android:layout_marginTop="@dimen/major_100"
         android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal"
-        tools:text="@string/order_refunds_shipping_refund_variable_notice" />
+        tools:text="@string/order_refunds_shipping_refund_variable_notice"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/issueRefund_dividerBelowTaxes"
@@ -119,7 +121,7 @@
         android:id="@+id/issueRefund_totalsGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="issueRefund_refundNotice,issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
+        app:constraint_referenced_ids="issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/issueRefundSubtotalTaxesGroup"
