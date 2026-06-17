@@ -416,11 +416,16 @@ class LoginActivity :
     }
 
     override fun onPrimaryButtonClicked() {
-        disableDynamicEdgeToEdge()
         if (qrLoginAvailability.isAvailable()) {
+            // The QR login prologue is itself an edge-to-edge screen, so keep edge-to-edge enabled
+            // through the transition. Disabling it here would re-apply the system bar insets to the
+            // shared root while the prologue is still visible, briefly shifting the content and
+            // flashing the white window background before the QR prologue re-enables edge-to-edge.
             unifiedLoginTracker.trackClick(Click.LOGIN_WITH_QR)
             showQrLoginPrologueFragment()
         } else {
+            // The site address login screen is not edge-to-edge, so restore the default window insets.
+            disableDynamicEdgeToEdge()
             unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
             loginViaSiteAddress()
         }
