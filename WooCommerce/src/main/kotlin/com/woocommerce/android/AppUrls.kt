@@ -79,6 +79,8 @@ object AppUrls {
         "https://stripe.com/docs/terminal/payments/setup-reader/tap-to-pay?platform=android#supported-devices"
     const val LEARN_MORE_ABOUT_TAP_TO_PAY =
         "https://woocommerce.com/document/woopayments/in-person-payments/tap-to-pay-android/"
+    const val WOOPAYMENTS_FEES_NOT_REFUNDABLE =
+        "https://woocommerce.com/document/woopayments/fees/why-arent-fees-refunded/"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
         "https://woocommerce.com/document/cash-on-delivery/"
