@@ -5,6 +5,7 @@ import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
 import com.android.volley.RequestQueue
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -409,7 +410,7 @@ class SiteRestClient @Inject constructor(
                 var siteError = response.error.toConnectSiteInfoError(discoverWPAPIOnFailure)
                 val discovery = siteError.wpApiDiscovery
                 if (discovery != null) {
-                    val wpApiBaseUrl = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    val wpApiBaseUrl = withContext(Dispatchers.IO) {
                         discoveryWPAPIRestClient.discoverWPAPIBaseURL(uri.toString())
                             ?.let { discoveryWPAPIRestClient.verifyWPAPIV2Support(it) }
                     }
