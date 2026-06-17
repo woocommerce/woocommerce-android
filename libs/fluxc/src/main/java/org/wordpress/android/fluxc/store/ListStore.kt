@@ -58,6 +58,10 @@ class ListStore @Inject internal constructor(
                 handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
             ListAction.LIST_DATA_INVALIDATED ->
                 handleListDataInvalidated(action.payload as ListDescriptorTypeIdentifier)
+            ListAction.MARK_LISTS_OF_TYPE_NEED_REFRESH ->
+                coroutineEngine.launch(AppLog.T.API, this, "handleMarkListsOfTypeNeedRefresh") {
+                    handleMarkListsOfTypeNeedRefresh(action.payload as MarkListsNeedRefreshPayload)
+                }
             ListAction.LIST_DATA_FAILURE ->
                 handleDataFailure(action.payload as OnListDataFailure)
         }
@@ -262,6 +266,21 @@ class ListStore @Inject internal constructor(
         emitChange(OnListDataInvalidated(type = typeIdentifier))
     }
 
+    /**
+     * Handles the [ListAction.MARK_LISTS_OF_TYPE_NEED_REFRESH] action.
+     *
+     * Sets every cached list of [MarkListsNeedRefreshPayload.excludedDescriptor]'s type to
+     * [ListState.NEEDS_REFRESH] — except that descriptor itself — so each list refetches the next
+     * time it is consumed. No change event is emitted, so the new state is consumed lazily (via
+     * [getListState]) and this cannot trigger a refetch loop.
+     */
+    private suspend fun handleMarkListsOfTypeNeedRefresh(payload: MarkListsNeedRefreshPayload) {
+        listDao.markListsOfTypeNeedRefresh(
+            typeIdentifier = payload.excludedDescriptor.typeIdentifier.value,
+            excludedUniqueIdentifier = payload.excludedDescriptor.uniqueIdentifier.value
+        )
+    }
+
     private fun handleDataFailure(event: OnListDataFailure) {
         emitChange(event)
     }
@@ -362,6 +381,17 @@ class ListStore @Inject internal constructor(
             this.error = error
         }
     }
+
+    /**
+     * This is the payload for [ListAction.MARK_LISTS_OF_TYPE_NEED_REFRESH].
+     *
+     * @property excludedDescriptor All cached lists sharing this descriptor's type identifier are
+     * marked [ListState.NEEDS_REFRESH], except this descriptor itself (it is assumed to be freshly
+     * fetched).
+     */
+    class MarkListsNeedRefreshPayload(
+        val excludedDescriptor: ListDescriptor
+    ) : Payload<ListError>()
 
     class ListError(
         val type: ListErrorType,
