@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -28,6 +29,8 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -105,6 +108,14 @@ fun WooPosOrdersScreen(
 
     val listState by listViewModel.state.collectAsState()
     val detailState by detailViewModel.state.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val refreshErrorMessage = stringResource(R.string.woopos_orders_details_refresh_error)
+    LaunchedEffect(Unit) {
+        detailViewModel.refreshFailedEvent.collect {
+            snackbarHostState.showSnackbar(refreshErrorMessage)
+        }
+    }
 
     val emailReceiptSent = backStackEntry.savedStateHandle
         .getStateFlow(EMAIL_RECEIPT_SENT, false)
@@ -201,6 +212,7 @@ fun WooPosOrdersScreen(
         detailState = detailState,
         isSingleOrderMode = detailViewModel.isSingleOrderMode,
         isPhoneLayout = isPhoneLayout,
+        snackbarHostState = snackbarHostState,
         scrollToTopEvent = listViewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = listViewModel::onRefresh,
@@ -239,6 +251,7 @@ private fun WooPosOrdersScreen(
     detailState: WooPosOrderDetailsState,
     isSingleOrderMode: Boolean = false,
     isPhoneLayout: Boolean = false,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
@@ -339,6 +352,14 @@ private fun WooPosOrdersScreen(
             isVisible = pendingOrderSelectionConfirmation != null,
             onDismissRequest = onPendingOrderSelectionConfirmationDismissed,
             onDiscardChanges = onPendingOrderSelectionConfirmed,
+        )
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = WooPosSpacing.Medium.value)
         )
     }
 }

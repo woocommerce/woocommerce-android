@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CARRIER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -1846,6 +1847,120 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when purchase fails with UPSDAP missing ToS, then track carrier ToS shown for upsdap`() =
+        testBlocking {
+            val wooException = WooException(
+                WooError(
+                    type = WooErrorType.API_ERROR,
+                    original = GenericErrorType.UNKNOWN,
+                    apiErrorCode = WooShippingLabelCreationViewModel.UPSDAP_MISSING_TOS_ERROR_CODE,
+                    message = "Missing UPS DAP terms of service acceptance"
+                )
+            )
+            whenever(
+                purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+            ) doReturn Result.failure(wooException)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val viewState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            val ratesState = viewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.WCS_CARRIER_TOS,
+                mapOf(KEY_STATE to "shown", KEY_CARRIER to "upsdap")
+            )
+        }
+
+    @Test
+    fun `when purchase fails with FedEx missing ToS, then track carrier ToS shown for fedex`() =
+        testBlocking {
+            val wooException = WooException(
+                WooError(
+                    type = WooErrorType.API_ERROR,
+                    original = GenericErrorType.UNKNOWN,
+                    apiErrorCode = WooShippingLabelCreationViewModel.FEDEX_MISSING_TOS_ERROR_CODE,
+                    message = "Missing FedEx terms of service acceptance"
+                )
+            )
+            whenever(
+                purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+            ) doReturn Result.failure(wooException)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val viewState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            val ratesState = viewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onPurchaseShippingLabel()
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.WCS_CARRIER_TOS,
+                mapOf(KEY_STATE to "shown", KEY_CARRIER to "fedex")
+            )
+        }
+
+    @Test
+    fun `when carrier terms accepted for FedEx, then track carrier ToS accepted for fedex`() =
+        testBlocking {
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val viewState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            val ratesState = viewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onCarrierTermsAccepted(WooShippingLabelCreationViewModel.Carrier.FEDEX)
+            advanceUntilIdle()
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.WCS_CARRIER_TOS,
+                mapOf(KEY_STATE to "accepted", KEY_CARRIER to "fedex")
+            )
+        }
+
+    @Test
+    fun `when carrier terms accepted for UPS, then track carrier ToS accepted for upsdap`() =
+        testBlocking {
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            val viewState = sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            val ratesState = viewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            ratesState.onSelectedShippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onCarrierTermsAccepted(WooShippingLabelCreationViewModel.Carrier.UPS)
+            advanceUntilIdle()
+
+            verify(analyticsTracker).track(
+                AnalyticsEvent.WCS_CARRIER_TOS,
+                mapOf(KEY_STATE to "accepted", KEY_CARRIER to "upsdap")
+            )
+        }
+
+    @Test
     fun `when carrier terms accepted, then fetch new rates and reselect same rate as before`() = testBlocking {
         val firstRatesFetchResult = mapOf(
             defaultCarrier to defaultShippingRates[defaultCarrier]!!.map {
@@ -1893,7 +2008,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // Simulate terms acceptance
-            sut.onCarrierTermsAccepted()
+            sut.onCarrierTermsAccepted(WooShippingLabelCreationViewModel.Carrier.UPS)
             advanceUntilIdle()
         }.last() as DataState
 
@@ -1929,7 +2044,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             shippingRateState.onSelectedShippingRateChanged(selectedRate)
             advanceUntilIdle()
 
-            sut.onCarrierTermsAccepted()
+            sut.onCarrierTermsAccepted(WooShippingLabelCreationViewModel.Carrier.UPS)
             advanceUntilIdle()
         }.last() as DataState
 

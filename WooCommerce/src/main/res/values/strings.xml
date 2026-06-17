@@ -304,6 +304,9 @@
     <string name="login_open_installation_page">Open installation page</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
+    <string name="login_site_info_fallback_dialog_title">Connection Issue</string>
+    <string name="login_site_info_fallback_dialog_message">We couldn\'t verify your site details. You can try logging in with your site credentials instead.</string>
+    <string name="login_site_info_fallback_dialog_cta">Log In with Site Credentials</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -4175,6 +4178,7 @@
     <string name="woopos_refund_back_to_order_button">Back to order</string>
     <string name="woopos_orders_refund_complete">Refund complete</string>
     <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
+    <string name="woopos_orders_details_refresh_error">Couldn\'t refresh the order. Please check your connection and try again.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
