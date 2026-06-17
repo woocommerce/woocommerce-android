@@ -5,9 +5,11 @@ import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
 import com.android.volley.RequestQueue
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.SiteAction
@@ -19,6 +21,7 @@ import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
@@ -48,11 +51,11 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteFilter
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainError
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainErrorType.EMPTY_RESULTS
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
+import org.wordpress.android.fluxc.store.SiteStore.WPAPIDiscoveryResult
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
-import java.net.UnknownHostException
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
 import java.security.cert.CertificateNotYetValidException
@@ -75,6 +78,7 @@ class SiteRestClient @Inject constructor(
     private val wpComGsonRequestBuilder: WPComGsonRequestBuilder,
     private val jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder,
     private val coroutineEngine: CoroutineEngine,
+    private val discoveryWPAPIRestClient: DiscoveryWPAPIRestClient,
     accessToken: AccessToken?,
     userAgent: UserAgent?
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
@@ -354,16 +358,19 @@ class SiteRestClient @Inject constructor(
     }
 
     // Unauthenticated network calls
-    fun fetchConnectSiteInfo(siteUrl: String) {
+    fun fetchConnectSiteInfo(siteUrl: String, discoverWPAPIOnFailure: Boolean = false) {
         coroutineEngine.launch(AppLog.T.API, this, "fetchConnectSiteInfo") {
-            fetchConnectSiteInfoSync(siteUrl).let { payload ->
+            fetchConnectSiteInfoSync(siteUrl, discoverWPAPIOnFailure).let { payload ->
                 mDispatcher.dispatch(SiteActionBuilder.newFetchedConnectSiteInfoAction(payload))
             }
         }
     }
 
     @Suppress("SwallowedException")
-    suspend fun fetchConnectSiteInfoSync(siteUrl: String): ConnectSiteInfoPayload {
+    suspend fun fetchConnectSiteInfoSync(
+        siteUrl: String,
+        discoverWPAPIOnFailure: Boolean = false
+    ): ConnectSiteInfoPayload {
         fun ConnectSiteInfoResponse.toConnectSiteInfoPayload(url: String): ConnectSiteInfoPayload {
             return ConnectSiteInfoPayload(
                 url,
@@ -400,25 +407,48 @@ class SiteRestClient @Inject constructor(
 
         return when (response) {
             is Error -> {
-                val siteErrorType = when (response.error.apiError) {
-                    "connection_disabled" -> SiteErrorType.WPCOM_SITE_SUSPENDED
-                    else -> {
-                        when {
-                            isTlsCertificateValidityIssue(response.error) -> TLS_CERTIFICATE_VALIDITY_ERROR
-                            isRemoteSiteCertificateIssue(response.error) -> REMOTE_SITE_CERTIFICATE_ERROR
-                            isWordPressComConnectivityIssue(response.error) -> WORDPRESS_COM_CONNECTIVITY_ERROR
-                            else -> INVALID_SITE
-                        }
+                var siteError = response.error.toConnectSiteInfoError(discoverWPAPIOnFailure)
+                val discovery = siteError.wpApiDiscovery
+                if (discovery != null) {
+                    val wpApiBaseUrl = withContext(Dispatchers.IO) {
+                        discoveryWPAPIRestClient.discoverWPAPIBaseURL(uri.toString())
+                            ?.let { discoveryWPAPIRestClient.verifyWPAPIV2Support(it) }
                     }
+                    siteError = siteError.copy(wpApiDiscovery = discovery.copy(wpApiBaseUrl = wpApiBaseUrl))
                 }
-
-                ConnectSiteInfoPayload(siteUrl, SiteError(siteErrorType))
+                ConnectSiteInfoPayload(siteUrl, siteError)
             }
             is Success -> {
                 response.data.toConnectSiteInfoPayload(siteUrl)
             }
         }
     }
+
+    private fun WPComGsonNetworkError.toConnectSiteInfoError(discoverWPAPIOnFailure: Boolean): SiteError {
+        val message = getCombinedErrorMessage()
+        return when {
+            apiError == "connection_disabled" -> SiteError(SiteErrorType.WPCOM_SITE_SUSPENDED, message)
+            isTlsCertificateValidityIssue(this) -> SiteError(TLS_CERTIFICATE_VALIDITY_ERROR, message)
+            isRemoteSiteCertificateIssue(this) -> SiteError(REMOTE_SITE_CERTIFICATE_ERROR, message)
+            isWordPressComConnectivityIssue(this) -> SiteError(
+                WORDPRESS_COM_CONNECTIVITY_ERROR,
+                message,
+                wpApiDiscovery = toWPAPIDiscoveryResult(discoverWPAPIOnFailure)
+            )
+            else -> SiteError(
+                INVALID_SITE,
+                message,
+                wpApiDiscovery = toWPAPIDiscoveryResult(discoverWPAPIOnFailure)
+            )
+        }
+    }
+
+    private fun WPComGsonNetworkError.toWPAPIDiscoveryResult(discoverWPAPIOnFailure: Boolean) =
+        if (discoverWPAPIOnFailure) {
+            WPAPIDiscoveryResult(connectSiteInfoApiError = apiError)
+        } else {
+            null
+        }
 
     private fun isTlsCertificateValidityIssue(error: WPComGsonNetworkError): Boolean {
         if (error.type !in TLS_CERTIFICATE_VALIDITY_ERROR_TYPES) {
@@ -467,18 +497,7 @@ class SiteRestClient @Inject constructor(
         return when (error.type) {
             GenericErrorType.NO_CONNECTION,
             GenericErrorType.NETWORK_ERROR,
-            GenericErrorType.TIMEOUT -> {
-                error.volleyError?.cause?.let { cause ->
-                    when (cause) {
-                        is UnknownHostException -> {
-                            cause.message?.contains("public-api.wordpress.com", ignoreCase = true) == true
-                        }
-                        else -> {
-                            error.volleyError.message?.contains("public-api.wordpress.com", ignoreCase = true) == true
-                        }
-                    }
-                } ?: false
-            }
+            GenericErrorType.TIMEOUT -> true
             else -> false
         }
     }
