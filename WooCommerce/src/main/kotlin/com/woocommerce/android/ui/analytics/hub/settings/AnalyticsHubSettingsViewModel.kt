@@ -49,7 +49,8 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
     private lateinit var draftConfiguration: List<AnalyticCardConfigurationUI>
     private lateinit var activePluginCards: Set<AnalyticsCards>
 
-    private fun hasChanges() = currentConfiguration != draftConfiguration
+    private fun hasChanges() =
+        currentConfiguration.map { it.toConfigurationModel() } != draftConfiguration.map { it.toConfigurationModel() }
 
     init {
         launch {
