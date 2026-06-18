@@ -41,6 +41,12 @@ class WooPosSyncTimestampManager @Inject constructor(
 
     suspend fun getFullSyncLastCompletedTimestamp(): Long? = timestampRepository.getFullSyncLastCompletedTimestamp()
 
+    suspend fun setCatalogFileBlocked(blocked: Boolean) {
+        timestampRepository.setCatalogFileBlocked(blocked)
+    }
+
+    suspend fun isCatalogFileBlocked(): Boolean = timestampRepository.isCatalogFileBlocked()
+
     fun formatTimestampForApi(timestamp: Long): String {
         return defaultApiDateFormatter.format(Instant.ofEpochMilli(timestamp))
     }
