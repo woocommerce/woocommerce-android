@@ -4,6 +4,7 @@
 
 25.1
 -----
+- [*] Fixed a startup crash when WordPress.com returns malformed site details [https://github.com/woocommerce/woocommerce-android/pull/16102]
 - [*] Renamed the empty Orders "test order" prompt to "Place your first order" and clarified that processing fees aren't refundable [https://github.com/woocommerce/woocommerce-android/pull/16086]
 - [*] Improved login error messages for site security certificate issues [https://github.com/woocommerce/woocommerce-android/pull/16042]
 - [Internal] Fixed a screen flash when navigating from the login prologue to the (feature-flagged) QR login screen [https://github.com/woocommerce/woocommerce-android/pull/16095]

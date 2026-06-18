@@ -38,6 +38,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.UrlUtils
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
@@ -124,6 +125,22 @@ class SiteRestClientTest {
         assertNotNull(errorResponse.error)
         assertThat(errorResponse.error.type).isEqualTo(GenericErrorType.NETWORK_ERROR)
         assertThat(errorResponse.error.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `given malformed successful site response, when fetching site, then return parse error`() = test {
+        initSiteResponse(
+            SiteWPComRestResponse().apply {
+                ID = siteId
+                name = "Updated name"
+            }
+        )
+
+        val errorResponse = restClient.fetchSite(site)
+
+        assertNotNull(errorResponse.error)
+        assertThat(errorResponse.error.type).isEqualTo(GenericErrorType.PARSE_ERROR)
+        assertParseErrorReported("https://public-api.wordpress.com/rest/v1.1/sites/12")
     }
 
     @Test
@@ -219,6 +236,25 @@ class SiteRestClientTest {
         assertNotNull(errorResponse.error)
         assertThat(errorResponse.error.type).isEqualTo(GenericErrorType.NETWORK_ERROR)
         assertThat(errorResponse.error.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `given malformed successful sites response, when fetching sites, then return parse error`() = test {
+        val sitesResponse = SitesResponse()
+        sitesResponse.sites = listOf(
+            SiteWPComRestResponse().apply {
+                ID = siteId
+                name = "Updated name"
+            }
+        )
+
+        initSitesResponse(data = sitesResponse)
+
+        val errorResponse = restClient.fetchSites(emptyList(), false)
+
+        assertNotNull(errorResponse.error)
+        assertThat(errorResponse.error.type).isEqualTo(GenericErrorType.PARSE_ERROR)
+        assertParseErrorReported("https://public-api.wordpress.com/rest/v1.1/me/sites/")
     }
 
     @Test
@@ -816,5 +852,13 @@ class SiteRestClientTest {
         assertThat(result.error!!.type).isEqualTo(SiteErrorType.WORDPRESS_COM_CONNECTIVITY_ERROR)
         assertThat(result.error!!.wpApiDiscovery).isNull()
         verifyNoInteractions(discoveryWPAPIRestClient)
+    }
+
+    private fun assertParseErrorReported(url: String) {
+        val eventCaptor = argumentCaptor<OnUnexpectedError>()
+        verify(dispatcher).emitChange(eventCaptor.capture())
+
+        assertThat(eventCaptor.firstValue.description).isEqualTo("API response parse error")
+        assertThat(eventCaptor.firstValue.extras[OnUnexpectedError.KEY_URL]).isEqualTo(url)
     }
 }
