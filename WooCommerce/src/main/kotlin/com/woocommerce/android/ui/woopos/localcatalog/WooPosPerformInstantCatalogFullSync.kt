@@ -14,9 +14,19 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val syncScheduler: WooPosLocalCatalogSyncScheduler,
     private val selectedSite: SelectedSite,
+    private val isCatalogFileBlocked: WooPosIsCatalogFileBlocked,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
     suspend operator fun invoke(): Result<Unit> {
+        if (isCatalogFileBlocked()) {
+            // The host blocked the catalog file on a previous attempt and a full sync has never
+            // completed. Fail fast instead of waiting on catalog generation/download again (which would
+            // repeat on every POS entry). The caller falls back to remote sync, while the background
+            // worker keeps retrying and clears the flag on the first successful sync.
+            wooPosLogWrapper.d("Catalog file is blocked by the host; skipping the blocking sync wait")
+            return Result.failure(WooPosCatalogFileBlockedException())
+        }
+
         val isOneTimeRunning = syncScheduler.observeOneTimeWorkStatus().first()
         val isPeriodicRunning = syncScheduler.observePeriodicWorkStatus().first()
 
