@@ -6,3 +6,18 @@ Gemfile*       @woocommerce/apps-infra-tooling
 .ruby-version  @woocommerce/apps-infra-tooling
 .bundle/       @woocommerce/apps-infra-tooling
 .rubocop*.yml  @woocommerce/apps-infra-tooling
+fastlane/      @woocommerce/apps-infra-tooling
+# Store-listing localization is content, not infra.
+fastlane/metadata/
+
+# CI and automation
+.buildkite/            @woocommerce/apps-infra-tooling
+.github/workflows/     @woocommerce/apps-infra-tooling
+.github/dependabot.yml @woocommerce/apps-infra-tooling
+Dangerfile*            @woocommerce/apps-infra-tooling
+
+# Toolchain and environment pins
+.java-version          @woocommerce/apps-infra-tooling
+
+# Secrets
+.configure-files/     @woocommerce/apps-infra-tooling
