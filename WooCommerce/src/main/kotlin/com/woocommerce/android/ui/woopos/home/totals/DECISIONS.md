@@ -4,9 +4,14 @@ Paired with the WooCommerce server-side architectural spike at
 `plugins/woocommerce/src/Internal/POS/StoreApi/` in `woocommerce/woocommerce`,
 this is the Android side: behind the
 `WOO_POS_STORE_API_CHECKOUT` feature flag, the moment the cashier taps "Charge"
-runs the in-memory cart through the new `wc/pos/v1/cart/add-item` + `/checkout`
-endpoints instead of `POST /wc/v3/orders`. Everything downstream of order
-creation (payment flow, card reader SDK, cash mark-paid) is unchanged.
+runs the in-memory cart through the new `wc/internal/pos/v1/cart/add-item` +
+`/checkout` endpoints instead of `POST /wc/v3/orders`. Everything downstream of
+order creation (payment flow, card reader SDK, cash mark-paid) is unchanged.
+
+The namespace is `wc/internal/pos/v1` (not `wc/pos/v1`, which is the public POS
+catalog feed): the cart/checkout shape is still a spike and not a committed
+public contract, and the routes exist only when the server's `point_of_sale`
+feature is enabled.
 
 This document records the judgement calls made while wiring it up.
 
@@ -30,8 +35,8 @@ assembly, coupon/fee composition) don't grow.
 ## Why per-item `cart/add-item` instead of a batch endpoint
 
 The Store API has `/wc/store/v1/batch` which can issue multiple operations in
-one HTTP request. We could expose it as `/wc/pos/v1/batch` and post all items
-+ the checkout in one round-trip.
+one HTTP request. We could expose it as `/wc/internal/pos/v1/batch` and post all
+items + the checkout in one round-trip.
 
 For the spike we stuck with per-item add + final checkout because:
 
@@ -44,8 +49,8 @@ For the spike we stuck with per-item add + final checkout because:
 - Lets us test the Store API integration on the simplest possible code path
   before optimising.
 
-A `/wc/pos/v1/batch` follow-up is a sensible optimisation once the per-item
-flow is validated end-to-end against real extensions.
+A `/wc/internal/pos/v1/batch` follow-up is a sensible optimisation once the
+per-item flow is validated end-to-end against real extensions.
 
 ## Why fetch the order after `/checkout` instead of constructing it locally
 
@@ -88,7 +93,7 @@ Practical paths forward, in order of preference:
 1. **Make `StoreApi\SessionHandler` non-final upstream and extend it as
    `POSSessionHandler`.** Mobile sends/receives `Cart-Token` via header. This
    is what Block Checkout already does — POS would share the model.
-2. **Add a `/wc/pos/v1/cart-token` endpoint** that issues a fresh signed
+2. **Add a `/wc/internal/pos/v1/cart-token` endpoint** that issues a fresh signed
    cart-token. Mobile calls it once at sale start; passes the token via
    `?session=` on subsequent requests.
 3. **Configure an OkHttp `CookieJar` per POS transaction** in the Android
@@ -102,12 +107,25 @@ session — i.e. the cart on checkout will not contain the prior items. This
 is documented in the server-side `DECISIONS.md` too. Unit tests mock the
 REST client so they're unaffected.
 
+## Coupons and custom amounts
+
+Both flow through dedicated POS cart endpoints before checkout, so server-side
+validation and composition run unchanged:
+
+- **Coupons** (`ItemClickedData.Coupon`) → `cart/apply-coupon`, one call per
+  code. Coupon validation (usage limits, per-customer limits, product
+  restrictions) runs server-side.
+- **Custom amounts** (`ItemClickedData.CustomAmount`) → `cart/add-fee`, one
+  call per fee, carrying name/amount/taxable. The server persists each fee in
+  the session and re-applies it on every cart recalculation, and fee identity
+  is content-derived so re-adding an identical fee is idempotent.
+
+The sequence is items → coupons → custom amounts → checkout; ordering is not
+load-bearing (coupons never discount fees, and fee/coupon persistence both span
+the cart-building phase), but it keeps the call order predictable.
+
 ## What this spike deliberately does NOT include
 
-- **Coupons** (`ItemClickedData.Coupon`) and **custom fees**
-  (`ItemClickedData.CustomAmount`) — the Store API uses separate endpoints
-  for these (`cart/apply-coupon`, etc.). Silently dropped for now;
-  `addProductsToCart` filters to `ItemClickedData.Product` only.
 - **Customer pre-fill on the order** — guest checkout in all cases. The
   agent/customer identity model from the server proposal hasn't been
   implemented yet, so there's no `customer_id` to send.

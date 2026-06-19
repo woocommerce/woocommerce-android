@@ -7,12 +7,18 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import java.math.BigDecimal
 import java.net.URLEncoder
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * REST client for the POS Store API namespace (`wc/pos/v1`).
+ * REST client for the POS Store API namespace (`wc/internal/pos/v1`).
+ *
+ * The namespace is `internal` because the cart/checkout shape is still a spike
+ * and not a committed public contract; the routes exist only when the server's
+ * `point_of_sale` feature is enabled. (The public `wc/pos/v1` namespace is a
+ * separate thing — the POS catalog feed — and must not be confused with this.)
  *
  * These endpoints run the WooCommerce checkout pipeline (and therefore fire
  * the checkout-time extension hooks that fulfilment of gift cards,
@@ -36,7 +42,7 @@ class PosStoreApiRestClient @Inject constructor(
 ) {
 
     /**
-     * POST /wc/pos/v1/cart/add-item.
+     * POST /wc/internal/pos/v1/cart/add-item.
      *
      * Adds one cart line. Returns the response together with any
      * `Cart-Token` header the server emitted, so the caller can replay
@@ -71,7 +77,7 @@ class PosStoreApiRestClient @Inject constructor(
     }
 
     /**
-     * POST /wc/pos/v1/cart/apply-coupon.
+     * POST /wc/internal/pos/v1/cart/apply-coupon.
      *
      * Applies a single coupon to the in-progress cart. Coupon validation
      * (usage limits, per-customer limits, product restrictions, etc.) runs
@@ -98,7 +104,43 @@ class PosStoreApiRestClient @Inject constructor(
     }
 
     /**
-     * POST /wc/pos/v1/checkout.
+     * POST /wc/internal/pos/v1/cart/add-fee.
+     *
+     * Adds one ad-hoc custom fee (a "custom amount" in POS terms) to the
+     * in-progress cart. The server persists the fee in the session and
+     * re-applies it on every cart recalculation, so it survives until
+     * checkout. Fee identity is content-derived server-side (name + amount +
+     * tax), so re-adding an identical fee is idempotent. The amount must be
+     * greater than zero — the server rejects non-positive fees. Returns the
+     * response together with any refreshed `Cart-Token` header so the caller
+     * can replay it on subsequent calls in the same transaction.
+     */
+    suspend fun addFee(
+        site: SiteModel,
+        name: String,
+        amount: BigDecimal,
+        taxable: Boolean = false,
+        cartToken: String? = null,
+    ): WooPayload<Unit> {
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = appendCartToken(ADD_FEE_PATH, cartToken),
+            clazz = AddFeeResponseDto::class.java,
+            body = mapOf(
+                "name" to name,
+                "amount" to amount,
+                "taxable" to taxable,
+            )
+        )
+
+        return when (response) {
+            is Success -> WooPayload(Unit, response.headers)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
+    /**
+     * POST /wc/internal/pos/v1/checkout.
      *
      * Finalises the in-progress cart into an order. The body is empty:
      * no payment_method, no billing_address, no shipping_address. The POS
@@ -163,6 +205,14 @@ class PosStoreApiRestClient @Inject constructor(
     private class ApplyCouponResponseDto
 
     /**
+     * Minimal projection of the add-fee response. As with add-item, the
+     * in-memory POS cart stays the client-side source of truth, so we don't
+     * consume the returned cart payload here.
+     */
+    @Suppress("unused")
+    private class AddFeeResponseDto
+
+    /**
      * Minimal projection of the checkout response. The full schema is much
      * larger; we only need the order identification fields to hand off to
      * the existing payment flow.
@@ -182,9 +232,10 @@ class PosStoreApiRestClient @Inject constructor(
          */
         const val CART_TOKEN_HEADER = "Cart-Token"
 
-        private const val ADD_ITEM_PATH = "/wc/pos/v1/cart/add-item"
-        private const val APPLY_COUPON_PATH = "/wc/pos/v1/cart/apply-coupon"
-        private const val CHECKOUT_PATH = "/wc/pos/v1/checkout"
+        private const val ADD_ITEM_PATH = "/wc/internal/pos/v1/cart/add-item"
+        private const val APPLY_COUPON_PATH = "/wc/internal/pos/v1/cart/apply-coupon"
+        private const val ADD_FEE_PATH = "/wc/internal/pos/v1/cart/add-fee"
+        private const val CHECKOUT_PATH = "/wc/internal/pos/v1/checkout"
         private const val CART_TOKEN_PARAM = "cart_token"
     }
 }

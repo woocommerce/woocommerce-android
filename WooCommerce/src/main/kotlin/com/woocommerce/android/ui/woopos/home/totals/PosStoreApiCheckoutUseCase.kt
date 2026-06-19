@@ -14,15 +14,15 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 /**
- * Drives order creation through the POS Store API under the wc/pos/v1
+ * Drives order creation through the POS Store API under the wc/internal/pos/v1
  * namespace, instead of the legacy REST POST /wc/v3/orders path.
  *
  * The flow is: for each distinct product/variation in the in-memory cart,
  * POST cart/add-item; then POST cart/apply-coupon for each coupon in the
- * cart; then POST checkout to materialise the cart into a pending order.
- * The newly-created order is then fetched via the existing orders REST
- * client so the rest of the POS payment flow sees an Order with
- * fully-populated totals.
+ * cart; then POST cart/add-fee for each custom amount; then POST checkout to
+ * materialise the cart into a pending order. The newly-created order is then
+ * fetched via the existing orders REST client so the rest of the POS payment
+ * flow sees an Order with fully-populated totals.
  *
  * Session continuity across the request sequence is maintained by
  * capturing the `Cart-Token` HTTP response header emitted by the first
@@ -31,9 +31,8 @@ import javax.inject.Inject
  * header-based session swap on the server picks it up so each request
  * operates on the same server-side cart.
  *
- * Custom fees are deliberately not supported in this spike; the in-memory
- * WooPosItemsViewModel.ItemClickedData.CustomAmount items are silently
- * dropped. Coupons are applied via cart/apply-coupon.
+ * Coupons are applied via cart/apply-coupon and custom amounts via
+ * cart/add-fee.
  *
  * Routed behind the FeatureFlag.WOO_POS_STORE_API_CHECKOUT flag from
  * WooPosTotalsRepository.createOrderFromCartItems.
@@ -55,6 +54,8 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
             .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
         val coupons = itemClickedDataList
             .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
+        val customAmounts = itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.CustomAmount>()
 
         // The first add-item call creates the server-side cart; its response carries
         // the Cart-Token we replay on every subsequent call so we stay on that cart.
@@ -64,6 +65,9 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
             .onFailure { return@withContext Result.failure(it) }
 
         applyCoupons(site, coupons, cartTokenHolder)
+            .onFailure { return@withContext Result.failure(it) }
+
+        applyCustomFees(site, customAmounts, cartTokenHolder)
             .onFailure { return@withContext Result.failure(it) }
 
         val checkoutPayload = restClient.checkout(site, cartToken = cartTokenHolder.value)
@@ -134,6 +138,31 @@ class PosStoreApiCheckoutUseCase @Inject constructor(
                 return Result.failure(
                     IllegalStateException(
                         "Store API apply-coupon failed for ${coupon.couponCode}: ${payload.error?.message}"
+                    )
+                )
+            }
+            cartTokenHolder.updateFrom(payload)
+        }
+        return Result.success(Unit)
+    }
+
+    private suspend fun applyCustomFees(
+        site: SiteModel,
+        customAmounts: List<WooPosItemsViewModel.ItemClickedData.CustomAmount>,
+        cartTokenHolder: CartTokenHolder,
+    ): Result<Unit> {
+        for (customAmount in customAmounts) {
+            val payload = restClient.addFee(
+                site = site,
+                name = customAmount.name,
+                amount = customAmount.amount,
+                taxable = customAmount.isTaxable,
+                cartToken = cartTokenHolder.value,
+            )
+            if (payload.isError) {
+                return Result.failure(
+                    IllegalStateException(
+                        "Store API add-fee failed for ${customAmount.name}: ${payload.error?.message}"
                     )
                 )
             }

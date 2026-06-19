@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.pos.PosStoreApiRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pos.PosStoreApiRestClient.CheckoutResponseDto
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
+import java.math.BigDecimal
 
 class PosStoreApiCheckoutUseCaseTest {
 
@@ -156,6 +157,109 @@ class PosStoreApiCheckoutUseCaseTest {
     }
 
     @Test
+    fun `given custom amounts in cart, when invoked, then add-fee is called once per custom amount`() = runTest {
+        givenAddToCartSucceeds()
+        givenAddFeeSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
+        givenOrderFetchSucceeds(orderId = 42L)
+
+        sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                    id = 20L,
+                    name = "Gift wrap",
+                    amount = BigDecimal("5.00"),
+                    isTaxable = true,
+                ),
+                WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                    id = 21L,
+                    name = "Handling",
+                    amount = BigDecimal("1.50"),
+                    isTaxable = false,
+                ),
+            )
+        )
+
+        verify(restClient).addFee(
+            site = eq(site),
+            name = eq("Gift wrap"),
+            amount = eq(BigDecimal("5.00")),
+            taxable = eq(true),
+            cartToken = anyOrNull(),
+        )
+        verify(restClient).addFee(
+            site = eq(site),
+            name = eq("Handling"),
+            amount = eq(BigDecimal("1.50")),
+            taxable = eq(false),
+            cartToken = anyOrNull(),
+        )
+    }
+
+    @Test
+    fun `given a custom amount, when invoked, then it is added after coupons and before checkout`() = runTest {
+        givenAddToCartSucceeds()
+        givenApplyCouponSucceeds()
+        givenAddFeeSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
+        givenOrderFetchSucceeds(orderId = 42L)
+
+        sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 10L, couponCode = "SAVE10"),
+                WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                    id = 20L,
+                    name = "Gift wrap",
+                    amount = BigDecimal("5.00"),
+                    isTaxable = false,
+                ),
+            )
+        )
+
+        inOrder(restClient) {
+            verify(restClient).addToCart(any(), eq(1L), any(), anyOrNull(), anyOrNull())
+            verify(restClient).applyCoupon(eq(site), eq("SAVE10"), anyOrNull())
+            verify(restClient).addFee(eq(site), eq("Gift wrap"), any(), any(), anyOrNull())
+            verify(restClient).checkout(eq(site), anyOrNull())
+        }
+    }
+
+    @Test
+    fun `given add-fee fails, when invoked, then checkout is not called`() = runTest {
+        givenAddToCartSucceeds()
+        whenever(restClient.addFee(any(), any(), any(), any(), anyOrNull())) doReturn
+            WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "bad fee"))
+
+        val result = sut(
+            listOf(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.CustomAmount(
+                    id = 20L,
+                    name = "Gift wrap",
+                    amount = BigDecimal("5.00"),
+                    isTaxable = false,
+                ),
+            )
+        )
+
+        assertThat(result.isFailure).isTrue
+        verify(restClient, never()).checkout(any(), anyOrNull())
+    }
+
+    @Test
+    fun `given no custom amounts, when invoked, then add-fee is never called`() = runTest {
+        givenAddToCartSucceeds()
+        givenCheckoutSucceeds(orderId = 42L)
+        givenOrderFetchSucceeds(orderId = 42L)
+
+        sut(listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)))
+
+        verify(restClient, never()).addFee(any(), any(), any(), any(), anyOrNull())
+    }
+
+    @Test
     fun `given add-item fails, when invoked, then checkout is not called`() = runTest {
         whenever(restClient.addToCart(any(), any(), any(), any(), anyOrNull())) doReturn
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.UNKNOWN, "boom"))
@@ -254,6 +358,10 @@ class PosStoreApiCheckoutUseCaseTest {
 
     private suspend fun givenApplyCouponSucceeds() {
         whenever(restClient.applyCoupon(any(), any(), anyOrNull())) doReturn WooPayload(Unit)
+    }
+
+    private suspend fun givenAddFeeSucceeds() {
+        whenever(restClient.addFee(any(), any(), any(), any(), anyOrNull())) doReturn WooPayload(Unit)
     }
 
     private suspend fun givenCheckoutSucceeds(
