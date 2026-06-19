@@ -445,7 +445,11 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                     new ConnectSiteInfoResult(
                             mConnectSiteInfoUrl,
                             mConnectSiteInfoUrlRedirect,
-                            mConnectSiteInfoCalculatedHasJetpack
+                            mConnectSiteInfoCalculatedHasJetpack,
+                            false,
+                            siteInfo.isWPCom,
+                            siteInfo.isCommerceGarden,
+                            siteInfo.isJetpackConnected
                     )
             );
         }

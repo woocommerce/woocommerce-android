@@ -699,7 +699,12 @@ class LoginActivity :
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
-        if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
+        // Decide the next screen from the site info carried by the result itself, so the routing
+        // doesn't depend on the separately-maintained connectSiteInfo field (which can be null when
+        // its subscriber races/clears). WordPress.com, Commerce-garden and Jetpack-connected sites
+        // use the WP.com email flow; only self-hosted sites without a Jetpack connection use site
+        // credentials. Mirrors iOS AuthenticationManager.shouldPresentUsernamePasswordController.
+        if (result.shouldUseWPComLogin) {
             showEmailLoginScreen(null)
         } else {
             appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
