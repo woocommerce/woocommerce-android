@@ -49,6 +49,13 @@ class ListStoreTest {
         override val config = ListConfig.default
     }
 
+    // Shares its type identifier with [testListDescriptor] but has a different unique identifier.
+    private val siblingListDescriptor = object : ListDescriptor {
+        override val uniqueIdentifier = ListDescriptorUniqueIdentifier(101)
+        override val typeIdentifier = ListDescriptorTypeIdentifier(200)
+        override val config = ListConfig.default
+    }
+
     @Before
     fun setUp() {
         store = ListStore(
@@ -287,6 +294,41 @@ class ListStoreTest {
         val event = captor.firstValue as ListStore.OnListDataFailure
         assertThat(event.type).isEqualTo(payload)
     }
+    // endregion
+
+    // region onAction - MARK_LISTS_OF_TYPE_NEED_REFRESH
+    @Test
+    fun `given sibling lists of same type, when mark lists of type need refresh, then siblings need refresh`() = runTest {
+        store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false)
+        store.saveListFetched(siblingListDescriptor, listOf(2L), canLoadMore = false)
+
+        store.onAction(
+            ListActionBuilder.newMarkListsOfTypeNeedRefreshAction(
+                ListStore.MarkListsNeedRefreshPayload(excludedDescriptor = testListDescriptor)
+            )
+        )
+
+        // The excluded (just-fetched) list keeps its state; the sibling is marked for refresh.
+        assertThat(store.getListState(testListDescriptor)).isEqualTo(ListState.FETCHED)
+        assertThat(store.getListState(siblingListDescriptor)).isEqualTo(ListState.NEEDS_REFRESH)
+    }
+
+    @Test
+    fun `given lists of a different type, when mark lists of type need refresh, then other type is unaffected`() =
+        runTest {
+            store.saveListFetched(testListDescriptor, listOf(1L), canLoadMore = false) // type 200
+            store.saveListFetched(otherListDescriptor, listOf(2L), canLoadMore = false) // type 400
+
+            // Exclude a (non-existent) type-200 sibling so every type-200 list is marked.
+            store.onAction(
+                ListActionBuilder.newMarkListsOfTypeNeedRefreshAction(
+                    ListStore.MarkListsNeedRefreshPayload(excludedDescriptor = siblingListDescriptor)
+                )
+            )
+
+            assertThat(store.getListState(testListDescriptor)).isEqualTo(ListState.NEEDS_REFRESH)
+            assertThat(store.getListState(otherListDescriptor)).isEqualTo(ListState.FETCHED)
+        }
     // endregion
 
     /* HELPER */
