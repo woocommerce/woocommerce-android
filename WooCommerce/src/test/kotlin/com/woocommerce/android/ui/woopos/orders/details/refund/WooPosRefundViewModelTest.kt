@@ -32,11 +32,13 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -55,6 +57,9 @@ class WooPosRefundViewModelTest {
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
     private val groupRefundItems: WooPosGroupRefundItems = mock()
+    private val buildRefundV4LineItems = WooPosBuildRefundV4LineItems()
+    private val refundPreview: WooPosRefundPreview = mock()
+    private val v4RefundAvailabilityCache = WooPosV4RefundAvailabilityCache()
     private val calculateRefundSubtotal = WooPosCalculateRefundSubtotal()
     private val calculateRefundTax = WooPosCalculateRefundTax()
     private val resourceProvider: ResourceProvider = mock()
@@ -134,6 +139,9 @@ class WooPosRefundViewModelTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
 
         whenever(loadPaymentMethod.invoke(any())).thenReturn(Result.success("Manual refund"))
+        // Default to the v3 fallback so existing assertions exercise the local-calculation path;
+        // v4-specific tests override this.
+        whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.FallbackToLocal)
         whenever(refundSubmissionProcessor.submit(any())).thenReturn(
             flowOf(
                 WooPosRefundSubmissionState.Processing,
@@ -157,6 +165,9 @@ class WooPosRefundViewModelTest {
             retrieveOrderRefunds = retrieveOrderRefunds,
             getRefundableItems = getRefundableItems,
             groupRefundItems = groupRefundItems,
+            buildRefundV4LineItems = buildRefundV4LineItems,
+            refundPreview = refundPreview,
+            v4RefundAvailabilityCache = v4RefundAvailabilityCache,
             calculateRefundSubtotal = calculateRefundSubtotal,
             calculateRefundTax = calculateRefundTax,
             resourceProvider = resourceProvider,
@@ -175,6 +186,30 @@ class WooPosRefundViewModelTest {
      * Note: Items with the same orderItemId but different rowIndex represent
      * expanded units from an order item with quantity > 1.
      */
+    private fun refundPreview(
+        subtotal: String,
+        tax: String,
+        total: String,
+        maxRefundable: String,
+    ) = WCRefundPreview(
+        subtotal = BigDecimal(subtotal),
+        tax = BigDecimal(tax),
+        total = BigDecimal(total),
+        maxRefundable = BigDecimal(maxRefundable),
+        breakdown = WCRefundPreview.Breakdown(
+            products = emptyPreviewSection(),
+            shipping = emptyPreviewSection(),
+            fees = emptyPreviewSection(),
+        ),
+    )
+
+    private fun emptyPreviewSection() = WCRefundPreview.Section(
+        items = emptyList(),
+        subtotal = BigDecimal.ZERO,
+        tax = BigDecimal.ZERO,
+        total = BigDecimal.ZERO,
+    )
+
     private fun createRefundableItem(
         orderItemId: Long,
         productId: Long = 10L,
@@ -262,6 +297,79 @@ class WooPosRefundViewModelTest {
             assertThat(contentState.subtotal).isEqualByComparingTo(BigDecimal("40.00"))
             assertThat(contentState.taxes).isEqualByComparingTo(BigDecimal("4.00"))
             assertThat(contentState.total).isEqualByComparingTo(BigDecimal("44.00"))
+        }
+
+    @Test
+    fun `given v4 available, when continue clicked, then review shows server-calculated totals`() = runTest {
+        // GIVEN
+        val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+        whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+        whenever(refundPreview.invoke(any(), any())).thenReturn(
+            WooPosRefundPreview.Result.ServerCalculated(
+                refundPreview(subtotal = "55.00", tax = "5.00", total = "60.00", maxRefundable = "60.00")
+            )
+        )
+        viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosRefundState.Content
+        assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+        assertThat(content.subtotal).isEqualByComparingTo(BigDecimal("55.00"))
+        assertThat(content.taxes).isEqualByComparingTo(BigDecimal("5.00"))
+        assertThat(content.total).isEqualByComparingTo(BigDecimal("60.00"))
+        assertThat(content.maxRefundable).isEqualByComparingTo(BigDecimal("60.00"))
+        assertThat(content.isPreviewLoading).isFalse()
+        assertThat(content.previewFailed).isFalse()
+    }
+
+    @Test
+    fun `given preview is not triggered, when items toggled, then preview is not called`() = runTest {
+        // GIVEN
+        val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+        whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+        viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(refundableItems.first().uniqueId))
+        advanceUntilIdle()
+
+        // THEN
+        verify(refundPreview, never()).invoke(any(), any())
+    }
+
+    @Test
+    fun `given v4 preview errors, when continue clicked, then content marks preview failed and stays on select`() =
+        runTest {
+            // GIVEN
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.Error)
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(content.previewFailed).isTrue()
+            assertThat(content.isPreviewLoading).isFalse()
         }
 
     @Test

@@ -38,6 +38,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -60,6 +61,7 @@ class WooPosRefundSubmissionProcessorTest {
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val uiStringParser: UiStringParser = mock()
+    private val v4RefundAvailabilityCache: WooPosV4RefundAvailabilityCache = mock()
 
     private val site = SiteModel().apply { id = 1 }
     private val refundAmount = BigDecimal("22.00")
@@ -131,7 +133,8 @@ class WooPosRefundSubmissionProcessorTest {
             loadPaymentGateway = loadPaymentGateway,
             cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
             resourceProvider = resourceProvider,
-            uiStringParser = uiStringParser
+            uiStringParser = uiStringParser,
+            v4RefundAvailabilityCache = v4RefundAvailabilityCache,
         )
     }
 
@@ -152,6 +155,96 @@ class WooPosRefundSubmissionProcessorTest {
         }
 
         verify(cardReaderPaymentControllerFactory, never()).createRefund(any(), any(), any())
+        verify(refundStore).createItemsRefund(
+            site = eq(site),
+            orderId = eq(order.id),
+            amount = eq(refundAmount),
+            reason = eq("Customer request"),
+            restockItems = eq(true),
+            autoRefund = eq(true),
+            items = eq(refundItems)
+        )
+    }
+
+    @Test
+    fun `given v4 line items, when submitted, then simplified v4 refund is created and v3 not called`() = runTest {
+        // GIVEN
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "visa",
+                cardLast4 = "1234",
+                paymentMethodType = CARD_PRESENT
+            )
+        )
+        val v4LineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        whenever(
+            refundStore.createSimplifiedItemsRefund(
+                site = eq(site),
+                orderId = eq(order.id),
+                reason = eq("Customer request"),
+                autoRefund = eq(true),
+                items = eq(v4LineItems),
+            )
+        ).thenReturn(WooResult(refundModel))
+
+        // WHEN
+        processor.submit(request.copy(v4LineItems = v4LineItems)).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            awaitComplete()
+        }
+
+        // THEN
+        verify(refundStore).createSimplifiedItemsRefund(
+            site = eq(site),
+            orderId = eq(order.id),
+            reason = eq("Customer request"),
+            autoRefund = eq(true),
+            items = eq(v4LineItems),
+        )
+        verify(refundStore, never()).createItemsRefund(
+            site = any(),
+            orderId = any(),
+            amount = any(),
+            reason = any(),
+            restockItems = any(),
+            autoRefund = any(),
+            items = any()
+        )
+    }
+
+    @Test
+    fun `given v4 create returns 404, when submitted, then falls back to v3 and marks v4 unavailable`() = runTest {
+        // GIVEN
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "visa",
+                cardLast4 = "1234",
+                paymentMethodType = CARD_PRESENT
+            )
+        )
+        val v4LineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        whenever(
+            refundStore.createSimplifiedItemsRefund(
+                site = eq(site),
+                orderId = eq(order.id),
+                reason = eq("Customer request"),
+                autoRefund = eq(true),
+                items = eq(v4LineItems),
+            )
+        ).thenReturn(
+            WooResult(WooError(WooErrorType.API_NOT_FOUND, GenericErrorType.NOT_FOUND))
+        )
+
+        // WHEN
+        processor.submit(request.copy(v4LineItems = v4LineItems)).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+            awaitComplete()
+        }
+
+        // THEN
+        verify(v4RefundAvailabilityCache).markV4Unavailable(site.siteId)
         verify(refundStore).createItemsRefund(
             site = eq(site),
             orderId = eq(order.id),
