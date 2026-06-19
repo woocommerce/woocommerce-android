@@ -1,19 +1,19 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
+import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.domain.getBeforeAndAfterFrom
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
-import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 class GetWCOrderListDescriptorWithFiltersBySiteId @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository,
     private val dateUtils: DateUtils,
-    private val siteStore: SiteStore,
+    private val resolveSiteBySiteId: ResolveSiteBySiteId,
     private val ciabOrderStatusMapper: CIABOrderStatusMapper
 ) {
     operator fun invoke(siteId: Long): WCOrderListDescriptor? {
@@ -26,7 +26,7 @@ class GetWCOrderListDescriptorWithFiltersBySiteId @Inject constructor(
             orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
         ).joinToString(separator = ",")
 
-        val site = siteStore.getSiteBySiteId(siteId) ?: return null
+        val site = resolveSiteBySiteId(siteId) ?: return null
 
         return WCOrderListDescriptor(
             site = site,
