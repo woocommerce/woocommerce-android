@@ -109,13 +109,20 @@ class SelectedSite @Inject constructor(
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
     }
 
+    /**
+     * Clears the selected site.
+     *
+     * @param persistSynchronously when true the preference is written with a blocking [commit] instead
+     * of [apply]. Recovery flows restart (and may kill) the process right after resetting, and an async
+     * [apply] can be lost before it flushes, leaving the site still "selected" on relaunch. Normal
+     * resets keep [apply] to avoid main-thread disk I/O.
+     */
     @Synchronized
-    fun reset() {
+    fun reset(persistSynchronously: Boolean = false) {
         wasReset = true
         state.value = null
-        // Persist synchronously: recovery flows restart (and may kill) the process right after, and an
-        // async apply() can be lost before it flushes, leaving the site still "selected" on relaunch.
-        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).commit()
+        val editor = getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID)
+        if (persistSynchronously) editor.commit() else editor.apply()
         siteComponent = null
         siteCoroutineScope?.cancel()
     }
