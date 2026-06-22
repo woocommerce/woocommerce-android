@@ -4838,7 +4838,7 @@
     <string name="login_qr_scanner_error_payload_title">Це не код WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">Цей QR не є кодом входу WooCommerce. Згенеруйте новий у своєму магазині й спробуйте ще раз.</string>
     <string name="login_qr_scanner_error_install_qr_title">Це QR для встановлення</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Застосунок уже встановлено — цей QR його встановлює. У wp-admin торкніться кнопки <b>%1$s</b>, щоб показати QR для входу. Або перейдіть на <b>%2$s</b> на комп’ютері.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Застосунок уже встановлено — цей QR його встановлює. У wp-admin торкніться кнопки &lt;b&gt;%1$s&lt;/b&gt;, щоб показати QR для входу. Або перейдіть на &lt;b&gt;%2$s&lt;/b&gt; на комп’ютері.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Застосунок встановлено</string>
     <string name="login_qr_scanner_error_token_title">Термін дії коду минув</string>
     <string name="login_qr_scanner_error_token_body">Термін дії цього коду минув або його вже використано. Згенеруйте новий у своєму магазині.</string>
@@ -4876,12 +4876,12 @@
     <string name="dashboard_stats_delayed_footer">Статистика може затримуватися до 12 годин</string>
     <string name="dashboard_stats_info_content_description">Налаштування оновлень Analytics</string>
     <string name="dashboard_scheduled_import_sheet_title">Оновлення Analytics</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Виберіть, як WooCommerce обробляє оновлення даних Analytics. <a href="learn_more"><u>Докладніше</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Виберіть, як WooCommerce обробляє оновлення даних Analytics. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Докладніше&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">За розкладом</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Автоматично оновлює дані Analytics кожні 12 годин. Рекомендовано для магазинів із великим обсягом замовлень.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Негайно</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Оновлює дані Analytics, щойно з’являються нові дані.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Це налаштування для всього магазину, яке також керує параметром &quot;Оновлення&quot; в налаштуваннях Analytics адміністратора WooCommerce.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Це налаштування для всього магазину, яке також керує параметром \"Оновлення\" в налаштуваннях Analytics адміністратора WooCommerce.</string>
     <string name="dashboard_scheduled_import_option_selected">Вибрано</string>
     <string name="dashboard_scheduled_import_update_error">Не вдалося оновити налаштування. Спробуйте ще раз.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Цей пристрій не відповідає вимогам безпеки для Tap to Pay на Android. Щоб приймати платежі особисто, можна придбати Bluetooth-зчитувач карток.</string>

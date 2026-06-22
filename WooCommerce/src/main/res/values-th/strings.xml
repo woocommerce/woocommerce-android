@@ -244,7 +244,7 @@
     <string name="login_qr_scanner_error_payload_title">ไม่ใช่โค้ด WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">QR นี้ไม่ใช่โค้ดเข้าสู่ระบบ WooCommerce โปรดสร้างโค้ดใหม่จากร้านค้าของคุณแล้วลองอีกครั้ง</string>
     <string name="login_qr_scanner_error_install_qr_title">นี่คือ QR สำหรับติดตั้ง</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[แอปได้รับการติดตั้งแล้ว — QR นี้ใช้ติดตั้งแอป ใน wp-admin ให้แตะปุ่ม <b>%1$s</b> เพื่อแสดง QR สำหรับเข้าสู่ระบบ หรือไปที่ <b>%2$s</b> บนคอมพิวเตอร์ของคุณ]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">แอปได้รับการติดตั้งแล้ว — QR นี้ใช้ติดตั้งแอป ใน wp-admin ให้แตะปุ่ม &lt;b&gt;%1$s&lt;/b&gt; เพื่อแสดง QR สำหรับเข้าสู่ระบบ หรือไปที่ &lt;b&gt;%2$s&lt;/b&gt; บนคอมพิวเตอร์ของคุณ</string>
     <string name="login_qr_scanner_error_install_qr_body_button">ติดตั้งแอปแล้ว</string>
     <string name="login_qr_scanner_error_token_title">โค้ดหมดอายุ</string>
     <string name="login_qr_scanner_error_token_body">โค้ดนั้นหมดอายุหรือถูกใช้ไปแล้ว โปรดสร้างโค้ดใหม่ในร้านค้าของคุณ</string>
@@ -444,7 +444,7 @@
     <string name="dashboard_stats_delayed_footer">สถิติอาจล่าช้าได้สูงสุด 12 ชั่วโมง</string>
     <string name="dashboard_stats_info_content_description">การตั้งค่าการอัปเดตการวิเคราะห์</string>
     <string name="dashboard_scheduled_import_sheet_title">การอัปเดตการวิเคราะห์</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[เลือกวิธีที่ WooCommerce ประมวลผลการอัปเดตข้อมูลการวิเคราะห์ <a href="learn_more"><u>เรียนรู้เพิ่มเติม</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">เลือกวิธีที่ WooCommerce ประมวลผลการอัปเดตข้อมูลการวิเคราะห์ &lt;a href=\"learn_more\"&gt;&lt;u&gt;เรียนรู้เพิ่มเติม&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">ตามกำหนดเวลา</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">อัปเดตข้อมูลการวิเคราะห์โดยอัตโนมัติทุก 12 ชั่วโมง แนะนำสำหรับร้านค้าที่มีปริมาณคำสั่งซื้อสูง</string>
     <string name="dashboard_scheduled_import_option_immediately_title">ทันที</string>

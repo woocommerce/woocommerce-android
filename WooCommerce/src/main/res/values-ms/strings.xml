@@ -4835,7 +4835,7 @@
     <string name="login_qr_scanner_error_payload_title">Bukan kod WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">QR ini bukan kod log masuk WooCommerce. Jana kod baharu daripada kedai anda dan cuba lagi.</string>
     <string name="login_qr_scanner_error_install_qr_title">Itu QR pemasangan</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Aplikasi sudah dipasang — QR ini memasangnya. Dalam wp-admin, ketik butang <b>%1$s</b> untuk memaparkan QR log masuk. Atau lawati <b>%2$s</b> pada komputer anda.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Aplikasi sudah dipasang — QR ini memasangnya. Dalam wp-admin, ketik butang &lt;b&gt;%1$s&lt;/b&gt; untuk memaparkan QR log masuk. Atau lawati &lt;b&gt;%2$s&lt;/b&gt; pada komputer anda.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Aplikasi dipasang</string>
     <string name="login_qr_scanner_error_token_title">Kod tamat tempoh</string>
     <string name="login_qr_scanner_error_token_body">Kod itu tamat tempoh atau sudah digunakan. Jana kod baharu dalam kedai anda.</string>
@@ -4873,12 +4873,12 @@
     <string name="dashboard_stats_delayed_footer">Statistik mungkin lewat sehingga 12 jam</string>
     <string name="dashboard_stats_info_content_description">Tetapan kemas kini Analytics</string>
     <string name="dashboard_scheduled_import_sheet_title">Kemas kini Analytics</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Pilih cara WooCommerce memproses kemas kini data Analytics. <a href="learn_more"><u>Ketahui lebih lanjut</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Pilih cara WooCommerce memproses kemas kini data Analytics. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Ketahui lebih lanjut&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Dijadualkan</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Mengemas kini data Analytics secara automatik setiap 12 jam. Disyorkan untuk kedai dengan volum pesanan tinggi.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Serta-merta</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Mengemas kini data Analytics sebaik sahaja data baharu tersedia.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Ini ialah tetapan seluruh kedai, yang turut mengawal pilihan &quot;Kemas kini&quot; dalam tetapan Analytics pentadbir WooCommerce.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Ini ialah tetapan seluruh kedai, yang turut mengawal pilihan \"Kemas kini\" dalam tetapan Analytics pentadbir WooCommerce.</string>
     <string name="dashboard_scheduled_import_option_selected">Dipilih</string>
     <string name="dashboard_scheduled_import_update_error">Tidak dapat mengemas kini tetapan. Sila cuba lagi.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Peranti ini tidak memenuhi keperluan keselamatan untuk Tap to Pay pada Android. Untuk menerima pembayaran secara bersemuka, anda boleh membeli pembaca kad Bluetooth.</string>

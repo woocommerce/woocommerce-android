@@ -3932,7 +3932,7 @@ Language: ko_KR
     <string name="login_qr_scanner_error_payload_title">WooCommerce 코드가 아님</string>
     <string name="login_qr_scanner_error_payload_body">이 QR은 WooCommerce 로그인 코드가 아닙니다. 스토어에서 새 코드를 생성하고 다시 시도하세요.</string>
     <string name="login_qr_scanner_error_install_qr_title">설치용 QR입니다</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[앱이 이미 설치되어 있습니다. 이 QR은 앱 설치용입니다. wp-admin에서 <b>%1$s</b> 버튼을 탭하여 로그인 QR을 표시하세요. 또는 컴퓨터에서 <b>%2$s</b>을(를) 방문하세요.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">앱이 이미 설치되어 있습니다. 이 QR은 앱 설치용입니다. wp-admin에서 &lt;b&gt;%1$s&lt;/b&gt; 버튼을 탭하여 로그인 QR을 표시하세요. 또는 컴퓨터에서 &lt;b&gt;%2$s&lt;/b&gt;을(를) 방문하세요.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">앱이 설치됨</string>
     <string name="login_qr_scanner_error_token_title">코드 만료됨</string>
     <string name="login_qr_scanner_error_token_body">해당 코드는 만료되었거나 이미 사용되었습니다. 스토어에서 새 코드를 생성하세요.</string>
@@ -3970,12 +3970,12 @@ Language: ko_KR
     <string name="dashboard_stats_delayed_footer">통계가 최대 12시간 지연될 수 있음</string>
     <string name="dashboard_stats_info_content_description">분석 업데이트 설정</string>
     <string name="dashboard_scheduled_import_sheet_title">분석 업데이트</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[WooCommerce에서 분석 데이터 업데이트를 처리하는 방식을 선택하세요. <a href="learn_more"><u>더 알아보기</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">WooCommerce에서 분석 데이터 업데이트를 처리하는 방식을 선택하세요. &lt;a href=\"learn_more\"&gt;&lt;u&gt;더 알아보기&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">예약됨</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">분석 데이터를 12시간마다 자동으로 업데이트합니다. 주문량이 많은 스토어에 권장됩니다.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">즉시</string>
     <string name="dashboard_scheduled_import_option_immediately_description">새 데이터가 제공되는 즉시 분석 데이터를 업데이트합니다.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">이 설정은 스토어 전체 설정이며, WooCommerce 관리자 분석 설정의 &quot;업데이트&quot; 옵션도 제어합니다.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">이 설정은 스토어 전체 설정이며, WooCommerce 관리자 분석 설정의 \"업데이트\" 옵션도 제어합니다.</string>
     <string name="dashboard_scheduled_import_option_selected">선택됨</string>
     <string name="dashboard_scheduled_import_update_error">설정을 업데이트할 수 없습니다. 다시 시도하세요.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">이 기기는 Tap to Pay on Android의 보안 요구 사항을 충족하지 않습니다. 대면 결제를 수락하려면 Bluetooth 카드 리더를 구매할 수 있습니다.</string>

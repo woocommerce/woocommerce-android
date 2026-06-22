@@ -4837,7 +4837,7 @@
     <string name="login_qr_scanner_error_payload_title">Nu este un cod WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">Acest QR nu este un cod de autentificare WooCommerce. Generează unul nou din magazin și încearcă din nou.</string>
     <string name="login_qr_scanner_error_install_qr_title">Acesta este QR-ul de instalare</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Aplicația este deja instalată — acest QR o instalează. În wp-admin, atinge butonul <b>%1$s</b> pentru a afișa QR-ul de autentificare. Sau accesează <b>%2$s</b> pe computer.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Aplicația este deja instalată — acest QR o instalează. În wp-admin, atinge butonul &lt;b&gt;%1$s&lt;/b&gt; pentru a afișa QR-ul de autentificare. Sau accesează &lt;b&gt;%2$s&lt;/b&gt; pe computer.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Aplicația este instalată</string>
     <string name="login_qr_scanner_error_token_title">Cod expirat</string>
     <string name="login_qr_scanner_error_token_body">Acel cod a expirat sau a fost deja folosit. Generează unul nou în magazin.</string>
@@ -4875,12 +4875,12 @@
     <string name="dashboard_stats_delayed_footer">Statisticile pot avea o întârziere de până la 12 ore</string>
     <string name="dashboard_stats_info_content_description">Setări de actualizare Analytics</string>
     <string name="dashboard_scheduled_import_sheet_title">Actualizări Analytics</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Alege cum procesează WooCommerce actualizările datelor Analytics. <a href="learn_more"><u>Află mai multe</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Alege cum procesează WooCommerce actualizările datelor Analytics. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Află mai multe&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Programat</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Actualizează automat datele Analytics la fiecare 12 ore. Recomandat pentru magazine cu volum mare de comenzi.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Imediat</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Actualizează datele Analytics imediat ce sunt disponibile date noi.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Aceasta este o setare la nivel de magazin, care controlează și opțiunea &quot;Actualizări&quot; din setările Analytics ale administrării WooCommerce.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Aceasta este o setare la nivel de magazin, care controlează și opțiunea \"Actualizări\" din setările Analytics ale administrării WooCommerce.</string>
     <string name="dashboard_scheduled_import_option_selected">Selectat</string>
     <string name="dashboard_scheduled_import_update_error">Nu s-a putut actualiza setarea. Încearcă din nou.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Acest dispozitiv nu îndeplinește cerințele de securitate pentru Tap to Pay pe Android. Pentru a accepta plăți în persoană, poți cumpăra un cititor de carduri Bluetooth.</string>

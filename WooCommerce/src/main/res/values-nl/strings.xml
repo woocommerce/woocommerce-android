@@ -3933,7 +3933,7 @@ Language: nl
     <string name="login_qr_scanner_error_payload_title">Geen WooCommerce-code</string>
     <string name="login_qr_scanner_error_payload_body">Deze QR is geen WooCommerce-inlogcode. Genereer een nieuwe vanuit je winkel en probeer het opnieuw.</string>
     <string name="login_qr_scanner_error_install_qr_title">Dat is de installatie-QR</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[De app is al geïnstalleerd — deze QR installeert de app. Tik in wp-admin op de knop <b>%1$s</b> om de inlog-QR te tonen. Of bezoek <b>%2$s</b> op je computer.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">De app is al geïnstalleerd — deze QR installeert de app. Tik in wp-admin op de knop &lt;b&gt;%1$s&lt;/b&gt; om de inlog-QR te tonen. Of bezoek &lt;b&gt;%2$s&lt;/b&gt; op je computer.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">App is geïnstalleerd</string>
     <string name="login_qr_scanner_error_token_title">Code verlopen</string>
     <string name="login_qr_scanner_error_token_body">Die code is verlopen of al gebruikt. Genereer een nieuwe in je winkel.</string>
@@ -3971,12 +3971,12 @@ Language: nl
     <string name="dashboard_stats_delayed_footer">Statistieken kunnen tot 12 uur vertraagd zijn</string>
     <string name="dashboard_stats_info_content_description">Instellingen voor Analytics-updates</string>
     <string name="dashboard_scheduled_import_sheet_title">Analytics-updates</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Kies hoe WooCommerce updates van Analytics-gegevens verwerkt. <a href="learn_more"><u>Meer informatie</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Kies hoe WooCommerce updates van Analytics-gegevens verwerkt. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Gepland</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Werkt Analytics-gegevens automatisch elke 12 uur bij. Aanbevolen voor winkels met veel bestellingen.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Direct</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Werkt Analytics-gegevens bij zodra nieuwe gegevens beschikbaar zijn.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Dit is een winkelbrede instelling, die ook de optie &quot;Updates&quot; in de WooCommerce-beheerinstellingen voor Analytics aanstuurt.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Dit is een winkelbrede instelling, die ook de optie \"Updates\" in de WooCommerce-beheerinstellingen voor Analytics aanstuurt.</string>
     <string name="dashboard_scheduled_import_option_selected">Geselecteerd</string>
     <string name="dashboard_scheduled_import_update_error">Kan de instelling niet bijwerken. Probeer het opnieuw.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Dit apparaat voldoet niet aan de beveiligingsvereisten voor Tap to Pay op Android. Om persoonlijke betalingen te accepteren, kun je een Bluetooth-kaartlezer kopen.</string>

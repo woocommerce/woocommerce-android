@@ -4836,7 +4836,7 @@
     <string name="login_qr_scanner_error_payload_title">Ikke en WooCommerce-kode</string>
     <string name="login_qr_scanner_error_payload_body">Denne QR-koden er ikke en WooCommerce-innloggingskode. Generer en ny fra butikken og prøv igjen.</string>
     <string name="login_qr_scanner_error_install_qr_title">Det er installasjons-QR-en</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Appen er allerede installert — denne QR-koden installerer den. I wp-admin trykker du på <b>%1$s</b>-knappen for å vise innloggings-QR-en. Eller besøk <b>%2$s</b> på datamaskinen.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Appen er allerede installert — denne QR-koden installerer den. I wp-admin trykker du på &lt;b&gt;%1$s&lt;/b&gt;-knappen for å vise innloggings-QR-en. Eller besøk &lt;b&gt;%2$s&lt;/b&gt; på datamaskinen.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Appen er installert</string>
     <string name="login_qr_scanner_error_token_title">Koden er utløpt</string>
     <string name="login_qr_scanner_error_token_body">Koden er utløpt eller allerede brukt. Generer en ny i butikken.</string>
@@ -4874,12 +4874,12 @@
     <string name="dashboard_stats_delayed_footer">Statistikk kan være opptil 12 timer forsinket</string>
     <string name="dashboard_stats_info_content_description">Innstillinger for Analytics-oppdateringer</string>
     <string name="dashboard_scheduled_import_sheet_title">Analytics-oppdateringer</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Velg hvordan WooCommerce behandler oppdateringer av Analytics-data. <a href="learn_more"><u>Les mer</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Velg hvordan WooCommerce behandler oppdateringer av Analytics-data. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Les mer&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Planlagt</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Oppdaterer Analytics-data automatisk hver 12. time. Anbefales for butikker med høyt ordrevolum.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Umiddelbart</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Oppdaterer Analytics-data så snart nye data er tilgjengelige.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Dette er en innstilling for hele butikken, som også styrer alternativet &quot;Oppdateringer&quot; i Analytics-innstillingene i WooCommerce-admin.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Dette er en innstilling for hele butikken, som også styrer alternativet \"Oppdateringer\" i Analytics-innstillingene i WooCommerce-admin.</string>
     <string name="dashboard_scheduled_import_option_selected">Valgt</string>
     <string name="dashboard_scheduled_import_update_error">Kunne ikke oppdatere innstillingen. Prøv igjen.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Denne enheten oppfyller ikke sikkerhetskravene for Tap to Pay på Android. For å ta imot betalinger personlig kan du kjøpe en Bluetooth-kortleser.</string>

@@ -4833,7 +4833,7 @@
     <string name="login_qr_scanner_error_payload_title">WooCommerce कोड नहीं है</string>
     <string name="login_qr_scanner_error_payload_body">यह QR WooCommerce लॉगिन कोड नहीं है। अपने स्टोर से नया कोड जनरेट करें और फिर से कोशिश करें।</string>
     <string name="login_qr_scanner_error_install_qr_title">यह इंस्टॉल QR है</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[ऐप पहले से इंस्टॉल है — यह QR इसे इंस्टॉल करता है। wp-admin में, लॉगिन QR दिखाने के लिए <b>%1$s</b> बटन पर टैप करें। या अपने कंप्यूटर पर <b>%2$s</b> पर जाएं।]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">ऐप पहले से इंस्टॉल है — यह QR इसे इंस्टॉल करता है। wp-admin में, लॉगिन QR दिखाने के लिए &lt;b&gt;%1$s&lt;/b&gt; बटन पर टैप करें। या अपने कंप्यूटर पर &lt;b&gt;%2$s&lt;/b&gt; पर जाएं।</string>
     <string name="login_qr_scanner_error_install_qr_body_button">ऐप इंस्टॉल है</string>
     <string name="login_qr_scanner_error_token_title">कोड समाप्त हो गया</string>
     <string name="login_qr_scanner_error_token_body">वह कोड समाप्त हो गया है या पहले ही इस्तेमाल हो चुका है। अपने स्टोर में नया कोड जनरेट करें।</string>
@@ -4871,12 +4871,12 @@
     <string name="dashboard_stats_delayed_footer">आंकड़े 12 घंटे तक विलंबित हो सकते हैं</string>
     <string name="dashboard_stats_info_content_description">Analytics अपडेट सेटिंग्स</string>
     <string name="dashboard_scheduled_import_sheet_title">Analytics अपडेट</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[चुनें कि WooCommerce Analytics डेटा अपडेट कैसे प्रोसेस करे। <a href="learn_more"><u>और जानें</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">चुनें कि WooCommerce Analytics डेटा अपडेट कैसे प्रोसेस करे। &lt;a href=\"learn_more\"&gt;&lt;u&gt;और जानें&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">निर्धारित</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">हर 12 घंटे में Analytics डेटा अपने-आप अपडेट करता है। अधिक ऑर्डर मात्रा वाले स्टोर के लिए अनुशंसित।</string>
     <string name="dashboard_scheduled_import_option_immediately_title">तुरंत</string>
     <string name="dashboard_scheduled_import_option_immediately_description">नया डेटा उपलब्ध होते ही Analytics डेटा अपडेट करता है।</string>
-    <string name="dashboard_scheduled_import_store_wide_note">यह पूरे स्टोर की सेटिंग है, जो WooCommerce एडमिन Analytics सेटिंग्स में &quot;Updates&quot; विकल्प को भी नियंत्रित करती है।</string>
+    <string name="dashboard_scheduled_import_store_wide_note">यह पूरे स्टोर की सेटिंग है, जो WooCommerce एडमिन Analytics सेटिंग्स में \"Updates\" विकल्प को भी नियंत्रित करती है।</string>
     <string name="dashboard_scheduled_import_option_selected">चयनित</string>
     <string name="dashboard_scheduled_import_update_error">सेटिंग अपडेट नहीं हो सकी। कृपया फिर से कोशिश करें।</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">यह डिवाइस Android पर Tap to Pay के सुरक्षा मानकों को पूरा नहीं करता। व्यक्तिगत रूप से भुगतान स्वीकार करने के लिए, आप Bluetooth कार्ड रीडर खरीद सकते हैं।</string>

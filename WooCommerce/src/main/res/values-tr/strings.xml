@@ -3933,7 +3933,7 @@ Language: tr
     <string name="login_qr_scanner_error_payload_title">WooCommerce kodu değil</string>
     <string name="login_qr_scanner_error_payload_body">Bu QR bir WooCommerce giriş kodu değil. Mağazanızdan yeni bir tane oluşturun ve tekrar deneyin.</string>
     <string name="login_qr_scanner_error_install_qr_title">Bu kurulum QR’si</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Uygulama zaten yüklü — bu QR uygulamayı yükler. wp-admin’de giriş QR’sini göstermek için <b>%1$s</b> düğmesine dokunun. Ya da bilgisayarınızda <b>%2$s</b> adresini ziyaret edin.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Uygulama zaten yüklü — bu QR uygulamayı yükler. wp-admin’de giriş QR’sini göstermek için &lt;b&gt;%1$s&lt;/b&gt; düğmesine dokunun. Ya da bilgisayarınızda &lt;b&gt;%2$s&lt;/b&gt; adresini ziyaret edin.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Uygulama yüklü</string>
     <string name="login_qr_scanner_error_token_title">Kodun süresi doldu</string>
     <string name="login_qr_scanner_error_token_body">Bu kodun süresi doldu veya zaten kullanıldı. Mağazanızda yeni bir kod oluşturun.</string>
@@ -3971,12 +3971,12 @@ Language: tr
     <string name="dashboard_stats_delayed_footer">İstatistikler 12 saate kadar gecikebilir</string>
     <string name="dashboard_stats_info_content_description">Analytics güncelleme ayarları</string>
     <string name="dashboard_scheduled_import_sheet_title">Analytics güncellemeleri</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[WooCommerce’in Analytics veri güncellemelerini nasıl işleyeceğini seçin. <a href="learn_more"><u>Daha fazla bilgi</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">WooCommerce’in Analytics veri güncellemelerini nasıl işleyeceğini seçin. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Daha fazla bilgi&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Zamanlanmış</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Analytics verilerini her 12 saatte bir otomatik olarak günceller. Yüksek sipariş hacimli mağazalar için önerilir.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Hemen</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Yeni veriler kullanılabilir olur olmaz Analytics verilerini günceller.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Bu, WooCommerce yönetici Analytics ayarlarındaki &quot;Güncellemeler&quot; seçeneğini de kontrol eden mağaza geneli bir ayardır.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Bu, WooCommerce yönetici Analytics ayarlarındaki \"Güncellemeler\" seçeneğini de kontrol eden mağaza geneli bir ayardır.</string>
     <string name="dashboard_scheduled_import_option_selected">Seçildi</string>
     <string name="dashboard_scheduled_import_update_error">Ayar güncellenemedi. Lütfen tekrar deneyin.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Bu cihaz Android’de Tap to Pay için güvenlik gereksinimlerini karşılamıyor. Yüz yüze ödeme almak için Bluetooth kart okuyucu satın alabilirsiniz.</string>

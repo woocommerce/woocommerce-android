@@ -244,7 +244,7 @@
     <string name="login_qr_scanner_error_payload_title">Không phải mã WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">Mã QR này không phải là mã đăng nhập WooCommerce. Hãy tạo mã mới từ cửa hàng của bạn rồi thử lại.</string>
     <string name="login_qr_scanner_error_install_qr_title">Đây là mã QR cài đặt</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Ứng dụng đã được cài đặt — mã QR này dùng để cài đặt ứng dụng. Trong wp-admin, hãy nhấn nút <b>%1$s</b> để hiển thị mã QR đăng nhập. Hoặc truy cập <b>%2$s</b> trên máy tính của bạn.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Ứng dụng đã được cài đặt — mã QR này dùng để cài đặt ứng dụng. Trong wp-admin, hãy nhấn nút &lt;b&gt;%1$s&lt;/b&gt; để hiển thị mã QR đăng nhập. Hoặc truy cập &lt;b&gt;%2$s&lt;/b&gt; trên máy tính của bạn.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Ứng dụng đã được cài đặt</string>
     <string name="login_qr_scanner_error_token_title">Mã đã hết hạn</string>
     <string name="login_qr_scanner_error_token_body">Mã đó đã hết hạn hoặc đã được sử dụng. Hãy tạo mã mới trong cửa hàng của bạn.</string>
@@ -444,7 +444,7 @@
     <string name="dashboard_stats_delayed_footer">Thống kê có thể trễ tối đa 12 giờ</string>
     <string name="dashboard_stats_info_content_description">Cài đặt cập nhật phân tích</string>
     <string name="dashboard_scheduled_import_sheet_title">Cập nhật phân tích</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Chọn cách WooCommerce xử lý các cập nhật dữ liệu phân tích. <a href="learn_more"><u>Tìm hiểu thêm</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Chọn cách WooCommerce xử lý các cập nhật dữ liệu phân tích. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Tìm hiểu thêm&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Theo lịch</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Tự động cập nhật dữ liệu phân tích mỗi 12 giờ. Được khuyến nghị cho cửa hàng có lượng đơn hàng cao.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Ngay lập tức</string>

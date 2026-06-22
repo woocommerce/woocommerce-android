@@ -4836,7 +4836,7 @@
     <string name="login_qr_scanner_error_payload_title">Nem WooCommerce-kód</string>
     <string name="login_qr_scanner_error_payload_body">Ez a QR nem WooCommerce bejelentkezési kód. Hozz létre újat az üzletedben, és próbáld újra.</string>
     <string name="login_qr_scanner_error_install_qr_title">Ez a telepítési QR</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Az app már telepítve van — ez a QR telepíti. A wp-adminban koppints a <b>%1$s</b> gombra a bejelentkezési QR megjelenítéséhez. Vagy nyisd meg a számítógépeden: <b>%2$s</b>.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">Az app már telepítve van — ez a QR telepíti. A wp-adminban koppints a &lt;b&gt;%1$s&lt;/b&gt; gombra a bejelentkezési QR megjelenítéséhez. Vagy nyisd meg a számítógépeden: &lt;b&gt;%2$s&lt;/b&gt;.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">Az app telepítve van</string>
     <string name="login_qr_scanner_error_token_title">A kód lejárt</string>
     <string name="login_qr_scanner_error_token_body">Ez a kód lejárt vagy már felhasználták. Hozz létre újat az üzletedben.</string>
@@ -4874,12 +4874,12 @@
     <string name="dashboard_stats_delayed_footer">A statisztikák akár 12 órát is késhetnek</string>
     <string name="dashboard_stats_info_content_description">Analytics-frissítési beállítások</string>
     <string name="dashboard_scheduled_import_sheet_title">Analytics-frissítések</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Válaszd ki, hogyan dolgozza fel a WooCommerce az Analytics-adatok frissítéseit. <a href="learn_more"><u>További információ</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Válaszd ki, hogyan dolgozza fel a WooCommerce az Analytics-adatok frissítéseit. &lt;a href=\"learn_more\"&gt;&lt;u&gt;További információ&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Ütemezett</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Automatikusan frissíti az Analytics-adatokat 12 óránként. Nagy rendelési forgalmú üzletekhez ajánlott.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Azonnal</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Frissíti az Analytics-adatokat, amint új adatok érhetők el.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Ez egy üzletszintű beállítás, amely a WooCommerce admin Analytics-beállításaiban található &quot;Frissítések&quot; opciót is vezérli.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Ez egy üzletszintű beállítás, amely a WooCommerce admin Analytics-beállításaiban található \"Frissítések\" opciót is vezérli.</string>
     <string name="dashboard_scheduled_import_option_selected">Kiválasztva</string>
     <string name="dashboard_scheduled_import_update_error">Nem sikerült frissíteni a beállítást. Próbáld újra.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Ez az eszköz nem felel meg a Tap to Pay Androidon biztonsági követelményeinek. Személyes fizetések elfogadásához vásárolhatsz Bluetooth-kártyaolvasót.</string>

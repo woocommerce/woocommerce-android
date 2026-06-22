@@ -4842,7 +4842,7 @@
     <string name="login_qr_scanner_error_payload_title">Não é um código WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">Este QR não é um código de início de sessão do WooCommerce. Gere um novo na sua loja e tente novamente.</string>
     <string name="login_qr_scanner_error_install_qr_title">Esse é o QR de instalação</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[A aplicação já está instalada — este QR instala-a. No wp-admin, toque no botão <b>%1$s</b> para revelar o QR de início de sessão. Ou aceda a <b>%2$s</b> no computador.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">A aplicação já está instalada — este QR instala-a. No wp-admin, toque no botão &lt;b&gt;%1$s&lt;/b&gt; para revelar o QR de início de sessão. Ou aceda a &lt;b&gt;%2$s&lt;/b&gt; no computador.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">A aplicação está instalada</string>
     <string name="login_qr_scanner_error_token_title">Código expirado</string>
     <string name="login_qr_scanner_error_token_body">Esse código expirou ou já foi utilizado. Gere um novo na sua loja.</string>
@@ -4880,12 +4880,12 @@
     <string name="dashboard_stats_delayed_footer">As estatísticas podem ter um atraso de até 12 horas</string>
     <string name="dashboard_stats_info_content_description">Definições de atualização do Analytics</string>
     <string name="dashboard_scheduled_import_sheet_title">Atualizações do Analytics</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Escolha como o WooCommerce processa as atualizações de dados do Analytics. <a href="learn_more"><u>Saber mais</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">Escolha como o WooCommerce processa as atualizações de dados do Analytics. &lt;a href=\"learn_more\"&gt;&lt;u&gt;Saber mais&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">Agendada</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">Atualiza automaticamente os dados do Analytics a cada 12 horas. Recomendado para lojas com elevado volume de encomendas.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">Imediatamente</string>
     <string name="dashboard_scheduled_import_option_immediately_description">Atualiza os dados do Analytics assim que novos dados ficam disponíveis.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">Esta é uma definição para toda a loja, que também controla a opção &quot;Atualizações&quot; nas definições de Analytics da administração do WooCommerce.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Esta é uma definição para toda a loja, que também controla a opção \"Atualizações\" nas definições de Analytics da administração do WooCommerce.</string>
     <string name="dashboard_scheduled_import_option_selected">Selecionado</string>
     <string name="dashboard_scheduled_import_update_error">Não foi possível atualizar a definição. Tente novamente.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">Este dispositivo não cumpre os requisitos de segurança do Tap to Pay no Android. Para aceitar pagamentos presenciais, pode comprar um leitor de cartões Bluetooth.</string>

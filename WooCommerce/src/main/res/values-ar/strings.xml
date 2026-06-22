@@ -3937,7 +3937,7 @@ Language: ar
     <string name="login_qr_scanner_error_payload_title">ليس رمز WooCommerce</string>
     <string name="login_qr_scanner_error_payload_body">رمز QR هذا ليس رمز تسجيل دخول WooCommerce. أنشئ رمزًا جديدًا من متجرك وحاول مجددًا.</string>
     <string name="login_qr_scanner_error_install_qr_title">هذا هو رمز QR للتثبيت</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[التطبيق مثبت بالفعل — هذا الرمز يثبّته. في wp-admin، اضغط على زر <b>%1$s</b> لإظهار رمز QR لتسجيل الدخول. أو انتقل إلى <b>%2$s</b> على جهاز الكمبيوتر.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">التطبيق مثبت بالفعل — هذا الرمز يثبّته. في wp-admin، اضغط على زر &lt;b&gt;%1$s&lt;/b&gt; لإظهار رمز QR لتسجيل الدخول. أو انتقل إلى &lt;b&gt;%2$s&lt;/b&gt; على جهاز الكمبيوتر.</string>
     <string name="login_qr_scanner_error_install_qr_body_button">التطبيق مثبت</string>
     <string name="login_qr_scanner_error_token_title">انتهت صلاحية الرمز</string>
     <string name="login_qr_scanner_error_token_body">انتهت صلاحية هذا الرمز أو تم استخدامه بالفعل. أنشئ رمزًا جديدًا في متجرك.</string>
@@ -3975,12 +3975,12 @@ Language: ar
     <string name="dashboard_stats_delayed_footer">قد تتأخر الإحصاءات لمدة تصل إلى 12 ساعة</string>
     <string name="dashboard_stats_info_content_description">إعدادات تحديث Analytics</string>
     <string name="dashboard_scheduled_import_sheet_title">تحديثات Analytics</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[اختر طريقة معالجة WooCommerce لتحديثات بيانات Analytics. <a href="learn_more"><u>معرفة المزيد</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">اختر طريقة معالجة WooCommerce لتحديثات بيانات Analytics. &lt;a href=\"learn_more\"&gt;&lt;u&gt;معرفة المزيد&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">مجدولة</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">يتم تحديث بيانات Analytics تلقائيًا كل 12 ساعة. يُنصح بذلك للمتاجر ذات حجم الطلبات الكبير.</string>
     <string name="dashboard_scheduled_import_option_immediately_title">فورًا</string>
     <string name="dashboard_scheduled_import_option_immediately_description">يتم تحديث بيانات Analytics فور توفّر بيانات جديدة.</string>
-    <string name="dashboard_scheduled_import_store_wide_note">هذا إعداد على مستوى المتجر، ويتحكم أيضًا في خيار &quot;التحديثات&quot; في إعدادات Analytics في مسؤول WooCommerce.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">هذا إعداد على مستوى المتجر، ويتحكم أيضًا في خيار \"التحديثات\" في إعدادات Analytics في مسؤول WooCommerce.</string>
     <string name="dashboard_scheduled_import_option_selected">مُحدَّد</string>
     <string name="dashboard_scheduled_import_update_error">تعذر تحديث الإعداد. يُرجى المحاولة مجددًا.</string>
     <string name="card_reader_tap_to_pay_not_available_error_device">لا يفي هذا الجهاز بمتطلبات الأمان الخاصة بميزة Tap to Pay على Android. لقبول المدفوعات الشخصية، يمكنك شراء قارئ بطاقات Bluetooth.</string>

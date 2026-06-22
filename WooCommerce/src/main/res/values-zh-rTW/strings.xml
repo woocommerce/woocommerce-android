@@ -3932,7 +3932,7 @@ Language: zh_TW
     <string name="login_qr_scanner_error_payload_title">不是 WooCommerce 代碼</string>
     <string name="login_qr_scanner_error_payload_body">此 QR 碼不是 WooCommerce 登入代碼。請從商店產生新的代碼，然後再試一次。</string>
     <string name="login_qr_scanner_error_install_qr_title">這是安裝 QR 碼</string>
-    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[應用程式已安裝 — 這個 QR 碼是用來安裝應用程式。請在 wp-admin 中點一下 <b>%1$s</b> 按鈕以顯示登入 QR 碼。或是在電腦上造訪 <b>%2$s</b>。]]></string>
+    <string name="login_qr_scanner_error_install_qr_body">應用程式已安裝 — 這個 QR 碼是用來安裝應用程式。請在 wp-admin 中點一下 &lt;b&gt;%1$s&lt;/b&gt; 按鈕以顯示登入 QR 碼。或是在電腦上造訪 &lt;b&gt;%2$s&lt;/b&gt;。</string>
     <string name="login_qr_scanner_error_install_qr_body_button">應用程式已安裝</string>
     <string name="login_qr_scanner_error_token_title">代碼已過期</string>
     <string name="login_qr_scanner_error_token_body">該代碼已過期或已使用。請在商店產生新的代碼。</string>
@@ -3970,7 +3970,7 @@ Language: zh_TW
     <string name="dashboard_stats_delayed_footer">統計資料最多可能延遲 12 小時</string>
     <string name="dashboard_stats_info_content_description">分析更新設定</string>
     <string name="dashboard_scheduled_import_sheet_title">分析更新</string>
-    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[選擇 WooCommerce 處理分析資料更新的方式。<a href="learn_more"><u>深入了解</u></a>]]></string>
+    <string name="dashboard_scheduled_import_sheet_description">選擇 WooCommerce 處理分析資料更新的方式。&lt;a href=\"learn_more\"&gt;&lt;u&gt;深入了解&lt;/u&gt;&lt;/a&gt;</string>
     <string name="dashboard_scheduled_import_option_scheduled_title">已排程</string>
     <string name="dashboard_scheduled_import_option_scheduled_description">每 12 小時自動更新分析資料。建議訂單量高的商店使用。</string>
     <string name="dashboard_scheduled_import_option_immediately_title">立即</string>
