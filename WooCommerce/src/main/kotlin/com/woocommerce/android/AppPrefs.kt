@@ -283,9 +283,16 @@ object AppPrefs {
 
     // String resource of a message to surface on the site picker after the app restarts into it
     // (e.g. when the selected site was reset due to an error). 0 means no pending message.
+    // Persisted synchronously because it is written right before a recovery restart that may kill the
+    // process before an async apply() flushes.
     var sitePickerErrorMessage: Int
         get() = getInt(DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE, 0)
-        set(value) = setInt(DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE, value)
+        set(value) {
+            getPreferences()
+                .edit()
+                .putString(DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE.toString(), value.toString())
+                .commit()
+        }
 
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)

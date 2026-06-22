@@ -113,7 +113,9 @@ class SelectedSite @Inject constructor(
     fun reset() {
         wasReset = true
         state.value = null
-        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+        // Persist synchronously: recovery flows restart (and may kill) the process right after, and an
+        // async apply() can be lost before it flushes, leaving the site still "selected" on relaunch.
+        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).commit()
         siteComponent = null
         siteCoroutineScope?.cancel()
     }
