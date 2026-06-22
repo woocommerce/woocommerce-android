@@ -54,6 +54,33 @@ internal abstract class ListDao {
     @Insert
     protected abstract suspend fun insertList(list: ListModel): Long
 
+    /**
+     * Marks every cached list sharing [typeIdentifier] as [ListState.NEEDS_REFRESH], except the list
+     * with [excludedUniqueIdentifier], so they refetch the next time they are consumed. Each list's
+     * [ListModel.lastModified] is left untouched so it keeps reflecting when the list was actually
+     * fetched (marking a list stale is not a fetch).
+     */
+    suspend fun markListsOfTypeNeedRefresh(typeIdentifier: Int, excludedUniqueIdentifier: Int) =
+        updateListStatesOfTypeExcept(
+            typeIdentifier = typeIdentifier,
+            excludedUniqueIdentifier = excludedUniqueIdentifier,
+            stateDbValue = ListState.NEEDS_REFRESH.value
+        )
+
+    @Query(
+        """
+        UPDATE ListEntity
+        SET stateDbValue = :stateDbValue
+        WHERE descriptorTypeIdentifierDbValue = :typeIdentifier
+        AND descriptorUniqueIdentifierDbValue != :excludedUniqueIdentifier
+        """
+    )
+    protected abstract suspend fun updateListStatesOfTypeExcept(
+        typeIdentifier: Int,
+        excludedUniqueIdentifier: Int,
+        stateDbValue: Int
+    )
+
     @Query(
         """
         UPDATE ListEntity

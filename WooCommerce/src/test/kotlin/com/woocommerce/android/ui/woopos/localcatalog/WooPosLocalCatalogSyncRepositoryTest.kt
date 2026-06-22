@@ -19,6 +19,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -269,6 +270,48 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
                 }
             )
         }
+
+    @Test
+    fun `when full sync succeeds, then clears catalog file blocked flag`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(syncTimestampManager).setCatalogFileBlocked(false)
+    }
+
+    @Test
+    fun `when full sync fails with catalog file blocked, then sets catalog file blocked flag`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.CatalogFileBlocked(
+                error = "Catalog file blocked by the host"
+            )
+        )
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(syncTimestampManager).setCatalogFileBlocked(true)
+    }
+
+    @Test
+    fun `when full sync fails with non-blocked error, then does not change catalog file blocked flag`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
+        )
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(syncTimestampManager, never()).setCatalogFileBlocked(any())
+    }
 
     @Test
     fun `when incremental sync starts, then tracks sync started event`() = testBlocking {
