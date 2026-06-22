@@ -2307,14 +2307,10 @@
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
 
     <!-- Empty order: place your first order -->
-    <string name="empty_order_place_order_message">Run an order to ensure your WooCommerce process delivers a seamless customer experience</string>
-    <string name="empty_order_place_order_button">Place your first order</string>
 
     <string name="place_first_order_heading">Place your first order</string>
     <!-- Steps 1 and 3 keep their original keys: their copy is unchanged, so renaming would discard existing translations -->
-    <string name="try_test_order_step_1">Tap the button below to be redirected to your online store via a web browser.</string>
     <string name="place_first_order_step_2">Select your product, add to cart, and complete checkout on that web store as a real customer.</string>
-    <string name="try_test_order_step_3">Complete the payment and await a push notification about the order on your WooCommerce app.</string>
     <string name="place_first_order_step_4">Use the app to process the refund for the order. &lt;a href=\'processingFees\'&gt;&lt;u&gt;Processing fees aren\'t refundable&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="place_first_order_button">Place order</string>
     <!--
