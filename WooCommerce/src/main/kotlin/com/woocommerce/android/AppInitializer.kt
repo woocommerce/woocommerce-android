@@ -24,6 +24,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.UnknownBlogNotifier
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
@@ -143,6 +144,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
 
+    @Inject lateinit var unknownBlogNotifier: UnknownBlogNotifier
+
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
     @Inject lateinit var variationsRepository: VariationsRepository
@@ -257,6 +260,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()
+
+        monitorUnknownBlogErrors()
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
@@ -387,6 +392,23 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
                         logUserOut()
                     }
+                }.launchIn(this)
+        }
+    }
+
+    private fun monitorUnknownBlogErrors() {
+        appCoroutineScope.launch {
+            // Reset the selected site and route the user to the site picker when WPCom no longer
+            // recognises the selected site (the `unknown_blog` error code)
+            unknownBlogNotifier.unknownBlogEvents
+                .onEach { siteId ->
+                    val selected = selectedSite.getOrNull() ?: return@onEach
+                    // siteId is the WPCom blog id; ignore non-WPCom (0) and other sites
+                    if (siteId == 0L || siteId != selected.siteId) return@onEach
+                    WooLog.w(T.LOGIN, "Received unknown_blog for the selected site, resetting selected site")
+                    analyticsTracker.track(AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG)
+                    selectedSite.reset()
+                    restartMainActivity()
                 }.launchIn(this)
         }
     }
