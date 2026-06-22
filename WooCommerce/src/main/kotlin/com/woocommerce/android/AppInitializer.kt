@@ -407,6 +407,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     if (siteId == 0L || siteId != selected.siteId) return@onEach
                     WooLog.w(T.LOGIN, "Received unknown_blog for the selected site, resetting selected site")
                     analyticsTracker.track(AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG)
+                    prefs.sitePickerErrorMessage = R.string.site_picker_unknown_blog_error
                     selectedSite.reset()
                     restartMainActivity()
                 }.launchIn(this)

@@ -71,6 +71,12 @@ class MainActivityViewModel @Inject constructor(
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
+    // True when the site picker is the start destination because the selected site was reset after an
+    // error. In that case the picker is opened as a store switcher (not from login), so it doesn't
+    // auto-select the failing store. The pending message itself is consumed by the site picker.
+    val isRecoveringSelectedSite = startDestination == R.id.nav_graph_site_picker &&
+        prefs.sitePickerErrorMessage != 0
+
     val moreMenuBadgeState = combine(
         unseenReviewsCountHandler.observeUnseenCount(),
         moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable,

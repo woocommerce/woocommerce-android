@@ -81,6 +81,12 @@ class SitePickerViewModel @Inject constructor(
 
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
 
+    // Non-zero when the app routed to the picker to recover from an error; read and consumed once to
+    // show the message. Auto-login is prevented separately by opening the picker with openedFromLogin=false.
+    private val pendingErrorMessage = appPrefsWrapper.sitePickerErrorMessage.also {
+        appPrefsWrapper.sitePickerErrorMessage = 0
+    }
+
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
@@ -116,6 +122,13 @@ class SitePickerViewModel @Inject constructor(
         loadAndDisplaySites()
         if (selectedSiteId.value == null && selectedSite.exists()) {
             selectedSiteId.value = selectedSite.getSelectedSiteId()
+        }
+        showPendingErrorMessageIfNeeded()
+    }
+
+    private fun showPendingErrorMessageIfNeeded() {
+        if (pendingErrorMessage != 0) {
+            triggerEvent(ShowSnackbar(pendingErrorMessage))
         }
     }
 

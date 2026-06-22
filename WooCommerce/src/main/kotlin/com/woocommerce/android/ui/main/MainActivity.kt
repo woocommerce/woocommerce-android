@@ -115,6 +115,7 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.sitepicker.SitePickerFragmentArgs
 import com.woocommerce.android.ui.woopos.tab.WooPosTabController
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
@@ -352,7 +353,14 @@ class MainActivity :
         navGraph.setStartDestination(viewModel.startDestination)
 
         navController = navHostFragment.navController
-        navController.graph = navGraph
+        // When recovering from a selected-site error, open the picker as a store switcher (not from
+        // login) so it doesn't auto-select the failing store
+        val startDestinationArgs = if (viewModel.isRecoveringSelectedSite) {
+            SitePickerFragmentArgs(openedFromLogin = false).toBundle()
+        } else {
+            null
+        }
+        navController.setGraph(navGraph, startDestinationArgs)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 

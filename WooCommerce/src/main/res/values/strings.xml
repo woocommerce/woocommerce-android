@@ -407,6 +407,7 @@
     <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
+    <string name="site_picker_unknown_blog_error">We couldn\'t access your store, so it\'s been signed out. Please select a store to continue.</string>
     <string name="site_picker_edit_store_list">Edit Stores</string>
     <string name="site_picker_edit_store_list_title">Visible Stores</string>
     <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders or product reviews.</string>
