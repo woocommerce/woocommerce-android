@@ -322,7 +322,7 @@ private fun WooPosOrdersScreen(
         }
 
         if (listState.searchInputState is WooPosSearchInputState.Closed &&
-            !(isSingleOrderMode && detailPaneIssueRefundOrderId != null)
+            detailPaneIssueRefundOrderId == null
         ) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (detailState as? WooPosOrderDetailsState.Loaded)
@@ -660,36 +660,38 @@ private fun OrdersListWithDetails(
     onIssueRefundDismissRequestRejected: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListPane(
-            state = listContent,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = listContent.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onOrderSelected = onOrderSelected,
-            onEndOfOrdersListReached = onEndOfOrdersListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            onSearchEvent = onSearchEvent,
-            onSearchErrorRetry = onSearchErrorRetry,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
+    if (detailPaneIssueRefundOrderId != null) {
+        // The refund flow is presented full screen (covering the orders list) from the very first
+        // step, mirroring the rest of the flow — not constrained to the detail pane.
+        WooPosIssueRefundScreen(
+            orderId = detailPaneIssueRefundOrderId,
+            onNavigationEvent = onNavigationEvent,
+            refundReasonUpdate = refundReasonUpdate,
+            onDismissed = onIssueRefundDismissed,
+            viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
+                detailPaneIssueRefundInstanceId,
+            dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+            onPendingChangesChanged = onIssueRefundPendingChangesChanged,
+            onDismissRequestRejected = onIssueRefundDismissRequestRejected,
+            modifier = Modifier.fillMaxSize()
         )
-        if (detailPaneIssueRefundOrderId != null) {
-            WooPosIssueRefundScreen(
-                orderId = detailPaneIssueRefundOrderId,
-                onNavigationEvent = onNavigationEvent,
-                refundReasonUpdate = refundReasonUpdate,
-                onDismissed = onIssueRefundDismissed,
-                viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
-                    detailPaneIssueRefundInstanceId,
-                dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
-                onPendingChangesChanged = onIssueRefundPendingChangesChanged,
-                onDismissRequestRejected = onIssueRefundDismissRequestRejected,
-                modifier = Modifier.weight(0.7f)
+    } else {
+        Row(modifier = Modifier.fillMaxSize()) {
+            OrdersListPane(
+                state = listContent,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = listContent.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onSearchEvent = onSearchEvent,
+                onSearchErrorRetry = onSearchErrorRetry,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
             )
-        } else {
             OrderDetailsPane(
                 detailState = detailState,
                 onUIEvent = onUIEvent,
