@@ -208,6 +208,75 @@
 
     <string name="login_prologue_start_new_store">กำลังเริ่มร้านค้าใหม่?</string>
 
+    <!-- QR login prologue -->
+    <string name="login_qr_prologue_title">สแกนเพื่อเข้าสู่ระบบ</string>
+    <string name="login_qr_prologue_subtitle">บนคอมพิวเตอร์ของคุณ ให้ไปที่:</string>
+    <string name="login_qr_prologue_url_clipboard_label">URL เข้าสู่ระบบ WooCommerce</string>
+    <string name="login_qr_prologue_url_copied">คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว</string>
+    <string name="login_qr_prologue_step_hint">จากนั้นสแกน QR code ที่ปรากฏขึ้น</string>
+    <string name="login_qr_prologue_scan_button">สแกน QR code</string>
+    <string name="login_qr_prologue_fallback_link">ไม่มีคอมพิวเตอร์? เข้าสู่ระบบด้วยที่อยู่ไซต์</string>
+    <string name="login_qr_prologue_camera_denied_title">ต้องการสิทธิ์เข้าถึงกล้อง</string>
+    <string name="login_qr_prologue_camera_denied_body">หากไม่ให้สิทธิ์เข้าถึงกล้อง คุณยังสามารถเข้าสู่ระบบได้โดยป้อนที่อยู่ร้านค้าของคุณ</string>
+    <string name="login_qr_prologue_camera_denied_allow_button">อนุญาตให้เข้าถึงกล้อง</string>
+    <string name="login_qr_prologue_camera_blocked_title">การเข้าถึงกล้องถูกปิดอยู่</string>
+    <string name="login_qr_prologue_camera_blocked_body">เปิดการเข้าถึงกล้องในการตั้งค่า หรือยกเลิกเพื่อเข้าสู่ระบบด้วยที่อยู่ร้านค้าของคุณแทน</string>
+    <string name="login_qr_prologue_camera_blocked_settings_button">เปิดการตั้งค่าสิทธิ์</string>
+    <string name="login_qr_scanner_hint">จัด QR code ให้อยู่ตรงกลางกรอบ</string>
+    <string name="login_qr_scanner_visit_url">ไปที่ %1$s</string>
+    <string name="login_qr_scanner_authenticating">กำลังเข้าสู่ระบบ…</string>
+    <string name="login_qr_endpoint_missing_title">ร้านค้านี้ไม่สามารถเข้าสู่ระบบด้วย QR ได้</string>
+    <string name="login_qr_endpoint_missing_body">ปลั๊กอิน WooCommerce ของคุณไม่รองรับการเข้าสู่ระบบด้วย QR กรุณาอัปเดต WooCommerce บนร้านค้าของคุณแล้วลองอีกครั้ง หรือเข้าสู่ระบบโดยป้อน URL ของไซต์</string>
+    <string name="login_qr_endpoint_missing_enter_url">ป้อน URL ของไซต์แทน</string>
+    <string name="login_qr_endpoint_missing_retry">ลองสแกนอีกครั้ง</string>
+    <!-- Number-matching approval step -->
+    <string name="login_qr_match_title">ยืนยันการเข้าสู่ระบบ</string>
+    <string name="login_qr_match_host_label">คุณกำลังเข้าสู่ระบบไปยัง</string>
+    <string name="login_qr_match_account_label">คุณกำลังเข้าสู่ระบบในฐานะ</string>
+    <string name="login_qr_match_subtitle">แตะตัวเลขนี้บนคอมพิวเตอร์ของคุณเพื่อเสร็จสิ้น</string>
+    <string name="login_qr_match_countdown">หมดอายุใน %1$d วินาที</string>
+    <string name="login_qr_match_cancel">ยกเลิก</string>
+    <string name="login_qr_match_security_note">ทั้งสองหน้าจอต้องแสดงตัวเลขเดียวกันเพื่อให้การเข้าสู่ระบบเสร็จสมบูรณ์</string>
+
+    <!-- Fullscreen error titles + bodies (split from snackbar copy) -->
+    <string name="login_qr_scanner_error_generic_title">อ่านโค้ดนั้นไม่ได้</string>
+    <string name="login_qr_scanner_error_generic_body">เราอ่าน QR code นั้นไม่ได้ กรุณาลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_payload_title">ไม่ใช่โค้ด WooCommerce</string>
+    <string name="login_qr_scanner_error_payload_body">QR นี้ไม่ใช่โค้ดเข้าสู่ระบบ WooCommerce โปรดสร้างโค้ดใหม่จากร้านค้าของคุณแล้วลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_install_qr_title">นี่คือ QR สำหรับติดตั้ง</string>
+    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[แอปได้รับการติดตั้งแล้ว — QR นี้ใช้ติดตั้งแอป ใน wp-admin ให้แตะปุ่ม <b>%1$s</b> เพื่อแสดง QR สำหรับเข้าสู่ระบบ หรือไปที่ <b>%2$s</b> บนคอมพิวเตอร์ของคุณ]]></string>
+    <string name="login_qr_scanner_error_install_qr_body_button">ติดตั้งแอปแล้ว</string>
+    <string name="login_qr_scanner_error_token_title">โค้ดหมดอายุ</string>
+    <string name="login_qr_scanner_error_token_body">โค้ดนั้นหมดอายุหรือถูกใช้ไปแล้ว โปรดสร้างโค้ดใหม่ในร้านค้าของคุณ</string>
+    <string name="login_qr_scanner_error_rate_limited_title">พยายามมากเกินไป</string>
+    <string name="login_qr_scanner_error_rate_limited_body">กรุณารอสักครู่แล้วลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_network_title">เข้าถึงร้านค้าของคุณไม่ได้</string>
+    <string name="login_qr_scanner_error_network_body">ตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_server_title">เกิดข้อผิดพลาด</string>
+    <string name="login_qr_scanner_error_server_body">ร้านค้าของคุณส่งคืนข้อผิดพลาดที่ไม่คาดคิด กรุณาลองอีกครั้งในอีกสักครู่</string>
+    <string name="login_qr_scanner_error_site_auth_title">เข้าสู่ระบบล้มเหลว</string>
+    <string name="login_qr_scanner_error_site_auth_body">เราไม่สามารถยืนยันตัวตนกับร้านค้าของคุณได้ กรุณาลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_not_woo_title">ไม่ใช่ร้านค้า WooCommerce</string>
+    <string name="login_qr_scanner_error_not_woo_body">ไซต์นี้ไม่ได้ติดตั้ง WooCommerce</string>
+    <string name="login_qr_scanner_error_user_role_title">ต้องมีสิทธิ์</string>
+    <string name="login_qr_scanner_error_user_role_body">บัญชีของคุณไม่มีสิทธิ์ใช้แอปกับร้านค้านี้</string>
+    <string name="login_qr_scanner_error_match_rejected_title">การเข้าสู่ระบบถูกปฏิเสธ</string>
+    <string name="login_qr_scanner_error_match_rejected_body">เพื่อความปลอดภัยของคุณ ความพยายามเข้าสู่ระบบนี้ถูกยกเลิก โปรดสร้างโค้ดใหม่ในร้านค้าของคุณเพื่อลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_match_timed_out_title">การเข้าสู่ระบบหมดเวลา</string>
+    <string name="login_qr_scanner_error_match_timed_out_body">คุณไม่ได้ยืนยันภายในเวลาที่กำหนด โปรดสร้างโค้ดใหม่ในร้านค้าของคุณแล้วลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_match_already_scanned_title">โค้ดถูกใช้แล้ว</string>
+    <string name="login_qr_scanner_error_match_already_scanned_body">โค้ดนั้นถูกสแกนไปแล้ว โปรดสร้างโค้ดใหม่ในร้านค้าของคุณ</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_title">การเข้าสู่ระบบถูกขัดจังหวะ</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_body">การเข้าสู่ระบบของคุณถูกขัดจังหวะ โปรดสร้างโค้ดใหม่ในร้านค้าของคุณแล้วลองอีกครั้ง</string>
+    <string name="login_qr_scanner_error_match_already_completed_title">เข้าสู่ระบบที่อื่นแล้ว</string>
+    <string name="login_qr_scanner_error_match_already_completed_body">การเข้าสู่ระบบนี้เสร็จสมบูรณ์บนอุปกรณ์อื่นแล้ว โปรดสร้างโค้ดใหม่หากคุณต้องการลองอีกครั้ง</string>
+    <string name="login_qr_error_primary_retry">ลองอีกครั้ง</string>
+    <string name="login_qr_error_primary_scan">สแกนโค้ดใหม่</string>
+    <string name="login_qr_session_replace_title">คุณเข้าสู่ระบบอยู่แล้ว</string>
+    <string name="login_qr_session_replace_body">การดำเนินการต่อจะออกจากเซสชันปัจจุบันของคุณและเริ่มการเข้าสู่ระบบใหม่</string>
+    <string name="login_qr_session_replace_continue">ดำเนินการต่อและออกจากระบบ</string>
+    <string name="login_qr_session_replace_cancel">ยกเลิก</string>
+
     <string name="login_pick_store">เลือกร้านค้าที่จะเชื่อมต่อ</string>
     <string name="login_non_woo_stores_label">ไซต์อื่นๆ</string>
     <string name="login_verifying_site">กำลังตรวจสอบไซต์…</string>
@@ -229,6 +298,9 @@
     <string name="login_open_installation_page">เปิดหน้าการติดตั้ง</string>
     <string name="login_no_jetpack">ในการใช้แอปนี้กับ %1$s คุณจะต้องตั้งค่าปลั๊กอิน Jetpack และเชื่อมต่อกับบัญชี WordPress.com</string>
     <string name="login_not_wordpress_site_v2">เราไม่สามารถตรวจพบไซต์ WordPress ที่ที่อยู่ที่คุณป้อน โปรดตรวจสอบให้แน่ใจว่าได้ติดตั้ง WordPress และกำลังใช้เวอร์ชันล่าสุดที่มีอยู่</string>
+    <string name="login_site_info_fallback_dialog_title">ปัญหาการเชื่อมต่อ</string>
+    <string name="login_site_info_fallback_dialog_message">เราไม่สามารถยืนยันรายละเอียดไซต์ของคุณได้ คุณสามารถลองเข้าสู่ระบบด้วยข้อมูลประจำตัวของไซต์แทน</string>
+    <string name="login_site_info_fallback_dialog_cta">เข้าสู่ระบบด้วยข้อมูลประจำตัวของไซต์</string>
     <string name="login_view_connected_stores">ดูร้านค้าที่เชื่อมต่อ</string>
     <string name="login_jetpack_what_is">Jetpack คืออะไร?</string>
     <string name="login_jetpack_what_is_description">Jetpack คือปลั๊กอิน WordPress ฟรีที่เชื่อมต่อร้านค้าของคุณกับเครื่องมือที่จำเป็นเพื่อมอบประสบการณ์มือถือที่ดีที่สุด รวมถึงการแจ้งเตือนแบบพุชและสถิติ</string>
@@ -367,6 +439,19 @@
     <string name="dashboard_top_performers_empty">ไม่มีกิจกรรมในช่วงเวลานี้</string>
     <string name="dashboard_top_performers_net_sales">ยอดขายสุทธิ: %s</string>
     <string name="dashboard_top_performers_wcanalytics_inactive_title">ไม่สามารถโหลดผู้มีประสิทธิภาพสูงสุดได้</string>
+
+    <!-- Analytics scheduled-import delay -->
+    <string name="dashboard_stats_delayed_footer">สถิติอาจล่าช้าได้สูงสุด 12 ชั่วโมง</string>
+    <string name="dashboard_stats_info_content_description">การตั้งค่าการอัปเดตการวิเคราะห์</string>
+    <string name="dashboard_scheduled_import_sheet_title">การอัปเดตการวิเคราะห์</string>
+    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[เลือกวิธีที่ WooCommerce ประมวลผลการอัปเดตข้อมูลการวิเคราะห์ <a href="learn_more"><u>เรียนรู้เพิ่มเติม</u></a>]]></string>
+    <string name="dashboard_scheduled_import_option_scheduled_title">ตามกำหนดเวลา</string>
+    <string name="dashboard_scheduled_import_option_scheduled_description">อัปเดตข้อมูลการวิเคราะห์โดยอัตโนมัติทุก 12 ชั่วโมง แนะนำสำหรับร้านค้าที่มีปริมาณคำสั่งซื้อสูง</string>
+    <string name="dashboard_scheduled_import_option_immediately_title">ทันที</string>
+    <string name="dashboard_scheduled_import_option_immediately_description">อัปเดตข้อมูลการวิเคราะห์ทันทีที่มีข้อมูลใหม่</string>
+    <string name="dashboard_scheduled_import_store_wide_note">นี่คือการตั้งค่าทั่วทั้งร้านค้า ซึ่งยังควบคุมตัวเลือก \"การอัปเดต\" ในการตั้งค่าการวิเคราะห์ของผู้ดูแลระบบ WooCommerce ด้วย</string>
+    <string name="dashboard_scheduled_import_option_selected">เลือกแล้ว</string>
+    <string name="dashboard_scheduled_import_update_error">ไม่สามารถอัปเดตการตั้งค่าได้ กรุณาลองอีกครั้ง</string>
 
     <string name="dashboard_action_view_all_orders">ดูคำสั่งซื้อทั้งหมด</string>
 
@@ -1370,6 +1455,7 @@
     <string name="card_reader_tap_to_pay_not_available_error_android_version">หากต้องการใช้ Tap To Pay บน Android คุณต้องใช้ Android 10 หรือใหม่กว่า หากต้องการรับชำระเงินแบบตัวต่อตัว โปรดอัปเดต Android หรือซื้อเครื่องอ่านบัตรแบบ Bluetooth</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">หากต้องการใช้ Tap To Pay บน Android อุปกรณ์ของคุณต้องมี Google Play Services หากต้องการรับชำระเงินแบบตัวต่อตัว โปรดติดตั้ง Google Play Services หรือซื้อเครื่องอ่านบัตรแบบ Bluetooth</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">ขออภัย Tap To Pay บน Android ยังไม่พร้อมใช้งานในประเทศของคุณ โปรดติดตามข่าวสาร!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_device">อุปกรณ์นี้ไม่ตรงตามข้อกำหนดด้านความปลอดภัยสำหรับ Tap to Pay บน Android หากต้องการรับชำระเงินแบบตัวต่อตัว คุณสามารถซื้อเครื่องอ่านบัตร Bluetooth ได้</string>
     <string name="card_reader_hub_payout_summary_available_funds">เงินทุนที่พร้อมใช้งาน</string>
     <string name="card_reader_hub_payout_summary_pending_funds">เงินทุนที่รอดำเนินการ</string>
     <string name="card_reader_hub_payout_summary_funds_available_after_plural">เงินทุนจะพร้อมใช้งานหลังจากรอดำเนินการ %d วัน</string>
@@ -2184,6 +2270,15 @@
     <string name="empty_message_with_search">ขออภัย ไม่พบผลลัพธ์สำหรับ \"%s\"</string>
     <string name="empty_message_with_filters">ขออภัย ไม่มีสินค้าที่ตรงกับตัวกรองที่เลือก"</string>
 
+    <!-- Empty order: place your first order -->
+    <string name="empty_order_place_order_message">ดำเนินการคำสั่งซื้อหนึ่งรายการเพื่อให้มั่นใจว่ากระบวนการ WooCommerce ของคุณมอบประสบการณ์ที่ราบรื่นให้ลูกค้า</string>
+    <string name="empty_order_place_order_button">สั่งซื้อรายการแรกของคุณ</string>
+
+    <string name="place_first_order_heading">สั่งซื้อรายการแรกของคุณ</string>
+    <string name="place_first_order_step_2">เลือกสินค้าของคุณ เพิ่มลงตะกร้า และดำเนินการชำระเงินในร้านค้าเว็บนั้นในฐานะลูกค้าจริง</string>
+    <string name="place_first_order_step_4">ใช้แอปเพื่อดำเนินการคืนเงินสำหรับคำสั่งซื้อนั้น &lt;a href=\'processingFees\'&gt;&lt;u&gt;ค่าธรรมเนียมการประมวลผลไม่สามารถคืนเงินได้&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="place_first_order_button">สั่งซื้อ</string>
+
     <!-- Empty order: try a test order -->
     <string name="empty_order_test_order_message">ทดลองสั่งซื้อเพื่อให้มั่นใจว่ากระบวนการ WooCommerce ของคุณมอบประสบการณ์ที่ราบรื่นให้ลูกค้า</string>
     <string name="empty_order_test_order_button">ทดลองสั่งซื้อ</string>
@@ -2281,6 +2376,8 @@
     <string name="settings_notifs_new_orders_threshold">มูลค่าขั้นต่ำ (%1$s)</string>
     <string name="settings_notifs_stock">สต็อกสินค้า</string>
     <string name="settings_notifs_stock_subtitle">การแจ้งเตือนสต็อกทั้งหมด</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">ไม่มีการแจ้งเตือน</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s และ %2$s</string>
     <string name="settings_notifs_stock_enable_title">เปิดใช้งานการแจ้งเตือนสต็อก</string>
     <string name="settings_notifs_stock_enable_description">รับการแจ้งเตือนเมื่อสต็อกสินค้าต้องการความสนใจ</string>
     <string name="settings_notifs_stock_low_stock_title">สต็อกต่ำ</string>
@@ -3708,8 +3805,11 @@
     <string name="woopos_home_syncing_catalog_subtitle">คุณสามารถออกได้และการซิงค์จะดำเนินต่อในเบื้องหลัง</string>
     <string name="woopos_home_syncing_catalog_exit_button">ออกจาก POS</string>
     <string name="woopos_home_sync_failed_title">ไม่สามารถซิงค์ได้</string>
+    <string name="woopos_home_sync_failed_blocked_title">ต้องดำเนินการในร้านค้าของคุณ</string>
     <string name="woopos_home_sync_failed_message">เราไม่สามารถซิงค์แคตาล็อกสินค้าของคุณได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองใหม่อีกครั้ง</string>
+    <string name="woopos_home_sync_failed_server_permissions_message">Point of Sale ไม่สามารถเข้าถึงไฟล์ที่มีข้อมูลสินค้าของคุณได้เนื่องจากผู้ให้บริการโฮสติ้งของคุณบล็อกไว้ โปรดขอให้ผู้ให้บริการอนุญาตการเข้าถึงไฟล์ดังกล่าวเพื่อให้ Point of Sale ทำงานได้อย่างถูกต้อง</string>
     <string name="woopos_home_sync_failed_retry_button">ลองใหม่</string>
+    <string name="woopos_home_sync_failed_blocked_continue_button">เข้าใจแล้ว</string>
     <string name="woopos_refresh_catalog_banner_title">รีเฟรชแคตาล็อก</string>
     <string name="woopos_refresh_catalog_banner_message">แคตาล็อกยังไม่ได้ซิงค์ในช่วง 7 วันที่ผ่านมา กรุณาเชื่อมต่ออุปกรณ์กับ Wi-Fi หรือเปิดใช้งานการซิงค์ผ่านเครือข่ายมือถือในการตั้งค่า POS</string>
     <string name="woopos_refresh_catalog_banner_dismiss">ปิดแบนเนอร์</string>
@@ -3801,7 +3901,9 @@
     <string name="woopos_settings_local_catalog_size_format">%1$d สินค้า และ %2$d ตัวเลือก</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">พื้นหลังไดอะล็อกข้อผิดพลาดในการซิงค์</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">ไม่สามารถซิงค์แค็ตตาล็อกได้</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_title">ต้องดำเนินการในร้านค้าของคุณ</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_message">Point of Sale ไม่สามารถเข้าถึงไฟล์ที่มีข้อมูลสินค้าของคุณได้เนื่องจากผู้ให้บริการโฮสติ้งของคุณบล็อกไว้ โปรดขอให้ผู้ให้บริการอนุญาตการเข้าถึงไฟล์ดังกล่าวเพื่อให้ Point of Sale ทำงานได้อย่างถูกต้อง</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">ลองอีกครั้ง</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">ยกเลิก</string>
 
@@ -3871,6 +3973,21 @@
     <string name="woopos_payment_method_other_methods_label">วิธีการชำระเงินอื่นๆ</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scan to Pay</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">ทำเครื่องหมายคำสั่งซื้อว่าชำระแล้ว</string>
+    <string name="woopos_mark_order_as_paid_title">ทำเครื่องหมายคำสั่งซื้อว่าชำระแล้ว?</string>
+    <string name="woopos_mark_order_as_paid_message">การดำเนินการนี้จะทำเครื่องหมายคำสั่งซื้อ %1$s ว่าเสร็จสมบูรณ์ ใช้เฉพาะเมื่อคุณได้รับชำระเงินด้วยวิธีอื่นแล้วเท่านั้น</string>
+    <string name="woopos_mark_order_as_paid_note_hint">เช่น โอนเงินผ่านธนาคารจาก Maria, อ้างอิง 4827</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">ทำเครื่องหมายว่าชำระแล้ว</string>
+    <string name="woopos_mark_order_as_paid_error_message">ไม่สามารถอัปเดตคำสั่งซื้อได้ ลองอีกครั้ง</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">ไม่สามารถโหลดคำสั่งซื้อได้ กลับไปและลองอีกครั้ง</string>
+    <string name="woopos_scan_to_pay_title">Scan to Pay</string>
+    <string name="woopos_scan_to_pay_subtitle">แสดงโค้ดนี้ให้ลูกค้าเพื่อให้ลูกค้าชำระเงินจากโทรศัพท์</string>
+    <string name="woopos_scan_to_pay_total">ยอดรวมคำสั่งซื้อ: %1$s</string>
+    <string name="woopos_scan_to_pay_error_message">เราไม่สามารถเตรียมการชำระเงินได้ กรุณาลองอีกครั้ง</string>
+    <string name="woopos_scan_to_pay_retry">ลองอีกครั้ง</string>
+    <string name="woopos_scan_to_pay_cancel">ยกเลิก</string>
+    <string name="woopos_scan_to_pay_order_note">ลูกค้าชำระเงินผ่าน Scan to Pay</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">เลือกวิธีการชำระเงิน</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">พื้นหลังมืดลง แตะเพื่อปิดตัวเลือกวิธีการชำระเงิน</string>
     <string name="woopos_mark_order_as_complete_total">ยอดรวมคำสั่งซื้อ: %1$s</string>
     <string name="woopos_mark_order_as_complete_confirm_button">ทำเครื่องหมายคำสั่งซื้อว่าเสร็จสมบูรณ์</string>
     <string name="woopos_mark_order_as_complete_error_message">เกิดข้อผิดพลาด กรุณาลองอีกครั้ง</string>
@@ -4008,11 +4125,28 @@
     <string name="woopos_orders_confirm_refund_title">คืนเงิน %1$s</string>
     <string name="woopos_orders_confirm_refund_message">คุณแน่ใจหรือไม่ว่าต้องการดำเนินการคืนเงิน %1$s ผ่าน %2$s?\n\nการกระทำนี้ไม่สามารถยกเลิกได้</string>
     <string name="woopos_orders_yes_proceed">ใช่ ดำเนินการต่อ</string>
+    <string name="woopos_refund_discard_changes_title">ทิ้งการเปลี่ยนแปลงการคืนเงิน?</string>
+    <string name="woopos_refund_discard_changes_message">การเปลี่ยนคำสั่งซื้อจะทิ้งการเปลี่ยนแปลงการคืนเงินที่คุณทำไว้</string>
+    <string name="woopos_refund_discard_changes_discard">ทิ้งการเปลี่ยนแปลง</string>
+    <string name="woopos_refund_discard_changes_dialog_background_content_description">พื้นหลังไดอะล็อกทิ้งการเปลี่ยนแปลงการคืนเงิน</string>
     <string name="woopos_refund_loading_error_title">โหลดรายการคืนเงินไม่สำเร็จ</string>
     <string name="woopos_refund_creating_error_title">สร้างการคืนเงินไม่สำเร็จ</string>
     <string name="woopos_refund_error_subtitle">กรุณาลองอีกครั้ง</string>
+    <string name="woopos_refund_reader_title">คืนเงินการชำระเงินด้วยบัตร</string>
+    <string name="woopos_refund_reader_preparing_title">กำลังเตรียมเครื่องอ่านสำหรับการคืนเงิน</string>
+    <string name="woopos_refund_reader_preparing_subtitle">กำลังเตรียมเครื่องอ่าน</string>
+    <string name="woopos_refund_reader_not_connected_title">ไม่ได้เชื่อมต่อเครื่องอ่าน</string>
+    <string name="woopos_refund_reader_not_connected_subtitle">หากต้องการดำเนินการคืนเงินนี้ โปรดเชื่อมต่อเครื่องอ่านของคุณ</string>
+    <string name="woopos_refund_reader_not_connected_cta_button_label">เชื่อมต่อกับเครื่องอ่าน</string>
+    <string name="woopos_refund_reader_ready_title">พร้อมคืนเงิน</string>
+    <string name="woopos_refund_reader_ready_subtitle">แตะ เสียบ หรือรูดบัตรเพื่อคืนเงิน</string>
+    <string name="woopos_refund_reader_processing_title">กำลังดำเนินการคืนเงิน</string>
+    <string name="woopos_refund_notifying_store_title">กำลังแจ้งร้านค้า</string>
+    <string name="woopos_refund_notifying_store_subtitle">กำลังใช้การคืนเงินกับคำสั่งซื้อ</string>
+    <string name="woopos_refund_back_to_order_button">กลับไปที่คำสั่งซื้อ</string>
     <string name="woopos_orders_refund_complete">การคืนเงินเสร็จสมบูรณ์</string>
     <string name="woopos_orders_refund_success_message">คุณได้คืนเงิน %1$s ผ่าน %2$s แล้ว</string>
+    <string name="woopos_orders_details_refresh_error">ไม่สามารถรีเฟรชคำสั่งซื้อได้ กรุณาตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง</string>
     <string name="woopos_orders_details_placeholder_title">เลือกคำสั่งซื้อ</string>
     <string name="woopos_orders_details_placeholder_message">เลือกคำสั่งซื้อจากรายการเพื่อดูรายละเอียด</string>
     <string name="woopos_orders_details_products_title">สินค้า</string>
@@ -4396,6 +4530,7 @@
     <string name="woo_shipping_labels_customs_product_details_title">รายละเอียดสินค้า</string>
     <string name="woo_shipping_labels_customs_product_details_description">คำอธิบาย</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">ไม่มีคำอธิบาย</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">คำอธิบายต้องมีอักขระไม่เกิน %1$s ตัว</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">หมายเลขภาษีศุลกากร HS</string>
     <string name="woo_shipping_labels_customs_product_details_tariff_invalid">หมายเลขภาษีศุลกากรต้องมีความยาวระหว่าง 6 ถึง 12 หลัก</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">มูลค่าต่อหน่วย</string>
@@ -4800,4 +4935,9 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">ยังไม่สามารถยืนยันได้ในขณะนี้ กรุณาลองอีกครั้งจากแชท</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">ผู้ช่วยไม่สามารถดำเนินการเสร็จสิ้นได้หลังจากหลายขั้นตอน</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">เกิดข้อผิดพลาดขณะที่ผู้ช่วยกำลังทำงาน</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">อัปเดตคำสั่งซื้อ #%1$s (%2$s)</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">อัปเดตคำสั่งซื้อ #%1$s (%2$s): ส่งอีเมลถึงลูกค้า</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">ผู้เยี่ยมชม</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">ลูกค้า #%1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">อัปเดตตัวแปร %1$s (#%2$s) ของสินค้า #%3$s</string>
 </resources>

@@ -208,6 +208,75 @@
 
     <string name="login_prologue_start_new_store">Đang bắt đầu cửa hàng mới?</string>
 
+    <!-- QR login prologue -->
+    <string name="login_qr_prologue_title">Quét để đăng nhập</string>
+    <string name="login_qr_prologue_subtitle">Trên máy tính của bạn, truy cập:</string>
+    <string name="login_qr_prologue_url_clipboard_label">URL đăng nhập WooCommerce</string>
+    <string name="login_qr_prologue_url_copied">Đã sao chép liên kết vào bảng nhớ tạm</string>
+    <string name="login_qr_prologue_step_hint">Sau đó quét mã QR xuất hiện.</string>
+    <string name="login_qr_prologue_scan_button">Quét mã QR</string>
+    <string name="login_qr_prologue_fallback_link">Không có máy tính? Đăng nhập bằng địa chỉ trang web</string>
+    <string name="login_qr_prologue_camera_denied_title">Cần quyền truy cập camera</string>
+    <string name="login_qr_prologue_camera_denied_body">Nếu không có quyền truy cập camera, bạn vẫn có thể đăng nhập bằng cách nhập địa chỉ cửa hàng.</string>
+    <string name="login_qr_prologue_camera_denied_allow_button">Cho phép truy cập camera</string>
+    <string name="login_qr_prologue_camera_blocked_title">Quyền truy cập camera đang tắt</string>
+    <string name="login_qr_prologue_camera_blocked_body">Bật quyền truy cập camera trong Cài đặt hoặc hủy để đăng nhập bằng địa chỉ cửa hàng.</string>
+    <string name="login_qr_prologue_camera_blocked_settings_button">Mở cài đặt quyền</string>
+    <string name="login_qr_scanner_hint">Đặt mã QR ở giữa khung</string>
+    <string name="login_qr_scanner_visit_url">Truy cập %1$s</string>
+    <string name="login_qr_scanner_authenticating">Đang đăng nhập…</string>
+    <string name="login_qr_endpoint_missing_title">Cửa hàng này không thể hoàn tất đăng nhập bằng QR</string>
+    <string name="login_qr_endpoint_missing_body">Plugin WooCommerce của bạn không hỗ trợ đăng nhập bằng QR. Vui lòng cập nhật WooCommerce trên cửa hàng rồi thử lại, hoặc đăng nhập bằng cách nhập URL trang web.</string>
+    <string name="login_qr_endpoint_missing_enter_url">Nhập URL trang web thay thế</string>
+    <string name="login_qr_endpoint_missing_retry">Thử quét lại</string>
+    <!-- Number-matching approval step -->
+    <string name="login_qr_match_title">Xác nhận đăng nhập</string>
+    <string name="login_qr_match_host_label">Bạn đang đăng nhập vào</string>
+    <string name="login_qr_match_account_label">Bạn đang đăng nhập với tư cách</string>
+    <string name="login_qr_match_subtitle">Nhấn số này trên máy tính để hoàn tất.</string>
+    <string name="login_qr_match_countdown">Hết hạn sau %1$d giây</string>
+    <string name="login_qr_match_cancel">Hủy</string>
+    <string name="login_qr_match_security_note">Cả hai màn hình phải hiển thị cùng một số để hoàn tất đăng nhập.</string>
+
+    <!-- Fullscreen error titles + bodies (split from snackbar copy) -->
+    <string name="login_qr_scanner_error_generic_title">Không thể đọc mã đó</string>
+    <string name="login_qr_scanner_error_generic_body">Chúng tôi không thể đọc mã QR đó. Vui lòng thử lại.</string>
+    <string name="login_qr_scanner_error_payload_title">Không phải mã WooCommerce</string>
+    <string name="login_qr_scanner_error_payload_body">Mã QR này không phải là mã đăng nhập WooCommerce. Hãy tạo mã mới từ cửa hàng của bạn rồi thử lại.</string>
+    <string name="login_qr_scanner_error_install_qr_title">Đây là mã QR cài đặt</string>
+    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[Ứng dụng đã được cài đặt — mã QR này dùng để cài đặt ứng dụng. Trong wp-admin, hãy nhấn nút <b>%1$s</b> để hiển thị mã QR đăng nhập. Hoặc truy cập <b>%2$s</b> trên máy tính của bạn.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body_button">Ứng dụng đã được cài đặt</string>
+    <string name="login_qr_scanner_error_token_title">Mã đã hết hạn</string>
+    <string name="login_qr_scanner_error_token_body">Mã đó đã hết hạn hoặc đã được sử dụng. Hãy tạo mã mới trong cửa hàng của bạn.</string>
+    <string name="login_qr_scanner_error_rate_limited_title">Quá nhiều lần thử</string>
+    <string name="login_qr_scanner_error_rate_limited_body">Vui lòng đợi vài phút rồi thử lại.</string>
+    <string name="login_qr_scanner_error_network_title">Không thể kết nối với cửa hàng của bạn</string>
+    <string name="login_qr_scanner_error_network_body">Kiểm tra kết nối của bạn rồi thử lại.</string>
+    <string name="login_qr_scanner_error_server_title">Đã xảy ra lỗi</string>
+    <string name="login_qr_scanner_error_server_body">Cửa hàng của bạn trả về lỗi không mong đợi. Vui lòng thử lại sau giây lát.</string>
+    <string name="login_qr_scanner_error_site_auth_title">Đăng nhập thất bại</string>
+    <string name="login_qr_scanner_error_site_auth_body">Chúng tôi không thể xác thực với cửa hàng của bạn. Vui lòng thử lại.</string>
+    <string name="login_qr_scanner_error_not_woo_title">Không phải cửa hàng WooCommerce</string>
+    <string name="login_qr_scanner_error_not_woo_body">Trang web này chưa cài đặt WooCommerce.</string>
+    <string name="login_qr_scanner_error_user_role_title">Cần quyền</string>
+    <string name="login_qr_scanner_error_user_role_body">Tài khoản của bạn không có quyền sử dụng ứng dụng cho cửa hàng này.</string>
+    <string name="login_qr_scanner_error_match_rejected_title">Đăng nhập bị từ chối</string>
+    <string name="login_qr_scanner_error_match_rejected_body">Vì lý do bảo mật, lần đăng nhập này đã bị hủy. Hãy tạo mã mới trong cửa hàng để thử lại.</string>
+    <string name="login_qr_scanner_error_match_timed_out_title">Đăng nhập đã hết thời gian</string>
+    <string name="login_qr_scanner_error_match_timed_out_body">Bạn đã không xác nhận kịp thời. Hãy tạo mã mới trong cửa hàng rồi thử lại.</string>
+    <string name="login_qr_scanner_error_match_already_scanned_title">Mã đã được sử dụng</string>
+    <string name="login_qr_scanner_error_match_already_scanned_body">Mã đó đã được quét. Hãy tạo mã mới trong cửa hàng của bạn.</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_title">Đăng nhập bị gián đoạn</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_body">Đăng nhập của bạn đã bị gián đoạn. Hãy tạo mã mới trong cửa hàng rồi thử lại.</string>
+    <string name="login_qr_scanner_error_match_already_completed_title">Đã đăng nhập ở nơi khác</string>
+    <string name="login_qr_scanner_error_match_already_completed_body">Lần đăng nhập này đã hoàn tất trên thiết bị khác. Hãy tạo mã mới nếu bạn cần thử lại.</string>
+    <string name="login_qr_error_primary_retry">Thử lại</string>
+    <string name="login_qr_error_primary_scan">Quét mã mới</string>
+    <string name="login_qr_session_replace_title">Bạn đã đăng nhập</string>
+    <string name="login_qr_session_replace_body">Tiếp tục sẽ đăng xuất bạn khỏi phiên hiện tại và bắt đầu đăng nhập mới.</string>
+    <string name="login_qr_session_replace_continue">Tiếp tục và đăng xuất</string>
+    <string name="login_qr_session_replace_cancel">Hủy</string>
+
     <string name="login_pick_store">Chọn cửa hàng để kết nối</string>
     <string name="login_non_woo_stores_label">Các trang web khác</string>
     <string name="login_verifying_site">Đang xác minh trang web…</string>
@@ -229,6 +298,9 @@
     <string name="login_open_installation_page">Mở trang cài đặt</string>
     <string name="login_no_jetpack">Để sử dụng ứng dụng này cho %1$s, bạn cần cài đặt và kết nối plugin Jetpack với tài khoản WordPress.com</string>
     <string name="login_not_wordpress_site_v2">Chúng tôi không thể phát hiện trang WordPress tại địa chỉ bạn đã nhập. Vui lòng đảm bảo WordPress đã được cài đặt và bạn đang chạy phiên bản mới nhất hiện có.</string>
+    <string name="login_site_info_fallback_dialog_title">Vấn đề kết nối</string>
+    <string name="login_site_info_fallback_dialog_message">Chúng tôi không thể xác minh chi tiết trang web của bạn. Bạn có thể thử đăng nhập bằng thông tin đăng nhập trang web.</string>
+    <string name="login_site_info_fallback_dialog_cta">Đăng nhập bằng thông tin đăng nhập trang web</string>
     <string name="login_view_connected_stores">Xem các cửa hàng đã kết nối</string>
     <string name="login_jetpack_what_is">Jetpack là gì?</string>
     <string name="login_jetpack_what_is_description">Jetpack là một plugin WordPress miễn phí kết nối cửa hàng của bạn với các công cụ cần thiết để mang lại trải nghiệm di động tốt nhất, bao gồm thông báo đẩy và thống kê</string>
@@ -367,6 +439,19 @@
     <string name="dashboard_top_performers_empty">Không có hoạt động trong kỳ này</string>
     <string name="dashboard_top_performers_net_sales">Doanh thu thuần: %s</string>
     <string name="dashboard_top_performers_wcanalytics_inactive_title">Không thể tải top sản phẩm nổi bật</string>
+
+    <!-- Analytics scheduled-import delay -->
+    <string name="dashboard_stats_delayed_footer">Thống kê có thể trễ tối đa 12 giờ</string>
+    <string name="dashboard_stats_info_content_description">Cài đặt cập nhật phân tích</string>
+    <string name="dashboard_scheduled_import_sheet_title">Cập nhật phân tích</string>
+    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Chọn cách WooCommerce xử lý các cập nhật dữ liệu phân tích. <a href="learn_more"><u>Tìm hiểu thêm</u></a>]]></string>
+    <string name="dashboard_scheduled_import_option_scheduled_title">Theo lịch</string>
+    <string name="dashboard_scheduled_import_option_scheduled_description">Tự động cập nhật dữ liệu phân tích mỗi 12 giờ. Được khuyến nghị cho cửa hàng có lượng đơn hàng cao.</string>
+    <string name="dashboard_scheduled_import_option_immediately_title">Ngay lập tức</string>
+    <string name="dashboard_scheduled_import_option_immediately_description">Cập nhật dữ liệu phân tích ngay khi có dữ liệu mới.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">Đây là cài đặt toàn cửa hàng, cũng kiểm soát tùy chọn \"Cập nhật\" trong cài đặt phân tích của quản trị viên WooCommerce.</string>
+    <string name="dashboard_scheduled_import_option_selected">Đã chọn</string>
+    <string name="dashboard_scheduled_import_update_error">Không thể cập nhật cài đặt. Vui lòng thử lại.</string>
 
     <string name="dashboard_action_view_all_orders">Xem tất cả đơn hàng</string>
 
@@ -1370,6 +1455,7 @@
     <string name="card_reader_tap_to_pay_not_available_error_android_version">Để sử dụng Tap to Pay trên Android, bạn cần Android 10 trở lên. Để chấp nhận thanh toán trực tiếp, vui lòng cập nhật Android hoặc mua đầu đọc thẻ Bluetooth.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">Để sử dụng Tap to Pay trên Android, thiết bị của bạn cần có Google Play Services. Để chấp nhận thanh toán trực tiếp, vui lòng cài đặt Google Play Services hoặc mua đầu đọc thẻ Bluetooth.</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">Rất tiếc, Tap to Pay trên Android chưa khả dụng tại quốc gia của bạn. Hãy chờ đón!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_device">Thiết bị này không đáp ứng các yêu cầu bảo mật cho Tap to Pay trên Android. Để chấp nhận thanh toán trực tiếp, bạn có thể mua đầu đọc thẻ Bluetooth.</string>
     <string name="card_reader_hub_payout_summary_available_funds">Số tiền khả dụng</string>
     <string name="card_reader_hub_payout_summary_pending_funds">Số tiền đang chờ xử lý</string>
     <string name="card_reader_hub_payout_summary_funds_available_after_plural">Tiền sẽ khả dụng sau khi chờ xử lý %d ngày.</string>
@@ -2184,6 +2270,15 @@
     <string name="empty_message_with_search">Rất tiếc, chúng tôi không tìm thấy kết quả cho \"%s\"</string>
     <string name="empty_message_with_filters">Rất tiếc, không có sản phẩm nào phù hợp với bộ lọc đã chọn"</string>
 
+    <!-- Empty order: place your first order -->
+    <string name="empty_order_place_order_message">Chạy một đơn hàng để đảm bảo quy trình WooCommerce của bạn mang lại trải nghiệm liền mạch cho khách hàng</string>
+    <string name="empty_order_place_order_button">Đặt đơn hàng đầu tiên</string>
+
+    <string name="place_first_order_heading">Đặt đơn hàng đầu tiên</string>
+    <string name="place_first_order_step_2">Chọn sản phẩm của bạn, thêm vào giỏ hàng và hoàn tất thanh toán trên cửa hàng web đó như một khách hàng thật.</string>
+    <string name="place_first_order_step_4">Dùng ứng dụng để xử lý hoàn tiền cho đơn hàng. &lt;a href=\'processingFees\'&gt;&lt;u&gt;Phí xử lý không được hoàn lại&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="place_first_order_button">Đặt hàng</string>
+
     <!-- Empty order: try a test order -->
     <string name="empty_order_test_order_message">Chạy một đơn hàng thử để đảm bảo quy trình WooCommerce của bạn mang lại trải nghiệm liền mạch cho khách hàng</string>
     <string name="empty_order_test_order_button">Thử đơn hàng kiểm tra</string>
@@ -2281,6 +2376,8 @@
     <string name="settings_notifs_new_orders_threshold">Giá trị tối thiểu (%1$s)</string>
     <string name="settings_notifs_stock">Kho hàng</string>
     <string name="settings_notifs_stock_subtitle">Tất cả cảnh báo kho hàng</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">Không có cảnh báo</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s và %2$s</string>
     <string name="settings_notifs_stock_enable_title">Bật thông báo kho hàng</string>
     <string name="settings_notifs_stock_enable_description">Nhận thông báo khi tình trạng kho hàng sản phẩm cần được chú ý.</string>
     <string name="settings_notifs_stock_low_stock_title">Sắp hết hàng</string>
@@ -3711,8 +3808,11 @@
     <string name="woopos_home_syncing_catalog_subtitle">Bạn có thể rời đi và việc đồng bộ sẽ tiếp tục trong nền.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Thoát POS</string>
     <string name="woopos_home_sync_failed_title">Không thể đồng bộ</string>
+    <string name="woopos_home_sync_failed_blocked_title">Cần thao tác trên cửa hàng của bạn</string>
     <string name="woopos_home_sync_failed_message">Chúng tôi không thể đồng bộ danh mục sản phẩm của bạn. Vui lòng kiểm tra kết nối internet và thử lại.</string>
+    <string name="woopos_home_sync_failed_server_permissions_message">Point of Sale không thể truy cập tệp chứa thông tin sản phẩm của bạn vì nhà cung cấp hosting của bạn đang chặn tệp đó. Vui lòng yêu cầu họ cho phép truy cập tệp này để Point of Sale tiếp tục hoạt động đúng cách.</string>
     <string name="woopos_home_sync_failed_retry_button">Thử lại</string>
+    <string name="woopos_home_sync_failed_blocked_continue_button">Đã hiểu</string>
     <string name="woopos_refresh_catalog_banner_title">Làm mới danh mục</string>
     <string name="woopos_refresh_catalog_banner_message">Danh mục chưa được đồng bộ trong 7 ngày qua. Hãy kết nối thiết bị với Wi-Fi hoặc bật đồng bộ qua mạng di động trong cài đặt POS.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Đóng thông báo</string>
@@ -3804,7 +3904,9 @@
     <string name="woopos_settings_local_catalog_size_format">%1$d sản phẩm và %2$d biến thể</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Nền hộp thoại lỗi đồng bộ</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Không thể đồng bộ danh mục</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_title">Cần thao tác trên cửa hàng của bạn</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">Vui lòng kiểm tra kết nối internet và thử lại.</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_message">Point of Sale không thể truy cập tệp chứa thông tin sản phẩm của bạn vì nhà cung cấp hosting của bạn đang chặn tệp đó. Vui lòng yêu cầu họ cho phép truy cập tệp này để Point of Sale tiếp tục hoạt động đúng cách.</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Thử lại</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Hủy</string>
 
@@ -3874,6 +3976,21 @@
     <string name="woopos_payment_method_other_methods_label">Phương thức thanh toán khác</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scan to Pay</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Đánh dấu đơn hàng đã thanh toán</string>
+    <string name="woopos_mark_order_as_paid_title">Đánh dấu đơn hàng là đã thanh toán?</string>
+    <string name="woopos_mark_order_as_paid_message">Thao tác này sẽ đánh dấu đơn hàng %1$s là đã hoàn thành. Chỉ dùng nếu bạn đã thu thanh toán bằng cách khác.</string>
+    <string name="woopos_mark_order_as_paid_note_hint">ví dụ: Chuyển khoản ngân hàng từ Maria, tham chiếu 4827</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Đánh dấu đã thanh toán</string>
+    <string name="woopos_mark_order_as_paid_error_message">Không thể cập nhật đơn hàng. Thử lại.</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Không thể tải đơn hàng. Quay lại và thử lại.</string>
+    <string name="woopos_scan_to_pay_title">Scan to Pay</string>
+    <string name="woopos_scan_to_pay_subtitle">Hiển thị mã này cho khách hàng để họ thanh toán từ điện thoại.</string>
+    <string name="woopos_scan_to_pay_total">Tổng đơn hàng: %1$s</string>
+    <string name="woopos_scan_to_pay_error_message">Chúng tôi không thể chuẩn bị thanh toán. Vui lòng thử lại.</string>
+    <string name="woopos_scan_to_pay_retry">Thử lại</string>
+    <string name="woopos_scan_to_pay_cancel">Hủy</string>
+    <string name="woopos_scan_to_pay_order_note">Khách hàng đã thanh toán qua Scan to Pay</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Chọn phương thức thanh toán</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Nền mờ. Nhấn để đóng bộ chọn phương thức thanh toán.</string>
     <string name="woopos_mark_order_as_complete_total">Tổng đơn hàng: %1$s</string>
     <string name="woopos_mark_order_as_complete_confirm_button">Đánh dấu đơn hàng hoàn tất</string>
     <string name="woopos_mark_order_as_complete_error_message">Đã xảy ra lỗi. Vui lòng thử lại.</string>
@@ -4011,11 +4128,28 @@
     <string name="woopos_orders_confirm_refund_title">Hoàn tiền %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Bạn có chắc chắn muốn xử lý hoàn tiền %1$s qua %2$s không?\n\nHành động này không thể hoàn tác.</string>
     <string name="woopos_orders_yes_proceed">Có, tiếp tục</string>
+    <string name="woopos_refund_discard_changes_title">Bỏ thay đổi hoàn tiền?</string>
+    <string name="woopos_refund_discard_changes_message">Việc đổi đơn hàng sẽ bỏ các thay đổi hoàn tiền bạn đã thực hiện.</string>
+    <string name="woopos_refund_discard_changes_discard">Bỏ thay đổi</string>
+    <string name="woopos_refund_discard_changes_dialog_background_content_description">Nền hộp thoại bỏ thay đổi hoàn tiền</string>
     <string name="woopos_refund_loading_error_title">Không thể tải mặt hàng hoàn tiền</string>
     <string name="woopos_refund_creating_error_title">Không thể tạo hoàn tiền</string>
     <string name="woopos_refund_error_subtitle">Vui lòng thử lại</string>
+    <string name="woopos_refund_reader_title">Hoàn tiền thanh toán bằng thẻ</string>
+    <string name="woopos_refund_reader_preparing_title">Đang chuẩn bị đầu đọc để hoàn tiền</string>
+    <string name="woopos_refund_reader_preparing_subtitle">Đang chuẩn bị đầu đọc</string>
+    <string name="woopos_refund_reader_not_connected_title">Đầu đọc chưa kết nối</string>
+    <string name="woopos_refund_reader_not_connected_subtitle">Để xử lý khoản hoàn tiền này, vui lòng kết nối đầu đọc.</string>
+    <string name="woopos_refund_reader_not_connected_cta_button_label">Kết nối với đầu đọc</string>
+    <string name="woopos_refund_reader_ready_title">Sẵn sàng hoàn tiền</string>
+    <string name="woopos_refund_reader_ready_subtitle">Chạm, cắm hoặc quẹt thẻ để hoàn tiền</string>
+    <string name="woopos_refund_reader_processing_title">Đang xử lý hoàn tiền</string>
+    <string name="woopos_refund_notifying_store_title">Đang thông báo cho cửa hàng</string>
+    <string name="woopos_refund_notifying_store_subtitle">Đang áp dụng hoàn tiền cho đơn hàng</string>
+    <string name="woopos_refund_back_to_order_button">Quay lại đơn hàng</string>
     <string name="woopos_orders_refund_complete">Hoàn tiền hoàn tất</string>
     <string name="woopos_orders_refund_success_message">Bạn đã hoàn tiền %1$s qua %2$s.</string>
+    <string name="woopos_orders_details_refresh_error">Không thể làm mới đơn hàng. Vui lòng kiểm tra kết nối của bạn rồi thử lại.</string>
     <string name="woopos_orders_details_placeholder_title">Chọn một đơn hàng</string>
     <string name="woopos_orders_details_placeholder_message">Chọn một đơn hàng từ danh sách để xem chi tiết.</string>
     <string name="woopos_orders_details_products_title">Sản phẩm</string>
@@ -4399,6 +4533,7 @@
     <string name="woo_shipping_labels_customs_product_details_title">Chi Tiết Sản Phẩm</string>
     <string name="woo_shipping_labels_customs_product_details_description">Mô tả</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Thiếu Mô Tả</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Mô tả phải có %1$s ký tự trở xuống.</string>
     <string name="woo_shipping_labels_customs_product_details_tariff">Số thuế quan HS</string>
     <string name="woo_shipping_labels_customs_product_details_tariff_invalid">Số thuế quan phải có độ dài từ 6 đến 12 chữ số</string>
     <string name="woo_shipping_labels_customs_product_details_value_per_unit">Giá trị mỗi đơn vị</string>
@@ -4803,4 +4938,9 @@
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Xác nhận chưa có sẵn. Vui lòng thử lại từ cuộc trò chuyện.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Trợ lý không thể hoàn thành sau nhiều bước.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Đã xảy ra lỗi trong khi trợ lý đang làm việc.</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Cập nhật đơn hàng #%1$s (%2$s)</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Cập nhật đơn hàng #%1$s (%2$s): gửi email cho khách hàng</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Khách vãng lai</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Khách hàng #%1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Cập nhật biến thể %1$s (#%2$s) cho sản phẩm #%3$s</string>
 </resources>
