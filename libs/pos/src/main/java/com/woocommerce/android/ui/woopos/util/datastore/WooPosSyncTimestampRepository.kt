@@ -72,15 +72,16 @@ class WooPosSyncTimestampRepository @Inject constructor(
     }
 
     suspend fun clearAllSyncTimestamps() {
-        val productsKey = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
-        val variationsKey = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
-        val fullSyncKey = buildSiteSpecificKey(FULL_SYNC_TIMESTAMP_KEY)
+        val keys = listOfNotNull(
+            buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY),
+            buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY),
+            buildSiteSpecificKey(FULL_SYNC_TIMESTAMP_KEY),
+            buildSiteSpecificKey(CATALOG_FILE_BLOCKED_KEY),
+        )
 
-        if (productsKey != null && variationsKey != null && fullSyncKey != null) {
+        if (keys.isNotEmpty()) {
             dataStore.edit { preferences ->
-                preferences.remove(productsKey)
-                preferences.remove(variationsKey)
-                preferences.remove(fullSyncKey)
+                keys.forEach { preferences.remove(it) }
             }
         }
     }
@@ -103,6 +104,28 @@ class WooPosSyncTimestampRepository @Inject constructor(
         }
     }
 
+    suspend fun setCatalogFileBlocked(blocked: Boolean) {
+        val key = buildSiteSpecificKey(CATALOG_FILE_BLOCKED_KEY)
+        if (key != null) {
+            dataStore.edit { preferences ->
+                if (blocked) {
+                    preferences[key] = true.toString()
+                } else {
+                    preferences.remove(key)
+                }
+            }
+        }
+    }
+
+    suspend fun isCatalogFileBlocked(): Boolean {
+        val key = buildSiteSpecificKey(CATALOG_FILE_BLOCKED_KEY)
+        return if (key != null) {
+            dataStore.data.first()[key]?.toBoolean() == true
+        } else {
+            false
+        }
+    }
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String>? {
         val site = selectedSite.getOrNull()
         return if (site != null) {
@@ -117,5 +140,6 @@ class WooPosSyncTimestampRepository @Inject constructor(
         const val PRODUCTS_TIMESTAMP_KEY = "pos_products_sync_timestamp"
         const val VARIATIONS_TIMESTAMP_KEY = "pos_variations_sync_timestamp"
         const val FULL_SYNC_TIMESTAMP_KEY = "pos_full_sync_completed_timestamp"
+        const val CATALOG_FILE_BLOCKED_KEY = "pos_catalog_file_blocked"
     }
 }
