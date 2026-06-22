@@ -294,10 +294,66 @@ class WooPosRefundViewModelTest {
             assertThat(contentState.currency).isEqualTo("USD")
             assertThat(contentState.refundableItems).hasSize(2)
             assertThat(contentState.itemsCount).isEqualTo(2)
-            assertThat(contentState.subtotal).isEqualByComparingTo(BigDecimal("40.00"))
-            assertThat(contentState.taxes).isEqualByComparingTo(BigDecimal("4.00"))
-            assertThat(contentState.total).isEqualByComparingTo(BigDecimal("44.00"))
+            assertThat(contentState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            // Totals are not computed on the selection step; they are resolved on Continue.
+            assertThat(contentState.subtotal).isEqualByComparingTo(BigDecimal.ZERO)
+            assertThat(contentState.taxes).isEqualByComparingTo(BigDecimal.ZERO)
+            assertThat(contentState.total).isEqualByComparingTo(BigDecimal.ZERO)
         }
+
+    @Test
+    fun `given v4 unavailable, when continue clicked, then store settings fetched and totals calculated locally`() =
+        runTest {
+            // GIVEN — v4 is known unavailable for the site, so the local (v3) path is used.
+            v4RefundAvailabilityCache.markV4Unavailable(testSite.siteId)
+            val refundableItems = listOf(
+                testRefundableItem.copy(rowIndex = 0),
+                testRefundableItem.copy(rowIndex = 1)
+            )
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // THEN — settings were fetched lazily and the totals computed locally.
+            verify(wooCommerceStore).fetchSiteSettingsTaxRoundAtSubtotal(testSite)
+            verify(refundPreview, never()).invoke(any(), any())
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+            assertThat(content.subtotal).isEqualByComparingTo(BigDecimal("40.00"))
+            assertThat(content.taxes).isEqualByComparingTo(BigDecimal("4.00"))
+            assertThat(content.total).isEqualByComparingTo(BigDecimal("44.00"))
+        }
+
+    @Test
+    fun `given v4 available, when continue clicked, then store settings are not fetched`() = runTest {
+        // GIVEN
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+        whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+        whenever(refundPreview.invoke(any(), any())).thenReturn(
+            WooPosRefundPreview.Result.ServerCalculated(
+                refundPreview(subtotal = "55.00", tax = "5.00", total = "60.00", maxRefundable = "60.00")
+            )
+        )
+        viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+        advanceUntilIdle()
+
+        // THEN — no redundant settings calls when the server provides the totals.
+        verify(wooCommerceStore, never()).fetchSiteSettingsTaxRoundAtSubtotal(any())
+        verify(wooCommerceStore, never()).fetchSiteGeneralSettings(any())
+    }
 
     @Test
     fun `given v4 available, when continue clicked, then review shows server-calculated totals`() = runTest {
@@ -545,6 +601,8 @@ class WooPosRefundViewModelTest {
                 )
             )
 
+            // v4 unavailable so totals are calculated locally on Continue.
+            v4RefundAvailabilityCache.markV4Unavailable(testSite.siteId)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithMultipleItems))
             whenever(
                 retrieveOrderRefunds.invoke(eq(orderWithMultipleItems), any())
@@ -554,6 +612,8 @@ class WooPosRefundViewModelTest {
             // WHEN
             viewModel = createViewModel()
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
 
             // THEN
@@ -1032,7 +1092,9 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
-            // WHEN
+            // WHEN — Continue resolves the totals (locally, via the v3 fallback) before confirming.
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
@@ -1072,6 +1134,8 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(testReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
@@ -1142,7 +1206,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given all items selected initially, when item deselected, then selectedItemIds updated and totals recalculated`() =
+    fun `given all items selected initially, when item deselected, then selectedItemIds and count updated`() =
         runTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
@@ -1183,9 +1247,7 @@ class WooPosRefundViewModelTest {
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
-            assertThat(initialState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
-            assertThat(initialState.taxes).isEqualByComparingTo(BigDecimal("3.00"))
-            assertThat(initialState.total).isEqualByComparingTo(BigDecimal("33.00"))
+            assertThat(initialState.itemsCount).isEqualTo(2)
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
@@ -1193,13 +1255,12 @@ class WooPosRefundViewModelTest {
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
             assertThat(updatedState.selectedItemIds).containsExactly(item2.uniqueId)
-            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
-            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("2.00"))
-            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("22.00"))
+            assertThat(updatedState.itemsCount).isEqualTo(1)
+            assertThat(updatedState.allItemsSelected).isFalse()
         }
 
     @Test
-    fun `given item not selected, when item selected, then selectedItemIds updated and totals recalculated`() =
+    fun `given item not selected, when item selected, then selectedItemIds and count updated`() =
         runTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
@@ -1242,7 +1303,7 @@ class WooPosRefundViewModelTest {
 
             val stateBeforeSelect = viewModel.state.value as WooPosRefundState.Content
             assertThat(stateBeforeSelect.selectedItemIds).containsExactly(item2.uniqueId)
-            assertThat(stateBeforeSelect.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
+            assertThat(stateBeforeSelect.itemsCount).isEqualTo(1)
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
@@ -1250,9 +1311,8 @@ class WooPosRefundViewModelTest {
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
             assertThat(updatedState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
-            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
-            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("3.00"))
-            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("33.00"))
+            assertThat(updatedState.itemsCount).isEqualTo(2)
+            assertThat(updatedState.allItemsSelected).isTrue()
         }
 
     @Test
@@ -1311,7 +1371,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given no items selected, when select all toggled, then all items selected and totals recalculated`() =
+    fun `given no items selected, when select all toggled, then all items selected`() =
         runTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
@@ -1362,9 +1422,7 @@ class WooPosRefundViewModelTest {
             val updatedState = viewModel.state.value as WooPosRefundState.Content
             assertThat(updatedState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
             assertThat(updatedState.itemsCount).isEqualTo(2)
-            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
-            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("3.00"))
-            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("33.00"))
+            assertThat(updatedState.allItemsSelected).isTrue()
         }
 
     @Test
@@ -1579,7 +1637,6 @@ class WooPosRefundViewModelTest {
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.selectedItemIds).hasSize(3)
-            assertThat(initialState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1Unit2.uniqueId))
@@ -1591,9 +1648,6 @@ class WooPosRefundViewModelTest {
                 item1Unit3.uniqueId
             )
             assertThat(updatedState.itemsCount).isEqualTo(2)
-            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
-            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("2.00"))
-            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("22.00"))
         }
 
     @Suppress("LongMethod")
@@ -1675,7 +1729,9 @@ class WooPosRefundViewModelTest {
             val stateBeforeConfirm = viewModel.state.value as WooPosRefundState.Content
             assertThat(stateBeforeConfirm.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item3.uniqueId)
 
-            // WHEN
+            // WHEN — Continue resolves the totals (locally, via the v3 fallback) before confirming.
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 

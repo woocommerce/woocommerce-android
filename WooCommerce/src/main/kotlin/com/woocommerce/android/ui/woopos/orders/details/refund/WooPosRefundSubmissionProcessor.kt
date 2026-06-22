@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
@@ -42,7 +41,6 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
-    private val v4RefundAvailabilityCache: WooPosV4RefundAvailabilityCache,
 ) {
     @Suppress("TooGenericExceptionCaught")
     fun submit(request: WooPosRefundSubmissionRequest): Flow<WooPosRefundSubmissionState> = channelFlow {
@@ -230,6 +228,8 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
         shouldAutoRefund: Boolean,
         retryBackendNotificationOnly: Boolean,
     ): WooResult<WCRefundModel> {
+        // v4 availability was already established by the preview probe earlier in the same flow, so
+        // the simplified create can be trusted here. The v3 path is used when v4 is unavailable.
         val v4LineItems = request.v4LineItems
         if (v4LineItems != null) {
             WooLog.i(
@@ -240,23 +240,13 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                     "autoRefund=$shouldAutoRefund, " +
                     "backendOnlyRetry=$retryBackendNotificationOnly"
             )
-            val v4Result = refundStore.createSimplifiedItemsRefund(
+            return refundStore.createSimplifiedItemsRefund(
                 site = selectedSite.get(),
                 orderId = request.orderId,
                 reason = request.refundReason,
                 autoRefund = shouldAutoRefund,
                 items = v4LineItems,
             )
-            // Only fall back to v3 when the v4 route is genuinely missing (404 rest_no_route); other
-            // errors are real failures and must surface to the user.
-            if (!(v4Result.isError && v4Result.error.type == WooErrorType.API_NOT_FOUND)) {
-                return v4Result
-            }
-            WooLog.w(
-                WooLog.T.POS,
-                "WooPosRefund: v4 create not available; falling back to v3 orderId=${request.orderId}"
-            )
-            v4RefundAvailabilityCache.markV4Unavailable(selectedSite.get().siteId)
         }
 
         WooLog.i(
