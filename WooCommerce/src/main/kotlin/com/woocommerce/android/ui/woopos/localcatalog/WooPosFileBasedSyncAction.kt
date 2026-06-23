@@ -33,6 +33,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
+        private const val MAX_PROGRESS_PERCENT = 100f
     }
     sealed class SyncState {
         data object Preparing : SyncState()
@@ -176,6 +177,15 @@ class WooPosFileBasedSyncAction @Inject constructor(
             "WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
                 "out of ${result.total} items"
         )
+        val progress = result.progress
+        if (progress != null && progress > MAX_PROGRESS_PERCENT) {
+            logger.e("WooPosFileBasedSyncAction: Catalog generation reported invalid progress: $progress%")
+            return WooPosFileBasedSyncResult.Failure(
+                PosLocalCatalogSyncResult.Failure.InvalidResponse(
+                    error = "Catalog generation reported invalid progress ($progress%)."
+                )
+            )
+        }
         return when (result.state) {
             WooPosGenerateCatalogState.COMPLETED -> {
                 if (result.url != null) {
