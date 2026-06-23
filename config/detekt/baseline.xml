@@ -120,13 +120,9 @@
     <ID>NoWildcardImports:AddOrderNoteViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>NoWildcardImports:AddonTestFixtures.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*</ID>
     <ID>NoWildcardImports:AddonsExt.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.*</ID>
-    <ID>NoWildcardImports:CreateShippingLabelEvent.kt$import com.woocommerce.android.model.*</ID>
-    <ID>NoWildcardImports:CreateShippingLabelTestUtils.kt$import com.woocommerce.android.model.*</ID>
-    <ID>NoWildcardImports:EditShippingLabelPaymentViewModelTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.*</ID>
     <ID>NoWildcardImports:FeatureFeedbackSettingsTest.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
     <ID>NoWildcardImports:InfiniteListHandler.kt$import androidx.compose.runtime.*</ID>
     <ID>NoWildcardImports:MarkAllReviewsAsSeen.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>NoWildcardImports:MoveShippingItemViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*</ID>
     <ID>NoWildcardImports:NumberRounding.kt$import kotlin.math.*</ID>
     <ID>NoWildcardImports:PaymentManager.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
     <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
@@ -137,18 +133,10 @@
     <ID>NoWildcardImports:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>NoWildcardImports:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>NoWildcardImports:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachine.kt$import com.woocommerce.android.model.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.model.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
-    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
     <ID>PrintStackTrace:TestIdler.kt$TestIdler$e</ID>
     <ID>ReturnCount:AddOrderShipmentTrackingViewModel.kt$AddOrderShipmentTrackingViewModel$fun onAddButtonTapped()</ID>
     <ID>ReturnCount:ChromeCustomTabUtils.kt$ChromeCustomTabUtils$private fun canUseCustomTabs(context: Context): Boolean</ID>
     <ID>ReturnCount:DrawableMatcher.kt$DrawableMatcher$override fun matchesSafely(item: View?): Boolean</ID>
-    <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
     <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
     <ID>ReturnCount:OrderListAdapter.kt$&lt;no name provided&gt;$override fun areItemsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$fun hasAttributeChanges(updatedProduct: Product?): Boolean</ID>
@@ -1785,17 +1773,6 @@
     <ID>UnitTestNamingRule:ShippingLabelOnboardingRepositoryTest.kt$ShippingLabelOnboardingRepositoryTest$@Test fun `Given WC shipping not ready, when order is eligible for shipping label, then show shipping banner is true`()</ID>
     <ID>UnitTestNamingRule:ShippingLabelOnboardingRepositoryTest.kt$ShippingLabelOnboardingRepositoryTest$@Test fun `Given WC shipping not ready, when order is not in USD, then show shipping banner is false`()</ID>
     <ID>UnitTestNamingRule:ShippingLabelOnboardingRepositoryTest.kt$ShippingLabelOnboardingRepositoryTest$@Test fun `Given WC shipping not ready, when site is not in the US, then show shipping banner is false`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelOnboardingRepositoryTest.kt$ShippingLabelOnboardingRepositoryTest$@Test fun `Given both WC legacy and shipping plugins are not ready, then isShippingPluginReady is false`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRefundViewModelTest.kt$ShippingLabelRefundViewModelTest$@Test fun `Displays the refund shipping label view correctly`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRefundViewModelTest.kt$ShippingLabelRefundViewModelTest$@Test fun `Refunds the shipping label correctly`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRefundViewModelTest.kt$ShippingLabelRefundViewModelTest$@Test fun `Refunds the shipping label results in an error`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRefundViewModelTest.kt$ShippingLabelRefundViewModelTest$@Test fun `disable refund if label is anonymized`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRefundViewModelTest.kt$ShippingLabelRefundViewModelTest$@Test fun `disable refund if label is older than 30 days`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRefundViewModelTest.kt$ShippingLabelRefundViewModelTest$@Test fun `enable refund if label is recent than 30 days`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelRestClientTest.kt$ShippingLabelRestClientTest$@Test fun `when purchase shipping label then pass correct source param to network client`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelsStateMachineTest.kt$ShippingLabelsStateMachineTest$@Test fun `Test successful address verification`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelsStateMachineTest.kt$ShippingLabelsStateMachineTest$@Test fun `Test the data login sequence of events after start`()</ID>
-    <ID>UnitTestNamingRule:ShippingLabelsStateMachineTest.kt$ShippingLabelsStateMachineTest$@Test fun `test show packages step`()</ID>
     <ID>UnitTestNamingRule:ShippingLineDetailsTest.kt$ShippingLineDetailsTest$@Test fun `toShippingLineDetails should return null for empty list`()</ID>
     <ID>UnitTestNamingRule:ShippingLineDetailsTest.kt$ShippingLineDetailsTest$@Test fun `toShippingLineDetails should skip shipping lines with null methodId`()</ID>
     <ID>UnitTestNamingRule:ShippingLineDetailsTest.kt$ShippingLineDetailsTest$@Test fun `toShippingLineDetails should use method title from the shipping method field`()</ID>
@@ -2460,15 +2437,11 @@
     <ID>WildcardImport:AddOrderNoteViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
     <ID>WildcardImport:AddonTestFixtures.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*</ID>
     <ID>WildcardImport:AddonsExt.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.*</ID>
-    <ID>WildcardImport:CreateShippingLabelEvent.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:CreateShippingLabelTestUtils.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:EditShippingLabelPaymentViewModelTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.*</ID>
     <ID>WildcardImport:FeatureFeedbackSettingsTest.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
     <ID>WildcardImport:InfiniteListHandler.kt$import androidx.compose.runtime.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import org.wordpress.android.fluxc.store.AccountStore.*</ID>
     <ID>WildcardImport:MarkAllReviewsAsSeen.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>WildcardImport:MoveShippingItemViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*</ID>
     <ID>WildcardImport:NumberRounding.kt$import kotlin.math.*</ID>
     <ID>WildcardImport:PaymentManager.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
@@ -2479,12 +2452,5 @@
     <ID>WildcardImport:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
-    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
   </CurrentIssues>
 </SmellBaseline>

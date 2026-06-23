@@ -149,14 +149,12 @@ class OrderFulfillFragment :
     ) {
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
-                showProductListMenuButton(false)
                 showMarkOrderCompleteButton(false) { }
                 updateProductList(
                     orderItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderFulfillFragment,
-                    onProductMenuItemClicked = { /* will be added in a separate commit */ }
                 )
             }
         }.otherwise { binding.orderDetailProductList.hide() }

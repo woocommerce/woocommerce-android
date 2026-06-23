@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.details.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,7 +35,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
-        onProductMenuItemClicked: () -> Unit,
         onViewAddonsClick: ViewAddonClickListener? = null
     ) {
         val adapter = OrderDetailProductItemListAdapter(
@@ -48,8 +46,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
         )
         updateList(
             adapter,
-            orderProductItems.size,
-            onProductMenuItemClicked
+            orderProductItems.size
         )
     }
 
@@ -58,7 +55,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
-        onProductMenuItemClicked: () -> Unit,
         onViewAddonsClick: ViewAddonClickListener? = null
     ) {
         val adapter = OrderDetailProductListAdapter(
@@ -71,15 +67,13 @@ class OrderDetailProductListView @JvmOverloads constructor(
 
         updateList(
             adapter,
-            orderItems.size,
-            onProductMenuItemClicked
+            orderItems.size
         )
     }
 
     private fun updateList(
         listAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
-        size: Int,
-        onProductMenuItemClicked: () -> Unit,
+        size: Int
     ) {
         binding.productListLblProduct.text = StringUtils.getQuantityString(
             context = context,
@@ -107,17 +101,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
             // and only processes the first click event. More details on this issue can be found here:
             // https://github.com/woocommerce/woocommerce-android/issues/2074
             isMotionEventSplittingEnabled = false
-        }
-
-        val popupMenu = PopupMenu(context, binding.productListBtnMenu)
-        popupMenu.menu.add(0, 0, 0, R.string.orderdetail_products_recreate_shipping_label_menu)
-        popupMenu.menu.findItem(0).setOnMenuItemClickListener {
-            onProductMenuItemClicked()
-            true
-        }
-
-        binding.productListBtnMenu.setOnClickListener {
-            popupMenu.show()
         }
     }
 
@@ -147,7 +130,4 @@ class OrderDetailProductListView @JvmOverloads constructor(
         binding.productListShippingLabelsNotice.setOnClickListener { onShippingLabelNoticeTapped() }
     }
 
-    fun showProductListMenuButton(isVisible: Boolean) {
-        binding.productListBtnMenu.isVisible = isVisible
-    }
 }

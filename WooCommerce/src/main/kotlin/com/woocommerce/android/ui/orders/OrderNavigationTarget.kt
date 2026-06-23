@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.math.BigDecimal
@@ -36,8 +35,7 @@ sealed class OrderNavigationTarget : Event() {
     data class AddOrderNote(val orderId: Long, val orderNumber: String) : OrderNavigationTarget()
     data class RefundShippingLabel(
         val remoteOrderId: Long,
-        val shippingLabelId: Long,
-        val isRevampWooShippingEnabled: Boolean
+        val shippingLabelId: Long
     ) : OrderNavigationTarget()
 
     data class AddOrderShipmentTracking(
@@ -51,13 +49,7 @@ sealed class OrderNavigationTarget : Event() {
         val selectedProvider: String
     ) : OrderNavigationTarget()
     object OpenTrackingBarcodeScanning : OrderNavigationTarget()
-    data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
-    data class ViewShippingLabelPaperSizes(val currentPaperSize: ShippingLabelPaperSize) : OrderNavigationTarget()
     object ViewCreateShippingLabelInfo : OrderNavigationTarget()
-    object ViewPrintShippingLabelInfo : OrderNavigationTarget()
-    object ViewShippingLabelFormatOptions : OrderNavigationTarget()
-    data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
-    data class StartShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
     data class StartWooShippingLabelCreationFlow(
         val orderId: Long,
         val shipmentId: Int? = null

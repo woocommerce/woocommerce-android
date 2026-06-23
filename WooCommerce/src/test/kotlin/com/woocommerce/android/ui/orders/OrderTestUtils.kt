@@ -6,7 +6,6 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -75,32 +74,6 @@ object OrderTestUtils {
 
     fun generateOrderStatusOptionsMappedByStatus(): Map<String, WCOrderStatusModel> =
         generateOrderStatusOptions().map { it.statusKey to it }.toMap()
-
-    fun generateShippingLabel(shippingLabelId: Long): ShippingLabel {
-        return ShippingLabel(
-            id = shippingLabelId,
-            packageName = "Package",
-            serviceName = "Service",
-            createdDate = Date(),
-            commercialInvoiceUrl = "",
-        )
-    }
-
-    fun generateShippingLabels(totalCount: Int = 5): List<ShippingLabel> {
-        val result = ArrayList<ShippingLabel>()
-        for (i in totalCount downTo 1) {
-            result.add(
-                ShippingLabel(
-                    id = i.toLong(),
-                    packageName = "Package$i",
-                    serviceName = "Service$i",
-                    createdDate = Date(),
-                    commercialInvoiceUrl = "",
-                )
-            )
-        }
-        return result
-    }
 
     fun generateItemsRefunds(
         productQuantityPairs: List<Pair<Long, Int>>

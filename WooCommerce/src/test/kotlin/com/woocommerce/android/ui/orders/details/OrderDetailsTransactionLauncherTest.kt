@@ -56,7 +56,6 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
 
         sut.onOrderFetched()
         sut.onOrderFulfillmentsFetched()
-        sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
         sut.onShipmentsFetchingCompleted()
         sut.onRefundsFetched()
@@ -75,7 +74,6 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
 
         sut.onOrderFetched()
         sut.onOrderFulfillmentsFetched()
-        sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
         sut.onRefundsFetched()
         sut.onShipmentTrackingFetchingCompleted()

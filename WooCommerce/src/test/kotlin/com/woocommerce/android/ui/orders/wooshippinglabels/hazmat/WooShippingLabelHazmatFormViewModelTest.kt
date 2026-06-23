@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.hazmat
 
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
+import com.woocommerce.android.model.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.OnHazmatCategorySelected
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

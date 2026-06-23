@@ -19,7 +19,6 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
@@ -49,7 +48,6 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.orders.wooshippinglabels.GetShipments
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -133,7 +131,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
+        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(it).shippingPluginSupport
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
@@ -166,7 +164,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         orderId = ORDER_ID,
         localSiteId = ORDER_SITE_ID,
     )
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(totalCount = 5)
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderDetailViewModel
 
@@ -179,7 +176,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isShipmentTrackingAvailable = true,
         isCreateShippingLabelButtonVisible = false,
         isProductListVisible = true,
-        isProductListMenuVisible = false,
         wcShippingBannerVisible = false,
         isRefreshing = false,
         isOrderDetailSkeletonShown = false,
@@ -248,6 +244,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(false).whenever(featureFlagRepository).isEnabled(any())
+        doReturn(flowOf(false)).whenever(shippingEligibilityDataStore).observeEligibility(any())
 
         val site = SiteModel().let {
             it.id = 1
@@ -256,6 +253,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it.name = "https://www.testname.com"
             it
         }
+        doReturn(site).whenever(selectedSite).get()
         doReturn(site).whenever(selectedSite).getIfExists()
         testBlocking {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
@@ -300,8 +298,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
 
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-
         var orderData: OrderDetailViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
@@ -335,12 +331,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             it?.let { refunds.addAll(it) }
         }
 
-        // shipping Labels
-        val shippingLabels = ArrayList<ShippingLabelModel>()
-        viewModel.shippingLabels.observeForever { shippingLabelModelList ->
-            shippingLabelModelList?.let { shippingLabels.addAll(it) }
-        }
-
         viewModel.start()
 
         assertThat(orderData).isEqualTo(expectedViewState)
@@ -353,7 +343,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         assertThat(products).isNotEmpty
         assertThat(refunds).isEmpty()
-        assertThat(shippingLabels).isEmpty()
     }
 
     @Test
@@ -371,7 +360,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
             whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
             whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
-            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
 
             // WHEN
             var detailViewState: OrderDetailViewState? = null
@@ -400,7 +388,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
             whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
             whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
-            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
 
             // WHEN
             var detailViewState: OrderDetailViewState? = null
@@ -425,7 +412,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             whenever(orderDetailRepository.getOrderNotes(any())).thenReturn(testOrderNotes)
             whenever(orderDetailRepository.getOrderShipmentTrackings(any())).thenReturn(testOrderShipmentTrackings)
             whenever(orderDetailRepository.getOrderRefunds(any())).thenReturn(emptyList())
-            whenever(orderDetailRepository.getOrderShippingLabels(any())).thenReturn(emptyList())
 
             // WHEN
             var detailViewState: OrderDetailViewState? = null
@@ -482,8 +468,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
             assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
@@ -502,7 +486,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderRefunds).whenever(orderDetailRepository).getOrderRefunds(any())
 
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
 
             viewModel.start()
 
@@ -524,8 +507,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
 
@@ -565,8 +546,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
 
@@ -588,9 +567,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
-
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
                 it?.let { refunds.addAll(it) }
@@ -605,127 +581,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             assertThat(areProductsVisible).isFalse
             assertThat(refunds).isNotEmpty
-        }
-
-    @Test
-    fun `given the legacy shipping labels, when shipping labels are available, then show products menu`() =
-        testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
-                .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            whenever(orderDetailRepository.getOrderShippingLabels(any()))
-                .doReturn(OrderTestUtils.generateShippingLabels(2))
-            whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
-
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            val shippingLabels = ArrayList<ShippingLabelModel>()
-            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
-                shippingLabelModelList?.let { shippingLabels.addAll(it) }
-            }
-
-            var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
-
-            viewModel.start()
-
-            assertThat(shippingLabels).isNotEmpty
-            assertThat(isProductListMenuVisible).isTrue
-        }
-
-    @Test
-    fun `given the legacy shipping labels, when no shipping labels are available, then hide products menu`() =
-        testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
-                .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
-            whenever(orderDetailRepository.getOrderShippingLabels(any())).doReturn(emptyList())
-
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            val shippingLabels = ArrayList<ShippingLabelModel>()
-            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
-                shippingLabelModelList?.let { shippingLabels.addAll(it) }
-            }
-
-            var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
-
-            viewModel.start()
-
-            assertThat(shippingLabels).isEmpty()
-            assertThat(isProductListMenuVisible).isFalse
-        }
-
-    @Test
-    fun `Do not display shipment tracking when shipping labels are available`() =
-        testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
-
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
-
-            var orderData: OrderDetailViewState? = null
-            viewModel.viewStateData.observeForever { _, new -> orderData = new }
-
-            val shippingLabels = ArrayList<ShippingLabelModel>()
-            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
-                shippingLabelModelList?.let { shippingLabels.addAll(it) }
-            }
-
-            viewModel.start()
-
-            assertThat(shippingLabels).isNotEmpty
-            assertThat(orderData?.isShipmentTrackingAvailable).isFalse()
-        }
-
-    @Test
-    fun `Do not display shipment tracking when order is eligible for in-person payments`() =
-        testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-            doReturn(true).whenever(paymentCollectibilityChecker).isCollectable(any(), any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
-
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-
-            val shippingLabels = ArrayList<ShippingLabelModel>()
-            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
-                shippingLabelModelList?.let { shippingLabels.addAll(it) }
-            }
-
-            var isCreateShippingLabelButtonVisible: Boolean? = null
-            var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
-            }
-
-            viewModel.start()
-
-            assertThat(shippingLabels).isEmpty()
-            assertThat(isCreateShippingLabelButtonVisible).isFalse
-            assertThat(isProductListMenuVisible).isFalse
         }
 
     @Test
@@ -801,9 +656,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
-
         var snackbar: ShowUndoSnackbar? = null
         viewModel.event.observeForever {
             if (it is ShowUndoSnackbar) snackbar = it
@@ -854,9 +706,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
-
         var newOrder: Order? = null
         viewModel.viewStateData.observeForever { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) { newOrder = it.order }
@@ -892,9 +741,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings)
             .whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
-
         var orderShipmentTrackings = emptyList<OrderShipmentTracking>()
         viewModel.shipmentTrackings.observeForever {
             it?.let { orderShipmentTrackings = it }
@@ -907,34 +753,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         verify(orderDetailRepository, times(3)).getOrderShipmentTrackings(any())
         assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
     }
-
-    @Test
-    fun `given using legacy shipping labels plugin, when order is eligible, then show shipping label creation button`() =
-        testBlocking {
-            whenever(shippingLabelOnboardingRepository.shippingPluginSupport)
-                .doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            whenever(orderDetailRepository.getOrderShippingLabels(any()))
-                .doReturn(OrderTestUtils.generateShippingLabels(2))
-            whenever(orderDetailRepository.isOrderEligibleForSLCreation(any())).doReturn(true)
-
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
-
-            var isCreateShippingLabelButtonVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-            }
-
-            viewModel.start()
-
-            assertThat(isCreateShippingLabelButtonVisible).isTrue()
-        }
 
     @Test
     fun `given using new Woo Shipping plugin, when order is eligible, then show shipments section`() = testBlocking {
@@ -950,7 +768,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new ->
             isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
         }
-        val shipments = viewModel.shippingLabels.captureValues()
+        val shipments = viewModel.wooShippingShipments.captureValues()
 
         viewModel.start()
 
@@ -976,9 +794,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-
-            verify(orderDetailRepository, never()).fetchSLCreationEligibility(any())
-            verify(orderDetailRepository, never()).isOrderEligibleForSLCreation(any())
             assertThat(isCreateShippingLabelButtonVisible).isFalse()
         }
 
@@ -990,7 +805,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
 
@@ -1022,9 +836,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-
-            verify(orderDetailRepository, never()).fetchSLCreationEligibility(any())
-            verify(orderDetailRepository, never()).isOrderEligibleForSLCreation(any())
             assertThat(isCreateShippingLabelButtonVisible).isFalse()
         }
 
@@ -1622,8 +1433,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when service plugin is installed and active, then fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+    fun `when Woo Shipping is supported, then fetch config and eligibility`() = testBlocking {
+        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -1631,34 +1442,26 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository).fetchOrderShippingLabels(any(), any())
-        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
+        verify(shippingLabelRepository).fetchConfig(any(), eq(ORDER_ID))
+        verify(shippingLabelRepository).fetchShippingEligibility(any(), eq(ORDER_ID))
+        verify(orderDetailsTransactionLauncher).onShipmentsFetchingCompleted()
+        verify(orderDetailsTransactionLauncher).onPackageCreationEligibleFetched()
     }
 
     @Test
-    fun `when service plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+    fun `when Woo Shipping is not supported, then don't fetch config and eligibility`() = testBlocking {
+        doReturn(ShippingLabelSupport.NOT_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
         viewModel.start()
 
-        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any(), any())
-        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
-    }
-
-    @Test
-    fun `when service plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.NOT_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any(), any())
-        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
+        verify(shippingLabelRepository, never()).fetchConfig(any(), any())
+        verify(shippingLabelRepository, never()).fetchShippingEligibility(any(), any())
+        verify(orderDetailsTransactionLauncher).onShipmentsFetchingCompleted()
+        verify(orderDetailsTransactionLauncher).onPackageCreationEligibleFetched()
     }
 
     @Test
@@ -1744,14 +1547,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
         viewModel.start()
 
-        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any(), any())
         verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
     }
 
@@ -2299,7 +2099,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
 
         createViewModel()
         viewModel.start()
@@ -2323,7 +2122,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
 
         createViewModel()
         viewModel.start()
@@ -2346,21 +2144,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.onCreateShippingLabelButtonTapped()
 
         assertThat(viewModel.event.value).isInstanceOf(StartWooShippingLabelCreationFlow::class.java)
-    }
-
-    @Test
-    fun `when woo shipping and tax is installed, then navigate to the legacy shipping flow`() = testBlocking {
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-
-        createViewModel()
-
-        viewModel.start()
-        viewModel.onCreateShippingLabelButtonTapped()
-
-        assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartShippingLabelCreationFlow::class.java)
     }
 
     @Test

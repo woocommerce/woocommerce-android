@@ -49,7 +49,6 @@ class OrderDetailsTransactionLauncher @Inject constructor(
         ORDER_FETCHED,
         ORDER_FULFILLMENTS_FETCHED,
         SHIPMENTS_FETCHED,
-        SHIPPING_LABEL_FETCHED,
         NOTES_FETCHED,
         REFUNDS_FETCHED,
         SHIPMENT_TRACKINGS_FETCHED,
@@ -63,8 +62,6 @@ class OrderDetailsTransactionLauncher @Inject constructor(
     fun onOrderFulfillmentsFetched() = satisfyCondition(Conditions.ORDER_FULFILLMENTS_FETCHED)
 
     fun onShipmentsFetchingCompleted() = satisfyCondition(Conditions.SHIPMENTS_FETCHED)
-
-    fun onShippingLabelFetchingCompleted() = satisfyCondition(Conditions.SHIPPING_LABEL_FETCHED)
 
     fun onNotesFetched() = satisfyCondition(Conditions.NOTES_FETCHED)
 

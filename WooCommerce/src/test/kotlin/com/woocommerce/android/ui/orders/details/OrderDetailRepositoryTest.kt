@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.model.OrderFulfillment
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.ShippingLabelMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +18,6 @@ import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,13 +26,11 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val productStore: WCProductStore = mock()
     private val refundStore: WCRefundStore = mock()
-    private val shippingLabelStore: WCShippingLabelStore = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn site
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val orderMapper: OrderMapper = mock()
-    private val shippingLabelMapper: ShippingLabelMapper = mock()
 
     private lateinit var sut: OrderDetailRepository
 
@@ -44,12 +40,10 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
             orderStore = orderStore,
             productStore = productStore,
             refundStore = refundStore,
-            shippingLabelStore = shippingLabelStore,
             selectedSite = selectedSite,
             wooCommerceStore = wooCommerceStore,
             dispatchers = coroutinesTestRule.testDispatchers,
-            orderMapper = orderMapper,
-            shippingLabelMapper = shippingLabelMapper
+            orderMapper = orderMapper
         )
     }
 

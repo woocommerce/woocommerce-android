@@ -4,7 +4,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
+import com.woocommerce.android.model.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsItemDTO
@@ -105,7 +105,7 @@ class WooShippingRatesRepository @Inject constructor(
                 restrictionComments = customsData.restrictionDescription,
                 isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
                 itn = customsData.itn,
-                hazmatCategory = hazmatSelection?.toHazmatCategory(),
+                hazmatCategory = hazmatSelection?.requestFieldValue,
                 items = customsData.items.map {
                     CustomsItemDTO(
                         productId = it.productID,
@@ -127,7 +127,7 @@ class WooShippingRatesRepository @Inject constructor(
                 height = selectedPackage.safeHeight,
                 weight = weight.toDouble(),
                 isLetter = selectedPackage.isLetter,
-                hazmatCategory = hazmatSelection?.toHazmatCategory(),
+                hazmatCategory = hazmatSelection?.requestFieldValue,
             )
         }
     }

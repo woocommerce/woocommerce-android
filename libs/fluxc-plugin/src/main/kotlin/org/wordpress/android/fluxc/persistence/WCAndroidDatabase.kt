@@ -67,8 +67,6 @@ import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.persistence.dao.RevenueStatsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
-import org.wordpress.android.fluxc.persistence.dao.ShippingLabelCreationEligibilityDao
-import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
 import org.wordpress.android.fluxc.persistence.dao.SupportChatBookmarkDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -329,8 +327,6 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val gatewaysDao: GatewaysDao
     internal abstract val newVisitorStatsDao: NewVisitorStatsDao
     internal abstract val revenueStatsDao: RevenueStatsDao
-    internal abstract val shippingLabelDao: ShippingLabelDao
-    internal abstract val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
     internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
     abstract val supportChatBookmarkDao: SupportChatBookmarkDao
     abstract val analyticsScheduledImportDao: AnalyticsScheduledImportDao

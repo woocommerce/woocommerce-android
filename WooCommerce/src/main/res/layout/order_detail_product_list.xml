@@ -25,23 +25,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
-                android:id="@+id/productList_btnMenu"
-                style="@style/Woo.ImageButton.More"
-                android:contentDescription="@string/orderdetail_products_recreate_shipping_label_menu"
-                android:scaleType="centerInside"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="visible"
-                tools:visibility="visible" />
-
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/productList_barrier"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:constraint_referenced_ids="productList_lblProduct,productList_btnMenu"
                 app:barrierDirection="bottom"
-                />
+                app:constraint_referenced_ids="productList_lblProduct" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

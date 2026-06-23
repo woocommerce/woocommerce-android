@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowStateSelector
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ViewState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,6 +39,8 @@ class AddressViewModelTest : BaseUnitTest() {
     private val newCountry = WCLocationModel(name = "Brazil", code = "BR")
     private val newState = WCLocationModel(name = "Acre", code = "AC", parentCode = "BR")
     private val newCountryWithoutStates = WCLocationModel(name = "Country without states", code = "123")
+    private val testCountry = Location(code = "US", name = "United States")
+    private val testState = AmbiguousLocation.Defined(Location(code = "CA", name = "California", parentCode = "US"))
 
     private val dataStore: WCDataStore = mock {
         on { getCountries() } doReturn listOf(newCountry, newCountryWithoutStates)
@@ -50,9 +51,18 @@ class AddressViewModelTest : BaseUnitTest() {
     private lateinit var addressViewModel: AddressViewModel
 
     private val viewStateObserver: Observer<ViewState> = mock()
-    private val shippingAddress = CreateShippingLabelTestUtils.generateAddress().copy(
+    private val shippingAddress = Address(
+        company = "Automattic",
+        firstName = "John",
+        lastName = "Doe",
+        phone = "555-1234",
         country = testCountry,
-        state = testState
+        state = testState,
+        address1 = "60 29th Street",
+        address2 = "",
+        city = "San Francisco",
+        postcode = "94110",
+        email = "john@example.com"
     )
 
     @Before

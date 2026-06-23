@@ -78,7 +78,6 @@ import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.Communicat
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoadingNotified
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
-import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
@@ -86,11 +85,8 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailWooShippingShi
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
-import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
-import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
@@ -422,9 +418,6 @@ class OrderDetailFragment :
             new.isCreateShippingLabelButtonVisible?.takeIfNotEqualTo(old?.isCreateShippingLabelButtonVisible) {
                 showShippingLabelButton(it)
             }
-            new.isProductListMenuVisible?.takeIfNotEqualTo(old?.isProductListMenuVisible) {
-                showProductListMenuButton(it)
-            }
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
             }
@@ -468,11 +461,6 @@ class OrderDetailFragment :
         }
         viewModel.wooShippingShipments.observe(viewLifecycleOwner) {
             updateWooShippingShipments(it)
-        }
-        viewModel.shippingLabels.observe(viewLifecycleOwner) {
-            lifecycleScope.launch {
-                showShippingLabels(it, viewModel.awaitOrder().currency)
-            }
         }
         viewModel.subscriptions.observe(viewLifecycleOwner) {
             showSubscriptions(it)
@@ -633,9 +621,6 @@ class OrderDetailFragment :
         handleResult<Long>(WooShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
             viewModel.onShippingLabelRefunded()
         }
-        handleResult<Boolean>(ShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
-            viewModel.onShippingLabelRefunded()
-        }
         handleResult<OrderShipmentTracking>(AddOrderShipmentTrackingFragment.KEY_ADD_SHIPMENT_TRACKING_RESULT) {
             viewModel.onNewShipmentTrackingAdded(it)
         }
@@ -653,9 +638,6 @@ class OrderDetailFragment :
         }
         handleNotice(RefundSummaryFragment.REFUND_ORDER_NOTICE_KEY) {
             viewModel.onOrderItemRefunded()
-        }
-        handleNotice(PrintShippingLabelFragment.KEY_LABEL_PURCHASED) {
-            viewModel.onShippingLabelsPurchased()
         }
     }
 
@@ -714,10 +696,6 @@ class OrderDetailFragment :
         )
     }
 
-    private fun showProductListMenuButton(isVisible: Boolean) {
-        binding.orderDetailProductList.showProductListMenuButton(isVisible)
-    }
-
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
@@ -769,7 +747,6 @@ class OrderDetailFragment :
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
-                    onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped,
                     onViewAddonsClick = viewModel::onViewOrderedAddonButtonTapped
                 )
             }
@@ -853,42 +830,6 @@ class OrderDetailFragment :
                     )
                 }
             }
-        }
-    }
-
-    private fun showShippingLabels(
-        shippingLabels: List<ShippingLabelModel>,
-        currency: String
-    ) {
-        shippingLabels.whenNotNullNorEmpty {
-            with(binding.orderDetailShippingLabelList) {
-                show()
-                updateShippingLabels(
-                    shippingLabels = shippingLabels,
-                    productImageMap = productImageMap,
-                    formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
-                    productClickListener = this@OrderDetailFragment,
-                    shippingLabelClickListener = object : OnShippingLabelClickListener {
-                        override fun onRefundRequested(shippingLabel: ShippingLabelModel) {
-                            viewModel.onRefundShippingLabelClick(shippingLabel.labelId)
-                        }
-
-                        override fun onPrintShippingLabelClicked(shippingLabel: ShippingLabelModel) {
-                            viewModel.onPrintShippingLabelClicked(shippingLabel.labelId)
-                        }
-
-                        override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel) {
-                            viewModel.onPrintCustomsFormClicked(shippingLabel)
-                        }
-
-                        override fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel) {
-                            viewModel.onViewShippingLabelClicked(shippingLabel)
-                        }
-                    }
-                )
-            }
-        }.otherwise {
-            binding.orderDetailShippingLabelList.hide()
         }
     }
 

@@ -128,15 +128,6 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone" />
 
-                    <!-- Legacy Woo Tax Shipping Labels List -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
-                        android:id="@+id/orderDetail_shippingLabelList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:contentDescription="@string/shipping_labels"
-                        android:visibility="gone" />
-
                     <!-- Payments -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView
                         android:id="@+id/orderDetail_paymentInfo"

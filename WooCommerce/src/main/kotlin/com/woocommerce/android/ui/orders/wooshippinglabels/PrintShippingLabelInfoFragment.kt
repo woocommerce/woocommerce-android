@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.shippinglabels
+package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.os.Bundle
 import android.view.View

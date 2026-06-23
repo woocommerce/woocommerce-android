@@ -4,9 +4,7 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.ShippingLabel
-import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
+import com.woocommerce.android.model.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper.Companion.CARRIER_DHL_EXPRESS_KEY
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -101,23 +99,4 @@ enum class ShippingLabelStatus {
 
     @SerializedName("ANONYMIZED")
     ANONYMIZED
-}
-
-/**
- * This fill ShippingLabelModel with products
- *
- * The [ShippingLabelModel.productIds] field is only available from the API after WCS 1.24.1 or in the new Woo Shipping
- * plugin.
- * Adding a check in this method to fetch products by productIds only if it is available.
- * Otherwise default to using [ShippingLabel.productNames]
- */
-fun List<ShippingLabelModel>.fillProducts(products: List<Order.Item>): List<ShippingLabelModel> = map { shippingLabel ->
-    val products = if (shippingLabel.productIds.isNullOrEmpty()) {
-        // This case can be removed when the old shipping label flow is removed from the codebase since productIds
-        // will always be available in the new flow.
-        products.filter { it.name in shippingLabel.productNames }
-    } else {
-        products.filter { it.uniqueId in shippingLabel.productIds }
-    }
-    shippingLabel.copy(products = products)
 }

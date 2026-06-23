@@ -61,7 +61,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         totalCount = 5,
         localSiteId = ORDER_SITE_ID,
     )
-    private val orderShippingLabels = OrderTestUtils.generateShippingLabels(5)
     private val testOrderRefunds = OrderTestUtils.generateRefunds(1)
     private lateinit var viewModel: OrderFulfillViewModel
 
@@ -188,19 +187,6 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(products).isEmpty()
-        }
-
-    @Test
-    fun `Do not display shipment tracking when shipping labels are available`() =
-        testBlocking {
-            doReturn(order).whenever(repository).getOrderById(any())
-            doReturn(orderShippingLabels).whenever(repository).getOrderShippingLabels(any())
-
-            var orderData: ViewState? = null
-            viewModel.viewStateData.observeForever { _, new -> orderData = new }
-
-            viewModel.start()
-            assertThat(orderData?.isShipmentTrackingAvailable).isFalse()
         }
 
     @Test

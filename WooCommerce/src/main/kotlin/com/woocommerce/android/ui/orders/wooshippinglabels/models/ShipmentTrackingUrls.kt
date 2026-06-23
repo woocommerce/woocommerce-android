@@ -1,8 +1,7 @@
-package com.woocommerce.android.ui.orders.shippinglabels
+package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
 /**
- * Maps the shipping carriers with the corresponding tracking urls since it is currently not possible
- * from the API to fetch tracking urls for a shipment without the Shipment Tracking plugin.
+ * Maps shipping carriers to tracking URLs when the Shipment Tracking plugin is unavailable.
  */
 enum class ShipmentTrackingUrls(val trackingUrl: String) {
     USPS("https://tools.usps.com/go/TrackConfirmAction.action?tLabels=%s"),

@@ -378,7 +378,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED,
 
     // -- Shipping Labels
-    SHIPPING_LABEL_API_REQUEST,
     SHIPPING_LABEL_PRINT_REQUESTED,
     SHIPPING_LABEL_REFUND_REQUESTED,
     WCS_CREATE_SHIPPING_LABEL_FORM_SHOWN,
@@ -408,7 +407,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     SHIPPING_LABEL_ADD_PACKAGE_TAPPED,
     SHIPPING_LABEL_PACKAGE_ADDED_SUCCESSFULLY,
     SHIPPING_LABEL_ADD_PACKAGE_FAILED,
-    SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
 
     // -- Card Present Payments - onboarding
     CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,

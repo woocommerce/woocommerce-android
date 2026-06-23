@@ -16,7 +16,6 @@ data class OrderDetailViewState(
     val refreshedProductId: Long? = null,
     val isCreateShippingLabelButtonVisible: Boolean? = null,
     val isProductListVisible: Boolean? = null,
-    val isProductListMenuVisible: Boolean? = null,
     val wcShippingBannerVisible: Boolean? = null,
     val isWcShippingBannerEnabled: Boolean = false,
     val isAIThankYouNoteButtonShown: Boolean = false,
