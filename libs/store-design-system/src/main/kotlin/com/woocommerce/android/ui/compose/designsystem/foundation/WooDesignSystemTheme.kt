@@ -51,6 +51,7 @@ internal fun ProvideWooDesignSystemFoundation(
         LocalWooSpacing provides foundation.spacing,
         LocalWooPadding provides foundation.padding,
         LocalWooRadius provides foundation.radius,
+        LocalWooIconSize provides foundation.iconSize,
     ) {
         content()
     }
@@ -66,4 +67,8 @@ internal val LocalWooPadding = staticCompositionLocalOf<WooPadding> {
 
 internal val LocalWooRadius = staticCompositionLocalOf<WooRadius> {
     error("WooTheme.radius is not available. Wrap content in WooDesignSystemTheme.")
+}
+
+internal val LocalWooIconSize = staticCompositionLocalOf<WooIconSize> {
+    error("WooTheme.iconSize is not available. Wrap content in WooDesignSystemTheme.")
 }

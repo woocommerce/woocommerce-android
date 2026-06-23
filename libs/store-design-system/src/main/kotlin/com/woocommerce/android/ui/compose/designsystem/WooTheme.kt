@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.compose.designsystem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooColors
+import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooIconSize
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooPadding
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooRadius
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooSpacing
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooText
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooIconSize
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooPadding
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooRadius
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooSpacing
@@ -38,4 +40,9 @@ object WooTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalWooRadius.current
+
+    val iconSize: WooIconSize
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalWooIconSize.current
 }

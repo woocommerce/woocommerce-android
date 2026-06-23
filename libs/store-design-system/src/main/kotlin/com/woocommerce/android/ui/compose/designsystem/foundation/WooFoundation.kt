@@ -11,6 +11,7 @@ data class WooFoundation(
     val spacing: WooSpacing,
     val padding: WooPadding,
     val radius: WooRadius,
+    val iconSize: WooIconSize,
 )
 
 object WooFoundationDefaults {
@@ -19,6 +20,7 @@ object WooFoundationDefaults {
     val spacing: WooSpacing = DefaultWooSpacing
     val padding: WooPadding = DefaultWooPadding
     val radius: WooRadius = DefaultWooRadius
+    val iconSize: WooIconSize = DefaultWooIconSize
 
     @Composable
     fun foundation(useDarkTheme: Boolean = isSystemInDarkTheme()): WooFoundation = WooFoundation(
@@ -27,6 +29,7 @@ object WooFoundationDefaults {
         spacing = spacing,
         padding = padding,
         radius = radius,
+        iconSize = iconSize,
     )
 
     fun colors(useDarkTheme: Boolean): WooColors = wooColors(useDarkTheme = useDarkTheme)

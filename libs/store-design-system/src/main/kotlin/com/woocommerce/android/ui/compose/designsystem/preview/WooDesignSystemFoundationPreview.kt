@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -64,7 +65,8 @@ private fun FoundationPreviewContent() {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(spacing.space5),
+            .padding(spacing.space5)
+            .safeDrawingPadding(),
         verticalArrangement = Arrangement.spacedBy(spacing.space6),
     ) {
         ColorFoundationSection()
@@ -72,6 +74,7 @@ private fun FoundationPreviewContent() {
         SpacingAndPaddingFoundationSection()
         RadiusFoundationSection()
         StrokeFoundationSection()
+        IconSizeFoundationSection()
         OmittedFoundationSection()
     }
 }
@@ -351,13 +354,27 @@ private fun StrokeSample(label: String, stroke: Dp) {
 }
 
 @Composable
+private fun IconSizeFoundationSection() {
+    val iconSize = WooTheme.iconSize
+
+    FoundationSection(title = "Icon Size") {
+        ScaleRows(
+            prefix = "size",
+            values = listOf(
+                "14" to iconSize.size14,
+                "16" to iconSize.size16,
+                "18" to iconSize.size18,
+                "20" to iconSize.size20,
+                "24" to iconSize.size24,
+                "32" to iconSize.size32,
+            ),
+        )
+    }
+}
+
+@Composable
 private fun OmittedFoundationSection() {
     FoundationSection(title = "Omitted In PR2") {
-        Text(
-            text = "Icon sizing remains probable/internal until the generic size source is accepted.",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodySmall,
-        )
         Text(
             text = "Elevation, minimum touch, and state-layer alpha primitives remain unsourced.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
