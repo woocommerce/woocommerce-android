@@ -35,7 +35,8 @@ class WooNetwork @Inject constructor(
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
     private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler,
-    private val unknownBlogListener: Optional<UnknownBlogListener>
+    private val unknownBlogListener: Optional<UnknownBlogListener>,
+    private val invalidSignatureListener: Optional<InvalidSignatureListener>
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -126,12 +127,26 @@ class WooNetwork @Inject constructor(
             }
         }
         notifyIfUnknownBlog(site, response)
+        notifyInvalidSignatureListener(site, response)
         return response
     }
 
     private fun <T : Any> notifyIfUnknownBlog(site: SiteModel, response: WPAPIResponse<T>) {
         if (response is WPAPIResponse.Error && response.error.errorCode == UNKNOWN_BLOG_ERROR_CODE) {
             unknownBlogListener.ifPresent { it.onUnknownBlog(site.siteId) }
+        }
+    }
+
+    private fun <T : Any> notifyInvalidSignatureListener(site: SiteModel, response: WPAPIResponse<T>) {
+        val listener = invalidSignatureListener.orElse(null) ?: return
+        when (response) {
+            is WPAPIResponse.Error -> {
+                if (response.error.errorCode == WooError.REST_INVALID_SIGNATURE_CODE) {
+                    listener.onInvalidSignatureDetected(site)
+                }
+            }
+
+            is WPAPIResponse.Success -> listener.onSuccessfulConnection(site)
         }
     }
 
