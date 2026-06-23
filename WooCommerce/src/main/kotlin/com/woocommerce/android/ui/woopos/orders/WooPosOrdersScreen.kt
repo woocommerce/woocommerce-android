@@ -661,8 +661,6 @@ private fun OrdersListWithDetails(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     if (detailPaneIssueRefundOrderId != null) {
-        // The refund flow is presented full screen (covering the orders list) from the very first
-        // step, mirroring the rest of the flow — not constrained to the detail pane.
         WooPosIssueRefundScreen(
             orderId = detailPaneIssueRefundOrderId,
             onNavigationEvent = onNavigationEvent,
