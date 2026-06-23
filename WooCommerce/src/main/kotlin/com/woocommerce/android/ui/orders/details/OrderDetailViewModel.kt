@@ -812,7 +812,11 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun loadShipmentTracking(wooShippingShipments: ListInfo<ShipmentUIModel>): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(navArgs.orderId)
-        return if (!appPrefs.isTrackingExtensionAvailable() || wooShippingShipments.isVisible || hasVirtualProductsOnly()) {
+        return if (
+            !appPrefs.isTrackingExtensionAvailable() ||
+            wooShippingShipments.isVisible ||
+            hasVirtualProductsOnly()
+        ) {
             ListInfo(isVisible = false)
         } else {
             ListInfo(list = trackingList)

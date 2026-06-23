@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.model.ShippingLabelHazmatCategory
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsItemDTO

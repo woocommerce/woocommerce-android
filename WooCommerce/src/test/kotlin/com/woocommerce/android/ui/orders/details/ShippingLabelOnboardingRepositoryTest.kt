@@ -109,7 +109,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when install WC Shipping banner is dismissed, then show shipping banner is false`() = testBlocking {
+    fun `given WC shipping not ready, when install WC Shipping banner is dismissed, then show shipping banner is false`() = testBlocking {
         givenStoreCountryCode(SUPPORTED_WC_SHIPPING_COUNTRY)
         givenWcShippingBannerIsDismissed(dismissed = true)
 
@@ -119,7 +119,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping is ready, then isShippingPluginReady is true`() {
+    fun `given WC shipping is ready, when checking shipping plugin support, then isShippingPluginReady is true`() {
         // Given
         givenWCShippingPlugin(installed = true, active = true)
 
@@ -131,7 +131,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping is ready, then shippingPluginSupport uses WC Shipping`() {
+    fun `given WC shipping is ready, when checking shipping plugin support, then shippingPluginSupport uses WC Shipping`() {
         // Given
         givenWCShippingPlugin(installed = true, active = true)
 
@@ -144,7 +144,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping is not ready, then isShippingPluginReady is false`() {
+    fun `given WC shipping is not ready, when checking shipping plugin support, then isShippingPluginReady is false`() {
         // Given
         givenWCShippingPlugin(installed = false, active = false)
 
