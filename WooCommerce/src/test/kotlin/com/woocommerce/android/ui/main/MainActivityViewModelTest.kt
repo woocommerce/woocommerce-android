@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
+import com.woocommerce.android.network.StoreConnectionErrorMonitor
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.WooNotificationType
@@ -41,6 +42,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -81,8 +83,14 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: MainActivityViewModel
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { observe() } doReturn flowOf<SiteModel?>(null)
+    }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val invalidSignatureFlow = MutableStateFlow<Long?>(null)
+    private val storeConnectionErrorMonitor: StoreConnectionErrorMonitor = mock {
+        on { invalidSignatureDetected } doReturn invalidSignatureFlow
+    }
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -723,12 +731,96 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_DENIED)
     }
 
+    @Test
+    fun `given store has invalid signature, when it is detected, then show the connection error dialog`() =
+        testBlocking {
+            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { siteId = 42L }))
+            createViewModel()
+            var shown: Boolean? = null
+            viewModel.showStoreConnectionErrorDialog.observeForever { shown = it }
+
+            invalidSignatureFlow.value = 42L
+            advanceUntilIdle()
+
+            assertThat(shown).isTrue()
+        }
+
+    @Test
+    fun `given dialog is shown, when the error resolves, then hide the dialog`() = testBlocking {
+        whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { siteId = 42L }))
+        createViewModel()
+        var shown: Boolean? = null
+        viewModel.showStoreConnectionErrorDialog.observeForever { shown = it }
+
+        invalidSignatureFlow.value = 42L
+        advanceUntilIdle()
+        invalidSignatureFlow.value = null
+        advanceUntilIdle()
+
+        assertThat(shown).isFalse()
+    }
+
+    @Test
+    fun `given dialog is shown, when cancelled, then hide the dialog`() = testBlocking {
+        whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { siteId = 42L }))
+        createViewModel()
+        var shown: Boolean? = null
+        viewModel.showStoreConnectionErrorDialog.observeForever { shown = it }
+
+        invalidSignatureFlow.value = 42L
+        advanceUntilIdle()
+        viewModel.onStoreConnectionErrorDismissed()
+        advanceUntilIdle()
+
+        assertThat(shown).isFalse()
+    }
+
+    @Test
+    fun `given dialog was cancelled, when app returns to foreground and store still unreachable, then show again`() =
+        testBlocking {
+            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { siteId = 42L }))
+            createViewModel()
+            var shown: Boolean? = null
+            viewModel.showStoreConnectionErrorDialog.observeForever { shown = it }
+
+            invalidSignatureFlow.value = 42L
+            advanceUntilIdle()
+            viewModel.onStoreConnectionErrorDismissed()
+            advanceUntilIdle()
+            viewModel.onAppForegrounded()
+            advanceUntilIdle()
+
+            assertThat(shown).isTrue()
+        }
+
+    @Test
+    fun `given dialog is shown, when contact support is tapped, then keep dialog and emit support event`() =
+        testBlocking {
+            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { siteId = 42L }))
+            createViewModel()
+            var shown: Boolean? = null
+            viewModel.showStoreConnectionErrorDialog.observeForever { shown = it }
+            var event: MainActivityViewModel.ContactSupportForStoreConnection? = null
+            viewModel.event.observeForever {
+                if (it is MainActivityViewModel.ContactSupportForStoreConnection) event = it
+            }
+
+            invalidSignatureFlow.value = 42L
+            advanceUntilIdle()
+            viewModel.onStoreConnectionErrorContactSupportClicked()
+            advanceUntilIdle()
+
+            assertThat(shown).isTrue()
+            assertThat(event).isEqualTo(MainActivityViewModel.ContactSupportForStoreConnection)
+        }
+
     private fun createViewModel() {
         viewModel = spy(
             MainActivityViewModel(
                 savedState = savedStateHandle,
                 siteStore = siteStore,
                 selectedSite = selectedSite,
+                storeConnectionErrorMonitor = storeConnectionErrorMonitor,
                 notificationHandler = notificationMessageHandler,
                 featureAnnouncementRepository = featureAnnouncementRepository,
                 buildConfigWrapper = buildConfigWrapper,

@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.network.StoreConnectionErrorMonitor
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.WooNotificationType
@@ -55,6 +56,7 @@ class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
+    private val storeConnectionErrorMonitor: StoreConnectionErrorMonitor,
     private val notificationHandler: NotificationMessageHandler,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
@@ -93,6 +95,59 @@ class MainActivityViewModel @Inject constructor(
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
     val isUserAgeRangeEligible = ageEligibilityChecker.ageEligibilityState.asLiveData()
+
+    // Snoozes the dialog when the merchant taps Dismiss. Reset when the app returns to the foreground
+    // (see [onAppForegrounded]) so a still-unreachable store reminds the merchant again next session.
+    private val connectionErrorSnoozed = MutableStateFlow(false)
+    private val _showStoreConnectionErrorDialog = MutableStateFlow(false)
+    val showStoreConnectionErrorDialog = _showStoreConnectionErrorDialog.asLiveData()
+
+    init {
+        observeStoreConnectionError()
+    }
+
+    private fun observeStoreConnectionError() {
+        launch {
+            combine(
+                selectedSite.observe(),
+                storeConnectionErrorMonitor.invalidSignatureDetected,
+                connectionErrorSnoozed
+            ) { site, affectedSiteId, snoozed ->
+                val isAffected = site != null && site.siteId == affectedSiteId
+                isAffected to snoozed
+            }.collect { (isAffected, snoozed) ->
+                // The dialog tracks the live error state: it stays visible (across navigation, on every
+                // main-app screen) until the store connection is resolved, and is only hidden early if the
+                // merchant taps Dismiss (snooze).
+                when {
+                    !isAffected -> {
+                        connectionErrorSnoozed.value = false
+                        _showStoreConnectionErrorDialog.value = false
+                    }
+
+                    snoozed -> _showStoreConnectionErrorDialog.value = false
+
+                    else -> _showStoreConnectionErrorDialog.value = true
+                }
+            }
+        }
+    }
+
+    fun onStoreConnectionErrorContactSupportClicked() {
+        triggerEvent(ContactSupportForStoreConnection)
+    }
+
+    fun onStoreConnectionErrorDismissed() {
+        connectionErrorSnoozed.value = true
+    }
+
+    /**
+     * Called when the app returns to the foreground; clears the dialog snooze so a still-unreachable store
+     * reminds the merchant again.
+     */
+    fun onAppForegrounded() {
+        connectionErrorSnoozed.value = false
+    }
 
     fun handleShortcutAction(action: String?) {
         if (!selectedSite.exists()) return
@@ -366,6 +421,7 @@ class MainActivityViewModel @Inject constructor(
     ) : Event()
     data class ViewSurvey(val surveyType: SurveyType) : Event()
 
+    object ContactSupportForStoreConnection : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     object LaunchBlazeCampaignCreation : Event()

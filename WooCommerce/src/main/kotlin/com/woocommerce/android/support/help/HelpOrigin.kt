@@ -35,6 +35,7 @@ enum class HelpOrigin(private val stringValue: String) {
     CONNECTIVITY_TOOL("origin:connectivity-tool"),
     AI_TROUBLESHOOTING("origin:ai-troubleshooting"),
     APPLICATION_PASSWORD_TUTORIAL("origin:application-password-tutorial"),
+    CONNECTION_ERROR("origin:connection-error"),
     POS("origin:point-of-sale");
 
     override fun toString(): String {

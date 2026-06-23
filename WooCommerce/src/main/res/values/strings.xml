@@ -460,6 +460,11 @@
     <string name="dashboard_scheduled_import_option_selected">Selected</string>
     <string name="dashboard_scheduled_import_update_error">Couldn\'t update the setting. Please try again.</string>
 
+    <!-- Store connection error -->
+    <string name="store_connection_error_dialog_title">Your store can\'t be reached</string>
+    <string name="store_connection_error_dialog_body">We\'re having trouble connecting to your store. This is usually a connection issue on your WordPress site — often caused by a security plugin, a recent plugin update, or a Jetpack connection that needs to be refreshed. The WooCommerce app can\'t fix this from your phone.</string>
+    <string name="store_connection_error_dialog_contact_support">Contact support</string>
+
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
     <string name="dashboard_action_view_all_messages">View all messages</string>
