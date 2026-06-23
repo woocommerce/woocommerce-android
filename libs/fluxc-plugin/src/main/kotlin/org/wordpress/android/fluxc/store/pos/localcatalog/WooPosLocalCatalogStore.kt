@@ -537,13 +537,16 @@ class WooPosLocalCatalogStore @Inject constructor(
      * Generates a new catalog on the server.
      *
      * @param [site] The site to generate catalog for
+     * @param [force] When true, asks the server to discard any prior attempt and start a clean
+     * generation. Should only be set on the first request of a manually-invoked sync.
      * @return [Result] containing PosGenerateCatalogResult with catalog generation details or error
      */
     suspend fun generateCatalogOrGetStatus(
-        site: SiteModel
+        site: SiteModel,
+        force: Boolean = false
     ): Result<WooPosGenerateCatalogResult> =
         coroutineEngine.withDefaultContext(API, this, "generateCatalog") {
-            val response = posProductRestClient.postGenerateCatalog(site)
+            val response = posProductRestClient.postGenerateCatalog(site, force)
 
             when {
                 response.isError -> {
