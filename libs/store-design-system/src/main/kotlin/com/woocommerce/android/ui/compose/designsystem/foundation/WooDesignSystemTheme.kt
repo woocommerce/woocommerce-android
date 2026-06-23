@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -12,11 +13,12 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 
 @Composable
 fun WooDesignSystemTheme(
-    foundation: WooFoundation = WooFoundationDefaults.foundation(),
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    foundation: WooFoundation = WooFoundationDefaults.foundation(useDarkTheme = useDarkTheme),
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colorScheme = foundation.colors.toMaterialColorScheme(),
+        colorScheme = foundation.colors.toMaterialColorScheme(useDarkTheme = useDarkTheme),
         typography = foundation.text.toMaterialTypography(),
         shapes = foundation.radius.toMaterialShapes(),
     ) {
@@ -30,10 +32,14 @@ fun WooDesignSystemTheme(
 
 @Composable
 fun WooDesignSystemThemeWithBackground(
-    foundation: WooFoundation = WooFoundationDefaults.foundation(),
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    foundation: WooFoundation = WooFoundationDefaults.foundation(useDarkTheme = useDarkTheme),
     content: @Composable () -> Unit,
 ) {
-    WooDesignSystemTheme(foundation = foundation) {
+    WooDesignSystemTheme(
+        useDarkTheme = useDarkTheme,
+        foundation = foundation,
+    ) {
         Surface(color = MaterialTheme.colorScheme.background) {
             content()
         }

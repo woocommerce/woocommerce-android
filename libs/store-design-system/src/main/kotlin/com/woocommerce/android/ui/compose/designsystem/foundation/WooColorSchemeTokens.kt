@@ -1,13 +1,21 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 
-internal fun WooColors.toMaterialColorScheme(): ColorScheme = ColorScheme(
+internal fun WooColors.toMaterialColorScheme(useDarkTheme: Boolean): ColorScheme =
+    if (useDarkTheme) {
+        toDarkMaterialColorScheme()
+    } else {
+        toLightMaterialColorScheme()
+    }
+
+private fun WooColors.toDarkMaterialColorScheme(): ColorScheme = darkColorScheme(
     primary = primary,
     onPrimary = onPrimary,
     primaryContainer = secondary,
     onPrimaryContainer = onSecondary,
-    inversePrimary = primary,
     secondary = secondary,
     onSecondary = onSecondary,
     secondaryContainer = secondary,
@@ -22,16 +30,6 @@ internal fun WooColors.toMaterialColorScheme(): ColorScheme = ColorScheme(
     onSurface = surface.onDefault,
     surfaceVariant = background.sectionVariant,
     onSurfaceVariant = surface.onVariant,
-    surfaceTint = primary,
-    inverseSurface = surface.inverted,
-    inverseOnSurface = surface.onInverted,
-    error = status.errorContainer,
-    onError = status.onErrorContainer,
-    errorContainer = status.errorContainer,
-    onErrorContainer = status.onErrorContainer,
-    outline = outline,
-    outlineVariant = outlineVariant,
-    scrim = overlay.overlay50,
     surfaceBright = surface.default,
     surfaceDim = background.section,
     surfaceContainer = background.section,
@@ -39,16 +37,46 @@ internal fun WooColors.toMaterialColorScheme(): ColorScheme = ColorScheme(
     surfaceContainerHighest = surface.default,
     surfaceContainerLow = background.sectionVariant,
     surfaceContainerLowest = surface.default,
-    primaryFixed = primary,
-    primaryFixedDim = secondary,
-    onPrimaryFixed = onPrimary,
-    onPrimaryFixedVariant = onSecondary,
-    secondaryFixed = secondary,
-    secondaryFixedDim = secondary,
-    onSecondaryFixed = onSecondary,
-    onSecondaryFixedVariant = onSecondary,
-    tertiaryFixed = secondary,
-    tertiaryFixedDim = secondary,
-    onTertiaryFixed = onSecondary,
-    onTertiaryFixedVariant = onSecondary,
+    inverseSurface = surface.inverted,
+    inverseOnSurface = surface.onInverted,
+    errorContainer = status.errorContainer,
+    onErrorContainer = status.onErrorContainer,
+    outline = outline,
+    outlineVariant = outlineVariant,
+    scrim = overlay.overlay50,
+)
+
+private fun WooColors.toLightMaterialColorScheme(): ColorScheme = lightColorScheme(
+    primary = primary,
+    onPrimary = onPrimary,
+    primaryContainer = secondary,
+    onPrimaryContainer = onSecondary,
+    secondary = secondary,
+    onSecondary = onSecondary,
+    secondaryContainer = secondary,
+    onSecondaryContainer = onSecondary,
+    tertiary = secondary,
+    onTertiary = onSecondary,
+    tertiaryContainer = secondary,
+    onTertiaryContainer = onSecondary,
+    background = background.section,
+    onBackground = background.onSection,
+    surface = surface.default,
+    onSurface = surface.onDefault,
+    surfaceVariant = background.sectionVariant,
+    onSurfaceVariant = surface.onVariant,
+    surfaceBright = surface.default,
+    surfaceDim = background.section,
+    surfaceContainer = background.section,
+    surfaceContainerHigh = surface.default,
+    surfaceContainerHighest = surface.default,
+    surfaceContainerLow = background.sectionVariant,
+    surfaceContainerLowest = surface.default,
+    inverseSurface = surface.inverted,
+    inverseOnSurface = surface.onInverted,
+    errorContainer = status.errorContainer,
+    onErrorContainer = status.onErrorContainer,
+    outline = outline,
+    outlineVariant = outlineVariant,
+    scrim = overlay.overlay50,
 )
