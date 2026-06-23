@@ -13,12 +13,15 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
+import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient.RefundPreviewResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
@@ -37,6 +40,7 @@ class RefundStoreTest {
     val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext())
 
     private val restClient = mock<RefundRestClient>()
+    private val previewRestClient = mock<RefundPreviewRestClient>()
     private val site = SiteModel()
     private val mapper = RefundMapper(Gson())
     private lateinit var store: WCRefundStore
@@ -56,6 +60,7 @@ class RefundStoreTest {
 
         store = WCRefundStore(
             restClient,
+            previewRestClient,
             initCoroutineEngine(),
             mapper,
             refundDao,
@@ -101,6 +106,62 @@ class RefundStoreTest {
         val refund = store.getRefund(site, orderId, refundId)
 
         assertThat(refund).isEqualTo(mapper.toModel(REFUND_RESPONSE))
+    }
+
+    @Test
+    fun `when previewRefund succeeds, then server-calculated response is mapped to model`() = test {
+        val previewResponse = RefundPreviewResponse(
+            breakdown = null,
+            subtotal = "100.00",
+            tax = "10.00",
+            total = "110.00",
+            maxRefundable = "200.00",
+        )
+        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 2))
+        whenever(previewRestClient.previewRefund(site, orderId, lineItems))
+            .thenReturn(WooPayload(previewResponse))
+
+        val result = store.previewRefund(site, orderId, lineItems)
+
+        assertThat(result.model).isEqualTo(mapper.toPreviewModel(previewResponse))
+        assertThat(result.model?.total?.toPlainString()).isEqualTo("110.00")
+    }
+
+    @Test
+    fun `when previewRefund route is missing, then API_NOT_FOUND is surfaced for fallback`() = test {
+        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
+        whenever(previewRestClient.previewRefund(site, orderId, lineItems))
+            .thenReturn(WooPayload(notFound))
+
+        val result = store.previewRefund(site, orderId, lineItems)
+
+        assertThat(result.model).isNull()
+        assertThat(result.error.type).isEqualTo(WooErrorType.API_NOT_FOUND)
+    }
+
+    @Test
+    fun `when createSimplifiedItemsRefund succeeds, then response is mapped to model`() = test {
+        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 2))
+        whenever(
+            restClient.createSimplifiedRefund(
+                site = site,
+                orderId = orderId,
+                reason = "reason",
+                automaticRefund = false,
+                items = lineItems,
+            )
+        ).thenReturn(WooPayload(REFUND_RESPONSE))
+
+        val result = store.createSimplifiedItemsRefund(
+            site = site,
+            orderId = orderId,
+            reason = "reason",
+            autoRefund = false,
+            items = lineItems,
+        )
+
+        assertThat(result.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
     private suspend fun fetchSpecificTestRefund(): WooResult<WCRefundModel> {

@@ -4,11 +4,14 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -20,6 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class WCRefundStore @Inject internal constructor(
     private val restClient: RefundRestClient,
+    private val previewRestClient: RefundPreviewRestClient,
     private val coroutineEngine: CoroutineEngine,
     private val refundsMapper: RefundMapper,
     private val refundDao: RefundDao,
@@ -71,6 +75,57 @@ class WCRefundStore @Inject internal constructor(
                 automaticRefund = autoRefund,
                 items = items,
                 restockItems = restockItems
+            )
+            return@withDefaultContext when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> WooResult(refundsMapper.toModel(response.result))
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    /**
+     * Fetches a server-calculated refund preview via the v4 endpoint.
+     *
+     * On a v4-unavailable store the result is an error with [WooErrorType.API_NOT_FOUND]; callers
+     * should detect this and fall back to the v3 + local-calculation flow.
+     */
+    suspend fun previewRefund(
+        site: SiteModel,
+        orderId: Long,
+        items: List<RefundV4LineItem>,
+    ): WooResult<WCRefundPreview> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "previewRefund") {
+            val response = previewRestClient.previewRefund(site, orderId, items)
+            return@withDefaultContext when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> WooResult(refundsMapper.toPreviewModel(response.result))
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
+    /**
+     * Creates a refund through the simplified v4 endpoint. The client sends only the items being
+     * refunded; the server computes all monetary values. No client-calculated amount is sent.
+     *
+     * On a v4-unavailable store the result is an error with [WooErrorType.API_NOT_FOUND]; callers
+     * should detect this and fall back to [createItemsRefund].
+     */
+    suspend fun createSimplifiedItemsRefund(
+        site: SiteModel,
+        orderId: Long,
+        reason: String = "",
+        autoRefund: Boolean = false,
+        items: List<RefundV4LineItem>,
+    ): WooResult<WCRefundModel> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createSimplifiedItemsRefund") {
+            val response = restClient.createSimplifiedRefund(
+                site = site,
+                orderId = orderId,
+                reason = reason,
+                automaticRefund = autoRefund,
+                items = items,
             )
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)

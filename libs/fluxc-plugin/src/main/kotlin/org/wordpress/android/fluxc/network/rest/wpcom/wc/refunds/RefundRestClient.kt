@@ -5,6 +5,7 @@ import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
@@ -49,6 +50,37 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         ).filterNotNull()
 
         return createRefund(site, orderId, body)
+    }
+
+    /**
+     * Creates a refund through the simplified v4 endpoint (`POST /wc/v4/refunds`).
+     *
+     * The client sends only what to refund (line item IDs + quantities, or amounts for fee/shipping
+     * lines) — the server computes all monetary values. No client-side amount calculation is sent.
+     *
+     * When the v4 route is not registered (feature flag off) the request fails with HTTP 404
+     * `rest_no_route`, surfaced as [WooErrorType.API_NOT_FOUND] so callers can fall back to v3.
+     */
+    suspend fun createSimplifiedRefund(
+        site: SiteModel,
+        orderId: Long,
+        reason: String,
+        automaticRefund: Boolean,
+        items: List<RefundV4LineItem>,
+    ): WooPayload<RefundResponse> {
+        val body = mapOf(
+            "order_id" to orderId,
+            "reason" to reason,
+            "api_refund" to automaticRefund.toString(),
+            "line_items" to items,
+        )
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.refunds.pathV4,
+            body = body,
+            clazz = RefundResponse::class.java,
+        )
+        return response.toWooPayload()
     }
 
     private suspend fun createRefund(
