@@ -97,6 +97,16 @@ import kotlinx.coroutines.flow.filter
 
 val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
+/**
+ * The orders toolbar is shown only when no search is active and no refund is in progress. While a
+ * refund is being issued the flow is presented full screen with its own header, so the orders
+ * toolbar must stay hidden regardless of single- vs dual-pane mode.
+ */
+internal fun shouldShowOrdersToolbar(
+    searchInputState: WooPosSearchInputState,
+    isIssuingRefund: Boolean,
+): Boolean = searchInputState is WooPosSearchInputState.Closed && !isIssuingRefund
+
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -321,8 +331,10 @@ private fun WooPosOrdersScreen(
             )
         }
 
-        if (listState.searchInputState is WooPosSearchInputState.Closed &&
-            detailPaneIssueRefundOrderId == null
+        if (shouldShowOrdersToolbar(
+                searchInputState = listState.searchInputState,
+                isIssuingRefund = detailPaneIssueRefundOrderId != null,
+            )
         ) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (detailState as? WooPosOrderDetailsState.Loaded)
