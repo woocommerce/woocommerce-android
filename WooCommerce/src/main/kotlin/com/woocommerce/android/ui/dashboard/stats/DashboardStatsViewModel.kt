@@ -332,10 +332,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
                             showJetpackIcon = !appPrefsWrapper.isSiteWPComSuspended
                         )
                         parentViewModel.hideRefreshingIndicator()
-                        trackEventForStatsCard(
-                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
-                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
-                        )
                     }
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
