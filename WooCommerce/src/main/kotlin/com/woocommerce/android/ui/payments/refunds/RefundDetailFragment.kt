@@ -121,10 +121,12 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
                     binding.refundDetailDetailsCard.show()
                     binding.refundDetailReasonCard.show()
                     productsBinding.issueRefundTotalsGroup.show()
+                    productsBinding.issueRefundDividerBelowList.show()
                 } else {
                     binding.refundDetailDetailsCard.hide()
                     binding.refundDetailReasonCard.hide()
                     productsBinding.issueRefundTotalsGroup.hide()
+                    productsBinding.issueRefundDividerBelowList.hide()
                 }
             }
 
