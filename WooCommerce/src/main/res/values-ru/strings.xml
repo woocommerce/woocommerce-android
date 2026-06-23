@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-25 10:57:46+0000
+Translation-Revision-Date: 2026-06-12 08:05:21+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">Нет оповещений</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s и %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">До %1$d звёзд</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Обновить вариант %1$s (№ %2$s) товара № %3$s</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Клиент № %1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Гость</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Обновить заказ № %1$s (%2$s): отправляет эл. письмо клиенту</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Обновить заказ № %1$s (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Описание должно содержать не более %1$s символов.</string>
+    <string name="woopos_totals_success_payment_external">Заказ %1$s отмечен как выполненный!</string>
+    <string name="woopos_totals_success_payment_qr">Платёж на сумму %1$s получен.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Добавить купон</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Затемнённый фон. Коснитесь, чтобы закрыть средство выбора способа оплаты.</string>
+    <string name="woopos_scan_to_pay_order_note">Клиент оплатил заказ с помощью Scan to Pay</string>
+    <string name="woopos_scan_to_pay_cancel">Отмена</string>
+    <string name="woopos_scan_to_pay_retry">Повторить попытку</string>
+    <string name="woopos_scan_to_pay_error_message">Не удалось подготовить платёж. Повторите попытку.</string>
+    <string name="woopos_scan_to_pay_total">Общая стоимость заказа: %1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">Покажите этот код клиенту, чтобы он мог оплатить покупку с телефона.</string>
+    <string name="woopos_scan_to_pay_title">Сканируйте для оплаты</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Не удалось загрузить заказ. Вернитесь и повторите попытку.</string>
+    <string name="woopos_mark_order_as_paid_error_message">Не удалось обновить заказ. Повторите попытку.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Отметить как оплаченный</string>
+    <string name="woopos_mark_order_as_paid_note_hint">Например, банковский перевод от Maria, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_message">Заказ %1$s будет отмечен как выполненный. Пользуйтесь этой функцией, только если платёж уже был получен другим способом.</string>
+    <string name="woopos_mark_order_as_paid_title">Отметить заказ как оплаченный?</string>
+    <string name="woopos_custom_amount_dialog_cancel">Отмена</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Обновить индивидуальную сумму</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Добавить индивидуальную сумму</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Удержать налоги</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Индивидуальная сумма</string>
+    <string name="woopos_custom_amount_dialog_name_label">Имя</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Сумма</string>
+    <string name="woopos_custom_amount_form_title">Индивидуальная сумма</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Изменить индивидуальную сумму</string>
+    <string name="woopos_custom_amount_dialog_title_add">Добавить индивидуальную сумму</string>
+    <string name="woopos_custom_amount_entry_subtitle">Добавить разовый платёж</string>
+    <string name="woopos_custom_amount_entry_title">Индивидуальная сумма</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Удалить</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Редактировать</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Включён налог</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">Изменить %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Индивидуальная сумма %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">Бесполезно</string>
+    <string name="ai_support_chat_feedback_helpful">Полезно</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">Не удалось проверить регистрацию push-уведомлений.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">Это устройство не зарегистрировано для получения push-уведомлений в вашем магазине.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">Не удалось найти токен push-уведомлений для этого устройства.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Уведомления заблокированы в настройках Android.\n\nВключите уведомления WooCommerce, а затем вернитесь сюда, чтобы продолжить.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">Не удалось проверить параметры аналитики.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">Аналитика WooCommerce не включена в вашем магазине.\n\nАналитические данные, такие как статистика доходов и заказов, не будут доступны, пока она не будет активирована.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Возникла проблема с подключением к Jetpack.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">Не удаётся правильно обработать ответ вашего сайта.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">Не удалось подключиться к WordPress.com.\n\nПопробуйте ещё раз через пару минут.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Проверка регистрации push-уведомлений</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Проверка токена push-уведомлений</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Проверка каналов уведомлений</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Проверка настроек уведомлений</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Проверка разрешения на отправку уведомлений</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Проверка параметров аналитики</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Выполнить проверки заново</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Регистрация уведомлений…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Включение аналитики…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Зарегистрировать уведомления</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Открыть настройки уведомлений</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Включить аналитику</string>
+    <string name="ai_support_chat_diagnostics_success">Все проверки выполнены без ошибок</string>
+    <string name="ai_support_chat_resolved_prompt">Если проблема решена, отметьте чат как решённый или оставьте сообщение, если у вас есть другие вопросы.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Запрос по поддержке плагинов</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">Запрос по поддержке плагина WooCommerce</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">Запрос по поддержке WooPayments</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Запрос по поддержке платёжного терминала</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Запрос по поддержке мобильного приложения</string>
+    <string name="ai_support_chat_escalation_transcript_header">Ниже приводится расшифровка сеанса ИИ-чата поддержки в приложении:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Форма обратной связи</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Отправить запрос</string>
+    <string name="ai_support_chat_escalation_consent_message">Мы можем создать запрос в службу поддержки на основе расшифровки этого чата, а также вы можете открыть форму обратной связи и ввести данные самостоятельно.</string>
+    <string name="ai_support_chat_escalation_consent_title">Отправить этот чат в службу поддержки?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">Это закроет действия чата в этой беседе.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Отметить чат как решённый?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Отмена</string>
+    <string name="ai_support_chat_mark_resolved">Отметить как решённый</string>
+    <string name="ai_support_chat_toolbar_contact_support">Поддержка</string>
+    <string name="ai_support_chat_resolved_message">Этот чат помечен как решённый.</string>
+    <string name="ai_support_chat_ticket_created_message">На основе этого чата создан запрос в службу поддержки. Мы ответим вам по электронной почте.</string>
+    <string name="ai_support_chat_contact_support">Поддержка</string>
+    <string name="ai_support_chat_human_support_message">По-видимому, вам требуется дополнительная помощь. Вы хотите обратиться в нашу службу поддержки?</string>
+    <string name="ai_support_chat_suggested_fix_error">Не удалось применить это исправление. Проверьте подключение и повторите попытку.</string>
+    <string name="ai_support_chat_load_history_error">Не удалось загрузить этот чат. Проверьте подключение и повторите попытку.</string>
+    <string name="ai_support_chat_error_dismiss">Закрыть</string>
+    <string name="ai_support_chat_error_title">Ошибка</string>
+    <string name="ai_support_chat_input_hint">Введите сообщение…</string>
+    <string name="ai_support_chat_greeting">Здравствуйте! Я мобильный бот поддержки Woo. Могу ли я вам чем-нибудь помочь?</string>
+    <string name="ai_support_chat_history_default_title">Беседа по поддержке</string>
+    <string name="ai_support_chat_history_delete_error">Не удалось удалить историю чата.</string>
+    <string name="ai_support_chat_history_load_error">Не удалось загрузить историю чата.</string>
+    <string name="ai_support_chat_history_empty">Вы ещё не общались со службой поддержки.</string>
+    <string name="ai_support_chat_history_title">История чата</string>
+    <string name="ai_support_chat_history_row_subtitle">Просмотреть предыдущие беседы со службой поддержки</string>
+    <string name="ai_support_chat_history_row_title">История чата</string>
+    <string name="ai_support_chat_screen_title">Чат со службой поддержки</string>
+    <string name="ai_support_chat_help_row_title">Чат со службой поддержки</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Фильтрация отзывов по рейтингу не выше выбранного.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Только отзывы с низким рейтингом</string>
+    <string name="settings_notifs_new_reviews_all_description">Уведомлять о каждом отзыве.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Получайте уведомления, когда кто-то оставляет отзыв на ваш магазин.</string>
+    <string name="settings_notifs_new_orders_threshold">Минимальное значение (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Заказы дороже %1$s</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Включить в настройках устройства</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Что-то пошло не так во время работы помощника.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Помощник прервал работу, выполнив несколько шагов.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d звезда и менее</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Подтверждение пока недоступно. Повторите попытку в чате.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Запрос остановлен.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Мне неясно, было ли применено изменение. Проверьте данные в магазине, прежде чем предпринимать другие действия.</string>
@@ -121,7 +231,6 @@ Language: ru
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Оплата с помощью Tap to Pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Принимайте бесконтактную оплату банковскими картами на этом устройстве.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to Pay (Оплата касанием)</string>
-    <string name="woopos_payment_method_picker_dialog_title">Выберите способ оплаты</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Пометить заказ как оплаченный</string>
     <string name="woopos_payment_method_scan_to_pay_label">Сканировать для оплаты</string>
     <string name="woopos_payment_method_other_methods_label">Другие способы оплаты</string>
@@ -138,13 +247,10 @@ Language: ru
     <string name="ai_support_chat_diagnostics_status_failed">Ошибка</string>
     <string name="ai_support_chat_diagnostics_status_passed">Успешно</string>
     <string name="woopos_payment_method_tap_to_pay_label">Tap to Pay (Оплата касанием)</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Выбрать способ оплаты</string>
     <string name="ai_support_chat_diagnostics_status_running">Запущено</string>
     <string name="ai_support_chat_diagnostics_status_pending">На утверждении</string>
     <string name="ai_support_chat_diagnostics_continue">Продолжить чат</string>
-    <string name="ai_support_chat_diagnostics_retry">Повторить</string>
-    <string name="ai_support_chat_diagnostics_failure">Не удалось пройти некоторые проверки. Вы можете повторить попытку или продолжить чат по этим результатам.</string>
-    <string name="ai_support_chat_diagnostics_success">Диагностика завершена</string>
-    <string name="ai_support_chat_diagnostics_title">Проверка магазина…</string>
     <string name="ai_support_chat_issue_other">Что-то ещё</string>
     <string name="ai_support_chat_issue_receiving_notifications">Я не получаю уведомления</string>
     <string name="ai_support_chat_issue_loading_analytics">Аналитика не загружается</string>
@@ -155,17 +261,9 @@ Language: ru
     <string name="ai_support_chat_typing">Я думаю…</string>
     <string name="ai_support_chat_send_error">Не удалось отправить сообщение. Проверьте подключение и повторите попытку.</string>
     <string name="ai_support_chat_send">Отправить</string>
-    <string name="ai_support_chat_greeting">Здравствуйте! Расскажите мне, что не так в вашем магазине, и я помогу устранить неполадки.</string>
     <string name="ai_support_chat_placeholder">Уже скоро</string>
-    <string name="ai_support_chat_screen_title">Устранение неполадок при помощи ИИ</string>
-    <string name="ai_support_chat_help_row_title">Устранение неполадок при помощи ИИ</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Отзывы до рейтинга</string>
-    <string name="ai_support_chat_input_hint">Устранение неполадок ИИ сообщений</string>
     <string name="ai_support_chat_help_row_subtitle">Общайтесь в чате с нашим помощником на базе ИИ, чтобы определить проблемы магазина</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Выберите наивысший рейтинг для отправки уведомлений.</string>
-    <string name="settings_notifs_new_reviews_all_description">Уведомления о каждом отзыве, независимо от рейтинга.</string>
     <string name="settings_notifs_new_reviews_all_title">Все новые отзывы</string>
-    <string name="settings_notifs_new_reviews_enable_description">Получайте уведомления, когда кто-то оставляет отзыв на один из ваших товаров.</string>
     <string name="settings_notifs_stock_backorder_description">Когда клиент заказывает товар, которого нет в наличии.</string>
     <string name="settings_notifs_stock_out_of_stock_description">Когда вариант товара заканчивается.</string>
     <string name="settings_notifs_stock_out_of_stock_title">Нет в наличии</string>
@@ -177,10 +275,9 @@ Language: ru
     <string name="settings_notifs_stock_low_stock_title">Товар заканчивается</string>
     <string name="settings_notifs_stock_enable_description">Получайте уведомления, когда нужно пополнить запас товара.</string>
     <string name="settings_notifs_stock_enable_title">Включить оповещения о недостатке товаров</string>
-    <string name="settings_notifs_new_orders_threshold">Пороговое значение (%1$s)</string>
     <string name="settings_notifs_new_orders_high_value_title">Только заказы с высокой стоимостью</string>
     <string name="settings_notifs_new_orders_all_description">Отправлять уведомления о каждом заказе, независимо от стоимости.</string>
-    <string name="settings_notifs_new_orders_high_value_description">Фильтровать по заказам выше порогового значения.</string>
+    <string name="settings_notifs_new_orders_high_value_description">Фильтровать по заказам дороже указанной минимальной стоимости.</string>
     <string name="settings_notifs_new_orders_all_title">Все новые заказы</string>
     <string name="settings_notifs_notify_me_for">Уведомлять меня о</string>
     <string name="settings_notifs_new_orders_enable_description">Получайте уведомления о размещении заказов в вашем магазине.</string>
@@ -808,8 +905,6 @@ Language: ru
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Великобритания</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Соединённые Штаты</string>
     <string name="woopos_eligibility_screen_unable_to_load">Не удалось загрузить</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">Система POS не поддерживает валюту вашего магазина. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Система POS не поддерживает валюту вашего магазина. В %1$s в настоящее время поддерживается только %2$s. Проверьте настройки валюты магазина или обратитесь за помощью в службу поддержки.</string>
     <string name="woopos_eligibility_reason_check_connection">Проверьте подключение к Интернету и попробуйте перезапустить приложение. Если решить проблему не удалось, обратитесь в службу поддержки.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Ваша версия WooCommerce не поддерживается. Для работы системы POS требуется WooCommerce версии %1$s или более поздней. Обновите WooCommerce до последней версии.</string>
     <string name="orderfilters_sales_channel_filter">Канал продаж</string>
@@ -4097,8 +4192,6 @@ Language: ru
         <item>Индивидуальный пакет</item>
         <item>Пакет услуг</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d звёзд или ниже</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d звезда или ниже</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Промежуточный итог по товарам (позиций: %d)</item>
         <item quantity="few">Промежуточный итог по товарам (позиций: %d)</item>

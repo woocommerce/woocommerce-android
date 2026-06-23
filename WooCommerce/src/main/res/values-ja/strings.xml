@@ -1,11 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-19 09:55:33+0000
+Translation-Revision-Date: 2026-06-12 08:06:10+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_two_subtitle">%1$s と %2$s</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">アラートなし</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$dつ星以下</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">商品 #%3$sのバリエーション %1$s (#%2$s) を更新</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">顧客 #%1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">ゲスト</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">注文 #%1$s (%2$s) を更新: お客様にメールを送信</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">注文 #%1$s (%2$s) を更新</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">説明は%1$s文字以下にしてください。</string>
+    <string name="woopos_totals_success_payment_external">%1$s の注文を完了としました。</string>
+    <string name="woopos_totals_success_payment_qr">%1$s の支払いが正常に完了しました。</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">クーポンを追加</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">背景を暗くしました。 タップすると、支払い方法の選択を終了します。</string>
+    <string name="woopos_scan_to_pay_order_note">お客様が「スキャンして支払う」で支払いました</string>
+    <string name="woopos_scan_to_pay_cancel">キャンセル</string>
+    <string name="woopos_scan_to_pay_retry">もう一度試す</string>
+    <string name="woopos_scan_to_pay_error_message">支払いを処理できませんでした。 もう一度お試しください。</string>
+    <string name="woopos_scan_to_pay_total">注文合計: %1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">このコードをお客様に提示して、スマートフォンから支払えるようにします。</string>
+    <string name="woopos_scan_to_pay_title">スキャンして支払う</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">注文を読み込めませんでした。 戻ってもう一度お試しください。</string>
+    <string name="woopos_mark_order_as_paid_error_message">注文を更新できませんでした。 もう一度お試しください。</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">支払い済みとしてマーク</string>
+    <string name="woopos_mark_order_as_paid_note_hint">例: Mariaからの銀行振込 (ref 4827)</string>
+    <string name="woopos_mark_order_as_paid_message">これにより、%1$s の注文が完了としてマークされます。 別の方法ですでに支払いを受領している場合にのみ、これを使用してください。</string>
+    <string name="woopos_mark_order_as_paid_title">注文を支払い済みとしてマークしますか ?</string>
+    <string name="woopos_custom_amount_dialog_cancel">キャンセル</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">カスタム金額を更新</string>
+    <string name="woopos_custom_amount_dialog_submit_add">カスタム金額を追加</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">税金を請求</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">カスタム金額</string>
+    <string name="woopos_custom_amount_dialog_name_label">名前</string>
+    <string name="woopos_custom_amount_dialog_amount_label">合計</string>
+    <string name="woopos_custom_amount_form_title">カスタム金額</string>
+    <string name="woopos_custom_amount_dialog_title_edit">カスタム金額を編集</string>
+    <string name="woopos_custom_amount_dialog_title_add">カスタム金額を追加</string>
+    <string name="woopos_custom_amount_entry_subtitle">1回限りの料金を追加</string>
+    <string name="woopos_custom_amount_entry_title">カスタム金額</string>
+    <string name="woopos_cart_custom_amount_menu_remove">削除</string>
+    <string name="woopos_cart_custom_amount_menu_edit">編集</string>
+    <string name="woopos_cart_custom_amount_includes_tax">税込み</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">%s を編集</string>
+    <string name="woopos_cart_item_custom_amount_content_description">カスタム金額%1$s、%2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">役に立たない</string>
+    <string name="ai_support_chat_feedback_helpful">役に立つ</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">プッシュ通知の登録を確認できませんでした。</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">この端末は、ストアのプッシュ通知を受信する設定になっていません。</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">この端末のプッシュ通知トークンが見つかりませんでした。</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Android 設定で通知がブロックされています。\n\nWooCommerceの通知を有効にしてから、ここに戻って続行してください。</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">アナリティクスの設定を確認できませんでした。</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">ストアで WooCommerce Analytics が有効化されていません。\n\n収益や注文統計などのアナリティクスデータは、有効化されるまで利用できません。</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Jetpack の連携で問題が発生しています。</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">サイトの応答が正常に機能していません。</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">現在 WordPress.com に接続できません。\n\n数分経ってから再度お試しください。</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">プッシュ登録を確認しています</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">プッシュ通知トークンを確認しています</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">通知チャネルを確認しています</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">アプリの通知設定を確認していす</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">通知のパーミッションを確認しています</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">分析設定を確認しています</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">チェックを再実行</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">通知を登録しています…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">分析を有効化しています…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">通知を登録</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">通知設定を開く</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">分析を有効化</string>
+    <string name="ai_support_chat_diagnostics_success">すべてのチェックが問題なく完了しました</string>
+    <string name="ai_support_chat_resolved_prompt">問題が解決した場合はチャットを解決済みとしてマークし、他にご質問がある場合はメッセージを残してください。</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">プラグインのサポートリクエスト</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">WooCommerce プラグインのサポートリクエスト</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">WooPayments サポートリクエスト</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">カードリーダーのサポートリクエスト</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">モバイルアプリのサポートリクエスト</string>
+    <string name="ai_support_chat_escalation_transcript_header">以下は、アプリ内 AI サポートチャットセッションのトランスクリプトです。</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">お問い合わせフォーム</string>
+    <string name="ai_support_chat_escalation_consent_send_request">リクエストを送信</string>
+    <string name="ai_support_chat_escalation_consent_message">このチャットトランスクリプトをもとにサポートリクエストを作成するか、お問い合わせフォームを開いて詳細をご入力いただくことも可能です。</string>
+    <string name="ai_support_chat_escalation_consent_title">このチャットをサポートに送信しますか ?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">この会話のチャットアクションを閉じます。</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">チャットを解決済みとしてマークしますか ?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">キャンセル</string>
+    <string name="ai_support_chat_mark_resolved">解決済みとしてマーク</string>
+    <string name="ai_support_chat_toolbar_contact_support">サポートに連絡</string>
+    <string name="ai_support_chat_resolved_message">このチャットは解決済みとしました。</string>
+    <string name="ai_support_chat_ticket_created_message">このチャットのサポートチケットが作成されました。 メールで返信いたします。</string>
+    <string name="ai_support_chat_contact_support">サポートに連絡</string>
+    <string name="ai_support_chat_human_support_message">追加のサポートが必要な場合があります。 サポートチームへの問い合わせを希望しますか ?</string>
+    <string name="ai_support_chat_suggested_fix_error">この修正を適用できません。 接続を確認して、もう一度お試しください。</string>
+    <string name="ai_support_chat_load_history_error">このチャットを読み込めません。 接続を確認して、もう一度お試しください。</string>
+    <string name="ai_support_chat_error_dismiss">閉じる</string>
+    <string name="ai_support_chat_error_title">エラー</string>
+    <string name="ai_support_chat_input_hint">メッセージを入力…</string>
+    <string name="ai_support_chat_greeting">こんにちは。 Woo モバイルサポートボットです。 今日お手伝いできることはありますか ?</string>
+    <string name="ai_support_chat_history_default_title">サポートに関する会話</string>
+    <string name="ai_support_chat_history_delete_error">チャット履歴を削除できません。</string>
+    <string name="ai_support_chat_history_load_error">チャット履歴を読み込めません。</string>
+    <string name="ai_support_chat_history_empty">まだサポートとチャットしていません。</string>
+    <string name="ai_support_chat_history_title">チャットの履歴</string>
+    <string name="ai_support_chat_history_row_subtitle">過去のサポート会話を再度確認</string>
+    <string name="ai_support_chat_history_row_title">チャットの履歴</string>
+    <string name="ai_support_chat_screen_title">サポートとチャット</string>
+    <string name="ai_support_chat_help_row_title">サポートとチャット</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">選択した評価以下のレビューに絞り込みます。</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">低評価のレビューのみ</string>
+    <string name="settings_notifs_new_reviews_all_description">すべてのレビューでpingを実行します。</string>
+    <string name="settings_notifs_new_reviews_enable_description">ストアにレビューが投稿されたら通知を受け取ります。</string>
+    <string name="settings_notifs_new_orders_threshold">最小値%1$s</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">%1$s以上の注文</string>
+    <string name="settings_notifs_channel_disabled_subtitle">端末設定で有効化</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$dつ星以下</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">アシスタントの作業中にエラーが発生しました。</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">アシスタントは数ステップ後に完了できませんでした。</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">まだ確認できません。 チャットからもう一度お試しください。</string>
@@ -121,7 +231,7 @@ Language: ja_JP
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Tap to Pay で支払う</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">この端末を使用して、非接触型カードでの支払いを受け付けます。</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap To Pay</string>
-    <string name="woopos_payment_method_picker_dialog_title">支払い方法を選択</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">支払い方法を選択</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">支払い済みとしてマーク</string>
     <string name="woopos_payment_method_scan_to_pay_label">スキャンして支払う</string>
     <string name="woopos_payment_method_other_methods_label">他の支払い方法</string>
@@ -141,10 +251,6 @@ Language: ja_JP
     <string name="ai_support_chat_diagnostics_status_running">実行中</string>
     <string name="ai_support_chat_diagnostics_status_pending">保留中</string>
     <string name="ai_support_chat_diagnostics_continue">チャットに進む</string>
-    <string name="ai_support_chat_diagnostics_retry">再試行</string>
-    <string name="ai_support_chat_diagnostics_failure">一部のチェックに失敗しました。 もう一度お試しいただくか、これらの結果でチャットを続けることができます。</string>
-    <string name="ai_support_chat_diagnostics_success">診断が完了しました</string>
-    <string name="ai_support_chat_diagnostics_title">ストアを確認しています…</string>
     <string name="ai_support_chat_issue_other">その他</string>
     <string name="ai_support_chat_issue_receiving_notifications">通知を受信していません</string>
     <string name="ai_support_chat_issue_loading_analytics">アナリティクスが読み込まれていません</string>
@@ -155,17 +261,9 @@ Language: ja_JP
     <string name="ai_support_chat_typing">考えています…</string>
     <string name="ai_support_chat_send_error">メッセージを送信できません。 接続を確認して、もう一度お試しください。</string>
     <string name="ai_support_chat_send">送信</string>
-    <string name="ai_support_chat_input_hint">メッセージ AI のトラブルシューティング</string>
-    <string name="ai_support_chat_greeting">こんにちは ! ストアの状況を教えてください。トラブルシューティングをお手伝いします。</string>
     <string name="ai_support_chat_placeholder">まもなく公開予定</string>
-    <string name="ai_support_chat_screen_title">AI トラブルシューティング</string>
     <string name="ai_support_chat_help_row_subtitle">AI アシスタントとチャットして、ストアの問題を診断する</string>
-    <string name="ai_support_chat_help_row_title">AI トラブルシューティング</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">通知を送信する最も高い評価を選択します。</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">評価までのレビュー</string>
-    <string name="settings_notifs_new_reviews_all_description">評価に関係なく、すべてのレビューに対してピンバックします。</string>
     <string name="settings_notifs_new_reviews_all_title">すべての新しいレビュー</string>
-    <string name="settings_notifs_new_reviews_enable_description">誰かがあなたの商品の1つにレビューを残したときに通知を受け取ります。</string>
     <string name="settings_notifs_stock_backorder_description">顧客が現在在庫切れのアイテムを注文したとき。</string>
     <string name="settings_notifs_stock_backorder_title">お取り寄せ</string>
     <string name="settings_notifs_stock_out_of_stock_description">商品バリエーションが0に達したとき。</string>
@@ -177,8 +275,7 @@ Language: ja_JP
     <string name="settings_notifs_stock_low_stock_title">在庫少</string>
     <string name="settings_notifs_stock_enable_description">商品の在庫変更に注意が必要な場合に通知を受け取ります。</string>
     <string name="settings_notifs_stock_enable_title">在庫通知を有効化</string>
-    <string name="settings_notifs_new_orders_threshold">しきい値 (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">しきい値を超える注文に絞り込みます。</string>
+    <string name="settings_notifs_new_orders_high_value_description">最小値を超える注文に絞り込みます。</string>
     <string name="settings_notifs_new_orders_high_value_title">高額注文のみ</string>
     <string name="settings_notifs_new_orders_all_description">値に関係なく、すべての注文に対してピンバックします。</string>
     <string name="settings_notifs_new_orders_all_title">すべての新しい注文</string>
@@ -808,8 +905,6 @@ Language: ja_JP
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">イギリス</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">米国</string>
     <string name="woopos_eligibility_screen_unable_to_load">読み込めません</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS システムはストアの通貨では利用できません。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS システムはストアの通貨では利用できません。 %1$s では、現在、 %2$s のみをサポートしています。 ストアの通貨設定を確認するか、サポートにお問い合わせください。</string>
     <string name="woopos_eligibility_reason_check_connection">インターネット接続を確認してアプリを再起動してください。問題が解消されない場合はサポートにご連絡ください。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">お使いの WooCommerce バージョンはサポートされていません。 POS システムには WooCommerce バージョン %1$s以上が必要です。 最新バージョンの WooCommerce に更新してください。</string>
     <string name="orderfilters_sales_channel_filter">販売経路</string>
@@ -4097,8 +4192,6 @@ Language: ja_JP
         <item>カスタムパッケージ</item>
         <item>サービスパッケージ</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d つ星以下</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d つ星以下</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小計 (%d点の商品)</item>
     </plurals>

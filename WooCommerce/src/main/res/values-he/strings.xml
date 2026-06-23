@@ -1,11 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-19 09:55:31+0000
+Translation-Revision-Date: 2026-06-12 08:06:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_two_subtitle">%1$s ו-%2$s</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">אין התראות</string>
+    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ כוכבים ומטה</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">עדכון וריאציה⁦%1$s⁩ (מס\' ⁦%2$s⁩) עבור מוצר מס\' ⁦%3$s⁩</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">לקוח מס\' ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">אורח</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה מס\' ⁦%1$s⁩ (⁦%2$s⁩): שולח אימייל ללקוח</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">עדכון הזמנה מס\' ⁦%1$s⁩ (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">התיאור חייב להיות ⁦%1$s⁩ תווים או פחות.</string>
+    <string name="woopos_totals_success_payment_external">הזמנה בסך ⁦%1$s⁩ סומנה כ\'הושלמה\'.</string>
+    <string name="woopos_totals_success_payment_qr">תשלום בסך ⁦%1$s⁩ התקבל בהצלחה.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">הוספת קופון</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">רקע מעומעם. יש להקיש כדי לבטל את בוחר אמצעי התשלום.</string>
+    <string name="woopos_scan_to_pay_order_note">הלקוח שילם באמצעות Scan to Pay</string>
+    <string name="woopos_scan_to_pay_cancel">ביטול</string>
+    <string name="woopos_scan_to_pay_retry">יש לנסות שוב</string>
+    <string name="woopos_scan_to_pay_error_message">לא הצלחנו להכין את התשלום. יש לנסות שוב.</string>
+    <string name="woopos_scan_to_pay_total">סך ההזמנה: ⁦%1$s⁩</string>
+    <string name="woopos_scan_to_pay_subtitle">יש להציג ללקוח קוד זה כדי לאפשר לו לשלם מהטלפון שלו.</string>
+    <string name="woopos_scan_to_pay_title">תשלום בסריקה</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">לא ניתן היה לטעון את ההזמנה. יש לחזור בחזרה ולנסות שוב.</string>
+    <string name="woopos_mark_order_as_paid_error_message">לא ניתן היה לעדכן את ההזמנה. יש לנסות שוב.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">סימון כ\'שולמה\'</string>
+    <string name="woopos_mark_order_as_paid_note_hint">לדוגמה, העברה בנקאית ממריה, אסמכתא 4827</string>
+    <string name="woopos_mark_order_as_paid_message">פעולה זו תסמן את ההזמנה ⁦%1$s⁩ כ\'הושלמה\'. יש להשתמש באפשרות זו רק אם כבר גבית תשלום בדרך אחרת.</string>
+    <string name="woopos_mark_order_as_paid_title">האם לסמן את ההזמנה כ\'שולמה\'?</string>
+    <string name="woopos_custom_amount_dialog_cancel">ביטול</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">עדכון סכום בהתאמה אישית</string>
+    <string name="woopos_custom_amount_dialog_submit_add">הוספת סכום בהתאמה אישית</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">גביית מיסים</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">סכום בהתאמה אישית</string>
+    <string name="woopos_custom_amount_dialog_name_label">שם</string>
+    <string name="woopos_custom_amount_dialog_amount_label">סכום</string>
+    <string name="woopos_custom_amount_form_title">סכום בהתאמה אישית</string>
+    <string name="woopos_custom_amount_dialog_title_edit">עריכת סכום בהתאמה אישית</string>
+    <string name="woopos_custom_amount_dialog_title_add">הוספת סכום בהתאמה אישית</string>
+    <string name="woopos_custom_amount_entry_subtitle">הוספת חיוב חד פעמי</string>
+    <string name="woopos_custom_amount_entry_title">סכום בהתאמה אישית</string>
+    <string name="woopos_cart_custom_amount_menu_remove">הסרה</string>
+    <string name="woopos_cart_custom_amount_menu_edit">עריכה</string>
+    <string name="woopos_cart_custom_amount_includes_tax">כולל מיסים</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">עריכת %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">סכום בהתאמה אישית ⁦%1$s⁩, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">לא עזר לי</string>
+    <string name="ai_support_chat_feedback_helpful">עזר לי</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">לא הצלחנו לבדוק את ההרשמה שלך להודעות בדחיפה.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">התקן זה לא רשום לקבלת הודעות בדחיפה עבור החנות שלך.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">לא הצלחנו למצוא אסימון של הודעות בדחיפה עבור מכשיר זה.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">ההודעות חסומות בהגדרות של Android.\n\nיש להפעיל הודעות עבור WooCommerce ולאחר מכן לחזור לכאן כדי להמשיך.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">לא הצלחנו לבדוק את הגדרת הנתונים האנליטיים שלך.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">השירות של WooCommerce Analytics אינו מופעל בחנות שלך.\n\nנתונים אנליטיים כגון נתונים סטטיסטיים של הכנסות והזמנות לא יהיו זמינים עד שהאפשרות תופעל.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">קיימת בעיה עם החיבור שלך אל Jetpack.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">איננו יכולים לאפשר פעילות תקינה עם התגובה של האתר שלך.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">איננו יכולים להתחבר אל WordPress.com כרגע.\n\nיש לנסות שוב בעוד כמה דקות.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">בודק את רישום הדחיפה</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">בודק את אסימון ההודעות בדחיפה</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">בודק את ערוצי ההודעות</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">בודק את הגדרות ההודעות באפליקציה</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">בודק את הרשאות ההודעות</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">בודק את הגדרת הנתונים האנליטיים</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">הרצת בדיקות חוזרת</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">רושם הודעות…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">שגיאה בהפעלת הנתונים האנליטיים.</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">רישום הודעות</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">פתיחת הגדרות ההודעות</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">הפעלת נתונים אנליטיים</string>
+    <string name="ai_support_chat_diagnostics_success">כל הבדיקות הושלמו ללא בעיות</string>
+    <string name="ai_support_chat_resolved_prompt">יש לסמן את הצ\'אט כ\'נפתר\' אם הבעיה נפתרה, או להשאיר הודעה אם יש לך שאלות נוספות.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">בקשת תמיכה בתוספים</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">בקשת תמיכה בתוספים של WooCommerce</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">בקשת תמיכה ב-WooPayments</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">בקשת תמיכה בקורא כרטיסים</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">בקשת תמיכה באפליקציות למכשירים ניידים</string>
+    <string name="ai_support_chat_escalation_transcript_header">להלן התמלול של שיחת תמיכה בצ\'אט עם הבינה המלאכותית באפליקציה:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">טופס יצירת קשר</string>
+    <string name="ai_support_chat_escalation_consent_send_request">שליחת בקשה</string>
+    <string name="ai_support_chat_escalation_consent_message">אנחנו יכולים ליצור בקשת תמיכה באמצעות תמלול צ\'אט זה. לחלופין, באפשרותך לפתוח את טופס יצירת הקשר ולהזין את הפרטים בעצמך.</string>
+    <string name="ai_support_chat_escalation_consent_title">האם לשלוח צ\'אט זה לתמיכה?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">פעולה זו תסגור את פעולות הצ\'אט עבור שיחה זו.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">האם לסמן את הצ\'אט כ\'נפתר\'?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">ביטול</string>
+    <string name="ai_support_chat_mark_resolved">סימון כ\'נפתר\'</string>
+    <string name="ai_support_chat_toolbar_contact_support">פנייה לתמיכה</string>
+    <string name="ai_support_chat_resolved_message">צ\'אט זה סומן כ\'נפתר\'.</string>
+    <string name="ai_support_chat_ticket_created_message">נוצר כרטיס תמיכה עבור צ\'אט זה. אנו נגיב באימייל.</string>
+    <string name="ai_support_chat_contact_support">פנייה לתמיכה</string>
+    <string name="ai_support_chat_human_support_message">נראה שאולי נדרשת לך עזרה נוספת. רוצה לפנות לצוות התמיכה שלנו?</string>
+    <string name="ai_support_chat_suggested_fix_error">לא ניתן להחיל תיקון זה. יש לבדוק את החיבור ולנסות שוב.</string>
+    <string name="ai_support_chat_load_history_error">לא ניתן לטעון צ\'אט זה. יש לבדוק את החיבור ולנסות שוב.</string>
+    <string name="ai_support_chat_error_dismiss">ביטול</string>
+    <string name="ai_support_chat_error_title">שגיאה</string>
+    <string name="ai_support_chat_input_hint">יש להקליד הודעה…</string>
+    <string name="ai_support_chat_greeting">שלום! אני בוט התמיכה שלך ב-WooCommerce לנייד. יש משהו שאני יכול לעזור לך איתו היום?</string>
+    <string name="ai_support_chat_history_default_title">שיחת תמיכה</string>
+    <string name="ai_support_chat_history_delete_error">לא ניתן למחוק את היסטוריית הצ\'אט.</string>
+    <string name="ai_support_chat_history_load_error">לא ניתן לטעון את היסטוריית הצ\'אט.</string>
+    <string name="ai_support_chat_history_empty">עדיין לא התחלת שיחת צ\'אט עם התמיכה.</string>
+    <string name="ai_support_chat_history_title">היסטוריית צ\'אטים</string>
+    <string name="ai_support_chat_history_row_subtitle">עיון חוזר בשיחות תמיכה קודמות</string>
+    <string name="ai_support_chat_history_row_title">היסטוריית צ\'אטים</string>
+    <string name="ai_support_chat_screen_title">שיחה עם התמיכה בצ\'אט</string>
+    <string name="ai_support_chat_help_row_title">שיחה עם התמיכה בצ\'אט</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">סינון לביקורות עם דירוג השווה או לדירוג שנבחר או נמוך ממנו.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">רק סקירות בדירוג נמוך</string>
+    <string name="settings_notifs_new_reviews_all_description">קבלת התראה על כל ביקורת.</string>
+    <string name="settings_notifs_new_reviews_enable_description">קבלת הודעות כאשר מושארת ביקורת בחנות.</string>
+    <string name="settings_notifs_new_orders_threshold">ערך מינימלי (⁦%1$s⁩)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">הזמנות מעל ⁦%1$s⁩</string>
+    <string name="settings_notifs_channel_disabled_subtitle">הפעלה בהגדרות המכשיר</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">כוכב ⁦%1$d⁩ ומטה</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">משהו השתבש במהלך פעולת הסייען.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">הסייען לא הצליח לסיים את הפעולה לאחר מספר שלבים.</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">האישור עדיין אינו זמין. יש לנסות שוב מהצ\'אט.</string>
@@ -121,7 +231,7 @@ Language: he_IL
     <string name="woopos_tap_to_pay_promoted_cta_button_label">תשלום באמצעות Tap To Pay</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">אפשר להשתמש במכשיר זה כדי לקבל תשלומים בכרטיס ללא מגע.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
-    <string name="woopos_payment_method_picker_dialog_title">יש לבחור את אמצעי התשלום</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">יש לבחור את אמצעי התשלום</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">סימון הזמנה כ\'שולמה\'</string>
     <string name="woopos_payment_method_scan_to_pay_label">סריקה לתשלום</string>
     <string name="woopos_payment_method_other_methods_label">אמצעי תשלום אחרים</string>
@@ -141,10 +251,6 @@ Language: he_IL
     <string name="ai_support_chat_diagnostics_status_running">מופעל</string>
     <string name="ai_support_chat_diagnostics_status_pending">בהמתנה</string>
     <string name="ai_support_chat_diagnostics_continue">המשך לצ\'אט</string>
-    <string name="ai_support_chat_diagnostics_retry">לנסות שוב</string>
-    <string name="ai_support_chat_diagnostics_failure">חלק מהבדיקות נכשלו. אפשר לנסות שוב או להמשיך לשוחח עם התוצאות האלה.</string>
-    <string name="ai_support_chat_diagnostics_success">האבחון הושלם</string>
-    <string name="ai_support_chat_diagnostics_title">בודק את החנות שלך…</string>
     <string name="ai_support_chat_issue_other">משהו אחר</string>
     <string name="ai_support_chat_issue_receiving_notifications">לא מתקבלות אצלי הודעות</string>
     <string name="ai_support_chat_issue_loading_analytics">הנתונים האנליטיים שלי אינם נטענים</string>
@@ -155,17 +261,9 @@ Language: he_IL
     <string name="ai_support_chat_typing">מנסה למצוא תשובה…</string>
     <string name="ai_support_chat_send_error">לא ניתן לשלוח את ההודעה. יש לבדוק את החיבור ולנסות שוב.</string>
     <string name="ai_support_chat_send">שליחה</string>
-    <string name="ai_support_chat_input_hint">פתרון בעיות באמצעות בינה מלאכותית</string>
-    <string name="ai_support_chat_greeting">שלום! אני רוצה לדעת מה קורה בחנות שלך ולעזור לך לפתור את הבעיה.</string>
     <string name="ai_support_chat_placeholder">בקרוב</string>
-    <string name="ai_support_chat_screen_title">פתרון בעיות באמצעות בינה מלאכותית</string>
     <string name="ai_support_chat_help_row_subtitle">אפשר לשוחח עם סייען הבינה המלאכותית כדי לאבחן בעיות בחנות</string>
-    <string name="ai_support_chat_help_row_title">פתרון בעיות באמצעות בינה מלאכותית</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">יש לבחור את הדירוג הגבוה ביותר שיביא לשליחת הודעה.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">חוות דעת עד דירוג</string>
-    <string name="settings_notifs_new_reviews_all_description">פינג לכל ביקורת, בלי קשר לדירוג.</string>
     <string name="settings_notifs_new_reviews_all_title">כל הביקורות החדשות</string>
-    <string name="settings_notifs_new_reviews_enable_description">אפשר לקבל הודעות כאשר מישהו כותב ביקורת על אחד מהמוצרים שלך.</string>
     <string name="settings_notifs_stock_backorder_description">כאשר לקוח מזמין פריט שכרגע אזל מהמלאי.</string>
     <string name="settings_notifs_stock_backorder_title">בהזמנה משלימה</string>
     <string name="settings_notifs_stock_out_of_stock_description">כאשר וריאציה של מוצר מגיעה לאפס.</string>
@@ -177,8 +275,7 @@ Language: he_IL
     <string name="settings_notifs_stock_low_stock_title">מלאי נמוך</string>
     <string name="settings_notifs_stock_enable_description">אפשר לקבל הודעות כאשר שינויים במלאי המוצרים דורשים תשומת לב.</string>
     <string name="settings_notifs_stock_enable_title">הפעלת התראה כאשר המלאי נמוך</string>
-    <string name="settings_notifs_new_orders_threshold">סף (⁦%1$s⁩)</string>
-    <string name="settings_notifs_new_orders_high_value_description">סינון לפי הזמנות מעל הסף.</string>
+    <string name="settings_notifs_new_orders_high_value_description">סינון לפי הזמנות מעל הערך המינימלי שנבחר.</string>
     <string name="settings_notifs_new_orders_high_value_title">רק הזמנות בעלות ערך גבוה</string>
     <string name="settings_notifs_new_orders_all_description">פינג לכל הזמנה, ללא קשר לערך.</string>
     <string name="settings_notifs_new_orders_all_title">כל ההזמנות החדשות</string>
@@ -806,8 +903,6 @@ Language: he_IL
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">בריטניה</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">ארצות הברית</string>
     <string name="woopos_eligibility_screen_unable_to_load">לא ניתן לטעון</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">מערכת POS לא זמינה במטבע של החנות שלך. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">מערכת POS לא זמינה במטבע של החנות שלך. ב-⁦%1$s⁩, כרגע המערכת תומכת רק ב-⁦%2$s⁩. יש לבדוק את הגדרות המטבע של החנות או לפנות לתמיכה לקבלת סיוע.</string>
     <string name="woopos_eligibility_reason_check_connection">יש לבדוק את החיבור לאינטרנט ולנסות להפעיל מחדש את האפליקציה. אם הבעיה נמשכת, ניתן ליצור קשר עם התמיכה.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">הגרסה של WooCommerce שברשותך לא נתמכת. למערכת POS נדרשת גרסת WooCommerce של ⁦%1$s⁩ ומעלה. עליך לעדכן את WooCommerce לגרסה האחרונה.</string>
     <string name="orderfilters_sales_channel_filter">ערוץ מכירות</string>
@@ -4095,8 +4190,6 @@ Language: he_IL
         <item>חבילות מותאמות אישית</item>
         <item>חבילת שירות</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ כוכבים ומטה</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">כוכב ⁦%1$d⁩ ומטה</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">סכום ביניים (פריט %d)</item>
         <item quantity="two">סכום ביניים (%d פריטים)</item>

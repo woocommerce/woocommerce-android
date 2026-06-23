@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
+import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
@@ -53,6 +54,14 @@ interface CardReaderManager {
     ): Flow<CardReaderDiscoveryEvents>
 
     fun setupTapToPayUx(config: TapToPayUxConfig)
+
+    /**
+     * Checks whether the Stripe Terminal SDK considers this device capable of acting as a
+     * Tap-to-Pay reader (e.g. has a Trusted Execution Environment and hardware-backed key
+     * attestation). Returns [TapToPaySupportResult.TerminalNotInitialized] if Terminal has
+     * not been initialized yet — callers should fall back to their pre-init heuristics.
+     */
+    fun isTapToPaySupportedOnDevice(isSimulated: Boolean): TapToPaySupportResult
 
     suspend fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean

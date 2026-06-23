@@ -2,10 +2,21 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.1
+-----
+- [*] Fixed QR login retrying an expired number challenge re-showing the old number with "Expires in 0s"; it now returns you to the QR scanner to scan a fresh code [https://github.com/woocommerce/woocommerce-android/pull/16094]
+- [*] Renamed the empty Orders "test order" prompt to "Place your first order" and clarified that processing fees aren't refundable [https://github.com/woocommerce/woocommerce-android/pull/16086]
+- [*] Improved login error messages for site security certificate issues [https://github.com/woocommerce/woocommerce-android/pull/16042]
+- [Internal] Fixed a screen flash when navigating from the login prologue to the (feature-flagged) QR login screen [https://github.com/woocommerce/woocommerce-android/pull/16095]
+- [Internal] Migrated media upload and media-list endpoints to Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/15550]
+- [*] Fixed newest orders sometimes missing from the order list until a filter was applied or the list was refreshed [https://github.com/woocommerce/woocommerce-android/pull/16088]
+- [*] Fixed Analytics Hub Customize screen showing a discard-changes dialog on back when no changes were made [https://github.com/woocommerce/woocommerce-android/pull/16092]
+
 25.0
 -----
 - [*] Added age-eligibility verification to comply with Google Play age requirements [https://github.com/woocommerce/woocommerce-android/pull/16048]
 - [**] Woo POS is now available in Canada, and the POS refund flow is improved [https://github.com/woocommerce/woocommerce-android/pull/15996]
+- [*] Fixed Tap to Pay being offered on devices that don't support it, and replaced the generic "No reader connected" error with a clear "Tap to Pay is not available" message linking to the requirements [https://github.com/woocommerce/woocommerce-android/pull/16044]
 
 24.9
 -----
@@ -15,12 +26,9 @@
 - [**] Contact support now includes troubleshooting and AI help [https://github.com/woocommerce/woocommerce-android/pull/15979]
 - [*] Fixed USPS shipping label customs handling for US territories and added a 30-character limit on customs item descriptions [https://github.com/woocommerce/woocommerce-android/pull/15999]
 - [Internal] Enabled local flag for self-driven push notifications [https://github.com/woocommerce/woocommerce-android/pull/15997]
-<<<<<<< merge/release-24.9-into-trunk
 - [*] Fixed Woo POS failing to load products on stores whose web server blocks access to the catalog file [https://github.com/woocommerce/woocommerce-android/pull/16059]
-=======
 - [*] Fixed Woo Shipping label "Shipment details" title not expanding the bottom sheet on tap [https://github.com/woocommerce/woocommerce-android/pull/16020]
 - [*] Fixed Shipping Labels Verify button being briefly tappable when the address form input is invalid [https://github.com/woocommerce/woocommerce-android/pull/16021]
->>>>>>> trunk
 
 24.8
 -----

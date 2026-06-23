@@ -1,5 +1,6 @@
 package com.woocommerce.android.background
 
+import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,7 +15,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.Test
 
@@ -22,19 +22,19 @@ import kotlin.test.Test
 class UpdateOrderAndOrderListTest : BaseUnitTest() {
     private val updateOrdersListByStoreId: UpdateOrdersListByStoreId = mock()
     private val orderStore: WCOrderStore = mock()
-    private val siteStore: SiteStore = mock()
+    private val resolveSiteBySiteId: ResolveSiteBySiteId = mock()
 
     private val sut = UpdateOrderAndOrderList(
         updateOrdersListByStoreId = updateOrdersListByStoreId,
         orderStore = orderStore,
-        siteStore = siteStore
+        resolveSiteBySiteId = resolveSiteBySiteId
     )
 
     @Test
     fun `when selected site is null then return false`() = testBlocking {
         val defaultSiteId = 2L
         val defaultOrderId = 5L
-        whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(null)
+        whenever(resolveSiteBySiteId(defaultSiteId)).thenReturn(null)
         whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
 
         val result = sut(defaultSiteId, defaultOrderId)
@@ -53,7 +53,7 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
             WooError(WooErrorType.INVALID_RESPONSE, BaseRequest.GenericErrorType.INVALID_RESPONSE)
         )
 
-        whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
+        whenever(resolveSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
         whenever(orderStore.fetchSingleOrderSync(eq(defaultSite), eq(defaultOrderId))).thenReturn(fetchOrderError)
         whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
 
@@ -71,7 +71,7 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
         val defaultSite = SiteModel().apply { id = 3 }
         val fetchOrderResult = WooResult(OrderTestUtils.generateOrder())
 
-        whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
+        whenever(resolveSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
         whenever(orderStore.fetchSingleOrderSync(eq(defaultSite), eq(defaultOrderId))).thenReturn(fetchOrderResult)
         whenever(updateOrdersListByStoreId.invoke(any(), any()))
             .thenReturn(Result.failure(Exception("Unhandled error")))
@@ -90,8 +90,25 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
         val defaultSite = SiteModel().apply { id = 3 }
         val fetchOrderResult = WooResult(OrderTestUtils.generateOrder())
 
-        whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
+        whenever(resolveSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
         whenever(orderStore.fetchSingleOrderSync(eq(defaultSite), eq(defaultOrderId))).thenReturn(fetchOrderResult)
+        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
+
+        val result = sut(defaultSiteId, defaultOrderId)
+
+        // Assertions
+        Assert.assertTrue(result.isSuccess)
+    }
+
+    @Test
+    fun `given app-password site, when site resolved via selected site, then fetch succeeds`() = testBlocking {
+        val defaultSiteId = 0L
+        val defaultOrderId = 5L
+        val selectedSite = SiteModel().apply { id = 3 }
+        val fetchOrderResult = WooResult(OrderTestUtils.generateOrder())
+
+        whenever(resolveSiteBySiteId(defaultSiteId)).thenReturn(selectedSite)
+        whenever(orderStore.fetchSingleOrderSync(eq(selectedSite), eq(defaultOrderId))).thenReturn(fetchOrderResult)
         whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
 
         val result = sut(defaultSiteId, defaultOrderId)

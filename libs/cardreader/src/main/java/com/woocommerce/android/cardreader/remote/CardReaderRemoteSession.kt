@@ -250,6 +250,7 @@ class CardReaderRemoteSession internal constructor(
                 when (event) {
                     is CardReaderDiscoveryEvents.ReadersFound -> event.list.firstOrNull()
                     is CardReaderDiscoveryEvents.Failed -> error(event.msg)
+                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported -> error(event.msg)
                     CardReaderDiscoveryEvents.Started,
                     CardReaderDiscoveryEvents.Succeeded -> null
                 }

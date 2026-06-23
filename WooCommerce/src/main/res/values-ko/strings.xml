@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-20 09:55:34+0000
+Translation-Revision-Date: 2026-06-12 08:06:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">알림 없음</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s 및 %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">별 %1$d개 이하</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">상품 #%3$s의 변형 %1$s 업데이트(#%2$s)</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">고객 #%1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">비회원</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature"> 주문 #%1$s 업데이트(%2$s): 고객에게 이메일 발송</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">주문 #%1$s 업데이트(%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">설명은 %1$s자 이하여야 합니다.</string>
+    <string name="woopos_totals_success_payment_external">%1$s의 주문이 완료로 표시되었습니다.</string>
+    <string name="woopos_totals_success_payment_qr">%1$s의 결제가 접수되었습니다.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">쿠폰 추가</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">어두워진 배경입니다. 눌러서 결제 수단 선택기를 해제하세요.</string>
+    <string name="woopos_scan_to_pay_order_note">고객이 Scan to Pay를 통해 결제했음</string>
+    <string name="woopos_scan_to_pay_cancel">취소</string>
+    <string name="woopos_scan_to_pay_retry">다시 시도</string>
+    <string name="woopos_scan_to_pay_error_message">결제를 준비할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="woopos_scan_to_pay_total">주문 합계: %1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">고객이 스마트폰에서 결제할 수 있도록 이 코드를 보여주세요.</string>
+    <string name="woopos_scan_to_pay_title">스캔하여 결제</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">주문을 로드할 수 없습니다. 뒤로 이동하여 다시 시도하세요.</string>
+    <string name="woopos_mark_order_as_paid_error_message">주문을 업데이트할 수 없습니다. 다시 시도하세요.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">결제됨으로 표시</string>
+    <string name="woopos_mark_order_as_paid_note_hint">예: Maria의 은행 이체, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_message">그러면 %1$s 주문이 완료됨으로 표시됩니다. 다른 방법으로 이미 결제를 수령한 경우에만 사용하세요.</string>
+    <string name="woopos_mark_order_as_paid_title">주문을 결제됨으로 표시할까요?</string>
+    <string name="woopos_custom_amount_dialog_cancel">취소</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">사용자 정의 금액 업데이트</string>
+    <string name="woopos_custom_amount_dialog_submit_add">사용자 정의 금액 추가</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">세금 청구</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">사용자 정의 금액</string>
+    <string name="woopos_custom_amount_dialog_name_label">이름</string>
+    <string name="woopos_custom_amount_dialog_amount_label">금액</string>
+    <string name="woopos_custom_amount_form_title">사용자 정의 금액</string>
+    <string name="woopos_custom_amount_dialog_title_edit">사용자 정의 금액 편집</string>
+    <string name="woopos_custom_amount_dialog_title_add">사용자 정의 금액 추가</string>
+    <string name="woopos_custom_amount_entry_subtitle">일회성 요금 추가</string>
+    <string name="woopos_custom_amount_entry_title">사용자 정의 금액</string>
+    <string name="woopos_cart_custom_amount_menu_remove">제거</string>
+    <string name="woopos_cart_custom_amount_menu_edit">편집</string>
+    <string name="woopos_cart_custom_amount_includes_tax">세금 포함됨</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">%s 편집</string>
+    <string name="woopos_cart_item_custom_amount_content_description">사용자 정의 금액 %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">유용하지 않음</string>
+    <string name="ai_support_chat_feedback_helpful">유용함</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">푸시 알림 등록을 확인할 수 없습니다.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">이 기기에는 스토어의 푸시 알림 수신이 등록되어 있지 않습니다.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">이 기기의 푸시 알림 토큰을 찾을 수 없습니다.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">알림이 Android 설정에서 차단되어 있습니다.\n\n우커머스의 알림을 활성화한 다음에 여기로 돌아와서 계속하세요.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">분석 설정을 확인할 수 없습니다.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">우커머스 분석이 회원님의 스토어에서 활성화되어 있지 않습니다.\n\n활성화될 때까지 수익 및 주문 통계와 같은 분석 데이터를 사용할 수 없습니다.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">젯팩 연결에서 문제가 발생했습니다.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">사이트의 응답을 제대로 처리할 수 없습니다.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">지금은 워드프레스닷컴에 연결할 수 없습니다.\n\n잠시 후에 다시 시도하세요.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">푸시 등록 확인 중</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">푸시 알림 토큰 확인 중</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">알림 채널 확인 중</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">앱 알림 설정 확인 중</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">알림 권한 확인 중</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">분석 설정 확인 중</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">다시 확인 실행</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">알림 등록 중…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">분석 활성화 중…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">알림 등록</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">알림 설정 열기</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">분석 활성화</string>
+    <string name="ai_support_chat_diagnostics_success">문제없이 모든 확인 완료됨</string>
+    <string name="ai_support_chat_resolved_prompt">문제가 해결되었으면 채팅을 해결됨으로 표시하고, 다른 질문이 있으면 메시지를 남겨주세요.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">플러그인 지원 요청</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">우커머스 플러그인 지원 요청</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">WooPayments 지원 요청</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">카드 리더 지원 요청</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">모바일 앱 지원 요청</string>
+    <string name="ai_support_chat_escalation_transcript_header">다음은 앱 내 AI 지원 채팅 세션의 대본입니다.</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">문의 양식</string>
+    <string name="ai_support_chat_escalation_consent_send_request">요청 보내기</string>
+    <string name="ai_support_chat_escalation_consent_message">이 채팅 대본을 사용하여 지원 요청을 생성해 드리거나, 회원님이 문의 양식을 열어서 상세 정보를 직접 입력하실 수 있습니다.</string>
+    <string name="ai_support_chat_escalation_consent_title">지원팀에 이 채팅을 보낼까요?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">그러면 이 대화의 채팅 작업이 종료됩니다.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">채팅을 해결됨으로 표시할까요?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">취소</string>
+    <string name="ai_support_chat_mark_resolved">해결됨으로 표시</string>
+    <string name="ai_support_chat_toolbar_contact_support">지원 문의</string>
+    <string name="ai_support_chat_resolved_message">이 채팅은 해결됨으로 표시되었습니다.</string>
+    <string name="ai_support_chat_ticket_created_message">이 채팅의 지원 티켓이 생성되었습니다. 이메일을 통해 응답하겠습니다.</string>
+    <string name="ai_support_chat_contact_support">지원 문의</string>
+    <string name="ai_support_chat_human_support_message">추가 도움말이 필요하신 것처럼 보입니다. 지원팀에 문의하시겠어요?</string>
+    <string name="ai_support_chat_suggested_fix_error">이 수정 사항을 적용할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.</string>
+    <string name="ai_support_chat_load_history_error">이 채팅을 로드할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.</string>
+    <string name="ai_support_chat_error_dismiss">해제</string>
+    <string name="ai_support_chat_error_title">오류</string>
+    <string name="ai_support_chat_input_hint">메시지 입력…</string>
+    <string name="ai_support_chat_greeting">안녕하세요! 저는 Woo 모바일 지원 봇입니다. 오늘 제가 도와드릴 일이 있나요?</string>
+    <string name="ai_support_chat_history_default_title">지원 대화</string>
+    <string name="ai_support_chat_history_delete_error">채팅 기록을 삭제할 수 없습니다.</string>
+    <string name="ai_support_chat_history_load_error">채팅 기록을 로드할 수 없습니다.</string>
+    <string name="ai_support_chat_history_empty">지원팀과 채팅하신 적이 없습니다.</string>
+    <string name="ai_support_chat_history_title">채팅 기록</string>
+    <string name="ai_support_chat_history_row_subtitle">과거 지원 대화 다시 방문</string>
+    <string name="ai_support_chat_history_row_title">채팅 기록</string>
+    <string name="ai_support_chat_screen_title">지원팀과 채팅</string>
+    <string name="ai_support_chat_help_row_title">지원팀과 채팅</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">선택하신 평점 이하의 리뷰로 필터링됩니다.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">평점이 낮은 리뷰만</string>
+    <string name="settings_notifs_new_reviews_all_description">리뷰마다 핑이 표시됩니다.</string>
+    <string name="settings_notifs_new_reviews_enable_description">스토어에 대한 리뷰가 남겨질 때 알림을 받으세요.</string>
+    <string name="settings_notifs_new_orders_threshold">최솟값(%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">%1$s 초과 주문</string>
+    <string name="settings_notifs_channel_disabled_subtitle">기기 설정에서 켜기</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">도우미가 작업하는 동안 문제가 발생했습니다.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">몇 단계 후 도우미가 마무리할 수 없습니다.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">별 %1$d개 이하</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">아직 확정을 사용할 수 없습니다. 채팅에서 다시 시도해 주세요.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">요청이 중지되었습니다.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">해당 변경 사항이 적용되었는지 잘 모르겠습니다. 다른 방법을 시도하기 전에 스토어에서 확인해 주세요.</string>
@@ -121,7 +231,6 @@ Language: ko_KR
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Tap to pay로 결제</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">비접촉 카드 결제를 수락하려면 이 기기를 사용하세요.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap To Pay</string>
-    <string name="woopos_payment_method_picker_dialog_title">결제 수단 선택</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">주문을 결제됨으로 표시</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scan to Pay</string>
     <string name="woopos_payment_method_other_methods_label">기타 결제 수단</string>
@@ -138,13 +247,10 @@ Language: ko_KR
     <string name="ai_support_chat_connectivity_initial_message">내 스토어 연결 문제 해결을 도와주세요.</string>
     <string name="ai_support_chat_diagnostics_status_failed">실패</string>
     <string name="ai_support_chat_diagnostics_status_passed">전달됨</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">결제 수단 선택</string>
     <string name="ai_support_chat_diagnostics_status_running">실행 중</string>
     <string name="ai_support_chat_diagnostics_status_pending">대기 중</string>
     <string name="ai_support_chat_diagnostics_continue">채팅 계속하기</string>
-    <string name="ai_support_chat_diagnostics_retry">다시 시도</string>
-    <string name="ai_support_chat_diagnostics_failure">일부 점검은 실패했습니다. 다시 시도하거나 이러한 결과에서 채팅을 계속하실 수 있습니다.</string>
-    <string name="ai_support_chat_diagnostics_success">진단 완료됨</string>
-    <string name="ai_support_chat_diagnostics_title">스토어 점검 중…</string>
     <string name="ai_support_chat_issue_other">기타</string>
     <string name="ai_support_chat_issue_receiving_notifications">알림이 수신되지 않음</string>
     <string name="ai_support_chat_issue_loading_analytics">내 분석이 로드되지 않음</string>
@@ -155,17 +261,9 @@ Language: ko_KR
     <string name="ai_support_chat_typing">생각 중…</string>
     <string name="ai_support_chat_send_error">회원님의 메시지를 보낼 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.</string>
     <string name="ai_support_chat_send">보내기</string>
-    <string name="ai_support_chat_input_hint">AI 문제 해결 메시지</string>
-    <string name="ai_support_chat_greeting">안녕하세요! 스토어에서 무슨 일이 일어나고 있는지 알려주시면 문제 해결을 도와드리겠습니다.</string>
     <string name="ai_support_chat_placeholder">공개 예정</string>
-    <string name="ai_support_chat_screen_title">AI 문제 해결</string>
     <string name="ai_support_chat_help_row_subtitle">AI 도우미와 채팅하며 스토어 문제 진단</string>
-    <string name="ai_support_chat_help_row_title">AI 문제 해결</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">알림을 보내야 하는 최고 평점을 선택하세요.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">평점까지 남은 리뷰 수</string>
-    <string name="settings_notifs_new_reviews_all_description">평점과 관계없이 모든 리뷰에 핑을 표시하세요.</string>
     <string name="settings_notifs_new_reviews_all_title">모든 새 리뷰</string>
-    <string name="settings_notifs_new_reviews_enable_description">누군가 회원님의 상품 중 하나에 대한 리뷰를 남길 때 알림을 받으세요.</string>
     <string name="settings_notifs_stock_backorder_description">고객이 현재 재고 없음 상태인 아이템을 주문할 때.</string>
     <string name="settings_notifs_stock_backorder_title">이월 주문 시</string>
     <string name="settings_notifs_stock_out_of_stock_description">상품 변형이 0에 도달할 때.</string>
@@ -177,10 +275,9 @@ Language: ko_KR
     <string name="settings_notifs_stock_low_stock_title">재고 부족</string>
     <string name="settings_notifs_stock_enable_description">상품 재고 변경 사항에 회원님의 주의가 필요할 때 알림을 받으세요.</string>
     <string name="settings_notifs_stock_enable_title">재고 알림 활성화</string>
-    <string name="settings_notifs_new_orders_threshold">임계값(%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">임계값을 초과하는 주문으로 필터링하세요.</string>
     <string name="settings_notifs_new_orders_high_value_title">고가의 주문만</string>
     <string name="settings_notifs_new_orders_all_description">값과 관계없이 모든 주문에 핑을 표시하세요.</string>
+    <string name="settings_notifs_new_orders_high_value_description">최솟값을 넘는 주문으로 필터링하세요.</string>
     <string name="settings_notifs_new_orders_all_title">모든 새 주문</string>
     <string name="settings_notifs_notify_me_for">다음에 대해 알림 받기</string>
     <string name="settings_notifs_new_orders_enable_description">스토어에 주문이 접수될 때 알림을 받으세요.</string>
@@ -808,8 +905,6 @@ Language: ko_KR
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">영국</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">미국</string>
     <string name="woopos_eligibility_screen_unable_to_load">로드할 수 없음</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">스토어의 통화에는 POS 시스템을 사용할 수 없습니다. %1$s에서는 현재 %2$s만 지원됩니다. 스토어 통화 설정을 확인하거나 도움이 필요하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_check_connection">인터넷 연결을 확인하고 앱을 다시 시작해 보세요. 문제가 계속 발생하면 지원을 문의해 주세요.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">회원님의 우커머스 버전은 지원되지 않습니다. POS 시스템에는 우커머스 버전 %1$s 이상이 필요합니다. 우커머스를 최신 버전으로 업데이트하세요.</string>
     <string name="orderfilters_sales_channel_filter">판매 채널</string>
@@ -4097,8 +4192,6 @@ Language: ko_KR
         <item>사용자 정의 패키지</item>
         <item>서비스 패키지</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">별 %1$d개 이하</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">별 %1$d개 이하</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">품목 소계(%d개 품목)</item>
     </plurals>

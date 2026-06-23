@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Tog
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.Available
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
@@ -1373,6 +1375,67 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.index == 6 &&
                     it.iconBadge == null
             }
+        }
+
+    @Test
+    fun `given DeviceNotSupported, when view model started, then show only about ttp row in hub`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(tapToPayAvailabilityStatus()).thenReturn(DeviceNotSupported)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = "1.0",
+                    countryCode = "US",
+                )
+            )
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            val rows = viewModel.viewStateData.getOrAwaitValue().rows
+            assertThat(rows).anyMatch {
+                it is PaymentsHubViewState.ListItem.HeaderItem &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_header)
+            }
+            assertThat(rows).noneMatch {
+                it is NonToggleableListItem &&
+                    it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            }
+            assertThat(rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
+            }
+        }
+
+    @Test
+    fun `given DeviceNotSupported, when about ttp clicked, then unavailable handler invoked`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(tapToPayAvailabilityStatus()).thenReturn(DeviceNotSupported)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = "1.0",
+                    countryCode = "US",
+                )
+            )
+            initViewModel()
+
+            // WHEN
+            (
+                viewModel.viewStateData.getOrAwaitValue().rows.first {
+                    it is NonToggleableListItem &&
+                        it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
+                } as NonToggleableListItem
+                ).onClick.invoke()
+
+            // THEN
+            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(eq(DeviceNotSupported), any())
+            verify(paymentsHubTapToPayUnavailableHandler).handleTTPUnavailable(eq(DeviceNotSupported), any(), any())
         }
 
     @Test

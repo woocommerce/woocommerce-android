@@ -155,8 +155,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             ORDER_LIST_CREATE_TEST_ORDER -> {
                 isTitleBold = true
                 title = context.getString(R.string.empty_order_list_title)
-                message = context.getString(R.string.empty_order_test_order_message)
-                buttonText = context.getString(R.string.empty_order_test_order_button)
+                message = context.getString(R.string.empty_order_place_order_message)
+                buttonText = context.getString(R.string.empty_order_place_order_button)
                 drawableId = R.drawable.img_empty_orders_no_orders
             }
 
