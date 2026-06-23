@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -26,13 +27,16 @@ class WooPosRefundPreviewTest {
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
     private val availabilityCache = WooPosV4RefundAvailabilityCache()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
 
     private val site = SiteModel().apply { siteId = SITE_ID }
     private val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)
-        WooPosRefundPreview(refundStore, selectedSite, availabilityCache)
+        // The version mock defaults to null (unknown) → not below support → cases probe the network,
+        // unless a test stubs a specific version.
+        WooPosRefundPreview(refundStore, selectedSite, availabilityCache, getWooCoreVersion)
     }
 
     @Test
@@ -74,6 +78,49 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.Error)
+    }
+
+    @Test
+    fun `given WC older than 10_9_0, when invoked, then falls back without probing and marks unavailable`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.8.0")
+
+        // WHEN
+        val result = sut(ORDER_ID, lineItems)
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
+        assertThat(availabilityCache.isV4Available(SITE_ID)).isFalse()
+        verify(refundStore, never()).previewRefund(any(), any(), any())
+    }
+
+    @Test
+    fun `given WC at 10_9_0, when invoked, then probes v4`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.9.0")
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(WooResult(preview()))
+
+        // WHEN
+        val result = sut(ORDER_ID, lineItems)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
+        verify(refundStore).previewRefund(eq(site), eq(ORDER_ID), eq(lineItems))
+    }
+
+    @Test
+    fun `given WC version unknown, when invoked, then still probes v4`() = runTest {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn(null)
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(WooResult(preview()))
+
+        // WHEN
+        sut(ORDER_ID, lineItems)
+
+        // THEN
+        verify(refundStore).previewRefund(eq(site), eq(ORDER_ID), eq(lineItems))
     }
 
     @Test
